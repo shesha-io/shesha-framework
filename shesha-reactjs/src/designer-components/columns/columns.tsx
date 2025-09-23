@@ -33,8 +33,6 @@ const validateColumns = (columns: IColumnProps[]) => {
     return columns;
   }
 
-  console.warn(`Columns component: Total flex value (${totalFlex}) exceeds 24. Columns will wrap to new rows.`);
-
   return columns;
 };
 

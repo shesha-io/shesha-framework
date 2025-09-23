@@ -135,7 +135,7 @@ export function getNumberFormat(str: any, format: string) {
 }
 
 /* Convert string to camelCase */
-export const camelcaseDotNotation = (str) =>
+export const camelcaseDotNotation = (str: string) =>
   str
     .split('.')
     .map((s) => camelcase(s))

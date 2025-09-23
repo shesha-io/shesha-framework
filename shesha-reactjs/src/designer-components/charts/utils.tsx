@@ -294,9 +294,9 @@ export const stringifyValues = (data: object[]) => {
  * @param str the enjoined properties string to remove duplicates from
  * @returns the string without duplicates
  */
-function removePropertyDuplicates(str) {
+function removePropertyDuplicates(str: string) {
   // Split the string into an array by commas
-  const arr = str.split(',');
+  const arr = str?.split(',');
 
   // Use a Set to remove duplicates and convert it back to an array
   const uniqueArr = [...new Set(arr)];

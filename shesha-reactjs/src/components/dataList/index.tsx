@@ -308,7 +308,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         // Extract all field references (secondary - for completeness)
         const extractedFields = extractFieldsFromFormConfig(mainEntityForm.formConfiguration);
 
-        const { validProperties, invalidProperties, allExtracted } = validationResult;
+        const { validProperties } = validationResult;
 
         if (validProperties.length > 0) {
           // Call the callback with VALID propertyName values (filtered against model)
@@ -356,7 +356,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
         const validationResult = extractValidatedPropertyNamesFromFormConfig(defaultFormTemplate, modelMetadata);
         const extractedFields = extractFieldsFromFormConfig(defaultFormTemplate);
-        const { validProperties, invalidProperties } = validationResult;
+        const { validProperties } = validationResult;
         const fieldsToUse = validProperties.length > 0 ? validProperties : extractedFields;
 
         if (fieldsToUse.length > 0) {
@@ -368,7 +368,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               console.error('DataList: Error in onFieldsExtracted callback (default template):', error);
             });
           }
-
         }
         return fieldsToUse;
       }

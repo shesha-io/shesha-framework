@@ -713,11 +713,14 @@ export const componentsFlatStructureToTree = (
               : [component[containerName] as IComponentsContainer]
             : undefined;
           if (childContainers) {
-            childContainers.forEach((c) => {
+            const mutableChildContainers = childContainers.map((c) => {
               const childComponents: IConfigurableFormComponent[] = [];
               processComponent(childComponents, c.id);
-              c.components = childComponents;
+              return { ...c, components: childComponents };
             });
+            component[containerName] = Array.isArray(component[containerName])
+              ? mutableChildContainers
+              : mutableChildContainers[0];
           }
         });
       }

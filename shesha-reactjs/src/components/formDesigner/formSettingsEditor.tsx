@@ -22,6 +22,12 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
   const { formProps } = useFormPersister();
   const formRef = useShaFormRef();
 
+  const initialValues = {
+    ...formSettings,
+    labelCol: { span: formSettings?.labelCol?.span || theme?.labelSpan },
+    wrapperCol: { span: formSettings?.wrapperCol?.span || theme?.componentSpan }
+  };
+
   const onSave = values => {
     if (!readOnly) {
       updateFormSettings(values);
@@ -54,7 +60,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
           shaFormRef={formRef}
           onFinish={onSave}
           markup={formSettingsMarkup}
-          initialValues={formSettings}
+          initialValues={initialValues}
         />
       </SourceFilesFolderProvider>
     </Modal>

@@ -57,16 +57,6 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
 
       <FormMarkupConverter markup={markup} formSettings={formSettings}>
         {(flatComponents) => {
-          // Log the flattened components structure to debug property bindings
-          if (process.env.NODE_ENV === 'development') {
-            console.log('DataList ItemRenderer: Flattened components structure:', {
-              itemIndex,
-              itemId,
-              flatComponents,
-              data
-            });
-          }
-
           return (
           <DataListCrudProvider
             isNewObject={isNewObject}

@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { Alert } from 'antd';
 import { DataList } from '@/components/dataList';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
@@ -10,11 +10,10 @@ import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions }
 import { useStyles } from '@/components/dataList/styles/styles';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
-import { YesNoInherit } from '@/interfaces';
+import { IPropertyMetadata, YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { IFormApi } from '@/providers/form/formApi';
-import defaultPersonFormTemplate from './defaultPersonFormTemplate.json';
-import { useMetadataDispatcher, useAppConfigurator } from '@/providers';
+import { useMetadataDispatcher } from '@/providers';
 import { DataTypes } from '@/interfaces';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { extractFieldsFromFormConfig } from './fieldExtractor';
@@ -75,7 +74,6 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const isDesignMode = allData.form?.formMode === 'designer';
   const { executeAction } = useConfigurableActionDispatcher();
   const metadataDispatcher = useMetadataDispatcher();
-  const { configurationItemMode } = useAppConfigurator();
   const { getEntityFormId, getForm } = useConfigurationItemsLoader();
   // TODO: Need to implement proper form fetching
 
@@ -89,8 +87,11 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   React.useEffect(() => {
     if (requireColumns) {
       requireColumns();
+      if (isDesignMode) {
+        console.log(`DataList (${props.id}): Called requireColumns() to activate columns functionality for data fetching`);
+      }
     }
-  }, [requireColumns]);
+  }, [requireColumns, isDesignMode, props.id]);
 
   const onSelectRow = useCallback((index: number, row: any) => {
     if (row && setSelectedRow) {
@@ -116,31 +117,17 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   );
 
   const data = useDeepCompareMemo(() => {
-    // In designer mode, if we have no data, provide some sample data for preview
-    if (isDesignMode && (!tableData || tableData.length === 0)) {
-      return [
-        {
-          id: "sample-1",
-          displayName: "Sample Item 1",
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@example.com",
-          _className: modelType || "Entity"
-        },
-        {
-          id: "sample-2",
-          displayName: "Sample Item 2",
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane.smith@example.com",
-          _className: modelType || "Entity"
-        }
-      ];
-    }
-
     // Use real data from the data context
+    if (isDesignMode && tableData) {
+      console.log(`DataList (${props.id}): Using real data from context:`, {
+        recordCount: tableData.length,
+        firstRecordKeys: tableData.length > 0 ? Object.keys(tableData[0]) : [],
+        sampleRecord: tableData.length > 0 ? tableData[0] : null,
+        modelType: modelType
+      });
+    }
     return tableData;
-  }, [tableData, isDesignMode, modelType]);
+  }, [tableData, isDesignMode, modelType, props.id]);
 
   // http, moment, setFormData
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
@@ -267,66 +254,59 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  const isFormMissing = isDesignMode && (
-    !repository
-    || !props.formId && props.formSelectionMode === "name"
-    || !props.formType && props.formSelectionMode === "view"
-    || !props.formIdExpression && props.formSelectionMode === "expression"
-  );
-
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
-  // State to track extracted fields from form template
-  const [extractedFields, setExtractedFields] = useState<string[]>([]);
+
+  // Deep search function to find all propertyName values in nested objects
+  const findAllPropertyNames = useCallback((obj: any, path: string = ''): Array<{ path: string, propertyName: string, fullObject?: any }> => {
+    const results: Array<{ path: string, propertyName: string, fullObject?: any }> = [];
+
+    const searchRecursively = (current: any, currentPath: string) => {
+      if (!current || typeof current !== 'object') return;
+
+      if (Array.isArray(current)) {
+        current.forEach((item, index) => {
+          searchRecursively(item, `${currentPath}[${index}]`);
+        });
+      } else {
+        // Check if current object has propertyName
+        if (current.hasOwnProperty('propertyName') && current.propertyName) {
+          results.push({
+            path: currentPath || 'root',
+            propertyName: current.propertyName,
+            fullObject: current
+          });
+        }
+
+        // Recursively search all properties
+        Object.keys(current).forEach(key => {
+          const newPath = currentPath ? `${currentPath}.${key}` : key;
+          searchRecursively(current[key], newPath);
+        });
+      }
+    };
+
+    searchRecursively(obj, path);
+    return results;
+  }, []);
+
+  // State to track field registration status and discovered property names
   const [hasRegisteredFields, setHasRegisteredFields] = useState(false);
+  const [discoveredPropertyNames, setDiscoveredPropertyNames] = useState<string[]>([]);
 
-  // Fallback to register common properties if field extraction fails
-  const registerFallbackProperties = useCallback(async () => {
-    if (!registerConfigurableColumns || !modelType || hasRegisteredFields) {
+
+
+  // Filter discovered property names against entity metadata and register valid ones
+  const validateAndRegisterDiscoveredFields = useCallback(async () => {
+    if (!discoveredPropertyNames.length || !modelType || !registerConfigurableColumns || hasRegisteredFields) {
       return;
     }
 
     try {
-      if (isDesignMode) {
-        console.warn(`DataList (${props.id}): Using fallback properties for entity:`, modelType);
-      }
-
-      const fallbackProperties = ['id', 'firstName', 'lastName', 'jobTitle', 'name', 'displayName', 'email', 'phoneNumber'];
-      const virtualColumns = fallbackProperties.map((propertyName, index) => ({
-        id: `datalist_fallback_${propertyName}`,
-        propertyName: propertyName,
-        caption: propertyName,
-        itemType: 'item' as const,
-        sortOrder: index,
-        isVisible: false,
-        columnType: 'data' as const,
-        propertiesToFetch: propertyName,
-      }));
-
-      registerConfigurableColumns(`datalist_fallback_${props.id}`, virtualColumns);
-      setHasRegisteredFields(true);
-
-      if (isDesignMode) {
-        console.warn(`DataList (${modelType}): Using fallback properties:`, fallbackProperties.join(', '));
-      }
-    } catch (error) {
-      console.error(`DataList: Failed to register fallback properties for ${modelType}:`, error);
-    }
-  }, [registerConfigurableColumns, isDesignMode, props.id, modelType, hasRegisteredFields]);
-
-  // Register specific properties based on form template field extraction with validation
-  const registerExtractedFields = useCallback(async (fields: string[]) => {
-    if (!registerConfigurableColumns || !modelType || fields.length === 0) {
-      return;
-    }
-
-    try {
-      if (isDesignMode) {
-        console.warn(`DataList (${props.id}): Validating and registering extracted fields for entity ${modelType}:`, fields);
-      }
-
       // Always include 'id' field as it's essential for DataList functionality
-      let fieldsWithId = ['id', ...fields.filter(f => f !== 'id')];
+      // Ensure all field names are strings and filter out any invalid values
+      const validPropertyNames = discoveredPropertyNames.filter(f => typeof f === 'string' && f.length > 0 && f !== 'id');
+      let fieldsToValidate = ['id', ...validPropertyNames];
 
       // Validate fields against entity metadata if available
       try {
@@ -335,149 +315,143 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
           modelType: modelType
         });
 
-        if (metadata?.properties) {
-          const availableProperties = Object.keys(metadata.properties);
-          const validFields: string[] = [];
-          const invalidFields: string[] = [];
+        if (metadata?.properties && Array.isArray(metadata.properties)) {
+          // Extract the 'path' field from each property object - these are the actual entity column names
+          const availableEntityColumns = metadata.properties.map(prop => prop.path).filter(Boolean);
+          const validEntityFields: string[] = [];
+          const invalidFormFields: string[] = [];
 
-          fieldsWithId.forEach(field => {
-            // For nested properties like 'person.firstName', check if 'person' exists
+          if (isDesignMode) {
+            console.log(`DataList (${modelType}): Entity has ${availableEntityColumns.length} available columns:`, availableEntityColumns);
+            console.log(`DataList (${modelType}): Form has ${fieldsToValidate.length} property references:`, fieldsToValidate);
+            console.log(`DataList (${modelType}): Full entity metadata:`, metadata);
+          }
+
+          fieldsToValidate.forEach(field => {
+            // Skip invalid field values
+            if (typeof field !== 'string' || !field.length) {
+              if (isDesignMode) {
+                console.warn(`DataList (${modelType}): Skipping invalid field:`, field);
+              }
+              return;
+            }
+
+            // For nested properties like 'person.firstName', check if 'person' exists as entity column
             const topLevelProperty = field.split('.')[0];
 
-            if (availableProperties.includes(topLevelProperty)) {
-              validFields.push(field);
+            // Check if the field matches any of the entity column paths (case-insensitive for better matching)
+            const matchingColumn = availableEntityColumns.find(col =>
+              col.toLowerCase() === field.toLowerCase() ||
+              col.toLowerCase() === topLevelProperty.toLowerCase()
+            );
+
+            if (matchingColumn) {
+              // Use the exact column name from metadata for consistency
+              validEntityFields.push(matchingColumn);
             } else {
-              invalidFields.push(field);
+              invalidFormFields.push(field);
             }
           });
 
-          if (invalidFields.length > 0 && isDesignMode) {
-            console.warn(`DataList (${modelType}): Found ${invalidFields.length} invalid field references in form template:`, invalidFields);
+          if (invalidFormFields.length > 0 && isDesignMode) {
+            console.warn(`DataList (${modelType}): Found ${invalidFormFields.length} form fields that don't match entity columns:`, {
+              invalidFormFields,
+              availableEntityColumns,
+              note: "These form fields reference properties that don't exist on the entity"
+            });
           }
 
-          if (validFields.length > 0) {
-            fieldsWithId = validFields;
+          if (validEntityFields.length > 0) {
+            // Use the validated entity fields (the matched ones) for registration
+            fieldsToValidate = validEntityFields;
+
             if (isDesignMode) {
-              console.warn(`DataList (${modelType}): Using ${validFields.length} validated fields:`, validFields);
+              console.log(`DataList (${modelType}): Successfully matched ${validEntityFields.length} form fields to entity columns:`, {
+                matchedFields: validEntityFields,
+                skippedFormFields: invalidFormFields,
+                totalEntityColumns: availableEntityColumns.length,
+                totalFormFields: discoveredPropertyNames.length
+              });
             }
+
+            // Create virtual columns for the MATCHED/VALIDATED fields only
+            const virtualColumns = validEntityFields.map((propertyName, index) => ({
+              id: `datalist_matched_${propertyName}`,
+              propertyName: propertyName,
+              caption: propertyName,
+              itemType: 'item' as const,
+              sortOrder: index,
+              isVisible: false, // Hidden columns, only for field fetching
+              columnType: 'data' as const,
+              propertiesToFetch: [propertyName], // Array format like DataTable uses
+            }));
+
+            // Register the matched fields as virtual columns
+            registerConfigurableColumns(`datalist_matched_${props.id}`, virtualColumns);
+            setHasRegisteredFields(true);
+
+            if (isDesignMode) {
+              console.log(`DataList (${modelType}): Successfully registered ${validEntityFields.length} MATCHED entity fields for optimized fetching:`, {
+                registeredFields: validEntityFields,
+                registeredColumns: virtualColumns,
+                ownerId: `datalist_matched_${props.id}`
+              });
+            }
+            return; // Exit early since we successfully registered matched fields
           } else {
-            // If no valid fields found, fall back to common properties
+            // If no valid fields found, log error
             if (isDesignMode) {
-              console.warn(`DataList (${modelType}): No valid fields found, falling back to common properties`);
+              console.error(`DataList (${modelType}): No form fields match any entity columns. Please check form field bindings against entity properties:`, {
+                formFields: discoveredPropertyNames,
+                entityColumns: availableEntityColumns
+              });
             }
-            await registerFallbackProperties();
             return;
           }
         } else {
           if (isDesignMode) {
-            console.warn(`DataList (${modelType}): Entity metadata not available, using extracted fields without validation`);
+            console.warn(`DataList (${modelType}): Entity metadata not available, using discovered fields without validation`);
           }
         }
       } catch (metadataError) {
         if (isDesignMode) {
-          console.warn(`DataList (${modelType}): Failed to get entity metadata, using extracted fields without validation:`, metadataError);
+          console.warn(`DataList (${modelType}): Failed to get entity metadata for field validation:`, metadataError);
         }
       }
 
-      // Create virtual columns for validated/extracted fields
-      const virtualColumns = fieldsWithId.map((propertyName, index) => ({
-        id: `datalist_extracted_${propertyName}`,
+      // If we reach here, no entity metadata validation occurred, fallback to using discovered fields
+      if (isDesignMode) {
+        console.warn(`DataList (${modelType}): Using discovered fields without entity validation (no metadata available):`, fieldsToValidate);
+      }
+
+      // Create virtual columns for discovered fields (fallback when no entity metadata)
+      const virtualColumns = fieldsToValidate.map((propertyName, index) => ({
+        id: `datalist_discovered_${propertyName}`,
         propertyName: propertyName,
         caption: propertyName,
         itemType: 'item' as const,
         sortOrder: index,
         isVisible: false, // Hidden columns, only for field fetching
         columnType: 'data' as const,
-        propertiesToFetch: propertyName,
+        propertiesToFetch: [propertyName], // Array format like DataTable uses
       }));
 
-      // Register extracted fields as virtual columns
-      registerConfigurableColumns(`datalist_extracted_${props.id}`, virtualColumns);
+      // Register discovered fields as virtual columns (fallback)
+      registerConfigurableColumns(`datalist_discovered_${props.id}`, virtualColumns);
       setHasRegisteredFields(true);
 
       if (isDesignMode) {
-        console.warn(`DataList (${modelType}): Successfully registered ${fieldsWithId.length} validated fields for optimized fetching:`, fieldsWithId.join(', '));
+        console.log(`DataList (${modelType}): Registered ${fieldsToValidate.length} discovered fields (without entity validation):`, {
+          registeredFields: fieldsToValidate,
+          registeredColumns: virtualColumns,
+          ownerId: `datalist_discovered_${props.id}`
+        });
       }
     } catch (error) {
-      console.error(`DataList: Failed to register extracted fields for ${modelType}:`, error);
-      // Fallback to registering common properties on error
-      await registerFallbackProperties();
+      console.error(`DataList: Failed to validate and register discovered fields for ${modelType}:`, error);
     }
-  }, [registerConfigurableColumns, isDesignMode, props.id, modelType, metadataDispatcher, registerFallbackProperties]);
+  }, [discoveredPropertyNames, modelType, registerConfigurableColumns, hasRegisteredFields, metadataDispatcher, isDesignMode, props.id]);
 
-  // Auto-detect smart display properties when no form is configured
-  const registerSmartDisplayProperties = useCallback(async () => {
-    if (!modelType || hasRegisteredFields) return;
-
-    try {
-      if (isDesignMode) {
-        console.warn(`DataList (${props.id}): No form configured, using smart display mode for entity:`, modelType);
-      }
-
-      // Get entity metadata to determine good display properties
-      const metadata = await metadataDispatcher.getMetadata({
-        dataType: DataTypes.entityReference,
-        modelType: modelType
-      });
-
-      if (metadata?.properties) {
-        const availableProperties = Object.keys(metadata.properties);
-
-        // Smart property selection for display (prioritize useful display fields)
-        const smartProperties = [
-          'id', // Always include ID
-          ...availableProperties.filter(prop => {
-            const lowerProp = prop.toLowerCase();
-            // High priority display fields
-            return lowerProp.includes('name') ||
-              lowerProp.includes('title') ||
-              lowerProp.includes('display') ||
-              lowerProp.includes('description') ||
-              lowerProp.includes('email') ||
-              lowerProp.includes('code') ||
-              lowerProp.includes('reference') ||
-              lowerProp.includes('status');
-          }),
-          // Add some common text fields if we don't have many display fields yet
-          ...availableProperties.filter(prop => {
-            const lowerProp = prop.toLowerCase();
-            return lowerProp.includes('department') ||
-              lowerProp.includes('position') ||
-              lowerProp.includes('phone') ||
-              lowerProp.includes('mobile') ||
-              lowerProp.includes('category') ||
-              lowerProp.includes('type');
-          })
-        ].slice(0, 12); // Limit to reasonable number
-
-        const virtualColumns = smartProperties.map((propertyName, index) => ({
-          id: `datalist_smart_${propertyName}`,
-          propertyName: propertyName,
-          caption: propertyName,
-          itemType: 'item' as const,
-          sortOrder: index,
-          isVisible: false, // Hidden columns, only for field fetching
-          columnType: 'data' as const,
-          propertiesToFetch: propertyName,
-        }));
-
-        // Register smart display properties
-        registerConfigurableColumns(`datalist_smart_${props.id}`, virtualColumns);
-        setHasRegisteredFields(true);
-
-        if (isDesignMode) {
-          console.warn(`DataList (${modelType}): Registered ${smartProperties.length} smart display properties:`, smartProperties.join(', '));
-        }
-        return;
-      } else {
-        // Fallback to common properties if metadata not available
-        await registerFallbackProperties();
-      }
-    } catch (error) {
-      console.error(`DataList: Error in smart display property detection:`, error);
-      await registerFallbackProperties();
-    }
-  }, [modelType, hasRegisteredFields, registerConfigurableColumns, props.id, metadataDispatcher, isDesignMode, registerFallbackProperties]);
 
   // Preload form template to extract fields early (before data fetching)
   const preloadFormTemplate = useCallback(async () => {
@@ -490,9 +464,74 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       props.formSelectionMode === 'expression';
 
     if (!hasFormConfigured) {
-      // No form configured - use smart display mode
-      await registerSmartDisplayProperties();
-      return;
+      // No form configured - use auto display mode with entity metadata
+      if (!modelType) {
+        if (isDesignMode) {
+          console.error(`DataList (${props.id}): No form configured and no entity type specified. Cannot use auto display mode.`);
+        }
+        return;
+      }
+
+      // Auto display mode: discover entity properties automatically
+      try {
+        const entityMetadata = await metadataDispatcher.getMetadata({
+          dataType: DataTypes.entityReference,
+          modelType: modelType
+        });
+
+        if (entityMetadata?.properties && entityMetadata.properties.length > 0) {
+          // Get basic displayable properties (exclude complex navigation properties for now)
+          const basicProperties = (entityMetadata.properties as IPropertyMetadata[])
+            .filter(prop =>
+              prop.dataType !== 'entity-reference' && // Skip navigation properties for auto mode
+              prop.dataType !== 'object' && // Skip complex objects
+              !prop.path.includes('.') && // Skip nested properties
+              prop.path !== 'id' // Skip ID field unless explicitly needed
+            )
+            .slice(0, 6) // Limit to first 6 properties for auto display
+            .map(prop => prop.path);
+
+          if (basicProperties.length > 0) {
+            // Create virtual columns for auto-discovered properties
+            const virtualColumns = basicProperties.map((propertyName, index) => ({
+              id: `datalist_auto_${propertyName}`,
+              propertyName: propertyName,
+              caption: propertyName,
+              itemType: 'item' as const,
+              sortOrder: index,
+              isVisible: false, // Hidden columns, only for field fetching
+              columnType: 'data' as const,
+              propertiesToFetch: [propertyName], // Array format like DataTable uses
+            }));
+
+            // Register auto-discovered fields as virtual columns
+            registerConfigurableColumns(`datalist_auto_${props.id}`, virtualColumns);
+            setHasRegisteredFields(true);
+
+            if (isDesignMode) {
+              console.log(`DataList (${props.id}): Auto display mode - registered ${basicProperties.length} entity properties:`, {
+                registeredFields: basicProperties,
+                registeredColumns: virtualColumns,
+                entityType: modelType,
+                ownerId: `datalist_auto_${props.id}`
+              });
+            }
+            return;
+          }
+        }
+
+        // If no suitable properties found for auto display
+        if (isDesignMode) {
+          console.warn(`DataList (${props.id}): Auto display mode failed - no suitable properties found in entity metadata for "${modelType}"`);
+        }
+        return;
+
+      } catch (error) {
+        if (isDesignMode) {
+          console.error(`DataList (${props.id}): Auto display mode failed - could not fetch entity metadata for "${modelType}":`, error);
+        }
+        return;
+      }
     }
 
     try {
@@ -508,44 +547,76 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
           formTypeToLoad = props.formType;
           break;
         case 'expression':
-          // Can't preload for expression mode - use smart display
-          await registerSmartDisplayProperties();
+          // Can't preload for expression mode - will extract fields at runtime
+          if (isDesignMode) {
+            console.warn(`DataList (${props.id}): Expression mode selected - fields will be extracted at runtime`);
+          }
           return;
         default:
-          await registerSmartDisplayProperties();
+          if (isDesignMode) {
+            console.error(`DataList (${props.id}): Unknown form selection mode. Please configure a valid form selection mode.`);
+          }
           return;
       }
 
       if (formToLoad) {
         // Load form by ID
         try {
-          const formConfig = await getForm({ formId: formToLoad, configurationItemMode, skipCache: false });
-          if (formConfig) {
-            const extractedFields = extractFieldsFromFormConfig(formConfig);
-            if (extractedFields.length > 0) {
-              await registerExtractedFields(extractedFields);
-              if (isDesignMode) {
-                console.warn(`DataList (${props.id}): Preloaded form template and extracted ${extractedFields.length} fields:`, extractedFields);
-              }
-              return;
+          const formResult = await getForm({ formId: formToLoad, skipCache: false });
+          if (formResult) {
+            // Deep search for all propertyName values
+            const allPropertyNames = findAllPropertyNames(formResult);
+            const uniquePropertyNames = [...new Set(allPropertyNames.map(item => item.propertyName))];
+
+            // Save discovered property names to state
+            setDiscoveredPropertyNames(uniquePropertyNames);
+
+            if (isDesignMode) {
+              console.log(`DataList (${props.id}): Deep search found ${allPropertyNames.length} propertyName entries:`, {
+                propertyNames: allPropertyNames.map(item => item.propertyName),
+                detailedResults: allPropertyNames,
+                uniquePropertyNames: uniquePropertyNames
+              });
             }
           }
         } catch (error) {
           if (isDesignMode) {
-            console.warn(`DataList (${props.id}): Failed to preload form by ID:`, error);
+            console.warn(`DataList (${props.id}): Failed to load form by ID "${formToLoad}":`, error);
           }
         }
       } else if (formTypeToLoad && modelType) {
         // Load form by entity type and form type
         try {
           const formId = await getEntityFormId(modelType, formTypeToLoad);
-          const formConfig = await getForm({ formId, configurationItemMode, skipCache: false });
-          if (formConfig) {
-            const extractedFields = extractFieldsFromFormConfig(formConfig);
+          const formResult = await getForm({ formId, skipCache: false });
+          if (formResult) {
+            // Deep search for all propertyName values
+            const allPropertyNames = findAllPropertyNames(formResult);
+            const uniquePropertyNames = [...new Set(allPropertyNames.map(item => item.propertyName))];
+
+            // Save discovered property names to state
+            setDiscoveredPropertyNames(uniquePropertyNames);
+
+            if (isDesignMode) {
+              console.log(`DataList (${props.id}): Deep search found ${allPropertyNames.length} propertyName entries for entity "${modelType}" with form type "${formTypeToLoad}":`, {
+                formId: formId,
+                propertyNames: allPropertyNames.map(item => item.propertyName),
+                detailedResults: allPropertyNames,
+                uniquePropertyNames: uniquePropertyNames
+              });
+            }
+            const extractedFields = extractFieldsFromFormConfig(formResult);
+            if (isDesignMode) {
+              console.log(`DataList (${props.id}): Field extraction result from entity form:`, {
+                extractedFields,
+                extractedFieldsCount: extractedFields.length,
+                modelType: modelType,
+                formType: formTypeToLoad
+              });
+            }
             if (extractedFields.length > 0) {
-              await registerExtractedFields(extractedFields);
               if (isDesignMode) {
-                console.warn(`DataList (${props.id}): Preloaded form template by type and extracted ${extractedFields.length} fields:`, extractedFields);
+                console.log(`DataList (${props.id}): Preloaded form template by type and extracted ${extractedFields.length} fields (will be validated via discovered fields):`, extractedFields);
               }
               return;
             }
@@ -557,43 +628,66 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         }
       }
 
-      // If preloading failed, fall back to smart display
-      await registerSmartDisplayProperties();
+      // If preloading failed, log error and rely on runtime extraction
+      if (isDesignMode) {
+        console.error(`DataList (${props.id}): Form template preloading failed. Fields will need to be extracted at runtime or form configuration must be corrected.`);
+      }
     } catch (error) {
       console.error(`DataList: Error in form template preloading:`, error);
-      await registerFallbackProperties();
     }
-  }, [props.formSelectionMode, props.formId, props.formType, modelType, hasRegisteredFields, registerExtractedFields, registerSmartDisplayProperties, registerFallbackProperties, getForm, getEntityFormId, configurationItemMode, isDesignMode, props.id]);
+  }, [props.formSelectionMode, props.formId, props.formType, modelType, hasRegisteredFields, getForm, getEntityFormId, isDesignMode, props.id]);
 
   // Handle fields extracted from form template (for runtime extraction)
   const handleFieldsExtracted = useCallback((fields: string[], formConfig: any) => {
-    // Only handle runtime extraction if we haven't already registered fields from preloading
+    // Allow runtime extraction even if fields were registered before (form config might have changed)
     if (hasRegisteredFields) {
       if (isDesignMode) {
-        console.warn(`DataList (${props.id}): Fields already registered from preloading, skipping runtime extraction`);
+        console.log(`DataList (${props.id}): Handling runtime field extraction (form config may have changed)`);
       }
-      return;
+    }
+
+    // Deep search for all propertyName values in runtime form
+    const allPropertyNames = findAllPropertyNames(formConfig);
+    const uniquePropertyNames = [...new Set(allPropertyNames.map(item => item.propertyName))];
+
+    // If we previously had registered fields and form changed, reset registration status
+    if (hasRegisteredFields) {
+      setHasRegisteredFields(false);
+    }
+
+    // Save discovered property names to state for comparison with entity metadata
+    setDiscoveredPropertyNames(uniquePropertyNames);
+
+    if (isDesignMode) {
+      console.log(`DataList (${props.id}): Runtime deep search found ${allPropertyNames.length} propertyName entries:`, {
+        propertyNames: allPropertyNames.map(item => item.propertyName),
+        detailedResults: allPropertyNames,
+        uniquePropertyNames: uniquePropertyNames
+      });
     }
 
     if (fields.length > 0) {
-      setExtractedFields(fields);
-      registerExtractedFields(fields).catch(error => {
-        console.error('Failed to register extracted fields:', error);
-      });
-
       if (isDesignMode) {
-        console.warn(`DataList (${props.id}): Runtime form template analysis complete. Extracted ${fields.length} fields from form configuration:`, fields);
+        console.log(`DataList (${props.id}): Runtime field extraction found ${fields.length} fields (will be validated via discovered fields):`, fields);
       }
+      // Note: No longer registering here - fields will be validated and registered via validateAndRegisterDiscoveredFields
     } else {
-      // If no fields extracted, use smart display
-      registerSmartDisplayProperties().catch(error => {
-        console.error('Failed to register smart display properties:', error);
-      });
+      // If no fields extracted, require proper form configuration
+      if (isDesignMode) {
+        console.error(`DataList (${props.id}): No fields extracted from form template. Please ensure the form contains valid field references.`);
+      }
     }
-  }, [registerExtractedFields, registerSmartDisplayProperties, isDesignMode, props.id, hasRegisteredFields]);
+  }, [isDesignMode, props.id, hasRegisteredFields, modelType]);
+
+  // Effect to reset field registration when form configuration changes
+  useEffect(() => {
+    // Reset when key form configuration properties change
+    setHasRegisteredFields(false);
+    setDiscoveredPropertyNames([]);
+  }, [props.formId, props.formType, props.formSelectionMode, modelType, props.id, isDesignMode]);
 
   // Effect to preload form template and extract fields early
-  React.useEffect(() => {
+  useEffect(() => {
     if (modelType && !hasRegisteredFields) {
       preloadFormTemplate().catch(error => {
         console.error('Failed to preload form template:', error);
@@ -601,21 +695,15 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     }
   }, [modelType, preloadFormTemplate, hasRegisteredFields]);
 
-  // Effect to register fallback properties when modelType changes and no fields have been extracted yet
-  React.useEffect(() => {
-    if (modelType && !hasRegisteredFields && extractedFields.length === 0) {
-      // Small delay to allow preloading to happen first
-      const timeoutId = setTimeout(() => {
-        if (!hasRegisteredFields) {
-          registerFallbackProperties().catch(error => {
-            console.error('Failed to register fallback properties:', error);
-          });
-        }
-      }, 500); // Increased delay to allow preloading
-
-      return () => clearTimeout(timeoutId);
+  // Effect to validate and register discovered property names
+  useEffect(() => {
+    if (discoveredPropertyNames.length > 0 && modelType && !hasRegisteredFields) {
+      validateAndRegisterDiscoveredFields().catch(error => {
+        console.error('Failed to validate and register discovered fields:', error);
+      });
     }
-  }, [modelType, hasRegisteredFields, extractedFields.length, registerFallbackProperties]);
+  }, [discoveredPropertyNames, modelType, hasRegisteredFields, validateAndRegisterDiscoveredFields]);
+
 
   const dataListProps = useMemo(() => {
     const baseProps = {
@@ -652,7 +740,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     (baseProps as any).onFieldsExtracted = handleFieldsExtracted;
 
     return baseProps;
-  }, [props, isFormMissing, canAddInline, canEditInline, canDeleteInline, data, selectedRow, selectedRows, handleFieldsExtracted]);
+  }, [props, canAddInline, canEditInline, canDeleteInline, data, selectedRow, selectedRows, handleFieldsExtracted]);
 
   if (groupingColumns?.length > 0 && orientation === "wrap") {
     return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.' />;
@@ -663,7 +751,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       model={{ ...props, hideLabel: true }}
       className={classNames(
         styles.shaDatalistComponent,
-        { horizontal: props?.orientation === 'horizontal' && allData.form?.formMode !== 'designer' } //
+        { horizontal: props?.orientation === 'horizontal' }
       )}
       wrapperCol={{ md: 24 }}
     >

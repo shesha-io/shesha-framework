@@ -48,11 +48,17 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     undefined
   );
 
-  actualModel.hidden = shaForm.formMode !== 'designer'
-    && (
-      actualModel.hidden
-      || !anyOfPermissionsGranted(actualModel?.permissions || [])
-      || !isComponentFiltered(actualModel));
+  // Stabilize the hidden calculation to prevent unnecessary re-renders
+  const isHidden = useMemo(() => {
+    return shaForm.formMode !== 'designer'
+      && (
+        actualModel.hidden
+        || !anyOfPermissionsGranted(actualModel?.permissions || [])
+        || !isComponentFiltered(actualModel));
+  }, [shaForm.formMode, actualModel.hidden, actualModel.permissions, actualModel, anyOfPermissionsGranted, isComponentFiltered]);
+
+  // Apply the calculated hidden state to the model
+  actualModel.hidden = isHidden;
 
   if (!toolboxComponent?.isInput && !toolboxComponent?.isOutput)
     actualModel.propertyName = undefined;
@@ -62,14 +68,14 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
 
   const control = useMemo(() => (
-    <toolboxComponent.Factory 
+    <toolboxComponent.Factory
       form={shaForm.antdForm}
       model={actualModel}
       calculatedModel={calculatedModel}
       shaApplication={shaApplication}
       key={actualModel.id}
     />
-  ), [actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
+  ), [actualModel, isHidden, actualModel.allStyles, calculatedModel]);
 
   if (!toolboxComponent)
     return <ComponentError errors={{
