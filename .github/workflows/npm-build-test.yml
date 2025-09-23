@@ -33,5 +33,5 @@ jobs:
 
       - name: Build
         id: build
-        run: npm run build -- --max-old-space-size=8192
+        run: npm run build -- --max-old-space-size=16384
         
