@@ -5,7 +5,6 @@ import { FormMarkup } from '@/providers/form/models';
 import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useFormPersister } from '@/providers/formPersisterProvider';
-import { useTheme } from '@/index';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 import { getSettings } from './formSettings';
 
@@ -18,14 +17,10 @@ export interface IFormSettingsEditorProps {
 }
 
 export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, close, readOnly }) => {
-  const { theme } = useTheme();
   const formSettings = useFormDesignerStateSelector(x => x.formSettings);
   const { updateFormSettings } = useFormDesignerActions();
   const { formProps } = useFormPersister();
   const formRef = useShaFormRef();
-
-  formSettings.labelCol = { span: formSettings?.labelCol?.span || theme?.labelSpan };
-  formSettings.wrapperCol = { span: formSettings?.wrapperCol?.span || theme?.componentSpan };
 
   const onSave = values => {
     if (!readOnly) {
