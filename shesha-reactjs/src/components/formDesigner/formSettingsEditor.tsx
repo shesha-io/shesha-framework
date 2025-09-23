@@ -21,7 +21,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
   const { updateFormSettings } = useFormDesignerActions();
   const { formProps } = useFormPersister();
   const formRef = useShaFormRef();
-
+  
   const initialValues = {
     ...formSettings,
     labelCol: { span: formSettings?.labelCol?.span || theme?.labelSpan },
@@ -46,7 +46,6 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
         formRef.current?.submit();
       }}
       okButtonProps={{ hidden: readOnly }}
-
       onCancel={close}
       cancelText={readOnly ? 'Close' : undefined}
     >
