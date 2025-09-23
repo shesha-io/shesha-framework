@@ -286,7 +286,7 @@ export const getSettings = () => {
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'codeEditor',
-                propertyName: 'onFileChanged',
+                propertyName: 'onChangeCustom',
                 label: 'On File List Changed',
                 labelAlign: 'right',
                 parentId: eventsTabId,
@@ -299,6 +299,25 @@ export const getSettings = () => {
                   functionName: 'onFileListChanged',
                   useAsyncDeclaration: true,
                 },
+                availableConstantsExpression: " return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .addString(\"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();"
+              })
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'codeEditor',
+                propertyName: 'onDownload',
+                label: 'On Download',
+                labelAlign: 'right',
+                parentId: 'root',
+                hidden: false,
+                description: 'Callback that is triggered when a file is downloaded.',
+                validate: {},
+                settingsValidationErrors: [],
+                wrapInTemplate: true,
+                templateSettings: {
+                  functionName: 'onDownload',
+                  useAsyncDeclaration: true,
+                },
+                availableConstantsExpression: " return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .addString(\"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();"
               })
               .toJson()
             ]
