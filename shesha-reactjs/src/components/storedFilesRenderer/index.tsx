@@ -2,7 +2,6 @@ import React, { FC, ReactNode } from 'react';
 import { StoredFilesRendererBase } from '@/components/storedFilesRendererBase';
 import { useStoredFilesStore } from '@/providers/storedFiles';
 import { ButtonProps } from 'antd';
-import { IStoredFile } from '@/index';
 
 export interface IStoredFilesRendererProps {
   ownerId?: string;
@@ -14,7 +13,6 @@ export interface IStoredFilesRendererProps {
   accept?: string[];
   layout?: 'vertical' | 'horizontal' | 'grid';
   listType?: 'text' | 'thumbnail';
-  onFileListChanged?: (list: IStoredFile[]) => void;
 }
 
 export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
@@ -26,7 +24,6 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
   accept = [],
   layout,
   listType,
-  onFileListChanged,
 }) => {
   const {
     fileList,
@@ -55,7 +52,6 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
       allowedFileTypes={accept}
       layout={layout}
       listType={listType}
-      onFileListChanged={onFileListChanged}
     // noFilesCaption={noFilesCaption}
     />
   );
