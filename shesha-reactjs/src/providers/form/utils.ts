@@ -607,12 +607,12 @@ export const upgradeComponent = (
 
   const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent>();
   const fluent = definition.migrator(migrator);
-  if (componentModel.version === undefined) componentModel.version = -1;
-  const model = fluent.migrator.upgrade(componentModel, {
+  const versionedModel = { ...componentModel, version: componentModel.version ?? -1 };
+  const model = fluent.migrator.upgrade(versionedModel, {
     isNew,
     formSettings,
     flatStructure,
-    componentId: componentModel.id,
+    componentId: versionedModel.id,
   });
   return model;
 };
