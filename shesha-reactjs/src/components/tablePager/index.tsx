@@ -2,6 +2,7 @@ import React, { CSSProperties, FC } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { PHONE_SIZE_QUERY } from '@/shesha-constants/media-queries';
 import { useDataTable } from '@/providers';
+import { useNearestDataContext } from '@/providers/dataContextManager';
 import TablePaging from './tablePaging';
 import TableNoPaging from './tableNoPaging';
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
@@ -24,14 +25,19 @@ export interface ITablePagerProps {
 
 export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalItems, style }) => {
   const dataTableContext = useDataTable(false);
+  const nearestDataTableContext = useNearestDataContext('control');
   const { theme } = useTheme();
 
   const hideTotalItems = useMediaQuery({
     query: PHONE_SIZE_QUERY,
   });
 
-  // Fallback UI when not in a Data Context
-  if (!dataTableContext) {
+  // Check if there's a sibling data context with a data table or data list
+  const hasDataSibling = nearestDataTableContext &&
+    (nearestDataTableContext.type === 'control' || nearestDataTableContext.name?.toLowerCase().includes('data'));
+
+  // Fallback UI when not in a Data Context and no data siblings
+  if (!dataTableContext && !hasDataSibling) {
     return (
       <div
         style={{
@@ -87,7 +93,8 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
   } = dataTableContext;
 
   // Fallback UI when in Data Context but no configured DataTable/DataList
-  if (totalRows === undefined || totalRows === null) {
+  // If we have a data sibling but no direct data table context, show a different message
+  if ((totalRows === undefined || totalRows === null) && !hasDataSibling) {
     return (
       <div
         style={{
@@ -128,6 +135,38 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
         >
           <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
         </Popover>
+      </div>
+    );
+  }
+
+  // If we have a data sibling but no direct table context with totals, show a simplified pager
+  if (hasDataSibling && (totalRows === undefined || totalRows === null)) {
+    return (
+      <div
+        style={{
+          ...style,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}
+      >
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: '4px 8px',
+          border: '1px solid #d9d9d9',
+          borderRadius: '6px',
+          backgroundColor: '#f0f9ff',
+          color: '#1890ff',
+          fontSize: '14px',
+          gap: 8,
+        }}>
+          <span>Table Pager</span>
+          <span style={{ opacity: 0.6 }}>•</span>
+          <span>•••</span>
+          <span style={{ opacity: 0.6 }}>•</span>
+          <span>Data Context Active</span>
+        </div>
       </div>
     );
   }

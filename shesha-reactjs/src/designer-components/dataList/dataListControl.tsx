@@ -146,7 +146,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowDeleteSuccessAction)
       return () => {
-        /* nop*/
+        /*nop*/
       };
     return (data, formApi, globalState, setGlobalState) => {
       const evaluationContext = {
@@ -430,23 +430,23 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
             const lowerProp = prop.toLowerCase();
             // High priority display fields
             return lowerProp.includes('name') ||
-                   lowerProp.includes('title') ||
-                   lowerProp.includes('display') ||
-                   lowerProp.includes('description') ||
-                   lowerProp.includes('email') ||
-                   lowerProp.includes('code') ||
-                   lowerProp.includes('reference') ||
-                   lowerProp.includes('status');
+              lowerProp.includes('title') ||
+              lowerProp.includes('display') ||
+              lowerProp.includes('description') ||
+              lowerProp.includes('email') ||
+              lowerProp.includes('code') ||
+              lowerProp.includes('reference') ||
+              lowerProp.includes('status');
           }),
           // Add some common text fields if we don't have many display fields yet
           ...availableProperties.filter(prop => {
             const lowerProp = prop.toLowerCase();
             return lowerProp.includes('department') ||
-                   lowerProp.includes('position') ||
-                   lowerProp.includes('phone') ||
-                   lowerProp.includes('mobile') ||
-                   lowerProp.includes('category') ||
-                   lowerProp.includes('type');
+              lowerProp.includes('position') ||
+              lowerProp.includes('phone') ||
+              lowerProp.includes('mobile') ||
+              lowerProp.includes('category') ||
+              lowerProp.includes('type');
           })
         ].slice(0, 12); // Limit to reasonable number
 
@@ -647,16 +647,6 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       actionRef: dataListRef,
       modalWidth: width ?? '60%',
     };
-
-    // If form is missing in design mode, provide default template
-    if (isFormMissing) {
-      baseProps.formId = { name: 'PersonListTemplate', module: 'Default' };
-      baseProps.formSelectionMode = 'name';
-      // Also set a mock entity type for better smart display
-      if (!baseProps.entityType) {
-        baseProps.entityType = 'Person';
-      }
-    }
 
     // Add the field extraction callback
     (baseProps as any).onFieldsExtracted = handleFieldsExtracted;
