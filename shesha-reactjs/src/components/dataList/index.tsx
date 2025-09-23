@@ -1,9 +1,9 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
-import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
+import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance, useMetadataDispatcher } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
@@ -24,7 +24,7 @@ import { useStyles } from './styles/styles';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { extractFieldsFromFormConfig } from '../../designer-components/dataList/fieldExtractor';
+import { extractFieldsFromFormConfig, extractValidatedPropertyNamesFromFormConfig } from '../../designer-components/dataList/fieldExtractor';
 import { SmartDefaultItem } from './smartDefaultItem';
 
 interface EntityForm {
@@ -104,6 +104,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const rows = useRef<React.JSX.Element[]>(null);
 
   const shaForm = useShaFormInstance();
+  const metadataDispatcher = useMetadataDispatcher();
 
   useDeepCompareEffect(() => {
     entityForms.current = [];
@@ -280,15 +281,38 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   // Effect to automatically extract and configure fields to fetch based on form configuration
   useDeepCompareEffect(() => {
-    const extractFieldsFromCurrentForm = () => {
+    const extractFieldsFromCurrentForm = async () => {
       // Check the main form configuration
       const mainEntityForm = entityFormInfo.current;
       if (mainEntityForm?.formConfiguration) {
+        // Get model metadata for validation if entityType is available
+        let modelMetadata = null;
+        if (entityType) {
+          try {
+            modelMetadata = await metadataDispatcher.getMetadata({
+              modelType: entityType,
+              dataType: null
+            });
+          } catch (error) {
+            if (allData.form?.formMode === 'designer') {
+              console.warn('DataList: Could not fetch model metadata for validation:', entityType, error);
+            }
+          }
+        }
+
+        // Extract and validate propertyName values (primary - for data fetching)
+        const validationResult = extractValidatedPropertyNamesFromFormConfig(
+          mainEntityForm.formConfiguration,
+          modelMetadata
+        );
+        // Extract all field references (secondary - for completeness)
         const extractedFields = extractFieldsFromFormConfig(mainEntityForm.formConfiguration);
 
-        if (extractedFields.length > 0) {
-          // Call the callback to inform parent components about extracted fields
-          const result = onFieldsExtracted?.(extractedFields, mainEntityForm.formConfiguration);
+        const { validProperties, invalidProperties, allExtracted } = validationResult;
+
+        if (validProperties.length > 0) {
+          // Call the callback with VALID propertyName values (filtered against model)
+          const result = onFieldsExtracted?.(validProperties, mainEntityForm.formConfiguration);
 
           // Handle async callback
           if (result instanceof Promise) {
@@ -297,20 +321,46 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             });
           }
 
-          // Log for debugging in designer mode
-          if (allData.form?.formMode === 'designer') {
-            console.warn('DataList: Extracted fields from form configuration:', extractedFields);
+        } else if (extractedFields.length > 0) {
+          // Fallback to extracted fields if no propertyNames found
+          const result = onFieldsExtracted?.(extractedFields, mainEntityForm.formConfiguration);
+
+          // Handle async callback
+          if (result instanceof Promise) {
+            result.catch(error => {
+              console.error('DataList: Error in onFieldsExtracted callback (fallback):', error);
+            });
           }
+
         }
 
-        return extractedFields;
+        return validProperties.length > 0 ? validProperties : extractedFields;
       }
 
       // Fallback to default template if available
       if (defaultFormTemplate) {
+        // Get model metadata for validation if entityType is available
+        let modelMetadata = null;
+        if (entityType) {
+          try {
+            modelMetadata = await metadataDispatcher.getMetadata({
+              modelType: entityType,
+              dataType: null
+            });
+          } catch (error) {
+            if (allData.form?.formMode === 'designer') {
+              console.warn('DataList: Could not fetch model metadata for default template validation:', entityType, error);
+            }
+          }
+        }
+
+        const validationResult = extractValidatedPropertyNamesFromFormConfig(defaultFormTemplate, modelMetadata);
         const extractedFields = extractFieldsFromFormConfig(defaultFormTemplate);
-        if (extractedFields.length > 0) {
-          const result = onFieldsExtracted?.(extractedFields, defaultFormTemplate);
+        const { validProperties, invalidProperties } = validationResult;
+        const fieldsToUse = validProperties.length > 0 ? validProperties : extractedFields;
+
+        if (fieldsToUse.length > 0) {
+          const result = onFieldsExtracted?.(fieldsToUse, defaultFormTemplate);
 
           // Handle async callback
           if (result instanceof Promise) {
@@ -319,20 +369,19 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             });
           }
 
-          if (allData.form?.formMode === 'designer') {
-            console.warn('DataList: Using fields from default template:', extractedFields);
-          }
         }
-        return extractedFields;
+        return fieldsToUse;
       }
 
       return [];
     };
 
     if (entityFormInfo.current || defaultFormTemplate) {
-      extractFieldsFromCurrentForm();
+      extractFieldsFromCurrentForm().catch(error => {
+        console.error('DataList: Error in field extraction:', error);
+      });
     }
-  }, [entityFormInfo.current?.formConfiguration, defaultFormTemplate, allData.form?.formMode, onFieldsExtracted]);
+  }, [entityFormInfo.current?.formConfiguration, defaultFormTemplate, entityType, allData.form?.formMode, onFieldsExtracted, metadataDispatcher]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;
@@ -347,36 +396,42 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
 
-    // If no form configuration found, show smart default display
-    if (!entityForm?.formConfiguration?.markup) {
-      // Check if we have a proper form configuration (formId or formType specified)
-      const hasFormConfigured =
-        (formSelectionMode === 'name' && formId) ||
-        (formSelectionMode === 'view' && formType) ||
-        formSelectionMode === 'expression';
+    // Check if we have a proper form configuration (formId or formType actually specified with valid values)
+    const isValidFormId = !!formId;
+    console.log('isValidFormId', isValidFormId, formId)
 
-      if (defaultFormTemplate && allData.form?.formMode === 'designer' && hasFormConfigured) {
-        // Only use default template if user actually configured a form but it's not loading
-        entityForm = {
-          entityType: className,
-          formId: { name: 'PersonListTemplate', module: 'Default' },
-          formType: fType,
-          formConfiguration: defaultFormTemplate,
-        };
-      } else {
-        // Use smart default item renderer for unconfigured or missing forms
-        if (allData.form?.formMode === 'designer') {
-          console.warn(`DataList: Rendering smart default for item ${index}, formSelectionMode: ${formSelectionMode}, hasFormConfigured: ${hasFormConfigured}`);
-        }
-        return (
-          <SmartDefaultItem
-            data={item}
-            itemIndex={index}
-            entityType={entityType}
-            isDesignMode={allData.form?.formMode === 'designer'}
-          />
-        );
+    // Use SmartDefaultItem when no formId is configured (simple check)
+    if (!isValidFormId) {
+      // Let user know they need to configure form item template
+      if (allData.form?.formMode === 'designer' && index === 0) {
+        console.warn('DataList: No form item template configured. Please set the "Form" property in the Data section to specify an item template form.');
       }
+      return (
+        <SmartDefaultItem
+          data={item}
+          itemIndex={index}
+          entityType={entityType}
+          isDesignMode={allData.form?.formMode === 'designer'}
+        />
+      );
+    }
+
+    // FormId is configured - check if form markup is loaded
+    if (!entityForm?.formConfiguration?.markup) {
+      // Form is configured but not loaded yet - use default template if available
+      return (
+        <div style={{
+          padding: '12px',
+          textAlign: 'center',
+          color: '#8c8c8c',
+          fontStyle: 'italic',
+          border: '1px dashed #d9d9d9',
+          borderRadius: '4px',
+          margin: '4px 0'
+        }}>
+          Loading form template...
+        </div>
+      );
     }
 
     const dblClick = () => {
@@ -404,6 +459,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     if (isFormFullName(entityForm?.formId))
       attributes['data-sha-form-name'] = `${entityForm?.formId.module}/${entityForm?.formId.name}`;
+
 
     return (
       <AttributeDecorator attributes={attributes}>
@@ -506,7 +562,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     );
   };
 
-  
+
 
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
     const stylesAsCSS = style as CSSProperties;
@@ -530,7 +586,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         border: '1px solid #d3d3d3',
         borderRadius: '8px',
       }),
-      ...(orientation !== 'wrap'  &&  {
+      ...(orientation !== 'wrap' && {
         marginTop: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px',
       }),
     };
@@ -558,7 +614,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={{...itemStyles, width: orientation === 'wrap' ?  'unset' : itemStyles.width, overflow: 'auto'}}
+            style={{ ...itemStyles, width: orientation === 'wrap' ? 'unset' : itemStyles.width, overflow: 'auto' }}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
@@ -614,7 +670,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       ...fcContainerStyles.dimensionsStyles
 
     };
-    
+
 
     const rawItemWidth =
       (style as CSSProperties)?.width ?? props.container?.dimensions?.width;
