@@ -52,25 +52,16 @@ const properties2options = (properties: IPropertyMetadata[], prefix: string): IO
   });
 };
 
-export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 'single', readOnly = false, allowClear = false, ...props }) => {
+export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 'single', readOnly = false, allowClear = false, onPropertiesLoaded, ...props }) => {
   const { style = { width: '32px' } } = props;
 
   const meta = useMetadata(false);
   const { getContainerProperties } = useMetadataDispatcher();
-  const { metadata } = meta || {};
+  const { metadata } = meta ?? {};
 
   const initialProperties = asPropertiesArray(metadata?.properties, []);
   const [state, setState] = useState<IAutocompleteState>({ options: properties2options(initialProperties, null), properties: initialProperties });
   const [multipleValue, setMultipleValue] = useState('');
-
-  const setProperties = (properties: IPropertyMetadata[], prefix: string) => {
-    if (props.onPropertiesLoaded)
-      props.onPropertiesLoaded(properties, prefix);
-    setState({
-      properties: properties,
-      options: properties2options(properties, prefix)
-    });
-  };
 
   const form = useForm(false);
   const { linkToModelMetadata } = useConfigurableFormActions(false) ?? {};
@@ -103,12 +94,25 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   // TODO: add `loadProperties` method with callback:
   //    modelType, properties[] (dot notation props list)
   useEffect(() => {
-    getContainerProperties({ metadata, containerPath: containerPath ?? containerPathMultiple }).then(properties => {
-      setProperties(properties, containerPath ?? containerPathMultiple);
-    }).catch(() => {
+    const setProperties = (properties: IPropertyMetadata[], prefix: string) => {
+      if (onPropertiesLoaded)
+        onPropertiesLoaded(properties, prefix);
+      setState({
+        properties: properties,
+        options: properties2options(properties, prefix)
+      });
+    };
+
+    if (!metadata) {
       setProperties([], '');
-    });
-  }, [metadata?.properties, containerPath, containerPathMultiple]);
+    } else {
+      getContainerProperties({ metadata, containerPath: containerPath ?? containerPathMultiple }).then(properties => {
+        setProperties(properties, containerPath ?? containerPathMultiple);
+      }).catch(() => {
+        setProperties([], '');
+      });
+    }
+  }, [metadata, metadata?.properties, containerPath, containerPathMultiple, getContainerProperties, onPropertiesLoaded]);
 
   const onSelect = (data: string) => {
     if (props.onChange) props.onChange(data);
@@ -187,7 +191,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       onSelect={onSelect}
       onSearch={onSearch}
       notFoundContent="Not found"
-      size={props.size}      
+      size={props.size}
       popupMatchSelectWidth={false}
       allowClear={allowClear}
     />

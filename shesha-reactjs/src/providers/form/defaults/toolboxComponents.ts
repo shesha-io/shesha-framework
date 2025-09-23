@@ -216,7 +216,7 @@ export const getToolboxComponents = (
         Tabs,
         Wizard,
         SubForm,
-        HorizontalMenu
+        HorizontalMenu,
       ],
     },
     {

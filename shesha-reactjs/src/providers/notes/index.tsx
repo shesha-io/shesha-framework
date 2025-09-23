@@ -232,7 +232,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
           deleteNotes: deleteNotesRequest,
           refreshNotes,
           /* NEW_ACTION_GOES_HERE */
-          updateNotes:updateNotesRequest
+          updateNotes: updateNotesRequest,
         }}
       >
         {children}

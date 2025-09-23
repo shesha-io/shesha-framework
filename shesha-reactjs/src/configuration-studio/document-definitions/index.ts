@@ -8,12 +8,12 @@ import { RoleDocumentDefinition } from './role';
 import { SettingDocumentDefinition } from './setting';
 
 export const SheshaDocumentDefinitions = [
-    EntityDocumentDefinition,
-    FormDocumentDefinition,
-    NotificationDocumentDefinition,
-    NotificationChannelDocumentDefinition,
-    PermissionDocumentDefinition,
-    ReferenceListDocumentDefinition,
-    RoleDocumentDefinition,
-    SettingDocumentDefinition,
+  EntityDocumentDefinition,
+  FormDocumentDefinition,
+  NotificationDocumentDefinition,
+  NotificationChannelDocumentDefinition,
+  PermissionDocumentDefinition,
+  ReferenceListDocumentDefinition,
+  RoleDocumentDefinition,
+  SettingDocumentDefinition,
 ];

@@ -12,54 +12,54 @@ export interface IShaDataAccessor {
 export const CreateDataAccessor = (getData: () => any, setData: (data: any) => void, setFieldValue: (propertyName: string, value: any) => void, propertyName?: string) => {
   const data = getValueByPropertyName(getData(), propertyName);
   const property = (Array.isArray(data))
-      ? new ShaArrayAccessProxy(getData, setData, setFieldValue, propertyName)
-      : new ShaObjectAccessProxy(getData, setData, setFieldValue, propertyName);
+    ? new ShaArrayAccessProxy(getData, setData, setFieldValue, propertyName)
+    : new ShaObjectAccessProxy(getData, setData, setFieldValue, propertyName);
 
   return new Proxy(property, {
-      get(target, name) {
-          const propertyName = name.toString();
+    get(target, name) {
+      const propertyName = name.toString();
 
-          if (typeof name === 'symbol') {
-              const accessorData = target.getAccessorValue();
-              const objSymbol = accessorData[name];
-              if (objSymbol && typeof objSymbol === 'function')
-                  return objSymbol.bind(accessorData);
-          }
+      if (typeof name === 'symbol') {
+        const accessorData = target.getAccessorValue();
+        const objSymbol = accessorData[name];
+        if (objSymbol && typeof objSymbol === 'function')
+          return objSymbol.bind(accessorData);
+      }
 
-          if (propertyName.includes(GHOST_PAYLOAD_KEY))
-              return undefined;
-
-          if (propertyName === 'hasOwnProperty')
-              return (prop: string | symbol) => prop ? propertyName in target.accessor : false;
-
-          if (propertyName in target.accessor)
-              return typeof target.accessor[propertyName] === 'function'
-                  ? target.accessor[propertyName].bind(target.accessor)
-                  : target.accessor[propertyName];
-
-          return target.accessor.getFieldValue(propertyName);
-      },
-      set(target, name, newValue, _receiver) {
-          const propertyName = name.toString();
-          target.setFieldValue(propertyName, newValue);
-          return true;
-      },
-      has(target, prop) {
-        const propertyName = prop.toString();
-        const data = target.getAccessorValue();
-        return !propertyName.includes(GHOST_PAYLOAD_KEY) && data && propertyName in data;
-      },
-      ownKeys(target) {
-        const data = target.getAccessorValue();
-        return data ? Reflect.ownKeys(data) : [];
-      },
-      getOwnPropertyDescriptor(target, prop) {
-        const propertyName = prop.toString();
-        const data = target.getAccessorValue();
-        if (data && propertyName in data)
-            return { enumerable: true, configurable: true, writable: true };
+      if (propertyName.includes(GHOST_PAYLOAD_KEY))
         return undefined;
-      },
+
+      if (propertyName === 'hasOwnProperty')
+        return (prop: string | symbol) => prop ? propertyName in target.accessor : false;
+
+      if (propertyName in target.accessor)
+        return typeof target.accessor[propertyName] === 'function'
+          ? target.accessor[propertyName].bind(target.accessor)
+          : target.accessor[propertyName];
+
+      return target.accessor.getFieldValue(propertyName);
+    },
+    set(target, name, newValue, _receiver) {
+      const propertyName = name.toString();
+      target.setFieldValue(propertyName, newValue);
+      return true;
+    },
+    has(target, prop) {
+      const propertyName = prop.toString();
+      const data = target.getAccessorValue();
+      return !propertyName.includes(GHOST_PAYLOAD_KEY) && data && propertyName in data;
+    },
+    ownKeys(target) {
+      const data = target.getAccessorValue();
+      return data ? Reflect.ownKeys(data) : [];
+    },
+    getOwnPropertyDescriptor(target, prop) {
+      const propertyName = prop.toString();
+      const data = target.getAccessorValue();
+      if (data && propertyName in data)
+        return { enumerable: true, configurable: true, writable: true };
+      return undefined;
+    },
   });
 };
 
@@ -123,15 +123,15 @@ export class ShaDataAccessor implements IShaDataAccessor {
     const propValue = getValueByPropertyName(this.getData(), propName);
 
     if (propValue === undefined)
-        return undefined;
+      return undefined;
     if (propValue === null)
-        return null;
+      return null;
 
     if (typeof propValue === 'function')
-        return propValue.bind(this.getAccessorValue());
+      return propValue.bind(this.getAccessorValue());
 
     if (typeof propValue === 'object' && propValue) {
-        return CreateDataAccessor(this.getData, this.setData, this._setFieldValue, propName);// new ShaDataAccessor(this.getData, this.setData, this._setFieldValue, propName);
+      return CreateDataAccessor(this.getData, this.setData, this._setFieldValue, propName);// new ShaDataAccessor(this.getData, this.setData, this._setFieldValue, propName);
     }
 
     return propValue;

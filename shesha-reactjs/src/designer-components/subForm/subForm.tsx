@@ -29,8 +29,6 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     formSettings,
     propertyName,
     context,
-    versionStatus,
-    versionNo,
     description,
     allComponents,
   } = useSubForm();
@@ -65,7 +63,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     return Object.values(loading).find((l) => Boolean(l));
   }, [loading]);
 
-  const persistedFormProps: IPersistedFormProps = { id, module, versionNo, description, versionStatus, name };
+  const persistedFormProps: IPersistedFormProps = { id, module, description, name };
 
   if (formSettings?.access === 4 && !anyOfPermissionsGranted(formSettings?.permissions || [])) {
     return (

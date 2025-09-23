@@ -29,6 +29,6 @@ export interface IReferenceListItem {
 }
 
 export interface IReferenceListIdentifier {
-  module?: string;
+  module: string | null;
   name: string;
 }

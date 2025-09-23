@@ -2,17 +2,17 @@ export interface IMetadata {
     dataType: string;
     name?: string;
     description?: string;
-    itemsType?: IPropertyMetadata;
+    itemsType?: Omit<IPropertyMetadata, 'path'>;
 }
 
 export interface IMemberType {
-    dataType?: string | null;
+    dataType: string | null;
     dataFormat?: string | null;
     baseType?: IMemberType;
 }
 
 export interface IMemberMetadata extends IMemberType {
-    path?: string | null;
+    path: string;
     label?: string | null;
     description?: string | null;
 }
@@ -42,6 +42,11 @@ export interface IPropertyMetadata extends IMemberMetadata {
     isNullable?: boolean;
     prefix?: string;
     isVisible?: boolean;
+
+    columnName?: string | null;
+    createdInDb?: boolean;
+    inheritedFromId?: string | null;
+    formatting?: any;
 }
 
 export type PropertiesPromise = Promise<IPropertyMetadata[]>;

@@ -13,27 +13,27 @@ export function scheduledJobExecutionReducer(
   //#endregion
 
   switch (type) {
-    case ScheduledJobExecutionActionEnums.GetExecutionLogRequest:
-    case ScheduledJobExecutionActionEnums.GetExecutionLogSuccess:
-    case ScheduledJobExecutionActionEnums.GetExecutionLogError:
-      /* NEW_ACTION_ENUM_GOES_HERE */
+  case ScheduledJobExecutionActionEnums.GetExecutionLogRequest:
+  case ScheduledJobExecutionActionEnums.GetExecutionLogSuccess:
+  case ScheduledJobExecutionActionEnums.GetExecutionLogError:
+    /* NEW_ACTION_ENUM_GOES_HERE */
 
-      return {
-        ...state,
-        ...payload,
-      };
-    case ScheduledJobExecutionActionEnums.AddExecutionLogEvent: {
-      const { executionLogEvents } = state;
-      const { eventToAdd } = payload;
+    return {
+      ...state,
+      ...payload,
+    };
+  case ScheduledJobExecutionActionEnums.AddExecutionLogEvent: {
+    const { executionLogEvents } = state;
+    const { eventToAdd } = payload;
 
-      return {
-        ...state,
-        executionLogEvents: [...executionLogEvents, eventToAdd],
-      };
-    }
+    return {
+      ...state,
+      executionLogEvents: [...executionLogEvents, eventToAdd],
+    };
+  }
 
-    default: {
-      return state;
-    }
+  default: {
+    return state;
+  }
   }
 }

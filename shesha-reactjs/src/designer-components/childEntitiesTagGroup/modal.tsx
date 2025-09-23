@@ -2,7 +2,6 @@ import { Modal, Skeleton } from 'antd';
 import React, { FC } from 'react';
 import { useAppConfigurator, useDataContextManagerActions } from '@/providers';
 import { IFormMarkupResponse } from '@/providers/form/api';
-import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import ValidationErrors from '@/components/validationErrors';
 import SubForm from '../subForm/subForm';
 import { IChildEntitiesTagGroupProps } from './models';
@@ -43,7 +42,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
     onToggle(false);
   };
 
-  const showFormInfo = !!formInfo && formInfoBlockVisible && !!ConfigurationItemVersionStatusMap?.[formInfo?.versionStatus];
+  const showFormInfo = formInfo && formInfoBlockVisible;
 
   return (
     <Modal

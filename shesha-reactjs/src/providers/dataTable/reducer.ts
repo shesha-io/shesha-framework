@@ -441,7 +441,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       const selectedStoredFilterIds =
         (!Boolean(state.selectedStoredFilterIds) || state.selectedStoredFilterIds.length === 0) &&
-          predefinedFilters?.length > 0
+        predefinedFilters?.length > 0
           ? Boolean(uc) && uc.length > 0
             ? uc
             : [predefinedFilters[0].id]

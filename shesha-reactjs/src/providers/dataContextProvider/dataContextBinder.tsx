@@ -4,7 +4,7 @@ import { MetadataProvider, useMetadataDispatcher } from "@/providers";
 import { useDataContextManagerActions, useDataContextRegister } from "@/providers/dataContextManager";
 import { getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { DEFAULT_CONTEXT_METADATA } from "../dataContextManager/models";
-import { 
+import {
   ContextGetData,
   ContextGetFieldValue,
   ContextGetFull,
@@ -18,18 +18,18 @@ import {
   IDataContextProviderActionsContext,
   IDataContextProviderActionsContextOverride,
   IDataContextProviderStateContext,
-  useDataContext 
+  useDataContext,
 } from "./contexts";
 import ConditionalWrap from "@/components/conditionalWrapper/index";
 import { useDeepCompareCallback } from "@/hooks/useDeepCompareEffect";
 import { isEmpty } from "lodash";
 
-export interface  IDataContextBinderRef {
+export interface IDataContextBinderRef {
   fireListener: (propertyName: string) => void;
   fireAllListeners: () => void;
 }
 
-export interface IDataContextBinderProps { 
+export interface IDataContextBinderProps {
   id: string;
   name: string;
   description?: string;
@@ -50,9 +50,9 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   const {
     children,
     id,
-    name, 
-    description, 
-    type, 
+    name,
+    description,
+    type,
     data,
     onChangeData,
   } = props;
@@ -66,7 +66,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   // update api if presented in the props (another way - leave props.api empty and call updateApi method)
   if (!isEmpty(props.api))
     apiRef.current = props.api;
-  
+
   // use ref to get actual data value inside methods
   const dataRef = useRef<any>();
   dataRef.current = data;
@@ -79,7 +79,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     description,
     type,
     parentDataContext: parentContext,
-    metadata: props.metadata ?? Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name, properties: []} as IModelMetadata) // set default metadata if empty
+    metadata: props.metadata ?? Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name, properties: [] } as IModelMetadata), // set default metadata if empty
   });
 
   const metadata = props.metadata ?? state.metadata;
@@ -105,7 +105,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     if (props.setFieldValue)
       props.setFieldValue(name, value, onChangeContextData);
     else {
-      const newData = setValueByPropertyName({...dataRef.current ?? {}}, name, value, true);
+      const newData = setValueByPropertyName({ ...dataRef.current ?? {} }, name, value, true);
       const changedData = setValueByPropertyName({}, name, value);
 
       if (onChangeData)
@@ -114,14 +114,14 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   }, [props.setFieldValue, onChangeData]);
 
   const setData = useDeepCompareCallback((changedData: any) => {
-    if (props.setData) 
-      props.setData(changedData,  onChangeContextData);
+    if (props.setData)
+      props.setData(changedData, onChangeContextData);
     else if (onChangeData)
-      onChangeData({...dataRef.current, ...changedData}, {...changedData}, onChangeContextData);
+      onChangeData({ ...dataRef.current, ...changedData }, { ...changedData }, onChangeContextData);
   }, [props.setData, onChangeData]);
 
   const updateApi = (api: any) => {
-    apiRef.current = api;    
+    apiRef.current = api;
   };
 
   const getApi = () => {
@@ -131,12 +131,12 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   const getFull: ContextGetFull = () => {
     const data: IDataContextFull = getData();
     const api = getApi();
-    if (api) 
+    if (api)
       data.api = api;
     return data;
   };
 
-  const actionContext: IDataContextProviderActionsContext ={
+  const actionContext: IDataContextProviderActionsContext = {
     setFieldValue,
     getFieldValue,
     setData,
@@ -158,8 +158,8 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   }, []);
 
   useEffect(() => {
-    setState({...state, metadata});
-    metadata?.then(res => {
+    setState({ ...state, metadata });
+    metadata?.then((res) => {
       onChangeContext({
         id,
         uid,
@@ -168,7 +168,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
         type,
         metadata: res,
         parentUid: parentContext?.uid,
-        ...actionContext
+        ...actionContext,
       });
     });
     metadataDispatcher?.updateModel(id, metadata);
@@ -191,11 +191,11 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   return (
     <ConditionalWrap
       condition={props.metadata && (props.distributeMetadata ?? false)}
-      wrap={children => <MetadataProvider id={id} modelType={id} dataType='context' > {children} </MetadataProvider>}
+      wrap={(children) => <MetadataProvider id={id} modelType={id} dataType="context"> {children} </MetadataProvider>}
     >
       <DataContextProviderActionsContext.Provider value={{ ...actionContext }}>
         <DataContextProviderStateContext.Provider value={state}>
-          <>{children}</> 
+          <>{children}</>
         </DataContextProviderStateContext.Provider>
       </DataContextProviderActionsContext.Provider>
     </ConditionalWrap>

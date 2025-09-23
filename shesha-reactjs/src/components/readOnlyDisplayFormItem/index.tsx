@@ -123,7 +123,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         );
       }
       case 'time': {
-        return <InputField style={style} value={<ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }} />} />;
+        return <InputField style={style} value={<ValueRenderer value={value} meta={{ path: '', dataType: 'time', dataFormat: timeFormat }} />} />;
       }
       case 'datetime': {
         return <InputField style={style} value={getMoment(value, dateFormat)?.format(dateFormat) || ''} />;
