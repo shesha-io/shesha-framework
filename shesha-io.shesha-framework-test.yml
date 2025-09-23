@@ -226,7 +226,7 @@ stages:
     dependsOn: Job_4
     displayName: Build_Functional_Shesha_AdminPortal
     pool:
-      vmImage: ubuntu-latest
+      vmImage: windows-latest
     steps:
     - task: PowerShell@2
       displayName: Check if Pull Request
