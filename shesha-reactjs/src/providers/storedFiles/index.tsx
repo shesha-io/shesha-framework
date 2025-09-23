@@ -125,19 +125,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     }
   }, [ownerId, ownerType, filesCategory, propertyName]);
 
-  useEffect(() => {
-    if (!isFetchingFileList) {
-      if (isAjaxSuccessResponse(fileListResponse)) {
-        const { result } = fileListResponse;
-        const fileList = filesReducer(result as IStoredFile[]);
-
-        dispatch(fetchFileListSuccessAction(fileList));
-      } else {
-        dispatch(fetchFileListErrorAction());
-      }
-    }
-  }, [isFetchingFileList, fileListResponse]);
-
   //#region Register signal r events
   useEffect(() => {
     connection?.on('OnFileAdded', (eventData: IStoredFile | string) => {
