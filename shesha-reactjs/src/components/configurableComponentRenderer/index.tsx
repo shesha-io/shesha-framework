@@ -44,7 +44,7 @@ const BlockOverlay: FC<PropsWithChildren<IBlockOverlayProps>> = ({ onClick, chil
   );
 };
 
-export const ConfigurableComponentRenderer = <TSettings extends any>({
+export const ConfigurableComponentRenderer = <TSettings extends object>({
   children,
   canConfigure = true,
   onStartEdit,

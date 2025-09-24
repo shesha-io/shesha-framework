@@ -37,6 +37,7 @@ import { getQueryParams } from "@/utils/url";
 import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
 import { removeGhostKeys } from "@/utils/form";
 import { isPropertySettings } from "@/designer-components/_settings/utils";
+import { FieldValueSetter } from "@/utils/dotnotation";
 
 interface ShaFormInstanceArguments {
   forceRootUpdate: ForceUpdateTrigger;
@@ -58,10 +59,10 @@ interface IComponentsWithScripts {
 // ToDo: AS - add other events
 const scriptProps = ['onChangeCustom', 'onFocusCustom', 'onBlurCustom', 'onClickCustom'];
 
-class PublicFormApi<Values = any> implements IFormApi<Values> {
-  #form: IShaFormInstance;
+class PublicFormApi<Values extends object = object> implements IFormApi<Values> {
+  #form: IShaFormInstance<Values>;
 
-  constructor(form: IShaFormInstance) {
+  constructor(form: IShaFormInstance<Values>) {
     this.#form = form;
   }
 
@@ -114,8 +115,8 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
     return delayedUpdateData;
   };
 
-  setFieldValue = (name: string, value: any) => {
-    this.#form.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });
+  setFieldValue: FieldValueSetter<Values> = (name, value) => {
+    this.#form.setFormData({ values: setValueByPropertyName(this.#form.formData, name.toString(), value, true), mergeValues: true });
   };
 
   setFieldsValue = (values: Values) => {
@@ -175,10 +176,10 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
   }
 };
 
-export type ShaFormSubscription<Values = any> = (cs: IShaFormInstance<Values>) => void;
+export type ShaFormSubscription<Values extends object = object> = (cs: IShaFormInstance<Values>) => void;
 export type ShaFormSubscriptionType = 'data' | 'data-loading' | 'data-submit';
 
-class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
+class ShaFormInstance<Values extends object = object> implements IShaFormInstance<Values> {
   private forceRootUpdate: ForceUpdateTrigger;
 
   private formManager: IFormManagerActionsContext;
@@ -366,7 +367,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     this.forceRootUpdate();
   };
 
-  #publicFormApi: PublicFormApi;
+  #publicFormApi: PublicFormApi<Values>;
 
   getPublicFormApi = (): IFormApi<Values> => {
     return this.#publicFormApi ?? (this.#publicFormApi = new PublicFormApi<Values>(this));
@@ -761,18 +762,18 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
   };
 }
 
-type UseShaFormArgsExistingForm<Values = any> = { form: IShaFormInstance<Values> };
-// type UseShaFormArgsExistingForm<Values = any> = IShaFormInstance<Values>;
-type UseShaFormArgsNewForm<Values = any> = {
+type UseShaFormArgsExistingForm<Values extends object = object> = { form: IShaFormInstance<Values> };
+
+type UseShaFormArgsNewForm<Values extends object = object> = {
   antdForm?: FormInstance<Values>;
   init?: (shaForm: IShaFormInstance<Values>) => void;
 };
-type UseShaFormArgs<Values = any> = UseShaFormArgsExistingForm<Values> & UseShaFormArgsNewForm<Values>;
+type UseShaFormArgs<Values extends object = object> = UseShaFormArgsExistingForm<Values> & UseShaFormArgsNewForm<Values>;
 
-const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstance<Values>[] => {
+const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>): IShaFormInstance<Values>[] => {
   const { antdForm, form, init } = args;
 
-  const formRef = React.useRef<IShaFormInstance>();
+  const formRef = React.useRef<IShaFormInstance<Values>>();
   const [, forceUpdate] = React.useState({});
   const formManager = useFormManager();
   const dataLoaders = useFormDataLoaders();
@@ -790,7 +791,7 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
         forceUpdate({});
       };
 
-            const instance = new ShaFormInstance({
+            const instance = new ShaFormInstance<Values>({
                 forceRootUpdate: forceReRender,
                 formManager: formManager,
                 dataLoaders: dataLoaders,

@@ -2,8 +2,9 @@ import { ConfigurableFormInstance } from "@/interfaces";
 import { isEqual } from "lodash";
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload, SHESHA_ROOT_DATA_CONTEXT_MANAGER } from "./models";
-import { DataContextType, IDataContextFull, useDataContext } from "../dataContextProvider/contexts";
+import { DataContextType, IDataContextFull, useDataContextOrUndefined } from "../dataContextProvider/contexts";
 import { createNamedContext } from "@/utils/react";
+import { isDefined, isNullOrWhiteSpace } from "@/configuration-studio/types";
 
 export const DataContextTopLevels = {
   /** Only aplication root contexts */
@@ -11,7 +12,7 @@ export const DataContextTopLevels = {
   /** All contexts from this Data context manager */
   All: 'all',
   /** All available contexts */
-  Full: 'full'
+  Full: 'full',
 };
 
 export const RootContexts: string[] = [];
@@ -19,12 +20,12 @@ export const RootContexts: string[] = [];
 export interface IDataContextManagerStateContext {
   lastUpdate: number;
   id: string;
-  parent?: IDataContextManagerFullInstance;
+  parent?: IDataContextManagerFullInstance | undefined;
 }
 
 export interface IDataContextsData {
-  [key: string]: any;
-  lastUpdate: string;
+  [key: string]: unknown;
+  lastUpdate: number;
 }
 
 export interface IDataContextManagerActionsContext {
@@ -34,17 +35,17 @@ export interface IDataContextManagerActionsContext {
   unregisterDataContext: (payload: IRegisterDataContextPayload) => void;
   getLocalDataContexts: (contextId: string) => IDataContextDescriptor[];
   getDataContexts: (topId?: string) => IDataContextDescriptor[];
-  getDataContextsData: (topId?: string, data?: any) => IDataContextsData;
-  getDataContext: (contextId: string) => IDataContextDescriptor;
-  getNearestDataContext: (topId: string, type: DataContextType) => IDataContextDescriptor;
-  getDataContextData: (contextId: string) => any;
+  getDataContextsData: (topId?: string, data?: IDataContextsData) => IDataContextsData;
+  getDataContext: (contextId: string) => IDataContextDescriptor | undefined;
+  getNearestDataContext: (topId: string, type: DataContextType) => IDataContextDescriptor | undefined;
+  getDataContextData: (contextId: string) => unknown;
   onChangeContext: (dataContext: IDataContextDescriptor) => void;
   onChangeContextData: () => void;
   updatePageFormInstance: (form: ConfigurableFormInstance) => void;
-  getPageFormInstance: () => ConfigurableFormInstance;
-  getPageContext: () => IDataContextDescriptor;
-  getRoot: () => IDataContextManagerFullInstance;
-  getParent: () => IDataContextManagerFullInstance;
+  getPageFormInstance: () => ConfigurableFormInstance | undefined;
+  getPageContext: () => IDataContextDescriptor | undefined;
+  getRoot: () => IDataContextManagerFullInstance | undefined;
+  getParent: () => IDataContextManagerFullInstance | undefined;
 }
 
 export interface IDataContextManagerFullInstance extends IDataContextManagerStateContext, IDataContextManagerActionsContext {
@@ -55,8 +56,8 @@ export interface IDataContextManagerFullInstance extends IDataContextManagerStat
 export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStateContext = { lastUpdate: 0, id: '' };
 
 export const DataContextManagerUpdateContext = createNamedContext<object>({}, "DataContextManagerUpdateContext");
-export const DataContextManagerStateContext = createNamedContext<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE, "DataContextManagerStateContext");
-export const DataContextManagerActionsContext = createNamedContext<IDataContextManagerActionsContext>(undefined, "DataContextManagerActionsContext");
+export const DataContextManagerStateContext = createNamedContext<IDataContextManagerStateContext | undefined>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE, "DataContextManagerStateContext");
+export const DataContextManagerActionsContext = createNamedContext<IDataContextManagerActionsContext | undefined>(undefined, "DataContextManagerActionsContext");
 
 export interface IDataContextManagerProps {
   id: string;
@@ -91,8 +92,17 @@ const useDataContextManager = (require: boolean = true): IDataContextManagerFull
     : undefined;
 };
 
-const useDataManagerRegister = (payload: IDataContextManagerFullInstance, deps?: ReadonlyArray<any>) => {
-  const manager = useDataContextManagerActions(false)?.getParent();
+const useDataContextManager = (): IDataContextManagerFullInstance => {
+  const context = useDataContextManagerOrUndefined();
+
+  if (!context)
+    throw new Error('useDataContextManager must be used within a DataContextManager');
+
+  return context;
+};
+
+const useDataManagerRegister = (payload: IDataContextManagerFullInstance, deps?: React.DependencyList): void => {
+  const manager = useDataContextManagerActionsOrUndefined()?.getParent();
 
   useEffect(() => {
     if (!manager)
@@ -106,8 +116,8 @@ const useDataManagerRegister = (payload: IDataContextManagerFullInstance, deps?:
   }, deps);
 };
 
-const useDataContextRegister = (payload: IRegisterDataContextPayload, deps?: ReadonlyArray<any>) => {
-  const manager = useDataContextManagerActions(false);
+const useDataContextRegister = (payload: IRegisterDataContextPayload, deps?: React.DependencyList): void => {
+  const manager = useDataContextManagerActionsOrUndefined();
 
   useEffect(() => {
     if (!manager)
@@ -121,14 +131,14 @@ const useDataContextRegister = (payload: IRegisterDataContextPayload, deps?: Rea
   }, deps);
 };
 
-function useNearestDataContext(type: DataContextType): IDataContextDescriptor {
-  const currentDataContext = useDataContext(false);
+function useNearestDataContext(type: DataContextType): IDataContextDescriptor | undefined {
+  const currentDataContext = useDataContextOrUndefined();
   const dcm = useDataContextManagerActions();
 
   if (!currentDataContext)
-    return null;
+    return undefined;
 
-  const nearestDataContext = dcm?.getNearestDataContext(currentDataContext.id, type);
+  const nearestDataContext = dcm.getNearestDataContext(currentDataContext.id, type);
   return nearestDataContext;
 }
 
@@ -191,10 +201,10 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       contexts.current[payload.id] = { ...ctx };
       internalUpdate();
 
-            if (payload.type === DataContextTopLevels.Root)
-                RootContexts.push(payload.id);
-        }
-    };
+      if (payload.type === DataContextTopLevels.Root)
+        RootContexts.push(payload.id);
+    }
+  };
 
   const unregisterDataContext = (payload: IRegisterDataContextPayload) => {
     if (!!contexts.current[payload.id])
@@ -202,9 +212,9 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
 
     internalUpdate();
 
-      if (payload.type === DataContextTopLevels.Root)
-        RootContexts.splice(RootContexts.indexOf(payload.id), 1);
-    };
+    if (payload.type === DataContextTopLevels.Root)
+      RootContexts.splice(RootContexts.indexOf(payload.id), 1);
+  };
 
   const getLocalDataContexts = (topId: string) => {
     const ctxs: IDataContextDescriptor[] = [];
@@ -214,19 +224,19 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       if (Object.hasOwn(contexts.current, key) && contexts.current[key].type !== 'settings')
         dataContexts.push(contexts.current[key] as IDataContextDescriptor);
 
-      if (!topId)
-        return dataContexts?.filter(x => x.type === DataContextTopLevels.Root) ?? [];
+    if (!topId)
+      return dataContexts.filter((x) => x.type === DataContextTopLevels.Root);
 
-      if (topId === DataContextTopLevels.All)
-        return [...dataContexts];
+    if (topId === DataContextTopLevels.All)
+      return [...dataContexts];
 
-      if (topId === DataContextTopLevels.Full) {
-        const res = [...dataContexts];
-        managers.current.forEach(manager => {
-          manager.getLocalDataContexts(DataContextTopLevels.Full).forEach(x => res.push(x));
-        });
-        return res;
-      }
+    if (topId === DataContextTopLevels.Full) {
+      const res = [...dataContexts];
+      managers.current.forEach((manager) => {
+        manager.getLocalDataContexts(DataContextTopLevels.Full).forEach((x) => res.push(x));
+      });
+      return res;
+    }
 
     let c = dataContexts.find((x) => x.uid === topId || x.id === topId);
     while (c) {
@@ -363,9 +373,11 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
 
 export {
   DataContextManager,
+  useDataContextManagerOrUndefined,
   useDataContextManager,
   useDataContextManagerActions,
-  useDataContextManagerChange,
+  useDataContextManagerActionsOrUndefined,
+  useDataContextManagerState as useDataContextManagerChange,
   useDataManagerRegister,
   useDataContextRegister,
   useNearestDataContext,

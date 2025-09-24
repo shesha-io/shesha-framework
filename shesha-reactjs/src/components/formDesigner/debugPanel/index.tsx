@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { Col, Divider } from 'antd';
 import { CollapsiblePanel } from '@/components';
-import { useDataContextManager } from '@/providers/dataContextManager';
 import { useShaFormInstance, useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
+import { useDataContextManagerOrUndefined } from '@/providers';
 
 export interface DebugPanelProps {
     formData?: any;
@@ -12,7 +12,7 @@ export const DebugPanel: FC<DebugPanelProps> = () => {
 
     useShaFormDataUpdate();
     const formData = useShaFormInstance(false)?.formData;
-    const ctxManager = useDataContextManager(false)?.getRoot();
+    const ctxManager = useDataContextManagerOrUndefined()?.getRoot();
     const contexts = ctxManager.getDataContexts('full');
 
     return (

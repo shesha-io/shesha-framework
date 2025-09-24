@@ -2,7 +2,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { ISizableColumnComponentProps, ISizableColumnInputProps } from './interfaces';
 import { BorderHorizontalOutlined } from '@ant-design/icons';
 import React, { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react';
-import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { StyleBoxValue, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { getLayoutStyle, getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -69,7 +69,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-    const styling = jsonSafeParse(model.stylingBox || '{}');
+    const styling = jsonSafeParse<StyleBoxValue>(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...style,

@@ -4,7 +4,7 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IToolboxComponent } from '@/interfaces';
-import { IFormComponentContainer, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { IFormComponentContainer, StyleBoxValue, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { getLayoutStyle, getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
@@ -85,7 +85,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-    const styling = jsonSafeParse(model.stylingBox || '{}');
+    const styling = jsonSafeParse<StyleBoxValue>(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
     const additionalStyles = removeUndefinedProps({
       ...stylingBoxAsCSS,
