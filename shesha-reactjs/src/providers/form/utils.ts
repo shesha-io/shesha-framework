@@ -709,17 +709,19 @@ export const componentsFlatStructureToTree = (
 
         const customContainers = componentRegistration?.customContainerNames || [];
         customContainers.forEach((containerName) => {
-          const childContainers = component[containerName]
-            ? Array.isArray(component[containerName])
-              ? (component[containerName] as IComponentsContainer[])
-              : [component[containerName] as IComponentsContainer]
-            : undefined;
+          const processContainer = (container: IComponentsContainer): IComponentsContainer => {
+            const childComponents: IConfigurableFormComponent[] = [];
+            processComponent(childComponents, container.id);
+            return { ...container, components: childComponents };
+          };
+
+          const childContainers = component[containerName];
           if (childContainers) {
-            childContainers.forEach((c) => {
-              const childComponents: IConfigurableFormComponent[] = [];
-              processComponent(childComponents, c.id);
-              c.components = childComponents;
-            });
+            if (Array.isArray(childContainers)) {
+              component[containerName] = childContainers.map(processContainer);
+            } else {
+              component[containerName] = processContainer(childContainers);
+            }
           }
         });
       }
@@ -1418,22 +1420,22 @@ export const cloneComponents = (
 
 export const getDefaultFormMarkup = (type: ViewType = 'blank') => {
   switch (type) {
-  case 'blank':
-    return blankViewMarkup;
-  case 'dashboard':
-    return dashboardViewMarkup;
-  case 'details':
-    return detailsViewMarkup;
-  case 'form':
-    return formViewMarkup;
-  case 'masterDetails':
-    return masterDetailsViewMarkup;
-  case 'menu':
-    return menuViewMarkup;
-  case 'table':
-    return tableViewMarkup;
-  default:
-    return blankViewMarkup;
+    case 'blank':
+      return blankViewMarkup;
+    case 'dashboard':
+      return dashboardViewMarkup;
+    case 'details':
+      return detailsViewMarkup;
+    case 'form':
+      return formViewMarkup;
+    case 'masterDetails':
+      return masterDetailsViewMarkup;
+    case 'menu':
+      return menuViewMarkup;
+    case 'table':
+      return tableViewMarkup;
+    default:
+      return blankViewMarkup;
   }
 };
 export const createComponentModelForDataProperty = (
