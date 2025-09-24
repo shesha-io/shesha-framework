@@ -42,7 +42,7 @@ export default function undoable<State>(
   let initialState: State = undefined;
 
   // Return a reducer that handles undo and redo
-  return function (state /*= initialState*/, action) {
+  return function (state /* = initialState*/, action) {
     const { past, present, future } = state;
 
     if (initialState === undefined) {
@@ -51,57 +51,57 @@ export default function undoable<State>(
     }
 
     switch (action.type) {
-      case UndoableActionEnums.CLEAR_HISTORY: {
-        initialState = undefined;
+    case UndoableActionEnums.CLEAR_HISTORY: {
+      initialState = undefined;
 
-        return {
-          past: [],
-          present: present,
-          future: [],
-          _latestUnfiltered: present,
-        };
+      return {
+        past: [],
+        present: present,
+        future: [],
+        _latestUnfiltered: present,
+      };
+    }
+    case UndoableActionEnums.UNDO:
+      const previous = past[past.length - 1];
+      const newPast = past.slice(0, past.length - 1);
+      return {
+        past: newPast,
+        present: previous,
+        future: [present, ...future],
+        _latestUnfiltered: previous,
+      };
+    case UndoableActionEnums.REDO:
+      const next = future[0];
+      const newFuture = future.slice(1);
+      return {
+        past: [...past, present],
+        present: next,
+        future: newFuture,
+        _latestUnfiltered: next,
+      };
+    default:
+      // Delegate handling the action to the passed reducer
+      const newPresent = reducer(present, action);
+      if (present === newPresent) {
+        return state;
       }
-      case UndoableActionEnums.UNDO:
-        const previous = past[past.length - 1];
-        const newPast = past.slice(0, past.length - 1);
-        return {
-          past: newPast,
-          present: previous,
-          future: [present, ...future],
-          _latestUnfiltered: previous,
-        };
-      case UndoableActionEnums.REDO:
-        const next = future[0];
-        const newFuture = future.slice(1);
-        return {
-          past: [...past, present],
-          present: next,
-          future: newFuture,
-          _latestUnfiltered: next,
-        };
-      default:
-        // Delegate handling the action to the passed reducer
-        const newPresent = reducer(present, action);
-        if (present === newPresent) {
-          return state;
-        }
 
-        if (includeAction(action.type)) {
-          // `state._latestUnfiltered` is not available during the recording of the first undoable action
-          const lastSavedState = state._latestUnfiltered ?? initialState;
-          return {
-            past: lastSavedState ? applyLimit([...past, lastSavedState], options.limit) : [],
-            present: newPresent,
-            future: state.future.length === 0  ? state.future : [],
-            _latestUnfiltered: newPresent,
-          };
-        } else
-          return {
-            past: state.past,
-            present: newPresent,
-            future: state.future.length === 0  ? state.future : [],
-            _latestUnfiltered: state._latestUnfiltered,
-          };
+      if (includeAction(action.type)) {
+        // `state._latestUnfiltered` is not available during the recording of the first undoable action
+        const lastSavedState = state._latestUnfiltered ?? initialState;
+        return {
+          past: lastSavedState ? applyLimit([...past, lastSavedState], options.limit) : [],
+          present: newPresent,
+          future: state.future.length === 0 ? state.future : [],
+          _latestUnfiltered: newPresent,
+        };
+      } else
+        return {
+          past: state.past,
+          present: newPresent,
+          future: state.future.length === 0 ? state.future : [],
+          _latestUnfiltered: state._latestUnfiltered,
+        };
     }
   };
 }

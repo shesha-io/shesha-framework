@@ -69,7 +69,7 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
 
 }
 
-export type IConfigurableFormRuntimeProps<Values = any> = {
+export type IConfigurableFormRuntimeProps<Values extends object = object> = {
   shaForm?: IShaFormInstance<Values>;
 
   formName?: string;
@@ -153,7 +153,7 @@ export type IConfigurableFormRenderingProps = {
   markupLoadingError?: (args: MarkupLoadingErrorRenderProps) => React.ReactNode;  
 };
 
-export type IConfigurableFormProps<Values = any> = HasFormIdOrMarkup & IConfigurableFormRuntimeProps<Values> & IConfigurableFormRenderingProps & {
+export type IConfigurableFormProps<Values extends object = object> = HasFormIdOrMarkup & IConfigurableFormRuntimeProps<Values> & IConfigurableFormRenderingProps & {
   logEnabled?: boolean;
   /**
    * Show/hide form information is the block overlay (is visible in edit mode). Default value = true

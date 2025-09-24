@@ -1,4 +1,4 @@
-import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, evaluateDynamicFilters, useDataContextManagerActions, useDataTable, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
+import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, evaluateDynamicFilters, useDataContextManagerActionsOrUndefined, useDataTable, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
 import React, { useEffect, useState } from 'react';
 import { useStyles } from './styles/styles';
 import { useMedia } from 'react-use';
@@ -58,7 +58,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
 
   const { globalState } = useGlobalState();
   const { formData } = useShaFormInstance();
-  const pageContext = useDataContextManagerActions(false)?.getPageContext();
+  const pageContext = useDataContextManagerActionsOrUndefined()?.getPageContext();
 
   useEffect(() => {
     registerConfigurableColumns(modalId, configurableColumns);

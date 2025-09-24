@@ -7,7 +7,6 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
 import ReflistTag from './reflistTag';
 
-// tslint:disable-next-line:whitespace
 export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownProps<TValue>) => {
   const {
     referenceListId,
@@ -83,13 +82,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
   const options = useMemo<ISelectOption<TValue>[]>(() => {
     const fetchedData = (refList?.items || []).filter(filter);
 
-    const fetchedItems = fetchedData.map<ISelectOption<TValue>>((item) => {
-      const option = Boolean(getOptionFromFetchedItem)
-        ? (getOptionFromFetchedItem(item) as ISelectOption<TValue>)
-        : (item as ISelectOption<TValue>);
-
-      return option;
-    });
+    const fetchedItems = fetchedData.map<ISelectOption<TValue>>((item) => getOptionFromFetchedItem(item));
 
     const selectedItem = wrapValue(value, fetchedItems);
     // Remove items which are already exist in the fetched items.

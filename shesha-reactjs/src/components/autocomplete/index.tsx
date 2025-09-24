@@ -6,7 +6,7 @@ import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAuto
 import QueryString from 'qs';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
-import { getValueByPropertyName } from '@/utils/object';
+import { getValueByPropertyName, unsafeGetValueByPropertyName } from '@/utils/object';
 import { isDataColumn } from '@/providers/dataTable/interfaces';
 import { ValueRenderer } from '../valueRenderer';
 import { isEqual, uniqWith } from 'lodash';
@@ -205,12 +205,12 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     // render grouped data
     if (props.grouping && source?.tableData?.length) {
       const groupProp = props.grouping.propertyName;
-      const groups = uniqWith(source?.tableData.map(row => getValueByPropertyName(row, groupProp)), (a, b) => isEqual(a, b));
+      const groups = uniqWith(source?.tableData.map(row => unsafeGetValueByPropertyName(row, groupProp)), (a, b) => isEqual(a, b));
       const res = <>
         {groups.map((group, gindex) => {
           const groupTitle = renderGroupTitle(group, groupProp) ?? 'empty';
           return <Select.OptGroup key={gindex} label={groupTitle} title={groupTitle}>
-            {list.filter((x) => isEqual(getValueByPropertyName(x, groupProp), group)).map((row, index) => renderOption(row, gindex*1000000 + index))}
+            {list.filter((x) => isEqual(unsafeGetValueByPropertyName(x, groupProp), group)).map((row, index) => renderOption(row, gindex*1000000 + index))}
           </Select.OptGroup>;
         })}
       </>;

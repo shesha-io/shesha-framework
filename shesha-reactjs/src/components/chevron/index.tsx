@@ -2,7 +2,7 @@ import { CSSProperties, FC, useEffect, useMemo, useRef, useState } from "react";
 import React from "react";
 import { Button, Form, FormInstance } from "antd";
 import ConfigurableButton from "@/designer-components/button/configurableButton";
-import { pickStyleFromModel, useTheme } from "@/index";
+import { pickStyleFromModel, StyleBoxValue, useTheme } from "@/index";
 import { useStyles } from "./styles";
 import { fadeColor } from "@/components/refListSelectorDisplay/provider/utils";
 import { IChevronButton, IChevronControlProps } from "./models";
@@ -21,7 +21,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(true);
     const containerRef = useRef(null);
-    const stylingBoxJSON = jsonSafeParse(stylingBox || '{}');
+    const stylingBoxJSON = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
     const stylingBoxCSS = pickStyleFromModel(stylingBoxJSON);    
 
     const renderButton = (props: IChevronButton, uuid: string, form?: FormInstance<any>) => {

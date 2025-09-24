@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import ConfigurableComponent from '../appConfigurator/configurableComponent';
 import EditViewMsg from '../appConfigurator/editViewMsg';
-import React, { FC, MutableRefObject, useEffect } from 'react';
+import React, { MutableRefObject, ReactElement, useEffect } from 'react';
 import { IConfigurableFormProps, SheshaFormProps } from './models';
 import { Form, FormInstance } from 'antd';
 import { useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
@@ -15,16 +15,17 @@ import { IShaFormInstance } from '@/providers/form/store/interfaces';
 import ParentProvider from '@/providers/parentProvider';
 import { ShaSpin } from '..';
 
-export type ConfigurableFormProps<Values = any> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
+export type ConfigurableFormProps<Values extends object = object> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
   form?: FormInstance<any>;
   formRef?: MutableRefObject<Partial<ConfigurableFormInstance> | null>;
   // TODO: merge with formRef
-  shaFormRef?: MutableRefObject<IShaFormInstance>;
+  shaFormRef?: MutableRefObject<IShaFormInstance<Values>>;
   isSettingsForm?: boolean;
   externalShaForm?: IShaFormInstance<Values>;
 } & SheshaFormProps;
 
-export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
+//export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
+export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
   const {
     formId,
     markup,

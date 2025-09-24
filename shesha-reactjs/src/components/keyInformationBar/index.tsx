@@ -1,5 +1,5 @@
 import { IKeyInformationBarProps } from '@/designer-components/keyInformationBar/interfaces';
-import { ComponentsContainer, isValidGuid, useFormData, useSheshaApplication, ValidationErrors } from '@/index';
+import { ComponentsContainer, isValidGuid, StyleBoxValue, useFormData, useSheshaApplication, ValidationErrors } from '@/index';
 import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import { Flex } from 'antd';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
@@ -70,7 +70,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     fetchStyles();
   }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
-  const styling = jsonSafeParse(props.stylingBox || '{}');
+  const styling = jsonSafeParse<StyleBoxValue>(props.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   const additionalStyles: CSSProperties = removeUndefinedProps({
@@ -99,7 +99,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
 
   if (hidden) return null;
 
-  const stylingBoxJSON = jsonSafeParse(stylingBox || '{}');
+  const stylingBoxJSON = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
   const vertical = orientation === 'vertical';
   const computedStyle = { ...getStyle(style, data), ...pickStyleFromModel(stylingBoxJSON) };
   const barStyle = !vertical ? { justifyContent: alignItems } : { alignItems: alignItems };
