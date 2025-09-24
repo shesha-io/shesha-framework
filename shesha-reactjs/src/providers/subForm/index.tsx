@@ -23,7 +23,7 @@ import { ISubFormProviderProps } from './interfaces';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
 import { subFormReducer } from './reducer';
-import { MetadataProvider, useSheshaApplication } from '@/providers';
+import { MetadataProvider, useDataContextManagerActionsOrUndefined, useSheshaApplication } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useDebouncedCallback } from 'use-debounce';
@@ -43,11 +43,12 @@ import {
 import ParentProvider, { useParent } from '../parentProvider/index';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { IFormApi } from '../form/formApi';
-import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { ISetFormDataPayload } from '../form/contexts';
 import { deepMergeValues, setValueByPropertyName } from '@/utils/object';
-import { ConfigurableItemIdentifierToString, IAjaxResponseBase, IErrorInfo, useDataContextManagerActions } from '@/index';
 import { AxiosResponse } from 'axios';
+import { ConfigurableItemIdentifierToString } from '@/interfaces/configurableItems';
+import { IErrorInfo } from '@/interfaces/errorInfo';
+import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -80,7 +81,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const parent = useParent(false);
 
-  const ctxManager = useDataContextManagerActions(false);
+  const ctxManager = useDataContextManagerActionsOrUndefined();
   const contextId = context ? (ctxManager?.getDataContext(context)?.uid ?? context) : undefined;
 
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
@@ -115,24 +116,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     else
       parentFormApi.clearFieldsValue();
   };
-
-  // ToDO: Alexs - review and remove
-  // update global state on value change
-  /* useDeepCompareEffect(() => {
-    if (propertyName) {
-      // Note: don't write undefined if subform value is missing in the globalState. It doesn't make any sense but initiates a re-rendering
-      const existsInGlobalState = Boolean(globalState) && globalState.hasOwnProperty(propertyName);
-
-      if (value === undefined && !existsInGlobalState
-        || !!state.fetchedEntityId && state.fetchedEntityId === (typeof value === 'object' ? value.id : value)
-      ) return;
-
-      setGlobalState({
-        key: propertyName,
-        data: value,
-      });
-    }
-  }, [value, propertyName]);*/
 
   const internalEntityType = (props.apiMode === 'entityName' ? entityType : value?.['_className']) || value?.['_className'];
   const prevRenderedEntityTypeForm = useRef<string>(null);
@@ -494,16 +477,16 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   };
 
   const subFormApi: IFormApi<any> = {
-    addDelayedUpdateData: function (data: any): IDelayedUpdateGroup[] {
+    addDelayedUpdateData: (data: any) => {
       return parentFormApi.addDelayedUpdateData(data);
     },
-    setFieldValue: function (name: string, value: any): void {
-      onChangeInternal(deepMergeValues(getSubFormData(), setValueByPropertyName({}, name, value)));
+    setFieldValue: (name, value) => {
+      onChangeInternal(deepMergeValues(getSubFormData(), setValueByPropertyName({}, name?.toString(), value)));
     },
-    setFieldsValue: function (values: any): void {
+    setFieldsValue: (values) => {
       onChangeInternal(deepMergeValues(getSubFormData(), values));
     },
-    clearFieldsValue: function (): void {
+    clearFieldsValue: () => {
       onChangeInternal({});
     },
     submit: function (): void {

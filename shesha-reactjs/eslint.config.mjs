@@ -54,6 +54,7 @@ const stylisticOverrides = {
     "@stylistic/lines-between-class-members": ["error", "always"],
     "indent": "off",
     "@stylistic/indent": ["error", 2, {
+        "SwitchCase": 1,
         "ignoredNodes": ["JSXElement", "JSXAttribute", "JSXSpreadAttribute", "JSXText", "JSXFragment"]
     }]
 };
@@ -352,6 +353,8 @@ const makeStrictConfig = (path) => {
 
 const strictFolders = [
     "src/configuration-studio",
+    //"src/utils",
+
     "src/providers/referenceListDispatcher",
     "src/providers/metadataDispatcher",
     "src/providers/metadata",
@@ -362,6 +365,8 @@ const strictFolders = [
     "src/providers/configurableActionsDispatcher",
     "src/providers/auth",
     "src/providers/appConfigurator",
+    "src/providers/dataContextManager",
+    "src/providers/dataContextProvider",
 ];
 
 export default [

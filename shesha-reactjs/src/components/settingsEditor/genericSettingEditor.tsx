@@ -3,15 +3,17 @@ import React, { useEffect, useMemo } from 'react';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { DesignerToolbarSettings, FormMarkup } from '@/interfaces';
 import { FC } from 'react';
-import { ISettingIdentifier } from './provider/models';
+import { ISettingIdentifier, SettingValue } from './provider/models';
 import { useSettingsEditor } from './provider';
 import { ISettingEditorWithValueProps } from './models';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
+type FormType = { value: SettingValue };
+
 export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) => {
     const { selection, value } = props;
     const { setting: configuration } = selection;
-    const formRef = useShaFormRef();
+    const formRef = useShaFormRef<FormType>();
 
     const { setEditor, saveSettingValue, editorMode } = useSettingsEditor();
 
@@ -82,7 +84,7 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
     }, [configuration]);
 
     return (
-        <ConfigurableForm
+        <ConfigurableForm<FormType>
             mode={editorMode}
             shaFormRef={formRef}
             markup={formMarkup}

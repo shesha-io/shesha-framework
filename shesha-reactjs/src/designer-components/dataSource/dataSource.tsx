@@ -6,7 +6,7 @@ import { evaluateDynamicFilters } from '@/utils';
 import { IDataSourceComponentProps } from './models';
 import {
   MetadataProvider,
-  useDataContextManagerActions,
+  useDataContextManagerActionsOrUndefined,
   useDataTableStore,
   useForm,
   useGlobalState,
@@ -33,7 +33,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
   useShaFormDataUpdate();
 
   const { globalState } = useGlobalState();
-  const pageContext = useDataContextManagerActions(false)?.getPageContext();
+  const pageContext = useDataContextManagerActionsOrUndefined()?.getPageContext();
 
   const isDesignMode = formMode === 'designer';
 

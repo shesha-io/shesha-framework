@@ -29,7 +29,7 @@ const DebugPanelDataContent: FC = () => {
   
     const onChangeContext = (contextId: string, propName: string, val: any) => {
       const ctx = contextManager.getDataContext(contextId);
-      ctx.setFieldValue(propName, val);
+       ctx.setFieldValue(propName as "", val as never); // TODO: review and change types
     };
   
     const onChangeGloablState = (propName: string, val: any) => {

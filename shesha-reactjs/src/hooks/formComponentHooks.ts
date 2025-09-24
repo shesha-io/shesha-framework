@@ -5,6 +5,7 @@ import {
   IConfigurableFormComponent,
   IFormComponentStyles,
   IStyleType,
+  StyleBoxValue,
   executeScriptSync,
   getActualModel,
   getParentReadOnly,
@@ -192,7 +193,7 @@ export const useFormComponentStyles = <TModel,>(
       : getBackgroundStyle(background, jsStyle)
   );
 
-  const styligBox = jsonSafeParse(stylingBox || '{}');
+  const styligBox = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
 
   const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, styligBox), [dimensions, stylingBox]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);

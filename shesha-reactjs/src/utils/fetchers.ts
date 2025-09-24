@@ -4,9 +4,10 @@ import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/context
 import { requestHeaders } from './requestHeaders';
 import { buildUrl } from './url';
 import { HttpResponse } from '@/publicJsApis/httpClient';
+import { isNullOrWhiteSpace } from '@/configuration-studio/types';
 
-export function constructUrl<TQueryParams>(base: string, path: string, queryParams?: TQueryParams) {
-  let normalizedBase = Boolean(base) ? base : '';
+export function constructUrl<TQueryParams extends object = object>(base: string | undefined, path: string, queryParams?: TQueryParams) {
+  let normalizedBase = !isNullOrWhiteSpace(base) ? base : '';
   normalizedBase = normalizedBase.endsWith('/') ? normalizedBase : `${normalizedBase}/`;
 
   let trimmedPath = Boolean(path) ? path : '';
@@ -56,7 +57,7 @@ export const get = <
   props: Omit<GetProps<TData, TError, TQueryParams, _TPathParams>, 'queryParams'>,
   signal?: RequestInit['signal']
 ): Promise<TData | null> => {
-  const url = constructUrl(props?.base, path, queryParams);
+  const url = constructUrl(props?.base, path, typeof(queryParams) === 'object' ? queryParams as object : undefined);
   const headers = {
     'content-type': 'application/json',
     ...(props?.headers || {}),
@@ -83,7 +84,7 @@ export interface MutateProps<
   data: TRequestBody | null;
   queryParams?: TQueryParams;
   signal?: RequestInit['signal'];
-  //options?: MutateRequestOptions<TQueryParams, TPathParams>
+  // options?: MutateRequestOptions<TQueryParams, TPathParams>
 }
 
 export const mutate = <
@@ -105,7 +106,7 @@ export const mutate = <
   if (method === 'DELETE' && typeof data === 'string') {
     fixedPath += `/${data}`;
   }
-  const url = constructUrl(props.base, fixedPath, props.queryParams);
+  const url = constructUrl(props.base, fixedPath, typeof(props.queryParams) === 'object' ? props.queryParams as object : undefined);
 
   const headers = {
     'content-type': 'application/json',

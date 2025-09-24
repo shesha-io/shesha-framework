@@ -67,7 +67,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   isOutput: true,
   calculateModel: (model, allData) => ({
     ownerId: evaluateValue(model.ownerId, allData),
-    dataId: allData.data?.Id,
+    dataId: (allData.data as {Id: string})?.Id, // TODO: review and remove
     formModelType: allData.form.formSettings?.modelType,
   }),
   Factory: ({ model, calculatedModel }) => {

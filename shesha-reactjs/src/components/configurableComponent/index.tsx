@@ -60,7 +60,7 @@ export interface IBlockOverlayProps {
   onClick?: () => void;
 }
 
-export const ConfigurableApplicationComponent = <TSettings extends any>({
+export const ConfigurableApplicationComponent = <TSettings extends object>({
   children,
   canConfigure = true,
   defaultSettings,

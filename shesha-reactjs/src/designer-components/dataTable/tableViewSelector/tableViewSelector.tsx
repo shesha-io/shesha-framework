@@ -4,8 +4,8 @@ import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
 import { Alert } from 'antd';
 import { evaluateDynamicFilters } from '@/utils';
 import { ITableViewSelectorComponentProps } from './models';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
-import { useDataContextManager } from '@/providers/dataContextManager';
+import { useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
+import { useDataContextManagerOrUndefined } from '@/providers/dataContextManager';
 import {
     useDataFetchDependency,
     useDataTableStore,
@@ -40,9 +40,9 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     const application = useSheshaApplication();
     const { globalState } = useGlobalState();
     const { formData, formMode } = useShaFormInstance();
-    const dataContextManager = useDataContextManager(false);
+    const dataContextManager = useDataContextManagerOrUndefined();
     const pageContext = dataContextManager?.getPageContext();
-    const dataContext = useDataContext(false);
+    const dataContext = useDataContextOrUndefined();
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
     const selectedFilterId =

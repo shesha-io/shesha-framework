@@ -197,10 +197,11 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
   isInput: true,
   isOutput: true,
   calculateModel(model, allData) {
+    const initialValues = (allData.form?.initialValues ?? {}) as IContextPropertyAutocompleteState;
     return { 
-      componentName: allData.form?.initialValues.componentName,
-      propertyName: allData.form?.initialValues.propertyName,
-      contextName: allData.form?.initialValues.context,
+      componentName: initialValues.componentName,
+      propertyName: initialValues.propertyName,
+      contextName: initialValues.context,
       style: model?.style ? getStyle(model?.style, allData.data, allData.globalState) : emptyObj,
       dropdownStyle: model?.dropdownStyle ? getStyle(model?.dropdownStyle, allData.data, allData.globalState) : emptyObj,
       modelType: allData.form.formSettings.modelType,
