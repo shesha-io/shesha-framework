@@ -56,7 +56,8 @@ const stylisticOverrides = {
     "@stylistic/indent": ["error", 2, {
         "SwitchCase": 1,
         "ignoredNodes": ["JSXElement", "JSXAttribute", "JSXSpreadAttribute", "JSXText", "JSXFragment"]
-    }]
+    }],
+    "@stylistic/space-infix-ops": "error",
 };
 
 const legacyTypescriptOverrides = {
