@@ -715,15 +715,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
     }
   };
 
-  createItemAsync = async ({ moduleId, folderId, itemType, prevItemId }: CreateItemArgs): Promise<void> => {
-    this.log(`create item of type '${itemType}'`, { moduleId, folderId });
-    }
-  };
-
-<<<<<<< HEAD
-    this.notifySubscribers(['tree', 'tabs', 'doc']);
-  };
-
   loadTreeAndDocsAsync = async (): Promise<void> => {
     await this.loadTreeAsync();
     this.loadTreeStateAsync();
@@ -784,7 +775,215 @@ export class ConfigurationStudio implements IConfigurationStudio {
   createItemAsync = async ({ moduleId, folderId, itemType, prevItemId }: CreateItemArgs): Promise<void> => {
     this.log(`create item of type '${itemType}'`, { moduleId, folderId });
 
-=======
+    const definition = this.getItemTypeDefinition(itemType);
+    if (!definition.createFormId)
+      throw new Error(`Create form is not specified for item type '${itemType}'`);
+
+    const response = await this.modalApi.showModalFormAsync<CreateItemResponse>({
+      title: `Create ${definition.friendlyName}`,
+      formId: definition.createFormId,
+      footerButtons: definition.editor?.createModalFooterButtons ?? 'default',
+      formArguments: {
+        moduleId: moduleId,
+        folderId: folderId,
+        prevItemId: prevItemId,
+        itemType: itemType,
+      },
+    });
+    await this.loadTreeAsync();
+
+    if (!isNullOrWhiteSpace(response?.id)) {
+      const treeNode = this._treeNodesMap.get(response.id);
+
+      if (treeNode && isConfigItemTreeNode(treeNode)) {
+        if (isDefined(treeNode.parentId) && !(this.isTreeNodeExpanded(treeNode.parentId))) {
+          this.expandTreeNode(treeNode.parentId);
+        }
+
+        // load item, add new tab and select
+        const newTab = await this.createNewTabAsync(treeNode);
+
+        // select new tab
+        await this.selectTabAsync(newTab);
+        this.notifySubscribers(['tabs']);
+      } else
+        console.error(`Tree node not found for a new item with id = '${response.id}'. Item type = '${itemType}'`);
+    } else
+      console.error(`Item creation API didn't return expected id of a new item. Item type = '${itemType}'`);
+  };
+
+  deleteItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
+    const definition = this.getItemTypeDefinition(node.itemType);
+    if (!await this.modalApi.confirmYesNo({ title: 'Confirm Deletion', content: `Are you sure you want to delete ${definition.friendlyName} '${node.name}'?` }))
+      return;
+
+    const docId = node.id;
+    try {
+      await deleteConfigurationItemAsync(this.httpClient, { itemId: docId });
+
+      if (this.isDocOpened(docId))
+        this.closeDocAsync(docId);
+
+      await this.loadTreeAsync();
+    } catch (error) {
+      console.error(`Failed to delete ${definition.friendlyName} '${node.name}' (id: '${docId}')`, error);
+    }
+  };
+
+  renameItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
+    try {
+      const definition = this.getItemTypeDefinition(node.itemType);
+      if (!isDefined(definition.renameFormId))
+        throw new Error("Rename form is not configured for item type '" + node.itemType + "'");
+
+      await this.modalApi.showModalFormAsync({
+        title: `Rename ${definition.friendlyName}`,
+        formId: definition.renameFormId,
+        formArguments: {
+          itemId: node.id,
+          name: node.name,
+        },
+      });
+
+      await this.loadTreeAndDocsAsync();
+    } catch (error) {
+      console.error(`Failed to rename folder '${node.name}' (id: '${node.id}')`, error);
+    }
+  };
+
+  duplicateItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
+    const definition = this.getItemTypeDefinition(node.itemType);
+    try {
+      const response = await duplicateItemAsync(this.httpClient, { itemId: node.id });
+      if (!response.success)
+        return;
+
+      await this.loadTreeAsync();
+      const duplicateId = response.result?.itemId;
+
+      if (!isNullOrWhiteSpace(duplicateId)) {
+        const treeNode = this._treeNodesMap.get(duplicateId);
+
+        if (treeNode && isConfigItemTreeNode(treeNode)) {
+          if (isDefined(treeNode.parentId) && !(this.isTreeNodeExpanded(treeNode.parentId))) {
+            this.expandTreeNode(treeNode.parentId);
+          }
+
+          // load item, add new tab and select
+          const newTab = await this.createNewTabAsync(treeNode);
+
+          // select new tab
+          await this.selectTabAsync(newTab);
+          this.notifySubscribers(['tabs']);
+        } else
+          console.error(`Tree node not found for a new item with id = '${duplicateId}'. Item type = '${node.itemType}'`);
+      } else
+        console.error(`Item creation API didn't return expected id of a new item. Item type = '${node.itemType}'`);
+    } catch (error) {
+      this.showError(`Failed to duplicate ${definition.friendlyName} '${node.name}'`, error);
+    }
+  };
+
+  showRevisionHistoryAsync = (node: ConfigItemTreeNode): Promise<void> => {
+    const doc = this.getDocumenById(node.id);
+    if (!doc)
+      return Promise.reject(`Document with id = '${node.id}' not found`);
+
+    doc.isHistoryVisible = true;
+    this.notifySubscribers(['doc']);
+
+    return Promise.resolve();
+  };
+
+  hideRevisionHistoryAsync = (docId: string): Promise<void> => {
+    const doc = this.getDocumenById(docId);
+    if (!doc)
+      return Promise.reject(`Document with id = '${docId}' not found`);
+
+    doc.isHistoryVisible = false;
+    this.notifySubscribers(['doc']);
+
+    return Promise.resolve();
+  };
+
+  exposeExistingAsync = async ({ moduleId, folderId }: ExposeArgs): Promise<void> => {
+    await this.modalApi.showModalFormAsync({
+      title: 'Expose Configuration',
+      formId: FORMS.EXPOSE_EXISTING,
+      formArguments: {
+        moduleId: moduleId,
+        folderId: folderId,
+      },
+    });
+    await this.loadTreeAsync();
+  };
+
+  importPackageAsync = async (_args: ImportPackageArgs): Promise<void> => {
+    const importerRef = createManualRef<IImportInterface | undefined>(undefined);
+
+    const exported = await this.modalApi.showModalContentAsync<boolean>(({ resolve, removeModal }) => {
+      const hideModal = (): void => {
+        resolve(false);
+        removeModal();
+      };
+
+      const onImported = (): void => {
+        removeModal();
+        resolve(true);
+      };
+      return {
+        title: 'Import Configuration',
+        content: <ConfigurationItemsImport onImported={onImported} importRef={importerRef} />,
+        footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerRef={importerRef} />,
+      };
+    });
+
+    if (exported === true)
+      await this.loadTreeAsync();
+  };
+
+  exportPackageAsync = async (_args: ExportPackageArgs): Promise<void> => {
+    const exporterRef = createManualRef<IExportInterface | undefined>(undefined);
+
+    const exported = await this.modalApi.showModalContentAsync<boolean>(({ resolve, removeModal }) => {
+      const hideModal = (): void => {
+        resolve(false);
+        removeModal();
+      };
+
+      const onExported = (): void => {
+        removeModal();
+        resolve(true);
+      };
+      return {
+        title: 'Export Configuration',
+        content: (<ConfigurationItemsExport exportRef={exporterRef} onExported={onExported} />),
+        footer: (<ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />),
+      };
+    });
+
+    if (exported === true)
+      await this.loadTreeAsync();
+  };
+
+  //#endregion
+
+  showError = (errorMessage: string, _error?: unknown): void => {
+    this.notificationApi.error({ message: errorMessage });
+  };
+
+  getTreeNodeById = (itemId: string): TreeNode | undefined => {
+    return this._treeNodesMap.get(itemId);
+  };
+
+  get selectedNodeId(): string | undefined {
+    return this._selectedNodeId;
+  };
+
+  get treeNodes(): TreeNode[] {
+    return this._treeNodes;
+  }
+
   selectTreeNode = async (node?: TreeNode): Promise<void> => {
     this.log('selectTreeNode', node);
 
@@ -1151,8 +1350,6 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   createItemAsync = async ({ moduleId, folderId, itemType, prevItemId }: CreateItemArgs): Promise<void> => {
     this.log(`create item of type '${itemType}'`, { moduleId, folderId });
-
->>>>>>> origin/main
     const definition = this.getItemTypeDefinition(itemType);
     if (!definition.createFormId)
       throw new Error(`Create form is not specified for item type '${itemType}'`);
