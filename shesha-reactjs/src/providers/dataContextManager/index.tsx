@@ -230,7 +230,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
 
     const dataContexts: IDataContextDescriptor[] = [];
     for (let key in contexts.current)
-      if (Object.hasOwn(contexts.current, key) && contexts?.current?.[key]?.type !== 'settings')
+      if (Object.hasOwn(contexts.current, key) && contexts.current[key]?.type !== 'settings')
         dataContexts.push(contexts.current[key] as IDataContextDescriptor);
 
     if (!topId)
