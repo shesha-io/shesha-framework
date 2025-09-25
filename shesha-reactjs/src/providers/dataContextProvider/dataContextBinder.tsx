@@ -23,7 +23,7 @@ import {
 import ConditionalWrap from "@/components/conditionalWrapper/index";
 import { useDeepCompareCallback } from "@/hooks/useDeepCompareEffect";
 import { isEmpty } from "lodash";
-import { isDefined } from "@/configuration-studio/types";
+import { isDefined } from "@/utils/nullables";
 import { Path } from "@/utils/dotnotation";
 
 export interface IDataContextBinderRef {

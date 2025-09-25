@@ -1,4 +1,4 @@
-import { isNullOrWhiteSpace } from '@/configuration-studio/types';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 import camelcase from 'camelcase';
 
 /* tslint:disable:no-empty-character-class */

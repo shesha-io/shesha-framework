@@ -11,7 +11,7 @@ import { useStyles } from '../../styles';
 import { useFilteredTreeNodes } from './filter';
 import { DndPreview } from './dndPreview';
 import { DropPositions } from './models';
-import { isDefined } from '@/configuration-studio/types';
+import { isDefined } from '@/utils/nullables';
 
 export interface IConfigurationTreeProps {
   debugDnd?: boolean;

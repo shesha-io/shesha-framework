@@ -309,7 +309,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     http: () => httpClient,
     message: () => message,
     fileSaver: () => FileSaver,
-    data: () => (!shaFormInstance ? EMPTY_DATA  : GetShaFormDataAccessor<TValues>(shaFormInstance)) as TValues,
+    data: () => (!shaFormInstance ? EMPTY_DATA : GetShaFormDataAccessor<TValues>(shaFormInstance)) as TValues,
     form: () => shaFormInstance,
     query: () => queryStringGetter?.() ?? {},
     initialValues: () => shaFormInstance?.initialValues,
@@ -787,18 +787,12 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
     if (!template || typeof template !== 'string')
       return template;
 
-    const localData: IAnyObject = !data ? undefined
-      : data instanceof ObservableProxy
-        ? { ...data } // unpropsy the observable
-        : data;
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
-      var dateFormat = data?.dateFormat;
-
-      if (localData) {
+      const view = {
+        ...data,
         // adding a function to the data object that will format datetime
-
-        localData.dateFormat = function () {
+        dateFormat: function () {
           return function (timestamp, render) {
             return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
               year: 'numeric',
@@ -806,12 +800,9 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
               day: 'numeric',
             });
           };
-        };
-      }
+        }
+      };
 
-      const view = localData ?? {};
-
-      let result = undefined;
       if (skipUnknownTags) {
         template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
           const mathes = x.match(/[\w\.]+/);
@@ -833,18 +824,9 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
             : value;
         };
 
-        result = Mustache.render(template, view, undefined, { escape });
+        return Mustache.render(template, view, undefined, { escape });
       } else
-        result = Mustache.render(template, view);
-
-      if (Boolean(dateFormat))
-        localData.dateFormat = dateFormat;
-      else {
-        localData.dateFormat = undefined; // for proxy objects
-        delete localData.dateFormat;
-      }
-
-      return result;
+        return Mustache.render(template, view);
     } catch (error) {
       console.warn('evaluateString ', error);
       return template;

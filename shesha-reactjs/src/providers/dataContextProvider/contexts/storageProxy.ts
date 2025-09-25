@@ -1,4 +1,4 @@
-import { isDefined } from "@/configuration-studio/types";
+import { isDefined } from "@/utils/nullables";
 import { Path } from "@/utils/dotnotation";
 import { getValueByPropertyName, hasProperty, setValueByPropertyName } from "@/utils/object";
 
