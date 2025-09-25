@@ -4,7 +4,7 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IToolboxComponent } from '@/interfaces';
-import { IFormComponentContainer, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { IFormComponentContainer, StyleBoxValue, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { getLayoutStyle, getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
@@ -85,14 +85,14 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-    const styling = jsonSafeParse(model.stylingBox || '{}');
+    const styling = jsonSafeParse<StyleBoxValue>(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
     const additionalStyles = removeUndefinedProps({
       ...stylingBoxAsCSS,
       ...dimensionsStyles,
       ...borderStyles,
       ...backgroundStyles,
-      ...shadowStyles
+      ...shadowStyles,
     });
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
@@ -151,7 +151,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
       ],
       gutterX: 12,
       gutterY: 12,
-      stylingBox: "{\"marginBottom\":\"5\"}"
+      stylingBox: "{\"marginBottom\":\"5\"}",
     };
 
     return tabsModel;
@@ -165,17 +165,17 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
       .add<IColumnsComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<IColumnsComponentProps>(2, (prev) => removeComponents(prev))
       .add<IColumnsComponentProps>(3, (prev) => {
-        const columns = prev.columns.map(c => ({
+        const columns = prev.columns.map((c) => ({
           ...c,
-          components: c.components.map(c => ({
+          components: c.components.map((c) => ({
             ...c,
-            propertyName: c.propertyName || c.id
-          }))
+            propertyName: c.propertyName || c.id,
+          })),
         }));
 
         return {
           ...prev,
-          columns
+          columns,
         };
       })
       .add<IColumnsComponentProps>(4, (prev) => {
@@ -190,9 +190,9 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
           borderRadius: prev.borderRadius,
           border: {
             radius: {
-              all: prev.borderRadius
-            }
-          }
+              all: prev.borderRadius,
+            },
+          },
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })

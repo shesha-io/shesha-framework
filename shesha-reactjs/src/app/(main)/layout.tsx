@@ -4,15 +4,15 @@ import React from 'react';
 import { useLayoutSelection } from '@/hooks/useLayoutSelection';
 
 export default function CommonLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-    const { LayoutComponent } = useLayoutSelection('defaultLayout');    
+  const { LayoutComponent } = useLayoutSelection('defaultLayout');
 
-    return (
+  return (
         <LayoutComponent noPadding>
             {children}
         </LayoutComponent>
-    );
+  );
 };

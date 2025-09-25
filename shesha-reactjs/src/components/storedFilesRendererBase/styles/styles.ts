@@ -372,6 +372,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     storedFilesRendererNoFiles,
     antUploadDragIcon,
     antPreviewDownloadIcon,
-    thumbnailReadOnly
+    thumbnailReadOnly,
   };
 });

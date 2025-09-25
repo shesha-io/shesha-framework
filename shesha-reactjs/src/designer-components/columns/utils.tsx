@@ -2,7 +2,7 @@ import { IColumnsInputProps } from "./interfaces";
 
 export const defaultStyles = (): IColumnsInputProps => {
   return {
-    background: { type: 'color', color: '', },
+    background: { type: 'color', color: '' },
     dimensions: { width: '100%', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: '100%' },
     border: {
       borderType: 'all',
@@ -20,6 +20,6 @@ export const defaultStyles = (): IColumnsInputProps => {
     borderRadius: 0,
     gutterX: 12,
     gutterY: 12,
-    stylingBox: "{\"marginBottom\":\"5\"}"
+    stylingBox: "{\"marginBottom\":\"5\"}",
   };
 };

@@ -41,7 +41,7 @@ export const useStyles = createStyles(({ css, cx }) => {
   const cmoponentErrorTextError = cx("component-error-text-error", css`
     color: var(--ant-color-error-text);
   `);
-  
+
   return {
     cmoponentErrorInfo,
     cmoponentErrorWaring,

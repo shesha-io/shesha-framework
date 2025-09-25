@@ -104,8 +104,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
       .ant-upload-list-picture-card {
         height: ${hideFileName
-        ? 'var(--thumbnail-height)'
-        : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
+          ? 'var(--thumbnail-height)'
+          : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
         padding-bottom: 1rem;
       }
 
@@ -328,6 +328,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     antUploadText,
     antUploadHint,
     styledFileControls,
-    thumbnailReadOnly
+    thumbnailReadOnly,
   };
 });

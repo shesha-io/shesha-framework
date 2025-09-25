@@ -30,7 +30,7 @@ export interface IHasActions {
   items: ButtonGroupItemProps[]; // TODO: make a generic interface with minimal number of properties, ButtonGroupItemProps will implement/extend this interface
 }
 
-const DynamicActionsProvider = <TSettings, >({ id, name, useEvaluator, children, hasArguments = false, settingsFormFactory, settingsFormMarkup }: PropsWithChildren<IDynamicActionsProps<TSettings>>) => {
+const DynamicActionsProvider = <TSettings = unknown>({ id, name, useEvaluator, children, hasArguments = false, settingsFormFactory, settingsFormMarkup }: PropsWithChildren<IDynamicActionsProps<TSettings>>) => {
   const initial: IDynamicActionsStateContext<TSettings> = {
     ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
     id,

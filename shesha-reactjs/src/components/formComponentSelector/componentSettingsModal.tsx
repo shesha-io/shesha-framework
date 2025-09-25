@@ -68,7 +68,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
           layoutSettings={{
             labelCol: { span: 8 },
             wrapperCol: { span: 24 },
-            layout: 'vertical'
+            layout: 'vertical',
           }}
         />
       </Spin>

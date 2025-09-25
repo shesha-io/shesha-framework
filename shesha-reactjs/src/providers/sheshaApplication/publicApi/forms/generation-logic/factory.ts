@@ -10,25 +10,26 @@ import { BaseGenerationLogic } from "./baseGenerationLogic";
  * Factory for creating appropriate GenerationLogic implementations
  */
 export class GenerationLogicFactory {
-  private _implementations: GenerationLogic[] = [];  
+  private _implementations: GenerationLogic[] = [];
+
   private _logicConstructors: (new () => GenerationLogic)[] = [
     DetailsViewGenerationLogic,
     CreateViewGenerationLogic,
     TableViewGenerationLogic,
   ];
-  
+
   constructor() {
     // Register all available implementations
     this.initializeImplementations();
   }
-  
+
   /**
    * Initialize the available implementations from registered constructors
    */
   private initializeImplementations(): void {
-    this._implementations = this._logicConstructors.map(Constructor => new Constructor());
+    this._implementations = this._logicConstructors.map((Constructor) => new Constructor());
   }
-  
+
   /**
    * Register a new GenerationLogic implementation
    * @param logicConstructor Constructor function for the GenerationLogic implementation
@@ -40,7 +41,7 @@ export class GenerationLogicFactory {
       this._implementations.push(new logicConstructor());
     }
   }
-    
+
   /**
    * Get the appropriate generation logic for a template
    * @param template The form template requiring generation logic
@@ -48,13 +49,13 @@ export class GenerationLogicFactory {
    */
   getGenerationLogic(template: FormConfigurationDto): GenerationLogic {
     // Find the first implementation that supports this template
-    const logic = this._implementations.find(impl => impl.supportsTemplate(template));
-    
+    const logic = this._implementations.find((impl) => impl.supportsTemplate(template));
+
     // If no specific implementation is found, return a default implementation
     if (!logic) {
       return new DefaultGenerationLogic();
     }
-    
+
     return logic;
   }
 }
@@ -64,21 +65,20 @@ export class GenerationLogicFactory {
  */
 class DefaultGenerationLogic extends BaseGenerationLogic {
   readonly typeName = "DefaultGenerationLogic";
-  
+
   protected getModelTypeFromReplacements(_replacements: object): string | null {
     return null;
   }
-  
+
   protected async addComponentsToMarkup(): Promise<void> {
     // Do nothing for default logic
   }
-  
+
   override async processTemplate(markup: string, replacements: Record<string, any>): Promise<string> {
     // Override base implementation to just apply standard replacements
     const result = await Promise.resolve(evaluateString(markup, replacements, true));
     return result;
   }
 }
-
 
 

@@ -1,7 +1,7 @@
 import { getTitleWithHighlight } from "@/configuration-studio/filter-utils";
 import { isConfigItemTreeNode, isNodeWithChildren, TreeNode } from "@/configuration-studio/models";
 import { renderCsTreeNode } from "@/configuration-studio/tree-utils";
-import { isDefined, isNullOrWhiteSpace } from "@/configuration-studio/types";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { useMemo } from "react";
 
 const emptyNodes = [];

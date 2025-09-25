@@ -11,20 +11,20 @@ export default function Catch<Props extends {}>(
 ): React.ComponentType<Props> {
   // eslint-disable-next-line react/display-name
   return class extends React.Component<Props, ErrorState> {
-    
     public static getDerivedStateFromError(error: Error) {
       return { error };
     }
+
     public state: ErrorState = {
-      error: undefined
+      error: undefined,
     };
-    
+
     public componentDidCatch(error: Error, info: React.ErrorInfo) {
       if (errorHandler) {
         errorHandler(error, info);
       }
     }
-    
+
     public render() {
       return component(this.props, this.state.error);
     }

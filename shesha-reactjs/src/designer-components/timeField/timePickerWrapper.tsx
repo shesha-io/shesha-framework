@@ -31,7 +31,7 @@ const getTotalSeconds = (value: Moment): number => {
   const timeOnly = moment.duration({
     hours: value.hours(),
     minutes: value.minutes(),
-    seconds: value.seconds()
+    seconds: value.seconds(),
   });
   return timeOnly.asSeconds();
 };
@@ -62,7 +62,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   const minuteStepLocal = getNumericValue(minuteStep);
   const secondStepLocal = getNumericValue(secondStep);
 
-  //Should be a factors? if not shouldn't we delete the toolTips
+  // Should be a factors? if not shouldn't we delete the toolTips
   const steps: TimeSteps = {
     hourStep: 1 <= hourStepLocal && hourStepLocal <= 23 ? hourStepLocal as TimeSteps['hourStep'] : 1, // value should be in range 1..23
     minuteStep: 1 <= minuteStepLocal && minuteStepLocal <= 59 ? minuteStepLocal as TimeSteps['minuteStep'] : 1, // value should be in range 1..59
@@ -81,7 +81,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
 
   const handleRangePicker = (values: Moment[], timeString: [string, string]) => {
     if (onChange) {
-      const seconds = values?.map(value => getTotalSeconds(value));
+      const seconds = values?.map((value) => getTotalSeconds(value));
 
       (onChange as RangePickerChangeEvent)(seconds, timeString);
     }

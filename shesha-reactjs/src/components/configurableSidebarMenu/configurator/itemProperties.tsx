@@ -20,7 +20,7 @@ export interface ISidebarItemPropertiesProps {
 
 export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, onChange, readOnly }) => {
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       onChange?.({ ...item, ...values });
     },
     // delay in ms
@@ -35,11 +35,11 @@ export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, o
     const markup = isSidebarGroup(item)
       ? getGroupSettings(item) as FormMarkup
       : (getItemSettings(item) as FormMarkup);
-      
+
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>
         <ConfigurableForm
-          //key={item.id} // rerender for each item to initialize all controls
+          // key={item.id} // rerender for each item to initialize all controls
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}
           mode={readOnly ? 'readonly' : 'edit'}

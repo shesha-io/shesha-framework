@@ -1,8 +1,7 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, textAlign, color, fontSize }) => {
-
-    const passwordCombo = cx("sha-password-combo", css`
+  const passwordCombo = cx("sha-password-combo", css`
         .ant-input {
             --ant-color-text: ${color} !important;
             --ant-font-size: ${fontSize} !important;
@@ -11,7 +10,7 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
             text-align: ${textAlign};
         }
   `);
-    return {
-        passwordCombo,
-    };
+  return {
+    passwordCombo,
+  };
 });

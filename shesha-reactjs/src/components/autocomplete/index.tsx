@@ -6,7 +6,7 @@ import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAuto
 import QueryString from 'qs';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
-import { getValueByPropertyName } from '@/utils/object';
+import { getValueByPropertyName, unsafeGetValueByPropertyName } from '@/utils/object';
 import { isDataColumn } from '@/providers/dataTable/interfaces';
 import { ValueRenderer } from '../valueRenderer';
 import { isEqual, uniqWith } from 'lodash';
@@ -21,7 +21,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   // sources
   const source = useDataTableStore(false);
-  const allData = {};//useAvailableConstantsData();
+  const allData = {};// useAvailableConstantsData();
   const selectRef = useRef(null);
 
   // init props
@@ -32,7 +32,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const keyValueFunc: KayValueFunc = props.keyValueFunc ??
     ((value: any) => getValueByPropertyName(value, keyPropName) ?? value);
   const filterKeysFunc: FilterSelectedFunc = props.filterKeysFunc ??
-    ((value: any) => ({ in: [{ var: `${keyPropName}` }, Array.isArray(value) ? value.map(x => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]] }));
+    ((value: any) => ({ in: [{ var: `${keyPropName}` }, Array.isArray(value) ? value.map((x) => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]] }));
   const filterNotKeysFunc: FilterSelectedFunc = ((value: any) => {
     const filter = filterKeysFunc(value);
     return filter ? { "!": filter } : null;
@@ -73,8 +73,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   // update local store of values details
   useEffect(() => {
-    if (props.dataSourceType === 'entitiesList' && props.entityType
-      || props.dataSourceType === 'url' && props.dataSourceUrl
+    if (props.dataSourceType === 'entitiesList' && props.entityType ||
+      props.dataSourceType === 'url' && props.dataSourceUrl
     ) {
       if (keys.length) {
         const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
@@ -191,7 +191,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   }, [selected.current]);
 
   const freeTextValuesList = useMemo(() => {
-    return props.allowFreeText && autocompleteText && source.tableData.findIndex(x => x[displayPropName]?.toLowerCase() === autocompleteText.toLowerCase()) === -1
+    return props.allowFreeText && autocompleteText && source.tableData.findIndex((x) => x[displayPropName]?.toLowerCase() === autocompleteText.toLowerCase()) === -1
       ? renderOption({ [keyPropName]: autocompleteText, [displayPropName]: autocompleteText }, 'freeText')
       : null;
   }, [autocompleteText, source.tableData]);
@@ -199,18 +199,18 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const list = useMemo(() => {
     const list = source?.tableData
       // filter already selected items to avoid duplicate keys in options
-      ?.filter((x) => !keys.find((y) => isEqual(y, keyValueFunc(outcomeValueFunc(x, allData), allData))))
-      ?? [];
+      ?.filter((x) => !keys.find((y) => isEqual(y, keyValueFunc(outcomeValueFunc(x, allData), allData)))) ??
+      [];
 
     // render grouped data
     if (props.grouping && source?.tableData?.length) {
       const groupProp = props.grouping.propertyName;
-      const groups = uniqWith(source?.tableData.map(row => getValueByPropertyName(row, groupProp)), (a, b) => isEqual(a, b));
+      const groups = uniqWith(source?.tableData.map((row) => unsafeGetValueByPropertyName(row, groupProp)), (a, b) => isEqual(a, b));
       const res = <>
         {groups.map((group, gindex) => {
           const groupTitle = renderGroupTitle(group, groupProp) ?? 'empty';
           return <Select.OptGroup key={gindex} label={groupTitle} title={groupTitle}>
-            {list.filter((x) => isEqual(getValueByPropertyName(x, groupProp), group)).map((row, index) => renderOption(row, gindex*1000000 + index))}
+            {list.filter((x) => isEqual(unsafeGetValueByPropertyName(x, groupProp), group)).map((row, index) => renderOption(row, gindex * 1000000 + index))}
           </Select.OptGroup>;
         })}
       </>;
@@ -219,8 +219,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
     return <>
       {list.map((row, index) => renderOption(row, index))}
-      {props.dataSourceType === 'entitiesList' && source?.totalRows > 7
-        && <Select.Option value='total' key='total' disabled={true}>{`Total found: ${source?.totalRows} ...`}</Select.Option>}
+      {props.dataSourceType === 'entitiesList' && source?.totalRows > 7 &&
+        <Select.Option value="total" key="total" disabled={true}>{`Total found: ${source?.totalRows} ...`}</Select.Option>}
     </>;
   }, [selected.current, source?.tableData, props.grouping]);
 
@@ -239,18 +239,18 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   }
 
-  if (props.readOnly) {  
+  if (props.readOnly) {
     if (!selected.current || Array.isArray(selected.current) && selected.current.length === 0)
       return null;
     const readonlyValue = props.mode === 'multiple'
-      ? selected.current?.map((x) => ({ 
-        label: loadingValues ? x?._displayName : displayValueFunc(x, allData), 
-        value: keyValueFunc(outcomeValueFunc(x, allData), allData) 
+      ? selected.current?.map((x) => ({
+        label: loadingValues ? x?._displayName : displayValueFunc(x, allData),
+        value: keyValueFunc(outcomeValueFunc(x, allData), allData),
       }))
       : {
         id: keyValueFunc(outcomeValueFunc(selected.current[0], allData), allData),
         _displayName: loadingValues ? selected.current[0]?._displayName :  displayValueFunc(selected.current[0], allData),
-        _className: selected.current[0]?._className
+        _className: selected.current[0]?._className,
       };
 
     return (
@@ -378,7 +378,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
       initialPageSize={7}
       dataFetchingMode={'paging'}
       grouping={props.grouping ? [props.grouping] : []}
-      sortMode='standard'
+      sortMode="standard"
       standardSorting={props.sorting}
       allowReordering={false}
       permanentFilter={permanentFilter}
@@ -396,7 +396,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
   );
 };
 
-/** 
+/**
  * @deprecated The method should not be used
  */
 export const EntityDtoAutocomplete = (props: IAutocompleteProps) => {
@@ -405,7 +405,7 @@ export const EntityDtoAutocomplete = (props: IAutocompleteProps) => {
   );
 };
 
-/** 
+/**
  * @deprecated The method should not be used
  */
 export const RawAutocomplete = (props: IAutocompleteProps) => {
@@ -414,18 +414,18 @@ export const RawAutocomplete = (props: IAutocompleteProps) => {
       {...props}
       displayPropName={props.displayPropName || (props.dataSourceType === 'url' ? 'displayText' : '_displayName')}
       keyPropName={props.keyPropName || (props.dataSourceType === 'url' ? 'value' : 'id')}
-      mode='single'
+      mode="single"
     />
   );
 };
 
 type InternalAutocompleteType = typeof Autocomplete;
 interface IInternalAutocompleteInterface extends InternalAutocompleteType {
-  /** 
+  /**
    * @deprecated The method should not be used, please use Autocomplete
    */
   Raw: typeof RawAutocomplete;
-  /** 
+  /**
    * @deprecated The method should not be used, please use Autocomplete
    */
   EntityDto: typeof EntityDtoAutocomplete;
@@ -441,5 +441,5 @@ export {
   type IAutocompleteProps,
   type ISelectOption,
   type AutocompleteDataSourceType,
-  //type CustomLabeledValue
+  // type CustomLabeledValue
 };

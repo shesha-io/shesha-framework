@@ -16,8 +16,8 @@ export const ConfigurableLogo: FC<IProps> = ({ imgSrc }) => {
         <CustomErrorBoundary>
           <div className={`logo ${componentState.wrapperClassName}`}>
             <BlockOverlay>
-              <div className='sha-configurable-logo-button-wrapper'>
-                <Button title='Edit logo' shape='default' icon={<RebaseEditOutlined />} />
+              <div className="sha-configurable-logo-button-wrapper">
+                <Button title="Edit logo" shape="default" icon={<RebaseEditOutlined />} />
               </div>
             </BlockOverlay>
             <a href="/">

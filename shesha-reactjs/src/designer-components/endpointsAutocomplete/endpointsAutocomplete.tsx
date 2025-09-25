@@ -34,7 +34,7 @@ const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteCo
             }
           }
         </ConfigurableFormItem >
-      );
+    );
   },
   settingsFormMarkup: settingsForm,
   migrator: (m) => m
@@ -43,7 +43,7 @@ const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteCo
     .add<IEndpointsAutocompleteComponentProps>(2, (prev) => migrateReadOnly(prev))
     .add<IEndpointsAutocompleteComponentProps>(3, (prev) => ({ ...prev, mode: 'url' }))
   ,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export default EndpointsAutocompleteComponent;

@@ -1,20 +1,20 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }) => {
-    const debugPanelDrawer = cx("debugPanelDrawer", css`
+  const debugPanelDrawer = cx("debugPanelDrawer", css`
         z-index: 1025;
     `);
-    const debugPanelBody = cx("debugPanelBody", css`
+  const debugPanelBody = cx("debugPanelBody", css`
         display: flex;
         height: 100%;
     `);
-    const debugPanelContent = cx("debugPanelContent", css`
+  const debugPanelContent = cx("debugPanelContent", css`
         height: 100%;
         width: 100%;
         overflow-y: scroll;
     `);
 
-    const debugPanelBottomResizer = cx("debugPanelBottomResizer", css`
+  const debugPanelBottomResizer = cx("debugPanelBottomResizer", css`
         width: 100%;
         border-top-color: gray;
         border-top-style: double;
@@ -22,7 +22,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         cursor: ns-resize;
     `);
 
-    const debugPanelTopResizer = cx("debugPanelTopResizer", css`
+  const debugPanelTopResizer = cx("debugPanelTopResizer", css`
         width: 100%;
         border-bottom-color: gray;
         border-bottom-style: double;
@@ -30,7 +30,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         cursor: ns-resize;
     `);
 
-    const debugPanelLeftResizer = cx("debugPanelLeftResizer", css`
+  const debugPanelLeftResizer = cx("debugPanelLeftResizer", css`
         height: 100%;
         padding-right: 4px;
         margin-left: 4px;
@@ -39,7 +39,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         cursor: ew-resize;
     `);
 
-    const debugPanelRightResizer = cx("debugPanelRightResizer", css`
+  const debugPanelRightResizer = cx("debugPanelRightResizer", css`
         height: 100%;
         padding-left: 4px;
         margin-right: 4px;
@@ -48,13 +48,13 @@ export const useStyles = createStyles(({ css, cx }) => {
         cursor: ew-resize;    
     `);
 
-    return {
-        debugPanelDrawer,
-        debugPanelBody,
-        debugPanelContent,
-        debugPanelBottomResizer,
-        debugPanelTopResizer,
-        debugPanelLeftResizer,
-        debugPanelRightResizer,
-    };
+  return {
+    debugPanelDrawer,
+    debugPanelBody,
+    debugPanelContent,
+    debugPanelBottomResizer,
+    debugPanelTopResizer,
+    debugPanelLeftResizer,
+    debugPanelRightResizer,
+  };
 });

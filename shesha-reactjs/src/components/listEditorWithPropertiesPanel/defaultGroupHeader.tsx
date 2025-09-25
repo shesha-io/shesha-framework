@@ -5,17 +5,17 @@ import { useStyles } from '@/designer-components/_common/styles/listConfigurator
 import { ListItemWithId } from "../listEditor/models";
 
 export const DefaultGroupHeader = <TItem extends ListItemWithId>({ contextAccessor, addItemText }: ListEditorSectionRenderingArgs<TItem>) => {
-    const { addItem, readOnly } = contextAccessor();
-    const { styles } = useStyles();
+  const { addItem, readOnly } = contextAccessor();
+  const { styles } = useStyles();
 
-    const onAddItemClick = () => {
-        addItem();
-    };
+  const onAddItemClick = () => {
+    addItem();
+  };
 
-    return !readOnly
-        ? (
+  return !readOnly
+    ? (
             <div className={styles.customActionButtons}>
-                <Button onClick={onAddItemClick} type='primary'>{ addItemText ?? 'Add New Item' }</Button>
+                <Button onClick={onAddItemClick} type="primary">{ addItemText ?? 'Add New Item' }</Button>
             </div>
-        ) : null;
+    ) : null;
 };

@@ -51,11 +51,11 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
     const loop = (data: TreeNode[]): TreeNode[] => {
       const result: TreeNode[] = [];
-      data.forEach(node => {
+      data.forEach((node) => {
         if (isConfigItemTreeNode(node)) {
-          const filterPassed = mode === 'all'
-            || mode === 'updated' && node.flags.isUpdated
-            || mode === 'updated-by-me' && node.flags.isUpdatedByMe;
+          const filterPassed = mode === 'all' ||
+            mode === 'updated' && node.flags.isUpdated ||
+            mode === 'updated-by-me' && node.flags.isUpdatedByMe;
           if (filterPassed) {
             if (quickSearch) {
               const newTitle = getTitleWithHighlight(node, quickSearch);
@@ -77,7 +77,6 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
     const newNodes = loop(treeNodes);
     return newNodes;
-
   }, [treeNodes, filterState]);
 
   const getExportFilter = () => {
@@ -96,7 +95,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
       data: {
         filter: JSON.stringify(filter),
         exportDependencies: exportDependencies,
-        //versionSelectionMode: itemSelectionMode,
+        // versionSelectionMode: itemSelectionMode,
       },
       responseType: 'blob', // important
       headers: httpHeaders,

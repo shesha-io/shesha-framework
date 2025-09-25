@@ -27,8 +27,8 @@ export const getSelectedKeys = (path: string, menuItems: ISidebarGroup[]) => {
 export const filterObjFromKeys = <T = any>(value: T, keys: Array<keyof T>) =>
   keys.length > 0
     ? Object.entries(value || {})
-        .filter(([key]) => keys.includes(key as any))
-        .reduce((acc, [key, value]) => ({ ...acc, ...{ [key]: value } }), {})
+      .filter(([key]) => keys.includes(key as any))
+      .reduce((acc, [key, value]) => ({ ...acc, ...{ [key]: value } }), {})
     : value;
 
 
@@ -301,7 +301,7 @@ export const evaluateDynamicFiltersSync = (
     if (typeof filter.expression === 'object') {
       const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
         const argValue: any = args[argIndex];
-        
+
         // Handle mustache expressions in string values
         if (typeof argValue === 'string' && argValue.includes('{{') && argValue.includes('}}')) {
           const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
@@ -341,10 +341,10 @@ export const evaluateDynamicFiltersSync = (
         if (typeof argValue === 'string' && argValue.startsWith('{{') && argValue.endsWith('}}')) {
           const variableName = argValue.slice(2, -2).trim();
           const evaluationContext = mappings.reduce((acc, item) => ({ ...acc, [item.match]: item.data }), {});
-          
+
           // Try to resolve the variable from the context
           const variableValue = variableName.split('.').reduce((obj, key) => obj?.[key], evaluationContext);
-          
+
           return { handled: variableValue !== undefined, value: variableValue };
         }
 

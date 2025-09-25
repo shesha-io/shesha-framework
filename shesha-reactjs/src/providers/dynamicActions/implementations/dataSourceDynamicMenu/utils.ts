@@ -1,7 +1,10 @@
-import { evaluateString, useDataContextManagerActions, useFormData, useGlobalState } from '@/index';
 import { Key, useMemo } from 'react';
 import { IDataSourceArguments } from './model';
 import { buildUrl } from '@/utils/url';
+import { useFormData } from '@/providers/formContext';
+import { useGlobalState } from '@/providers/globalState';
+import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager';
+import { evaluateString } from '@/providers/form/utils';
 
 interface IQueryParams {
   [name: string]: Key;
@@ -11,7 +14,7 @@ export const useUrlTemplates = (settings: IDataSourceArguments) => {
   const { dataSourceUrl, queryParams } = settings ?? {};
   const { data } = useFormData();
   const { globalState } = useGlobalState();
-  const pageContext = useDataContextManagerActions(false)?.getPageContext();
+  const pageContext = useDataContextManagerActionsOrUndefined()?.getPageContext();
 
   const getQueryParams = useMemo(() => {
     return (): IQueryParams => {

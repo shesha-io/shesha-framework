@@ -3,9 +3,9 @@ import { IChildEntitiesTagGroupSelectOptions } from './models';
 export const addChildEntitiesTagGroupOption = (
   values: IChildEntitiesTagGroupSelectOptions[],
   option: IChildEntitiesTagGroupSelectOptions
-) => 
+) =>
   values.some(({ value }) => value === option?.value)
-    ? values.map(item => (item?.value === option?.value ? option : item))
+    ? values.map((item) => (item?.value === option?.value ? option : item))
     : [...values, option];
 
 export const filterObjFromKeys = (value: object, keys: string[] = []) =>
@@ -15,7 +15,7 @@ export const filterObjFromKeys = (value: object, keys: string[] = []) =>
       .reduce((acc, [key, value]) => ({ ...acc, ...{ [key]: value } }), {})
     : value;
 
-/*export const morphChildEntitiesTagGroup = (
+/* export const morphChildEntitiesTagGroup = (
   values: IChildEntitiesTagGroupSelectOptions[],
   origin: object[] | object,
   keys: string[] = []

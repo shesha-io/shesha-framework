@@ -27,11 +27,11 @@ export const DatatableColumnsSelector: FC<IDatatableColumnsSelectorProps> = () =
       <div className={styles.columnNames}>
         {(columnFilter
           ? visibleColumns.filter(
-              ({ header }) =>
-                getSafelyTrimmedString(header)
-                  ?.toLowerCase()
-                  ?.includes(getSafelyTrimmedString(columnFilter)?.toLowerCase())
-            )
+            ({ header }) =>
+              getSafelyTrimmedString(header)
+                ?.toLowerCase()
+                ?.includes(getSafelyTrimmedString(columnFilter)?.toLowerCase())
+          )
           : visibleColumns
         ).map(({ header, show, id }) => {
           return (

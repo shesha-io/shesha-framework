@@ -30,7 +30,6 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
     if (googleMapsApiKey && !window.google) {
       loadGooglePlaces(googleMapsApiKey, setGooglePlaceReady);
     }
-
   }, [googleMapsApiKey, googlePlaceReady]);
 
   const onSelect = (selected: IAddressAndCoords): Promise<IOpenCageResponse | IAddressAndCoords> =>

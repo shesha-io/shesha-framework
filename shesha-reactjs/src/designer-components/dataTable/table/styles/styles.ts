@@ -17,7 +17,7 @@ export const GlobalTableStyles = createGlobalStyle`
         height: 100% !important;
     }
 
-    .${p => p.theme.prefixCls}-form-item {
+    .${(p) => p.theme.prefixCls}-form-item {
       margin: unset !important;
     }
 
@@ -54,23 +54,23 @@ export const GlobalTableStyles = createGlobalStyle`
   }
   .sha-react-table {
     .td {
-      .${p => p.theme.prefixCls}-form-item {
+      .${(p) => p.theme.prefixCls}-form-item {
         width: 100%;
     
-        .${p => p.theme.prefixCls}-row {
-          &.${p => p.theme.prefixCls}-form-item-row {
+        .${(p) => p.theme.prefixCls}-row {
+          &.${(p) => p.theme.prefixCls}-form-item-row {
             margin: 0;
     
-            .${p => p.theme.prefixCls}-picker, .${p => p.theme.prefixCls}-input-number {
+            .${(p) => p.theme.prefixCls}-picker, .${(p) => p.theme.prefixCls}-input-number {
               width: 100%;
             }
           }
         }
       }
       .sha-form-cell {
-        .${p => p.theme.prefixCls}-form-item {
-          .${p => p.theme.prefixCls}-row {
-            &.${p => p.theme.prefixCls}-form-item-row {
+        .${(p) => p.theme.prefixCls}-form-item {
+          .${(p) => p.theme.prefixCls}-row {
+            &.${(p) => p.theme.prefixCls}-form-item-row {
               margin-bottom: 5px;
             }
           }

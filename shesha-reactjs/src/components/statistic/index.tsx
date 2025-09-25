@@ -16,12 +16,12 @@ export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => 
 
   const marginStyles = rest.style
     ? {
-        margin: rest.style.margin,
-        marginRight: rest.style.marginRight,
-        marginLeft: rest.style.marginLeft,
-        marginTop: rest.style.marginTop,
-        marginBottom: rest.style.marginBottom,
-      }
+      margin: rest.style.margin,
+      marginRight: rest.style.marginRight,
+      marginLeft: rest.style.marginLeft,
+      marginTop: rest.style.marginTop,
+      marginBottom: rest.style.marginBottom,
+    }
     : {};
 
   const restStyle = rest.style ? { ...rest.style } : {};

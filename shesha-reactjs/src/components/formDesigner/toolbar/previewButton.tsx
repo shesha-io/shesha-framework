@@ -9,21 +9,21 @@ export interface IPreviewButtonProps extends Pick<ButtonProps, 'size'> {
 }
 
 export const PreviewButton: FC<IPreviewButtonProps> = (props) => {
-    const { setFormMode } = useFormActions();
-    const { setFormMode: setFormDesignerMode } = useFormDesignerActions();
-    const formMode = useFormDesignerStateSelector(x => x.formMode);
+  const { setFormMode } = useFormActions();
+  const { setFormMode: setFormDesignerMode } = useFormDesignerActions();
+  const formMode = useFormDesignerStateSelector((x) => x.formMode);
 
-    return (
+  return (
         <Button
-            icon={<EyeOutlined/>}
-            onClick={() => {
-                setFormMode(formMode === 'designer' ? 'edit' : 'designer');
-                setFormDesignerMode(formMode === 'designer' ? 'edit' : 'designer');
-            }}
-            type={formMode === 'designer' ? 'default' : 'primary'}
-            title="Preview"
-            size={props.size}
-            shape='circle'
+          icon={<EyeOutlined/>}
+          onClick={() => {
+            setFormMode(formMode === 'designer' ? 'edit' : 'designer');
+            setFormDesignerMode(formMode === 'designer' ? 'edit' : 'designer');
+          }}
+          type={formMode === 'designer' ? 'default' : 'primary'}
+          title="Preview"
+          size={props.size}
+          shape="circle"
         />
-    );
+  );
 };

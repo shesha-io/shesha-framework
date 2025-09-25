@@ -22,8 +22,8 @@ export const standartActualModelPropertyFilter = (name: string) => {
 };
 
 export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: any) => {
-  return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true)
-    && propertiesToSkip.indexOf(name) === -1;
+  return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true) &&
+    propertiesToSkip.indexOf(name) === -1;
 };
 
 const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
@@ -48,11 +48,11 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     undefined
   );
 
-  actualModel.hidden = shaForm.formMode !== 'designer'
-    && (
-      actualModel.hidden
-      || !anyOfPermissionsGranted(actualModel?.permissions || [])
-      || !isComponentFiltered(actualModel));
+  actualModel.hidden = shaForm.formMode !== 'designer' &&
+    (
+      actualModel.hidden ||
+      !anyOfPermissionsGranted(actualModel?.permissions || []) ||
+      !isComponentFiltered(actualModel));
 
   if (!toolboxComponent?.isInput && !toolboxComponent?.isOutput)
     actualModel.propertyName = undefined;
@@ -62,7 +62,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
 
   const control = useMemo(() => (
-    <toolboxComponent.Factory 
+    <toolboxComponent.Factory
       form={shaForm.antdForm}
       model={actualModel}
       calculatedModel={calculatedModel}
@@ -73,10 +73,10 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
 
   if (!toolboxComponent)
     return <ComponentError errors={{
-      hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type
-    }} message={`Component '${actualModel.type}' not found`} type='error'
-  />;
-  
+      hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type,
+    }} message={`Component '${actualModel.type}' not found`} type="error"
+    />;
+
   if (shaForm.formMode === 'designer') {
     const validationResult: IModelValidation = { hasErrors: false, errors: [] };
     if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
@@ -91,9 +91,9 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
       validationResult.componentId = actualModel.id;
       validationResult.componentName = actualModel.componentName;
       validationResult.componentType = actualModel.type;
-      return <ComponentError errors={validationResult} message='' type='warning' />;
+      return <ComponentError errors={validationResult} message="" type="warning" />;
     }
-  }  
+  }
 
   if (shaForm.form.settings.isSettingsForm)
     return control;
@@ -106,7 +106,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   };
 
   if (componentModel.type === 'subForm') {
-    if ((componentModel as any)?.formSelectionMode !== 'dynamic'){
+    if ((componentModel as any)?.formSelectionMode !== 'dynamic') {
       attributes['data-sha-c-form-name'] = `${(componentModel as any)?.formId?.module}/${(componentModel as any)?.formId?.name}`;
     }
     attributes['data-sha-parent-form-id'] = `${shaForm.form.id}`;

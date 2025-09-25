@@ -2,8 +2,8 @@ import { createStyles } from '@/styles';
 import { getTextHoverEffects, getWarningHoverEffects } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, iconPrefixCls, token }) => {
-    const indexViewSelectorBulb = "index-view-selector-bulb";
-    const tableViewSelector = cx("table-view-selector", css`
+  const indexViewSelectorBulb = "index-view-selector-bulb";
+  const tableViewSelector = cx("table-view-selector", css`
         display: flex;
         align-items: center;
         .title {
@@ -24,8 +24,8 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, token }) => {
         }    
     `);
 
-    return {
-        tableViewSelector,
-        indexViewSelectorBulb
-    };
+  return {
+    tableViewSelector,
+    indexViewSelectorBulb,
+  };
 });

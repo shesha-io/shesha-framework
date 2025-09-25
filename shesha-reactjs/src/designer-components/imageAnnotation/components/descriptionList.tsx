@@ -9,12 +9,12 @@ const DescriptionsList: FC<IDataAnnotationListProps> = ({ data }) => {
   return (
     <div className={styles.listContainer}>
       {filteredData
-        ?.filter(mark => !!mark?.comment)
+        ?.filter((mark) => !!mark?.comment)
         ?.sort((a, b) => {
           const order = [...a.comment?.split('.'), ...b.comment?.split('.')];
           return parseInt(order[0], 10) - parseInt(order[2], 10);
         })
-        ?.map(mrk => {
+        ?.map((mrk) => {
           const [index, comment] = mrk.comment?.split('.') || [];
           return (
             <div className={styles.listItem} key={mrk.id}>

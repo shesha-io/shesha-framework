@@ -444,9 +444,9 @@ export type BrandAndLogosOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.brandAn
 export type ApplicationOutlinedIconTypes = typeof OUTLINED_ICON_GROUPS.application[number];
 
 export type OutlinedIconTypes =
-  | DirectionalOutlinedIconTypes
-  | SuggestedOutlinedIconTypes
-  | EditorOutlinedIconTypes
-  | DataOutlinedIconTypes
-  | BrandAndLogosOutlinedIconTypes
-  | ApplicationOutlinedIconTypes;
+  | DirectionalOutlinedIconTypes |
+  SuggestedOutlinedIconTypes |
+  EditorOutlinedIconTypes |
+  DataOutlinedIconTypes |
+  BrandAndLogosOutlinedIconTypes |
+  ApplicationOutlinedIconTypes;

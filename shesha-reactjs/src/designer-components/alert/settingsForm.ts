@@ -36,7 +36,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                       label: 'Component Name',
                       size: 'small',
                       jsSetting: true,
-                    }
+                    },
                   ],
                 })
                 .addSettingsInputRow({
@@ -54,9 +54,9 @@ export const getSettings = (data: IAlertComponentProps) => {
                         { label: 'Success', value: 'success' },
                         { label: 'Info', value: 'info' },
                         { label: 'Warning', value: 'warning' },
-                        { label: 'Error', value: 'error' }
-                      ]
-                    }
+                        { label: 'Error', value: 'error' },
+                      ],
+                    },
                   ],
                 })
                 .addSettingsInputRow({
@@ -72,7 +72,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                       tooltip: 'The message to display in the alert. You can use variables and expressions.',
                       allowClear: true,
                       jsSetting: true,
-                    }
+                    },
                   ],
                 })
                 .addSettingsInputRow({
@@ -86,7 +86,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                       label: 'Description',
                       tooltip: 'Additional information about the alert.',
                       jsSetting: true,
-                    }
+                    },
                   ],
                   hidden: { _code: 'return getSettingValue(data?.readOnly) || getSettingValue(data?.banner);', _mode: 'code', _value: true } as any,
 
@@ -111,9 +111,9 @@ export const getSettings = (data: IAlertComponentProps) => {
                       size: 'small',
                       jsSetting: true,
                       hidden: {
-                        _code: 'return !getSettingValue(data?.showIcon);', _mode: 'code', _value: false
-                      } as any
-                    }
+                        _code: 'return !getSettingValue(data?.showIcon);', _mode: 'code', _value: false,
+                      } as any,
+                    },
                   ],
                 })
                 .addSettingsInputRow({
@@ -135,7 +135,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                       label: 'Closable',
                       size: 'small',
                       jsSetting: true,
-                    }
+                    },
                   ],
                 })
                 .addSettingsInputRow({
@@ -162,7 +162,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                     },
                   ],
                 })
-                .toJson()]
+                .toJson()],
           },
           {
             key: 'appearance',
@@ -190,12 +190,12 @@ export const getSettings = (data: IAlertComponentProps) => {
                         label: 'Style',
                         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                       })
-                      .toJson()
-                    ]
-                  }
+                      .toJson(),
+                    ],
+                  },
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'security',
@@ -209,18 +209,18 @@ export const getSettings = (data: IAlertComponentProps) => {
                 label: 'Permissions',
                 jsSetting: true,
                 size: 'small',
-                parentId: securityTabId
+                parentId: securityTabId,
               })
-              .toJson()
-            ]
-          }
-        ]
+              .toJson(),
+            ],
+          },
+        ],
       }).toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

@@ -10,7 +10,7 @@ const TextsExample: FC = () => {
         Default text
       </Typography.Text>
 
-      <Typography.Text type='secondary' style={{ color: theme?.text?.secondary }}>
+      <Typography.Text type="secondary" style={{ color: theme?.text?.secondary }}>
         Secondary text
       </Typography.Text>
 

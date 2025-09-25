@@ -1,12 +1,12 @@
 import { createStyles } from "@/styles";
 
 export const useStyles = createStyles(({ css, cx, token }, { dimensions }) => {
-    const flexItem = "flex-item";
-    const flexItemWrapper = "flex-item-wrapper";
-    const flexItemWrapperVertical = "flex-item-wrapper-vertical";
-    const divider = "divider";
-    const content = "content";
-    const flexContainer = cx("flex-container", css`
+  const flexItem = "flex-item";
+  const flexItemWrapper = "flex-item-wrapper";
+  const flexItemWrapperVertical = "flex-item-wrapper-vertical";
+  const divider = "divider";
+  const content = "content";
+  const flexContainer = cx("flex-container", css`
         background-color: ${token.colorTextLightSolid};
         flex-wrap: wrap;
         ${dimensions}
@@ -75,12 +75,12 @@ export const useStyles = createStyles(({ css, cx, token }, { dimensions }) => {
             flex-grow: 0;
         }
     `);
-    return {
-        flexContainer,
-        flexItem,
-        flexItemWrapper,
-        flexItemWrapperVertical,
-        divider,
-        content,
-    };
+  return {
+    flexContainer,
+    flexItem,
+    flexItemWrapper,
+    flexItemWrapperVertical,
+    divider,
+    content,
+  };
 });

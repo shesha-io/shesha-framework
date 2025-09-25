@@ -24,7 +24,7 @@ import {
 } from './models';
 import { ISettingsActionsContext } from '../settings/contexts';
 import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
-import { isDefined, isNullOrWhiteSpace } from '@/configuration-studio/types';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 type RerenderTrigger = () => void;
 

@@ -5,11 +5,11 @@ import { PropertyMetadataDto } from "@/apis/metadata";
 import { DataTypes } from "@/interfaces/dataTypes";
 import { DesignerToolbarSettings, EditMode, IConfigurableFormComponent } from "@/index";
 import { nanoid } from "@/utils/uuid";
-import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y, 
-      COLUMN_WIDTH_BOOLEAN, COLUMN_WIDTH_DATE, COLUMN_WIDTH_DEFAULT, 
-      COLUMN_WIDTH_ENTITY_REFERENCE, COLUMN_WIDTH_FILE, 
-      COLUMN_WIDTH_NUMBER, COLUMN_WIDTH_REFERENCE_LIST_ITEM,
-      COLUMN_WIDTH_STRING, COLUMN_WIDTH_STRING_MULTILINE, COLUMN_WIDTH_TIME, ROW_COUNT } from "../constants";
+import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y,
+  COLUMN_WIDTH_BOOLEAN, COLUMN_WIDTH_DATE, COLUMN_WIDTH_DEFAULT,
+  COLUMN_WIDTH_ENTITY_REFERENCE, COLUMN_WIDTH_FILE,
+  COLUMN_WIDTH_NUMBER, COLUMN_WIDTH_REFERENCE_LIST_ITEM,
+  COLUMN_WIDTH_STRING, COLUMN_WIDTH_STRING_MULTILINE, COLUMN_WIDTH_TIME, ROW_COUNT } from "../constants";
 import { FormMetadataHelper } from "./formMetadataHelper";
 import pluralize from 'pluralize';
 
@@ -27,7 +27,7 @@ export function findContainersWithPlaceholderRecursive(
       results.push(token);
     }
     if (Array.isArray(token)) {
-      token.forEach(item =>
+      token.forEach((item) =>
         findContainersWithPlaceholderRecursive(item, placeholder, results, visited)
       );
     } else {
@@ -56,10 +56,10 @@ export function findContainersWithPlaceholder(markup: any, placeholder: string):
  * @throws {Error} If the data is not an object.
  */
 export function castToExtensionType<T>(data: unknown): T {
-    if (!data || typeof data !== 'object') {
-        throw new Error(`Invalid extension data: expected object, got ${typeof data}`);
-    }
-        return data as T;
+  if (!data || typeof data !== 'object') {
+    throw new Error(`Invalid extension data: expected object, got ${typeof data}`);
+  }
+  return data as T;
 }
 
 /**
@@ -69,28 +69,28 @@ export function castToExtensionType<T>(data: unknown): T {
  */
 export function humanizeModelType(modelType: string): string {
   if (!modelType) return '';
-  
+
   // Extract the class name from the fully qualified name
   const parts = modelType.split('.');
   const name = parts[parts.length - 1];
-  
+
   // Convert from PascalCase to space-separated words (e.g. "PersonAddress" -> "Person Address")
   const humanized = name?.replace(/([A-Z])/g, ' $1').trim() || '';
-  
+
   // Handle empty string case
   if (!humanized) return '';
-  
+
   // Use pluralize library to handle all pluralization rules
   return pluralize(humanized);
 }
 
 export function processBaseMarkup(markup: string, replacements: Record<string, any>): string {
-    return evaluateString(markup, replacements, true);
+  return evaluateString(markup, replacements, true);
 }
 
 export function getDataTypePriority(dataType: string | null | undefined, dataFormat?: string | null): number {
   if (!dataType) return 99;
-  
+
   switch (dataType) {
     case DataTypes.string:
       // Handle multiline strings separately
@@ -116,39 +116,39 @@ export function getDataTypePriority(dataType: string | null | undefined, dataFor
  */
 export function getColumnWidthByDataType(dataType: string | null | undefined, dataFormat?: string | null): { min: number; max: number } {
   if (!dataType) return COLUMN_WIDTH_DEFAULT; // Default values
-  
+
   switch (dataType) {
     case DataTypes.boolean:
       return COLUMN_WIDTH_BOOLEAN;
-      
+
     case DataTypes.number:
-      return COLUMN_WIDTH_NUMBER; 
-      
+      return COLUMN_WIDTH_NUMBER;
+
     case DataTypes.date:
     case DataTypes.dateTime:
       return COLUMN_WIDTH_DATE;
-      
+
     case DataTypes.time:
       return COLUMN_WIDTH_TIME;
-      
+
     case DataTypes.string:
       if (dataFormat === 'multiline') {
-        return COLUMN_WIDTH_STRING_MULTILINE; 
-      } 
+        return COLUMN_WIDTH_STRING_MULTILINE;
+      }
 
-      return COLUMN_WIDTH_STRING; 
-      
+      return COLUMN_WIDTH_STRING;
+
     case DataTypes.referenceListItem:
       return COLUMN_WIDTH_REFERENCE_LIST_ITEM;
-      
+
     case DataTypes.entityReference:
-      return COLUMN_WIDTH_ENTITY_REFERENCE; 
-      
+      return COLUMN_WIDTH_ENTITY_REFERENCE;
+
     case DataTypes.file:
       return COLUMN_WIDTH_FILE;
-      
+
     default:
-      return COLUMN_WIDTH_DEFAULT; 
+      return COLUMN_WIDTH_DEFAULT;
   }
 };
 
@@ -162,16 +162,16 @@ export function getColumnWidthByDataType(dataType: string | null | undefined, da
  * @param metadataHelper The metadata helper instance.
  */
 export function addDetailsPanel(
-  metadata: PropertyMetadataDto[], 
-  markup: any, 
-  metadataHelper: FormMetadataHelper, 
+  metadata: PropertyMetadataDto[],
+  markup: any,
+  metadataHelper: FormMetadataHelper,
 ): void {
   const placeholderName = "//*DETAILSPANEL*//";
 
   const builder = new DesignerToolbarSettings({});
 
   const detailsPanelContainer = findContainersWithPlaceholder(markup, placeholderName);
-  
+
   if (detailsPanelContainer.length === 0) {
     throw new Error(`No details panel container found in the markup with placeholder ${placeholderName}.`);
   }
@@ -182,18 +182,17 @@ export function addDetailsPanel(
     if (a.required !== b.required) {
       return a.required ? -1 : 1;
     }
-    
+
     // Sort by dataType priority only
     const priorityA = getDataTypePriority(a.dataType, a.dataFormat);
     const priorityB = getDataTypePriority(b.dataType, b.dataFormat);
-    
+
     return priorityA - priorityB;
   });
 
   const column1: IConfigurableFormComponent[] = [];
   const column2: IConfigurableFormComponent[] = [];
   if (sortedMetadata.length > ROW_COUNT) {
-
     sortedMetadata.forEach((prop, index) => {
       const columnBuilder = new DesignerToolbarSettings({});
       metadataHelper.getConfigFields(prop, columnBuilder);
@@ -216,28 +215,28 @@ export function addDetailsPanel(
       gutterX: COLUMN_GUTTER_X,
       gutterY: COLUMN_GUTTER_Y,
       columns: [{
-          id: nanoid(),
-          flex: COLUMN_FLEX,
-          offset: 0,
-          push: 0,
-          pull: 0,
-          components: column1
-        }, 
-        {
-          id: nanoid(),
-          flex: COLUMN_FLEX,
-          offset: 0,
-          push: 0,
-          pull: 0,
-          components: column2
-        }]
+        id: nanoid(),
+        flex: COLUMN_FLEX,
+        offset: 0,
+        push: 0,
+        pull: 0,
+        components: column1,
+      },
+      {
+        id: nanoid(),
+        flex: COLUMN_FLEX,
+        offset: 0,
+        push: 0,
+        pull: 0,
+        components: column2,
+      }],
     });
   } else {
-    sortedMetadata.forEach(prop => {
+    sortedMetadata.forEach((prop) => {
       metadataHelper.getConfigFields(prop, builder);
     });
   }
-  
+
   if (detailsPanelContainer[0].components && Array.isArray(detailsPanelContainer[0].components)) {
     detailsPanelContainer[0].components.push(...builder.toJson());
   }

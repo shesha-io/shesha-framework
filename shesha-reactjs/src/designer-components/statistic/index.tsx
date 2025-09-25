@@ -50,7 +50,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
   isOutput: true,
   Factory: ({ model: passedModel }) => {
     const { style, valueStyle, titleStyle, prefix, suffix, prefixIcon, suffixIcon, ...model } = passedModel;
-     const allData = useAvailableConstantsData();
+    const allData = useAvailableConstantsData();
     const { formMode } = useForm();
     const { allStyles } = model;
     const valueFont = model?.valueFont;

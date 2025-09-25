@@ -11,7 +11,7 @@ import { useStyles } from '../../styles';
 import { useFilteredTreeNodes } from './filter';
 import { DndPreview } from './dndPreview';
 import { DropPositions } from './models';
-import { isDefined } from '@/configuration-studio/types';
+import { isDefined } from '@/utils/nullables';
 
 export interface IConfigurationTreeProps {
   debugDnd?: boolean;
@@ -33,21 +33,21 @@ const isNodeDraggable: IsDraggable = (node): boolean => {
 
 const allowDropNode = (dragNode: TreeNode, dropNode: TreeNode, dropPosition: number): boolean => {
   switch (dropPosition) {
-  case DropPositions.After:
-  case DropPositions.Before:
-  default: {
-    return dragNode.moduleId === dropNode.moduleId &&
-      dragNode.parentId !== dropNode.parentId;
-  }
-  case DropPositions.Inside: {
-    if (!isFolderTreeNode(dropNode) && !isModuleTreeNode(dropNode))
-      return false;
-    if (dragNode.moduleId !== dropNode.moduleId)
-      return false;
+    case DropPositions.After:
+    case DropPositions.Before:
+    default: {
+      return dragNode.moduleId === dropNode.moduleId &&
+        dragNode.parentId !== dropNode.parentId;
+    }
+    case DropPositions.Inside: {
+      if (!isFolderTreeNode(dropNode) && !isModuleTreeNode(dropNode))
+        return false;
+      if (dragNode.moduleId !== dropNode.moduleId)
+        return false;
 
-    // allow to drop to another parent only
-    return dragNode.parentId !== dropNode.id;
-  }
+      // allow to drop to another parent only
+      return dragNode.parentId !== dropNode.id;
+    }
   }
 };
 
@@ -81,17 +81,17 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
   const getNewFolderId = (dropPosition: number, dropNode: TreeNode): string | undefined => {
     switch (dropPosition) {
-    case DropPositions.After:
-    case DropPositions.Before: {
-      const dropNodeParent = isDefined(dropNode.parentId)
-        ? getTreeNodeById(dropNode.parentId)
-        : undefined;
+      case DropPositions.After:
+      case DropPositions.Before: {
+        const dropNodeParent = isDefined(dropNode.parentId)
+          ? getTreeNodeById(dropNode.parentId)
+          : undefined;
 
-      return isFolderTreeNode(dropNodeParent) ? dropNodeParent.id : undefined;
-    }
-    default: {
-      return isFolderTreeNode(dropNode) ? dropNode.id : undefined;
-    }
+        return isFolderTreeNode(dropNodeParent) ? dropNodeParent.id : undefined;
+      }
+      default: {
+        return isFolderTreeNode(dropNode) ? dropNode.id : undefined;
+      }
     }
     return undefined;
   };

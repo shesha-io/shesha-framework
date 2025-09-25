@@ -90,10 +90,10 @@ interface NestedNodeParsingResult {
 }
 
 const evaluateJavaScriptAsync = async (evaluationNode: IEvaluateNode, options: IJsonLogicConversionOptions): Promise<NestedNodeParsingResult> => {
-  const expressionArguments = options.mappings.reduce((acc, current) => ({...acc, [current.match]: current.data}), {});
+  const expressionArguments = options.mappings.reduce((acc, current) => ({ ...acc, [current.match]: current.data }), {});
 
   const executionResult = executeFunction(evaluationNode.evaluate.expression, expressionArguments);
-  
+
   const promise = Promise.resolve(executionResult);
   const unwrappedResult = await promise;
 
@@ -106,10 +106,10 @@ const evaluateJavaScriptAsync = async (evaluationNode: IEvaluateNode, options: I
 
 // Synchronous version of evaluateJavaScriptAsync
 const evaluateJavaScriptSync = (evaluationNode: IEvaluateNode, options: IJsonLogicConversionOptionsSync): NestedNodeParsingResult => {
-  const expressionArguments = options.mappings.reduce((acc, current) => ({...acc, [current.match]: current.data}), {});
+  const expressionArguments = options.mappings.reduce((acc, current) => ({ ...acc, [current.match]: current.data }), {});
 
   const executionResult = executeFunction(evaluationNode.evaluate.expression, expressionArguments);
-  
+
   const unwrappedResult = executionResult;
 
   const parsingResult: NestedNodeParsingResult = {
@@ -151,7 +151,7 @@ const evaluateMustacheAsync = async (evaluationNode: IEvaluateNode, allArgs: any
       }
       case DataTypes.boolean: {
         convertedResult = typeof convertedResult === 'string' ? convertedResult?.toLowerCase() === 'true' : Boolean(convertedResult);
-          break;
+        break;
       }
     }
   }
@@ -166,7 +166,7 @@ const evaluateMustacheAsync = async (evaluationNode: IEvaluateNode, allArgs: any
 
   return {
     hasOptionalNonEvaluatedExpressions: (convertedResult === '' || convertedResult === null) && !evaluationNode.evaluate.required,
-    value: convertedResult
+    value: convertedResult,
   };
 };
 
@@ -203,7 +203,7 @@ const evaluateMustacheSync = (evaluationNode: IEvaluateNode, allArgs: any[], opt
       }
       case DataTypes.boolean: {
         convertedResult = typeof convertedResult === 'string' ? convertedResult?.toLowerCase() === 'true' : Boolean(convertedResult);
-          break;
+        break;
       }
     }
   }
@@ -218,7 +218,7 @@ const evaluateMustacheSync = (evaluationNode: IEvaluateNode, allArgs: any[], opt
 
   return {
     hasOptionalNonEvaluatedExpressions: (convertedResult === '' || convertedResult === null) && !evaluationNode.evaluate.required,
-    value: convertedResult
+    value: convertedResult,
   };
 };
 
@@ -229,12 +229,12 @@ export const getEvaluationNodeFromJsonLogicNode = (node: any): IEvaluateNode => 
     : undefined;
 
   const typedArgs = args as IEvaluateNodeArgs;
-  const result: IEvaluateNode = typeof(typedArgs?.expression) === 'string'
+  const result: IEvaluateNode = typeof (typedArgs?.expression) === 'string'
     ? {
       evaluate: {
         ...typedArgs,
         type: (args as IEvaluateNodeArgs).type ?? 'mustache' /* fallback to legacy */,
-      }
+      },
     }
     : undefined;
   return result;
@@ -261,13 +261,13 @@ export const convertJsonLogicNode = async (
 
       if (evaluationNode.evaluate.type === 'javascript')
         return await evaluateJavaScriptAsync(evaluationNode, options);
-      
+
       throw new Error(`Expressions of type '${evaluationNode.evaluate.type}' are not supported`);
     } else {
       const value = await convertJsonLogicNode(node, nestedOptions);
       return {
         hasOptionalNonEvaluatedExpressions: false,
-        value
+        value,
       };
     }
   };
@@ -295,7 +295,7 @@ export const convertJsonLogicNode = async (
           return evaluationResult.handled ? evaluationResult.value : arg;
         })
       );
-      convertedArgs = convertedArgs.filter(a => a !== undefined);
+      convertedArgs = convertedArgs.filter((a) => a !== undefined);
     } else {
       // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
       if (typeof args === 'object') {
@@ -345,13 +345,13 @@ export const convertJsonLogicNodeSync = (
 
       if (evaluationNode.evaluate.type === 'javascript')
         return evaluateJavaScriptSync(evaluationNode, options);
-      
+
       throw new Error(`Expressions of type '${evaluationNode.evaluate.type}' are not supported`);
     } else {
       const value = convertJsonLogicNodeSync(node, nestedOptions);
       return {
         hasOptionalNonEvaluatedExpressions: false,
-        value
+        value,
       };
     }
   };
@@ -377,7 +377,7 @@ export const convertJsonLogicNodeSync = (
         const evaluationResult = argumentEvaluator(operatorName, args, argIdx);
         return evaluationResult.handled ? evaluationResult.value : arg;
       });
-      convertedArgs = convertedArgs.filter(a => a !== undefined);
+      convertedArgs = convertedArgs.filter((a) => a !== undefined);
     } else {
       // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
       if (typeof args === 'object') {

@@ -3,9 +3,9 @@ import { DocumentDefinition, ItemEditorProps, ProviderRendererProps } from "@/co
 import { ITEM_TYPES } from "@/configuration-studio/models";
 import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
 import { EntityToolbar } from "./toolbar";
-import { ModelConfiguratorProvider } from "@/index";
 import { Form } from "antd";
 import ModelConfiguratorRenderer from "@/components/modelConfigurator/renderer";
+import { ModelConfiguratorProvider } from "@/providers";
 
 export const EntityDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.ENTITY,

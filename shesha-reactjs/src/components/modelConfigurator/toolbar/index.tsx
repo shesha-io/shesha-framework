@@ -12,10 +12,10 @@ export const ModelConfiguratorToolbar: FC<IProps> = () => {
 
   const onSaveClick = () => {
     configurator.saveForm()
-    .catch((_error) => {
+      .catch((_error) => {
       // ToDo: AS - handle error
-      //if (!error?.errorFields) message.error('Failed to save configuration');
-    });
+      // if (!error?.errorFields) message.error('Failed to save configuration');
+      });
   };
 
   return (

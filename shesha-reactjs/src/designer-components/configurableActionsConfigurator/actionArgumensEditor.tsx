@@ -28,7 +28,6 @@ const getDefaultFactory = (
 ): IConfigurableActionArgumentsFormFactory => {
   const { argumentsFormMarkup: markup } = action;
   return wrapDisplayName(({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }) => {
-
     const markupFactory = typeof markup === 'function'
       ? (markup as FormMarkupFactory)
       : () => markup as FormMarkup;

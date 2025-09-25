@@ -29,12 +29,12 @@ export const MetadataEditorComponent: IToolboxComponent<IMetadataEditorComponent
     const baseProperties = useMemo<IPropertyMetadata[]>(() => {
       if (!model.baseProperties)
         return [];
-      
+
       const metadataBuilder = metadataBuilderFactory();
       const result = executeScriptSync<IPropertyMetadata[]>(model.baseProperties, { data: formData, metadataBuilder });
       return result;
     }, [model.baseProperties, formData]);
-    
+
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
         {(value, onChange) => {
@@ -52,5 +52,5 @@ export const MetadataEditorComponent: IToolboxComponent<IMetadataEditorComponent
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model)
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };

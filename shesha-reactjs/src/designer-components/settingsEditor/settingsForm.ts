@@ -60,8 +60,8 @@ export const getSettings = (data) => {
                       label: 'Hide',
                       size: 'small',
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),

@@ -14,7 +14,6 @@ export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActi
   isInput: true,
   isOutput: true,
   Factory: ({ model }) => {
-
     if (model.hidden) return null;
 
     return (
@@ -26,5 +25,5 @@ export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActi
     );
   },
   settingsFormMarkup: configurableActionsConfiguratorSettingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
 };

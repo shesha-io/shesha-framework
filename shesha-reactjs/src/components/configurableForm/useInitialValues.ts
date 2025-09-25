@@ -27,13 +27,13 @@ export const getInitialValues = (
     const evaluatedValue = value?.includes('{{')
       ? evaluateComplexString(value, mappings)
       : value?.includes('{')
-      ? evaluateValue(value, {
+        ? evaluateValue(value, {
           data: formData,
           parentFormValues: parentFormValues,
           globalState: globalState,
           query: queryParams,
         })
-      : value;
+        : value;
     _.set(computedInitialValues, key, evaluatedValue);
   });
 

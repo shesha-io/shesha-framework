@@ -36,7 +36,7 @@ const parseActionFullName = (fullName: string): IActionIdentifier => {
 const FORM_ARGUMENTS_FIELD = 'actionArguments';
 const ACTION_FULL_NAME_FIELD = 'actionFullName';
 
-export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = props => {
+export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = (props) => {
   const [form] = Form.useForm();
   const { formSettings } = useForm();
   const { value, onChange, readOnly = false, label = 'Action Name', description } = props;
@@ -53,7 +53,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
     const { actionName, actionOwner, ...restProps } = value;
     const result: IActionFormModel = {
       ...restProps,
-      actionFullName: getActionFullName(actionOwner, actionName)
+      actionFullName: getActionFullName(actionOwner, actionName),
     };
     return result;
   }, [value]);
@@ -134,7 +134,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         )}
         {selectedAction && (
           <>
-            <SettingInput propertyName='handleSuccess' label='Handle Success' type='switch' id={nanoid()} />
+            <SettingInput propertyName="handleSuccess" label="Handle Success" type="switch" id={nanoid()} />
             {
               value?.handleSuccess && (
                 <Collapse defaultActiveKey={['1']}>
@@ -146,7 +146,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
                 </Collapse>
               )
             }
-            <SettingInput propertyName='handleFail' label='Handle Fail' type='switch' id={nanoid()} />
+            <SettingInput propertyName="handleFail" label="Handle Fail" type="switch" id={nanoid()} />
             {
               value?.handleFail && (
                 <Collapse defaultActiveKey={['1']}>

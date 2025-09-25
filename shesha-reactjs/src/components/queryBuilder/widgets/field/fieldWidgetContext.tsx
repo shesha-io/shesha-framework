@@ -4,14 +4,14 @@ import React, { createContext, FC, PropsWithChildren } from 'react';
 const FieldWidgetContext = createContext<WidgetProps>(null);
 
 export interface FieldWidgetProviderProps {
-    widgetProps: WidgetProps;
+  widgetProps: WidgetProps;
 }
 export const FieldWidgetProvider: FC<PropsWithChildren<FieldWidgetProviderProps>> = (props) => {
-    return (
+  return (
         <FieldWidgetContext.Provider value={props.widgetProps}>
             {props.children}
         </FieldWidgetContext.Provider>
-    );
+  );
 };
 
 export const useFieldWidget = () => React.useContext(FieldWidgetContext);

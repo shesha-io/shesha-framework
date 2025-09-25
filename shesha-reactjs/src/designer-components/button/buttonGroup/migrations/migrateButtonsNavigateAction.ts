@@ -3,18 +3,18 @@ import { ButtonGroupItemProps, IButtonGroup, IButtonItem, isButtonItem, isGroup 
 import { IButtonGroupComponentProps } from "../models";
 
 export const migrateButtonsNavigateAction = (props: IButtonGroupComponentProps): IButtonGroupComponentProps => {
-    const { items } = props;
+  const { items } = props;
 
-    const migrateButtonAction = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
-        if (isButtonItem(item))
-            return { ...item, actionConfiguration: migrateNavigateAction(item.actionConfiguration) } as IButtonItem;
-        
-        if (isGroup(item))
-            return { ...item, childItems: item.childItems?.map(migrateButtonAction) } as IButtonGroup;
+  const migrateButtonAction = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
+    if (isButtonItem(item))
+      return { ...item, actionConfiguration: migrateNavigateAction(item.actionConfiguration) } as IButtonItem;
 
-        return item;
-    };    
-    const newItems = items.map(item => migrateButtonAction(item));
+    if (isGroup(item))
+      return { ...item, childItems: item.childItems?.map(migrateButtonAction) } as IButtonGroup;
 
-    return { ...props, items: newItems };
+    return item;
+  };
+  const newItems = items.map((item) => migrateButtonAction(item));
+
+  return { ...props, items: newItems };
 };

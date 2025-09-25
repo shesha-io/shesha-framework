@@ -77,60 +77,60 @@ const flagsReducer = <T extends IFlagsState<string, string, string, string>>(
   }
 
   switch (type) {
-  case FlagsActionTypes.SetIsInProgressFlag: {
-    return {
-      ...state,
-      isInProgress: { ...state.isInProgress, ...payload.isInProgress },
-    };
-  }
-  case FlagsActionTypes.SetSucceededFlag: {
-    return {
-      ...state,
-      succeeded: { ...state.succeeded, ...payload.succeeded },
-    };
-  }
-  case FlagsActionTypes.SetErrorFlag: {
-    return {
-      ...state,
-      error: { ...state.error, ...payload.error },
-    };
-  }
-  case FlagsActionTypes.SetActionedFlag: {
-    return {
-      ...state,
-      actioned: { ...state.actioned, ...payload.actioned },
-    };
-  }
-  case FlagsActionTypes.ResetIsInProgressFlags:
-    return {
-      ...state,
-      isInProgress: {},
-    };
-  case FlagsActionTypes.ResetSucceededFlags:
-    return {
-      ...state,
-      succeeded: {},
-    };
-  case FlagsActionTypes.ResetErrorFlags:
-    return {
-      ...state,
-      error: {},
-    };
-  case FlagsActionTypes.ResetActionedFlags:
-    return {
-      ...state,
-      actioned: {},
-    };
-  case FlagsActionTypes.ResetAllFlags:
-    return {
-      ...state,
-      isInProgress: {},
-      succeeded: {},
-      error: {},
-      actioned: {},
-    };
-  default:
-    return state;
+    case FlagsActionTypes.SetIsInProgressFlag: {
+      return {
+        ...state,
+        isInProgress: { ...state.isInProgress, ...payload.isInProgress },
+      };
+    }
+    case FlagsActionTypes.SetSucceededFlag: {
+      return {
+        ...state,
+        succeeded: { ...state.succeeded, ...payload.succeeded },
+      };
+    }
+    case FlagsActionTypes.SetErrorFlag: {
+      return {
+        ...state,
+        error: { ...state.error, ...payload.error },
+      };
+    }
+    case FlagsActionTypes.SetActionedFlag: {
+      return {
+        ...state,
+        actioned: { ...state.actioned, ...payload.actioned },
+      };
+    }
+    case FlagsActionTypes.ResetIsInProgressFlags:
+      return {
+        ...state,
+        isInProgress: {},
+      };
+    case FlagsActionTypes.ResetSucceededFlags:
+      return {
+        ...state,
+        succeeded: {},
+      };
+    case FlagsActionTypes.ResetErrorFlags:
+      return {
+        ...state,
+        error: {},
+      };
+    case FlagsActionTypes.ResetActionedFlags:
+      return {
+        ...state,
+        actioned: {},
+      };
+    case FlagsActionTypes.ResetAllFlags:
+      return {
+        ...state,
+        isInProgress: {},
+        succeeded: {},
+        error: {},
+        actioned: {},
+      };
+    default:
+      return state;
   }
 };
 

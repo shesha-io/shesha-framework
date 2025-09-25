@@ -36,19 +36,19 @@ const allBaseProperties = [...labelProperties, ...bindingProperties, ...visibili
 export const editorAdapters: IDictionary<IEditorAdapter> = {
   [HtmlComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
-      ...allBaseProperties
+      ...allBaseProperties,
     ]),
   },
   [DropdownComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,
-      //'referenceListId',
-      //'dataSourceType',
-      //'valueFormat',
+      // 'referenceListId',
+      // 'dataSourceType',
+      // 'valueFormat',
       'incomeCustomJs',
       'outcomeCustomJs',
       'labelCustomJs',
-      //'values',
+      // 'values',
     ]),
   },
   [AutocompleteComponent.type]: {
@@ -64,7 +64,7 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'tooltip',
       'customSourceUrl',
       'disableSearch',
-      'required'
+      'required',
     ]),
   },
   [CheckboxComponent.type]: {

@@ -31,7 +31,6 @@ export interface IPermissionedObjectsTreeProps {
 }
 
 export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props) => {
-
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaPermissionedObjects.toolbox.objects.openedKeys.' + props.objectsType, ['']);
   const [searchText, setSearchText] = useLocalStorage('shaPermissionedObjects.toolbox.objects.search.' + props.objectsType, '');
   const [groupBy, setGroupBy] = useLocalStorage('shaPermissionedObjects.toolbox.objects.grouping.' + props.objectsType, '-');
@@ -60,7 +59,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
       }
     }
   }, [isFetchingData, fetchingDataError, fetchingDataResponse]);
-  
+
   const findItem = (items: PermissionedObjectDto[], key: string): PermissionedObjectDto => {
     let res = null;
     let i = 0;
@@ -145,8 +144,8 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
   };
 
   const renderTitle = (item: PermissionedObjectDto): React.ReactNode => {
-    const parent = item.parent ? allItems.find(x => x.object === item.parent) : null;
-    const access = 
+    const parent = item.parent ? allItems.find((x) => x.object === item.parent) : null;
+    const access =
       item.access === 1 || item.access === 2 && parent?.access === 1 // Disabled
         ? 1
         : item.access === 3 || item.access === 2 && parent?.access === 3 // Any authenticated
@@ -164,8 +163,8 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
     return (
       <>
         {(item.type === "Shesha.WebApi" ? <ApiOutlined /> : <InterfaceOutlined />)}
-        <span 
-          className='sha-component-title' 
+        <span
+          className="sha-component-title"
           style={access === 1 ? { textDecoration: 'line-through', color: 'gray', paddingLeft: '10px'} : {paddingLeft: '10px'}}
         >
           {item.description && <Tooltip title={item.description}>{name}</Tooltip>}
@@ -173,7 +172,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
           </span>
           {access === 4 && <span style={{color: 'green'}}> (permissioned)</span>}
           {access === 5 && <span style={{color: 'red'}}> (unsecured)</span>}
-        
+
       </>
     );
   };

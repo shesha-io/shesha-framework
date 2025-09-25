@@ -69,7 +69,7 @@ export const getSettings = (data: any) => {
                           },
                         ],
                       }).toJson(),
-                  ]
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -101,8 +101,8 @@ export const getSettings = (data: any) => {
                       size: 'small',
                       hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -115,7 +115,7 @@ export const getSettings = (data: any) => {
                       label: 'Hide',
                       jsSetting: true,
                       layout: 'horizontal',
-                    }
+                    },
                   ],
                 })
                 .toJson(),
@@ -194,9 +194,9 @@ export const getSettings = (data: any) => {
                                       {
                                         label: 'Dotted',
                                         value: 'dotted',
-                                      }
+                                      },
                                     ],
-                                  }
+                                  },
                                 ],
                               })
                               .toJson(),
@@ -351,9 +351,9 @@ export const getSettings = (data: any) => {
                                         description:
                                           'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                       })
-                                      .toJson()
-                                  ]
-                                }
+                                      .toJson(),
+                                  ],
+                                },
                               })
                               .toJson(),
                           ],
@@ -412,9 +412,9 @@ export const getSettings = (data: any) => {
                                         description:
                                           'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                       })
-                                      .toJson()
-                                  ]
-                                }
+                                      .toJson(),
+                                  ],
+                                },
                               })
                               .toJson(),
                           ],

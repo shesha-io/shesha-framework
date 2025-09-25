@@ -39,7 +39,7 @@ export const useStyles = () => {
 
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }, {
   rowBackgroundColor,
-  rowAlternateBackgroundColor, 
+  rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
 }: {
@@ -432,7 +432,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
       }
     `
 
-    
+
   );
   return {
     shaReactTable,

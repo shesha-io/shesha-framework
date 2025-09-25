@@ -68,7 +68,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   font,
   size,
   searchOptions,
-  onFocus
+  onFocus,
 }) => {
   const { styles } = useStyles({ fontFamily: font?.type, fontWeight: font?.weight, textAlign: font?.align, color: font?.color, fontSize: font?.size });
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
@@ -99,7 +99,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
         onChange(localAddress);
       }
       geocodeByAddress(localAddress)
-        .then(results => getLatLng(results[0]))
+        .then((results) => getLatLng(results[0]))
         .then(({ lat, lng }) => {
           if (biasedCoordinates) {
             if (pointsInPolygon([lat, lng], biasedCoordinates)) {
@@ -123,7 +123,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
             });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error no coords', error);
         });
     } catch {
@@ -214,7 +214,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
             return (
               <Input
                 value={displayValue}
-                onChange={e => {
+                onChange={(e) => {
                   if (inputProps.onChange) {
                     const {
                       target: { value: realValue },
@@ -243,7 +243,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
               hidden: !showSuggestionsDropdownContainer,
             })}
           >
-            {suggestions.map(suggestion => {
+            {suggestions.map((suggestion) => {
               const localSuggestion = { ...suggestion };
               localSuggestion.description = ignoreText
                 ? suggestion.description?.replace(ignoreText, '')

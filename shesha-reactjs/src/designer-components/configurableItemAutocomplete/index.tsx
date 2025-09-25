@@ -21,7 +21,6 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
   isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
-
     const { filter } = model;
     const allData = useAvailableConstantsData();
 
@@ -57,7 +56,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
         : undefined;
       if (!expression)
         return undefined;
-      
+
       return typeof (expression) === 'string'
         ? JSON.parse(expression)
         : expression;
@@ -78,11 +77,11 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IConfigurableItemAutocompleteComponentProps>(0, (prev) => ({
       ...prev,
       entityType: '',
-      mode: 'single'
+      mode: 'single',
     })),
 };

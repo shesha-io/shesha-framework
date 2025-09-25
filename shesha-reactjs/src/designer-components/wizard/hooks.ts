@@ -43,8 +43,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const getDefaultStepIndex = (i) => {
     if (i) {
-      const t = tabs[i]
-        ?? tabs?.find((item) => item?.id === i); // for backward compatibility
+      const t = tabs[i] ??
+        tabs?.find((item) => item?.id === i); // for backward compatibility
       return !!t ? tabs.indexOf(t) : 0;
     }
     return 0;
@@ -54,7 +54,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     return getDefaultStepIndex(defaultActiveStep);
   });
 
-  //Remove every tab from the equation that isn't visible either by customVisibility or permissions
+  // Remove every tab from the equation that isn't visible either by customVisibility or permissions
   const visibleSteps = useMemo(
     () =>
       tabs
@@ -89,7 +89,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         validate: () => {
           var formInstance = allData?.form?.formInstance;
           return formInstance?.validateFields(componentsNames, {recursive: false})
-            .catch(e => {
+            .catch((e) => {
               if (e.errorFields?.length > 0)
                 throw e;
               return null;
@@ -110,7 +110,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     if (!!actionConfiguration?.actionName) {
       executeAction({
         actionConfiguration: actionConfiguration,
-        argumentsEvaluationContext
+        argumentsEvaluationContext,
       });
     }
   }, [current]);
@@ -139,7 +139,6 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     afterAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
     success?: (actionResponse: any) => void,
   ) => {
-
     if (!formMode || formMode === 'designer') {
       if (success) success(null);
       return;
@@ -157,7 +156,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
           if (!!afterAction?.actionName)
             executeAction({
               actionConfiguration: afterAction,
-              argumentsEvaluationContext
+              argumentsEvaluationContext,
             });
         }
       );

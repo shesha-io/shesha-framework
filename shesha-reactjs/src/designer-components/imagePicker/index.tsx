@@ -10,62 +10,62 @@ import { IFileUploadProps } from '../fileUpload';
 import { getSettings } from './settings';
 
 interface IImageUploaderProps {
-    onChange: (value: any) => void;
-    value: UploadFile;
-    readOnly: boolean;
+  onChange: (value: any) => void;
+  value: UploadFile;
+  readOnly: boolean;
 }
 
 export const ImagePicker = ({ onChange, value, readOnly }: IImageUploaderProps) => {
-    const [fileList, setFileList] = useState<UploadFile[]>(typeof value == 'string' ? value : value ? [{ ...value }] : []);
-    const { styles } = useStyles();
+  const [fileList, setFileList] = useState<UploadFile[]>(typeof value == 'string' ? value : value ? [{ ...value }] : []);
+  const { styles } = useStyles();
 
-    const uploadBtnRef = useRef<HTMLButtonElement | null>(null);
+  const uploadBtnRef = useRef<HTMLButtonElement | null>(null);
 
-    const handleChange: UploadProps['onChange'] = async ({ fileList }) => {
-        if (fileList.length > 1) fileList.shift();
-        const file = fileList[0];
+  const handleChange: UploadProps['onChange'] = async ({ fileList }) => {
+    if (fileList.length > 1) fileList.shift();
+    const file = fileList[0];
 
-        if (file?.originFileObj) {
-            const base64Image = await toBase64(file.originFileObj as File);
-            onChange(base64Image);
-            setFileList([{ ...file, url: base64Image, name: "" }]);
-        } else {
-            onChange({});
-            setFileList([]);
-        }
-    };
+    if (file?.originFileObj) {
+      const base64Image = await toBase64(file.originFileObj as File);
+      onChange(base64Image);
+      setFileList([{ ...file, url: base64Image, name: "" }]);
+    } else {
+      onChange({});
+      setFileList([]);
+    }
+  };
 
-    const handleRemove = () => {
-        setFileList([]);
-        onChange('');
-    };
+  const handleRemove = () => {
+    setFileList([]);
+    onChange('');
+  };
 
 
-    const uploadButton = (
+  const uploadButton = (
         <Button size="small" ref={uploadBtnRef}>
-            {fileList.length === 0 ? <UploadOutlined title='upload' /> : <SyncOutlined title='Replace' />}
+            {fileList.length === 0 ? <UploadOutlined title="upload" /> : <SyncOutlined title="Replace" />}
         </Button>
-    );
+  );
 
-    const deleteButton = (
+  const deleteButton = (
         <Button size="small" danger onClick={(e) => {
-            handleRemove();
-            e.stopPropagation();
+          handleRemove();
+          e.stopPropagation();
         }}>
-            <DeleteOutlined title='delete' />
+            <DeleteOutlined title="delete" />
         </Button>
-    );
+  );
 
-    return (
+  return (
         <div className={styles.image}>
             <Upload
-                listType="text"
-                fileList={[]}
-                onRemove={handleRemove}
-                onChange={handleChange}
-                beforeUpload={() => false}
-                disabled={readOnly}
-                accept='.jpg, .png, .gif, .webp, .jpeg'
+              listType="text"
+              fileList={[]}
+              onRemove={handleRemove}
+              onChange={handleChange}
+              beforeUpload={() => false}
+              disabled={readOnly}
+              accept=".jpg, .png, .gif, .webp, .jpeg"
             >
                 <Space>
                     {uploadButton}
@@ -73,29 +73,28 @@ export const ImagePicker = ({ onChange, value, readOnly }: IImageUploaderProps) 
                 </Space>
             </Upload>
         </div>
-    );
+  );
 };
 
 const ImagePickerComponent: IToolboxComponent<IFileUploadProps> = {
-    type: 'imagePicker',
-    name: 'Image Picker',
-    icon: <FileAddOutlined />,
-    isInput: true,
-    isOutput: true,
-    Factory: ({ model }) => {
-
-        return (
+  type: 'imagePicker',
+  name: 'Image Picker',
+  icon: <FileAddOutlined />,
+  isInput: true,
+  isOutput: true,
+  Factory: ({ model }) => {
+    return (
             <ConfigurableFormItem model={model}>
                 {(value, onChange) => {
-                    return (
+                  return (
                         <ImagePicker onChange={onChange} value={value} readOnly={model.readOnly} />
-                    );
+                  );
                 }}
             </ConfigurableFormItem>
-        );
-    },
-    settingsFormMarkup: getSettings(),
-    validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+    );
+  },
+  settingsFormMarkup: getSettings(),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
 };
 
 export default ImagePickerComponent;

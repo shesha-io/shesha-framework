@@ -61,7 +61,7 @@ export const LayoutMenu: FC<IProps> = ({
   styleOnSubMenu,
   width,
   fontStyles,
-  menuId
+  menuId,
 }) => {
   const isScrolling = overflow === "scroll";
   const { styles } = useStyles({
@@ -93,7 +93,7 @@ export const LayoutMenu: FC<IProps> = ({
     menuId,
     colors,
     fontStyles,
-    styleOnSubMenu
+    styleOnSubMenu,
   });
 
   const [openedKeys, setOpenedKeys] = useLocalStorage(
@@ -115,7 +115,7 @@ export const LayoutMenu: FC<IProps> = ({
       }));
     }
   };
-  
+
   useEffect(() => {
     checkOverflow();
 
@@ -191,14 +191,14 @@ export const LayoutMenu: FC<IProps> = ({
     if (menuId) {
       const addDropdownClassName = (item: any): any => {
         if (!item) return item;
-        
+
         const newItem = { ...item };
-        
+
         if (newItem.children && newItem.children.length > 0) {
           newItem.popupClassName = `horizontal-menu-${menuId}-dropdown`;
           newItem.children = newItem.children.map(addDropdownClassName);
         }
-        
+
         return newItem;
       };
 
@@ -220,9 +220,9 @@ export const LayoutMenu: FC<IProps> = ({
     return (
       <Fragment>
         <Button type="link" icon={<MenuOutlined />} onClick={onClick} />
-        <ShaMenuDrawer 
-          items={menuItems} 
-          open={open} 
+        <ShaMenuDrawer
+          items={menuItems}
+          open={open}
           onClose={onClose}
           colors={colors}
           fontStyles={fontStyles}
@@ -250,7 +250,7 @@ export const LayoutMenu: FC<IProps> = ({
       )}
       <div
         className={classNames(
-          styles.menuWrapper, 
+          styles.menuWrapper,
           styles.menuWrapperScroll,
           menuId ? `horizontal-menu-${menuId}` : undefined
         )}

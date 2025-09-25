@@ -2,7 +2,7 @@ import { CSSProperties, FC, useEffect, useMemo, useRef, useState } from "react";
 import React from "react";
 import { Button, Form, FormInstance } from "antd";
 import ConfigurableButton from "@/designer-components/button/configurableButton";
-import { pickStyleFromModel, useTheme } from "@/index";
+import { pickStyleFromModel, StyleBoxValue, useTheme } from "@/index";
 import { useStyles } from "./styles";
 import { fadeColor } from "@/components/refListSelectorDisplay/provider/utils";
 import { IChevronButton, IChevronControlProps } from "./models";
@@ -13,81 +13,81 @@ import { jsonSafeParse } from "@/utils/object";
 
 
 export const ChevronControl: FC<IChevronControlProps> = (props) => {
-    const fontStyles = useMemo(() => getFontStyle(props?.font), [props?.font]);
-    const { value, activeColor, showIcons, colorSource, items, width, height, stylingBox } = props;
-    const { styles } = useStyles({ height });
-    const [form] = Form.useForm();
-    const { theme } = useTheme();
-    const [showLeftArrow, setShowLeftArrow] = useState(false);
-    const [showRightArrow, setShowRightArrow] = useState(true);
-    const containerRef = useRef(null);
-    const stylingBoxJSON = jsonSafeParse(stylingBox || '{}');
-    const stylingBoxCSS = pickStyleFromModel(stylingBoxJSON);    
+  const fontStyles = useMemo(() => getFontStyle(props?.font), [props?.font]);
+  const { value, activeColor, showIcons, colorSource, items, width, height, stylingBox } = props;
+  const { styles } = useStyles({ height });
+  const [form] = Form.useForm();
+  const { theme } = useTheme();
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+  const containerRef = useRef(null);
+  const stylingBoxJSON = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
+  const stylingBoxCSS = pickStyleFromModel(stylingBoxJSON);
 
-    const renderButton = (props: IChevronButton, uuid: string, form?: FormInstance<any>) => {
-        function getColor(source: string) {
-            switch (source) {
-                case 'primary':
-                    return theme.application.primaryColor;
-                case 'custom':
-                    return activeColor ?? theme.application.primaryColor;
-                case 'reflist':
-                    return props?.color ?? theme.application.primaryColor;
-                default:
-                    return theme.application.primaryColor;
-            }
-        }
+  const renderButton = (props: IChevronButton, uuid: string, form?: FormInstance<any>) => {
+    function getColor(source: string) {
+      switch (source) {
+        case 'primary':
+          return theme.application.primaryColor;
+        case 'custom':
+          return activeColor ?? theme.application.primaryColor;
+        case 'reflist':
+          return props?.color ?? theme.application.primaryColor;
+        default:
+          return theme.application.primaryColor;
+      }
+    }
 
-        const newStyles: CSSProperties = {
-            backgroundColor: props.itemValue === value ? getColor(colorSource) : fadeColor(getColor(colorSource), 70),
-            clipPath: 'polygon(95% 0, 100% 50%, 95% 100%, 0% 100%, 5% 50%, 0% 0%)',
-            cursor: 'pointer',
-            outline: 'none',
-            width: addPx(width) ?? '150px',
-            height: addPx(height) ?? '35px',
-            borderRadius: '0px',
-            ...fontStyles,
-            
-        };
+    const newStyles: CSSProperties = {
+      backgroundColor: props.itemValue === value ? getColor(colorSource) : fadeColor(getColor(colorSource), 70),
+      clipPath: 'polygon(95% 0, 100% 50%, 95% 100%, 0% 100%, 5% 50%, 0% 0%)',
+      cursor: 'pointer',
+      outline: 'none',
+      width: addPx(width) ?? '150px',
+      height: addPx(height) ?? '35px',
+      borderRadius: '0px',
+      ...fontStyles,
 
-        return !props.hidden && (
+    };
+
+    return !props.hidden && (
             <div className={styles.chevronButton}>
                 <ConfigurableButton
-                    key={uuid}
-                    {...props}
-                    icon={showIcons ? props.icon : null}
-                    style={{...newStyles, ...stylingBoxCSS, alignContent: fontStyles.textAlign, justifyContent: fontStyles.textAlign}}
-                    readOnly={props.readOnly}
-                    buttonType='text'
-                    form={form}
-                    label={props.item}
+                  key={uuid}
+                  {...props}
+                  icon={showIcons ? props.icon : null}
+                  style={{...newStyles, ...stylingBoxCSS, alignContent: fontStyles.textAlign, justifyContent: fontStyles.textAlign}}
+                  readOnly={props.readOnly}
+                  buttonType="text"
+                  form={form}
+                  label={props.item}
                 />
             </div>
-        );
+    );
+  };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const handleScroll = () => {
+      setShowLeftArrow(container.scrollLeft > 0);
+      setShowRightArrow(
+        container.scrollLeft < container.scrollWidth - container.clientWidth
+      );
     };
 
-    useEffect(() => {
-        const container = containerRef.current;
-        const handleScroll = () => {
-            setShowLeftArrow(container.scrollLeft > 0);
-            setShowRightArrow(
-                container.scrollLeft < container.scrollWidth - container.clientWidth
-            );
-        };
+    container.addEventListener('scroll', handleScroll);
+    handleScroll(); // Call once to set initial state
 
-        container.addEventListener('scroll', handleScroll);
-        handleScroll(); // Call once to set initial state
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
 
-        return () => container.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    const scroll = (e, scrollOffset: number) => {
-        e.preventDefault();
-        containerRef.current.scrollLeft += scrollOffset;
-    };
+  const scroll = (e, scrollOffset: number) => {
+    e.preventDefault();
+    containerRef.current.scrollLeft += scrollOffset;
+  };
 
 
-    return (
+  return (
         <div className={styles.pipelineContainer}>
             {showLeftArrow && (
                 <Button onClick={(e) => scroll(e, -100)} className={classNames(styles.arrowButton, styles.leftArrow)}>
@@ -96,7 +96,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
             )}
             <div ref={containerRef} className={styles.pipelineStages}>
                 {items?.map((item) => {
-                    return renderButton(item, item.id, form);
+                  return renderButton(item, item.id, form);
                 })}
             </div>
             {showRightArrow && (
@@ -105,7 +105,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
                 </Button>
             )}
         </div>
-    );
+  );
 };
 
 

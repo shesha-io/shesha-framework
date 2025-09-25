@@ -302,7 +302,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                         label: 'Enable Style On Readonly',
                         tooltip: 'Removes all visual styling except typography when the component becomes read-only',
                         inputType: 'switch',
-                        jsSetting: true
+                        jsSetting: true,
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),

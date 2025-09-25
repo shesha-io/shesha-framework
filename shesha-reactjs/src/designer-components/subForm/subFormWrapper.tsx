@@ -7,7 +7,7 @@ import { SubFormProvider } from '@/providers';
 
 export interface ISubFormComponentProps
   extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol'>,
-    IConfigurableFormComponent {
+  IConfigurableFormComponent {
   labelCol?: number;
   wrapperCol?: number;
   queryParams?: ISubFormProviderProps['queryParams'];
@@ -15,7 +15,7 @@ export interface ISubFormComponentProps
 
 interface ISubFormWrapperProps
   extends Omit<ISubFormComponentProps, 'id' | 'type' | 'style' | 'labelCol' | 'wrapperCol'>,
-    IStylable {
+  IStylable {
   id: string;
 }
 

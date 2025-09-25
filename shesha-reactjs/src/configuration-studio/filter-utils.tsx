@@ -1,7 +1,7 @@
 import { Typography } from "antd";
 import React, { ReactNode } from "react";
 import { TreeNode } from "./models";
-import { isNullOrWhiteSpace } from "./types";
+import { isNullOrWhiteSpace } from "../utils/nullables";
 
 const { Text } = Typography;
 

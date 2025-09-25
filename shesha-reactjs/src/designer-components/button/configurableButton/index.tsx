@@ -14,7 +14,7 @@ export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'i
   dynamicItem?: any;
 }
 
-export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
+export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
   const { actionConfiguration, dynamicItem } = props;
   const { getUrlFromNavigationRequest } = useShaRouting();
   const { executeAction, useActionDynamicContext, prepareArguments } = useConfigurableActionDispatcher();
@@ -28,7 +28,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
 
   const { buttonLoading, buttonDisabled } = {
     buttonLoading: loading && !isModal,
-    buttonDisabled: props?.readOnly || (loading && isModal)
+    buttonDisabled: props?.readOnly || (loading && isModal),
   };
 
   const onButtonClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -47,7 +47,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
         setLoading(true);
         executeAction({
           actionConfiguration: { ...actionConfiguration },
-          argumentsEvaluationContext: evaluationContext
+          argumentsEvaluationContext: evaluationContext,
         })
           .finally(() => {
             setLoading(false);
@@ -84,7 +84,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       size={props?.size}
       style={{
         ...props?.style,
-        ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default })
+        ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }),
       }}
     >
       {props.label}

@@ -47,7 +47,7 @@ export const ComplexProperty: FC<IProps> = ({ data, index, containerRendering, o
           items: data.properties || [],
           onChange: (newItems, changeDetails) => {
             onChange({...data, properties: [...newItems]}, changeDetails);
-          }
+          },
         })}
       </div>
     </div>

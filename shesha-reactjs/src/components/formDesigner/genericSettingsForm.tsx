@@ -31,7 +31,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   formRef,
   propertyFilter,
   layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS,
-  isInModal
+  isInModal,
 }: IProps<TModel>) {
   const [form] = Form.useForm();
 
@@ -39,8 +39,8 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     const currentModel = form.getFieldValue([]) as TModel;
 
     const wrapper = toolboxComponent.linkToModelMetadata
-      ? m => linkComponentToModelMetadata(toolboxComponent, m, metadata)
-      : m => m;
+      ? (m) => linkComponentToModelMetadata(toolboxComponent, m, metadata)
+      : (m) => m;
 
     const newModel: TModel = wrapper({
       ...currentModel,
@@ -79,7 +79,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       initialValues={model}
       onValuesChange={onValuesChange}
       actions={{
-        linkToModelMetadata
+        linkToModelMetadata,
       }}
       onFinishFailed={onFinishFailed}
       propertyFilter={propertyFilter}

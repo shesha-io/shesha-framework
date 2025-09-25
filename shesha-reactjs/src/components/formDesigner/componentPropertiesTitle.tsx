@@ -7,9 +7,9 @@ import { useStyles } from './styles/styles';
 export interface IProps {}
 
 export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
-  const selectedComponentId = useFormDesignerStateSelector(x => x.selectedComponentId);
-  const formFlatMarkup = useFormDesignerStateSelector(x => x.formFlatMarkup);
-  const readOnly = useFormDesignerStateSelector(x => x.readOnly);
+  const selectedComponentId = useFormDesignerStateSelector((x) => x.selectedComponentId);
+  const formFlatMarkup = useFormDesignerStateSelector((x) => x.formFlatMarkup);
+  const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
   const { deleteComponent, duplicateComponent } = useFormDesignerActions();
   const { styles } = useStyles();
 

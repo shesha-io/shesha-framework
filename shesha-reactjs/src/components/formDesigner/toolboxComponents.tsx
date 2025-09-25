@@ -18,7 +18,7 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
   const [searchText, setSearchText] = useLocalStorage('shaDesigner.toolbox.components.search', '');
   const { styles } = useStyles();
 
-  const toolboxComponentGroups = useFormDesignerStateSelector(state => state.toolboxComponentGroups);
+  const toolboxComponentGroups = useFormDesignerStateSelector((state) => state.toolboxComponentGroups);
   const { startDraggingNewItem, endDraggingNewItem } = useFormDesignerActions();
 
   const filteredGroups = useMemo<IToolboxComponentGroup[]>(() => {
@@ -96,10 +96,10 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
                 );
               })}
             </ReactSortable>
-          )
+          ),
         };
     })
-    .filter(item => Boolean(item));
+    .filter((item) => Boolean(item));
 
   return (
     <div className={styles.shaToolboxComponents}>

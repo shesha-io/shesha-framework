@@ -28,7 +28,7 @@ export const ColumnsEditorComponent: IToolboxComponent<IColumnsEditorComponentPr
     return (
       <ConditionalWrap
         condition={Boolean(modelType)}
-        wrap={children => <MetadataProvider modelType={modelType}>{children}</MetadataProvider>}
+        wrap={(children) => <MetadataProvider modelType={modelType}>{children}</MetadataProvider>}
       >
         <ConfigurableFormItem model={model}>
           <ColumnsConfig />

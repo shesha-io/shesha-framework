@@ -46,7 +46,7 @@ export interface ICustomAddressEventHandler extends ICustomEventHandler {
 
 export type EventHandlerAttributes<T = any> = Pick<DOMAttributes<T>, 'onBlur' | 'onChange' | 'onFocus' | 'onClick'>;
 
-export interface IEventHandlers<T = any> extends Pick<DOMAttributes<T>, 'onBlur' | 'onFocus' | 'onClick'>{
+export interface IEventHandlers<T = any> extends Pick<DOMAttributes<T>, 'onBlur' | 'onFocus' | 'onClick'> {
   onChange: (values: object, event?: any) => void;
 };
 
@@ -198,7 +198,6 @@ export const customAddressEventHandler = (
   onSelectCustom,
   onFocusCustom,
 ): IGooglePlacesAutocompleteProps => {
-
   const onCustomEvent = (event: any, key: string) => {
     const expression = model?.[key];
     if (Boolean(expression)) {
@@ -231,7 +230,7 @@ export const customAddressEventHandler = (
   return {
     onChange,
     onGeocodeChange,
-    onFocus
+    onFocus,
   };
 };
 

@@ -13,7 +13,7 @@ const JavaScriptWidget: JavaScriptWidgetType = {
     return (
       <JavaScriptEditor
         value={value}
-        onChange={value => {
+        onChange={(value) => {
           setValue(value);
         }}
       />

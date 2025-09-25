@@ -5,6 +5,7 @@ import {
   IConfigurableFormComponent,
   IFormComponentStyles,
   IStyleType,
+  StyleBoxValue,
   executeScriptSync,
   getActualModel,
   getParentReadOnly,
@@ -13,7 +14,7 @@ import {
   useAvailableConstantsContextsNoRefresh,
   useDeepCompareMemo,
   useSheshaApplication,
-  wrapConstantsData
+  wrapConstantsData,
 } from "..";
 import { TouchableProxy, makeTouchableProxy } from "@/providers/form/touchableProxy";
 import { useParent } from "@/providers/parentProvider";
@@ -173,7 +174,7 @@ export function useActualContextExecutionExecutor<T = any>(executor: (context: a
   return actualDataRef.current;
 };
 
-export const useFormComponentStyles = <TModel,>(
+export const useFormComponentStyles = <TModel>(
   model: TModel & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>
 ): IFormComponentStyles => {
   const app = useSheshaApplication();
@@ -192,7 +193,7 @@ export const useFormComponentStyles = <TModel,>(
       : getBackgroundStyle(background, jsStyle)
   );
 
-  const styligBox = jsonSafeParse(stylingBox || '{}');
+  const styligBox = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
 
   const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, styligBox), [dimensions, stylingBox]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
@@ -242,7 +243,7 @@ export const useFormComponentStyles = <TModel,>(
     overflowStyles,
     jsStyle,
     appearanceStyle,
-    fullStyle
+    fullStyle,
   }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles, overflowStyles, jsStyle, appearanceStyle, fullStyle]);
 
   return allStyles;

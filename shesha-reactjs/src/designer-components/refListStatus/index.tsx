@@ -59,7 +59,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   initModel: (model) => {
     const customModel: IRefListStatusProps = {
       ...model,
-      hideLabel: true
+      hideLabel: true,
     };
     return customModel;
   },
@@ -104,7 +104,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     })
     .add<IRefListStatusProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
   ,
-  settingsFormMarkup: data => getSettings(data),
+  settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   linkToModelMetadata: (model, metadata): IRefListStatusProps => {
     return {

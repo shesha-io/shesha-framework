@@ -16,12 +16,12 @@ export const FormDataLoadersProvider: FC<PropsWithChildren> = ({ children }) => 
 
   const getFormDataLoader = (type: string): IFormDataLoader => {
     switch (type) {
-    case 'gql':
-      return gqlLoader;
-    case 'custom':
-      return customLoader;
-    default:
-      return null;
+      case 'gql':
+        return gqlLoader;
+      case 'custom':
+        return customLoader;
+      default:
+        return null;
     }
   };
 

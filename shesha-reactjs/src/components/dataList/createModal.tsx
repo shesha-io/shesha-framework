@@ -22,18 +22,17 @@ const CreateModal: FC<ICreateModalProps> = ({
   formInfo,
   readOnly,
   loading = false,
-  //modalTitle: title,
-  //modalWidth: width = '60%',
+  // modalTitle: title,
+  // modalWidth: width = '60%',
   onToggle,
-  width
+  width,
 }) => {
-
   const { performCreate, switchMode, saveError } = useDataListCrud();
   const [isloading, setLoading] = useState(loading);
 
   const { buttonLoading, buttonDisabled } = {
     buttonLoading: isloading,
-    buttonDisabled: readOnly || isloading
+    buttonDisabled: readOnly || isloading,
   };
 
 
@@ -47,7 +46,6 @@ const CreateModal: FC<ICreateModalProps> = ({
       setLoading(false);
       console.error('Update failed: ', error);
     }
-
   };
 
   const onCancel = () => {
@@ -59,13 +57,13 @@ const CreateModal: FC<ICreateModalProps> = ({
       open={true}
       onOk={onOk}
       onCancel={onCancel}
-      title='Add new item'
+      title="Add new item"
       width={width}
       okButtonProps={{ disabled: buttonDisabled, loading: buttonLoading }}>
       <FormInfo formProps={formInfo} visible={!!formInfo}>
         <Skeleton loading={loading}>
           <ValidationErrors error={saveError} />
-          <ParentProvider model={null} formMode='edit'>
+          <ParentProvider model={null} formMode="edit">
             <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
               <ComponentsContainer containerId={'root'} />
             </ComponentsContainerProvider>
@@ -96,7 +94,7 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
     formSettings,
     creater,
     onToggle,
-    width
+    width,
   } = props;
 
   return (
@@ -108,7 +106,7 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
           allowEdit={true}
           creater={creater}
           allowDelete={false}
-          mode='create'
+          mode="create"
           allowChangeMode={false}
           autoSave={false}
           formFlatMarkup={flatComponents}

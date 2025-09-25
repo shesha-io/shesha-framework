@@ -69,7 +69,7 @@ export interface IShaDataTableInlineEditableProps {
   onRowSaveSuccessAction?: IConfigurableActionConfiguration;
   onDblClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
   onRowDeleteSuccessAction?: IConfigurableActionConfiguration;
-  
+
   onRowClick?: IConfigurableActionConfiguration;
   onRowDoubleClick?: IConfigurableActionConfiguration;
   onRowHover?: IConfigurableActionConfiguration;
@@ -116,7 +116,7 @@ export interface ITableCellRenderingArgs<TValue = any> {
 export interface ITableCustomTypesRender<D extends object, V = any> {
   key: string;
   dataFormat?: string;
-  //render: (cellProps: ITableCellRenderingArgs, router: any) => JSX.Element;
+  // render: (cellProps: ITableCellRenderingArgs, router: any) => JSX.Element;
   render: (cellProps: CellProps<D, V>, router: any) => JSX.Element;
 }
 

@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react';
 import WarningMessage from './components/warningMessage';
 import { getString, getStyle } from '@/providers/form/utils';
@@ -101,7 +101,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
 
     model.validate.message = `Enter a minimum of ${minPoints || 1} points`;
 
-    //This force instant update of the form validation
+    // This force instant update of the form validation
     const imageElement = imageFrameRef?.current
       ?.getElementsByClassName('rp-stage')[0]
       ?.getElementsByClassName('rp-shapes')[0] as HTMLDivElement;
@@ -110,7 +110,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
   };
 
   const onSelect = () => {
-    /*nop*/
+    /* nop*/
   };
 
   if (url && !urlBits) {

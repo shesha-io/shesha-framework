@@ -7,7 +7,7 @@ export interface IColumnsFilterSelectProps {}
 export const ColumnsFilterSelect: FC<IColumnsFilterSelectProps> = () => {
   const { columns, toggleColumnFilter, getCurrentFilter } = useDataTable();
 
-  const appliedFiltersColumnIds = getCurrentFilter().map(f => f.columnId);
+  const appliedFiltersColumnIds = getCurrentFilter().map((f) => f.columnId);
   return <ColumnsFilterSelectBase {...{ columns, appliedFiltersColumnIds, toggleColumnFilter }} />;
 };
 

@@ -23,7 +23,6 @@ export interface ISheshaErrorCause {
  * Shesha Error class
  */
 export class SheshaError extends Error {
-
   public cause?: ISheshaErrorCause;
 
   constructor(message: string, errors?: IModelValidation, type?: ISheshaErrorTypes) {
@@ -37,11 +36,11 @@ export class SheshaError extends Error {
     return error instanceof SheshaError;
   }
 
-    /** Throw a SheshaError with model property error */
+  /** Throw a SheshaError with model property error */
   static throwPropertyError(propertyName: string, error: string = null) {
     throw new SheshaError('', { hasErrors: true, errors: [{ propertyName, error: error || `Please make sure the '${propertyName}' property is configured properly.` }] }, 'warning');
   }
-  
+
   /** Throw a SheshaError with model errors */
   static throwModelErrors(errors: IModelValidation) {
     throw new SheshaError('', errors, 'warning');

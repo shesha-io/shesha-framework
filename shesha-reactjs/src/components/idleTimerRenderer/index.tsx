@@ -5,8 +5,8 @@ import {
   getTimeFormat,
   MIN_TIME,
   ONE_SECOND,
-  SIXTY
-  } from './util';
+  SIXTY,
+} from './util';
 import { IdleTimerComponent } from 'react-idle-timer';
 import { ISettingIdentifier } from '@/providers/settings/models';
 import { Modal, Progress } from 'antd';
@@ -44,14 +44,14 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const visible = isIdle && isTimeoutSet;
 
   const onAction = (_event: Event) => {
-    /*nop*/
+    /* nop*/
   };
 
   const onActive = (_event: Event) => {
-    /*nop*/
+    /* nop*/
   };
 
-  const onIdle = (_event: Event) => setState(s => ({ ...s, isIdle: true }));
+  const onIdle = (_event: Event) => setState((s) => ({ ...s, isIdle: true }));
 
   const logout = () => logoutUser().then(() => setState(INIT_STATE));
 
@@ -71,7 +71,7 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
 
   const onOk = () => logout();
 
-  const onCancel = () => setState(s => ({ ...s, isIdle: false, remainingTime: SIXTY }));
+  const onCancel = () => setState((s) => ({ ...s, isIdle: false, remainingTime: SIXTY }));
 
   if (!isTimeoutSet) {
     return <>{children}</>;

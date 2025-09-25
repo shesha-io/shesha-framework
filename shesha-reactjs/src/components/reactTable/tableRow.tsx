@@ -101,7 +101,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   prepareRow(row);
 
   const rowId = row.original.id ?? row.id;
-  
+
   return (
     <CrudProvider
       isNewObject={false}

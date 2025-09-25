@@ -7,7 +7,7 @@ import qs from "qs";
 import { useCallback } from "react";
 import useSWR, { SWRResponse } from "swr";
 import { flatNode2TreeNode } from "./tree-utils";
-import { isDefined } from "@/configuration-studio/types";
+import { isDefined } from "@/utils/nullables";
 import { extractAjaxResponse } from "@/interfaces/ajaxResponse";
 
 export const CS_URLS = {

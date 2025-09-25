@@ -31,7 +31,6 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
   } = useDataTable();
 
 
-
   const hideTotalItems = useMediaQuery({
     query: PHONE_SIZE_QUERY,
   });

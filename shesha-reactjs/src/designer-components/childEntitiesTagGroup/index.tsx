@@ -19,7 +19,7 @@ const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
   Factory: ({ model }) => {
     if (model.hidden) return null;
-    
+
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) =>

@@ -21,8 +21,8 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
 
   const inputRef = React.useRef<any>(null);
 
-  const handleClose = removedTag => {
-    const tags = value?.filter(tag => tag !== removedTag);
+  const handleClose = (removedTag) => {
+    const tags = value?.filter((tag) => tag !== removedTag);
 
     if (onChange) {
       onChange(tags);
@@ -63,7 +63,7 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
   };
 
   const onTagEdit = (tag: string) => {
-    const newTags = value?.filter(v => v !== tag);
+    const newTags = value?.filter((v) => v !== tag);
     const { inputValue: currentValue } = state;
 
     setState({
@@ -78,11 +78,11 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
     const tagElem = (
       <Tag
         closable={!readOnly}
-        onClose={e => {
+        onClose={(e) => {
           e.preventDefault();
           handleClose(tag);
         }}
-        onClick={e => {
+        onClick={(e) => {
           e.preventDefault();
           if (!readOnly)
             onTagEdit(tag);

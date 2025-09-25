@@ -1,5 +1,4 @@
 export const getRefListItems = (referenceList: string) => {
-
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
@@ -53,7 +52,7 @@ export const getComponentModel = (item: RefListGroupItemProps) => ({
 export function fadeColor(color: string, fadePercentage: number): string {
   // Helper function to parse RGB values from different formats
 
-  //handle simple colors
+  // handle simple colors
   if (/^[a-zA-Z]+$/.test(color)) {
     return color;
   }

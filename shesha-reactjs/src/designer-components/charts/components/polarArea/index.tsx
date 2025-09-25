@@ -39,8 +39,8 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
         top: 10,
         bottom: 10,
         left: 10,
-        right: 10
-      }
+        right: 10,
+      },
     },
     transitions: {
       active: {
@@ -90,12 +90,12 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
                   lineWidth: dataset.borderWidth,
                   pointStyle: 'circle',
                   hidden: false,
-                  index: i
+                  index: i,
                 };
               });
             }
             return [];
-          }
+          },
         },
       },
       title: {

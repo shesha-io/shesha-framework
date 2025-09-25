@@ -9,23 +9,23 @@ import dataTableContextCode from './dataTableContextApi.ts?raw';
 import wizardApiCode from './wizardApi.ts?raw';
 
 const CODE = {
-    ENTITY_BASE_TYPES_PATH: 'entities/index.d.ts',
-    METADATA_PATH: 'apis/metadata.d.ts',
-    METADATA_BUILDER_PATH: 'apis/metadataBuilder.d.ts',
-    ENVIRONMENT_TYPE: 'Environment',
-    ENVIRONMENT_BACK_END: 'Environment.BackEnd',
-    ENVIRONMENT_FRONT_END: 'Environment.FrontEnd',
+  ENTITY_BASE_TYPES_PATH: 'entities/index.d.ts',
+  METADATA_PATH: 'apis/metadata.d.ts',
+  METADATA_BUILDER_PATH: 'apis/metadataBuilder.d.ts',
+  ENVIRONMENT_TYPE: 'Environment',
+  ENVIRONMENT_BACK_END: 'Environment.BackEnd',
+  ENVIRONMENT_FRONT_END: 'Environment.FrontEnd',
 };
 
 export {
-    metadataSourceCode,
-    metadataBuilderSourceCode,
-    userApiSourceCode,
-    httpClientSourceCode,
-    entitiesCode,
-    webStorageCode,
-    canvasContextCode,
-    dataTableContextCode,
-    wizardApiCode,
-    CODE,
+  metadataSourceCode,
+  metadataBuilderSourceCode,
+  userApiSourceCode,
+  httpClientSourceCode,
+  entitiesCode,
+  webStorageCode,
+  canvasContextCode,
+  dataTableContextCode,
+  wizardApiCode,
+  CODE,
 };

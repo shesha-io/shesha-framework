@@ -7,16 +7,16 @@ import { useStyles } from '@/components/listEditor/styles/styles';
 import { useActualContextData } from '@/hooks';
 
 export interface IListItemProps {
-    item: DefaultItemRenderingProps;
+  item: DefaultItemRenderingProps;
 }
 
 export const DefaultListItem: FC<IListItemProps> = ({ item }) => {
-    const { label, description, icon } = item;
+  const { label, description, icon } = item;
 
-    const actualItem = useActualContextData({ label, description, icon });
+  const actualItem = useActualContextData({ label, description, icon });
 
-    const { styles } = useStyles();
-    return (
+  const { styles } = useStyles();
+  return (
         <>
             {actualItem.icon && <ShaIcon iconName={actualItem.icon as IconType} />}
 
@@ -28,5 +28,5 @@ export const DefaultListItem: FC<IListItemProps> = ({ item }) => {
                 </Tooltip>
             )}
         </>
-    );
+  );
 };

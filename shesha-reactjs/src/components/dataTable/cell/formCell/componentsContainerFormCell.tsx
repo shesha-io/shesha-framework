@@ -28,7 +28,7 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
   return (
     <div style={containerStyle}>
       {components?.map((model) => {
-          return (
+        return (
             <FormComponent
               componentModel={{
                 ...model,
@@ -39,8 +39,8 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
               }}
               key={model?.id}
             />
-          );
-        })}
+        );
+      })}
     </div>
   );
 };

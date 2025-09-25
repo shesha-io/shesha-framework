@@ -9,7 +9,7 @@ import {
 } from './contexts';
 import { ILoadingState } from './models';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
-import { isDefined } from '@/configuration-studio/types';
+import { isDefined } from '@/utils/nullables';
 
 const ReferenceListDispatcherProvider: FC<PropsWithChildren> = ({
   children,

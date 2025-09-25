@@ -98,9 +98,9 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             mode: 'dialog',
           })
-          .toJson()
-        ]
-      }
+          .toJson(),
+        ],
+      },
     })
     .addCollapsiblePanel({
       id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
@@ -123,8 +123,8 @@ export const getSettings = () =>
             hidden: false,
             validate: {},
             jsSetting: true,
-          }).toJson()
-        ]
-      }
+          }).toJson(),
+        ],
+      },
     })
     .toJson();

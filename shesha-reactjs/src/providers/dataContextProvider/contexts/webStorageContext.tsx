@@ -1,14 +1,15 @@
 import React, { FC, PropsWithChildren, useMemo, useRef } from "react";
 import DataContextBinder from "../dataContextBinder";
 import { SheshaCommonContexts } from "../../dataContextManager/models";
-import { DataTypes, IObjectMetadata, useDataContextManagerActions } from "@/index";
+import { DataTypes, IObjectMetadata, TypeDefinition, useDataContextManagerActions } from "@/index";
 import { WebStorageProxy } from "./webStorageProxy";
 import { webStorageCode } from '@/publicJsApis';
+import { splitDotNotation } from "@/utils/dotnotation";
 
 
-export const WebStorageContextProvider: FC<PropsWithChildren<any>> = (props) => {
+export const WebStorageContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
-    typeDefinitionLoader: () => Promise.resolve({ typeName: 'IWebStorage', files: [{ content: webStorageCode, fileName: 'apis/webStorage.ts' }] }),
+    typeDefinitionLoader: () => Promise.resolve({ typeName: 'IWebStorage', files: [{ content: webStorageCode as string, fileName: 'apis/webStorage.ts' }] } satisfies TypeDefinition),
     properties: [{ path: 'local', dataType: DataTypes.object }, { path: 'session', dataType: DataTypes.object }],
     dataType: DataTypes.object,
   } as IObjectMetadata), []);
@@ -19,23 +20,37 @@ export const WebStorageContextProvider: FC<PropsWithChildren<any>> = (props) => 
   const sessionStorage = useRef<WebStorageProxy>(new WebStorageProxy('sessionStorage'));
   sessionStorage.current.updateOnChangeHandler(manager.onChangeContextData);
 
-  const setItem = (key: string, value: any) => {
-    const parts = key.split('.');
-    if (parts[0] === 'session')
-      sessionStorage.current.setItem(parts[1], value);
-    if (parts[0] === 'local')
-      localStorage.current.setItem(parts[1], value);
+  const setItem = (key: string, value: unknown): void => {
+    const [storage, path] = splitDotNotation(key);
+    if (!path)
+      return;
+    switch (storage) {
+      case 'session':
+        sessionStorage.current.setItem(path, value);
+        return;
+      case 'local':
+        localStorage.current.setItem(path, value);
+        return;
+      default:
+        return;
+    }
   };
-  const getItem = (key: string) => {
-    const parts = key.split('.');
-    if (parts[0] === 'session')
-      return sessionStorage.current.getItem(parts[1]);
-    if (parts[0] === 'local')
-      return localStorage.current.getItem(parts[1]);
-    return null;
+  const getItem = (key: string): string | null | undefined => {
+    const [storage, path] = splitDotNotation(key);
+    if (!path)
+      return undefined;
+
+    switch (storage) {
+      case 'session':
+        return sessionStorage.current.getItem(path);
+      case 'local':
+        return localStorage.current.getItem(path);
+      default:
+        return undefined;
+    }
   };
-  const setFieldValue = (name: string, value: any) => setItem(name, value);
-  const getFieldValue = (name: string) => getItem(name);
+  const setFieldValue = (name: string, value: unknown): void => setItem(name, value);
+  const getFieldValue = (name: string): string | null | undefined => getItem(name);
 
   const data = { local: localStorage.current, session: sessionStorage.current };
 
@@ -51,7 +66,7 @@ export const WebStorageContextProvider: FC<PropsWithChildren<any>> = (props) => 
       getFieldValue={getFieldValue}
       getData={() => data}
     >
-      {props.children}
+      {children}
     </DataContextBinder>
   );
 };

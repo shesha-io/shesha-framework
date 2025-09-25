@@ -108,19 +108,19 @@ export const defaultStyles = (): any => {
       weight: '400',
       size: 14,
       color: '#000',
-      type: 'Segoe UI'
+      type: 'Segoe UI',
     },
     border: {
       border: {
         all: {
           width: 1,
           style: 'solid',
-          color: '#d9d9d9'
-        }
+          color: '#d9d9d9',
+        },
       },
       radius: { all: 8 },
       selectedBorder: 'all',
-      selectedCorner: 'all'
+      selectedCorner: 'all',
     },
     dimensions: {
       width: '100%',
@@ -128,7 +128,7 @@ export const defaultStyles = (): any => {
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',
-      maxWidth: 'auto'
-    }
+      maxWidth: 'auto',
+    },
   };
 };

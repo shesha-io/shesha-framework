@@ -9,7 +9,7 @@ import FormComponentBoolDisplay from './formComponentBoolDisplay';
 
 export interface IFormComponentProps extends IFormComponent {}
 
-export const FormComponent: FC<IFormComponentProps> = props => {
+export const FormComponent: FC<IFormComponentProps> = (props) => {
   const {
     label,
     dataType: { name },

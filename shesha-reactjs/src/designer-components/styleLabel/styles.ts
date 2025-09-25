@@ -2,7 +2,6 @@ import { createStyles } from '@/styles';
 
 
 export const useStyles = createStyles(({ css, cx, token }) => {
-
   const flexWrapper = cx("", css`
         display: flex;
         flex-direction: row;
@@ -27,6 +26,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
   return {
     flexWrapper,
-    hidelLabelIcon
+    hidelLabelIcon,
   };
 });

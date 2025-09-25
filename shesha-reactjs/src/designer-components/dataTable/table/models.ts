@@ -20,24 +20,24 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   noDataSecondaryText?: string;
   noDataIcon?: string;
   dblClickActionConfiguration?: IConfigurableActionConfiguration;
-  
+
   onRowClick?: IConfigurableActionConfiguration;
   onRowDoubleClick?: IConfigurableActionConfiguration;
   onRowHover?: IConfigurableActionConfiguration;
   onRowSelect?: IConfigurableActionConfiguration;
   onSelectionChange?: IConfigurableActionConfiguration;
-  
+
   striped?: boolean;
   hoverHighlight?: boolean;
   stickyHeader?: boolean;
-  
+
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
   borderRadius?: string;
   border?: IBorderValue;
-  
+
   enableStyleOnReadonly?: boolean;
 }
 

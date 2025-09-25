@@ -14,7 +14,7 @@ export interface IListEditorActions<TItem = any> {
 }
 
 export interface IListEditor<TItem = any> extends IListEditorState<TItem>, IListEditorActions<TItem> {
-  
+
 }
 
 export interface IListEditorStateContext<TItem = any> extends IListEditorState<TItem> {

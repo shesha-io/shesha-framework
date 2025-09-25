@@ -7,7 +7,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
   const { styles, cx } = useStyles();
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 1024,
-    height: typeof window !== 'undefined' ? window.innerHeight : 768
+    height: typeof window !== 'undefined' ? window.innerHeight : 768,
   });
 
   // Listen for window resize events
@@ -15,7 +15,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
     const handleResize = () => {
       setWindowSize({
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
       });
     };
 
@@ -32,14 +32,14 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
     '#F8BD00ff',
     '#00068Dff',
     '#0038B1ff',
-    '#000000ff'
+    '#000000ff',
   ];
 
   // Responsive dimensions based on screen size
   const responsiveDimensions = useMemo(() => {
     const isMobile = windowSize.width <= 480;
     const isTablet = windowSize.width <= 768 && windowSize.width > 480;
-    
+
     if (isMobile) {
       return {
         barHeights: [120, 100, 80, 110, 90, 70, 85, 115],
@@ -47,7 +47,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
         svgHeight: 100,
         polarSvgSize: 150,
         dotRadius: 3,
-        polarRadius: 50
+        polarRadius: 50,
       };
     } else if (isTablet) {
       return {
@@ -56,7 +56,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
         svgHeight: 125,
         polarSvgSize: 175,
         dotRadius: 3.5,
-        polarRadius: 60
+        polarRadius: 60,
       };
     } else {
       return {
@@ -65,7 +65,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
         svgHeight: 150,
         polarSvgSize: 200,
         dotRadius: 4,
-        polarRadius: 70
+        polarRadius: 70,
       };
     }
   }, [windowSize.width]);
@@ -84,9 +84,9 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
       case 'line':
         return (
           <div className={cx(styles.loaderCard)}>
-            <svg 
-              viewBox={`0 0 ${responsiveDimensions.svgWidth} ${responsiveDimensions.svgHeight}`} 
-              width={responsiveDimensions.svgWidth} 
+            <svg
+              viewBox={`0 0 ${responsiveDimensions.svgWidth} ${responsiveDimensions.svgHeight}`}
+              width={responsiveDimensions.svgWidth}
               height={responsiveDimensions.svgHeight}
             >
               <polyline
@@ -111,7 +111,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
                 [responsiveDimensions.svgWidth * 0.625, responsiveDimensions.svgHeight * 0.27],
                 [responsiveDimensions.svgWidth * 0.75, responsiveDimensions.svgHeight * 0.47],
                 [responsiveDimensions.svgWidth * 0.875, responsiveDimensions.svgHeight * 0.33],
-                [responsiveDimensions.svgWidth, responsiveDimensions.svgHeight * 0.2]
+                [responsiveDimensions.svgWidth, responsiveDimensions.svgHeight * 0.2],
               ].map((point, index) => (
                 <circle
                   key={index}
@@ -129,9 +129,9 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
       case 'polarArea':
         return (
           <div className={cx(styles.loaderCard)}>
-            <svg 
-              viewBox={`0 0 ${responsiveDimensions.polarSvgSize} ${responsiveDimensions.polarSvgSize}`} 
-              width={responsiveDimensions.polarSvgSize} 
+            <svg
+              viewBox={`0 0 ${responsiveDimensions.polarSvgSize} ${responsiveDimensions.polarSvgSize}`}
+              width={responsiveDimensions.polarSvgSize}
               height={responsiveDimensions.polarSvgSize}
             >
               <g transform={`translate(${responsiveDimensions.polarSvgSize / 2},${responsiveDimensions.polarSvgSize / 2})`}>
@@ -149,7 +149,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
         );
 
       default:
-          return (
+        return (
             <div className={cx(styles.loaderCard)}>
               <div className={cx(styles.barChartContainer)}>
                 {responsiveDimensions.barHeights.map((height, index) => (
@@ -158,13 +158,13 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
                     className={cx(styles.bar)}
                     style={{
                       height: `${height}px`,
-                      backgroundColor: colors[index]
+                      backgroundColor: colors[index],
                     }}
                   />
                 ))}
               </div>
             </div>
-          );
+        );
     }
   };
 
@@ -173,10 +173,10 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
       {renderLoader()}
       {handleCancelClick && (
       <Button
-          color="danger"
-          size="small"
-          onClick={handleCancelClick}
-        >
+        color="danger"
+        size="small"
+        onClick={handleCancelClick}
+      >
           Cancel
         </Button>
       )}

@@ -28,7 +28,7 @@ export function usePortal(container?: HTMLElement | null) {
 
     useEffect(() => {
       if (!portalRef.current) return undefined;
-      
+
       const containerToUse = targetContainer || document.body;
       containerToUse.appendChild(portalRef.current);
 

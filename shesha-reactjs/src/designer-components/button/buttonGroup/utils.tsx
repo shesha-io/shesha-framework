@@ -30,9 +30,8 @@ export function getButtonGroupMenuItem(
 };
 
 export const defaultStyles = (prev): IStyleType => {
-
   return {
-    background: { type: 'color', color: prev.backgroundColor, },
+    background: { type: 'color', color: prev.backgroundColor },
     font: { color: prev.buttonType === 'primary' ? '#fff' : prev.fontColor ?? '', weight: prev.fontWeight ?? '400', size: prev.fontSize ?? 14, type: prev.fontFamily ?? 'Segoe UI', align: 'center' },
     border: {
       borderType: 'all',
@@ -41,10 +40,10 @@ export const defaultStyles = (prev): IStyleType => {
         all: {
           width: prev.borderWidth ?? '1px',
           style: prev.borderStyle ?? 'solid',
-          color: prev.borderColor ?? '#d9d9d9'
+          color: prev.borderColor ?? '#d9d9d9',
         },
       },
-      radius: { all: prev.borderRadius ?? prev.size === 'small' ? 4 : 8 }
+      radius: { all: prev.borderRadius ?? prev.size === 'small' ? 4 : 8 },
     },
     shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
     dimensions: {
@@ -53,7 +52,7 @@ export const defaultStyles = (prev): IStyleType => {
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',
-      maxWidth: 'auto'
+      maxWidth: 'auto',
     },
     style: prev.style ?? '',
   };
@@ -69,6 +68,6 @@ export const defaultContainerStyles = (): IStyleType => {
       borderType: 'all',
     },
     shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
-    dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
+    dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
   };
 };

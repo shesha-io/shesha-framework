@@ -51,10 +51,10 @@ const RateComponent: IToolboxComponent<IRateProps> = {
             customEvent.onChange({value});
             if (typeof onChange === 'function') onChange(value);
           };
-          
+
           return <Rate
             allowClear={allowClear}
-            //allowHalf={allowHalf}
+            // allowHalf={allowHalf}
             character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
             disabled={readOnly}
             count={localCount ?? 5}

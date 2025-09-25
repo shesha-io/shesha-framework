@@ -1,6 +1,6 @@
 import { IConfigurableFormComponent } from '@/interfaces';
 
 export interface IColumnsEditorComponentProps extends IConfigurableFormComponent {
-  //items: ColumnsItemProps[];
+  // items: ColumnsItemProps[];
   modelType: string;
 }

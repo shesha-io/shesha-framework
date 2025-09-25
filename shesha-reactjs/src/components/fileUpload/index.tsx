@@ -118,7 +118,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       okType: 'danger',
       onOk: () => {
         deleteFile();
-      }
+      },
     });
   };
 

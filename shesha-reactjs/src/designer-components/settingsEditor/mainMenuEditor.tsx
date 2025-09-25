@@ -102,7 +102,7 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
         .then(async () => {
           if (saveSetting) {
             await saveSetting();
-          } 
+          }
         })
         .then(() => {
           message.success('Menu saved successfully!');

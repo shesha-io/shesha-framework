@@ -861,17 +861,17 @@ type IDataTableProviderProps = IDataTableProviderBaseProps &
 const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTableProviderBaseProps> => {
   const { sourceType } = props;
   switch (sourceType) {
-  case 'Entity': {
-    return withBackendRepository(DataTableProviderWithRepository);
-  }
-  case 'Form': {
-    return withFormFieldRepository(DataTableProviderWithRepository);
-  };
-  case 'Url':
-    return withUrlRepository(DataTableProviderWithRepository);
-  default: {
-    return withNullRepository(DataTableProviderWithRepository, {});
-  }
+    case 'Entity': {
+      return withBackendRepository(DataTableProviderWithRepository);
+    }
+    case 'Form': {
+      return withFormFieldRepository(DataTableProviderWithRepository);
+    };
+    case 'Url':
+      return withUrlRepository(DataTableProviderWithRepository);
+    default: {
+      return withNullRepository(DataTableProviderWithRepository, {});
+    }
   }
 };
 

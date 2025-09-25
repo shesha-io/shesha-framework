@@ -17,7 +17,7 @@ const columns = [
     title: 'Datatype',
     key: 'type',
     dataIndex: 'type',
-    render: tag => <Tag key={tag}>{tag}</Tag>,
+    render: (tag) => <Tag key={tag}>{tag}</Tag>,
   },
 ];
 

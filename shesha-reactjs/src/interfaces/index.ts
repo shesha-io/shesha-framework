@@ -34,16 +34,16 @@ export { type ITableColumn, type IDataTableInstance } from '../providers/dataTab
 export type { PageWithLayout } from './pageWithLayout';
 export type { InsertMode } from './insertMode';
 export type { IColor, IHsl, IHsv, IRgb } from './color';
-export type { 
-    IApiEndpoint, 
-    IObjectMetadata, 
-    IModelMetadata, 
-    IEntityMetadata, 
-    IPropertyMetadata, 
-    IHasEntityType,
-    TypeDefinition,
-    SourceFile,
-    ITypeDefinitionLoadingContext,
+export type {
+  IApiEndpoint,
+  IObjectMetadata,
+  IModelMetadata,
+  IEntityMetadata,
+  IPropertyMetadata,
+  IHasEntityType,
+  TypeDefinition,
+  SourceFile,
+  ITypeDefinitionLoadingContext,
 } from './metadata';
 export { isPropertiesArray, isEntityReferencePropertyMetadata } from './metadata';
 export { isEntityMetadata } from './metadata';

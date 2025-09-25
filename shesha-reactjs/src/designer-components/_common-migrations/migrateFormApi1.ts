@@ -15,18 +15,18 @@ const formMode = (expr: string): string => migrateExpression(expr, /\b(formMode)
 const withoutFormData = (expr: string): string => setFormData(formMode(expr));
 const full = (expr: string): string => setFormData(formData(formMode(expr)));
 
-const events = <T extends IConfigurableFormComponent,>(model: T): T => ({
+const events = <T extends IConfigurableFormComponent>(model: T): T => ({
   ...model,
   onBlurCustom: withoutFormData(model.onBlurCustom),
   onChangeCustom: withoutFormData(model.onChangeCustom),
   onFocusCustom: withoutFormData(model.onFocusCustom),
 });
 
-const properties = <T,>(model: T): T => {
+const properties = <T>(model: T): T => {
   const migrateProp = (prop: any) => {
     if (!prop)
       return prop;
-    
+
     if (isPropertySettings(prop)) {
       // migrate JS settings
       return {...prop, _code: withoutFormData(prop?._code)};
@@ -40,9 +40,9 @@ const properties = <T,>(model: T): T => {
   };
 
   if (Array.isArray(model)) {
-    return model.map(prop => {
-        // migrate properties
-        return typeof prop === 'object' ? migrateProp(prop) : prop;
+    return model.map((prop) => {
+      // migrate properties
+      return typeof prop === 'object' ? migrateProp(prop) : prop;
     }) as T;
   };
 
@@ -60,7 +60,7 @@ const properties = <T,>(model: T): T => {
   return newModel;
 };
 
-const eventsAndProperties = <T extends IConfigurableFormComponent,>(model: T): T => (events(properties(model)));
+const eventsAndProperties = <T extends IConfigurableFormComponent>(model: T): T => (events(properties(model)));
 
 export const migrateFormApi = {
   setFormData,
@@ -70,6 +70,6 @@ export const migrateFormApi = {
   full,
   events,
   properties,
-  eventsAndProperties
+  eventsAndProperties,
 };
 

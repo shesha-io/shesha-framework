@@ -79,11 +79,11 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
       padding: 0,
       margin: 0,
       ...{
-      ...style,
-      color: getColorByContentType(contentType, style, theme),
-      fontSize: textType === 'title' ? undefined : style?.fontSize,
-      justifyContent: style?.textAlign,
-    }},
+        ...style,
+        color: getColorByContentType(contentType, style, theme),
+        fontSize: textType === 'title' ? undefined : style?.fontSize,
+        justifyContent: style?.textAlign,
+      }},
   };
 
   const paragraphProps: ParagraphProps = {

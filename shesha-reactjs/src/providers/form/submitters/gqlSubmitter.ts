@@ -74,25 +74,25 @@ export class GqlSubmitter implements IFormDataSubmitter {
     };
 
     switch (normalizedVerb) {
-    case "post":
-      return (data) => {
-        return unwrapHttpCall(this.#httpClient.post(endpoint.url, data));
-      };
-    case "put":
-      return (data) => {
-        return unwrapHttpCall(this.#httpClient.put(endpoint.url, data));
-      };
-    case "delete":
-      return (data) => {
-        const urlWithoutQuery = getUrlWithoutQueryParams(endpoint.url);
-        const queryParams = getQueryParams(endpoint.url);
-        const queryStringData = { ...queryParams, ...data };
-        const finalUrl = `${urlWithoutQuery}?${qs.stringify(queryStringData)}`;
+      case "post":
+        return (data) => {
+          return unwrapHttpCall(this.#httpClient.post(endpoint.url, data));
+        };
+      case "put":
+        return (data) => {
+          return unwrapHttpCall(this.#httpClient.put(endpoint.url, data));
+        };
+      case "delete":
+        return (data) => {
+          const urlWithoutQuery = getUrlWithoutQueryParams(endpoint.url);
+          const queryParams = getQueryParams(endpoint.url);
+          const queryStringData = { ...queryParams, ...data };
+          const finalUrl = `${urlWithoutQuery}?${qs.stringify(queryStringData)}`;
 
-        return unwrapHttpCall(this.#httpClient.delete(finalUrl));
-      };
-    default:
-      return null;
+          return unwrapHttpCall(this.#httpClient.delete(finalUrl));
+        };
+      default:
+        return null;
     }
   };
 
@@ -102,18 +102,18 @@ export class GqlSubmitter implements IFormDataSubmitter {
     const { endpointType, staticEndpoint, dynamicEndpoint } = gqlSettings;
 
     switch (endpointType) {
-    case 'default': {
-      return await this.#endpointsEvaluator.getFormActionUrl({ actionName: entityAction, formSettings: formSettings, mappings: [] });
-    }
-    case 'static': {
-      return staticEndpoint;
-    }
-    case 'dynamic': {
-      const dynamicEvaluated = await payload.expressionExecuter(dynamicEndpoint, { data: payload.data });
-      return dynamicEvaluated;
-    }
-    default:
-      return null;
+      case 'default': {
+        return await this.#endpointsEvaluator.getFormActionUrl({ actionName: entityAction, formSettings: formSettings, mappings: [] });
+      }
+      case 'static': {
+        return staticEndpoint;
+      }
+      case 'dynamic': {
+        const dynamicEvaluated = await payload.expressionExecuter(dynamicEndpoint, { data: payload.data });
+        return dynamicEvaluated;
+      }
+      default:
+        return null;
     }
   };
 

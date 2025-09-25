@@ -44,7 +44,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     axisLabelFont,
     legendFont,
     tickFont,
-    simpleOrPivot
+    simpleOrPivot,
   } = useChartDataStateContext();
   const chartTitle: string = useGeneratedTitle();
   const isSmallScreen = useIsSmallScreen();
@@ -69,8 +69,8 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         top: 10,
         bottom: 10,
         left: 10,
-        right: 10
-      }
+        right: 10,
+      },
     },
     transitions: {
       active: {
@@ -158,7 +158,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
               return (value / 1000).toFixed(1) + 'k';
             }
             return value.toLocaleString();
-          }
+          },
         },
         grid: {
           display: !isSmallScreen, // Hide grid on mobile

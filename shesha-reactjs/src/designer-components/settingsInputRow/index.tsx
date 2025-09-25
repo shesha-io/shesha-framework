@@ -9,53 +9,53 @@ import { useStyles } from '../inputComponent/styles';
 import { ISettingsInputProps } from '../settingsInput/interfaces';
 
 export interface ISettingsInputRowProps extends Omit<IConfigurableFormComponent, 'id' | 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'>, IInputRowProps {
-    id?: string;
+  id?: string;
 }
 
 export interface IInputRowProps {
-    inputs?: Array<ISettingsInputProps>;
-    readOnly?: boolean;
-    inline?: boolean;
-    children?: React.ReactNode;
-    hidden?: boolean;
+  inputs?: Array<ISettingsInputProps>;
+  readOnly?: boolean;
+  inline?: boolean;
+  children?: React.ReactNode;
+  hidden?: boolean;
 }
 
 export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
-    const { styles } = useStyles();
-    const { formData } = useShaFormInstance();
+  const { styles } = useStyles();
+  const { formData } = useShaFormInstance();
 
-    const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
-    return isHidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
+  const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
+  return isHidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs?.map((props, i) => {
-            const { type } = props;
-            const isHidden = typeof props.hidden === 'string' ? evaluateString(props.hidden, { data: formData }) : props.hidden;
+          const { type } = props;
+          const isHidden = typeof props.hidden === 'string' ? evaluateString(props.hidden, { data: formData }) : props.hidden;
 
-            const width = getWidth(type, props.width);
+          const width = getWidth(type, props.width);
 
-            return (
+          return (
                 <SettingInput key={i + props.label}
-                    {...props}
-                    hidden={isHidden as boolean}
-                    readOnly={props.readOnly || readOnly}
-                    inline={inline}
-                    width={width} />
-            );
+                  {...props}
+                  hidden={isHidden as boolean}
+                  readOnly={props.readOnly || readOnly}
+                  inline={inline}
+                  width={width} />
+          );
         })}
         {children}
     </div>;
 };
 
 const SettingsInputRow: IToolboxComponent<ISettingsInputRowProps & IConfigurableFormComponent> = {
-    type: 'settingsInputRow',
-    isInput: true,
-    isOutput: true,
-    name: 'SettingsInputRow',
-    icon: <SettingOutlined />,
-    Factory: ({ model }) => {
-        return model.hidden ? null : (
+  type: 'settingsInputRow',
+  isInput: true,
+  isOutput: true,
+  name: 'SettingsInputRow',
+  icon: <SettingOutlined />,
+  Factory: ({ model }) => {
+    return model.hidden ? null : (
             <InputRow readOnly={model.readOnly} {...model} />
-        );
-    }
+    );
+  },
 };
 
 export default SettingsInputRow;

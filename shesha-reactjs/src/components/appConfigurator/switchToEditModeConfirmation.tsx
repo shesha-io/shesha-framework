@@ -6,7 +6,7 @@ export interface IProps {}
 
 export const SwitchToEditModeConfirmation: FC<IProps> = () => {
   const { editModeConfirmationVisible, switchApplicationMode, toggleEditModeConfirmation } = useAppConfigurator();
-  
+
   return (
     <Modal
       title="Launch Edit Mode"

@@ -19,7 +19,7 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
 
   const style = getAlignmentStyle(props);
 
-  //alias added for readability and avoiding names clashes
+  // alias added for readability and avoiding names clashes
   const { value: subFormData } = useSubForm();
   const { globalState } = useGlobalState();
 
@@ -40,7 +40,7 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
         })
         .map((model) => {
           return (
-            <FormComponent 
+            <FormComponent
               componentModel={{
                 ...model,
                 context: model.context ?? context,

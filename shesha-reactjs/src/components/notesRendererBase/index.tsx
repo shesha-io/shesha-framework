@@ -27,7 +27,7 @@ export interface INotesRendererBaseProps {
   buttonFloatRight?: boolean;
   autoSize?: boolean;
   allowDelete?: boolean;
-  //new props
+  // new props
   showCharCount?: boolean;
   minLength?: number;
   maxLength?: number;
@@ -304,7 +304,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
                         noteText,
                         author,
                         creationTime,
-                        ownerId: '', 
+                        ownerId: '',
                         ownerType: '',
                         category: '',
                       })

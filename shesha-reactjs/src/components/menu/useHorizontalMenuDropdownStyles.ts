@@ -14,12 +14,11 @@ export const useHorizontalMenuDropdownStyles = ({
   menuId,
   colors,
   fontStyles,
-  styleOnSubMenu
+  styleOnSubMenu,
 }: UseHorizontalMenuDropdownStylesProps) => {
   useLayoutEffect(() => {
-
     const styleId = `horizontal-menu-dropdown-styles-${menuId}`;
-    
+
     const existingStyle = document.getElementById(styleId);
     if (existingStyle) {
       existingStyle.remove();

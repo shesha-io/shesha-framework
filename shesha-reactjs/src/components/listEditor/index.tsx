@@ -4,7 +4,7 @@ import {
   getListEditorActionsContext,
   getListEditorContextInitialState,
   getListEditorStateContext,
-  IListEditorContext
+  IListEditorContext,
 } from './contexts';
 import { IGenericListEditorProps } from './interfaces';
 import { ListEditorRenderer } from './renderer';
@@ -22,7 +22,7 @@ export interface NestedItemsRenderingArgs<TItem = any> {
 
 export interface ItemChangeDetails {
   isReorder: boolean;
-  childsLengthDelta?: number; 
+  childsLengthDelta?: number;
 }
 export interface ListItemRenderingArgs<TItem = any> {
   item: TItem;

@@ -22,7 +22,6 @@ export interface IEntityEndpointsEvaluator {
 }
 
 export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
-
   const { getMetadata } = useMetadataDispatcher();
 
   const getDefaultActionUrl = (payload: GetDefaultActionUrlPayload): Promise<IApiEndpoint> => {
@@ -31,7 +30,7 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
     if (!payload.actionName)
       return Promise.reject('`name` is not provided');
 
-    return getMetadata({ dataType: DataTypes.entityReference, modelType: payload.modelType }).then(m => {
+    return getMetadata({ dataType: DataTypes.entityReference, modelType: payload.modelType }).then((m) => {
       const endpoint = isEntityMetadata(m)
         ? m.apiEndpoints[payload.actionName]
         : null;
@@ -64,7 +63,7 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
 
     // cleanup the url
     endpoint.url = removeZeroWidthCharsFromString(endpoint.url ?? '');
-    // don't return endpoint with empty url 
+    // don't return endpoint with empty url
     return endpoint.url
       ? endpoint
       : null;
@@ -73,7 +72,7 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
   const getFormActionUrl = (payload: GetFormActionUrlPayload): Promise<IApiEndpoint> => {
     const { formSettings, actionName, mappings } = payload;
     const customEndpoint = getActionUrlFromFormSettings(formSettings, actionName);
-    
+
     if (customEndpoint) {
       const evaluatedrl = evaluateComplexString(customEndpoint.url, mappings);
 
@@ -105,7 +104,7 @@ export const useModelApiEndpoint = (args: UseEntityEndpointArguments): IApiEndpo
   const endpointsHelper = useModelApiHelper();
 
   useDeepCompareEffect(() => {
-    endpointsHelper.getFormActionUrl({ actionName, formSettings, mappings }).then(e => {
+    endpointsHelper.getFormActionUrl({ actionName, formSettings, mappings }).then((e) => {
       setEndpoint(e);
     });
   }, [args]);

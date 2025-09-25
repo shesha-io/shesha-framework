@@ -39,10 +39,10 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     selectBtnSize,
     fullStyles,
     iconSize,
-    value
+    value,
   } = props;
 
-    const [finalValue, setFinalValue] = useState(null);
+  const [finalValue, setFinalValue] = useState(null);
   const hasSaved = useRef(false);
 
 
@@ -74,7 +74,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
           style={{
             ...fullStyles,
             fontSize: 20,
-            background: 'transparent', //icon should not have background and take the background of the parent like container
+            background: 'transparent', // icon should not have background and take the background of the parent like container
             borderWidth: '0px',
             borderColor: 'transparent',
           }}

@@ -9,11 +9,11 @@ export interface IQueryBuilderProps {
   readOnly?: boolean;
 }
 
-  export interface IQueryBuilderFieldProps {
-    jsonExpanded?: boolean;
-    value?: object;
-    onChange?: (value: any) => void;
-    readOnly?: boolean;
-  }
+export interface IQueryBuilderFieldProps {
+  jsonExpanded?: boolean;
+  value?: object;
+  onChange?: (value: any) => void;
+  readOnly?: boolean;
+}
 
 export type QueryBuilderFieldType = FC<IQueryBuilderFieldProps>;

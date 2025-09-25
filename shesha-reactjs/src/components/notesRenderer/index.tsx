@@ -38,7 +38,7 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
 }) => {
   const { notes, deleteNotes, isInProgress, postNotes, updateNotes } = useNotes();
   const { styles } = useStyles();
- const prevNotes = useRef(notes);
+  const prevNotes = useRef(notes);
   const wasPostingNotes = useRef(false);
   const { fetchNotes: isFetchingNotes, postNotes: isPostingNotes } = isInProgress;
 
@@ -51,7 +51,7 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
         }
       }
     }
-    
+
     wasPostingNotes.current = isPostingNotes;
     prevNotes.current = notes;
   }, [notes, isPostingNotes, onCreated]);

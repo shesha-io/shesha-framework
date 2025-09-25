@@ -43,7 +43,7 @@ const SizableColumnsSettings = (props: ISettingsFormFactoryArgs<ISizableColumnCo
           <StyleBox />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
-      
+
       <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting

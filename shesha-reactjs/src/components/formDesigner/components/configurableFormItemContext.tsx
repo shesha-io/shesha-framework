@@ -19,7 +19,7 @@ export const ConfigurableFormItemContext: FC<IConfigurableFormItem_ContextProps>
     valuePropName,
     propertyName,
     contextName,
-    children
+    children,
   } = props;
   const { getDataContext } = useDataContextManager();
   const context = getDataContext(contextName);
@@ -33,7 +33,7 @@ export const ConfigurableFormItemContext: FC<IConfigurableFormItem_ContextProps>
         onChange={(val) => {
           const value = val?.target ? val?.target[valuePropName || 'value'] : val;
           if (context?.setFieldValue)
-            context.setFieldValue(propertyName, value);
+            context.setFieldValue(propertyName as "", value as never); // TODO: review and change types
         }}
         value={value}
       >

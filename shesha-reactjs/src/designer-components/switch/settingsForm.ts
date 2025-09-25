@@ -80,11 +80,11 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       label: 'Hide',
                       size: 'small',
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'events',
@@ -99,10 +99,10 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   label: 'On Change',
                   labelAlign: 'right',
                   tooltip: 'Enter custom eventhandler on changing of event.',
-                  parentId: eventsTabId
+                  parentId: eventsTabId,
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -121,7 +121,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
+                    _value: "",
                   },
                   components: [
                     ...new DesignerToolbarSettings()
@@ -132,7 +132,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                         label: 'Enable Style On Readonly',
                         tooltip: 'Removes all visual styling except typography when the component becomes read-only',
                         inputType: 'switch',
-                        jsSetting: true
+                        jsSetting: true,
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -159,13 +159,13 @@ export const getSettings = (data: ISwitchComponentProps) => {
                                   dropdownOptions: [
                                     { value: 'small', label: 'Small' },
                                     { value: 'default', label: 'Default' },
-                                  ]
+                                  ],
                                 },
-                              ]
+                              ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -185,15 +185,15 @@ export const getSettings = (data: ISwitchComponentProps) => {
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
-                      .toJson()
-                  ]
+                      .toJson(),
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'security',
@@ -210,17 +210,17 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   size: 'small',
                   parentId: securityTabId,
                 })
-                .toJson()
-            ]
-          }
-        ]
+                .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

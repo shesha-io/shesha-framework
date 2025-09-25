@@ -10,7 +10,7 @@ export interface IProps extends IModelItem {
   index: number[];
 }
 
-export const EntityProperty: FC<IProps> = props => {
+export const EntityProperty: FC<IProps> = (props) => {
   const { styles } = useStyles();
 
   const icon = getIconTypeByDataType(props.dataType);

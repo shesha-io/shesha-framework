@@ -4,18 +4,18 @@ import { IButtonGroupItem, IButtonItem } from "@/providers/buttonGroupConfigurat
 import { upgradeActionConfig } from '@/components/formDesigner/components/_common-migrations/upgrade-action-owners';
 
 export const migrateV1toV2 = (props: IChildTableComponentProps, context: SettingsMigrationContext): IChildTableComponentProps => {
-    const { toolbarItems } = props;
+  const { toolbarItems } = props;
 
-    const newToolbarItems = toolbarItems?.map(item => {
-        if (item.itemType !== "item")
-            return item;
+  const newToolbarItems = toolbarItems?.map((item) => {
+    if (item.itemType !== "item")
+      return item;
 
-        const button = item as IButtonGroupItem;
-        if (button.itemSubType !== 'button')
-            return button;
-            
-        return { ...button, actionConfiguration: upgradeActionConfig((button as IButtonItem).actionConfiguration, context) };
-    });
+    const button = item as IButtonGroupItem;
+    if (button.itemSubType !== 'button')
+      return button;
 
-    return { ...props, toolbarItems: newToolbarItems ?? [] };
+    return { ...button, actionConfiguration: upgradeActionConfig((button as IButtonItem).actionConfiguration, context) };
+  });
+
+  return { ...props, toolbarItems: newToolbarItems ?? [] };
 };

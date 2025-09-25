@@ -13,7 +13,7 @@ export interface IProviderSettingsEditorProps {
   value?: any;
   onChange?: (value: any) => void;
   readOnly?: boolean;
-  //exposedVariables?: ICodeExposedVariable[];
+  // exposedVariables?: ICodeExposedVariable[];
   availableConstants?: IObjectMetadata;
 }
 
@@ -45,7 +45,7 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
   value,
   onChange,
   readOnly = false,
-  //exposedVariables,
+  // exposedVariables,
   availableConstants,
 }) => {
   const settingsEditor = useMemo(() => {
@@ -75,7 +75,7 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
           onCancel,
           onValuesChange,
           readOnly,
-          //exposedVariables,
+          // exposedVariables,
           availableConstants,
         })
         : null;

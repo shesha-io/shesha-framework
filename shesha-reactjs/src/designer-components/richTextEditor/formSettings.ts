@@ -75,7 +75,7 @@ export const getSettings = (data: any) => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       jsSetting: true,
-                      defaultValue: 'inherited'
+                      defaultValue: 'inherited',
                     },
                     {
                       type: 'switch',
@@ -251,7 +251,7 @@ export const getSettings = (data: any) => {
                                 { label: 'None', value: 'null' },
                                 { label: 'Inline', value: 'inline' },
                               ],
-                            }
+                            },
                           ],
                         })
                         .toJson(),
@@ -349,7 +349,7 @@ export const getSettings = (data: any) => {
                               propertyName: 'iframe',
                               label: 'Iframe Mode',
                               tooltip: "Isolates the editor content in a separate iframe for better style separation",
-                            }
+                            },
                           ],
                         })
                         .addSettingsInputRow({

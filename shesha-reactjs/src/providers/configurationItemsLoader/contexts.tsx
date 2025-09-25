@@ -36,7 +36,7 @@ export interface IClearFormCachePayload {
 }
 
 export interface IConfigurationItemsLoaderActionsContext {
-  getCachedForm: (payload: IGetFormPayload) => Promise<IFormDto>;
+  getCachedForm: (payload: IGetFormPayload) => Promise<IFormDto> | null;
   getForm: (payload: IGetFormPayload) => Promise<IFormDto>;
   getRefList: (payload: IGetRefListPayload) => PromisedValue<IReferenceList>;
   getComponent: (payload: IGetComponentPayload) => PromisedValue<IComponentSettings>;

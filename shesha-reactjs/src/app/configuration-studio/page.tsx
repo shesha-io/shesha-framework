@@ -5,9 +5,9 @@ import { PageWithLayout } from '@/interfaces';
 import ConfigurationStudio from '@/configuration-studio';
 
 const Page: PageWithLayout<{}> = () => {
-    return (
+  return (
         <ConfigurationStudio />
-    );
+  );
 };
 
 export default Page;

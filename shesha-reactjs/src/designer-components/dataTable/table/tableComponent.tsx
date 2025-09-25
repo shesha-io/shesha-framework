@@ -31,13 +31,13 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
       return null;
     return store ? (
       <TableWrapper {...model} />
-    ) : 
-      (<Alert
-        className="sha-designer-warning"
-        message="Data Table must be used within a Data Table Context"
-        type="warning"
+    )
+      : (<Alert
+          className="sha-designer-warning"
+          message="Data Table must be used within a Data Table Context"
+          type="warning"
       />
-    );
+      );
   },
   initModel: (model: ITableComponentProps) => {
     return {
@@ -84,26 +84,26 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
             handleFail: false,
             handleSuccess: false,
           }
-          : null
+          : null,
       }))
       .add<ITableComponentProps>(5, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ITableComponentProps>(6, (prev) => {
-        const columns = (prev.items ?? []).map(c => (c.columnType === 'data' ? { ...c, allowSorting: true } as IDataColumnsProps : c));
+        const columns = (prev.items ?? []).map((c) => (c.columnType === 'data' ? { ...c, allowSorting: true } as IDataColumnsProps : c));
         return { ...prev, items: columns };
       })
       .add<ITableComponentProps>(7, (prev) => migrateVisibility(prev))
       .add<ITableComponentProps>(8, (prev) => ({ ...prev, onRowSaveSuccessAction: migrateNavigateAction(prev.onRowSaveSuccessAction) }))
       .add<ITableComponentProps>(9, (prev) => ({
-        ...prev, items: (prev.items ?? []).map(item => {
+        ...prev, items: (prev.items ?? []).map((item) => {
           return isActionColumnProps(item)
             ? { ...item, actionConfiguration: migrateNavigateAction(item.actionConfiguration) }
             : item;
-        })
+        }),
       }))
       .add<ITableComponentProps>(10, (prev) => ({
         ...migrateFormApi.properties(prev),
         onNewRowInitialize: migrateFormApi.full(prev.onNewRowInitialize),
-        onRowSave: migrateFormApi.full(prev.onRowSave)
+        onRowSave: migrateFormApi.full(prev.onRowSave),
       }))
       .add<ITableComponentProps>(11, (prev) => ({
         ...prev,

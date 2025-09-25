@@ -29,7 +29,7 @@ export const defaultStyles = (prev): IStyleType => {
       offsetY: 0,
       color: '#000',
       blurRadius: 0,
-      spreadRadius: 0
+      spreadRadius: 0,
     },
   };
 };

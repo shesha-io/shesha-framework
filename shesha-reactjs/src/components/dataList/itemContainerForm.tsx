@@ -7,18 +7,18 @@ import classNames from 'classnames';
 
 type AlignmentProps = Pick<
   IComponentsContainerProps,
-  | 'direction'
-  | 'justifyContent'
-  | 'alignItems'
-  | 'justifyItems'
-  | 'flexDirection'
-  | 'justifySelf'
-  | 'alignSelf'
-  | 'textJustify'
-  | 'gap'
-  | 'gridColumnsCount'
-  | 'display'
-  | 'flexWrap'
+  | 'direction' |
+  'justifyContent' |
+  'alignItems' |
+  'justifyItems' |
+  'flexDirection' |
+  'justifySelf' |
+  'alignSelf' |
+  'textJustify' |
+  'gap' |
+  'gridColumnsCount' |
+  'display' |
+  'flexWrap'
 >;
 
 export const getAlignmentStyle = ({

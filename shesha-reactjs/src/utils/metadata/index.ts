@@ -5,12 +5,12 @@ import { useMetadataBuilderFactory } from './hooks';
 import { IMetadata } from '@/publicJsApis/metadata';
 
 export {
-    StringBuilder,
-    MetadataBuilder,
-    TypesImporter,
-    useMetadataBuilderFactory,
-    type IObjectMetadataBuilder,
-    type IMetadataBuilder,
-    type IMetadata,
+  StringBuilder,
+  MetadataBuilder,
+  TypesImporter,
+  useMetadataBuilderFactory,
+  type IObjectMetadataBuilder,
+  type IMetadataBuilder,
+  type IMetadata,
 };
 export * from './helpers';

@@ -5,7 +5,7 @@ import { useHttpClient } from "@/providers";
 import { asyncStorage } from "../storage";
 import { useModalApi } from "./modalApi";
 import { useNotificationApi } from "./notificationApi";
-import { isDefined } from "../types";
+import { isDefined } from "../../utils/nullables";
 
 const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
   const csRef = React.useRef<IConfigurationStudio>();

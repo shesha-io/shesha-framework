@@ -8,7 +8,7 @@ export const getStyleChangeValue = (
   value: string,
   prevVal: string
 ) => {
-  const v = jsonSafeParse(prevVal || '{}');
+  const v = jsonSafeParse<object>(prevVal || '{}');
 
   return JSON.stringify({
     ...(v || {}),

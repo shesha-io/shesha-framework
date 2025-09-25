@@ -139,7 +139,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     menuItemColor: "#000",
     hoverItemColor: "#000",
   }),
-  settingsFormMarkup: model => getSettings(model),
+  settingsFormMarkup: (model) => getSettings(model),
   validateSettings: (model) =>
     validateConfigurableComponentSettings(getSettings(model), model),
   migrator: (m) => m

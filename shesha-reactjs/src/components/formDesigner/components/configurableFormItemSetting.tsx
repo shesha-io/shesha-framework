@@ -20,7 +20,7 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
   const formProps: FormItemProps = {
     name: getFieldNameFromExpression(model.propertyName),
     label: model.label,
-    //style: model.style,
+    // style: model.style,
     required: model.validate?.required,
     tooltip: model.description,
     hidden: model.hidden,
@@ -49,9 +49,9 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
         id: '',
         description: model.description,
         validate: { required: model.validate?.required },
-        hidden: model.hidden
+        hidden: model.hidden,
       }}
-      className='sha-js-label'
+      className="sha-js-label"
       labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}
     >
       {(value, onChange) => {
@@ -77,8 +77,8 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
                       : event;
                     onChange(data);
                   },
-                  [valuePropName]: value
-              });
+                  [valuePropName]: value,
+                });
             }}
           </SettingsControl>
         );

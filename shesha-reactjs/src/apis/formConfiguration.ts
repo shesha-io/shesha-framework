@@ -11,15 +11,15 @@ export type ConfigurationItemVersionStatus = 1 | 2 | 3 | 4 | 5;
  * Form configuration DTO
  */
 export interface FormConfigurationDto {
-  id?: string;
+  id: string;
   /**
    * Module Id
    */
-  moduleId?: string | null;
+  moduleId: string | null;
   /**
    * Origin id
    */
-  originId?: string | null;
+  originId: string | null;
   /**
    * Module name
    */
@@ -31,11 +31,11 @@ export interface FormConfigurationDto {
   /**
    * Label
    */
-  label?: string | null;
+  label: string | null;
   /**
    * Description
    */
-  description?: string | null;
+  description: string | null;
   /**
    * Markup in JSON format
    */
@@ -43,11 +43,11 @@ export interface FormConfigurationDto {
   /**
    * Type of the form model
    */
-  modelType?: string | null;
-  suppress?: boolean;
+  modelType: string | null;
+  suppress: boolean;
 
-  access?: number;
-  permissions?: string[];
+  access: number | null;
+  permissions: string[];
 
   /**
    * Cache MD5, is used for client-side caching

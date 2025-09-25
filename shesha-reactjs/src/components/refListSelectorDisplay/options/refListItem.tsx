@@ -32,7 +32,7 @@ export const RefListItem: FC<IRefListGroupItemProps> = (props) => {
         </span>
         {props.hidden && (
             <EyeInvisibleOutlined style={{ marginRight: '8px', color: '#999' }} />
-          )}
+        )}
         <div className={styles.shaToolbarItemControls}>
 
           <Button icon={<SettingOutlined />} onClick={onEditBtnClick} size="small" />

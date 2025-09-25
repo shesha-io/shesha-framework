@@ -158,8 +158,8 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
-    migrator: (m) => m
-      .add<IMenuListProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+  migrator: (m) => m
+    .add<IMenuListProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default MenuListComponent;

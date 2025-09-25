@@ -81,12 +81,12 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       .add<ITextTypographyProps>(5, (prev) => {
         const fontSizeEntry = FONT_SIZES[prev.fontSize as keyof typeof FONT_SIZES];
         const rem = fontSizeEntry ? fontSizeEntry.fontSize : prev.fontSize;
-        const px = remToPx(rem);        
+        const px = remToPx(rem);
         return {
           ...prev,
           desktop: {...prev?.desktop, font: {...prev?.desktop?.font, size: px}},
         };
-      })
+      }),
 };
 
 export default TextComponent;

@@ -1,7 +1,7 @@
-export { 
-  useAvailableConstantsData, 
-  getActualModel, 
-  upgradeComponent, 
+export {
+  useAvailableConstantsData,
+  getActualModel,
+  upgradeComponent,
   getLayoutStyle,
   validateConfigurableComponentSettings } from '../providers/form/utils';
 export { axiosHttp } from './fetchers';

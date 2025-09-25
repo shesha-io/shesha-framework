@@ -141,10 +141,10 @@ export const defaultStyles = (): IStyleType => {
         all: {
           width: '1px',
           style: 'none',
-          color: '#d9d9d9'
-        }
+          color: '#d9d9d9',
+        },
       },
-      radius: { all: 8 }
+      radius: { all: 8 },
     },
     stylingBox: "{\"marginBottom\":\"5\",\"paddingBottom\":\"16\",\"paddingTop\":\"16\",\"paddingLeft\":\"16\",\"paddingRight\":\"16\"}",
   };

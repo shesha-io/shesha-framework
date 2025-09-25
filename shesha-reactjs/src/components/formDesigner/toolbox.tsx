@@ -11,7 +11,7 @@ export interface IProps { }
 
 const Toolbox: FC<IProps> = () => {
   const { styles } = useStyles();
-  const formDs = useFormDesignerStateSelector(x => x.dataSources);
+  const formDs = useFormDesignerStateSelector((x) => x.dataSources);
   const currentMeta = useMetadata(false);
 
   const builderItems = useMemo(() => {

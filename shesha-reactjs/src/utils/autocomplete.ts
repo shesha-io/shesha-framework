@@ -25,11 +25,11 @@ export interface IAutocompleteProps {
 
 const buildFilterById = (value: AutocompleteValueType): string => {
   if (!value) return null;
-   
-  const ids = (Array.isArray(value) ? value : [value]).map(val => {
+
+  const ids = (Array.isArray(value) ? value : [value]).map((val) => {
     return typeof val === 'string' ? val : val?.id ?? undefined;
-  }).filter(x => Boolean(x));
-  
+  }).filter((x) => Boolean(x));
+
   return getEntityFilterByIds(ids);
 };
 

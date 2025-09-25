@@ -1,13 +1,13 @@
-//import propertySettingsJson from './propertySettings.json';
+// import propertySettingsJson from './propertySettings.json';
 import React, {
   FC,
   ReactNode,
   useEffect,
-  useState
+  useState,
 } from 'react';
 import { ConfigurableForm } from '../../..';
 import { Empty } from 'antd';
-//import { FormMarkup } from '@/providers/form/models';
+// import { FormMarkup } from '@/providers/form/models';
 import { nanoid } from '@/utils/uuid';
 import { useDebouncedCallback } from 'use-debounce';
 import { usePropertiesEditor } from '../provider';
@@ -26,7 +26,7 @@ export const ToolbarItemProperties: FC<IProps> = () => {
   const components = useFormDesignerComponents();
 
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       updateItem({ id: selectedItemId, settings: values });
     },
     // delay in ms

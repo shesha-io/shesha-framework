@@ -1,8 +1,7 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }) => {
-
-    const image = cx(css`
+  const image = cx(css`
         max-width: 150px;
         
         .ant-upload-list-item-container {
@@ -12,7 +11,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     `);
 
 
-    return {
-        image
-    };
+  return {
+    image,
+  };
 });

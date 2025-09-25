@@ -1,21 +1,20 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }, { 
-  fontWeight, 
-  fontFamily, 
-  textAlign, 
-  color, 
-  fontSize, 
-  striped, 
-  hoverHighlight, 
+export const useStyles = createStyles(({ css, cx, token }, {
+  fontWeight,
+  fontFamily,
+  textAlign,
+  color,
+  fontSize,
+  striped,
+  hoverHighlight,
   stickyHeader,
   rowBackgroundColor,
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
-  borderRadius
+  borderRadius,
 }) => {
-
   const dataTable = cx("sha-data-table", css`
     ${ `
       .ant-table {

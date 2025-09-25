@@ -11,7 +11,7 @@ export interface IProps extends IModelItem {
   index: number[];
 }
 
-export const SimpleProperty: FC<IProps> = props => {
+export const SimpleProperty: FC<IProps> = (props) => {
   const { styles } = useStyles();
 
   const icon = getIconTypeByDataType(props.dataType);

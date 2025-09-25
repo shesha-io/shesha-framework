@@ -24,6 +24,6 @@ export const useStyles = createStyles(({ css, cx }) => {
   return {
     shaTreeMain,
     shaComponentTitle,
-    shaComponentParent
+    shaComponentParent,
   };
 });

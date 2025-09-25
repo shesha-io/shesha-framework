@@ -101,7 +101,7 @@ const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
 
   // function findIndex base on Table rowKey props and should always be a right array index
   const rowKey = restProps['data-row-key'];
-  const index = columns.findIndex(x => x.id === restProps['data-row-key']);
+  const index = columns.findIndex((x) => x.id === restProps['data-row-key']);
   return (
     <Draggable key={rowKey} draggableId={rowKey} index={index}>
       {(providedDraggable: DraggableProvided, snapshotDraggable: DraggableStateSnapshot) => (
@@ -133,7 +133,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
   const columns = value as IColumnProps[];
 
   const handleDeleteTab = (key: string) => {
-    const newColumns = columns.filter(column => column.id !== key);
+    const newColumns = columns.filter((column) => column.id !== key);
     onChange(newColumns);
   };
 
@@ -150,9 +150,9 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
     onChange(newColumns);
   };
 
-  const handleSaveCell = row => {
+  const handleSaveCell = (row) => {
     const newData = [...columns];
-    const index = newData.findIndex(item => row.id === item.id);
+    const index = newData.findIndex((item) => row.id === item.id);
     const currentItem = newData[index];
     newData.splice(index, 1, { ...currentItem, ...row });
 
@@ -206,16 +206,16 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
           ) : null,
       }
       : null,
-  ].filter(c => Boolean(c));
+  ].filter((c) => Boolean(c));
 
-  const tableColumns = cols.map(col => {
+  const tableColumns = cols.map((col) => {
     if (!col.editable) {
       return col;
     }
 
     return {
       ...col,
-      onCell: record => ({
+      onCell: (record) => ({
         record,
         editable: col.editable,
         dataIndex: col.dataIndex,
@@ -226,8 +226,8 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
   });
 
   const getListStyle = (_isDraggingOver: boolean) => ({
-    //background: isDraggingOver ? "lightgrey" : "inherit",
-    //overflow: "scroll" as "scroll",
+    // background: isDraggingOver ? "lightgrey" : "inherit",
+    // overflow: "scroll" as "scroll",
   });
 
   const onDragEnd = (result: DropResult) => {
@@ -256,21 +256,21 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const toggleModal = () => setShowDialog(prevVisible => !prevVisible);
+  const toggleModal = () => setShowDialog((prevVisible) => !prevVisible);
 
   return (
     <Fragment>
       <Button size="small" onClick={toggleModal}>{ readOnly ? 'View Columns' : 'Configure Columns' }</Button>
 
-      <Modal 
-        title={ readOnly ? 'View Columns' : 'Configure Columns' } 
-        open={showDialog} 
+      <Modal
+        title={ readOnly ? 'View Columns' : 'Configure Columns' }
+        open={showDialog}
         width="650px"
-        
-        onOk={toggleModal} 
+
+        onOk={toggleModal}
         okButtonProps={{ hidden: readOnly }}
 
-        onCancel={toggleModal} 
+        onCancel={toggleModal}
         cancelText={readOnly ? 'Close' : undefined}
       >
         <Space direction="vertical" style={{ width: '100%' }}>
@@ -284,7 +284,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
                     pagination={false}
                     dataSource={columns}
                     columns={tableColumns}
-                    rowKey={r => r.id}
+                    rowKey={(r) => r.id}
                     components={{
                       body: {
                         row: ({ className, style, ...restProps }) => (

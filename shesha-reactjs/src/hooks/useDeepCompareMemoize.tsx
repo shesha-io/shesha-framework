@@ -23,18 +23,18 @@ export function useDeepCompareMemoize(value: Readonly<any>) {
   const ref = useRef<any>();
 
   const unproxiedValue = Array.isArray(value)
-    ? value.map((item) => 
-      item instanceof StorageProperty 
-      || item instanceof StorageArrayProperty 
-      || item instanceof ShaObjectAccessProxy
-      || item instanceof ShaArrayAccessProxy
-      || item instanceof TouchableProperty 
-      || item instanceof TouchableArrayProperty
+    ? value.map((item) =>
+      item instanceof StorageProperty ||
+      item instanceof StorageArrayProperty ||
+      item instanceof ShaObjectAccessProxy ||
+      item instanceof ShaArrayAccessProxy ||
+      item instanceof TouchableProperty ||
+      item instanceof TouchableArrayProperty
         ? {...item.getData()}
         : item instanceof ObservableProxy
           ? {...item}
           : item
-      )
+    )
     : value;
 
   if (!isEqual(unproxiedValue, ref.current)) {

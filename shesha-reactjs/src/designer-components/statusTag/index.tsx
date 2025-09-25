@@ -34,10 +34,10 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
 
     // TODO: AS - review code from Luke and remove
     /** Used to inject table row in the status tag if rendered on databale. Uses data if not applicable **/
-    //func(model?.injectedTableRow || data, formMode);
-    
+    // func(model?.injectedTableRow || data, formMode);
+
     const getValueByExpression = (expression: string = '') => {
-      return typeof expression === 'string' 
+      return typeof expression === 'string'
         ? expression?.includes('{{') ? evaluateString(expression, data) : expression
         : '';
     };
@@ -56,7 +56,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
       [
         evaluatedOverrideByExpression,
         localValueByExpression,
-        localColorByExpression
+        localColorByExpression,
       ].filter(Boolean)?.length === 0;
 
     const getParsedMappings = () => {
@@ -77,7 +77,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     return (
       <ConfigurableFormItem model={model}>
         {(value) =>
-          <StatusTag {...props} style={getStyle(model?.style, data, globalState)} 
+          <StatusTag {...props} style={getStyle(model?.style, data, globalState)}
             value={model?.valueSource !== 'form' ? props.value : value}
           />
         }
@@ -93,14 +93,14 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
       value: prev['value'],
       color: prev['color'],
     }))
-    .add<IStatusTagProps>(1, (prev) => 
+    .add<IStatusTagProps>(1, (prev) =>
       migratePropertyName(
         migrateCustomFunctions(
           migrateFunctionToProp(
             migrateFunctionToProp(
               migrateFunctionToProp(prev, 'override', 'overrideCodeEvaluator')
-            , 'value', 'valueCodeEvaluator')
-          , 'color', 'colorCodeEvaluator')
+              , 'value', 'valueCodeEvaluator')
+            , 'color', 'colorCodeEvaluator')
         )))
     .add<IStatusTagProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
   ,

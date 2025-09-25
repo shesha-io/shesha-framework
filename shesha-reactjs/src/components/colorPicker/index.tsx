@@ -36,8 +36,8 @@ const formatColor = (color: AggregationColor, format: ColorFormat) => {
 };
 
 /**
- * 
- * @param theme 
+ *
+ * @param theme
  * @returns a (object) map of theme colors with keys as `primary`, `success`, `warning`, `error`, `info`, `processing`
  */
 export const readThemeColor = (theme: IConfigurableTheme) => ({
@@ -48,21 +48,21 @@ export const readThemeColor = (theme: IConfigurableTheme) => ({
   'info': theme.application?.infoColor,
   'processing': theme.application?.processingColor,
   'primaryTextColor': theme?.text?.default,
-  'secondaryTextColor': theme?.text?.secondary
+  'secondaryTextColor': theme?.text?.secondary,
 });
 
-export const ColorPicker: FC<IColorPickerProps> = ({ 
-  value, 
-  onChange, 
-  title, 
-  presets, 
-  showText, 
-  allowClear, 
-  disabledAlpha, 
-  readOnly, 
-  size, 
-  style, 
-  defaultValue 
+export const ColorPicker: FC<IColorPickerProps> = ({
+  value,
+  onChange,
+  title,
+  presets,
+  showText,
+  allowClear,
+  disabledAlpha,
+  readOnly,
+  size,
+  style,
+  defaultValue,
 }) => {
   const [format, setFormat] = useState<ColorFormat>('hex');
   const { theme } = useTheme();
@@ -108,7 +108,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({
     transform: 'scale(1)',
     transformOrigin: 'center center',
     overflow: 'visible',
-    alignItems: 'start'
+    alignItems: 'start',
   };
 
   const wrapperStyle: CSSProperties = {
@@ -139,7 +139,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({
     <div style={wrapperStyle}>
       <div style={scaleContainerStyle}>
         <AntdColorPicker
-          trigger='click'
+          trigger="click"
           format={format}
           onFormatChange={setFormat}
           disabledAlpha={disabledAlpha}

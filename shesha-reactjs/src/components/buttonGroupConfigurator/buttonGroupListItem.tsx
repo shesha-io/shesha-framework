@@ -29,7 +29,7 @@ export const ButtonGroupListItem: FC<IButtonGroupListItemProps> = ({ item, onCha
             ...args,
             initNewItem: initNewItem,
           });
-        }}        
+        }}
       />
     );
 

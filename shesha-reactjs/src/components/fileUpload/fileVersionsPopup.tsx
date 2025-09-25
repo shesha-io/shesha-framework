@@ -15,7 +15,7 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
   const {
     loading: loading,
     refetch: fetchHistory,
-    /*error: fetchError, */ data: serverData,
+    /* error: fetchError, */ data: serverData,
   } = useStoredFileGetFileVersions({
     fileId,
     lazy: true,

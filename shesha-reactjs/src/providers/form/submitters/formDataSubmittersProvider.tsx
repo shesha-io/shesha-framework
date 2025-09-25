@@ -16,12 +16,12 @@ export const FormDataSubmittersProvider: FC<PropsWithChildren> = ({ children }) 
 
   const getFormDataSubmitter = (type: string): IFormDataSubmitter => {
     switch (type) {
-    case 'gql':
-      return gqlSubmitter;
-    case 'custom':
-      return customSubmitter;
-    default:
-      return null;
+      case 'gql':
+        return gqlSubmitter;
+      case 'custom':
+        return customSubmitter;
+      default:
+        return null;
     }
   };
 

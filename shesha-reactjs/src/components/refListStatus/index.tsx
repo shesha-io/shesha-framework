@@ -23,7 +23,6 @@ const Icon = ({ type, ...rest }) => {
 };
 
 export const RefListStatus: FC<IRefListStatusProps> = (props) => {
-
   const {
     value,
     referenceListId,

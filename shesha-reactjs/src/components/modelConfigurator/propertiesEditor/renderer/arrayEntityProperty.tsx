@@ -11,12 +11,12 @@ export interface IProps extends IModelItem {
   parent?: IModelItem;
 }
 
-export const ArrayEntityProperty: FC<IProps> = props => {
+export const ArrayEntityProperty: FC<IProps> = (props) => {
   const { styles } = useStyles();
 
   const icon = getIconByDataType(props.dataType, props.dataFormat);
 
-  const itemsType = props.properties?.find(p => p.isItemsType);
+  const itemsType = props.properties?.find((p) => p.isItemsType);
   const listType = itemsType?.entityType;
   const listIcon = itemsType ? getIconByDataType(itemsType.dataType, itemsType.dataFormat) : null;
 
