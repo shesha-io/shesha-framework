@@ -82,7 +82,7 @@
         <None Remove="ConfigMigrations\package20250704_1203.shaconfig" />
         <None Remove="ConfigMigrations\package20250801_0955.shaconfig" />
         <None Remove="ConfigMigrations\package20250805_0851.shaconfig" />
-        <None Remove="ConfigMigrations\package20250925_0749.shaconfig" />
+        <None Remove="ConfigMigrations\package20250925_1002.shaconfig" />
         <None Remove="ConfigMigrations\package20250811_1431.shaconfig" />
         <None Remove="ConfigMigrations\package20250821_2018.shaconfig" />
         <None Remove="ConfigMigrations\package20250827_1439.shaconfig" />
@@ -139,7 +139,7 @@
         <EmbeddedResource Include="ConfigMigrations\package20250704_1203.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20250801_0955.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20250805_0851.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20250925_0749.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20250925_1002.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20250811_1431.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20250821_2018.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20250827_1439.shaconfig" />
