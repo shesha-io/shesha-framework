@@ -717,23 +717,458 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   createItemAsync = async ({ moduleId, folderId, itemType, prevItemId }: CreateItemArgs): Promise<void> => {
     this.log(`create item of type '${itemType}'`, { moduleId, folderId });
+    }
+  };
 
+<<<<<<< HEAD
+    this.notifySubscribers(['tree', 'tabs', 'doc']);
+  };
+
+  loadTreeAndDocsAsync = async (): Promise<void> => {
+    await this.loadTreeAsync();
+    this.loadTreeStateAsync();
+    this.loadDocsStateAsync();
+
+    this.notifySubscribers(['tree', 'tabs', 'doc']);
+  };
+
+  moveTreeNodeAsync = async (payload: MoveNodePayload): Promise<void> => {
+    await moveTreeNodeAsync(this.httpClient, payload);
+  };
+
+  //#region crud operations
+
+  createFolderAsync = async ({ moduleId, folderId }: CreateFolderArgs): Promise<void> => {
+    await this.modalApi.showModalFormAsync({
+      title: 'Create Folder',
+      formId: FORMS.CREATE_FOLDER,
+      formArguments: {
+        moduleId: moduleId,
+        folderId: folderId,
+      },
+    });
+    await this.loadTreeAsync();
+    // TODO: select created folder
+  };
+
+  deleteFolderAsync = async (node: FolderTreeNode): Promise<void> => {
+    if (!await this.modalApi.confirmYesNo({ title: 'Confirm Deletion', content: `Are you sure you want to delete '${node.name}'?` }))
+      return;
+
+    try {
+      await deleteFolderAsync(this.httpClient, { folderId: node.id });
+      // TODO: change selection, update tabs if required (opened items may be deleted)
+      await this.loadTreeAsync();
+    } catch (error) {
+      console.error(`Failed to delete folder '${node.name}' (id: '${node.id}')`, error);
+    }
+  };
+
+  renameFolderAsync = async (node: FolderTreeNode): Promise<void> => {
+    try {
+      await this.modalApi.showModalFormAsync({
+        title: 'Rename Folder',
+        formId: FORMS.RENAME_FOLDER,
+        formArguments: {
+          folderId: node.id,
+          name: node.name,
+        },
+      });
+
+      await this.loadTreeAsync();
+    } catch (error) {
+      console.error(`Failed to rename folder '${node.name}' (id: '${node.id}')`, error);
+    }
+  };
+
+  createItemAsync = async ({ moduleId, folderId, itemType, prevItemId }: CreateItemArgs): Promise<void> => {
+    this.log(`create item of type '${itemType}'`, { moduleId, folderId });
+
+=======
+  selectTreeNode = async (node?: TreeNode): Promise<void> => {
+    this.log('selectTreeNode', node);
+
+    await this.doSelectTreeNodeAsync(node);
+
+    if (isConfigItemTreeNode(node) && this.activeDocId !== node.id) {
+      const tab = this.findDocumentById(node.id);
+      if (!tab) {
+        // load item, add new tab and select
+        const newTab = await this.createNewTabAsync(node);
+        // select new tab
+        this.selectTabAsync(newTab);
+      } else {
+        this.selectTabAsync(tab);
+      }
+      this.notifySubscribers(['tabs']);
+    }
+  };
+
+  //#region documents
+
+  private loadOpenedDocsAsync = async (): Promise<void> => {
+    // TODO: check type of stored value, filter/proceess documents taking into account loaded tree nodes
+    const docs = await this.storage.getAsync<StoredDocumentInfo[]>(STORAGE_KEYS.OPENED_DOCS) ?? [];
+
+    this.log('Convert restored docs');
+    const mappedDocs = docs.map<IDocumentInstance | undefined>((d) => {
+      const node = this.getTreeNodeById(d.itemId);
+      if (!isConfigItemTreeNode(node))
+        return undefined;
+
+      const definition = this.getDocumentDefinition(node.itemType);
+      if (!definition)
+        return undefined;
+
+      return definition.documentInstanceFactory({
+        itemId: d.itemId,
+        label: node.name,
+        moduleId: node.moduleId,
+        moduleName: node.moduleName,
+        flags: node.flags,
+      });
+    })
+      .filter((d) => isDefined(d));
+
+    this.docs = mappedDocs;
+  };
+
+  private loadDocSelectionAsync = async (): Promise<void> => {
+    // TODO: check type of stored value, filter/proceess documents taking into account loaded tree nodes
+    this.activeDocId = await this.storage.getAsync(STORAGE_KEYS.ACTIVE_DOC_ID);
+  };
+
+  private loadDocsStateAsync = async (): Promise<void> => {
+    await this.loadOpenedDocsAsync();
+    await this.loadDocSelectionAsync();
+  };
+
+  private saveOpenedDocsAsync = async (): Promise<void> => {
+    const storedData = this.docs.map<StoredDocumentInfo>((d) => ({
+      itemId: d.itemId,
+      label: d.label,
+      type: d.type,
+    }));
+    await this.storage.setAsync(STORAGE_KEYS.OPENED_DOCS, storedData);
+  };
+
+  private saveDocSelectionAsync = async (): Promise<void> => {
+    if (isDefined(this.activeDocId))
+      await this.storage.setAsync(STORAGE_KEYS.ACTIVE_DOC_ID, this.activeDocId.toString());
+    else
+      await this.storage.removeAsync(STORAGE_KEYS.ACTIVE_DOC_ID);
+  };
+
+  //#endregion
+
+  //#region tabs
+
+  private createNewTabAsync = async (node: ConfigItemTreeNode): Promise<CIDocument> => {
+    this.log(`create tab for item '${node.name}'`);
+
+    const definition = this.getDocumentDefinition(node.itemType);
+    if (!definition)
+      throw new Error(`Unsupported item type: '${node.itemType}'`);
+
+    const newDocument = definition.documentInstanceFactory({
+      itemId: node.id,
+      label: node.name,
+      moduleId: node.moduleId,
+      moduleName: node.moduleName,
+      flags: node.flags,
+    });
+
+    this.docs = [...this.docs, newDocument];
+    await this.saveOpenedDocsAsync();
+
+    this.notifySubscribers(['tabs']);
+
+    return newDocument;
+  };
+
+  private findDocumentById = (tabId: string): DocumentBase | undefined => {
+    return this.docs.find((t) => t.itemId === tabId);
+  };
+
+  doSelectTabAsync = async (tab?: DocumentBase): Promise<void> => {
+    const selectedDocId = tab?.itemId;
+    this.activeDocId = selectedDocId;
+    await this.saveDocSelectionAsync();
+
+    this.notifySubscribers(['tabs', 'doc']);
+  };
+
+  selectTabAsync = async (tab?: DocumentBase): Promise<void> => {
+    // force render old tab
+    const prevDoc = this.activeDocument;
+
+    const selectedDocId = tab?.itemId;
+
+    await this.doSelectTabAsync(tab);
+    const doc = this.findDoc(tab?.itemId);
+
+    prevDoc?.toolbarForceRender?.();
+    doc?.toolbarForceRender?.();
+
+    // sync selection with tree when CI is selected
+    if (isDefined(selectedDocId) && this._selectedNodeId !== selectedDocId) {
+      const treeNode = this.getTreeNodeById(selectedDocId);
+      if (isConfigItemTreeNode(treeNode)) {
+        this.selectTreeNode(treeNode);
+      }
+    }
+  };
+
+  openDocById = async (docId?: string): Promise<void> => {
+    const doc = isDefined(docId) ? this.findDocumentById(docId) : undefined;
+    await this.selectTabAsync(doc);
+  };
+
+  isDocOpened = (docId: string): boolean => {
+    return this.docs.some((t) => t.itemId === docId);
+  };
+
+  closeDocAsync = async (docId?: string): Promise<void> => {
+    if (!isDefined(docId) || !this.isDocOpened(docId))
+      return;
+
+    // TODO: check for unsaved changes, ask user to confirm
+    // TODO: unload document
+    const index = this.docs.findIndex((t) => t.itemId === docId);
+    const isActive = this.activeDocId === docId;
+
+    this.docs = this.docs.filter((t) => t.itemId !== docId);
+
+    await this.saveOpenedDocsAsync();
+    this.notifySubscribers(['tabs', 'doc']);
+
+    // if the document was active - activate next if available
+    if (isActive) {
+      const indexToSwitch = this.docs.length - 1 >= index
+        ? index
+        : index - 1;
+      const docToSwitchTo = indexToSwitch >= 0
+        ? this.docs[indexToSwitch]
+        : undefined;
+      if (docToSwitchTo)
+        this.selectTabAsync(docToSwitchTo);
+    }
+  };
+
+  closeMultipleDocsAsync = async (predicate: (doc: IDocumentInstance, index: number) => boolean): Promise<void> => {
+    // TODO: check for unsaved changes, ask user to confirm
+    const docsToClose = this.docs.filter(predicate);
+    for (const doc of docsToClose) {
+      await this.closeDocAsync(doc.itemId);
+    }
+  };
+
+  getDocumentDefinition = (itemType: string): DocumentDefinition | undefined => {
+    const definition = this._documentDefinitions.get(itemType);
+    return definition ?? getUnknownDocumentDefinition(itemType);
+  };
+
+  //#endregion
+
+  //#region subscriptions
+
+  private getSubscriptions = (type: CsSubscriptionType): Set<CsSubscription> => {
+    const existing = this.subscriptions.get(type);
+    if (existing)
+      return existing;
+
+    const subscriptions = new Set<CsSubscription>();
+    this.subscriptions.set(type, subscriptions);
+    return subscriptions;
+  };
+
+  subscribe(type: CsSubscriptionType, callback: CsSubscription): () => void {
+    const callbacks = this.getSubscriptions(type);
+    callbacks.add(callback);
+
+    return () => this.unsubscribe(type, callback);
+  }
+
+  private unsubscribe(type: CsSubscriptionType, callback: CsSubscription): void {
+    const callbacks = this.getSubscriptions(type);
+    callbacks.delete(callback);
+  }
+
+  notifySubscribers(types: CsSubscriptionType[]): void {
+    const allSubscriptions = new Set<CsSubscription>();
+    types.forEach((type) => {
+      const subscriptions = this.getSubscriptions(type);
+      subscriptions.forEach((s) => allSubscriptions.add(s));
+    });
+
+    allSubscriptions.forEach((s) => (s(this)));
+  }
+
+  //#endregion
+
+  log = (...args: unknown[]): void => {
+    if (this.logEnabled) {
+      console.trace(`%c[cs]`, 'color: blue; font-weight: bold', ...args);
+    }
+  };
+
+  get itemTypes(): ItemTypeDefinition[] {
+    return this._itemTypes;
+  }
+
+  getItemTypeDefinition = (itemType: string): ItemTypeDefinition => {
+    const definition = this._itemTypesMap.get(itemType);
+    if (!definition)
+      throw new Error(`Item type '${itemType}' is not registered`);
+    return definition;
+  };
+
+  loadItemTypesAsync = async (): Promise<void> => {
+    this.log('Fetch item types');
+    const backEndItemTypes = await fetchItemTypesAsync(this.httpClient);
+    this.log('Fetch item types - done', backEndItemTypes);
+
+    this._itemTypesMap.clear();
+    this._itemTypes = [];
+
+    backEndItemTypes.forEach((it) => {
+      const definition: ItemTypeDefinition = {
+        itemType: it.itemType,
+        entityClassName: it.entityClassName,
+        friendlyName: it.friendlyName,
+        createFormId: it.createFormId,
+        renameFormId: it.renameFormId,
+        // front-end specific
+        icon: getIcon(
+          TreeNodeType.ConfigurationItem,
+          it.itemType,
+          false
+        ),
+        editor: this._documentDefinitions.get(it.itemType),
+      };
+      this._itemTypes.push(definition);
+      this._itemTypesMap.set(it.itemType, definition);
+    });
+  };
+
+  loadTreeAsync = async (): Promise<void> => {
+    this.treeLoadingState = { status: 'loading', hint: 'Fetching data...', error: null };
+    try {
+      const flatTreeNodes = await fetchFlatTreeAsync(this.httpClient);
+      const treeNodeMap = new Map<string, TreeNode>();
+      const treeNodes: TreeNode[] = [];
+
+      // First pass: create map and shallow copies
+      flatTreeNodes.forEach((node) => {
+        treeNodeMap.set(node.id, flatNode2TreeNode(node));
+      });
+
+      // Second pass: build hierarchy
+      flatTreeNodes.forEach((node) => {
+        const currentNode = treeNodeMap.get(node.id)!;
+
+        if (node.moduleId && isConfigItemTreeNode(currentNode))
+          currentNode.moduleName = treeNodeMap.get(node.moduleId)?.name ?? "";
+
+        if (isDefined(node.parentId)) {
+          const parent = treeNodeMap.get(node.parentId);
+          if (parent) {
+            parent.children ??= [];
+            parent.children.push(currentNode);
+          }
+        } else {
+          treeNodes.push(currentNode);
+        }
+      });
+
+      this._treeNodes = treeNodes;
+      this._treeNodesMap = treeNodeMap;
+
+      this.treeLoadingState = { status: 'ready', hint: undefined, error: null };
+    } catch (error) {
+      this.treeLoadingState = { status: 'failed', hint: 'Failed to fetch tree', error: error };
+    }
+
+    this.notifySubscribers(['tree', 'tabs', 'doc']);
+  };
+
+  loadTreeAndDocsAsync = async (): Promise<void> => {
+    await this.loadTreeAsync();
+    this.loadTreeStateAsync();
+    this.loadDocsStateAsync();
+
+    this.notifySubscribers(['tree', 'tabs', 'doc']);
+  };
+
+  moveTreeNodeAsync = async (payload: MoveNodePayload): Promise<void> => {
+    await moveTreeNodeAsync(this.httpClient, payload);
+  };
+
+  //#region crud operations
+
+  createFolderAsync = async ({ moduleId, folderId }: CreateFolderArgs): Promise<void> => {
+    await this.modalApi.showModalFormAsync({
+      title: 'Create Folder',
+      formId: FORMS.CREATE_FOLDER,
+      formArguments: {
+        moduleId: moduleId,
+        folderId: folderId,
+      },
+    });
+    await this.loadTreeAsync();
+    // TODO: select created folder
+  };
+
+  deleteFolderAsync = async (node: FolderTreeNode): Promise<void> => {
+    if (!await this.modalApi.confirmYesNo({ title: 'Confirm Deletion', content: `Are you sure you want to delete '${node.name}'?` }))
+      return;
+
+    try {
+      await deleteFolderAsync(this.httpClient, { folderId: node.id });
+      // TODO: change selection, update tabs if required (opened items may be deleted)
+      await this.loadTreeAsync();
+    } catch (error) {
+      console.error(`Failed to delete folder '${node.name}' (id: '${node.id}')`, error);
+    }
+  };
+
+  renameFolderAsync = async (node: FolderTreeNode): Promise<void> => {
+    try {
+      await this.modalApi.showModalFormAsync({
+        title: 'Rename Folder',
+        formId: FORMS.RENAME_FOLDER,
+        formArguments: {
+          folderId: node.id,
+          name: node.name,
+        },
+      });
+
+      await this.loadTreeAsync();
+    } catch (error) {
+      console.error(`Failed to rename folder '${node.name}' (id: '${node.id}')`, error);
+    }
+  };
+
+  createItemAsync = async ({ moduleId, folderId, itemType, prevItemId }: CreateItemArgs): Promise<void> => {
+    this.log(`create item of type '${itemType}'`, { moduleId, folderId });
+
+>>>>>>> origin/main
     const definition = this.getItemTypeDefinition(itemType);
     if (!definition.createFormId)
       throw new Error(`Create form is not specified for item type '${itemType}'`);
 
-        const response = await this.modalApi.showModalFormAsync<CreateItemResponse>({
-            title: `Create ${definition.friendlyName}`,
-            formId: definition.createFormId,
-            footerButtons: definition.editor?.createModalFooterButtons ?? 'default',
-            formArguments: {
-                moduleId: moduleId,
-                folderId: folderId,
-                prevItemId: prevItemId,
-                itemType: itemType,
-            },
-        });
-        await this.loadTreeAsync();
+    const response = await this.modalApi.showModalFormAsync<CreateItemResponse>({
+      title: `Create ${definition.friendlyName}`,
+      formId: definition.createFormId,
+      footerButtons: definition.editor?.createModalFooterButtons ?? 'default',
+      formArguments: {
+        moduleId: moduleId,
+        folderId: folderId,
+        prevItemId: prevItemId,
+        itemType: itemType,
+      },
+    });
+    await this.loadTreeAsync();
 
     if (!isNullOrWhiteSpace(response?.id)) {
       const treeNode = this._treeNodesMap.get(response.id);

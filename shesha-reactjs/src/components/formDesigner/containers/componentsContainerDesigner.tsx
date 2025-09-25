@@ -13,18 +13,18 @@ import { useParent } from '@/providers/parentProvider';
 import _ from 'lodash';
 
 export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
-    const {
-        containerId,
-        children,
-        direction = 'vertical',
-        className,
-        render,
-        itemsLimit = -1,
-        wrapperStyle,
-        style: incomingStyle,
-        noDefaultStyling,
-        emptyInsertThreshold,
-    } = props;
+  const {
+    containerId,
+    children,
+    direction = 'vertical',
+    className,
+    render,
+    itemsLimit = -1,
+    wrapperStyle,
+    style: incomingStyle,
+    noDefaultStyling,
+    emptyInsertThreshold,
+  } = props;
 
   const { styles } = useStyles();
   const parent = useParent();
@@ -123,27 +123,27 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
             <>
                 {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
                 <ReactSortable
-                    disabled={readOnly}
-                    onStart={onDragStart}
-                    onEnd={onDragEnd}
-                    list={componentsMapped}
-                    setList={onSetList}
-                    fallbackOnBody={true}
-                    swapThreshold={0.5}
-                    group={{
-                        name: 'shared',
-                    }}
-                    sort={true}
-                    draggable={`.${styles.shaComponent}`}
-                    animation={75}
-                    ghostClass={styles.shaComponentGhost}
-                    emptyInsertThreshold={emptyInsertThreshold || 20}
-                    handle={`.${styles.componentDragHandle}`}
-                    scroll={true}
-                    bubbleScroll={true}
-                    direction={direction}
-                    className={noDefaultStyling ? '' : styles.shaComponentsContainerInner}
-                    style={{ ...style, ...incomingStyle }}
+                  disabled={readOnly}
+                  onStart={onDragStart}
+                  onEnd={onDragEnd}
+                  list={componentsMapped}
+                  setList={onSetList}
+                  fallbackOnBody={true}
+                  swapThreshold={0.5}
+                  group={{
+                    name: 'shared',
+                  }}
+                  sort={true}
+                  draggable={`.${styles.shaComponent}`}
+                  animation={75}
+                  ghostClass={styles.shaComponentGhost}
+                  emptyInsertThreshold={emptyInsertThreshold || 20}
+                  handle={`.${styles.componentDragHandle}`}
+                  scroll={true}
+                  bubbleScroll={true}
+                  direction={direction}
+                  className={noDefaultStyling ? '' : styles.shaComponentsContainerInner}
+                  style={{ ...style, ...incomingStyle }}
                 >
                     {renderComponents()}
                 </ReactSortable>

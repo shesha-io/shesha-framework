@@ -10,9 +10,9 @@ export interface ShowModalArgs {
 };
 
 export interface ShowModalFormArgs extends ShowModalArgs {
-    formId: FormFullName;
-    formArguments?: object;
-    footerButtons?: ModalFooterButtons;
+  formId: FormFullName;
+  formArguments?: object;
+  footerButtons?: ModalFooterButtons;
 };
 
 export interface ShowModalContentArgs extends ShowModalArgs {
@@ -83,29 +83,29 @@ export class ModalApi implements IModalApi {
   showModalFormAsync = <TResponse = void>(args: ShowModalFormArgs): Promise<TResponse | undefined> => {
     const modalId = nanoid();
 
-        return new Promise((resolve, reject) => {
-            const modalProps: IModalProps<TResponse> = {
-                mode: "edit",
-                id: modalId,
-                title: args.title,
-                formId: args.formId,
-                formArguments: args.formArguments,
-                footerButtons: args.footerButtons,
-                isVisible: true,
-                onCancel: () => {
-                    reject("Cancelled");
-                },
-                onSubmitted: (values) => {
-                    this._removeModal(modalId);
-                    resolve(values);
-                },
-                onClose: (positive = false, result) => {
-                    if (positive)
-                        resolve(result);
-                    else
-                        reject(result);
-                },
-            };
+    return new Promise((resolve, reject) => {
+      const modalProps: IModalProps<TResponse> = {
+        mode: "edit",
+        id: modalId,
+        title: args.title,
+        formId: args.formId,
+        formArguments: args.formArguments,
+        footerButtons: args.footerButtons,
+        isVisible: true,
+        onCancel: () => {
+          reject("Cancelled");
+        },
+        onSubmitted: (values) => {
+          this._removeModal(modalId);
+          resolve(values);
+        },
+        onClose: (positive = false, result) => {
+          if (positive)
+            resolve(result);
+          else
+            reject(result);
+        },
+      };
 
       this._createModal(modalProps);
     });

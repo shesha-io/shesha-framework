@@ -164,12 +164,12 @@ export type DocumentInstanceFactoryArgs = {
 export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;
 
 export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstance> = {
-    documentType: string;
-    Editor: ItemEditorRenderer<TDoc>;
-    Provider: ProviderRenderer<TDoc>;
-    Toolbar: ItemEditorRenderer<TDoc>;
-    documentInstanceFactory: DocumentInstanceFactory;
-    createModalFooterButtons?: ModalFooterButtons;
+  documentType: string;
+  Editor: ItemEditorRenderer<TDoc>;
+  Provider: ProviderRenderer<TDoc>;
+  Toolbar: ItemEditorRenderer<TDoc>;
+  documentInstanceFactory: DocumentInstanceFactory;
+  createModalFooterButtons?: ModalFooterButtons;
 };
 
 export type DocumentDefinitions = Map<string, DocumentDefinition>;
