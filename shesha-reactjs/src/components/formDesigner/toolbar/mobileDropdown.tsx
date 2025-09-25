@@ -2,13 +2,12 @@ import React, { FC } from 'react';
 import { Tooltip } from 'antd';
 import { useCanvas } from '@/providers';
 import CustomDropdown from '@/designer-components/_settings/utils/CustomDropdown';
-import { screenSizeOptions } from '../utils/svgConstants';
+import { getDeviceTypeByWidth, screenSizeOptions } from '@/providers/canvas/utils';
 
 export interface IPreviewButtonProps { }
 
-export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
+export const DeviceOptions: FC<IPreviewButtonProps> = () => {
   const { setCanvasWidth, designerWidth } = useCanvas();
-
 
   return (
     <CustomDropdown
@@ -21,7 +20,7 @@ export const DeviceOptions: FC<IPreviewButtonProps> = ({ }) => {
       popupMatchSelectWidth={false}
       onChange={(val) => {
         const value = parseInt(val, 10);
-        setCanvasWidth(value, value > 850 ? 'desktop' : value > 430 ? 'tablet' : 'mobile');
+        setCanvasWidth(value, getDeviceTypeByWidth(value));
       }}
       value={typeof designerWidth === 'number' ? `${designerWidth}px` : designerWidth}
       labelRender={({ label, value }) => {

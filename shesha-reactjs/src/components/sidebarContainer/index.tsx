@@ -1,6 +1,5 @@
 import React, { FC, PropsWithChildren, ReactNode, useEffect, useState, useMemo, useCallback } from 'react';
 import classNames from 'classnames';
-import _ from 'lodash';
 
 import { ISidebarProps, SidebarPanelPosition } from './models';
 import { SidebarPanel } from './sidebarPanel';
@@ -8,7 +7,7 @@ import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
 import { useCanvas, useShaFormInstance, useSheshaApplication } from '@/index';
-import { calculateAutoZoom, usePinchZoom } from './canvasUtils';
+import { calculateAutoZoom, usePinchZoom } from '@/providers/canvas/utils';
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;
   rightSidebarProps?: ISidebarProps;
@@ -40,11 +39,13 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
   const handleDragSizesChange = useCallback((sizes: number[]) => {
+    
     setCurrentSizes(sizes as any);
   }, []);
 
   const handleZoomChange = useCallback((newZoom: number) => {
     setCanvasZoom(newZoom);
+    
   }, [setCanvasZoom]);
 
   const canvasRef = usePinchZoom(
@@ -54,11 +55,12 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     200,
     autoZoom
   );
+  
 
   useEffect(() => {
     if (canZoom) {
       setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
-      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, configTreePanelSize: configTreePanelSize || (20/100) * window.innerWidth}) : zoom);
+      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, configTreePanelSize: configTreePanelSize * window.innerWidth}) : zoom);
     }
   }, [canZoom, isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize]);
   

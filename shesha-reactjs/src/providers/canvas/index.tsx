@@ -38,6 +38,7 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
   });
 
   useEffect(() => {
+    /*consider debouncing, else you trigger too many rerenders. complex components with state will love this*/
     const handleResize = () => dispatch(setScreenWidthAction(window.innerWidth));
     window.addEventListener('resize', handleResize);
     dispatch(setScreenWidthAction(window.innerWidth));

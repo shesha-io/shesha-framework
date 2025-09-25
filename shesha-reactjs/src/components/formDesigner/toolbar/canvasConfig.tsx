@@ -3,8 +3,8 @@ import { useStyles } from '../styles/styles';
 import { Button, Space, Tooltip } from 'antd';
 import { ExpandOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { useCanvas } from '@/providers';
-import { DEFAULT_OPTIONS } from '@/components/sidebarContainer/canvasUtils';
 import { DeviceOptions } from './mobileDropdown';
+import { DEFAULT_OPTIONS } from '@/providers/canvas/utils';
 
 export interface ICanvasConfigProps {
 

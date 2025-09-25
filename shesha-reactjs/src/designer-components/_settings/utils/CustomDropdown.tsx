@@ -28,6 +28,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     label,
     placeholder,
     defaultValue,
+    optionFilterProp,
     customTooltip,
     onChange,
     size,
@@ -94,8 +95,9 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
             placeholder={placeholder}
             labelRender={labelRender}
             style={style}
+            optionFilterProp={optionFilterProp}
             popupMatchSelectWidth={popupMatchSelectWidth}
-            dropdownRender={(menu) => (
+            popupRender={(menu) => (
                 <>
                     {menu}
                     {renderCustomOptionInput()}

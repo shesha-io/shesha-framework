@@ -3,7 +3,7 @@ import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTable
 import { IDimensionsValue } from "./interfaces";
 import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
-import { widthRelativeToCanvas } from "@/components/sidebarContainer/canvasUtils";
+import { widthRelativeToCanvas } from "@/providers/canvas/utils";
 
 const getDimension = (main: string | number, left: any, right: any, canvasWidth?) => {
   const width = widthRelativeToCanvas(main, canvasWidth);
