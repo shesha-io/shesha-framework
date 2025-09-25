@@ -6,7 +6,7 @@ import { DataContextType, ContextOnChangeData, ContextSetFieldValue } from "./co
 import DataContextBinder from "./dataContextBinder";
 import { setValueByPropertyName } from "@/utils/object";
 import { IApplicationContext, useAvailableConstantsDataNoRefresh } from "../form/utils";
-import { GetShaContextDataAccessor, IShaDataAccessor } from "./contexts/shaDataAccessProxy";
+import { GetShaContextDataAccessor, IShaDataWrapper } from "./contexts/shaDataAccessProxy";
 import { IAnyObject } from "@/interfaces";
 import { isDefined } from "@/utils/nullables";
 import { Path } from "@/utils/dotnotation";
@@ -39,7 +39,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
   const allData = useRef<IApplicationContext>(undefined);
   allData.current = useAvailableConstantsDataNoRefresh({ topContextId: id });
 
-  const storage = useRef<IShaDataAccessor<TData>>(GetShaContextDataAccessor<TData>(onChangeContextData));
+  const storage = useRef<IShaDataWrapper<TData>>(GetShaContextDataAccessor<TData>(onChangeContextData) as IShaDataWrapper<TData>);
 
   const initialDataRef = useRef<IAnyObject>(undefined);
 
@@ -52,8 +52,8 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
     return storage.current.getFieldValue(name as Path<TData>);
   };
 
-  const getData = (): IShaDataAccessor<TData> => {
-    return storage.current;
+  const getData = (): IShaDataWrapper<TData> => {
+    return storage.current as IShaDataWrapper<TData>;
   };
 
   const onChangeAction = (changedData: Partial<TData>): void => {
@@ -108,12 +108,12 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
       name={name}
       description={description}
       type={type}
-      // data={storage} - review types
+      data={storage.current}
       metadata={metadata}
       setFieldValue={setFieldValue}
       getFieldValue={getFieldValue}
       setData={setData}
-      // getData={getData} - review types
+      getData={getData}
     >
       {children}
     </DataContextBinder>
