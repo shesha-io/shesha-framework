@@ -13,7 +13,6 @@ const SearchableTabs: IToolboxComponent<ITabsComponentProps> = {
   name: 'SearchableTabs',
   icon: <FolderOutlined />,
   Factory: ({ model }) => {
-
     return model.hidden ? null : (
       <SearchableTabsComponent model={model} />
     );

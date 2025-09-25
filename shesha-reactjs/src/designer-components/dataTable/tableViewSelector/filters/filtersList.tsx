@@ -6,34 +6,34 @@ import { FilterItem } from './filterItem';
 import { ListItem } from '@/components/listEditor/models';
 
 export interface IFiltersListProps {
-    value?: ITableViewProps[];
-    onChange?: (newValue: ITableViewProps[]) => void;
-    readOnly: boolean;
+  value?: ITableViewProps[];
+  onChange?: (newValue: ITableViewProps[]) => void;
+  readOnly: boolean;
 }
 
 export const FiltersList: FC<IFiltersListProps> = ({ value, onChange, readOnly }) => {
-    const makeNewFilter = (items: ITableViewProps[]) => {
-        const itemsCount = (items ?? []).length;
-        const itemNo = itemsCount + 1;
-        return {
-            id: nanoid(),
-            sortOrder: itemsCount,
-            name: `Filter ${itemNo}`
-        };
+  const makeNewFilter = (items: ITableViewProps[]) => {
+    const itemsCount = (items ?? []).length;
+    const itemNo = itemsCount + 1;
+    return {
+      id: nanoid(),
+      sortOrder: itemsCount,
+      name: `Filter ${itemNo}`,
     };
+  };
 
-    const localOnChange = (newValue: ITableViewProps[]) => {
-        onChange([...newValue]);
-    };
+  const localOnChange = (newValue: ITableViewProps[]) => {
+    onChange([...newValue]);
+  };
 
-    return (
+  return (
         <ListEditor<ITableViewProps & ListItem>
-            value={value}
-            onChange={localOnChange}
-            initNewItem={makeNewFilter}
-            readOnly={readOnly}
+          value={value}
+          onChange={localOnChange}
+          initNewItem={makeNewFilter}
+          readOnly={readOnly}
         >
             {({ item, itemOnChange, readOnly }) => (<FilterItem value={item} onChange={itemOnChange} readOnly={readOnly} />)}
         </ListEditor>
-    );
+  );
 };

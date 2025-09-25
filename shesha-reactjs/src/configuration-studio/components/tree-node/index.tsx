@@ -6,7 +6,7 @@ import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
 import { NodeIndicator } from './nodeIndicators';
 import { gray } from '@ant-design/colors';
 import { useCsTreeDnd } from '@/configuration-studio/cs/hooks';
-import { isDefined, isNullOrWhiteSpace } from '@/configuration-studio/types';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const { Text } = Typography;
 

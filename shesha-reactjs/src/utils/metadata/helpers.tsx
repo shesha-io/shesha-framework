@@ -94,7 +94,7 @@ export const getEntityIdType = (metadata: IModelMetadata): string => {
     return undefined;
 
   return isPropertiesArray(metadata.properties)
-    ? metadata.properties.find(p => p.path?.toLowerCase() === "id")?.dataType
+    ? metadata.properties.find((p) => p.path?.toLowerCase() === "id")?.dataType
     : undefined;
 };
 

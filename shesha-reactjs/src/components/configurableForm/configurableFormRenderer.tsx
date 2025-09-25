@@ -39,7 +39,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const { styles } = useStyles();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const isDragging = useFormDesignerStateSelector(x => x.isDragging) ?? false;
+  const isDragging = useFormDesignerStateSelector((x) => x.isDragging) ?? false;
 
   const onValuesChangeInternal = (_changedValues: any, values: any) => {
     shaForm.setFormData({ values: values, mergeValues: true });
@@ -55,7 +55,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       await shaForm.submitData();
     } catch (error) {
       onSubmittedFailed?.();
-      setValidationErrors(error instanceof Error 
+      setValidationErrors(error instanceof Error
         ? error.message
         : error?.data?.error || error);
       console.error('Submit failed: ', error);
@@ -92,7 +92,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     );
   }
 
-  const { /*dataLoadingState,*/ dataSubmitState } = shaForm ?? {};
+  const { /* dataLoadingState,*/ dataSubmitState } = shaForm ?? {};
 
   return (
     <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>

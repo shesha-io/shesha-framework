@@ -4,28 +4,28 @@ import { FileUnknownOutlined, FolderOpenOutlined, FolderOutlined, FormOutlined, 
 import React from "react";
 import { TreeNodeProps } from "antd";
 import { CsTreeNode } from "./components/tree-node";
-import { isDefined } from "@/configuration-studio/types";
+import { isDefined } from "@/utils/nullables";
 
 export const getIcon = (nodeType: TreeNodeType, itemType?: string, expanded?: boolean): ReactNode => {
   switch (nodeType) {
-  case TreeNodeType.ConfigurationItem: {
-    switch (itemType) {
-    case ITEM_TYPES.FORM: return <FormOutlined />;
-    case ITEM_TYPES.ROLE: return <TeamOutlined />;
-    case ITEM_TYPES.ENTITY: return <TableOutlined />;
-    case ITEM_TYPES.PERMISSION: return <SafetyOutlined />;
-    case ITEM_TYPES.REFLIST: return <OrderedListOutlined />;
-    case ITEM_TYPES.SETTING: return <SettingOutlined />;
-    case ITEM_TYPES.NOTIFICATION: return <MessageOutlined />;
-    case ITEM_TYPES.NOTIFICATION_CHANNEL: return <NotificationOutlined />;
-    default: return <FileUnknownOutlined />;
+    case TreeNodeType.ConfigurationItem: {
+      switch (itemType) {
+        case ITEM_TYPES.FORM: return <FormOutlined />;
+        case ITEM_TYPES.ROLE: return <TeamOutlined />;
+        case ITEM_TYPES.ENTITY: return <TableOutlined />;
+        case ITEM_TYPES.PERMISSION: return <SafetyOutlined />;
+        case ITEM_TYPES.REFLIST: return <OrderedListOutlined />;
+        case ITEM_TYPES.SETTING: return <SettingOutlined />;
+        case ITEM_TYPES.NOTIFICATION: return <MessageOutlined />;
+        case ITEM_TYPES.NOTIFICATION_CHANNEL: return <NotificationOutlined />;
+        default: return <FileUnknownOutlined />;
+      }
     }
-  }
-  case TreeNodeType.Folder:
-    return expanded === true ? <FolderOpenOutlined /> : <FolderOutlined />;
-  case TreeNodeType.Module:
-    return <ProductOutlined />;
-  default: return undefined;
+    case TreeNodeType.Folder:
+      return expanded === true ? <FolderOpenOutlined /> : <FolderOutlined />;
+    case TreeNodeType.Module:
+      return <ProductOutlined />;
+    default: return undefined;
   }
 };
 
@@ -57,43 +57,43 @@ export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
   };
 
   switch (node.nodeType) {
-  case TREE_NODE_TYPES.Module: {
-    const moduleNode: ModuleTreeNode = {
-      ...baseProps,
-      children: [],
-    };
-    applyIcon(moduleNode);
-    return moduleNode;
-  }
-  case TREE_NODE_TYPES.Folder: {
-    const folderNode: FolderTreeNode = {
-      ...baseProps,
-      children: [],
-    };
-    applyIcon(folderNode);
-    return folderNode;
-  }
-  case TREE_NODE_TYPES.ConfigurationItem: {
-    if (!isDefined(node.itemType))
-      throw new Error("Missing item type in node", { cause: node });
-    const itemNode: ConfigItemTreeNode = {
-      ...baseProps,
-      itemType: node.itemType,
-      flags: {
-        isCodeBased: node.isCodeBased,
-        isCodegenPending: node.isCodegenPending,
-        isUpdated: node.isUpdated,
-        isExposed: node.isExposed,
-        isUpdatedByMe: node.isUpdatedByMe,
-      },
-      lastModifierUser: node.lastModifierUser,
-      lastModificationTime: node.lastModificationTime,
-      baseModule: node.baseModule,
-      moduleName: "",
-    };
-    applyIcon(itemNode);
-    return itemNode;
-  }
+    case TREE_NODE_TYPES.Module: {
+      const moduleNode: ModuleTreeNode = {
+        ...baseProps,
+        children: [],
+      };
+      applyIcon(moduleNode);
+      return moduleNode;
+    }
+    case TREE_NODE_TYPES.Folder: {
+      const folderNode: FolderTreeNode = {
+        ...baseProps,
+        children: [],
+      };
+      applyIcon(folderNode);
+      return folderNode;
+    }
+    case TREE_NODE_TYPES.ConfigurationItem: {
+      if (!isDefined(node.itemType))
+        throw new Error("Missing item type in node", { cause: node });
+      const itemNode: ConfigItemTreeNode = {
+        ...baseProps,
+        itemType: node.itemType,
+        flags: {
+          isCodeBased: node.isCodeBased,
+          isCodegenPending: node.isCodegenPending,
+          isUpdated: node.isUpdated,
+          isExposed: node.isExposed,
+          isUpdatedByMe: node.isUpdatedByMe,
+        },
+        lastModifierUser: node.lastModifierUser,
+        lastModificationTime: node.lastModificationTime,
+        baseModule: node.baseModule,
+        moduleName: "",
+      };
+      applyIcon(itemNode);
+      return itemNode;
+    }
   }
   throw new Error(`Unknown type of configuration tree node: '${node.id}'`);
 };

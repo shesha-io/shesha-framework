@@ -1,22 +1,22 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }) => {
-    const dragHandle = "sha-drag-handle";
-    const listContainer = "sha-list-container";
-    const listHeader = "sha-list-header";
-    const listInsertArea = "sha-list-insert-area";
-    const listInsertPlaceholder = "sha-list-insert-placeholder";
-    const listInsertRow = "sha-list-insert-row";
-    const listItem = "sha-list-item";
-    const listItemSelected = "sha-list-item-selected";
-    const listItemContent = "sha-list-item-content";
-    const listItemControls = "sha-list-item-controls";
-    const listItemGhost = "sha-list-item-ghost";
-    const listItemName = "sha-list-item-name";
-    const helpIcon = "sha-help-icon";
-    const dragIcon = "sha-drag-icon";
+  const dragHandle = "sha-drag-handle";
+  const listContainer = "sha-list-container";
+  const listHeader = "sha-list-header";
+  const listInsertArea = "sha-list-insert-area";
+  const listInsertPlaceholder = "sha-list-insert-placeholder";
+  const listInsertRow = "sha-list-insert-row";
+  const listItem = "sha-list-item";
+  const listItemSelected = "sha-list-item-selected";
+  const listItemContent = "sha-list-item-content";
+  const listItemControls = "sha-list-item-controls";
+  const listItemGhost = "sha-list-item-ghost";
+  const listItemName = "sha-list-item-name";
+  const helpIcon = "sha-help-icon";
+  const dragIcon = "sha-drag-icon";
 
-    const list = cx("sha-list", css`
+  const list = cx("sha-list", css`
         padding-left: 4px;
         
         .${listHeader} {
@@ -139,21 +139,21 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
     `);
 
-    return {
-        list,
-        dragHandle,
-        listContainer,
-        listHeader,
-        listInsertArea,
-        listInsertPlaceholder,
-        listInsertRow,
-        listItem,
-        listItemSelected,
-        listItemContent,
-        listItemControls,
-        listItemGhost,
-        listItemName,
-        helpIcon,
-        dragIcon,
-    };
+  return {
+    list,
+    dragHandle,
+    listContainer,
+    listHeader,
+    listInsertArea,
+    listInsertPlaceholder,
+    listInsertRow,
+    listItem,
+    listItemSelected,
+    listItemContent,
+    listItemControls,
+    listItemGhost,
+    listItemName,
+    helpIcon,
+    dragIcon,
+  };
 });

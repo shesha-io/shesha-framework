@@ -20,9 +20,8 @@ const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentPro
   isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
-
     if (model.hidden) return null;
-    
+
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => <LabelValueEditor {...model} value={value} onChange={onChange} />}
@@ -47,7 +46,7 @@ const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentPro
     .add<ILabelValueEditorComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export { LabelValueEditorComponent };

@@ -36,7 +36,7 @@ const convertModelItemToPropertyMetadata = (item: IModelItem): IPropertyMetadata
     path: name,
     properties: properties?.map((item) => convertModelItemToPropertyMetadata(item)),
     itemsType: itemsType ? convertModelItemToPropertyMetadata(itemsType) : undefined,
-  };  
+  };
 };
 
 const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProps>> = (props) => {
@@ -62,9 +62,9 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
     <>
       <SettingsCollapsiblePanel header="Data context">
         <SettingsFormItem
-          name='componentName'
+          name="componentName"
           label="Component name"
-          tooltip='This name will be used as identifier and in the code editor'
+          tooltip="This name will be used as identifier and in the code editor"
           required
         >
           {(value) =>
@@ -76,7 +76,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
           }
         </SettingsFormItem>
 
-        <SettingsFormItem name='description' label="Description" jsSetting>
+        <SettingsFormItem name="description" label="Description" jsSetting>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
 
@@ -91,7 +91,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
             label="Initial Data"
             propertyName="initialDataCode"
             description="Initial Data"
-            language='typescript'
+            language="typescript"
             wrapInTemplate={true}
             templateSettings={{
               functionName: 'initData',

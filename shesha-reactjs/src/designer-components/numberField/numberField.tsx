@@ -99,12 +99,12 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
           return model.readOnly
             ? <ReadOnlyDisplayFormItem type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} style={finalStyle} />
             : <InputNumber
-              type='number'
-              value={value ?? model?.defaultValue}
-              {...inputProps}
-              style={{ ...model.allStyles.fullStyle }}
-              className={styles.numberField}
-              onChange={onChangeInternal}
+                type="number"
+                value={value ?? model?.defaultValue}
+                {...inputProps}
+                style={{ ...model.allStyles.fullStyle }}
+                className={styles.numberField}
+                onChange={onChangeInternal}
             />;
         }}
       </ConfigurableFormItem>

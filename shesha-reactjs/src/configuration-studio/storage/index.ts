@@ -1,4 +1,4 @@
-import { isDefined } from "../types";
+import { isDefined } from "../../utils/nullables";
 
 type StorageValue = string | number | boolean | object | null;
 

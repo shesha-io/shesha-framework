@@ -19,7 +19,7 @@ export const ModelConfiguratorRenderer: FC<IModelConfiguratorRendererProps> = ()
   const { message } = App.useApp();
   const { modelConfiguration, form, save, id } = useModelConfigurator();
 
-  const onSettingsSave = values => {
+  const onSettingsSave = (values) => {
     const dto = { ...values, id };
     save(dto)
       .then(() => message.success('Model saved successfully'))
@@ -46,7 +46,7 @@ export const ModelConfiguratorRenderer: FC<IModelConfiguratorRendererProps> = ()
             permissionCreate: () => <PermissionEditorComponent name="permissionCreate" />,
             permissionUpdate: () => <PermissionEditorComponent name="permissionUpdate" />,
             permissionDelete: () => <PermissionEditorComponent name="permissionDelete" />,
-            viewConfigurations: () => <ViewsEditorComponent />
+            viewConfigurations: () => <ViewsEditorComponent />,
           }}
         />
       </CustomErrorBoundary>

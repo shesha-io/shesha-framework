@@ -1,22 +1,22 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
-    const shaActionButtons = "sha-action-buttons";
-    const sidebarContainerMainArea = "sidebar-container-main-area";
-    const shaToolbarConfiguratorAlert = "sha-toolbar-configurator-alert";
-    const shaToolbarConfiguratorBodyTabs = "sha-toolbar-configurator-body-tabs";
-    const shaToolbarItemDragHandle = "sha-toolbar-item-drag-handle";
-    const shaToolbarItem = "sha-toolbar-item";
-    const shaToolbarItemControls = "sha-toolbar-item-controls";
-    const shaToolbarItemHeader = "sha-toolbar-item-header";
-    const shaToolbarGroupHeader = "sha-toolbar-group-header";
-    const shaToolbarGroupContainer = "sha-toolbar-group-container";
-    const shaToolbarItemGhost = "sha-toolbar-item-ghost";
-    const shaTooltipIcon = "sha-tooltip-icon";
-    const shaToolbarItemName = "sha-toolbar-item-name";
-    const shaHelpIcon = "sha-help-icon";
+  const shaActionButtons = "sha-action-buttons";
+  const sidebarContainerMainArea = "sidebar-container-main-area";
+  const shaToolbarConfiguratorAlert = "sha-toolbar-configurator-alert";
+  const shaToolbarConfiguratorBodyTabs = "sha-toolbar-configurator-body-tabs";
+  const shaToolbarItemDragHandle = "sha-toolbar-item-drag-handle";
+  const shaToolbarItem = "sha-toolbar-item";
+  const shaToolbarItemControls = "sha-toolbar-item-controls";
+  const shaToolbarItemHeader = "sha-toolbar-item-header";
+  const shaToolbarGroupHeader = "sha-toolbar-group-header";
+  const shaToolbarGroupContainer = "sha-toolbar-group-container";
+  const shaToolbarItemGhost = "sha-toolbar-item-ghost";
+  const shaTooltipIcon = "sha-tooltip-icon";
+  const shaToolbarItemName = "sha-toolbar-item-name";
+  const shaHelpIcon = "sha-help-icon";
 
-    const customActionButtons = cx("sha-action-buttons", css`
+  const customActionButtons = cx("sha-action-buttons", css`
         margin: 8px 0;
         width: 100%;
         .${prefixCls}-btn {
@@ -24,7 +24,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
     `);
 
-    const shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
+  const shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
       height: 100%;
       overflow: auto;
       .${shaActionButtons} {
@@ -123,22 +123,22 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
       }
   `);
 
-    return {
-        shaToolbarConfigurator,
-        shaActionButtons,
-        sidebarContainerMainArea,
-        shaToolbarConfiguratorAlert,
-        shaToolbarConfiguratorBodyTabs,
-        shaToolbarItemDragHandle,
-        shaToolbarItem,
-        shaToolbarItemControls,
-        shaToolbarItemHeader,
-        shaToolbarGroupHeader,
-        shaToolbarGroupContainer,
-        shaToolbarItemGhost,
-        shaTooltipIcon,
-        shaToolbarItemName,
-        shaHelpIcon,
-        customActionButtons,
-    };
+  return {
+    shaToolbarConfigurator,
+    shaActionButtons,
+    sidebarContainerMainArea,
+    shaToolbarConfiguratorAlert,
+    shaToolbarConfiguratorBodyTabs,
+    shaToolbarItemDragHandle,
+    shaToolbarItem,
+    shaToolbarItemControls,
+    shaToolbarItemHeader,
+    shaToolbarGroupHeader,
+    shaToolbarGroupContainer,
+    shaToolbarItemGhost,
+    shaTooltipIcon,
+    shaToolbarItemName,
+    shaHelpIcon,
+    customActionButtons,
+  };
 });

@@ -39,7 +39,7 @@ export const ActionButtonGroup: FC<IActionButtonGroupProps> = ({ items, classNam
                 return (
                   <Tooltip title={tooltipName} placement="right" key={nanoid()}>
                     <Button
-                      onClick={event => {
+                      onClick={(event) => {
                         event?.stopPropagation();
                         onClick(event);
                       }}

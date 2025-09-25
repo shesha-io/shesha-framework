@@ -6,9 +6,9 @@ export const DropPositions = {
 
 export const getDropPositionText = (dropPosition: number): string => {
   switch (dropPosition) {
-  case DropPositions.After: return 'after';
-  case DropPositions.Before: return 'before';
-  case DropPositions.Inside: return 'inside';
-  default: return 'unknown';
+    case DropPositions.After: return 'after';
+    case DropPositions.Before: return 'before';
+    case DropPositions.Inside: return 'inside';
+    default: return 'unknown';
   }
 };

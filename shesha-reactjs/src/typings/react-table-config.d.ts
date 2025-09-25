@@ -7,7 +7,7 @@ import {
   UseExpandedRowProps,
   UseExpandedState,
   UseFiltersColumnOptions,
-  //UseFiltersColumnProps,
+  // UseFiltersColumnProps,
   UseFiltersInstanceProps,
   UseFiltersOptions,
   UseFiltersState,
@@ -52,7 +52,7 @@ declare module 'react-table' {
   export interface TestInterface {
 
   }
-  
+
   // take this file as-is, or comment out the sections that don't apply to your plugin configuration
 
   export interface TableOptions<D extends Record<string, unknown>>

@@ -36,5 +36,5 @@ export const extractAjaxResponse = <T>(response: IAjaxResponse<T>, errorMessage?
   if (isAjaxSuccessResponse(response))
     return response.result;
   else
-    throw errorMessage ? new Error(errorMessage, { cause: response.error }) : new Error(response.error.message);  
+    throw errorMessage ? new Error(errorMessage, { cause: response.error }) : new Error(response.error.message);
 };

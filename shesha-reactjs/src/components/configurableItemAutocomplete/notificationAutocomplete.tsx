@@ -8,10 +8,10 @@ export type INotificationAutocompleteRuntimeProps = ConfigurableItemAutocomplete
 const NOTIFICATION_CONFIG_ENTITY_TYPE = 'Shesha.Domain.NotificationTypeConfig';
 
 export const NotificationAutocomplete: FC<INotificationAutocompleteRuntimeProps> = (props) => {
-    return (
+  return (
         <GenericConfigItemAutocomplete
-            {...props}
-            entityType={NOTIFICATION_CONFIG_ENTITY_TYPE}
+          {...props}
+          entityType={NOTIFICATION_CONFIG_ENTITY_TYPE}
         />
-    );
+  );
 };

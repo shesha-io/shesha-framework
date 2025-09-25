@@ -54,9 +54,9 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
   useEffect(() => {
     if (configurator.modelConfiguration?.id && configurator.modelConfiguration?.id !== entityConfigId) {
       onChange(configurator.modelConfiguration);
-      if (entityConfigId === '') //{
+      if (entityConfigId === '') // {
         entityConfigTreeRef.current.refresh(configurator.modelConfiguration?.id);
-      /*} else {
+      /* } else {
         entityConfigTreeRef.current.update(configurator.modelConfiguration);*
       }*/
     }
@@ -90,7 +90,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
   const allowDelete = useMemo(() => {
     return entityConfig && (entityConfig.source === MetadataSourceType.UserDefined || entityConfig.notImplemented);
   }, [entityConfig]);
-  /*const allowMerge = useMemo(() => {
+  /* const allowMerge = useMemo(() => {
     return entityConfig && entityConfig.source === MetadataSourceType.ApplicationCode && entityConfig.notImplemented;
   }, [entityConfig]);*/
 
@@ -128,7 +128,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
           });
       },
     },
-    /*{
+    /* {
       title: 'Merge entity to...',
       icon: <MergeCellsOutlined />,
       disabled: entityConfigId === null || !allowMerge,

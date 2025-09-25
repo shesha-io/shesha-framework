@@ -52,18 +52,18 @@ export class GqlLoader implements IFormDataLoader {
     const { endpointType, staticEndpoint, dynamicEndpoint } = gqlSettings;
 
     switch (endpointType) {
-    case 'default': {
-      return await this.#endpointsEvaluator.getFormActionUrl({ actionName: StandardEntityActions.read, formSettings: formSettings, mappings: [] });
-    }
-    case 'static': {
-      return { ...staticEndpoint, httpVerb: staticEndpoint?.httpVerb || 'get' };
-    }
-    case 'dynamic': {
-      const dynamicEvaluated = await payload.expressionExecuter(dynamicEndpoint, { });
-      return dynamicEvaluated;
-    }
-    default:
-      return null;
+      case 'default': {
+        return await this.#endpointsEvaluator.getFormActionUrl({ actionName: StandardEntityActions.read, formSettings: formSettings, mappings: [] });
+      }
+      case 'static': {
+        return { ...staticEndpoint, httpVerb: staticEndpoint?.httpVerb || 'get' };
+      }
+      case 'dynamic': {
+        const dynamicEvaluated = await payload.expressionExecuter(dynamicEndpoint, { });
+        return dynamicEvaluated;
+      }
+      default:
+        return null;
     }
   };
 

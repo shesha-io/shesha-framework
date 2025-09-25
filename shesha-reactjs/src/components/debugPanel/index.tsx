@@ -116,10 +116,10 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({children}) =
       <CloseOutlined onClick={onClose}/>
       <span>Debug panel</span>
       <Select onChange={onChangePosition} value={position} style={{minWidth: '7em'}}>
-        <Select.Option key={'1'} value='top'>Top</Select.Option>
-        <Select.Option key={'2'} value='bottom'>Bottom</Select.Option>
-        <Select.Option key={'3'} value='left'>Left</Select.Option>
-        <Select.Option key={'4'} value='right'>Right</Select.Option>
+        <Select.Option key={'1'} value="top">Top</Select.Option>
+        <Select.Option key={'2'} value="bottom">Bottom</Select.Option>
+        <Select.Option key={'3'} value="left">Left</Select.Option>
+        <Select.Option key={'4'} value="right">Right</Select.Option>
       </Select>
     </Space>
   </>;
@@ -137,9 +137,9 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({children}) =
         styles={{
           mask: {height: 0},
           header: {padding: '4px 12px 12px 8px', fontSize: 12},
-          body:  {padding: '4px 4px 12px 4px', overflow: 'hidden'},          
+          body:  {padding: '4px 4px 12px 4px', overflow: 'hidden'},
         }}
-      > 
+      >
         <div className={styles.debugPanelBody}>
           { position === 'right' &&
             <div className={styles.debugPanelRightResizer}
@@ -173,4 +173,3 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({children}) =
 };
 
 export default DebugPanel;
-  
