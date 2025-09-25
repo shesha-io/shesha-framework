@@ -6,8 +6,8 @@ import { Popover } from 'antd';
 import { evaluateDynamicFilters } from '@/utils';
 import { ITableViewSelectorComponentProps } from './models';
 import { useTheme } from '@/providers/theme';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
-import { useDataContextManager } from '@/providers/dataContextManager';
+import { useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
+import { useDataContextManagerOrUndefined } from '@/providers/dataContextManager';
 import {
   useDataFetchDependency,
   useDataTableStore,
@@ -94,6 +94,10 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
 
   const isDesignerMode = formMode === 'designer';
 
+  if (!defaultTitle) {
+    if (isDesignerMode) {
+      return <Alert message="Please make sure that you have at least 1 filter" type="warning" showIcon />;
+    }
     if (!defaultTitle) {
         if (isDesignerMode) {
             // WYSIWYG fallback when no filters are configured

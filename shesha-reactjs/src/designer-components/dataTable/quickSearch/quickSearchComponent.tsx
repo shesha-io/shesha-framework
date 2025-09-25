@@ -33,11 +33,15 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
     const size = useMemo(() => _size, [_size]);
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
 
+
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...dimensionsStyles,
     });
     const finalStyle = removeUndefinedProps({ ...additionalStyles });
 
+    return hidden
+      ? null
+      : store
     return hidden
       ? null
       : store

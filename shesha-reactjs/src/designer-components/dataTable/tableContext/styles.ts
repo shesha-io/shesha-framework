@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }) => {
-  const dataContextDesignerEmpty = cx("sha-data-context-designer-empty", css`
+    const dataContextDesignerEmpty = cx("sha-data-context-designer-empty", css`
         display: flex;
         align-items: center;
         justify-content: center;
@@ -36,7 +36,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
     `);
 
-  const dataContextRuntimeEmpty = cx("sha-data-context-runtime-empty", css`
+    const dataContextRuntimeEmpty = cx("sha-data-context-runtime-empty", css`
         display: flex;
         align-items: center;
         justify-content: center;
@@ -62,7 +62,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
     `);
 
-  const dataContextDesignerWithChildren = cx("sha-data-context-designer-with-children", css`
+    const dataContextDesignerWithChildren = cx("sha-data-context-designer-with-children", css`
         display: flex;
         flex-direction: column;
         min-height: 40px;
@@ -97,11 +97,11 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
     `);
 
-  const dataContextRuntime = cx("sha-data-context-runtime", css`
+    const dataContextRuntime = cx("sha-data-context-runtime", css`
         /* Runtime styles - transparent wrapper */
     `);
 
-  const dataContextComponentsContainer = cx("sha-data-context-components-container", css`
+    const dataContextComponentsContainer = cx("sha-data-context-components-container", css`
         border: 2px dotted ${token.colorPrimary}30;
         border-radius: 4px;
         margin: 8px;
@@ -123,7 +123,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
     `);
 
-  const dataContextComponentsContainerEmpty = cx("sha-data-context-components-container-empty", css`
+    const dataContextComponentsContainerEmpty = cx("sha-data-context-components-container-empty", css`
         .sha-components-container-inner {
             display: flex;
             align-items: center;
@@ -135,12 +135,12 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
     `);
 
-  return {
-    dataContextDesignerEmpty,
-    dataContextRuntimeEmpty,
-    dataContextDesignerWithChildren,
-    dataContextRuntime,
-    dataContextComponentsContainer,
-    dataContextComponentsContainerEmpty,
-  };
+    return {
+        dataContextDesignerEmpty,
+        dataContextRuntimeEmpty,
+        dataContextDesignerWithChildren,
+        dataContextRuntime,
+        dataContextComponentsContainer,
+        dataContextComponentsContainerEmpty,
+    };
 });
