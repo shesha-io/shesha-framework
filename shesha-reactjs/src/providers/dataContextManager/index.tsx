@@ -4,7 +4,7 @@ import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useRef, u
 import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload, SHESHA_ROOT_DATA_CONTEXT_MANAGER } from "./models";
 import { DataContextType, IDataContextFull, useDataContextOrUndefined } from "../dataContextProvider/contexts";
 import { createNamedContext } from "@/utils/react";
-import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { isDefined } from "@/utils/nullables";
 
 export const DataContextTopLevels = {
   /** Only aplication root contexts */
@@ -299,6 +299,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
 
     return getDataContext(contextId)?.getFull();
   };
+
 
   const getLocalDataContextsData = (topId?: string, data?: any) => {
     const res = data ?? { lastUpdate: state.lastUpdate, refreshContext: onChangeContextData };
