@@ -118,11 +118,13 @@ export function fadeColor(color: string, fadePercentage: number): string {
     }
 
     if (color.startsWith('hsl')) {
-      const matches = color.match(/\d+/g);
+      const matches = color.match(/-?\d+(\.\d+)?/g);
       if (!matches || matches.length < 3) {
         return null;
       }
-      const [h, s, l] = matches.map(Number);
+      const h = parseFloat(matches[0]);
+      const s = parseFloat(matches[1].replace('%', ''));
+      const l = parseFloat(matches[2].replace('%', ''));
       return hslToRgb(h / 360, s / 100, l / 100);
     }
 
