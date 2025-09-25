@@ -1,4 +1,4 @@
-import { isDefined, isNullOrWhiteSpace } from "@/configuration-studio/types";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import cleanDeep from "clean-deep";
 import { mergeWith } from "lodash";
 import moment from "moment";

@@ -1,4 +1,4 @@
-import { isDefined, isNullOrWhiteSpace } from '@/configuration-studio/types';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getLocalStorage } from './storage';
 
 const TENANT_KEY = 'TENANT';

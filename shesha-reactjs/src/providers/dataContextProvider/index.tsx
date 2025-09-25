@@ -8,7 +8,7 @@ import { setValueByPropertyName } from "@/utils/object";
 import { IApplicationContext, useAvailableConstantsDataNoRefresh } from "../form/utils";
 import { GetShaContextDataAccessor, IShaDataAccessor } from "./contexts/shaDataAccessProxy";
 import { IAnyObject } from "@/interfaces";
-import { isDefined } from "@/configuration-studio/types";
+import { isDefined } from "@/utils/nullables";
 import { Path } from "@/utils/dotnotation";
 
 export interface IDataContextProviderProps<TData extends object> {

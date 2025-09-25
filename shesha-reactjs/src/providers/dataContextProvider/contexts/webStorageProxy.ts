@@ -1,4 +1,4 @@
-import { isDefined } from "@/configuration-studio/types";
+import { isDefined } from "@/utils/nullables";
 
 export interface IWebStorageProxy {
   updateOnChangeHandler: (func: () => void) => void;

@@ -1,7 +1,7 @@
 import { GHOST_PAYLOAD_KEY } from "@/utils/form";
 import { IFormApi } from "../../form/formApi";
 import { getValueByPropertyName, hasProperty, safeGetProperty, setValueByPropertyName } from "@/utils/object";
-import { isDefined, isNullOrWhiteSpace } from "@/configuration-studio/types";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { FieldValueGetter, FieldValueSetter, Path } from '@/utils/dotnotation';
 
 export interface IHasGetAccessorValue {

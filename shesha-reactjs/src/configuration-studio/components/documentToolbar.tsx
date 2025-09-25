@@ -4,7 +4,7 @@ import { useConfigurationStudio } from '../cs/contexts';
 import { CustomErrorBoundary } from '@/components';
 import { useActiveDoc } from '../cs/hooks';
 import { usePortal } from '@/hooks/usePortal';
-import { isDefined } from '../types';
+import { isDefined } from '../../utils/nullables';
 
 export interface IDocumentToolbarProps {
   doc: IDocumentInstance;

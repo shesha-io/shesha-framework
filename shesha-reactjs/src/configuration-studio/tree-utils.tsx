@@ -4,7 +4,7 @@ import { FileUnknownOutlined, FolderOpenOutlined, FolderOutlined, FormOutlined, 
 import React from "react";
 import { TreeNodeProps } from "antd";
 import { CsTreeNode } from "./components/tree-node";
-import { isDefined } from "@/configuration-studio/types";
+import { isDefined } from "@/utils/nullables";
 
 export const getIcon = (nodeType: TreeNodeType, itemType?: string, expanded?: boolean): ReactNode => {
   switch (nodeType) {

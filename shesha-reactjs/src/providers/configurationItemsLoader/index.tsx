@@ -23,7 +23,7 @@ import { IFormsDictionary, IReferenceListsDictionary } from './models';
 import { getFormForbiddenMessage, getFormNotFoundMessage, getReferenceListNotFoundMessage } from './utils';
 import { migrateFormSettings } from '../form/migration/formSettingsMigrations';
 import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
-import { isDefined } from '@/configuration-studio/types';
+import { isDefined } from '@/utils/nullables';
 import { buildUrl } from '@/utils/url';
 import { HttpResponse } from '@/publicJsApis/httpClient';
 import axios from 'axios';
