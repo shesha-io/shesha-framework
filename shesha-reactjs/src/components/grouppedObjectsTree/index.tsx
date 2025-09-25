@@ -117,7 +117,7 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
             onChange={onChangeHandler}
             defaultSelected={props.defaultSelected?.toLowerCase()}
             onRenterItem={props?.onRenterItem}
-            getIcon={groups[0].groupName === '-' ? undefined :props?.getIcon}
+            getIcon={groups[0].groupName === '-' ? undefined : props?.getIcon}
             getIsLeaf={groups[0].groupName === '-' ? undefined : props?.getIsLeaf}
           />
         </div>
@@ -143,7 +143,7 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
                     onChange={onChangeHandler}
                     defaultSelected={props.defaultSelected?.toLowerCase()}
                     onRenterItem={props?.onRenterItem}
-                    getIcon={ds.groupName === '-' ? undefined :props?.getIcon}
+                    getIcon={ds.groupName === '-' ? undefined : props?.getIcon}
                     getIsLeaf={ds.groupName === '-' ? undefined : props?.getIsLeaf}
                   />
                 </div>,
