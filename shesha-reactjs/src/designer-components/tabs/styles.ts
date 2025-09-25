@@ -1,78 +1,78 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor }) => {
-    const {
-        borderWidth,
-        borderStyle,
-        borderColor,
-        borderTopWidth,
-        borderBottomWidth,
-        borderRightWidth,
-        borderLeftWidth,
-        backgroundColor,
-        backgroundImage,
-        backgroundSize,
-        backgroundPosition,
-        backgroundRepeat,
-        boxShadow,
-        marginTop = '0px',
-        marginBottom = '0px',
-        marginRight = '0px',
-        marginLeft = '0px',
-        paddingTop = '0px',
-        paddingRight = '0px',
-        paddingLeft = '0px',
-        paddingBottom = '0px',
-        borderTopLeftRadius,
-        borderTopRightRadius,
-        borderBottomRightRadius,
-        borderBottomLeftRadius,
-        fontSize,
-        fontWeight,
-        textAlign,
-        color,
-        fontFamily,
-        ...rest
-    } = styles;
+  const {
+    borderWidth,
+    borderStyle,
+    borderColor,
+    borderTopWidth,
+    borderBottomWidth,
+    borderRightWidth,
+    borderLeftWidth,
+    backgroundColor,
+    backgroundImage,
+    backgroundSize,
+    backgroundPosition,
+    backgroundRepeat,
+    boxShadow,
+    marginTop = '0px',
+    marginBottom = '0px',
+    marginRight = '0px',
+    marginLeft = '0px',
+    paddingTop = '0px',
+    paddingRight = '0px',
+    paddingLeft = '0px',
+    paddingBottom = '0px',
+    borderTopLeftRadius,
+    borderTopRightRadius,
+    borderBottomRightRadius,
+    borderBottomLeftRadius,
+    fontSize,
+    fontWeight,
+    textAlign,
+    color,
+    fontFamily,
+    ...rest
+  } = styles;
 
-    const {
-        backgroundImage: cardBgImage,
-        backgroundColor: cardBgColor,
-        width: cardWidth,
-        height: cardHeight,
-        minWidth: cardMinWidth,
-        minHeight: cardMinHeight,
-        maxWidth: cardMaxWidth,
-        maxHeight: cardMaxHeight,
-        borderTopLeftRadius: cardTopLeftRadius,
-        borderTopRightRadius: cardTopRightRadius,
-        borderBottomRightRadius: cardBottomRightRadius,
-        borderBottomLeftRadius: cardBottomLeftRadius,
-    } = cardStyles;
+  const {
+    backgroundImage: cardBgImage,
+    backgroundColor: cardBgColor,
+    width: cardWidth,
+    height: cardHeight,
+    minWidth: cardMinWidth,
+    minHeight: cardMinHeight,
+    maxWidth: cardMaxWidth,
+    maxHeight: cardMaxHeight,
+    borderTopLeftRadius: cardTopLeftRadius,
+    borderTopRightRadius: cardTopRightRadius,
+    borderBottomRightRadius: cardBottomRightRadius,
+    borderBottomLeftRadius: cardBottomLeftRadius,
+  } = cardStyles;
 
-    const isLeft = position === 'left';
-    const isRight = position === 'right';
-    const isTop = position === 'top';
-    const isBottom = position === 'bottom';
+  const isLeft = position === 'left';
+  const isRight = position === 'right';
+  const isTop = position === 'top';
+  const isBottom = position === 'bottom';
 
-    const getBorder = (side) => {
-        const width = `${side}Width`;
-        const style = `${side}Style`;
-        const color = `${side}Color`;
-        return `${styles[width] ?? borderWidth} ${styles[style] ?? borderStyle} ${styles[color] ?? borderColor}`;
-    };
+  const getBorder = (side) => {
+    const width = `${side}Width`;
+    const style = `${side}Style`;
+    const color = `${side}Color`;
+    return `${styles[width] ?? borderWidth} ${styles[style] ?? borderStyle} ${styles[color] ?? borderColor}`;
+  };
 
-    const borderMap = {
-        top: getBorder('borderTop'),
-        bottom: getBorder('borderBottom'),
-        left: getBorder('borderLeft'),
-        right: getBorder('borderRight'),
-        default: `${borderWidth} ${borderStyle} ${borderColor}`,
-    };
+  const borderMap = {
+    top: getBorder('borderTop'),
+    bottom: getBorder('borderBottom'),
+    left: getBorder('borderLeft'),
+    right: getBorder('borderRight'),
+    default: `${borderWidth} ${borderStyle} ${borderColor}`,
+  };
 
-    const content = cx(
-        'content',
-        css`
+  const content = cx(
+    'content',
+    css`
             --ant-tabs-horizontal-margin: 0 !important;
             height: max-content;
             margin: ${marginTop} ${marginRight} ${marginBottom} ${marginLeft} !important;
@@ -120,10 +120,10 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 ${color && `--ant-tabs-item-hover-color: ${color} !important`};
                 ${color && `--ant-tabs-item-active-color: ${color} !important`};
                 --ant-line-width: ${isTop ? borderTopWidth || borderWidth : isBottom ? borderBottomWidth || borderWidth : isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth : isBottom};
-                --ant-color-border-secondary: ${isTop ? styles.borderTopColor || borderColor : isBottom ?
-                styles.borderBottomColor || borderColor : isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor : isBottom};
-                --ant-line-type:  ${isTop ? styles.borderTopStyle || borderStyle : isBottom ? styles.borderBottomStyle || borderStyle : isLeft ?
-                styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
+                --ant-color-border-secondary: ${isTop ? styles.borderTopColor || borderColor : isBottom
+                  ? styles.borderBottomColor || borderColor : isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor : isBottom};
+                --ant-line-type:  ${isTop ? styles.borderTopStyle || borderStyle : isBottom ? styles.borderBottomStyle || borderStyle : isLeft
+                  ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
                 background: ${cardBgImage || cardBgColor} !important;
                 ${cardStyles};
                 background-repeat: ${cardStyles.backgroundRepeat} !important;
@@ -131,10 +131,10 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 background-position: ${cardStyles.backgroundPosition} !important;
                 box-shadow: ${tabType === 'card' && boxShadow} !important;
                 ${isLeft && 'border-right-width: 0px !important' || isRight && 'border-left-width: 0px !important' || isTop && 'border-bottom-width: 0px !important' || isBottom && 'border-top-width: 0px !important'};
-                 border-radius: ${isTop ? `${cardTopLeftRadius} ${cardTopRightRadius} 0px 0px` :
-                isBottom ? `0px 0px ${cardBottomLeftRadius} ${cardBottomRightRadius}` :
-                    isLeft ? `${cardTopRightRadius} 0px 0px ${cardBottomRightRadius}` :
-                        isRight ? `0px ${cardTopLeftRadius} ${cardBottomLeftRadius} 0px` : cardStyles.borderRadius};
+                 border-radius: ${isTop ? `${cardTopLeftRadius} ${cardTopRightRadius} 0px 0px`
+                    : isBottom ? `0px 0px ${cardBottomLeftRadius} ${cardBottomRightRadius}`
+                      : isLeft ? `${cardTopRightRadius} 0px 0px ${cardBottomRightRadius}`
+                        : isRight ? `0px ${cardTopLeftRadius} ${cardBottomLeftRadius} 0px` : cardStyles.borderRadius};
 
                 .ant-tabs-tab-btn {
                     width: 100%;
@@ -146,10 +146,10 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 --ant-tabs-card-bg: ${backgroundColor || backgroundImage};
                 --ant-color-bg-container: ${backgroundColor || backgroundImage};
                 --ant-line-width: ${isTop ? borderTopWidth || borderWidth : isBottom ? borderBottomWidth || borderWidth : isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth : isBottom};
-                --ant-color-border-secondary: ${isTop ? styles.borderTopColor || borderColor : isBottom ?
-                styles.borderBottomColor || borderColor : isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor : isBottom};
-                --ant-line-type:  ${isTop ? styles.borderTopStyle || borderStyle : isBottom ? styles.borderBottomStyle || borderStyle : isLeft ?
-                styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
+                --ant-color-border-secondary: ${isTop ? styles.borderTopColor || borderColor : isBottom
+                  ? styles.borderBottomColor || borderColor : isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor : isBottom};
+                --ant-line-type:  ${isTop ? styles.borderTopStyle || borderStyle : isBottom ? styles.borderBottomStyle || borderStyle : isLeft
+                  ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
                 --ant-color-bg-container: ${backgroundImage || backgroundColor};
                 background: ${tabType === 'card' ? backgroundImage || backgroundColor : ''} !important;
                 ${cardStyles};
@@ -180,12 +180,12 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
             }
 
             .ant-tabs-nav::before {
-                --ant-line-width: ${isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth :
-                isTop ? borderTopWidth || borderWidth : borderBottomWidth || borderWidth};
-                --ant-color-border-secondary: ${isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor :
-                isTop ? styles.borderTopColor || borderColor : styles.borderBottomColor || borderColor};
-                --ant-line-type:  ${isLeft ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle :
-                isTop ? styles.borderTopStyle || borderStyle : styles.borderBottomStyle || borderStyle};
+                --ant-line-width: ${isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth
+                  : isTop ? borderTopWidth || borderWidth : borderBottomWidth || borderWidth};
+                --ant-color-border-secondary: ${isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor
+                  : isTop ? styles.borderTopColor || borderColor : styles.borderBottomColor || borderColor};
+                --ant-line-type:  ${isLeft ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle
+                  : isTop ? styles.borderTopStyle || borderStyle : styles.borderBottomStyle || borderStyle};
            }
 
            .ant-tabs-nav-list {
@@ -198,9 +198,9 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
 
            }
         `
-    );
+  );
 
-    return {
-        content,
-    };
+  return {
+    content,
+  };
 });

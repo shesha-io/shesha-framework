@@ -29,7 +29,7 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => 
+        {(value, onChange) =>
           <AutocompleteTagGroup
             value={value}
             defaultValue={model?.defaultValue}
@@ -42,7 +42,7 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IAutocompleteTagsOutlinedComponentProps>(0, (prev: IAutocompleteTagsOutlinedComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAutocompleteTagsOutlinedComponentProps>(1, (prev) => migrateVisibility(prev))
@@ -50,7 +50,7 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
       ...migrateFormApi.eventsAndProperties(prev),
       defaultValue: migrateFormApi.withoutFormData(prev?.defaultValue),
     }))
-,
+  ,
 };
 
 export default AutocompleteTagGroupComponent;

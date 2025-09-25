@@ -62,7 +62,7 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
    */
   refetcher?: () => void;
 
-  /**  
+  /**
    * Triggered when the form is submitted successfully but the response is not successful
    **/
   onSubmittedFailed?: () => void;
@@ -85,7 +85,7 @@ export type IConfigurableFormRuntimeProps<Values extends object = object> = {
    * Trigger after submitting the form and verifying data failed
    */
   onFinishFailed?: (errorInfo: ValidateErrorEntity<Values>) => void;
-  
+
   /**
    * Form argurments
    */
@@ -107,7 +107,7 @@ export type IConfigurableFormRuntimeProps<Values extends object = object> = {
    * Note: doesn't work when the `onFinish` is specified
    */
   beforeSubmit?: (values: Values) => Promise<boolean>;
-  
+
   /**
    * Returns the form data and the response data as well, only if an API was made and came back successful
    * Note: doesn't work when the `onFinish` is specified
@@ -125,13 +125,13 @@ export type IConfigurableFormRuntimeProps<Values extends object = object> = {
 
   layout?: FormLayout;
   size?: SizeType;
-  
+
   /**
    * External form and data fetcher, is used to refresh form (both markup and data) from the back-end
    */
   refetcher?: () => void;
 
-  /**  
+  /**
    * Triggered when the form is submitted successfully but the response is not successful
    **/
   onSubmittedFailed?: () => void;
@@ -150,7 +150,7 @@ export type MarkupLoadingErrorRenderProps = {
   markupLoadingState: ProcessingState;
 };
 export type IConfigurableFormRenderingProps = {
-  markupLoadingError?: (args: MarkupLoadingErrorRenderProps) => React.ReactNode;  
+  markupLoadingError?: (args: MarkupLoadingErrorRenderProps) => React.ReactNode;
 };
 
 export type IConfigurableFormProps<Values extends object = object> = HasFormIdOrMarkup & IConfigurableFormRuntimeProps<Values> & IConfigurableFormRenderingProps & {

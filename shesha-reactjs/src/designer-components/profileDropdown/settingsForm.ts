@@ -69,8 +69,8 @@ export const getSettings = (data: any) => {
                     parentId: commonTabId,
                     hidden: { _code: 'return data?.showUserInfo != true', _mode: 'code', _value: false } as any,
                     jsSetting: true,
-                  }
-                ]
+                  },
+                ],
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -95,8 +95,8 @@ export const getSettings = (data: any) => {
                     parentId: commonTabId,
                     hidden: { _code: 'return data?.showUserInfo != true', _mode: 'code', _value: false } as any,
                     jsSetting: true,
-                  }
-                ]
+                  },
+                ],
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -106,8 +106,8 @@ export const getSettings = (data: any) => {
                 parentId: commonTabId,
                 jsSetting: true,
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -125,7 +125,7 @@ export const getSettings = (data: any) => {
                 propertyRouteName: {
                   _mode: "code",
                   _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
-                  _value: ""
+                  _value: "",
                 },
                 components: [
                   ...new DesignerToolbarSettings()
@@ -202,9 +202,9 @@ export const getSettings = (data: any) => {
                                     },
                                   ],
                                 })
-                                .toJson()
-                              ]
-                            }
+                                .toJson(),
+                              ],
+                            },
                           })
                           .addSettingsInput({
                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -215,9 +215,9 @@ export const getSettings = (data: any) => {
                             label: 'Custom Style',
                             description: 'A script that returns the style of the sub text as an object. This should conform to CSSProperties',
                           })
-                          .toJson()
-                        ]
-                      }
+                          .toJson(),
+                        ],
+                      },
                     })
                     .addCollapsiblePanel({
                       id: nanoid(),
@@ -238,15 +238,15 @@ export const getSettings = (data: any) => {
                             label: 'Content Style',
                             description: 'A script that returns the style of the popover content as an object. This should conform to CSSProperties',
                           })
-                          .toJson()
-                        ]
-                      }
+                          .toJson(),
+                        ],
+                      },
                     })
-                    .toJson()
-                ]
+                    .toJson(),
+                ],
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'security',
@@ -260,19 +260,19 @@ export const getSettings = (data: any) => {
                 propertyName: 'permissions',
                 label: 'Permissions',
                 size: 'small',
-                parentId: securityTabId
+                parentId: securityTabId,
               })
-              .toJson()
-            ]
-          }
-        ]
+              .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

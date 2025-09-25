@@ -31,8 +31,8 @@ export interface TypeImport {
 };
 
 export interface GenericTypeDeclaration {
-  /** 
-   * Final type declaration constructed taking into account all modifiers and generic types. 
+  /**
+   * Final type declaration constructed taking into account all modifiers and generic types.
    * @example
    * { typeName: 'Date', typeDeclaration: 'Nullable<Date>' }
    */
@@ -78,7 +78,7 @@ export interface IMemberMetadata extends IMemberType, Partial<IHasTypeDefinition
 }
 
 export const isIMemberMetadata = (value: any): value is IMemberMetadata => value && value.path && isIMemberType(value);
-//DataTypeInfo
+// DataTypeInfo
 
 export interface IHasItemsType {
   itemsType: IMemberType;
@@ -210,18 +210,18 @@ export const isDataPropertyMetadata = (value: IMemberMetadata): value is IProper
 };
 
 export type ProperyDataType =
-  | 'string'
-  | 'date'
-  | 'date-time'
-  | 'time'
-  | 'entity'
-  | 'file'
-  | 'number'
-  | 'reference-list-item'
-  | 'boolean'
-  | 'array'
-  | 'object'
-  | 'guid';
+  | 'string' |
+  'date' |
+  'date-time' |
+  'time' |
+  'entity' |
+  'file' |
+  'number' |
+  'reference-list-item' |
+  'boolean' |
+  'array' |
+  'object' |
+  'guid';
 
 export enum MetadataSourceType {
   ApplicationCode = 1,
@@ -291,8 +291,8 @@ export const isContextMetadata = (value: IModelMetadata): value is IContextMetad
 };
 
 export const metadataHasNestedProperties = (value: IModelMetadata): value is IContainerWithNestedProperties & IModelMetadata => {
-  return (isEntityMetadata(value) || isObjectMetadata(value) || isContextMetadata(value))
-    && Array.isArray((value as IContainerWithNestedProperties).properties);
+  return (isEntityMetadata(value) || isObjectMetadata(value) || isContextMetadata(value)) &&
+    Array.isArray((value as IContainerWithNestedProperties).properties);
 };
 
 export interface IApiEndpoint {

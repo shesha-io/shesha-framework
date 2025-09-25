@@ -13,7 +13,7 @@ const { Option } = Select;
 const optionsArr = ['Yes', 'No'];
 
 export const BooleanDropDown: FC<IBooleanDropDownProps> = ({ objectItem, setObjectItem, itemKey, value, ...rest }) => {
-  const handleOnSelect = arg => {
+  const handleOnSelect = (arg) => {
     if (arg === 1)
       setObjectItem({ ...objectItem, [itemKey]: true });
     else

@@ -68,7 +68,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const enabled = !model.readOnly;
 
     const onFileListChanged = (fileList: IStoredFile[]) => {
-
       if (!model.onFileChanged)
         return;
 
@@ -80,7 +79,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         http: httpClient,
         message,
         moment,
-        setGlobalState
+        setGlobalState,
       });
     };
 
@@ -89,7 +88,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       // File list uses propertyName only for support Required feature
       <ConfigurableFormItem model={{ ...model, propertyName: !model.removeFieldFromPayload && model.propertyName ? model.propertyName : `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
-
           return (
             <StoredFilesProvider
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
@@ -145,7 +143,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         listType: 'text',
         filesLayout: 'horizontal',
         hideFileName: true,
-        editMode: 'inherited'
+        editMode: 'inherited',
       };
     })
     .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

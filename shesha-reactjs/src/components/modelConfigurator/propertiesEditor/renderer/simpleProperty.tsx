@@ -13,12 +13,12 @@ export interface IProps extends IModelItem {
   parent?: IModelItem;
 }
 
-export const SimpleProperty: FC<IProps> = props => {
+export const SimpleProperty: FC<IProps> = (props) => {
   const { styles } = useStyles();
 
   const icon = getIconByDataType(props.dataType, props.dataFormat || props.entityType);
 
-  const label = props.isItemsType 
+  const label = props.isItemsType
     ? <>Array items type</>
     : <>{props.name} {props.label && <>({props.label})</>}</>;
 
@@ -28,9 +28,9 @@ export const SimpleProperty: FC<IProps> = props => {
       ? <>: <i>{props.entityType ?? 'undefined' }</i></>
       : null;
 
-  
+
   const refList = props.dataType === DataTypes.referenceListItem && props.referenceListId
-    ? <span> <i>{`RefList<${props.referenceListId.name}>`}</i></span> 
+    ? <span> <i>{`RefList<${props.referenceListId.name}>`}</i></span>
     : null;
 
   return (

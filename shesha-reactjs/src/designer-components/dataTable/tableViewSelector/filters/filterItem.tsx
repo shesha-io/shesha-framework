@@ -8,32 +8,32 @@ import { useStyles as useItemStyles } from './styles';
 import { ItemChangeDetails } from '@/components/listEditor';
 
 export interface IFilterItemProps {
-    value?: ITableViewProps;
-    onChange?: (newValue: ITableViewProps, changeDetails: ItemChangeDetails) => void;
-    readOnly: boolean;
+  value?: ITableViewProps;
+  onChange?: (newValue: ITableViewProps, changeDetails: ItemChangeDetails) => void;
+  readOnly: boolean;
 }
 
 export const FilterItem: FC<IFilterItemProps> = ({ value, onChange, readOnly }) => {
-    const { styles } = useStyles();
-    const { styles: itemStyles } = useItemStyles();
-    
-    const { name, tooltip } = value;
-    const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
+  const { styles } = useStyles();
+  const { styles: itemStyles } = useItemStyles();
 
-    const onEditBtnClick = () => {
-        setSettingsVisible(true);
-    };
+  const { name, tooltip } = value;
+  const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
 
-    const onSaveSettings = (newValue: ITableViewProps) => {
-        onChange(newValue, undefined);
-        setSettingsVisible(false);
-    };
+  const onEditBtnClick = () => {
+    setSettingsVisible(true);
+  };
 
-    const onCancelSettings = () => {
-        setSettingsVisible(false);
-    };
+  const onSaveSettings = (newValue: ITableViewProps) => {
+    onChange(newValue, undefined);
+    setSettingsVisible(false);
+  };
 
-    return (
+  const onCancelSettings = () => {
+    setSettingsVisible(false);
+  };
+
+  return (
         <>
             <div className={itemStyles.filterItem}>
                 <Space>
@@ -51,5 +51,5 @@ export const FilterItem: FC<IFilterItemProps> = ({ value, onChange, readOnly }) 
             </div>
             {settingsVisible && <FilterItemSettingsModal value={value} onSave={onSaveSettings} onCancel={onCancelSettings} readOnly={readOnly} />}
         </>
-    );
+  );
 };

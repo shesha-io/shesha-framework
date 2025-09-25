@@ -35,7 +35,7 @@ const FormProviderWithDelayedUpdates: FC<PropsWithChildren<IShaFormProviderProps
   );
 };
 
-const useShaFormRef = <Values extends object = object,>(): MutableRefObject<IShaFormInstance<Values>> => {
+const useShaFormRef = <Values extends object = object>(): MutableRefObject<IShaFormInstance<Values>> => {
   return useRef<IShaFormInstance<Values>>();
 };
 

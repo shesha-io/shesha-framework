@@ -18,7 +18,7 @@ const getStyles = (props: Partial<TableHeaderProps | TableCellProps>) => [
   {
     style: {
       display: 'flex',
-      height: '-webkit-fill-available !important'
+      height: '-webkit-fill-available !important',
     },
   },
 ];

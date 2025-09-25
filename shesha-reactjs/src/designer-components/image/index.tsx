@@ -86,7 +86,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
       ...model.allStyles.dimensionsStyles,
       ...model.allStyles.borderStyles,
       ...model.allStyles.shadowStyles,
-      ...model.allStyles.stylingBoxAsCSS
+      ...model.allStyles.stylingBoxAsCSS,
     });
 
     return (
@@ -102,7 +102,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               ? uploadedFileUrl
               : model.url || value;
 
-          const fileProvider = child => {
+          const fileProvider = (child) => {
             return (
               <StoredFileProvider
                 value={val}
@@ -114,7 +114,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
                 }
                 fileCategory={model.fileCategory}
                 propertyName={!model.context ? model.propertyName : null}
-                //uploadMode={model.useSync ? 'sync' : 'async'}
+                // uploadMode={model.useSync ? 'sync' : 'async'}
               >
                 {child}
               </StoredFileProvider>
@@ -144,7 +144,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   },
   initModel: (model) => {
     const customModel: IImageProps = {
-      ...model
+      ...model,
     };
     return customModel;
   },

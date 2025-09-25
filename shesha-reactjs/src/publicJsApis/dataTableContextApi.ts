@@ -1,13 +1,13 @@
 export type IndexColumnFilterOption =
-  | 'contains'
-  | 'startsWith'
-  | 'endsWith'
-  | 'equals'
-  | 'lessThan'
-  | 'greaterThan'
-  | 'between'
-  | 'before'
-  | 'after';
+  | 'contains' |
+  'startsWith' |
+  'endsWith' |
+  'equals' |
+  'lessThan' |
+  'greaterThan' |
+  'between' |
+  'before' |
+  'after';
 
 export type ColumnSorting = 'asc' | 'desc';
 
@@ -33,7 +33,7 @@ export interface ITableFilter {
   readonly filter: any;
 }
 
-export type ColumnFilter = string[] | number[] | /*Moment[] |*/ Date[] | string | number | /*Moment |*/ Date | boolean;
+export type ColumnFilter = string[] | number[] | /* Moment[] |*/ Date[] | string | number | /* Moment |*/ Date | boolean;
 
 export interface IPublicDataTableActions {
   refreshTable: () => void;
@@ -74,11 +74,11 @@ export interface IDataTableActionsContext extends IPublicDataTableActions {
 
   changeDisplayColumn: (displayColumnName: string) => void;
   changePersistedFiltersToggle: (persistSelectedFilters: boolean) => void;
-  
+
   /**
    * Get current repository of the datatable
    */
-  //getRepository: () => IRepository;
+  // getRepository: () => IRepository;
   /**
    * Set row data after inline editing
    */
@@ -89,9 +89,9 @@ export interface IDataTableActionsContext extends IPublicDataTableActions {
 }
 
 export interface IDataTableContexApi extends IHasModelType {
-  
+
   api: IDataTableActionsContext;
-  
+
   /** Datatable data (fetched from the back-end) */
   tableData?: object[];
   /** Selected page size */
@@ -111,7 +111,7 @@ export interface IDataTableContexApi extends IHasModelType {
 
   /** Rows grouping */
   grouping?: GroupingItem[];
-  
+
   /** Advanced filter: applied values */
   tableFilter?: ITableFilter[];
   /** Advanced filter: current editor state */

@@ -32,12 +32,12 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
   icon: <LineOutlined />,
   isInput: true,
   isOutput: true,
-    initModel: (model) => {
-      return {
-        ...model,
-        hideLabel: true,
-      };
-    },
+  initModel: (model) => {
+    return {
+      ...model,
+      hideLabel: true,
+    };
+  },
   Factory: ({ model }) => {
     const {
       progressType,
@@ -59,14 +59,14 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       hidden,
       gapDegree,
       style,
-      allStyles
+      allStyles,
     } = model;
 
     if (hidden) return null;
 
     const styles = getStyle(style);
     const finalStyle = allStyles?.fullStyle || styles;
-    
+
 
     const getEvaluatedSuccessColor = () => {
       // tslint:disable-next-line:function-constructor
@@ -126,8 +126,8 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IProgressProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))

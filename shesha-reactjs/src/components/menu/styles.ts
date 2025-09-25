@@ -36,7 +36,7 @@ export const useStyles = createStyles(
       styleOnHover,
       styleOnSelected,
       width,
-      fontStyles
+      fontStyles,
     }: IStyleProps
   ) => {
     const menuContainer = css`
@@ -64,10 +64,10 @@ export const useStyles = createStyles(
 
     const menuWrapperScroll = isScrolling
       ? {
-          display: "flex",
-          width: `calc(${width} + 80px)`,
-          overflow: "scroll",
-        }
+        display: "flex",
+        width: `calc(${width} + 80px)`,
+        overflow: "scroll",
+      }
       : undefined;
 
     const shaMenu = cx(

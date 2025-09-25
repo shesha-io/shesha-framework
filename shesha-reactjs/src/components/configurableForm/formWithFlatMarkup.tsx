@@ -36,8 +36,8 @@ export const FormWithFlatMarkup = <TValues extends object = object>(props: IForm
   } = props;
 
   const { formInfoBlockVisible } = useAppConfigurator();
-  
-  if (!formFlatMarkup) 
+
+  if (!formFlatMarkup)
     return null;
 
   const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible;

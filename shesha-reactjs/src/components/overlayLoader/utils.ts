@@ -21,25 +21,25 @@ import {
 } from 'react-spinners';
 
 export type SpinnerStyles =
-  | 'BarLoader'
-  | 'BeatLoader'
-  | 'BounceLoader'
-  | 'CircleLoader'
-  | 'ClipLoader'
-  | 'ClimbingBoxLoader'
-  | 'DotLoader'
-  | 'FadeLoader'
-  | 'GridLoader'
-  | 'HashLoader'
-  | 'MoonLoader'
-  | 'PacmanLoader'
-  | 'PropagateLoader'
-  | 'PulseLoader'
-  | 'RingLoader'
-  | 'RiseLoader'
-  | 'RotateLoader'
-  | 'ScaleLoader'
-  | 'SyncLoader';
+  | 'BarLoader' |
+  'BeatLoader' |
+  'BounceLoader' |
+  'CircleLoader' |
+  'ClipLoader' |
+  'ClimbingBoxLoader' |
+  'DotLoader' |
+  'FadeLoader' |
+  'GridLoader' |
+  'HashLoader' |
+  'MoonLoader' |
+  'PacmanLoader' |
+  'PropagateLoader' |
+  'PulseLoader' |
+  'RingLoader' |
+  'RiseLoader' |
+  'RotateLoader' |
+  'ScaleLoader' |
+  'SyncLoader';
 
 export default (loader: SpinnerStyles) => {
   // type IStringObj = { [name: string]: string };

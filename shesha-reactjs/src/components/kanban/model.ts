@@ -4,7 +4,7 @@ import { CSSProperties } from 'styled-components';
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
-export interface IRefListGroupItemBase extends IButtonItem{
+export interface IRefListGroupItemBase extends IButtonItem {
   referenceList?: any;
   item?: string;
 }

@@ -27,7 +27,7 @@ const SelectColumnsButtonComponent: IToolboxComponent<ISelectColumnsButtonCompon
       items: [],
     };
   },
-  migrator: m => m
+  migrator: (m) => m
     .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISelectColumnsButtonComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<ISelectColumnsButtonComponentProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))

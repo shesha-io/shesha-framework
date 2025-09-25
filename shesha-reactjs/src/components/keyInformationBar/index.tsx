@@ -47,17 +47,17 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
         const storedImageUrl =
           background?.storedFile?.id && background?.type === 'storedFile'
             ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`, {
-                headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
+              headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+                }
+                return response.blob();
               })
-                .then((response) => {
-                  if (!response.ok) {
-                    throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-                  }
-                  return response.blob();
-                })
-                .then((blob) => {
-                  return URL.createObjectURL(blob);
-                })
+              .then((blob) => {
+                return URL.createObjectURL(blob);
+              })
             : '';
 
         const style = getBackgroundStyle(background, jsStyle, storedImageUrl);

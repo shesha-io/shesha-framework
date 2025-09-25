@@ -64,7 +64,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const filterKeysFunc: FilterSelectedFunc = useCallback((value: any | any[]) => {
       const localValue = value?.length === 1 ? value[0] : value;
       return Array.isArray(localValue)
-        ? { or: localValue.map(x => executeExpression(model.filterKeysFunc, { value: x }, null, null)) }
+        ? { or: localValue.map((x) => executeExpression(model.filterKeysFunc, { value: x }, null, null)) }
         : executeExpression(model.filterKeysFunc, { value: localValue }, null, null);
     }, [model.filterKeysFunc]);
 
@@ -139,7 +139,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         borderColor: prev.borderColor,
         fontSize: prev.fontSize,
         backgroundColor: prev.backgroundColor,
-        stylingBox: prev.stylingBox
+        stylingBox: prev.stylingBox,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
@@ -175,7 +175,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
         ? 'entityReference'
         : 'simple',
-      filter: typeof propMetadata.formatting?.filter === 'object' && propMetadata.formatting?.filter 
+      filter: typeof propMetadata.formatting?.filter === 'object' && propMetadata.formatting?.filter
         ? {...propMetadata.formatting?.filter}
         : null,
     };

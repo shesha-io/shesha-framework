@@ -10,7 +10,7 @@ export interface IProps {
   index: number;
 }
 
-const ToolbarComponent: FC<IProps> = ({ component /*, index*/ }) => {
+const ToolbarComponent: FC<IProps> = ({ component /* , index*/ }) => {
   const { styles } = useStyles();
   const ComponentContent = () => (
     <div>

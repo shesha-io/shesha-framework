@@ -1,10 +1,10 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }) => {
-    const body = "body";
-    const loadingContainer = "loading-container";
-    const text = "text";
-    const overlayLoader = cx("overlay-loader", css`
+  const body = "body";
+  const loadingContainer = "loading-container";
+  const text = "text";
+  const overlayLoader = cx("overlay-loader", css`
         display: flex;
         height: 100vh;
         width: 100%;
@@ -33,10 +33,10 @@ export const useStyles = createStyles(({ css, cx }) => {
             }
         }   
   `);
-    return {
-        overlayLoader,
-        body,
-        loadingContainer,
-        text,
-    };
+  return {
+    overlayLoader,
+    body,
+    loadingContainer,
+    text,
+  };
 });

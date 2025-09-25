@@ -25,7 +25,6 @@ export interface FormInfoProps {
 }
 
 export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, children }) => {
-  
   const { id, name, module } = formProps;
   const { toggleShowInfoBlock, formInfoBlockVisible, softInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
@@ -53,7 +52,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
     return <>{children}</>;
   }
 
-  if (auth?.state?.status !== 'ready'){
+  if (auth?.state?.status !== 'ready') {
     return <>{children}</>;
   }
 

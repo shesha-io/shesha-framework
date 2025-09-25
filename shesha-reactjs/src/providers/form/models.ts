@@ -492,8 +492,8 @@ export const DEFAULT_FORM_SETTINGS: IFormSettings = {
 };
 
 export type ActionParametersJs = string;
-//export type ActionParametersDictionary = [{ key: string; value: string }];
-export type ActionParametersDictionary = { [key: string]: any; };
+// export type ActionParametersDictionary = [{ key: string; value: string }];
+export type ActionParametersDictionary = { [key: string]: any };
 export type ActionParameters = ActionParametersJs | ActionParametersDictionary;
 export type ActionArguments = { [key: string]: any };
 export type GenericDictionary = { [key: string]: any };

@@ -12,7 +12,6 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
   showReflistName,
   children,
 }) => {
-
   const popReflistName = !!(!showReflistName && currentStatus?.item);
 
   const showToolTip = !!currentStatus?.description || popReflistName;

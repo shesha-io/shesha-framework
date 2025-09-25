@@ -102,7 +102,7 @@ export const unsafeGetValueByPropertyName = (data: object, propertyName: string)
 
 export const hasProperty = <T extends object = object>(obj: T, key: string | number | symbol): key is keyof T => {
   return key in obj;
-}
+};
 
 export const safeGetProperty = <T extends object>(obj: T, key: string | symbol): T[keyof T] | undefined => {
   return hasProperty(obj, key)
