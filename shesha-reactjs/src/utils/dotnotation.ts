@@ -1,7 +1,7 @@
 // Helper type to increment the depth counter
 type AddOne<N extends number> = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10][N];
 
-export type PathImpl<T, Key extends keyof T, Depth extends number = 10, CurrentDepth extends number = 0> = 
+export type PathImpl<T, Key extends keyof T, Depth extends number = 10, CurrentDepth extends number = 0> =
   CurrentDepth extends Depth
     ? Key extends string ? Key : never
     : Key extends string
@@ -37,10 +37,10 @@ export const splitDotNotation = (path: string): [string, string] => {
   if (!path.includes('.')) {
     return [path, ''];
   }
-  
+
   const firstDotIndex = path.indexOf('.');
   const firstPart = path.substring(0, firstDotIndex);
   const remainingPart = path.substring(firstDotIndex + 1);
-  
+
   return [firstPart, remainingPart];
 };

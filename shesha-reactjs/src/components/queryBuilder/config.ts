@@ -19,7 +19,7 @@ interface TypeModifier extends Partial<Type> {
 };
 const modifyType = (types: CoreTypes, typeName: string, modifier: TypeModifier) => {
   const type: Type = types[typeName];
-  if (type){
+  if (type) {
     types[typeName] = { ...type, ...modifier };
   }
 };
@@ -47,8 +47,8 @@ const types = {
       javascript: {
         widgetProps: {},
         opProps: {},
-      }
-    }
+      },
+    },
   },
 };
 
@@ -79,7 +79,7 @@ const typeModifiers: IDictionary<TypeModifier> = {
       'not_like',
       'starts_with',
       'ends_with',
-    ]
+    ],
   },
   'javascript': {
     valueSources: ['value'],
@@ -88,12 +88,12 @@ const typeModifiers: IDictionary<TypeModifier> = {
       'not_equal',
       'is_empty',
       'is_not_empty',
-    ]
+    ],
   },
 };
 
-for(const typeName in typeModifiers){
-  if (typeModifiers.hasOwnProperty(typeName)){
+for(const typeName in typeModifiers) {
+  if (typeModifiers.hasOwnProperty(typeName)) {
     modifyType(types, typeName, typeModifiers[typeName]);
   }
 };
@@ -147,16 +147,15 @@ const widgets = {
 
 const evaluateTypes = ['boolean', 'date', 'datetime', 'time', 'number', 'text', 'entityReference', 'refList'];
 const evaluateFunctions = {};
-evaluateTypes.forEach(type => {
+evaluateTypes.forEach((type) => {
   evaluateFunctions[`evaluate_${type}`.toUpperCase()] = getEvaluateFunc(type);
 });
 
 const knownFuncNames = ['NOW', 'LOWER', 'NOW', 'UPPER', 'RELATIVE_DATETIME'];
 const knownFuncs: Funcs = {};
-knownFuncNames.forEach(funcName => {
-  
+knownFuncNames.forEach((funcName) => {
   if (Object.hasOwn(BasicFuncs, funcName))
-  //if (BasicFuncs.hasOwnProperty(funcName))
+  // if (BasicFuncs.hasOwnProperty(funcName))
     knownFuncs[funcName] = BasicFuncs[funcName];
 });
 
@@ -171,5 +170,5 @@ export const config: Config = {
   types,
   funcs,
   operators,
-  widgets, 
+  widgets,
 };

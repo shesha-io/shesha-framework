@@ -125,15 +125,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     if (dataSource !== 'api') return Promise.reject('`getUrl` is available only when `dataSource` = `api`');
 
     return actualGetUrl
-      ? // if getUrl is specified - evaluate value using JS
-      Promise.resolve(actualGetUrl)
+      ? Promise.resolve(actualGetUrl) // if getUrl is specified - evaluate value using JS
       : internalEntityType
-        ? // if entityType is specified - get default url for the entity
-        urlHelper
+        ? urlHelper // if entityType is specified - get default url for the entity
           .getDefaultActionUrl({ modelType: internalEntityType, actionName: StandardEntityActions.read })
           .then((endpoint) => endpoint.url)
-        : // return empty string
-        Promise.resolve('');
+        : Promise.resolve(''); // return empty string
   };
 
   const [formLoadingState, setFormLoadingState] = useState<IFormLoadingState>({ isLoading: false, error: null });

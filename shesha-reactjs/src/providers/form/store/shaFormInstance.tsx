@@ -791,21 +791,21 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
         forceUpdate({});
       };
 
-            const instance = new ShaFormInstance<Values>({
-                forceRootUpdate: forceReRender,
-                formManager: formManager,
-                dataLoaders: dataLoaders,
-                dataSubmitters: dataSubmitters,
-                antdForm: antdFormInstance,
-                metadataDispatcher: metadataDispatcher,
-            });
-            const accessors = wrapConstantsData({
-                topContextId: DataContextTopLevels.Full,
-                fullContext,
-                shaForm: instance,
-                queryStringGetter: getQueryParams,
-            });
-            const allConstants = makeObservableProxy<IApplicationContext>(accessors);
+      const instance = new ShaFormInstance<Values>({
+        forceRootUpdate: forceReRender,
+        formManager: formManager,
+        dataLoaders: dataLoaders,
+        dataSubmitters: dataSubmitters,
+        antdForm: antdFormInstance,
+        metadataDispatcher: metadataDispatcher,
+      });
+      const accessors = wrapConstantsData({
+        topContextId: DataContextTopLevels.Full,
+        fullContext,
+        shaForm: instance,
+        queryStringGetter: getQueryParams,
+      });
+      const allConstants = makeObservableProxy<IApplicationContext>(accessors);
 
       const expressionExecuter = (expression: string, data: any = null) => {
         // get formApi here and pass to caller

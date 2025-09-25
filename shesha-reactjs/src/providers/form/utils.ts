@@ -800,7 +800,7 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
               day: 'numeric',
             });
           };
-        }
+        },
       };
 
       if (skipUnknownTags) {

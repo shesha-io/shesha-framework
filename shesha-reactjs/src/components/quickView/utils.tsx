@@ -35,7 +35,7 @@ export const innerEntityReferenceButtonBoxStyle = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
-};  
+};
 
 export const compareValueToProperty = (key: string, value: string, properties: IPropertyMetadata[]) => {
   const dataType = getDataProperty(properties, key, 'dataType');

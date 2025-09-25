@@ -5,31 +5,31 @@ import { Typography } from 'antd';
 import { FieldWidgetProvider } from './fieldWidgetContext';
 
 type FieldWidgetType = BaseFieldWidget & {
-    valueSrc: "field";
+  valueSrc: "field";
 };
 
 const FieldWidget: FieldWidgetType = {
-    ...BasicConfig.widgets.field,
-    //type: 'specification',
-    factory: (props, { RCE, W: { ValueFieldWidget } }) => {
-        const fieldSelectorProps = {
-            ...props,
-            isFieldComparison: true,
-            mainField: props.fieldDefinition,
-        };
-        const filterProps = {
-            fieldType: props.fieldType,
-            field: props.field,
-            fieldSrc: props.fieldSrc,
-            fieldDefinition: props.fieldDefinition,
-        };
+  ...BasicConfig.widgets.field,
+  // type: 'specification',
+  factory: (props, { RCE, W: { ValueFieldWidget } }) => {
+    const fieldSelectorProps = {
+      ...props,
+      isFieldComparison: true,
+      mainField: props.fieldDefinition,
+    };
+    const filterProps = {
+      fieldType: props.fieldType,
+      field: props.field,
+      fieldSrc: props.fieldSrc,
+      fieldDefinition: props.fieldDefinition,
+    };
 
-        return (
+    return (
             <>
                 {false && <Typography.Paragraph
-                    copyable={{
-                        text: () => JSON.stringify(filterProps, null, 2)
-                    }}
+                  copyable={{
+                    text: () => JSON.stringify(filterProps, null, 2),
+                  }}
                 >
                     Copy widget props.
                 </Typography.Paragraph>
@@ -38,8 +38,8 @@ const FieldWidget: FieldWidgetType = {
                     {RCE(ValueFieldWidget, fieldSelectorProps)}
                 </FieldWidgetProvider>
             </>
-        );
-    },
+    );
+  },
 };
 
 export { FieldWidget };

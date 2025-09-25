@@ -8,38 +8,37 @@ import { useMetadataBuilderFactory } from '@/utils/metadata';
 import { IObjectMetadata } from '@/interfaces/metadata';
 
 export interface IPackageContentProps {
-    packageState: PackageAnalyzeResult;
-    onChangeSelection: (selectedKeys: string[]) => void;
+  packageState: PackageAnalyzeResult;
+  onChangeSelection: (selectedKeys: string[]) => void;
 }
 
 export const PackageContent: FC<IPackageContentProps> = ({ packageState, onChangeSelection }) => {
+  const getFieldValue = (propertyName: string) => {
+    return packageState[propertyName];
+  };
 
-    const getFieldValue = (propertyName: string) => {
-        return packageState[propertyName];
-    };
+  const metadataBuilderFactory = useMetadataBuilderFactory();
+  const metadata = useMemo<IObjectMetadata>(() => {
+    const metadataBuilder = metadataBuilderFactory();
+    const meta = metadataBuilder.object("row")
+      .addString("baseModule", "Base Module")
+      .addString("overrideModule", "Override Module")
+      .addString("name", "Name")
+      .addString("type", "Type")
+      .addDateTime("dateUpdated", "Date Updated")
+      .build();
+    return meta;
+  }, [metadataBuilderFactory]);
 
-    const metadataBuilderFactory = useMetadataBuilderFactory();
-    const metadata = useMemo<IObjectMetadata>(() => {
-        const metadataBuilder = metadataBuilderFactory();
-        const meta = metadataBuilder.object("row")
-            .addString("baseModule", "Base Module")
-            .addString("overrideModule", "Override Module")
-            .addString("name", "Name")
-            .addString("type", "Type")
-            .addDateTime("dateUpdated", "Date Updated")
-            .build();
-        return meta;
-    }, [metadataBuilderFactory]);
-
-    return (
+  return (
         <div>
             <DataTableProvider
-                sourceType='Form'
-                dataFetchingMode='paging'
+              sourceType="Form"
+              dataFetchingMode="paging"
 
-                getFieldValue={getFieldValue}
-                propertyName='items'
-                metadata={metadata}
+              getFieldValue={getFieldValue}
+              propertyName="items"
+              metadata={metadata}
             >
                 <GlobalTableFilter block style={{ margin: '8px 0' }} searchProps={{ size: 'middle', autoFocus: true }} />
                 <div style={{ display: 'flex', justifyContent: 'right', alignItems: 'center', padding: '8px 0' }}>
@@ -48,5 +47,5 @@ export const PackageContent: FC<IPackageContentProps> = ({ packageState, onChang
                 <PackageItemsTable onChangeSelection={onChangeSelection} />
             </DataTableProvider>
         </div>
-    );
+  );
 };

@@ -16,20 +16,20 @@ import parse from 'html-react-parser';
 const defaultTextForPreview = {
   success: {
     text: 'Success Alert Preview Text',
-    description: 'This is a success alert preview text. More information here.'
+    description: 'This is a success alert preview text. More information here.',
   },
   info: {
     text: 'Info Alert Preview Text',
-    description: 'This is an info alert preview text. More information here.'
+    description: 'This is an info alert preview text. More information here.',
   },
   warning: {
     text: 'Warning Alert Preview Text',
-    description: 'This is a warning alert preview text. More information here.'
+    description: 'This is a warning alert preview text. More information here.',
   },
   error: {
     text: 'Error Alert Preview Text',
-    description: 'This is an error alert preview text. More information here.'
-  }
+    description: 'This is an error alert preview text. More information here.',
+  },
 };
 
 interface IAlertComponentCalulatedValues {
@@ -71,8 +71,8 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCal
             ...(content as React.ReactElement).props?.style,
             padding: 0,
             margin: 0,
-            lineHeight: 'normal'
-          }
+            lineHeight: 'normal',
+          },
         });
       }
 
@@ -90,8 +90,8 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCal
               ...(parsedContent as React.ReactElement).props?.style,
               padding: 0,
               margin: 0,
-              lineHeight: 'normal'
-            }
+              lineHeight: 'normal',
+            },
           });
         }
         return parsedContent;

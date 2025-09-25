@@ -15,7 +15,7 @@ export const LayoutHeading: FC<ILayoutHeadingProps> = ({ title, extra, style, cl
   return (
     <div className={classNames(styles.shaLayoutHeadingContent, className)} style={style}>
       <h2 className={styles.shaLayoutHeadingTitle}>{title}</h2>
-  
+
       <div>{typeof extra === 'function' ? extra() : extra}</div>
     </div>
   );

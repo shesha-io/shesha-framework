@@ -9,12 +9,11 @@ export interface ICustomErrorBoundaryProps  {
 }
 
 export const CustomErrorBoundary: FC<PropsWithChildren<ICustomErrorBoundaryProps>> = ({ children, componentId, componentName, componentType }) => {
-
   const fallbackComponent: FC<any> = ({
     error,
     resetErrorBoundary,
   }) => {
-    return <CustomErrorBoundaryFallbackComponent 
+    return <CustomErrorBoundaryFallbackComponent
       error={error} resetErrorBoundary={resetErrorBoundary}
       componentName={componentName} componentType={componentType} componentId={componentId}
     />;

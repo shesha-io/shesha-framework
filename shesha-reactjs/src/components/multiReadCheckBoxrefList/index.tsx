@@ -16,8 +16,8 @@ export const binaryToList = (val: number) => {
   let currentVal = 1;
 
   while (currentVal <= val) {
-    if ((val & currentVal) === currentVal) total.push(currentVal);//eslint-disable-line no-bitwise
-    currentVal *= 2; 
+    if ((val & currentVal) === currentVal) total.push(currentVal);// eslint-disable-line no-bitwise
+    currentVal *= 2;
   }
 
   return total;
@@ -33,7 +33,7 @@ export const MultiReadCheckBoxRefList: FC<IMultiReadCheckBoxRefListProps> = ({
 
   const list = binaryToList(value);
 
-  const result = refList?.items?.map(i => ({ ...i, checked: list.includes(i?.itemValue) }));
+  const result = refList?.items?.map((i) => ({ ...i, checked: list.includes(i?.itemValue) }));
 
   const displayText = (checked: boolean) => {
     switch (display) {

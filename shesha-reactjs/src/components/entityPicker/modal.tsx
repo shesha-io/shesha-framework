@@ -18,7 +18,6 @@ export interface IEntityPickerModalProps extends IEntityPickerProps {
 };
 
 const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
-
   const {
     entityType,
     filters,
@@ -40,7 +39,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
   const [modalId] = useState(nanoid()); // use generated value because formId was changed. to be reviewed
   const [state, setState] = useState<IEntityPickerState>({ showModal: true });
   const hidePickerDialog = () => {
-    setState(prev => ({ ...prev, showModal: false }));
+    setState((prev) => ({ ...prev, showModal: false }));
     onCloseModal();
   };
 
@@ -65,7 +64,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
   }, [configurableColumns]);
 
   const valueId = Array.isArray(value)
-    ? value.map(x => incomeValueFunc(x, {}))
+    ? value.map((x) => incomeValueFunc(x, {}))
     : incomeValueFunc(value, {});
 
   const isMultiple = mode === 'multiple';
@@ -94,7 +93,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
     isVisible: false,
     formId: addNewRecordsProps?.modalFormId,
     title: addNewRecordsProps?.modalTitle,
-    showModalFooter: false, //doing this allows the modal to depend solely on the footerButtons prop
+    showModalFooter: false, // doing this allows the modal to depend solely on the footerButtons prop
     width: addNewRecordsProps?.modalWidth,
     buttons: addNewRecordsProps?.buttons,
     footerButtons: addNewRecordsProps?.footerButtons,
@@ -124,7 +123,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
         { match: 'pageContext', data: { ...pageContext?.getFull() } },
       ],
       propertyMetadataAccessor
-    ).then(evaluatedFilters => {
+    ).then((evaluatedFilters) => {
       let parsedFilters = evaluatedFilters;
 
       const firstElement = evaluatedFilters[0];
@@ -237,15 +236,14 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
 };
 
 export const EntityPickerModal = (props: IEntityPickerModalProps) => {
-
   return (
     <DataTableProvider
       userConfigId={'table_' + props.name}
       actionOwnerName={'table_' + props.name}
-      sourceType='Entity'
+      sourceType="Entity"
       entityType={props.entityType}
-      dataFetchingMode='paging'
-      sortMode='standard'
+      dataFetchingMode="paging"
+      sortMode="standard"
     >
       <EntityPickerModalInternal {...props} />
     </DataTableProvider>

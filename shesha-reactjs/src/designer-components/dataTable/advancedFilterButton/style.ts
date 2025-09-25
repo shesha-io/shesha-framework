@@ -122,6 +122,6 @@ export const useStyles = createStyles(({ token, cx, css }, fontSize: string | nu
     button,
     resultCount,
     clearAllButton,
-    filters
+    filters,
   };
 });

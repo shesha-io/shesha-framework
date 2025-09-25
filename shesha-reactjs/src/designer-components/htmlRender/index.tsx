@@ -22,12 +22,12 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalula
   calculateModel: (model, allData) => ({
     getContent: (value: any) => model.renderer
       ? executeScriptSync(model.renderer, addContextData(allData, {value})) || '<div><div/>'
-      : '<div><div/>'
+      : '<div><div/>',
   }),
   Factory: ({ model, calculatedModel }) => {
     return <div style={model.allStyles.fullStyle}>
       <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
-        {value => parse(calculatedModel.getContent(value))}
+        {(value) => parse(calculatedModel.getContent(value))}
       </ConfigurableFormItem>
     </div>;
   },

@@ -44,7 +44,7 @@ interface IContextPropertyAutocompleteState {
 }
 
 export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> = (model) => {
-  const { 
+  const {
     defaultModelType,
     readOnly,
     componentName,
@@ -52,21 +52,21 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
     contextName,
     style,
     dropdownStyle,
-    onValuesChange
+    onValuesChange,
   } = model;
 
   const [state, setState] = useState<IContextPropertyAutocompleteState>({
     componentName,
     propertyName,
     context: contextName,
-    mode: contextName || propertyName !== componentName ? 'context' : 'formData'
+    mode: contextName || propertyName !== componentName ? 'context' : 'formData',
   });
   const { styles } = useStyles();
 
   // ToDo: AS - remove after full optimization
-  /*useEffect(() => {
+  /* useEffect(() => {
     const init = {componentName: undefined, propertyName: undefined, context: undefined, mode: undefined};
-    if (componentName && !state?.componentName) 
+    if (componentName && !state?.componentName)
       init.componentName = componentName;
     if (propertyName && !state?.propertyName)
       init.propertyName = propertyName;
@@ -109,7 +109,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
             onChange={(e) => {
               const value = e.target.value;
               if (value !== undefined) {
-                setState(prev => ({ ...prev, componentName: value }));
+                setState((prev) => ({ ...prev, componentName: value }));
                 onChange(value);
               }
             }}
@@ -142,7 +142,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
                   if (state?.mode === 'formData')
                     changedData['componentName'] = getValueFromPropertySettings(value);
                   if (state.propertyName !== value) {
-                    setState(prev => ({ ...prev, ...changedData } as IContextPropertyAutocompleteState));
+                    setState((prev) => ({ ...prev, ...changedData } as IContextPropertyAutocompleteState));
                     onChange(value);
                     onValuesChange(changedData);
                   }
@@ -168,10 +168,10 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
           }}
         </ConfigurableFormItem>
       </MetadataProvider>
-      <Button type='link' onClick={setFormDataMode} hidden={model.readOnly || mode === 'formData'}>
+      <Button type="link" onClick={setFormDataMode} hidden={model.readOnly || mode === 'formData'}>
         hide binding option (bind to form data)
       </Button>
-      <Button type='link' onClick={setContextMode} hidden={model.readOnly || mode === 'context'}>
+      <Button type="link" onClick={setContextMode} hidden={model.readOnly || mode === 'context'}>
         show binding option
       </Button>
     </>
@@ -198,39 +198,39 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
   isOutput: true,
   calculateModel(model, allData) {
     const initialValues = (allData.form?.initialValues ?? {}) as IContextPropertyAutocompleteState;
-    return { 
+    return {
       componentName: initialValues.componentName,
       propertyName: initialValues.propertyName,
       contextName: initialValues.context,
       style: model?.style ? getStyle(model?.style, allData.data, allData.globalState) : emptyObj,
       dropdownStyle: model?.dropdownStyle ? getStyle(model?.dropdownStyle, allData.data, allData.globalState) : emptyObj,
       modelType: allData.form.formSettings.modelType,
-      setFieldsValue: allData.form.setFieldsValue
+      setFieldsValue: allData.form.setFieldsValue,
     };
   },
   Factory: ({ model, calculatedModel }) => {
-    const designerModelType = useFormDesignerStateSelector(x => x.formSettings?.modelType);
+    const designerModelType = useFormDesignerStateSelector((x) => x.formSettings?.modelType);
     const validate = useMemo(() => ({...model.validate, required: false}), [model.validate]);
-    const onValuesChange = useCallback(values => calculatedModel.setFieldsValue(values), [calculatedModel.setFieldsValue]);
+    const onValuesChange = useCallback((values) => calculatedModel.setFieldsValue(values), [calculatedModel.setFieldsValue]);
 
     return model.hidden
       ? null
       : <ContextPropertyAutocomplete {...model}
-        componentName={calculatedModel.componentName}
-        propertyName={calculatedModel.propertyName}
-        contextName={calculatedModel.contextName}
-        style={calculatedModel.style}
-        dropdownStyle={calculatedModel.dropdownStyle}
-        validate={validate}
-        readOnly={model.readOnly}
-        styledLabel={model.styledLabel}
-        defaultModelType={designerModelType ?? calculatedModel.modelType}
-        onValuesChange={onValuesChange}
+          componentName={calculatedModel.componentName}
+          propertyName={calculatedModel.propertyName}
+          contextName={calculatedModel.contextName}
+          style={calculatedModel.style}
+          dropdownStyle={calculatedModel.dropdownStyle}
+          validate={validate}
+          readOnly={model.readOnly}
+          styledLabel={model.styledLabel}
+          defaultModelType={designerModelType ?? calculatedModel.modelType}
+          onValuesChange={onValuesChange}
       />
     ;
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IContextPropertyAutocompleteComponentProps>(0, (prev) => {
       const showFillPropsButton = prev['showFillPropsButton'];

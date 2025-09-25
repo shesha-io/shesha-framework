@@ -1,7 +1,7 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-    const shaValidationErrorAlert = cx("sha-validation-error-alert", css`
+  const shaValidationErrorAlert = cx("sha-validation-error-alert", css`
 
         .${prefixCls}-alert-description {
             >ul {
@@ -10,7 +10,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             }
         }
   `);
-    return {
-        shaValidationErrorAlert,
-    };
+  return {
+    shaValidationErrorAlert,
+  };
 });

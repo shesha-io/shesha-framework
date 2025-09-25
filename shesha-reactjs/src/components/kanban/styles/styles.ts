@@ -18,8 +18,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
       min-width: ${isCollapsed ? '45px' : addPx(dimensionsStyles?.minWidth) || '300px'};
       width: ${isCollapsed ? '45px' : addPx(dimensionsStyles?.width) || '300px'};
       max-width: ${isCollapsed ? '45px' : addPx(dimensionsStyles?.maxWidth) || '500px'};
-     ${isCollapsed
-        &&`
+     ${isCollapsed&&
+        `
         border: none !important;
         `}
     `

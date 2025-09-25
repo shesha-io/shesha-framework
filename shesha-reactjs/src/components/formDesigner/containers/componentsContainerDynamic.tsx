@@ -12,7 +12,7 @@ export interface IComponentsContainerDynamicProps extends Omit<IComponentsContai
 }
 
 export const ComponentsContainerDynamic: FC<IComponentsContainerProps> = (props) => {
-  const { 
+  const {
     dynamicComponents,
     direction = 'vertical',
     className,
@@ -23,7 +23,7 @@ export const ComponentsContainerDynamic: FC<IComponentsContainerProps> = (props)
   } = props;
 
   const { styles } = useStyles();
-  
+
   const renderComponents = useDeepCompareMemo(() => {
     const renderedComponents = dynamicComponents.map((c) => (
       <ConfigurableFormComponent id={c.id} model={c} key={c.id} />

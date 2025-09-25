@@ -38,7 +38,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       ...borderStyles,
       ...backgroundStyles,
       ...shadowStyles,
-      ...stylingBoxAsCSS
+      ...stylingBoxAsCSS,
     });
 
     if (model.hidden) return null;
@@ -67,7 +67,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             ...wrapperStyles,
             alignSelf: model.alignSelf,
             justifySelf: model.justifySelf,
-            ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })
+            ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
           }}
           style={{
             ...getStyle(model?.style, formData),
@@ -116,7 +116,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           minWidth: prev.minWidth,
           minHeight: prev.minHeight,
           maxHeight: prev.maxHeight,
-          maxWidth: prev.maxWidth
+          maxWidth: prev.maxWidth,
         };
         const showAdvanced = prev.showAdvanced ?? false;
         return { ...prev, showAdvanced: showAdvanced, desktop: { ...styles, showAdvanced }, tablet: { ...styles, showAdvanced }, mobile: { ...styles, showAdvanced } };
@@ -141,7 +141,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
 
         return {
           ...prev, desktop: { ...prev.desktop, ...flexAndGridStyles },
-          tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
+          tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles },
         };
       })
       .add<IContainerComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),

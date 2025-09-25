@@ -132,7 +132,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
 
     return {
       hasMissingProperties: missingProperties.length > 0,
-      descriptionMessage: `Please make sure that you've specified the following properties: ${missingProperties.join(', ')}.`
+      descriptionMessage: `Please make sure that you've specified the following properties: ${missingProperties.join(', ')}.`,
     };
   }, [url, chartType]);
 
@@ -224,7 +224,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     justifyContent: 'center',
     padding: 0,
     margin: 0,
-    overflow: 'hidden'
+    overflow: 'hidden',
   }), []);
 
   const chartInnerStyle = useMemo(() => ({
@@ -236,7 +236,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     justifyContent: 'center',
     padding: 0,
     margin: 0,
-    overflow: 'hidden'
+    overflow: 'hidden',
   }), []);
 
   const hasValidData = useMemo(() => {
