@@ -55,7 +55,6 @@ const polarPulseAnimation = keyframes`
 `;
 
 const useStyles = createStyles(({ css, cx, prefixCls }) => {
-
   const responsiveChartContainer = cx(`${prefixCls}-responsive-chart-container`, css`
     width: 95%;
     max-width: 95%;
@@ -330,7 +329,7 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     padding: 20px;
     overflow: hidden;
   `);
-  
+
   return {
     responsiveChartContainer,
     chartContainerWithBorder,
@@ -346,7 +345,7 @@ const useStyles = createStyles(({ css, cx, prefixCls }) => {
     pieLoader,
     line,
     dot,
-    segment
+    segment,
   };
 });
 

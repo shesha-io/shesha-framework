@@ -48,7 +48,7 @@ const PasswordInputCombo: FC<IProps> = ({
   formItemProps,
   formItemConfirmProps,
   style,
-  repeatPropertyName
+  repeatPropertyName,
 }) => {
   useEffect(() => isPasswordOk(isSamePassword(newPassword, repeatPassword, passwordLength)), [
     newPassword,

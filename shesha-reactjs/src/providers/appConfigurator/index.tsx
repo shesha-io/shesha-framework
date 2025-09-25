@@ -20,7 +20,7 @@ import { ApplicationMode } from './models';
 import appConfiguratorReducer from './reducer';
 import { useStyles } from '@/components/appConfigurator/styles/styles';
 import { useHttpClient } from '../sheshaApplication/publicApi';
-import { isDefined } from '@/configuration-studio/types';
+import { isDefined } from '@/utils/nullables';
 
 
 interface IAppConfiguratorModesState {

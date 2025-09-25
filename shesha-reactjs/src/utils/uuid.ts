@@ -10,5 +10,5 @@ import { nanoid } from 'nanoid';
  * @returns string
  */
 
-const getNanoId = () => nanoid(30);
+const getNanoId = (): string => nanoid(30);
 export { getNanoId, getNanoId as nanoid };

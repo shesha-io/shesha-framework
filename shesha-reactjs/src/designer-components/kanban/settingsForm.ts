@@ -29,7 +29,7 @@ export const getSettings = (data: IKanbanProps) => {
   // Generate IDs for background panels
   const bgStylePanelId = nanoid();
   const bgStyleContentId = nanoid();
-  //const bgStyleRowId = nanoid();
+  // const bgStyleRowId = nanoid();
 
   // Generate IDs for shadow panels
   const shadowStylePanelId = nanoid();
@@ -503,7 +503,7 @@ export const getSettings = (data: IKanbanProps) => {
                                             propertyName: "background.position",
                                             dropdownOptions: positionOptions,
                                           },
-                                        ]
+                                        ],
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),
@@ -776,7 +776,7 @@ export const getSettings = (data: IKanbanProps) => {
                                         propertyName: 'columnStyles.background.type',
                                         inputType: 'radio',
                                         tooltip: 'Select a type of background',
-                                        buttonGroupOptions: backgroundTypeOptions
+                                        buttonGroupOptions: backgroundTypeOptions,
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),

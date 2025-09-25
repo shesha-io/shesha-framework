@@ -135,6 +135,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
     shaResponsiveButtonGroup,
     shaResponsiveButtonGroupInlineContainer,
     a,
-    shaHideEmpty
+    shaHideEmpty,
   };
 });

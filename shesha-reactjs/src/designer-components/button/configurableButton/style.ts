@@ -1,7 +1,7 @@
 import { createStyles } from "@/styles";
 
 export const useStyles = createStyles(({ css, cx }) => {
-    const configurableButton = cx("flex-container", css`
+  const configurableButton = cx("flex-container", css`
         .sha-toolbar-btn-configurable {
           display: flex;
           align-items: center;
@@ -15,13 +15,13 @@ export const useStyles = createStyles(({ css, cx }) => {
     }
     `);
 
-    const disabled = css`
+  const disabled = css`
         cursor: not-allowed;
         pointer-events: none;
     `;
 
-    return {
-        configurableButton,
-        disabled
-    };
+  return {
+    configurableButton,
+    disabled,
+  };
 });

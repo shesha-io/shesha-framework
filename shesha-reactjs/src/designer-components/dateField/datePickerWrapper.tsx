@@ -135,7 +135,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const defaultMomentValue = useMemo(() => getRangeMoment(defaultValue, pickerFormat), [defaultValue, pickerFormat]);
 
 
-
   const prevStartDatePartRef = useRef(null);
   const prevEndDatePartRef = useRef(null);
 
@@ -152,7 +151,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     let newStart = start;
     let newEnd = end;
 
-    /*start and end date parts are used to determine if the user has changed the date part of the date
+    /* start and end date parts are used to determine if the user has changed the date part of the date
     if the date part has changed, we override the time with the current system time
     if the date part has not changed, we keep the time as it is */
     if (start) {

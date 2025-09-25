@@ -8,19 +8,19 @@ import { IPropertiesEditorProps } from '..';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
-  allowAdd = false
+  allowAdd = false,
 }) => {
   const { items, addItem, selectedItemRef } = usePropertiesEditor();
   const { styles } = useStyles();
   const [ rightWidth, setRightWidth ] = useState<number | undefined>(undefined);
-  
+
   const onAddClick = () => {
-    addItem().then(_item => {
+    addItem().then((_item) => {
       const element = selectedItemRef?.current;
       if (element) {
         const offset = 0;
 
-        //get how much pixels left to scrolling our ReactElement
+        // get how much pixels left to scrolling our ReactElement
         const top = element.getBoundingClientRect().top;
         const isVisible = top + offset >= 0 && top - offset <= window.innerHeight;
         if (!isVisible)
@@ -31,7 +31,7 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
       }
     });
   };
-  
+
   const onDragEnd = (sizes: number[]) => {
     setRightWidth(sizes[1]);
   };
@@ -41,7 +41,7 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
       open: true,
       title: 'Properties',
       content: <ToolbarItemProperties />,
-      width: rightWidth
+      width: rightWidth,
     };
   }, [rightWidth]);
 

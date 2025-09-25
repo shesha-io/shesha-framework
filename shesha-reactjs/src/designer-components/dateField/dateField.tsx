@@ -67,13 +67,13 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     .add<IDateFieldProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IDateFieldProps>(4, (prev) => ({
       ...prev,
-      showNow: Boolean(prev.showNow || prev['showToday'])
+      showNow: Boolean(prev.showNow || prev['showToday']),
     }))
     .add<IDateFieldProps>(5, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
         hideBorder: prev.hideBorder,
-        style: prev.style
+        style: prev.style,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
@@ -97,7 +97,6 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     .add<IDateFieldProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
   ,
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
-
     return {
       ...model,
       dateFormat: !!metadata.dataFormat ? metadata.dataFormat : model.dateFormat,

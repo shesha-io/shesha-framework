@@ -88,12 +88,12 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
 
   const getUrlFromNavigationRequest = (request: INavigateActoinArguments): string => {
     switch (request?.navigationType) {
-    case 'url': return prepareUrl(request.url, request.queryParameters);
-    case 'form': {
-      const formUrl = getFormUrl(request.formId);
-      return prepareUrl(formUrl, request.queryParameters);
-    };
-    default: return undefined;
+      case 'url': return prepareUrl(request.url, request.queryParameters);
+      case 'form': {
+        const formUrl = getFormUrl(request.formId);
+        return prepareUrl(formUrl, request.queryParameters);
+      };
+      default: return undefined;
     }
   };
 

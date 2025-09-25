@@ -52,7 +52,7 @@ export interface ComponentFactoryArguments<TModel extends IConfigurableFormCompo
   children?: JSX.Element;
   calculatedModel?: TCalculatedModel;
   shaApplication?: ISheshaApplicationInstance;
-  
+
   // for backward compatibility
   form: FormInstance;
 }
@@ -174,7 +174,7 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
    * Returns true if the property should be calculated for the actual model (calculated from JS code)
    */
   actualModelPropertyFilter?: (name: string, value: any) => boolean;
-  
+
   editorAdapter?: IEditorAdapter;
 }
 

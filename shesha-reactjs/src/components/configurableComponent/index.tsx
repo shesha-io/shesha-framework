@@ -37,7 +37,7 @@ export interface ComponentSettingsMigrationContext {
 /**
  * Settings migrator
  */
- export type ComponentSettingsMigrator<TSettings> = (
+export type ComponentSettingsMigrator<TSettings> = (
   migrator: Migrator<any, TSettings, ComponentSettingsMigrationContext>
 ) => MigratorFluent<TSettings, TSettings, ComponentSettingsMigrationContext>;
 
@@ -60,7 +60,7 @@ export interface IBlockOverlayProps {
   onClick?: () => void;
 }
 
-export const ConfigurableApplicationComponent = <TSettings extends any>({
+export const ConfigurableApplicationComponent = <TSettings extends object>({
   children,
   canConfigure = true,
   defaultSettings,

@@ -27,25 +27,25 @@ const COLORS = {
 };
 
 type StatusLabelColor =
-  | 'red'
-  | 'pink'
-  | 'purple'
-  | 'indigo'
-  | 'blue'
-  | 'lightblue'
-  | 'cyan'
-  | 'teal'
-  | 'green'
-  | 'lightgreen'
-  | 'lime'
-  | 'yellow'
-  | 'amber'
-  | 'orange'
-  | 'deeporange'
-  | 'brown'
-  | 'grey'
-  | 'bluegrey'
-  | 'aeroblue';
+  | 'red' |
+  'pink' |
+  'purple' |
+  'indigo' |
+  'blue' |
+  'lightblue' |
+  'cyan' |
+  'teal' |
+  'green' |
+  'lightgreen' |
+  'lime' |
+  'yellow' |
+  'amber' |
+  'orange' |
+  'deeporange' |
+  'brown' |
+  'grey' |
+  'bluegrey' |
+  'aeroblue';
 
 export interface IStatusLabelProps {
   text: string;

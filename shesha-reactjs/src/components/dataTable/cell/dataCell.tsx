@@ -80,7 +80,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
 
   const actualModel = useActualContextData(
     model, props.readOnly ? true : undefined,
-    { 
+    {
       tableRow: injectables.injectedTableRow,
     }
   );
@@ -117,7 +117,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   return (
     <CustomErrorBoundary>
       {/* set namePrefix = '' to reset subForm prefix */}
-      <FormItemProvider namePrefix=''> 
+      <FormItemProvider namePrefix="">
         <div className={cx(styles.shaDataCell, styles.shaSpanCenterVertically)}>
           <FormComponentMemo componentModel={componentModel} />
         </div>

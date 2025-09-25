@@ -9,7 +9,7 @@ import settingsFormJson from './settingsForm.json';
 const settingsForm = settingsFormJson as FormMarkup;
 
 export interface IPermissionAutocompleteComponentProps extends IConfigurableFormComponent {
-  
+
 }
 
 const PermissionAutocompleteComponent: IToolboxComponent<IPermissionAutocompleteComponentProps> = {

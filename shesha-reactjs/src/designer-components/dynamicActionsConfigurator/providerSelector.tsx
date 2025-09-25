@@ -21,8 +21,8 @@ const treeStyles = {
     root: {
       maxHeight: 400,
       overflow: 'auto',
-    }
-  }
+    },
+  },
 };
 
 export const ProviderSelector: FC<IProviderSelectorProps> = ({ readOnly, value, onChange }) => {
@@ -41,7 +41,7 @@ export const ProviderSelector: FC<IProviderSelectorProps> = ({ readOnly, value, 
       /* TODO: evaluate dynamically
       ownerActions.actions.forEach(action => {
         const displayName = action.label ?? action.name;
- 
+
         ownerNodes.push({
           title: (
             <div>
@@ -62,7 +62,7 @@ export const ProviderSelector: FC<IProviderSelectorProps> = ({ readOnly, value, 
         value: owner,
         displayText: provider.contextValue.name,
         children: ownerNodes,
-        //selectable: false,
+        // selectable: false,
         selectable: true,
       });
     }
@@ -81,7 +81,7 @@ export const ProviderSelector: FC<IProviderSelectorProps> = ({ readOnly, value, 
       placeholder="Please select"
       allowClear
       onChange={onChange}
-      treeNodeLabelProp='displayText'
+      treeNodeLabelProp="displayText"
       treeData={treeData}
     >
     </TreeSelect>

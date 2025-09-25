@@ -1,11 +1,11 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }) => {
-    const containerImage = "container-image";
-    const imageFrameWithError = "image-frame-with-error";
-    const containerImageCover = "container-image-Cover";
-    const descriptionContainer = "description-container";
-    const annotationConatainer = cx("annotation-conatainer", css`
+  const containerImage = "container-image";
+  const imageFrameWithError = "image-frame-with-error";
+  const containerImageCover = "container-image-Cover";
+  const descriptionContainer = "description-container";
+  const annotationConatainer = cx("annotation-conatainer", css`
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -38,13 +38,13 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             color: ${token.colorError};
         }
     `);
-    const customInputContainer = cx("customInput_container", css`
+  const customInputContainer = cx("customInput_container", css`
         display: flex;
     `);
 
-    const listItem = "List-item";
-    const numbering = "numbering";
-    const listContainer = cx("List-Container", css`
+  const listItem = "List-item";
+  const numbering = "numbering";
+  const listContainer = cx("List-Container", css`
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -66,16 +66,16 @@ export const useStyles = createStyles(({ css, cx, token }) => {
           }
         }
     `);
-    
-    return {
-        containerImage,
-        imageFrameWithError,
-        containerImageCover,
-        descriptionContainer,
-        annotationConatainer,
-        customInputContainer,
-        listContainer,
-        listItem,
-        numbering,
-    };
-  });
+
+  return {
+    containerImage,
+    imageFrameWithError,
+    containerImageCover,
+    descriptionContainer,
+    annotationConatainer,
+    customInputContainer,
+    listContainer,
+    listItem,
+    numbering,
+  };
+});

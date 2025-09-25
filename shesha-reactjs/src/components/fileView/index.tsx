@@ -33,8 +33,8 @@ const FileView: FC<IImageProps> = ({ dataSource, url, storedFileId, base64, heig
   }, [isStoredFileId, storedFileId]);
 
   const content = useMemo(() => {
-    return isRawUrl 
-      ? url 
+    return isRawUrl
+      ? url
       : isBase64
         ? `data:image/png;base64, ${base64}`
         : isStoredFileId && Boolean(storedFile)

@@ -21,7 +21,7 @@ export interface ThemeParametersProps {
 }
 
 const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly }) => {
-  //const { theme, changeTheme } = useTheme();
+  // const { theme, changeTheme } = useTheme();
 
   const changeThemeInternal = (theme: IConfigurableTheme) => {
     if (onChange) onChange(theme);
@@ -100,7 +100,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], (hex) => config.onChange(hex))
           )}
         </Space>
-        
+
         {/* Layout background Color */}
         {renderColor(
           'layoutBackground',
