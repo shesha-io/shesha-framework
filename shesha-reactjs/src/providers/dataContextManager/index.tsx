@@ -1,10 +1,10 @@
-import { ConfigurableFormInstance } from "@/interfaces";
 import { isEqual } from "lodash";
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload, SHESHA_ROOT_DATA_CONTEXT_MANAGER } from "./models";
 import { DataContextType, IDataContextFull, useDataContextOrUndefined } from "../dataContextProvider/contexts";
 import { createNamedContext } from "@/utils/react";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { ConfigurableFormInstance } from "@/interfaces";
 
 export const DataContextTopLevels = {
   /** Only aplication root contexts */
@@ -67,25 +67,32 @@ export const useDataContextManagerUpdate = (): object => {
   return useContext(DataContextManagerUpdateContext);
 };
 
-const useDataContextManagerActions = (require: boolean = true): IDataContextManagerActionsContext => {
-  const actionsContext = useContext(DataContextManagerActionsContext);
-  if (!actionsContext && require)
-    throw new Error('useDataContextManagerActions must be used within a DataContextManager');
-
-  return actionsContext;
+const useDataContextManagerActionsOrUndefined = (): IDataContextManagerActionsContext | undefined => {
+  return useContext(DataContextManagerActionsContext);
 };
 
-const useDataContextManagerChange = (require: boolean = false): IDataContextManagerStateContext => {
-  const stateContext = useContext(DataContextManagerStateContext);
-  if (!stateContext && require)
+const useDataContextManagerActions = (): IDataContextManagerActionsContext => {
+  const context = useDataContextManagerActionsOrUndefined();
+  if (!isDefined(context))
+    throw new Error('useDataContextManagerActions must be used within a DataContextManager');
+  return context;
+};
+
+const useDataContextManagerStateOrUndefined = (): IDataContextManagerStateContext | undefined => {
+  return useContext(DataContextManagerStateContext);
+};
+
+const useDataContextManagerState = (): IDataContextManagerStateContext => {
+  const stateContext = useDataContextManagerStateOrUndefined();
+  if (!stateContext)
     throw new Error('useDataContextManagerState must be used within a DataContextManager');
 
   return stateContext;
 };
 
-const useDataContextManager = (require: boolean = true): IDataContextManagerFullInstance => {
-  const actionsContext = useDataContextManagerActions(require);
-  const stateContext = useDataContextManagerChange(require);
+const useDataContextManagerOrUndefined = (): IDataContextManagerFullInstance | undefined => {
+  const actionsContext = useDataContextManagerActionsOrUndefined();
+  const stateContext = useDataContextManagerStateOrUndefined();
 
   return actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext }
@@ -113,6 +120,7 @@ const useDataManagerRegister = (payload: IDataContextManagerFullInstance, deps?:
     return () => {
       manager.unregisterDataManager(payload);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 };
 
@@ -128,6 +136,7 @@ const useDataContextRegister = (payload: IRegisterDataContextPayload, deps?: Rea
     return () => {
       manager.unregisterDataContext(payload);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 };
 
@@ -150,7 +159,7 @@ const DataManagerAccessor: FC<PropsWithChildren<Omit<IDataContextManagerProps, '
 };
 
 const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ id, children }) => {
-  const parent = useDataContextManager(false);
+  const parent = useDataContextManagerOrUndefined();
 
   const [state, setState] = useState<IDataContextManagerStateContext>({ ...DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE, id, parent: parent });
 
@@ -158,11 +167,11 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
   const managers = useRef<IDataContextManagerFullInstance[]>([]);
   const formInstance = useRef<ConfigurableFormInstance>();
 
-  const internalUpdate = () => {
+  const internalUpdate = (): void => {
     setState({ ...state, lastUpdate: Date.now() });
   };
 
-  const onChangeContextData = () => {
+  const onChangeContextData = (): void => {
     internalUpdate();
 
     // ToDo: AS - check if we need to update parend DataContextManager
@@ -170,23 +179,23 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     managers.current.forEach((x) => x.onChangeContextData());
   };
 
-  const updatePageFormInstance = (form: ConfigurableFormInstance) => {
+  const updatePageFormInstance = (form: ConfigurableFormInstance): void => {
     formInstance.current = form;
     internalUpdate();
   };
 
-  const getPageFormInstance = () => {
+  const getPageFormInstance = (): ConfigurableFormInstance | undefined => {
     return formInstance.current;
   };
 
-  const registerDataManager = (payload: IDataContextManagerFullInstance) => {
+  const registerDataManager = (payload: IDataContextManagerFullInstance): void => {
     if (!managers.current.find((x) => x.id === payload.id)) {
       managers.current.push(payload);
       internalUpdate();
     }
   };
 
-  const unregisterDataManager = (payload: IDataContextManagerFullInstance) => {
+  const unregisterDataManager = (payload: IDataContextManagerFullInstance): void => {
     const manager = managers.current.find((x) => x.id === payload.id);
     if (manager) {
       managers.current.splice(managers.current.indexOf(manager), 1);
@@ -194,7 +203,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     }
   };
 
-  const registerDataContext = (payload: IRegisterDataContextPayload) => {
+  const registerDataContext = (payload: IRegisterDataContextPayload): void => {
     if (!contexts.current[payload.id]) {
       const ctx = { ...payload };
       delete ctx.initialData;
@@ -206,7 +215,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     }
   };
 
-  const unregisterDataContext = (payload: IRegisterDataContextPayload) => {
+  const unregisterDataContext = (payload: IRegisterDataContextPayload): void => {
     if (!!contexts.current[payload.id])
       delete contexts.current[payload.id];
 
@@ -216,12 +225,12 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       RootContexts.splice(RootContexts.indexOf(payload.id), 1);
   };
 
-  const getLocalDataContexts = (topId: string) => {
+  const getLocalDataContexts = (topId?: string): IDataContextDescriptor[] => {
     const ctxs: IDataContextDescriptor[] = [];
 
     const dataContexts: IDataContextDescriptor[] = [];
     for (let key in contexts.current)
-      if (Object.hasOwn(contexts.current, key) && contexts.current[key].type !== 'settings')
+      if (Object.hasOwn(contexts.current, key) && contexts?.current?.[key]?.type !== 'settings')
         dataContexts.push(contexts.current[key] as IDataContextDescriptor);
 
     if (!topId)
@@ -239,53 +248,54 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     }
 
     let c = dataContexts.find((x) => x.uid === topId || x.id === topId);
-    while (c) {
+    while (isDefined(c)) {
       ctxs.push(c);
-      c = dataContexts.find((x) => x.uid === c.parentUid);
-      if (c && c?.uid === c?.parentUid) {
+      const { parentUid } = c;
+      c = dataContexts.find((x) => x.uid === parentUid);
+      if (c && c.uid === c.parentUid) {
         console.error(`The hierarchy of contexts is broken, id === parentId: ${c.id} {${c.name}: ${c.description}}`);
-        c = null;
+        c = undefined;
       }
     }
     return ctxs;
   };
 
-  const isRoot = () => {
+  const isRoot = (): boolean => {
     return id === SHESHA_ROOT_DATA_CONTEXT_MANAGER;
   };
 
-  const getRoot = () => {
-    if (parent?.id === SHESHA_ROOT_DATA_CONTEXT_MANAGER)
-      return parent;
-    if (parent)
-      return parent?.getRoot();
-    return null;
+  const getRoot = (): IDataContextManagerFullInstance | undefined => {
+    return isDefined(parent)
+      ? parent.id === SHESHA_ROOT_DATA_CONTEXT_MANAGER
+        ? parent
+        : parent.getRoot()
+      : undefined;
   };
 
-  const getParent = () => {
+  const getParent = (): IDataContextManagerFullInstance | undefined => {
     return parent;
   };
 
-  const getDataContexts = (topId: string) => {
+  const getDataContexts = (topId?: string): IDataContextDescriptor[] => {
     const ctxs = getLocalDataContexts(topId);
     if (isRoot())
       return ctxs;
     return ctxs.concat(parent?.getDataContexts('all') ?? []);
   };
 
-  const getNearestDataContext = (topId: string, type: DataContextType) => {
+  const getNearestDataContext = (topId: string, type: DataContextType): IDataContextDescriptor | undefined => {
     const dataContexts = getDataContexts(topId);
     return dataContexts.find((x) => x.type === type);
   };
 
-  const getPageContext = (): IDataContextDescriptor => {
+  const getPageContext = (): IDataContextDescriptor | undefined => {
     if (isRoot())
       return getNearestDataContext('all', 'page');
     else
       return getRoot()?.getNearestDataContext('all', 'page');
   };
 
-  const getDataContext = (contextId: string): IDataContextDescriptor => {
+  const getDataContext = (contextId: string): IDataContextDescriptor | undefined => {
     if (!contextId)
       return undefined;
 
@@ -293,24 +303,27 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     return dc ? dc : parent?.getDataContext(contextId);
   };
 
-  const getDataContextData = (contextId: string): IDataContextFull => {
+  const getDataContextData = (contextId: string): IDataContextFull | undefined => {
     if (!contextId)
       return undefined;
 
     return getDataContext(contextId)?.getFull();
   };
 
-  const getLocalDataContextsData = (topId?: string, data?: any) => {
-    const res = data ?? { lastUpdate: state.lastUpdate, refreshContext: onChangeContextData };
-    getDataContexts(topId).forEach((item) => {
-      if (res[item.name] === undefined) {
-        res[item.name] = item.getFull();
-      }
-    });
+  const getLocalDataContextsData = (topId?: string, data?: IDataContextsData): IDataContextsData => {
+    const res: IDataContextsData = data ?? { lastUpdate: state.lastUpdate, refreshContext: onChangeContextData };
+    if (!isNullOrWhiteSpace(topId)) {
+      getDataContexts(topId).forEach((item) => {
+        if (res[item.name] === undefined) {
+          res[item.name] = item.getFull();
+        }
+      });
+    }
+
     return res;
   };
 
-  const getDataContextsData = (topId?: string, data?: any) => {
+  const getDataContextsData = (topId?: string, data?: IDataContextsData): IDataContextsData => {
     const res = getLocalDataContextsData(topId, data);
     if (isRoot())
       return res;
@@ -318,12 +331,12 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     return res;
   };
 
-  const onChangeContext = (payload: IDataContextDescriptor) => {
+  const onChangeContext = (payload: IDataContextDescriptor): void => {
     const existingContext = contexts.current[payload.id];
-    if (!!existingContext) {
-      const newCtx = {
+    if (isDefined(existingContext)) {
+      const newCtx: IDataContextDescriptor = {
         ...payload,
-        metadata: payload.metadata ?? contexts.current[payload.id].metadata,
+        metadata: payload.metadata ?? existingContext.metadata,
       };
       const changed = !isEqual(existingContext, newCtx);
       if (changed) {
@@ -351,7 +364,9 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       getPageContext,
       getRoot,
       getParent,
-    };
+    } satisfies IDataContextManagerActionsContext;
+  // TODO: Alex, please review this. Looks like it's better to convert to singletone class
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [true]);
 
   if (isRoot()) {
