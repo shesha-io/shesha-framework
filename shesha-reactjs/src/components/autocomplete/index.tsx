@@ -210,7 +210,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         {groups.map((group, gindex) => {
           const groupTitle = renderGroupTitle(group, groupProp) ?? 'empty';
           return <Select.OptGroup key={gindex} label={groupTitle} title={groupTitle}>
-            {list.filter((x) => isEqual(unsafeGetValueByPropertyName(x, groupProp), group)).map((row, index) => renderOption(row, gindex*1000000 + index))}
+            {list.filter((x) => isEqual(unsafeGetValueByPropertyName(x, groupProp), group)).map((row, index) => renderOption(row, gindex * 1000000 + index))}
           </Select.OptGroup>;
         })}
       </>;
