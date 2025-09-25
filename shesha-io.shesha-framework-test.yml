@@ -2,7 +2,7 @@
 # Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
 variables:
 - name: NODE_OPTIONS
-  value: --max_old_space_size=8192
+  value: --max_old_space_size=24576
 - name: BuildParameters.solution1
   value: Boxfusion.SheshaFunctionalTests.sln
 - name: BuildParameters.solution2
