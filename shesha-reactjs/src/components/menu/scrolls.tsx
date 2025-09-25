@@ -10,7 +10,7 @@ interface IProps {
 export const ScrollControls: FC<IProps> = ({
   styles,
   scrollLeft,
-  scrollRight
+  scrollRight,
 }) => (
   <div className={styles.scrollButtons}>
     <div className={styles.scrollButton} onClick={scrollLeft}>

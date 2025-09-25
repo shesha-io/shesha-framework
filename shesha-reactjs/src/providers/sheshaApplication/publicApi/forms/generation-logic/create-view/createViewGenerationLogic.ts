@@ -17,8 +17,8 @@ export class CreateViewGenerationLogic extends BaseGenerationLogic {
   }
 
   protected async addComponentsToMarkup(
-    markup: any, 
-    _entity: IEntityMetadata, 
+    markup: any,
+    _entity: IEntityMetadata,
     nonFrameworkProperties: PropertyMetadataDto[],
     metadataHelper: FormMetadataHelper
   ): Promise<void> {

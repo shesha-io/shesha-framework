@@ -1,14 +1,14 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 interface IPropertyRouterContent {
-    components: IConfigurableFormComponent[];
-    id: string;
+  components: IConfigurableFormComponent[];
+  id: string;
 }
 
 
-//update interface before pushing
+// update interface before pushing
 export interface IPropertyRouterProps extends IConfigurableFormComponent {
-    content?: IPropertyRouterContent;
-    components?: IConfigurableFormComponent[];
-    propertyRouteName?: any;
+  content?: IPropertyRouterContent;
+  components?: IConfigurableFormComponent[];
+  propertyRouteName?: any;
 }

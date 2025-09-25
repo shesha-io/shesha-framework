@@ -34,10 +34,10 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
         : (components && components.length > 0) || childComponentIds.length > 0;
     const disableRefresh: boolean = useActualContextExecution(props.disableRefresh, null, false);
 
-    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
-    const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
+  const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
 
-    const getDataPath = evaluateString(endpoint, { data });
+  const getDataPath = evaluateString(endpoint, { data });
 
     if (!sourceType)
         throw SheshaError.throwPropertyError('sourceType');
@@ -103,21 +103,20 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
         );
     };
 
-    if (props?.hidden) {
-        return null;
-    }
-    return sourceType === 'Form'
-        ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
+  if (props?.hidden) {
+    return null;
+  }
+  return sourceType === 'Form'
+    ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
             {(value, onChange) => provider(() => value, onChange)}
         </ConfigurableFormItem>
-        : provider();
+    : provider();
 };
 
 export const TableContext: FC<ITableContextComponentProps> = (props) => {
+  const uniqueKey = useMemo(() => {
+    return `${props.sourceType}_${props.propertyName}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
+  }, [props.sourceType, props.propertyName, props.entityType]);
 
-    const uniqueKey = useMemo(() => {
-        return `${props.sourceType}_${props.propertyName}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
-    }, [props.sourceType, props.propertyName, props.entityType]);
-
-    return <TableContextInner key={uniqueKey} {...props} />;
+  return <TableContextInner key={uniqueKey} {...props} />;
 };

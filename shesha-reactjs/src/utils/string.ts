@@ -109,20 +109,20 @@ export function getNumberFormat(str: string, format: string): string {
     const value = parseFloat(str);
 
     switch (format) {
-    case 'currency':
-      return new Intl.NumberFormat('en-ZA', {
-        style: 'currency',
-        currency: 'ZAR',
-      }).format(value);
+      case 'currency':
+        return new Intl.NumberFormat('en-ZA', {
+          style: 'currency',
+          currency: 'ZAR',
+        }).format(value);
 
-    case 'round':
-      return value.toFixed();
+      case 'round':
+        return value.toFixed();
 
-    case 'thousandSeparator':
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      case 'thousandSeparator':
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-    default:
-      return str;
+      default:
+        return str;
     }
   }
 

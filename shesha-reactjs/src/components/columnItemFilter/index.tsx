@@ -4,7 +4,7 @@ import React, {
   Fragment,
   useEffect,
   useMemo,
-  useState
+  useState,
 } from 'react';
 import {
   Checkbox,
@@ -13,7 +13,7 @@ import {
   InputNumber,
   MenuProps,
   Select,
-  Spin
+  Spin,
 } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ColumnFilter, IndexColumnFilterOption } from '@/providers/dataTable/interfaces';
@@ -374,7 +374,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     id,
     filter,
     filterOption,
-    onChangeFilter
+    onChangeFilter,
   };
 
   return (

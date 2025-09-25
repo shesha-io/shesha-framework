@@ -12,19 +12,19 @@ export interface IProps extends IModelItem {
   parent?: IModelItem;
 }
 
-export const ArraySimpleProperty: FC<IProps> = props => {
+export const ArraySimpleProperty: FC<IProps> = (props) => {
   const { styles } = useStyles();
 
   const icon = getIconByDataType(props.dataType, props.dataFormat);
 
-  const itemsType = props.properties?.find(p => p.isItemsType);
+  const itemsType = props.properties?.find((p) => p.isItemsType);
   const listIcon = itemsType ? getIconByDataType(itemsType.dataType, itemsType.dataFormat) : null;
 
   let listType = 'undefined';
   if (itemsType) {
     switch (itemsType.dataType) {
       case DataTypes.string: listType = 'string'; break;
-      case DataTypes.number: 
+      case DataTypes.number:
         switch (itemsType.dataFormat) {
           case NumberFormats.int64: listType = 'integer'; break;
           case NumberFormats.int32: listType = 'int32'; break;

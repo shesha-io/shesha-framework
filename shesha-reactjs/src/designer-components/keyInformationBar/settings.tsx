@@ -14,13 +14,13 @@ import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) => {
-    const { readOnly } = props;
-    const { Option } = Select;
-    const { values } = useSettingsForm<IKeyInformationBarProps>();
+  const { readOnly } = props;
+  const { Option } = Select;
+  const { values } = useSettingsForm<IKeyInformationBarProps>();
 
-    const tooltip = strings.tooltip;
+  const tooltip = strings.tooltip;
 
-    return (
+  return (
         <>
             <SettingsFormItem name="componentName" label="Component Name" required>
                 <Input readOnly={readOnly} />
@@ -84,11 +84,11 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
 
             <SettingsFormItem name="style" label="Style">
                 <CodeEditor
-                    propertyName="style"
-                    readOnly={readOnly}
-                    mode="dialog"
-                    label="Style"
-                    description="A script that returns the style of the element as an object. This should conform to CSSProperties"
+                  propertyName="style"
+                  readOnly={readOnly}
+                  mode="dialog"
+                  label="Style"
+                  description="A script that returns the style of the element as an object. This should conform to CSSProperties"
                 />
             </SettingsFormItem>
 
@@ -103,18 +103,18 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
 
             <SettingsCollapsiblePanel header="Security">
                 <SettingsFormItem
-                    jsSetting
-                    label="Permissions"
-                    name="permissions"
-                    initialValue={props.model.permissions}
-                    tooltip="Enter a list of permissions that should be associated with this component"
+                  jsSetting
+                  label="Permissions"
+                  name="permissions"
+                  initialValue={props.model.permissions}
+                  tooltip="Enter a list of permissions that should be associated with this component"
                 >
                     <PermissionAutocomplete readOnly={readOnly} />
                 </SettingsFormItem>
             </SettingsCollapsiblePanel>
         </>
-    );
+  );
 };
 
 export const KeyInformationBarSettingsForm: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) =>
-    SettingsForm<any>({ ...props, children: <KeyInformationBarSettings {...props} /> });
+  SettingsForm<any>({ ...props, children: <KeyInformationBarSettings {...props} /> });

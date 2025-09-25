@@ -124,12 +124,12 @@ export const evaluateYesNo = (
   formMode: FormMode
 ): boolean => {
   switch (value) {
-  case 'yes':
-    return true;
-  case 'no':
-    return false;
-  case 'inherit':
-    return formMode === 'edit';
+    case 'yes':
+      return true;
+    case 'no':
+      return false;
+    case 'inherit':
+      return formMode === 'edit';
   }
   return false;
 };

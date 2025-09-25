@@ -145,6 +145,7 @@ type PropertyRouterType = ToolbarSettingsProp & Omit<IPropertyRouterProps, 'hidd
 
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
+
   protected readonly data?: T;
 
   constructor();
@@ -365,7 +366,7 @@ export class DesignerToolbarSettings<T> {
       hidden: obj?.hidden as any,
       version: typeof (obj?.version) === 'number'
         ? obj?.version
-        : 'latest'
+        : 'latest',
     });
 
     return this;

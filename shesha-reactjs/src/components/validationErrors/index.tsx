@@ -32,7 +32,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
       ? {
         width: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
         maxWidth: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
-        minWidth: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`
+        minWidth: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
       }
       : {};
 

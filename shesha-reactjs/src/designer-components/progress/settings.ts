@@ -55,7 +55,7 @@ export const getSettings = (data: any) => {
                       propertyName: 'description',
                       label: 'Tooltip',
                       type: 'textArea',
-                      jsSetting: true
+                      jsSetting: true,
                     },
                     {
                       type: 'numberField',
@@ -66,8 +66,8 @@ export const getSettings = (data: any) => {
                       min: 0,
                       max: 100,
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -100,8 +100,8 @@ export const getSettings = (data: any) => {
                         { label: 'Active', value: 'active' },
                       ],
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -122,8 +122,8 @@ export const getSettings = (data: any) => {
                       propertyName: 'hidden',
                       label: 'Hide',
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .toJson(),
             ],
@@ -145,7 +145,7 @@ export const getSettings = (data: any) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
+                    _value: "",
                   },
                   components: [
                     ...new DesignerToolbarSettings()
@@ -180,8 +180,8 @@ export const getSettings = (data: any) => {
                                     label: 'Trail Color',
                                     tooltip: "The color of progress bar background",
                                     jsSetting: true,
-                                  }
-                                ]
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -209,8 +209,8 @@ export const getSettings = (data: any) => {
                                     tooltip: 'The width of the progress bar, unit: percentage of the canvas width',
                                     defaultValue: 6,
                                     jsSetting: true,
-                                  }
-                                ]
+                                  },
+                                ],
                               })
                               .addSettingsInput({
                                 id: nanoid(),
@@ -222,9 +222,9 @@ export const getSettings = (data: any) => {
                                 jsSetting: true,
                                 parentId: styleRouterId,
                               })
-                              .toJson()
-                          ]
-                        }
+                              .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -276,8 +276,8 @@ export const getSettings = (data: any) => {
                                     label: 'Gap Degree',
                                     tooltip: "The gap degree of half circle, 0 ~ 295",
                                     jsSetting: true,
-                                  }
-                                ]
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -297,8 +297,8 @@ export const getSettings = (data: any) => {
                                       { label: 'Right', value: 'right' },
                                     ],
                                     jsSetting: true,
-                                  }
-                                ]
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -312,12 +312,12 @@ export const getSettings = (data: any) => {
                                     label: 'Gap Degree',
                                     tooltip: "The gap degree of half circle, 0 ~ 295",
                                     jsSetting: true,
-                                  }
-                                ]
+                                  },
+                                ],
                               })
-                              .toJson()
-                          ]
-                        }
+                              .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -336,9 +336,9 @@ export const getSettings = (data: any) => {
                               hideLabel: true,
                               propertyName: 'stylingBox',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -358,9 +358,9 @@ export const getSettings = (data: any) => {
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .toJson(),
                   ],
@@ -368,7 +368,7 @@ export const getSettings = (data: any) => {
                 .toJson(),
             ],
           },
-                    {
+          {
             key: 'security',
             title: 'Security',
             id: securityTabId,
@@ -382,9 +382,9 @@ export const getSettings = (data: any) => {
                 parentId: securityTabId,
                 jsSetting: true,
               })
-              .toJson()
-            ]
-          }
+              .toJson(),
+            ],
+          },
         ],
       })
       .toJson(),

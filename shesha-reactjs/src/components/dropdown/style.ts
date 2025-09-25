@@ -2,7 +2,6 @@ import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
 export const useStyles = createStyles(({ css, cx, token }, { style }: { style: CSSProperties }) => {
-
   const dropdown = cx("sha-dropdown", css`
     --ant-color-text: ${style.color} !important;
     --ant-font-weight-strong: ${style.fontWeight} !important;
@@ -70,6 +69,6 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
   `);
 
   return {
-    dropdown
+    dropdown,
   };
 });

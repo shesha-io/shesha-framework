@@ -5,14 +5,14 @@ import { unstable_noStore as noStore } from 'next/cache';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 
 export default function RootLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-    noStore();
-    const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:21021';
+  noStore();
+  const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:21021';
 
-    return (
+  return (
         <html lang="en">
             <body>
                 <AntdRegistry>
@@ -24,5 +24,5 @@ export default function RootLayout({
                 </AntdRegistry>
             </body>
         </html>
-    );
+  );
 };

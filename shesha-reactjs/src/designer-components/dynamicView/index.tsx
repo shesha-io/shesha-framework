@@ -20,8 +20,8 @@ const DynamicViewComponent: IToolboxComponent<DynamicViewComponentProps> = {
       <DynamicView {...model} />
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default DynamicViewComponent;

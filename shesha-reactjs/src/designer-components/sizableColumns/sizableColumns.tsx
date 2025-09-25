@@ -77,7 +77,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
       ...dimensionsStyles,
       ...borderStyles,
       ...backgroundStyles,
-      ...shadowStyles
+      ...shadowStyles,
     });
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
@@ -121,17 +121,17 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
     .add<ISizableColumnComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ISizableColumnComponentProps>(2, (prev) => removeComponents(prev))
     .add<ISizableColumnComponentProps>(3, (prev) => {
-      const columns = prev.columns.map(c => ({
+      const columns = prev.columns.map((c) => ({
         ...c,
-        components: c.components.map(c => ({
+        components: c.components.map((c) => ({
           ...c,
-          propertyName: c.propertyName || c.id
-        }))
+          propertyName: c.propertyName || c.id,
+        })),
       }));
 
       return {
         ...prev,
-        columns
+        columns,
       };
     })
     .add<ISizableColumnComponentProps>(4, (prev) => {

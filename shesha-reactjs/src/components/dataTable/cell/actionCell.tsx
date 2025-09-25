@@ -36,7 +36,6 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext: evaluationContext,
       });
-
     } else console.error('Action is not configured');
   };
 
@@ -47,26 +46,25 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     const preparedArguments = await prepareArguments({ actionConfiguration, argumentsEvaluationContext: evaluationContext });
     return getUrlFromNavigationRequest(preparedArguments);
   }, [
-    actionConfiguration, 
+    actionConfiguration,
     {...evaluationContext.data},
     // TODO: review contexts and add to corresponding type
     evaluationContext.contexts.appConext,
     evaluationContext.contexts.pageContext,
-    evaluationContext.contexts.formContext
+    evaluationContext.contexts.formContext,
   ], "");
 
   return (
     <>
-      {navigationUrl === "" ?
-        <a className="sha-link" onClick={(e) => clickHandler(e, props)}>
+      {navigationUrl === ""
+        ? <a className="sha-link" onClick={(e) => clickHandler(e, props)}>
           {icon && (
             <Tooltip title={description}>
               <ShaIcon iconName={icon as IconType} />
             </Tooltip>
           )}
         </a>
-        :
-        <Link className="sha-link" href={navigationUrl} onClick={(e) => clickHandler(e, props)}>
+        :        <Link className="sha-link" href={navigationUrl} onClick={(e) => clickHandler(e, props)}>
           {icon && (
             <Tooltip title={description}>
               <ShaIcon iconName={icon as IconType} />

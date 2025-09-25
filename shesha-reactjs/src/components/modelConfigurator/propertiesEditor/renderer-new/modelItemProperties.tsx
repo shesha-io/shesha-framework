@@ -18,7 +18,7 @@ const formMarkup = propertySettingsJson as FormMarkup;
 
 export const ModelItemProperties: FC<IModelItemProperties> = ({ item, onChange }) => {
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       onChange?.({ ...item, ...values });
     },
     // delay in ms

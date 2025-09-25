@@ -10,7 +10,7 @@ import {
   useDataTableStore,
   useForm,
   useGlobalState,
-  useNestedPropertyMetadatAccessor
+  useNestedPropertyMetadatAccessor,
 } from '@/providers';
 import { useDataSource } from '@/providers/dataSourcesProvider';
 import { useDeepCompareEffect } from 'react-use';
@@ -54,7 +54,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
         { match: 'pageContext', data: {...pageContext?.getFull()} },
       ],
       propertyMetadataAccessor
-    ).then(evaluatedFilters => {
+    ).then((evaluatedFilters) => {
       setPredefinedFilters(evaluatedFilters);
     });
   };
@@ -74,7 +74,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
 };
 
 
-export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
+export const DataSourceInner: FC<IDataSourceComponentProps> = (props) => {
   const { sourceType, entityType, endpoint, id, propertyName: name } = props;
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
@@ -89,7 +89,7 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
         actionOwnerName={name}
         sourceType={sourceType}
         initialPageSize={getPageSize(props.maxResultCount)}
-        dataFetchingMode='paging'
+        dataFetchingMode="paging"
       >
         <DataSourceAccessor {...props} />
       </DataTableProvider>);
@@ -117,7 +117,7 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
   return providerWrapper;
 };
 
-export const DataSource: FC<IDataSourceComponentProps> = props => {
+export const DataSource: FC<IDataSourceComponentProps> = (props) => {
   const uniqueKey = `${props.sourceType}_${props.propertyName}_${props.entityType ?? props.endpoint}`; // is used just for re-rendering
   const provider = <DataSourceInner key={uniqueKey} {...props} />;
 

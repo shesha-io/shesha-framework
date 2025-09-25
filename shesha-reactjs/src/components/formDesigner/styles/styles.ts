@@ -2,97 +2,97 @@ import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
 
 const designerClassNames = {
-    componentDragHandle: "sha-component-drag-handle",
-    componentPropertiesActions: "component-properties-actions",
-    designerWorkArea: "sha-designer-work-area",
-    hasConfigErrors: "has-config-errors",
-    mainArea: "sha-designer-main-area",
-    previewBorderTop10: "preview-form-border-top-10",
-    shaComponent: "sha-component",
-    shaComponentControls: "sha-component-controls",
-    shaComponentGhost: "sha-component-ghost",
-    shaComponentIndicator: "sha-component-indicator",
-    shaComponentSearch: "sha-component-search",
-    shaComponentTitle: "sha-component-title",
-    shaComponentValidationIcon: "sha-component-validation-icon",
-    shaComponentsContainer: "sha-components-container",
-    shaComponentsContainerInner: "sha-components-container-inner",
-    shaDatasourceTree: "sha-datasource-tree",
-    shaDesignerCanvasConfig: "sha-designer-canvas-config",
-    shaDesignerHeader: "sha-designer-header",
-    shaDesignerHeaderRight: "sha-designer-header-right",
-    shaDesignerToolbar: "sha-designer-toolbar",
-    shaToolboxComponents: "sha-toolbox-components",
-    shaDesignerToolbarLeft: "sha-designer-toolbar-left",
-    shaDesignerToolbarRight: "sha-designer-toolbar-right",
-    shaDesignerToolbarCenter: "sha-designer-toolbar-center",
-    shaDesignerToolbox: "sha-designer-toolbox",
-    shaDesignerWarning: "sha-designer-warning",
-    shaDragging: "sha-dragging",
-    shaDropHint: "sha-drop-hint",
-    shaForm: "sha-form",
-    shaHelpIcon: "sha-help-icon",
-    shaToolboxComponent: "sha-toolbox-component",
-    shaToolboxPanelComponents: "sha-toolbox-panel-components",
-    shaToolboxPanel: "sha-toolbox-panel",
-    shaToolboxPanelItems: "sha-toolbox-panel-items",
-    sidebarContainerMainAreaBody: "sidebar-container-main-area-body",
-    sidebarHeaderTitle: "sidebar-header-title",
-    siteTreeSearchValue: "site-tree-search-value",
-    formName: "form-name",
-    formTitle: "form-title",
-    formNameParent: "form-name-parent",
+  componentDragHandle: "sha-component-drag-handle",
+  componentPropertiesActions: "component-properties-actions",
+  designerWorkArea: "sha-designer-work-area",
+  hasConfigErrors: "has-config-errors",
+  mainArea: "sha-designer-main-area",
+  previewBorderTop10: "preview-form-border-top-10",
+  shaComponent: "sha-component",
+  shaComponentControls: "sha-component-controls",
+  shaComponentGhost: "sha-component-ghost",
+  shaComponentIndicator: "sha-component-indicator",
+  shaComponentSearch: "sha-component-search",
+  shaComponentTitle: "sha-component-title",
+  shaComponentValidationIcon: "sha-component-validation-icon",
+  shaComponentsContainer: "sha-components-container",
+  shaComponentsContainerInner: "sha-components-container-inner",
+  shaDatasourceTree: "sha-datasource-tree",
+  shaDesignerCanvasConfig: "sha-designer-canvas-config",
+  shaDesignerHeader: "sha-designer-header",
+  shaDesignerHeaderRight: "sha-designer-header-right",
+  shaDesignerToolbar: "sha-designer-toolbar",
+  shaToolboxComponents: "sha-toolbox-components",
+  shaDesignerToolbarLeft: "sha-designer-toolbar-left",
+  shaDesignerToolbarRight: "sha-designer-toolbar-right",
+  shaDesignerToolbarCenter: "sha-designer-toolbar-center",
+  shaDesignerToolbox: "sha-designer-toolbox",
+  shaDesignerWarning: "sha-designer-warning",
+  shaDragging: "sha-dragging",
+  shaDropHint: "sha-drop-hint",
+  shaForm: "sha-form",
+  shaHelpIcon: "sha-help-icon",
+  shaToolboxComponent: "sha-toolbox-component",
+  shaToolboxPanelComponents: "sha-toolbox-panel-components",
+  shaToolboxPanel: "sha-toolbox-panel",
+  shaToolboxPanelItems: "sha-toolbox-panel-items",
+  sidebarContainerMainAreaBody: "sidebar-container-main-area-body",
+  sidebarHeaderTitle: "sidebar-header-title",
+  siteTreeSearchValue: "site-tree-search-value",
+  formName: "form-name",
+  formTitle: "form-title",
+  formNameParent: "form-name-parent",
 };
 const useStylesResponse = {
-    styles: designerClassNames,
+  styles: designerClassNames,
 };
 export const useStyles = () => {
-    return useStylesResponse;
+  return useStylesResponse;
 };
 
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
-    const {
-        shaHelpIcon,
-        shaDragging,
-        componentDragHandle,
-        sidebarContainerMainAreaBody,
-        shaDesignerToolbar,
-        shaToolboxComponents,
-        shaDesignerToolbarLeft,
-        shaDesignerToolbarRight,
-        shaDesignerToolbarCenter,
-        shaDesignerCanvasConfig,
-        shaDesignerToolbox,
-        sidebarHeaderTitle,
-        shaDesignerHeader,
-        shaComponentGhost,
-        shaComponent,
-        shaToolboxComponent,
-        shaToolboxPanelComponents,
-        shaComponentTitle,
-        shaComponentSearch,
-        shaToolboxPanel,
-        shaToolboxPanelItems,
-        shaDatasourceTree,
-        shaComponentIndicator,
-        shaComponentsContainer,
-        shaDropHint,
-        designerWorkArea,
-        componentPropertiesActions,
-        shaComponentControls,
-        siteTreeSearchValue,
-        shaDesignerWarning,
-        hasConfigErrors,
-        shaComponentValidationIcon,
-        shaDesignerHeaderRight,
-        shaForm,
-        formName,
-        formTitle,
-        formNameParent,
-        //mainArea,
-    } = useStyles().styles;
+  const {
+    shaHelpIcon,
+    shaDragging,
+    componentDragHandle,
+    sidebarContainerMainAreaBody,
+    shaDesignerToolbar,
+    shaToolboxComponents,
+    shaDesignerToolbarLeft,
+    shaDesignerToolbarRight,
+    shaDesignerToolbarCenter,
+    shaDesignerCanvasConfig,
+    shaDesignerToolbox,
+    sidebarHeaderTitle,
+    shaDesignerHeader,
+    shaComponentGhost,
+    shaComponent,
+    shaToolboxComponent,
+    shaToolboxPanelComponents,
+    shaComponentTitle,
+    shaComponentSearch,
+    shaToolboxPanel,
+    shaToolboxPanelItems,
+    shaDatasourceTree,
+    shaComponentIndicator,
+    shaComponentsContainer,
+    shaDropHint,
+    designerWorkArea,
+    componentPropertiesActions,
+    shaComponentControls,
+    siteTreeSearchValue,
+    shaDesignerWarning,
+    hasConfigErrors,
+    shaComponentValidationIcon,
+    shaDesignerHeaderRight,
+    shaForm,
+    formName,
+    formTitle,
+    formNameParent,
+    // mainArea,
+  } = useStyles().styles;
 
-    const quickEditModal = cx("sha-designer-modal", css`
+  const quickEditModal = cx("sha-designer-modal", css`
         .${prefixCls}-modal {
             overflow-y: hidden;
         }
@@ -110,9 +110,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
     `);
 
-    const formDesignerClassName = "sha-form-designer";
-    const designerPage = "sha-designer-page";
-    /*
+  const formDesignerClassName = "sha-form-designer";
+  const designerPage = "sha-designer-page";
+  /*
     const flexColumns = `
         display: flex;
         flex-direction: column;
@@ -124,7 +124,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     const flexFitHorizontal = 'flex-grow: 1;';
     const designerPage = cx("sha-designer-page", css`
         ${flexColumns}
-        
+
         .${formDesignerClassName} {
             ${flexFitHorizontal}
             ${flexColumns}
@@ -138,7 +138,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
    `);
     */
-    const formDesigner = cx(formDesignerClassName, css`
+  const formDesigner = cx(formDesignerClassName, css`
         .${shaHelpIcon} {
             cursor: help;
             font-size: 14px;
@@ -511,9 +511,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
     `);
 
-    return {
-        designerPage,
-        formDesigner,
-        quickEditModal,
-    };
+  return {
+    designerPage,
+    formDesigner,
+    quickEditModal,
+  };
 });

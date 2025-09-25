@@ -19,7 +19,7 @@ export const ConfigurableFormItemContext: FC<IConfigurableFormItem_ContextProps>
     valuePropName,
     propertyName,
     contextName,
-    children
+    children,
   } = props;
   const { getDataContext } = useDataContextManager();
   const context = getDataContext(contextName);

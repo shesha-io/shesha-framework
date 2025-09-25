@@ -45,7 +45,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
     fixHeading = false,
     showHeading = true,
     noPadding = false,
-    footer
+    footer,
   } = props;
 
   const { theme: themeFromStorage } = useTheme();

@@ -22,7 +22,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest, router } = useShaRouting();
   const executionContext = useAvailableConstantsData();
-  
+
   const { styles } = useStyles();
 
   const currentUrl = normalizeUrl(router?.fullPath);
@@ -35,7 +35,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     setSelectedKey(itemId);
     executeAction({
       actionConfiguration: actionConfiguration,
-      argumentsEvaluationContext: executionContext
+      argumentsEvaluationContext: executionContext,
     });
   };
 

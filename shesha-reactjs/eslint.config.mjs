@@ -380,6 +380,7 @@ export default [
         rules: {
             ...baseTsConfig.rules,
             ...legacyTypescriptOverrides,
+            ...stylisticOverrides,
         }
     },
     ...strictFolders.map(f => makeStrictConfig(f)),

@@ -13,13 +13,11 @@ export interface IComponentsContainerProps extends IComponentsContainerBaseProps
 }
 
 const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
-
   const ContainerComponent = useComponentContainer();
 
   return (
     <ContainerComponent {...props} />
   );
-
 };
 
 export default ComponentsContainer;

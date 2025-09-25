@@ -157,7 +157,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   }, [columns, tasks, groupingProperty, settings]);
 
   const overflowStyle = getOverflowStyle(true,false);
-  
+
   return (
     <>
       {!columns || columns.length === 0 ? (

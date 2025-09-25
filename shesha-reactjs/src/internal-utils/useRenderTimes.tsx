@@ -8,7 +8,7 @@ const useRenderTimes = <T extends object>(props?: T, debug?: string): number => 
   // Props changed
   const propsRef = React.useRef(props);
   const keys: string[] = [];
-  Object.keys(props || {}).map(key => {
+  Object.keys(props || {}).map((key) => {
     if (props?.[key] !== propsRef.current?.[key]) {
       keys.push(key);
     }

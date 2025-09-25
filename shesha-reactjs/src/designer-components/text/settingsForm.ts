@@ -419,10 +419,10 @@ export const getSettings = (data: any) => {
                                     hideLabel: true,
                                     width: 60,
                                     dropdownOptions: textAlignOptions,
-                                  }
+                                  },
                                 ],
                               })
-                               .addSettingsInputRow({
+                              .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
                                 inputs: [

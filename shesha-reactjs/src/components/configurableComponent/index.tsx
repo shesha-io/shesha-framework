@@ -37,7 +37,7 @@ export interface ComponentSettingsMigrationContext {
 /**
  * Settings migrator
  */
- export type ComponentSettingsMigrator<TSettings> = (
+export type ComponentSettingsMigrator<TSettings> = (
   migrator: Migrator<any, TSettings, ComponentSettingsMigrationContext>
 ) => MigratorFluent<TSettings, TSettings, ComponentSettingsMigrationContext>;
 

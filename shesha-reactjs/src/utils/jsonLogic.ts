@@ -144,15 +144,15 @@ const evaluateMustacheAsync = async (evaluationNode: IEvaluateNode, allArgs: any
     }
 
     switch (dataType) {
-    case DataTypes.number:
-    case DataTypes.referenceListItem: {
-      convertedResult = convertedResult ? parseInt(convertedResult, 10) : null;
-      break;
-    }
-    case DataTypes.boolean: {
-      convertedResult = typeof convertedResult === 'string' ? convertedResult?.toLowerCase() === 'true' : Boolean(convertedResult);
-      break;
-    }
+      case DataTypes.number:
+      case DataTypes.referenceListItem: {
+        convertedResult = convertedResult ? parseInt(convertedResult, 10) : null;
+        break;
+      }
+      case DataTypes.boolean: {
+        convertedResult = typeof convertedResult === 'string' ? convertedResult?.toLowerCase() === 'true' : Boolean(convertedResult);
+        break;
+      }
     }
   }
 
@@ -196,15 +196,15 @@ const evaluateMustacheSync = (evaluationNode: IEvaluateNode, allArgs: any[], opt
     }
 
     switch (dataType) {
-    case DataTypes.number:
-    case DataTypes.referenceListItem: {
-      convertedResult = convertedResult ? parseInt(convertedResult, 10) : null;
-      break;
-    }
-    case DataTypes.boolean: {
-      convertedResult = typeof convertedResult === 'string' ? convertedResult?.toLowerCase() === 'true' : Boolean(convertedResult);
-      break;
-    }
+      case DataTypes.number:
+      case DataTypes.referenceListItem: {
+        convertedResult = convertedResult ? parseInt(convertedResult, 10) : null;
+        break;
+      }
+      case DataTypes.boolean: {
+        convertedResult = typeof convertedResult === 'string' ? convertedResult?.toLowerCase() === 'true' : Boolean(convertedResult);
+        break;
+      }
     }
   }
 

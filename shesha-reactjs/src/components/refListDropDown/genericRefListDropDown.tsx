@@ -7,7 +7,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
 import ReflistTag from './reflistTag';
 
-export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownProps<TValue>) => {
+export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListDropDownProps<TValue>) => {
   const {
     referenceListId,
     showArrow = true,
@@ -200,7 +200,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
             showItemName={showItemName}
             label={option?.label}
           />;
-        }
+        },
       } : {})}
     >
       {options?.map(({ value: localValue, label, data, disabled }) => (

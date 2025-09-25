@@ -24,7 +24,7 @@ export type ConfigurableFormProps<Values extends object = object> = Omit<IConfig
   externalShaForm?: IShaFormInstance<Values>;
 } & SheshaFormProps;
 
-//export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
+// export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
 export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
   const {
     formId,
@@ -54,13 +54,13 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
 
   const [form] = Form.useForm(props.form);
   const [shaForm] = useShaForm({
-    //form: undefined,
+    // form: undefined,
     form: externalShaForm,
     antdForm: form,
     init: (instance) => {
       instance.setFormMode(props.mode);
       instance.setParentFormValues(parentFormValues);
-    }
+    },
   });
   shaForm.setOnMarkupLoaded(onMarkupLoaded);
 

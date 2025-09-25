@@ -35,7 +35,7 @@ const EditableTagGroupComponent: IToolboxComponent<IEditableTagGroupComponentPro
     .add<IEditableTagGroupComponentProps>(2, (prev) => migrateReadOnly(prev))
     .add<IEditableTagGroupComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export default EditableTagGroupComponent;
