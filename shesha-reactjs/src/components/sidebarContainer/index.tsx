@@ -7,7 +7,7 @@ import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
 import { useCanvas, useShaFormInstance, useSheshaApplication } from '@/index';
-import { calculateAutoZoom, usePinchZoom } from '@/providers/canvas/utils';
+import { calculateAutoZoom, DEFAULT_OPTIONS, usePinchZoom } from '@/providers/canvas/utils';
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;
   rightSidebarProps?: ISidebarProps;
@@ -40,7 +40,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
   const handleDragSizesChange = useCallback((sizes: number[]) => {
     
-    setCurrentSizes(sizes as any);
+
+    /*debounce*/
+    setCurrentSizes(sizes);
   }, []);
 
   const handleZoomChange = useCallback((newZoom: number) => {
@@ -51,18 +53,17 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const canvasRef = usePinchZoom(
     handleZoomChange,
     zoom,
-    25,
-    200,
+    DEFAULT_OPTIONS.minZoom,
+    DEFAULT_OPTIONS.maxZoom,
     autoZoom
   );
-  
 
   useEffect(() => {
     if (canZoom) {
       setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
       setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, configTreePanelSize: configTreePanelSize * window.innerWidth}) : zoom);
     }
-  }, [canZoom, isOpenRight, isOpenLeft, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize]);
+  }, [canZoom, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize]);
   
   useEffect(()=> {
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
