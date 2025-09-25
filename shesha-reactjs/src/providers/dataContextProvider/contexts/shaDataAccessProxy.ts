@@ -15,6 +15,8 @@ export interface IShaDataAccessor<TData = unknown> extends IHasGetAccessorValue 
   setData: (data: TData) => void;
 }
 
+export type IShaDataWrapper<TData> = TData & IShaDataAccessor<TData>;
+
 export interface IHasDataAccessor<TData = unknown> extends IHasGetAccessorValue {
   readonly accessor: IShaDataAccessor<TData>;
 }
