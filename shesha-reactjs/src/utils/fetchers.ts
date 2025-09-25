@@ -4,7 +4,7 @@ import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/context
 import { requestHeaders } from './requestHeaders';
 import { buildUrl } from './url';
 import { HttpResponse } from '@/publicJsApis/httpClient';
-import { isNullOrWhiteSpace } from '@/configuration-studio/types';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export function constructUrl<TQueryParams extends object = object>(base: string | undefined, path: string, queryParams?: TQueryParams) {
   let normalizedBase = !isNullOrWhiteSpace(base) ? base : '';

@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { ConfigurationItemRevision } from './hooks';
 import { DateDisplay } from '@/components';
 import { Col, Row, Typography } from 'antd';
-import { isNullOrWhiteSpace } from '@/configuration-studio/types';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IHistoryItemProps {
   item: ConfigurationItemRevision;

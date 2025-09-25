@@ -2,7 +2,7 @@ import { FormFullName } from "@/providers";
 import { DataTypes, ObjectFormats } from "./dataTypes";
 import { IDictionary } from "./shesha";
 import { DataTypeInfo } from "@/providers/sheshaApplication/publicApi/entities/models";
-import { isDefined } from "@/configuration-studio/types";
+import { isDefined } from "@/utils/nullables";
 
 export interface IMemberType {
   dataType: string;

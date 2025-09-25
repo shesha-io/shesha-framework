@@ -1,4 +1,4 @@
-import { isDefined, isNullOrWhiteSpace } from '@/configuration-studio/types';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import qs, { ParsedQs } from 'qs';
 
 const getCurrentQueryString = (): string => {

@@ -1,4 +1,4 @@
-import { isDefined } from "@/configuration-studio/types";
+import { isDefined } from "@/utils/nullables";
 
 export const addPx = (value: number | string | null | undefined): string | undefined => {
   return !isDefined(value)

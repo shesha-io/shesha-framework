@@ -8,7 +8,7 @@ import { MetadataDtoAjaxResponse, PropertyMetadataDto } from "@/apis/metadata";
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 import qs from "qs";
 import { isAjaxErrorResponse } from "@/interfaces/ajaxResponse";
-import { isDefined, isNullOrWhiteSpace } from "@/configuration-studio/types";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 interface IPropertyPathWithMetadata {
   path: string;

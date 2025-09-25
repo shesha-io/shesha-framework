@@ -1,4 +1,4 @@
-import { isDefined } from "@/configuration-studio/types";
+import { isDefined } from "@/utils/nullables";
 import { IReferenceListIdentifier } from "@/interfaces/referenceList";
 
 export const getReferenceListFullName = (refListId: IReferenceListIdentifier): string => {
