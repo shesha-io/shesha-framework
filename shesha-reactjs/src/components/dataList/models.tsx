@@ -36,6 +36,10 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+
+  defaultFormTemplate?: any;
+
+  onFieldsExtracted?: (fields: string[], formConfig: any) => void | Promise<void>;
 }
 
 export interface IDataListBaseProps extends IStyleType {

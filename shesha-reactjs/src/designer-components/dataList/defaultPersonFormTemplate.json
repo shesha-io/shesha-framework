@@ -1,0 +1,145 @@
+{
+  "module": "Default",
+  "name": "PersonListTemplate",
+  "label": "Person List Template",
+  "description": "Default template for displaying person information in a data list",
+  "versionNo": 1,
+  "versionStatus": "ready",
+  "formType": "details",
+  "markup": [
+    {
+      "id": "person-card-container",
+      "type": "container",
+      "propertyName": null,
+      "componentName": "person-card-container",
+      "label": "",
+      "labelAlign": "left",
+      "parentId": "root",
+      "hidden": false,
+      "customEnabled": false,
+      "isDynamic": false,
+      "direction": "horizontal",
+      "alignItems": "center",
+      "justifyContent": "left",
+      "wrap": false,
+      "gap": 16,
+      "components": [
+        {
+          "id": "avatar-container",
+          "type": "container",
+          "propertyName": null,
+          "componentName": "avatar-container",
+          "label": "",
+          "parentId": "person-card-container",
+          "hidden": false,
+          "customEnabled": false,
+          "isDynamic": false,
+          "direction": "vertical",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "wrap": false,
+          "style": {
+            "backgroundColor": "#1890ff",
+            "borderRadius": "50%",
+            "color": "white",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "width": "50px",
+            "height": "50px",
+            "display": "flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "marginRight": "16px"
+          },
+          "components": [
+            {
+              "id": "avatar-text",
+              "type": "text",
+              "propertyName": null,
+              "componentName": "avatar-text",
+              "label": "",
+              "parentId": "avatar-container",
+              "hidden": false,
+              "customEnabled": false,
+              "isDynamic": false,
+              "content": "{{data.firstName?.charAt(0) || 'U'}}{{data.lastName?.charAt(0) || 'N'}}",
+              "style": {
+                "color": "white",
+                "fontSize": "16px",
+                "fontWeight": "600"
+              }
+            }
+          ]
+        },
+        {
+          "id": "info-container",
+          "type": "container",
+          "propertyName": null,
+          "componentName": "info-container",
+          "label": "",
+          "parentId": "person-card-container",
+          "hidden": false,
+          "customEnabled": false,
+          "isDynamic": false,
+          "direction": "vertical",
+          "alignItems": "left",
+          "justifyContent": "center",
+          "wrap": false,
+          "style": {
+            "flex": 1
+          },
+          "components": [
+            {
+              "id": "full-name",
+              "type": "text",
+              "propertyName": null,
+              "componentName": "full-name",
+              "label": "",
+              "parentId": "info-container",
+              "hidden": false,
+              "customEnabled": false,
+              "isDynamic": false,
+              "content": "{{data.firstName}} {{data.lastName}}",
+              "style": {
+                "fontSize": "16px",
+                "fontWeight": "600",
+                "color": "#262626",
+                "marginBottom": "4px"
+              }
+            },
+            {
+              "id": "job-title",
+              "type": "text",
+              "propertyName": null,
+              "componentName": "job-title",
+              "label": "",
+              "parentId": "info-container",
+              "hidden": false,
+              "customEnabled": false,
+              "isDynamic": false,
+              "content": "{{data.jobTitle || 'No job title specified'}}",
+              "style": {
+                "fontSize": "14px",
+                "color": "#8c8c8c"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "postUpdateMessage": null,
+    "fieldsToFetch": ["id", "firstName", "lastName", "jobTitle"],
+    "skipFetchData": false,
+    "onDataLoaded": null,
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    }
+  }
+}

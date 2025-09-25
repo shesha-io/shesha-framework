@@ -22,9 +22,21 @@ export const FiltersList: FC<IFiltersListProps> = ({ value, onChange, readOnly }
     };
   };
 
-  const localOnChange = (newValue: ITableViewProps[]) => {
-    onChange([...newValue]);
-  };
+    const localOnChange = (newValue: ITableViewProps[]) => {
+        // Prevent removing the last filter - always ensure at least one filter exists
+        if (newValue.length === 0) {
+            const defaultFilter = {
+                id: nanoid(),
+                name: 'All Records',
+                tooltip: 'Shows all records without any filtering',
+                sortOrder: 0,
+                expression: null,
+            };
+            onChange([defaultFilter]);
+        } else {
+            onChange([...newValue]);
+        }
+    };
 
   return (
         <ListEditor<ITableViewProps & ListItem>

@@ -1,0 +1,89 @@
+[
+  {
+    "id": "root",
+    "type": "container",
+    "direction": "vertical",
+    "components": [
+      {
+        "id": "person-card-container",
+        "type": "container",
+        "direction": "horizontal",
+        "alignItems": "center",
+        "padding": 16,
+        "style": {
+          "border": "1px solid #f0f0f0",
+          "borderRadius": "8px",
+          "marginBottom": "8px",
+          "backgroundColor": "#fafafa"
+        },
+        "components": [
+          {
+            "id": "avatar-container",
+            "type": "container",
+            "direction": "vertical",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "width": 60,
+            "height": 60,
+            "style": {
+              "backgroundColor": "#1890ff",
+              "borderRadius": "50%",
+              "color": "white",
+              "fontSize": "24px",
+              "fontWeight": "600",
+              "marginRight": "16px"
+            },
+            "components": [
+              {
+                "id": "avatar-text",
+                "type": "text",
+                "content": "{{data.firstName.charAt(0)}}{{data.lastName.charAt(0)}}",
+                "style": {
+                  "color": "white",
+                  "fontSize": "18px",
+                  "fontWeight": "600"
+                }
+              }
+            ]
+          },
+          {
+            "id": "info-container",
+            "type": "container",
+            "direction": "vertical",
+            "flex": 1,
+            "components": [
+              {
+                "id": "name-container",
+                "type": "container",
+                "direction": "horizontal",
+                "alignItems": "center",
+                "components": [
+                  {
+                    "id": "full-name",
+                    "type": "text",
+                    "content": "{{data.firstName}} {{data.lastName}}",
+                    "style": {
+                      "fontSize": "16px",
+                      "fontWeight": "600",
+                      "color": "#262626"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "title-text",
+                "type": "text",
+                "content": "{{data.jobTitle}}",
+                "style": {
+                  "fontSize": "14px",
+                  "color": "#8c8c8c",
+                  "marginTop": "4px"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
