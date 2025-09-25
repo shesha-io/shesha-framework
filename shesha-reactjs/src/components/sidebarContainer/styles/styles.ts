@@ -1,5 +1,4 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const leftSidebarWidth = "550px";
@@ -24,7 +23,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
       .${sidebarContainerMainAreaBody}{
         overflow: auto;
-        margin: 0 auto;
       }
     
       .${sidebarContainerHeader} {

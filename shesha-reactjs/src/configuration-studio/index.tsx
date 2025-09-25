@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/workArea';
@@ -15,10 +15,15 @@ import { ItemToolbarHolder } from './components/item-toolbar-holder';
 import { DocumentDefinitionRegistration } from './document-definitions/documentDefinitionRegistration';
 import { SheshaDocumentDefinitions } from './document-definitions';
 import { useSheshaApplication } from '@/providers';
+import { DEFAULT_OPTIONS } from '@/providers/canvas/utils';
 
 const ConfigurationStudio: FC = () => {
     const { styles } = useStyles();
     const { setGlobalVariables } = useSheshaApplication();
+
+    useEffect(() => {
+        if(setGlobalVariables) setGlobalVariables({ configTreePanelSize: DEFAULT_OPTIONS.configTreePanelSize});
+      },[])
 
     return (
         <ConfigurationStudioProvider>
@@ -47,16 +52,17 @@ const ConfigurationStudio: FC = () => {
                     </div>
                 </Layout.Header>
                 <Layout.Content className={styles.csContent}>
-                    <Splitter onResize={(sizes) => {
-                        // set sideBar size
+                    <Splitter onResizeEnd={sizes => {
                         if (setGlobalVariables) {
                             const total = sizes.reduce((prev, curr) => prev + curr, 0);
                             const size = ((((sizes[0] ?? 20) / total) * 100) / 100) * window.innerWidth;
                             if (total > 0) {
-                                setGlobalVariables({ configTreePanelSize: size });
+                                    setGlobalVariables({ configTreePanelSize: size });
+                                }
                             }
                         }
-                    }}>
+                    }
+                    >
                         <Splitter.Panel
                             collapsible
                             min="5%"

@@ -39,8 +39,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
   const handleDragSizesChange = useCallback((sizes: number[]) => {
-    
-
     /*debounce*/
     setCurrentSizes(sizes);
   }, []);
@@ -61,7 +59,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   useEffect(() => {
     if (canZoom) {
       setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
-      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, configTreePanelSize: configTreePanelSize * window.innerWidth}) : zoom);
+      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, configTreePanelSize: configTreePanelSize}) : zoom);
     }
   }, [canZoom, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize]);
   
@@ -101,7 +99,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         maxSize={sizes?.maxSizes}
         onDrag={handleDragSizesChange}
         onDragEnd={handleDragSizesChange}
-        gutterSize={8}
+        gutterSize={DEFAULT_OPTIONS.sizeablePanelsGutter}
         gutterAlign="center"
         snapOffset={5}
         dragInterval={12}
@@ -123,7 +121,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse }
           )}
         >
-          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={isDesigner && canZoom ? { width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' } : {}}>{children}</div>
+          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={isDesigner && canZoom ? { width: designerWidth, zoom: `${zoom}%`, transformOrigin: 'top left', overflow: 'auto', margin: '0 auto' } : {}}>{children}</div>
         </div>
         {renderSidebar('right')}
       </SizableColumns>

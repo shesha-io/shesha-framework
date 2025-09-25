@@ -68,22 +68,24 @@ export interface IAutoZoomParams {
 export const DEFAULT_OPTIONS = {
   minZoom: 25,
   maxZoom: 200,
-  defaultSizes: [25, 50, 25]
+  defaultSizes: [25, 50, 25],
+  configTreePanelSize: (20/ 100) * window.innerWidth,
+  sizeablePanelsGutter: 4
 };
 
 const valueToPercent = (value: number) => value/100;
 
-
 export function calculateAutoZoom(params: IAutoZoomParams): number {
-  const { designerWidth = '1024px', sizes = DEFAULT_OPTIONS.defaultSizes, configTreePanelSize = valueToPercent(20) } = params;
+  const { designerWidth = '1024px', sizes = DEFAULT_OPTIONS.defaultSizes, configTreePanelSize = DEFAULT_OPTIONS.configTreePanelSize } = params;
   const availableWidthPercent = sizes[1] || 100;
   
   if (typeof window === 'undefined') {
     return 100;
   }
 
+  const guttersSize = 3 * DEFAULT_OPTIONS.sizeablePanelsGutter;
   const safePanelSize = typeof configTreePanelSize === 'number' ? configTreePanelSize : 0;
-  const viewportWidth = Math.max(0, window.innerWidth - safePanelSize);
+  const viewportWidth = Math.max(0, window.innerWidth - safePanelSize - guttersSize);
   const availableWidth = valueToPercent(availableWidthPercent) * viewportWidth;
 
   let canvasWidth: number;
@@ -96,16 +98,15 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     canvasWidth = parseFloat(designerWidth) || 1024;
   }
   
-  const optimalZoom = valueToPercent(availableWidth / canvasWidth);
-  
+  const optimalZoom = (availableWidth / canvasWidth) * 100;
   return Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, Math.round(optimalZoom)));
 }
 
 export const usePinchZoom = (
   onZoomChange: (zoom: number) => void,
   currentZoom: number,
-  minZoom: number = 10,
-  maxZoom: number = 200,
+  minZoom: number = DEFAULT_OPTIONS.minZoom,
+  maxZoom: number = DEFAULT_OPTIONS.maxZoom,
   isAutoWidth: boolean = false
 ) => {
   const elementRef = useRef<HTMLDivElement>(null);
