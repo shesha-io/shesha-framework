@@ -56,7 +56,7 @@ export function fadeColor(color: string, fadePercentage: number): string {
     return 'rgba(0, 0, 0, 0.3)'; // Default fallback
   }
 
-
+  // handle simple colors
   if (/^[a-zA-Z]+$/.test(color)) {
     return color;
   }

@@ -1,10 +1,10 @@
-import { ConfigurableFormInstance } from "@/interfaces";
 import { isEqual } from "lodash";
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload, SHESHA_ROOT_DATA_CONTEXT_MANAGER } from "./models";
 import { DataContextType, IDataContextFull, useDataContextOrUndefined } from "../dataContextProvider/contexts";
 import { createNamedContext } from "@/utils/react";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { ConfigurableFormInstance } from "@/interfaces";
 
 export const DataContextTopLevels = {
   /** Only aplication root contexts */
@@ -230,7 +230,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
 
     const dataContexts: IDataContextDescriptor[] = [];
     for (let key in contexts.current)
-      if (Object.hasOwn(contexts.current, key) && contexts.current[key].type !== 'settings')
+      if (Object.hasOwn(contexts.current, key) && contexts.current[key]?.type !== 'settings')
         dataContexts.push(contexts.current[key] as IDataContextDescriptor);
 
     if (!topId)
