@@ -23,6 +23,7 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   isFetchingTableData?: boolean;
 
   selectedIds?: string[];
+  showEditIcons?: boolean;
 
   canDeleteInline?: boolean;
   canEditInline?: boolean;
