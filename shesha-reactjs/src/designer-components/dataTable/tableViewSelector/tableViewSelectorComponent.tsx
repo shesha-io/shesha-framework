@@ -24,10 +24,10 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
     return store
       ? <TableViewSelector {...model} />
       : <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-        }}>
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+      }}>
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -62,12 +62,12 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
     const defaultFilters = model.filters && model.filters.length > 0
       ? model.filters
       : [{
-          id: 'default-all-records',
-          name: 'All Records',
-          tooltip: 'Shows all records without any filtering',
-          sortOrder: 0,
-          expression: null, // No filter expression = show all
-        }];
+        id: 'default-all-records',
+        name: 'All Records',
+        tooltip: 'Shows all records without any filtering',
+        sortOrder: 0,
+        expression: null, // No filter expression = show all
+      }];
 
     return {
       ...model,

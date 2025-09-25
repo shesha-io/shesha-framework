@@ -2,22 +2,22 @@ import { createStyles } from '@/styles';
 import { getWarningHoverEffects } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, iconPrefixCls, token }) => {
-    const indexViewSelectorBulb = "index-view-selector-bulb";
+  const indexViewSelectorBulb = "index-view-selector-bulb";
 
-    const tableViewSelector = cx("table-view-selector", css`
+  const tableViewSelector = cx("table-view-selector", css`
         display: flex;
         align-items: center;
         gap: 12px;
         position: relative;
     `);
 
-    const titleContainer = cx("title-container", css`
+  const titleContainer = cx("title-container", css`
         position: relative;
         display: inline-flex;
         align-items: center;
     `);
 
-    const titleWrapper = cx("title-wrapper", css`
+  const titleWrapper = cx("title-wrapper", css`
         display: flex;
         align-items: center;
         gap: 8px;
@@ -36,14 +36,14 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, token }) => {
         }
     `);
 
-    const filterIcon = cx("filter-icon", css`
+  const filterIcon = cx("filter-icon", css`
         color: ${token.colorPrimary};
         font-size: 14px;
         opacity: 0.8;
         transition: opacity 0.2s ease;
     `);
 
-    const titleContent = cx("title-content", css`
+  const titleContent = cx("title-content", css`
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -51,7 +51,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, token }) => {
         flex: 1;
     `);
 
-    const titleLabel = cx("title-label", css`
+  const titleLabel = cx("title-label", css`
         font-size: 12px;
         color: ${token.colorTextSecondary};
         font-weight: 500;
@@ -61,7 +61,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, token }) => {
         white-space: nowrap;
     `);
 
-    const titleName = cx("title-name", css`
+  const titleName = cx("title-name", css`
         font-size: 14px;
         color: ${token.colorText};
         font-weight: 600;
@@ -72,7 +72,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, token }) => {
         white-space: nowrap;
     `);
 
-    const dropdownIcon = cx("dropdown-icon", css`
+  const dropdownIcon = cx("dropdown-icon", css`
         color: ${token.colorTextTertiary};
         font-size: 10px;
         opacity: 0.7;
@@ -80,7 +80,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, token }) => {
         margin-left: 4px;
     `);
 
-    const activeBadge = cx("active-badge", css`
+  const activeBadge = cx("active-badge", css`
         position: absolute;
         top: -2px;
         right: -2px;
@@ -91,7 +91,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, token }) => {
         }
     `);
 
-    const clickableTitle = cx("clickable-title", css`
+  const clickableTitle = cx("clickable-title", css`
         cursor: pointer;
 
         &:hover .${titleWrapper} {
@@ -115,13 +115,13 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, token }) => {
         }
     `);
 
-    const singleTitle = cx("single-title", css`
+  const singleTitle = cx("single-title", css`
         .${titleWrapper} {
             cursor: default;
         }
     `);
 
-    const dropdownOverlay = cx("dropdown-overlay", css`
+  const dropdownOverlay = cx("dropdown-overlay", css`
         .ant-dropdown-menu {
             border-radius: 8px;
             box-shadow: 0 8px 24px 0 ${token.colorBgMask}20;
@@ -147,30 +147,30 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, token }) => {
         }
     `);
 
-    const dropdownMenu = cx("dropdown-menu", css`
+  const dropdownMenu = cx("dropdown-menu", css`
         min-width: 180px;
     `);
 
-    return {
-        tableViewSelector,
-        indexViewSelectorBulb: cx(indexViewSelectorBulb, css`
+  return {
+    tableViewSelector,
+    indexViewSelectorBulb: cx(indexViewSelectorBulb, css`
             margin-left: 8px;
 
             .${iconPrefixCls} {
                 ${getWarningHoverEffects(token)}
             }
         `),
-        titleContainer,
-        titleWrapper,
-        filterIcon,
-        titleContent,
-        titleLabel,
-        titleName,
-        dropdownIcon,
-        activeBadge,
-        clickableTitle,
-        singleTitle,
-        dropdownOverlay,
-        dropdownMenu,
-    };
+    titleContainer,
+    titleWrapper,
+    filterIcon,
+    titleContent,
+    titleLabel,
+    titleName,
+    dropdownIcon,
+    activeBadge,
+    clickableTitle,
+    singleTitle,
+    dropdownOverlay,
+    dropdownMenu,
+  };
 });

@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import { BulbTwoTone, DownOutlined, QuestionCircleOutlined, LayoutOutlined } from '@ant-design/icons';
-import { Dropdown, MenuProps, Popover, Space, Tooltip, Typography, Badge } from 'antd';
+import { Dropdown, MenuProps, Popover, Space, Tooltip, Badge } from 'antd';
 import { IStoredFilter } from '@/providers/dataTable/interfaces';
 import Show from '@/components/show';
 import { nanoid } from '@/utils/uuid';
@@ -134,7 +134,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
             menu={{
               items: menuItems,
               onClick: onMenuClickMemoized,
-              className: styles.dropdownMenu
+              className: styles.dropdownMenu,
             }}
             trigger={['click']}
             placement="bottomLeft"
