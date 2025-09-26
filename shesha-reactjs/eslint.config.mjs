@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
+import memoryTracePlugin from "./src/eslint-plugins/eslint-plugin-memory-monitor.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,6 +59,7 @@ const stylisticOverrides = {
         "ignoredNodes": ["JSXElement", "JSXAttribute", "JSXSpreadAttribute", "JSXText", "JSXFragment"]
     }],
     "@stylistic/space-infix-ops": "error",
+    "@stylistic/multiline-ternary": "off"
 };
 
 const legacyTypescriptOverrides = {
@@ -154,6 +156,7 @@ const baseTsConfig = {
         "**/__tests__/**/*",
     ],
     plugins: {
+        "memory-monitor": memoryTracePlugin,
         jsdoc,
         "react": reactPlugin,
         "react-hooks": hooksPlugin,
@@ -227,6 +230,7 @@ const baseTsConfig = {
     },
 
     rules: {
+        "memory-monitor/track-memory": "off",
         ...hooksPlugin.configs.recommended.rules,
         ...reactPlugin.configs.recommended.rules,
         "react/prop-types": ["off"],
