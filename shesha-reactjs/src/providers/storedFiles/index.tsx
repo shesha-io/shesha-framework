@@ -76,7 +76,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   // used for requered field validation
   onChange,
   onDownload,
-  value = []
+  value = [],
 }) => {
   const [state, dispatch] = useReducer(storedFilesReducer, {
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
@@ -229,7 +229,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         onChange?.(updateList);
         if (typeof removeDelayedUpdate === 'function') {
           removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
-        }; 
+        };
       })
       .catch(() => deleteFileError(fileIdToDelete));
   };

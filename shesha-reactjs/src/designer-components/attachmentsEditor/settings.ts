@@ -298,7 +298,7 @@ export const getSettings = () => {
                   functionName: 'onFileListChanged',
                   useAsyncDeclaration: true,
                 },
-                availableConstantsExpression: " return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .addString(\"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();"
+                availableConstantsExpression: " return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .addString(\"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -316,7 +316,7 @@ export const getSettings = () => {
                   functionName: 'onDownload',
                   useAsyncDeclaration: true,
                 },
-                availableConstantsExpression: " return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .addString(\"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();"
+                availableConstantsExpression: " return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .addString(\"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
               })
               .toJson(),
             ],

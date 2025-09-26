@@ -123,7 +123,7 @@ export const initializeFileListAction = createAction<IStoredFilesStateContext, I
   (fileList) => ({ fileList })
 );
 
-export const updateIsDownloadedByCurrentUser  = createAction<IStoredFilesStateContext, string>(
+export const updateIsDownloadedByCurrentUser = createAction<IStoredFilesStateContext, string>(
   StoredFilesActionEnums.UpdateIsDownloadedSuccess,
   (fileId) => ({ fileId })
 );
