@@ -280,10 +280,10 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   return (
     <Select
       title={title}
-      onDropdownVisibleChange={onDropdownVisibleChange}
+      onOpenChange={onDropdownVisibleChange}
       value={keys}
       className={styles.autocomplete}
-      dropdownStyle={restOfDropdownStyles}
+      styles={{ popup: { root: restOfDropdownStyles } }}
       showSearch={!props.disableSearch}
       notFoundContent={props.notFoundContent}
       defaultActiveFirstOption={false}

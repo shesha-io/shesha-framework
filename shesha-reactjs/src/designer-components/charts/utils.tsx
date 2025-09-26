@@ -85,14 +85,15 @@ export const processItems = (items: any[], refListMap: Map<string, Map<any, stri
 
 // Optimized sorting function
 export const sortItems = (items: any[], isTimeSeries: boolean, property: string) => {
+  const itemsCopy = [...items];
   if (isTimeSeries) {
-    return items.sort((a, b) => {
+    return itemsCopy.sort((a, b) => {
       const aTime = new Date(a[property]).getTime();
       const bTime = new Date(b[property]).getTime();
       return aTime - bTime;
     });
   } else {
-    return items.sort((a, b) => {
+    return itemsCopy.sort((a, b) => {
       const aVal = a[property];
       const bVal = b[property];
 

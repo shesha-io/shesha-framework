@@ -69,16 +69,16 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
   });
 
   return (
-        <ConfigurableButton
-          key={uuid}
-          {...props}
-          readOnly={model.readOnly}
-          size={size}
-          danger={props.danger}
-          style={removeNullUndefined({ ...finalStyles })}
-          buttonType={buttonType}
-          form={form}
-        />
+    <ConfigurableButton
+      key={uuid}
+      {...props}
+      readOnly={model.readOnly}
+      size={size}
+      danger={props.danger}
+      style={removeNullUndefined({ ...finalStyles })}
+      buttonType={buttonType}
+      form={form}
+    />
   );
 };
 
@@ -98,10 +98,10 @@ const createMenuItem = (
   return isDivider
     ? { type: 'divider', style: { height: addPx(props.dividerWidth), backgroundColor: props.dividerColor } }
     : getButtonGroupMenuItem(
-            <RenderButton props={props} uuid={props.id} form={form} />,
-            props.id,
-            props.readOnly,
-            childItems
+      <RenderButton props={props} uuid={props.id} form={form} />,
+      props.id,
+      props.readOnly,
+      childItems
     );
 };
 
@@ -127,22 +127,22 @@ const InlineItem: FC<InlineItemProps> = (props) => {
       .filter((item) => (getIsVisible(item)))
       .map((childItem) => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, form)));
     return (
-            <Dropdown
-              key={uuid}
-              menu={{ items: menuItems }}
-              disabled={item.readOnly}
-            >
-                <Button
-                  icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
-                  type={item.buttonType}
-                  title={item.tooltip}
-                  disabled={item.readOnly}
-                  className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
-                >
-                    {item.label ? item.label : undefined}
-                    {item.downIcon ? <ShaIcon iconName={item.downIcon as IconType} /> : undefined}
-                </Button>
-            </Dropdown>
+      <Dropdown
+        key={uuid}
+        menu={{ items: menuItems }}
+        disabled={item.readOnly}
+      >
+        <Button
+          icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
+          type={item.buttonType}
+          title={item.tooltip}
+          disabled={item.readOnly}
+          className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
+        >
+          {item.label ? item.label : undefined}
+          {item.downIcon ? <ShaIcon iconName={item.downIcon as IconType} /> : undefined}
+        </Button>
+      </Dropdown>
     );
   }
 
@@ -211,36 +211,36 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
 
   if (resolvedItems.length === 0 && isDesignMode)
     return (
-            <Alert
-              className="sha-designer-warning"
-              message="Button group is empty. Press 'Customize Button Group' button to add items"
-              type="warning"
-            />
+      <Alert
+        className="sha-designer-warning"
+        message="Button group is empty. Press 'Customize Button Group' button to add items"
+        type="warning"
+      />
     );
 
 
   if (isInline) {
     return (
-            <Button.Group size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }} className={styles.shaHideEmpty}>
-                <Space size={gap}>
-                    {filteredItems?.map((item) =>
-                      (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} form={form} />)
-                    )}
-                </Space>
-            </Button.Group>
+      <Space.Compact size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }} className={styles.shaHideEmpty}>
+        <Space size={gap}>
+          {filteredItems?.map((item) =>
+            (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} form={form} />)
+          )}
+        </Space>
+      </Space.Compact>
     );
   } else {
     const menuItems = filteredItems?.map((props) => createMenuItem(props, getIsVisible, allData, form));
 
     return (
-            <div className={styles.shaResponsiveButtonGroupContainer}>
-                <Menu
-                  mode="horizontal"
-                  items={menuItems}
-                  className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${gap}`)}
-                  style={{ ...props.styles, width: '30px', height: '30px' }}
-                />
-            </div>
+      <div className={styles.shaResponsiveButtonGroupContainer}>
+        <Menu
+          mode="horizontal"
+          items={menuItems}
+          className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${gap}`)}
+          style={{ ...props.styles, width: '30px', height: '30px' }}
+        />
+      </div>
     );
   }
 };
@@ -254,8 +254,8 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
   );
   const memoizedItems = useDeepCompareMemo(() => items, [items]) ?? [];
   return (
-        <DynamicActionsEvaluator items={memoizedItems}>
-            {(items) => (<ButtonGroupInner {...props} items={items} />)}
-        </DynamicActionsEvaluator>
+    <DynamicActionsEvaluator items={memoizedItems}>
+      {(items) => (<ButtonGroupInner {...props} items={items} />)}
+    </DynamicActionsEvaluator>
   );
 };
