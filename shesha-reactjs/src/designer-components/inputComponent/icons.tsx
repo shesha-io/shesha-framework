@@ -2,7 +2,8 @@ import React from 'react';
 
 export const customIcons = {
   blurIcon: (
-<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M120-380q-8 0-14-6t-6-14q0-8 6-14t14-6q8 0 14 6t6 14q0 8-6 14t-14 6Zm0-160q-8 0-14-6t-6-14q0-8 6-14t14-6q8
+<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor">
+<path d="M120-380q-8 0-14-6t-6-14q0-8 6-14t14-6q8 0 14 6t6 14q0 8-6 14t-14 6Zm0-160q-8 0-14-6t-6-14q0-8 6-14t14-6q8
      0 14 6t6 14q0 8-6 14t-14 6Zm120 340q-17 0-28.5-11.5T200-200q0-17 11.5-28.5T200-280q17 0 28.5 11.5T280-200q0 17-11.5 28.5T200-200Zm0-160q-17
       0-28.5-11.5T200-400q0-17 11.5-28.5T200-440q17 0 28.5 11.5T280-400q0 17-11.5 28.5T200-360Zm0-160q-17 0-28.5-11.5T200-560q0-17 11.5-28.5T200-600q17
        0 28.5 11.5T280-560q0 17-11.5 28.5T200-520Zm0-160q-17 0-28.5-11.5T200-720q0-17 11.5-28.5T200-760q17 0 28.5 11.5T280-720q0 17-11.5 28.5T200-680Zm160
@@ -212,7 +213,8 @@ export const customIcons = {
 </svg>
   ),
   spreadIcon: (
-<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M444-792v-120h72v120h-72Zm0 744v-120h72v120h-72Zm348-396v-72h120v72H792Zm-744
+<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor">
+<path d="M444-792v-120h72v120h-72Zm0 744v-120h72v120h-72Zm348-396v-72h120v72H792Zm-744
      0v-72h120v72H48Zm678-231-51-51 84-87 54 54-87 84ZM202-148l-54-54 86-83 51 51-83 86Zm557 0-84-86 51-51 87 83-54 54ZM234-675l-86-84 54-54 83 87-51 51Zm246 435q-100 0-170-70t-70-170q0-100 70-170t170-70q100
       0 170 70t70 170q0 100-70 170t-170 70Zm-.25-71Q550-311 599-360.5t49-119.75q0-70.24-48.75-119-48.76-48.75-119-48.75Q410-648 361-599.25q-49 48.76-49 119 0 70.25 48.75 119.75 48.76 49.5 119 49.5ZM481-481Z"
 />
@@ -256,7 +258,8 @@ export const customIcons = {
 </svg>
   ),
   flex: (
-<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -1090 960 960" width="16px" fill="currentColor"><path d="M68-302.23v-355.54h215.38v355.54H68Zm304.31 0v-355.54h215.38v355.54H372.31Zm304.31
+<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -1090 960 960" width="16px" fill="currentColor">
+<path d="M68-302.23v-355.54h215.38v355.54H68Zm304.31 0v-355.54h215.38v355.54H372.31Zm304.31
      0v-355.54H892v355.54H676.62Zm-556.62-52h111.39v-251.54H120v251.54Zm612.46 0H840v-251.54H732.46v251.54Z"
 />
 </svg>
