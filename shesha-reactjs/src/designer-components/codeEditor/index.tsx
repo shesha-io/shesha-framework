@@ -48,8 +48,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
           return Boolean(constantsEvaluator)
             ? <CodeEditor {...props} availableConstants={constantsEvaluator} resultType={resultType} />
             : <CodeEditorWithStandardConstants {...props} resultType={resultType} />;
-        }
-        }
+        }}
       </ConfigurableFormItem>
     );
   },
@@ -58,8 +57,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
     .add<ICodeEditorComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<ICodeEditorComponentProps>(2, (prev) => migrateReadOnly(prev))
     .add<ICodeEditorComponentProps>(3, (prev) => ({ ...prev, language: prev.language ?? "typescript" }))
-    .add<ICodeEditorComponentProps>(4, (prev) => ({ ...prev, environment: prev.environment ?? (prev.language === "typescript" ? Environment.FrontEnd : Environment.None) }))
-  ,
+    .add<ICodeEditorComponentProps>(4, (prev) => ({ ...prev, environment: prev.environment ?? (prev.language === "typescript" ? Environment.FrontEnd : Environment.None) })),
   initModel: (model) => {
     const textAreaModel: ICodeEditorComponentProps = {
       ...model,

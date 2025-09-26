@@ -10,7 +10,7 @@ import { useStyles } from './styles/styles';
 export interface DebugPanelProps {
 }
 
-export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({children}) => {
+export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({ children }) => {
   const { styles } = useStyles();
   const [open, setOpen] = useState(false);
   const [ctrlPressed] = useKeyPress('Control');
@@ -96,78 +96,96 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({children}) =
 
   const onChangePosition = (pos) => {
     switch (pos) {
-      case 'top': setHeight(heightTop); break;
-      case 'bottom': setHeight(heightBottom); break;
-      case 'left': setWidth(widthLeft); break;
-      case 'right': setWidth(widthRight); break;
+      case 'top':
+        setHeight(heightTop);
+        break;
+      case 'bottom':
+        setHeight(heightBottom);
+        break;
+      case 'left':
+        setWidth(widthLeft);
+        break;
+      case 'right':
+        setWidth(widthRight);
+        break;
     }
     setPosition(pos);
   };
 
-  const title = <>
-    {position === 'bottom' &&
-      <div className={styles.debugPanelBottomResizer}
+  const title = (
+<>
+    {position === 'bottom' && (
+      <div
+        className={styles.debugPanelBottomResizer}
         draggable
         onDragStart={initialY}
         onDragEnd={resizeY}
       />
-    }
+    )}
     <Space>
-      <CloseOutlined onClick={onClose}/>
+      <CloseOutlined onClick={onClose} />
       <span>Debug panel</span>
-      <Select onChange={onChangePosition} value={position} style={{minWidth: '7em'}}>
-        <Select.Option key={'1'} value="top">Top</Select.Option>
-        <Select.Option key={'2'} value="bottom">Bottom</Select.Option>
-        <Select.Option key={'3'} value="left">Left</Select.Option>
-        <Select.Option key={'4'} value="right">Right</Select.Option>
+      <Select onChange={onChangePosition} value={position} style={{ minWidth: '7em' }}>
+        <Select.Option key="1" value="top">Top</Select.Option>
+        <Select.Option key="2" value="bottom">Bottom</Select.Option>
+        <Select.Option key="3" value="left">Left</Select.Option>
+        <Select.Option key="4" value="right">Right</Select.Option>
       </Select>
     </Space>
-  </>;
+</>
+  );
 
   return (
     <>
       {children}
-      {open &&
-      <Drawer title={title} placement={position as any} open={open} onClose={onClose}
+      {open && (
+      <Drawer
+        title={title}
+        placement={position as any}
+        open={open}
+        onClose={onClose}
         closable={false}
         height={height}
         width={width}
         maskClosable={false}
         className={styles.debugPanelDrawer}
         styles={{
-          mask: {height: 0},
-          header: {padding: '4px 12px 12px 8px', fontSize: 12},
-          body:  {padding: '4px 4px 12px 4px', overflow: 'hidden'},
+          mask: { height: 0 },
+          header: { padding: '4px 12px 12px 8px', fontSize: 12 },
+          body: { padding: '4px 4px 12px 4px', overflow: 'hidden' },
         }}
       >
         <div className={styles.debugPanelBody}>
-          { position === 'right' &&
-            <div className={styles.debugPanelRightResizer}
+          { position === 'right' && (
+            <div
+              className={styles.debugPanelRightResizer}
               draggable
               onDragStart={initialX}
               onDragEnd={resizeX}
             />
-          }
+          )}
           <div className={styles.debugPanelContent}>
             <DebugPanelDataContent />
           </div>
-          { position === 'left' &&
-            <div className={styles.debugPanelLeftResizer}
+          { position === 'left' && (
+            <div
+              className={styles.debugPanelLeftResizer}
               draggable
               onDragStart={initialX}
               onDragEnd={resizeX}
             />
-          }
+          )}
         </div>
-        {position === 'top' &&
-          <div className={styles.debugPanelTopResizer}
+        {position === 'top' && (
+          <div
+            className={styles.debugPanelTopResizer}
             draggable
             onDragStart={initialY}
             onDragEnd={resizeY}
           />
-        }
+        )}
       </Drawer>
-      }
+      )}
     </>
   );
 };

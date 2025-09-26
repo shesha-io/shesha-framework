@@ -200,7 +200,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   if (range) {
     return (
-      <div style={{ marginRight: 1 }} >
+      <div style={{ marginRight: 1 }}>
         <RangePicker
           onCalendarChange={(dates) => {
             if (dates && showTime && !defaultToMidnight) handleCalendarRangeChange(dates);
@@ -230,7 +230,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   }
 
   return (
-    <div style={{ marginRight: 1 }} >
+    <div style={{ marginRight: 1 }}>
       <DatePicker
         className={styles.dateField}
         disabledDate={(e) => disabledDate(props, e, formData, globalState)}

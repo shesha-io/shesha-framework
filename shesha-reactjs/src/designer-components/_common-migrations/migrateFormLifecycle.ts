@@ -31,7 +31,7 @@ const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): st
 
   // Convert to JSON
   const initialData = {};
-  const initValues = [...initialValues, {key: "__shaFormData", value: 0}];
+  const initValues = [...initialValues, { key: "__shaFormData", value: 0 }];
   initValues.forEach((item) => {
     const value = typeof item.value === "string" && /{(.*?)}/gm.test(item.value)
       ? "'" + item.value.replaceAll("{", "' + ").replaceAll("}", " + '") + "'" // replace Mustache syntax if needed
@@ -58,7 +58,7 @@ const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): st
 export const migrateDefaults = (settings: IFormSettings, context: IFormMigrationContext) => {
   const initialData: IKeyValue[] = [];
   const flatStructure = convertFormMarkupToFlatStructure(context.form.markup, settings, context.designerComponents);
-  for(const id in flatStructure.allComponents) {
+  for (const id in flatStructure.allComponents) {
     if (!flatStructure.allComponents.hasOwnProperty(id)) continue;
     const component = flatStructure.allComponents[id];
     if (component.defaultValue !== undefined)
@@ -122,12 +122,12 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
   const lifecycleSettings: IFormLifecycleSettings = {
     dataLoaderType: 'gql',
     dataLoadersSettings: {
-      'gql': gqlLoaderSettings,
+      gql: gqlLoaderSettings,
     },
 
     dataSubmitterType: 'gql',
     dataSubmittersSettings: {
-      'gql': gqlSubmitterSettings,
+      gql: gqlSubmitterSettings,
     },
 
     onBeforeDataLoad: getBeforeDataLoad(onInitialized),

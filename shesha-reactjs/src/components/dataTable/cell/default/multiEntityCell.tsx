@@ -11,7 +11,7 @@ export const MultiEntityCell = <D extends object = {}, V = any>(props: IMultiEnt
   if (!props.value) return null;
 
   const values = Array.isArray(value) ? value.map((item) => ({ label: item['_displayName'] })) : [{ label: value['_displayName'] }];
-  return <span className={styles.shaMultiEntityCell}><ReadOnlyDisplayFormItem value={values} type="dropdownMultiple"/></span>;
+  return <span className={styles.shaMultiEntityCell}><ReadOnlyDisplayFormItem value={values} type="dropdownMultiple" /></span>;
 };
 
 export default MultiEntityCell;

@@ -8,7 +8,7 @@ export const migrateGqlCustomEndpoint = (prev: IFormSettings) => {
   const typedGql = gql as GqlSubmitterSettings;
 
   const staticEndpoint = typedGql?.staticEndpoint;
-  if (!staticEndpoint || typeof(staticEndpoint) !== 'string')
+  if (!staticEndpoint || typeof (staticEndpoint) !== 'string')
     return prev;
 
   const result = {

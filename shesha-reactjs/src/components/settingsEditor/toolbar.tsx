@@ -79,7 +79,7 @@ export const SettingsEditorToolbar: FC<ISettingsEditorToolbarProps> = () => {
     ? null
     : (
         <div className="sha-components-container horizontal sha-index-toolbar">
-            <div className="sha-components-container-inner" >
+            <div className="sha-components-container-inner">
                 { visibleItems.map((item, index) => <React.Fragment key={index}>{item.content()}</React.Fragment>) }
             </div>
         </div>

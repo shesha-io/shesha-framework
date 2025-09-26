@@ -17,7 +17,7 @@ export const SpecificationConditionEditor: FC<SpecificationConditionEditorProps>
           value={value}
           onChange={onChange}
           mode="dialog"
-          propertyName={'specificationCondition'}
+          propertyName="specificationCondition"
           label="Specification: condition to apply"
           description="Enter a condition that determines whether the Specification should be applied or not. Return true to apply the Specification or false to ignore it."
         />

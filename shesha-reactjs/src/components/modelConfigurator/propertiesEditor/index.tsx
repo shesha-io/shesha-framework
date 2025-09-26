@@ -33,7 +33,7 @@ export const PropertiesEditorComponent: FC<IPropertiesEditorComponentProps> = ()
           labelCol={{ span: 0 }}
           wrapperCol={{ span: 24 }}
         >
-            <PropertiesEditor allowAdd={modelConfigurator.modelConfiguration?.source === MetadataSourceTypeUseDefined}/>
+            <PropertiesEditor allowAdd={modelConfigurator.modelConfiguration?.source === MetadataSourceTypeUseDefined} />
         </Form.Item>
   );
 };

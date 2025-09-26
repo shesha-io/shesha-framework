@@ -197,7 +197,7 @@ export const getResponsiveStyle = (props: IChartsProps) => {
     height: props?.height
       ? `${props.height}px`
       : isSmallScreen
-        ? 'clamp(300px, 60vh, 600px)'  // Better mobile height utilization
+        ? 'clamp(300px, 60vh, 600px)' // Better mobile height utilization
         : 'clamp(400px, 70vh, 800px)', // Better desktop height utilization
 
     // Responsive width - use full available space
@@ -347,7 +347,7 @@ function convertNestedPropertiesToObjectFormat(array?: string[]) {
  * @param axisProperty axis property to use for the chart
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string,  orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number) => {
+export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string, orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number) => {
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
@@ -629,18 +629,18 @@ function getPredictableColorHSL(value: string): string {
   let hash = 0;
   for (let i = 0; i < value.length; i++) {
     // A non-linear function to mix character codes :)
-    hash += (value.charCodeAt(i) * (i + 1)) ** 3.5;  // Raising to 3.5 to exaggerate differences
+    hash += (value.charCodeAt(i) * (i + 1)) ** 3.5; // Raising to 3.5 to exaggerate differences
   }
 
   // Use the hash to calculate the hue (0 - 360 degrees on the color wheel)
   const hue = Math.abs(hash % 360);
 
   // Set a fixed saturation and lightness for the color to ensure visibility
-  const saturation = 60 + (hash % 30);  // Varies between 60% and 90% for some saturation variation
-  const lightness = 57 + (hash % 20);  // Varies between 50% and 70% for lightness variation
+  const saturation = 60 + (hash % 30); // Varies between 60% and 90% for some saturation variation
+  const lightness = 57 + (hash % 20); // Varies between 50% and 70% for lightness variation
 
   // Set a fixed alpha for transparency
-  const alpha = 0.75;  // 25% transparency
+  const alpha = 0.75; // 25% transparency
 
   // Construct the HSLA color string
   return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
@@ -690,18 +690,18 @@ function getPredictableColorHSLPolarArea(value: string): string {
   let hash = 0;
   for (let i = 0; i < value.length; i++) {
     // A non-linear function to mix character codes :)
-    hash += (value.charCodeAt(i) * (i + 1)) ** 3.5;  // Raising to 3.5 to exaggerate differences
+    hash += (value.charCodeAt(i) * (i + 1)) ** 3.5; // Raising to 3.5 to exaggerate differences
   }
 
   // Use the hash to calculate the hue (0 - 360 degrees on the color wheel)
   const hue = Math.abs(hash % 360);
 
   // Set a fixed saturation and lightness for the color to ensure visibility
-  const saturation = 60 + (hash % 30);  // Varies between 60% and 90% for some saturation variation
-  const lightness = 57 + (hash % 20);  // Varies between 50% and 70% for lightness variation
+  const saturation = 60 + (hash % 30); // Varies between 60% and 90% for some saturation variation
+  const lightness = 57 + (hash % 20); // Varies between 50% and 70% for lightness variation
 
   // Set a higher alpha for more transparency (50% transparency instead of 25%)
-  const alpha = 0.5;  // 50% transparency
+  const alpha = 0.5; // 50% transparency
 
   // Construct the HSLA color string
   return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;

@@ -170,7 +170,8 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
           <div style={{
             display: 'flex', flexDirection: 'row', alignItems: 'stretch', position: 'relative', backgroundSize, backgroundPosition, backgroundRepeat,
             boxShadow, marginTop, marginRight, marginBottom, marginLeft, background, backgroundImage, borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius, height, minHeight, maxHeight,
-          }}>
+          }}
+          >
             <Select
               size={size}
               onDropdownVisibleChange={(_e) => {
@@ -180,7 +181,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
               onClear={onClear}
               value={selection.loading ? undefined : valueId}
               placeholder={selection.loading ? 'Loading...' : placeholder}
-              notFoundContent={''}
+              notFoundContent=""
               defaultValue={defaultValue}
               disabled={disabled || selection.loading}
               ref={selectRef}
@@ -203,7 +204,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
               }}
               loading={selection.loading}
             >
-              {''}
+
             </Select>
             <Button
               onClick={showPickerDialog}
@@ -248,7 +249,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
 
 export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps) => {
   return restProps.readOnly ? (
-    <EntityPickerReadOnly  {...restProps} displayEntityKey={displayEntityKey} style={restProps.style} />
+    <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} style={restProps.style} />
   ) : (
     <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />
   );

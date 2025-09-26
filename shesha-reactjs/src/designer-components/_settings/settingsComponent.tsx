@@ -37,12 +37,12 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     if (model.hidden) return null;
 
     return (
-      <ConfigurableFormItem model={model} className="sha-js-label" labelCol={{ span: 24 }} wrapperCol={{ span: 24 }} >
+      <ConfigurableFormItem model={model} className="sha-js-label" labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
         {(value, onChange) => (
           <SettingsControl
             readOnly={model.readOnly}
             propertyName={model.propertyName}
-            mode={'value'}
+            mode="value"
             onChange={onChange}
             value={value}
           // exposedVariables={model.exposedVariables}
@@ -59,8 +59,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
   },
   settingsFormMarkup: getSettings(),
   migrator: (m) => m
-    .add<ISettingsComponentProps>(0, (prev) => migrateReadOnly(prev))
-  ,
+    .add<ISettingsComponentProps>(0, (prev) => migrateReadOnly(prev)),
 };
 
 export default SettingsComponent;

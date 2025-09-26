@@ -49,8 +49,7 @@ const ScheduledJobExecutionLog: IToolboxComponent<IScheduledJobExecutionLogProps
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IConfigurableFormComponent>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IConfigurableFormComponent>(1, (prev) => migrateReadOnly(prev))
-  ,
+    .add<IConfigurableFormComponent>(1, (prev) => migrateReadOnly(prev)),
 };
 
 export default ScheduledJobExecutionLog;

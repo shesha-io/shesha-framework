@@ -49,7 +49,7 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
       return true;
 
     return isPropertyMetadata(property) &&
-            (property.dataType === propertyMetadata.dataType || property.dataType === DataTypes.entityReference || property.dataType === DataTypes.object);
+      (property.dataType === propertyMetadata.dataType || property.dataType === DataTypes.entityReference || property.dataType === DataTypes.object);
   };
 
   const isPropertySelectable = (property: IPropertyItem) => {
@@ -58,12 +58,12 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
       return true;
 
     return isPropertyMetadata(property) &&
-            property.dataType === propertyMetadata.dataType &&
-            (isEntityReferencePropertyMetadata(propertyMetadata)
-              ? !isEntityReferencePropertyMetadata(property) || property.entityType === propertyMetadata.entityType && property.entityModule === propertyMetadata.entityModule
-              : true
-            ) &&
-            property.dataType !== DataTypes.object;
+      property.dataType === propertyMetadata.dataType &&
+      (isEntityReferencePropertyMetadata(propertyMetadata)
+        ? !isEntityReferencePropertyMetadata(property) || (property.entityType === propertyMetadata.entityType && property.entityModule === propertyMetadata.entityModule)
+        : true
+      ) &&
+      property.dataType !== DataTypes.object;
   };
 
   return (

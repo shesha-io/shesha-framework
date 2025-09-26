@@ -31,7 +31,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionedObjectsTr
   icon: <ApartmentOutlined />,
   Factory: ({ model }) => {
     return (
-      <PermissionedObjectsTree {...model} formComponentId={model.id} formComponentName={model.componentName}/>
+      <PermissionedObjectsTree {...model} formComponentId={model.id} formComponentName={model.componentName} />
     );
   },
   initModel: (model: IPermissionedObjectsTreeComponentProps) => {
@@ -47,8 +47,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionedObjectsTr
     };
   },
   migrator: (m) => m
-    .add<IPermissionedObjectsTreeComponentProps>(0, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-  ,
+    .add<IPermissionedObjectsTreeComponentProps>(0, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
 };
 
 export default PermissionedObjectsTreeComponent;

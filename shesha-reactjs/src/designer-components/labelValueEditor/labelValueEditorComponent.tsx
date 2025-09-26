@@ -43,8 +43,7 @@ const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentPro
       };
     })
     .add<ILabelValueEditorComponentProps>(2, (prev) => migrateReadOnly(prev))
-    .add<ILabelValueEditorComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-  ,
+    .add<ILabelValueEditorComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };

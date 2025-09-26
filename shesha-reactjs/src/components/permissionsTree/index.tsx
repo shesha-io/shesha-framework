@@ -208,7 +208,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     if (onSelectAction?.actionName) {
       executeAction({
         actionConfiguration: onSelectAction,
-        argumentsEvaluationContext: {...allData.current, selectedRow},
+        argumentsEvaluationContext: { ...allData.current, selectedRow },
       });
     }
   };

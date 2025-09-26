@@ -41,8 +41,7 @@ const SectionComponent: IToolboxComponent<ISectionProps> = {
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
-    .add<ISectionProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-  ,
+    .add<ISectionProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
 };
 
 export default SectionComponent;

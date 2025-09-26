@@ -27,7 +27,7 @@ export const FONT_SIZES = {
 };
 
 export const PADDING_SIZES = {
-  none: { padding: '0' },
+  "none": { padding: '0' },
   'padding-xxs': { padding: '0.6rem' },
   'padding-xs': { padding: '0.75rem' },
   'padding-sm': { padding: '0.875rem' },

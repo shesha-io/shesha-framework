@@ -27,7 +27,7 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     const allData = useAvailableConstantsData({ topContextId: model.id });
 
     const metadata: Promise<IModelMetadata> = useMemo(() => {
-      return Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name: model.componentName, properties: model.items ?? []} as IModelMetadata);
+      return Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name: model.componentName, properties: model.items ?? [] } as IModelMetadata);
     }, [model.id, model.componentName, model.items]);
 
     const initialData: Promise<any> = useMemo(() => {
@@ -47,17 +47,16 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     );
   },
   settingsFormFactory: (props) => {
-    return <DataContextSettingsForm {...props}/>;
+    return <DataContextSettingsForm {...props} />;
   },
-  linkToModelMetadata: (model): IDataContextComponentProps => ({...model}),
+  linkToModelMetadata: (model): IDataContextComponentProps => ({ ...model }),
   migrator: (m) => m
     .add<IDataContextComponentProps>(0, (prev) => ({ ...prev, description: prev.description ?? prev.componentName, items: [], initialDataCode: null }))
     .add<IDataContextComponentProps>(1, (prev) => ({ ...prev, onChangeAction: migrateNavigateAction(prev.onChangeAction) }))
     .add<IDataContextComponentProps>(2, (prev) => ({
       ...migrateFormApi.properties(prev),
       initialDataCode: migrateFormApi.withoutFormData(prev?.initialDataCode),
-    }))
-  ,
+    })),
 };
 
 export default DataContextComponent;

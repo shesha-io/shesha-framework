@@ -48,10 +48,14 @@ export const ImagePicker = ({ onChange, value, readOnly }: IImageUploaderProps) 
   );
 
   const deleteButton = (
-        <Button size="small" danger onClick={(e) => {
-          handleRemove();
-          e.stopPropagation();
-        }}>
+        <Button
+          size="small"
+          danger
+          onClick={(e) => {
+            handleRemove();
+            e.stopPropagation();
+          }}
+        >
             <DeleteOutlined title="delete" />
         </Button>
   );

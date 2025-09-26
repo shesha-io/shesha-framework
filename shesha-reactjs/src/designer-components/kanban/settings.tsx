@@ -53,7 +53,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
           <Autocomplete
             dataSourceType="entitiesList"
             entityType="Shesha.Framework.ReferenceList"
-            filter={{ "and": [{ "==": [{ "var": "isLast" }, true] }] }}
+            filter={{ and: [{ "==": [{ var: "isLast" }, true] }] }}
             readOnly={values.readOnly}
           />
         </SettingsFormItem>

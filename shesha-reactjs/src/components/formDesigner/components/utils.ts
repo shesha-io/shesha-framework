@@ -1,5 +1,5 @@
 import { MessageInstance } from 'antd/es/message/interface';
-import { DOMAttributes , FocusEvent} from 'react';
+import { DOMAttributes, FocusEvent } from 'react';
 import { IAnyObject, IConfigurableFormComponent } from '@/interfaces';
 import { IGooglePlacesAutocompleteProps } from '@/components';
 import { ISetStatePayload } from '@/providers/globalState/contexts';
@@ -28,7 +28,7 @@ export interface ICustomEventHandler {
 export const addContextData = (context: any, additionalContext: any) => {
   // if context is an ObservableProxy
   if (context instanceof ObservableProxy || context instanceof TouchableProxy) {
-    for(const propName in additionalContext) {
+    for (const propName in additionalContext) {
       if (additionalContext.hasOwnProperty(propName)) {
         context.addAccessor(propName, () => additionalContext[propName]);
       }
@@ -36,7 +36,7 @@ export const addContextData = (context: any, additionalContext: any) => {
     return context;
   }
   // if context is a simple object
-  return {...context, ...additionalContext};
+  return { ...context, ...additionalContext };
 };
 
 export interface ICustomAddressEventHandler extends ICustomEventHandler {
@@ -55,7 +55,7 @@ export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, con
   const onCustomEvent = (event: any, key: string) => {
     const expression = model?.[key];
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {event, value: event?.currentTarget.value}));
+      return executeScriptSync(expression, addContextData(context, { event, value: event?.currentTarget.value }));
     }
   };
 
@@ -71,7 +71,7 @@ export const getAllEventHandlers = <T = any>(model: IConfigurableFormComponent, 
   const onCustomEvent = (event: any, key: string) => {
     const expression = model?.[key];
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {event, value: event?.currentTarget.value}));
+      return executeScriptSync(expression, addContextData(context, { event, value: event?.currentTarget.value }));
     }
   };
 
@@ -129,7 +129,7 @@ export const customTimeEventHandler = (model: IConfigurableFormComponent, contex
   onChange: (value: any | null, timeString: string | [string, string]) => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {timeString, value}));
+      return executeScriptSync(expression, addContextData(context, { timeString, value }));
     }
   },
 });
@@ -138,7 +138,7 @@ export const customDropDownEventHandler = <T = any>(model: IConfigurableFormComp
   onChange: (value: CustomLabeledValue<T>, option: any) => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {option, value}));
+      return executeScriptSync(expression, addContextData(context, { option, value }));
     }
   },
 });
@@ -147,7 +147,7 @@ export const customOnChangeValueEventHandler = (model: IConfigurableFormComponen
   onChange: (value: any) => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {value}));
+      return executeScriptSync(expression, addContextData(context, { value }));
     }
   },
 });
@@ -158,7 +158,7 @@ export const customOnClickEventHandler = (model: IConfigurableFormComponent, con
       clickEvent(value);
     const expression = model?.onClickCustom;
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {value}));
+      return executeScriptSync(expression, addContextData(context, { value }));
     }
   },
 });

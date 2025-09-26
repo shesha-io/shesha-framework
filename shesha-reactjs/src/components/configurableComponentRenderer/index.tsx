@@ -54,8 +54,8 @@ export const ConfigurableComponentRenderer = <TSettings extends object>({
   const [editorIsVisible, setEditorIsVisible] = useState(false);
   const { mode } = useAppConfigurator();
   const { save, settings } = contextAccessor();
-  const {styles} = useStyles();
-  const {formInfoBlockVisible} = useAppConfigurator();
+  const { styles } = useStyles();
+  const { formInfoBlockVisible } = useAppConfigurator();
 
   if (!children) return null;
 

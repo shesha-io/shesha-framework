@@ -9,7 +9,7 @@ const ClassOutlinedSvg = () => (
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 318.188 318.188"
     strokeWidth={0.5}
-    stroke={'currentColor'}
+    stroke="currentColor"
   >
     <path
       d="M123.905,232.637c-7.613,0-13.417,2.106-17.409,6.317c-3.993,4.212-5.989,10.31-5.989,18.295

@@ -64,7 +64,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
 
   const { onChangeId } = useConfigurableFormActions(false) ?? {};
 
-  const {styles} = useStyles();
+  const { styles } = useStyles();
 
   useEffect(() => {
     if (props.defaultSelected && props.defaultSelected !== objectId) setObjectId(props.defaultSelected);
@@ -202,9 +202,9 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
   ];
 
   return (
-    <ShaSpin spinning={isFetchingData} tip={'Fetching data...'}>
+    <ShaSpin spinning={isFetchingData} tip="Fetching data...">
       <div className="sha-page-heading sha-paging-height">
-        <div className="sha-page-heading-left" style={{width: 'calc(100% - 60px)'}}>
+        <div className="sha-page-heading-left" style={{ width: 'calc(100% - 60px)' }}>
           <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />
         </div>
         <div className="sha-page-heading-right">
@@ -250,7 +250,8 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
             return name;
           }}
           onRenterItem={(item) => {
-            return <div className={styles.shaComponentParent}>
+            return (
+<div className={styles.shaComponentParent}>
               {item.suppress
                 ? <EyeInvisibleOutlined />
                 : item.source === MetadataSourceType.UserDefined
@@ -259,10 +260,10 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
                     ? <QuestionCircleOutlined />
                     : item.entityConfigType === EntityConfigType.Interface
                       ? <InterfaceOutlined />
-                      : <ClassOutlined />
-              }<span style={{paddingRight: '5px'}}> </span>
+                      : <ClassOutlined />}<span style={{ paddingRight: '5px' }}> </span>
               <span className={styles.shaComponentTitle}> {item.className} </span>
-            </div>;
+</div>
+            );
           }}
         />
       </div>

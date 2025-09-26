@@ -35,16 +35,16 @@ export const PropertyWrapper: FC<PropsWithChildren<IProps>> = (props) => {
     <div
       className={classNames(styles.shaToolbarItem, { selected: selectedItemId === props.id })}
       ref={selectedItemId === props.id ? selectedItemRef : undefined}
-      style={{color: props.suppress ? 'silver' : props.inheritedFromId ? 'green' : undefined}}
+      style={{ color: props.suppress ? 'silver' : props.inheritedFromId ? 'green' : undefined }}
     >
       <div className={styles.shaToolbarItemHeader}>
         <DragHandle id={props.id} />
         {props.suppress && !props.isItemsType && <span><EyeInvisibleOutlined /> </span>}
-        {needRestart &&
-          <Tooltip title={'This property has changes which require an application restart before they can take effect'}>
-            <span style={{color: 'red'}}><WarningFilled /> </span>
+        {needRestart && (
+          <Tooltip title="This property has changes which require an application restart before they can take effect">
+            <span style={{ color: 'red' }}><WarningFilled /> </span>
           </Tooltip>
-        }
+        )}
         {props.children}
         <div className={styles.shaToolbarItemControls}>
           {

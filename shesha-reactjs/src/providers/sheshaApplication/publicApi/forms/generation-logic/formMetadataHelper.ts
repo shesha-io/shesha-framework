@@ -195,9 +195,9 @@ export class FormMetadataHelper {
           ...commonProps,
           dataSourceType: 'referenceList',
           referenceListName: property.referenceListName,
-          referenceListId:{
+          referenceListId: {
             module: property.referenceListModule,
-            name: property.referenceListName},
+            name: property.referenceListName },
         });
         break;
 

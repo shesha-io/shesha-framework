@@ -65,9 +65,11 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     return null;
   }
   return sourceType === 'Form'
-    ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
+    ? (
+<ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
             {(value, onChange) => provider(() => value, onChange)}
-        </ConfigurableFormItem>
+</ConfigurableFormItem>
+    )
     : provider();
 };
 

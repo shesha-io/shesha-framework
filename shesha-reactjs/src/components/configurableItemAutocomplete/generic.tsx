@@ -49,7 +49,7 @@ const baseItemFilter = undefined;
 const baseListFilter = {
   "!=": [
     {
-      "var": "module",
+      var: "module",
     },
     null,
   ],
@@ -59,8 +59,8 @@ const getFilter = (term: string, staticFilter?: object): string => {
   const termFilter = term
     ? {
       or: [
-        { 'in': [term, { 'var': 'name' }] },
-        { 'in': [term, { 'var': 'module.name' }] },
+        { in: [term, { var: 'name' }] },
+        { in: [term, { var: 'module.name' }] },
       ],
     }
     : undefined;
@@ -77,8 +77,8 @@ const getFilter = (term: string, staticFilter?: object): string => {
 const ITEM_CONFIG_PROPERTIES = 'id name module { id name } label description';
 
 export const itemIdsEqual = (left: ConfigurableItemFullName, right: ConfigurableItemFullName): Boolean => {
-  return !left && !right ||
-        left && right && left.module === right.module && left.name === right.name;
+  return (!left && !right) ||
+    (left && right && left.module === right.module && left.name === right.name);
 };
 
 const getListFetcherQueryParams = (entityType: string, term: string, maxResultCount?: number, staticFilter?: object): IGenericGetAllPayload => {
@@ -102,8 +102,8 @@ export const getSelectedValueQueryParams = (entityType: string, value?: Configur
       ? {
         and: [
           baseItemFilter,
-          { '==': [{ 'var': 'name' }, value.name] },
-          { '==': [{ 'var': 'module.name' }, value.module] },
+          { '==': [{ var: 'name' }, value.name] },
+          { '==': [{ var: 'module.name' }, value.module] },
         ],
       }
       : null;

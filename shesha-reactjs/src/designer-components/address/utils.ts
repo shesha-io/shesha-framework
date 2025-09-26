@@ -97,7 +97,7 @@ export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['sear
     if (showPriorityBounds && lat && lng && radius) {
       result = { ...result, location: new google.maps.LatLng(lat, lng), radius };
     }
-  } catch {/* nop */ }
+  } catch { /* nop */ }
 
   return result;
 };
