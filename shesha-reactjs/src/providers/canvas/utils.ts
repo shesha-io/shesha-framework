@@ -46,7 +46,6 @@ export const getSmallerDevice = (a: IDeviceTypes, b: IDeviceTypes): IDeviceTypes
 };
 
 
-
 export function widthRelativeToCanvas(width: string | number, canvasWidth: string = '100vw'): string {
   if (typeof width === 'number') {
     return `${width}px`;
@@ -80,16 +79,16 @@ export const DEFAULT_OPTIONS = {
   minZoom: 25,
   maxZoom: 200,
   defaultSizes: [25, 50, 25],
-  configTreePanelSize: (20/ 100) * window.innerWidth,
-  sizeablePanelsGutter: 4
+  configTreePanelSize: (20 / 100) * window.innerWidth,
+  sizeablePanelsGutter: 4,
 };
 
-const valueToPercent = (value: number) => value/100;
+const valueToPercent = (value: number) => value / 100;
 
 export function calculateAutoZoom(params: IAutoZoomParams): number {
   const { designerWidth = '1024px', sizes = DEFAULT_OPTIONS.defaultSizes, configTreePanelSize = DEFAULT_OPTIONS.configTreePanelSize } = params;
   const availableWidthPercent = sizes[1] || 100;
-  
+
   if (typeof window === 'undefined') {
     return 100;
   }
@@ -108,7 +107,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   } else {
     canvasWidth = parseFloat(designerWidth) || 1024;
   }
-  
+
   const optimalZoom = (availableWidth / canvasWidth) * 100;
   return Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, Math.round(optimalZoom)));
 }
@@ -136,7 +135,7 @@ export const usePinchZoom = (
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
     if (isAutoWidth || e.touches.length !== 2) return;
-    
+
     e.preventDefault();
     lastDistance.current = getDistance(e.touches);
     initialZoom.current = currentZoom;
@@ -147,7 +146,7 @@ export const usePinchZoom = (
 
     e.preventDefault();
     const currentDistance = getDistance(e.touches);
-    
+
     if (lastDistance.current > 0) {
       const scale = currentDistance / lastDistance.current;
       const newZoom = Math.max(minZoom, Math.min(maxZoom, initialZoom.current * scale));
@@ -195,37 +194,37 @@ export const usePinchZoom = (
 };
 
 export const screenSizeOptions = [
-    {
-      label: 'iPhone SE', value: '375px', icon: MobileOutlined
-    },
-    {
-      label: 'iPhone XR/12/13/14', value: '414px', icon: MobileOutlined
-    },
-    {
-      label: 'Pixel 5', value: '393px', icon: MobileOutlined
-    },
-    {
-      label: 'Samsung Galaxy S8+', value: '360px', icon: MobileOutlined
-    },
-    {
-      label: 'iPad Mini', value: '768px', icon: TabletOutlined
-    },
-    {
-      label: 'iPad Air/Pro', value: '820px', icon: TabletOutlined
-    },
-    {
-      label: 'Surface Duo', value: '540px', icon: TabletOutlined
-    },
-    {
-      label: 'Surface Pro 7', value: '912px', icon: DesktopOutlined
-    },
-    {
-      label: 'Desktop 1024', value: '1024px', icon: DesktopOutlined
-    },
-    {
-      label: 'Desktop 1440', value: '1440px', icon: DesktopOutlined
-    },
-    {
-      label: 'Desktop 1920', value: '1920px', icon: DesktopOutlined
-    }
-  ];
+  {
+    label: 'iPhone SE', value: '375px', icon: MobileOutlined,
+  },
+  {
+    label: 'iPhone XR/12/13/14', value: '414px', icon: MobileOutlined,
+  },
+  {
+    label: 'Pixel 5', value: '393px', icon: MobileOutlined,
+  },
+  {
+    label: 'Samsung Galaxy S8+', value: '360px', icon: MobileOutlined,
+  },
+  {
+    label: 'iPad Mini', value: '768px', icon: TabletOutlined,
+  },
+  {
+    label: 'iPad Air/Pro', value: '820px', icon: TabletOutlined,
+  },
+  {
+    label: 'Surface Duo', value: '540px', icon: TabletOutlined,
+  },
+  {
+    label: 'Surface Pro 7', value: '912px', icon: DesktopOutlined,
+  },
+  {
+    label: 'Desktop 1024', value: '1024px', icon: DesktopOutlined,
+  },
+  {
+    label: 'Desktop 1440', value: '1440px', icon: DesktopOutlined,
+  },
+  {
+    label: 'Desktop 1920', value: '1920px', icon: DesktopOutlined,
+  },
+];

@@ -37,7 +37,7 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
   });
 
   useEffect(() => {
-    /*consider debouncing, else you trigger too many rerenders. complex components with state will love this*/
+    /* consider debouncing, else you trigger too many rerenders. complex components with state will love this*/
     const handleResize = () => dispatch(setScreenWidthAction(window.innerWidth));
     window.addEventListener('resize', handleResize);
     dispatch(setScreenWidthAction(window.innerWidth));
@@ -58,9 +58,9 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
     dispatch(SetCanvasAutoZoomAction());
   };
 
-  const setConfigTreePanelSize = (size: number ) => {
-    dispatch(SetConfigTreePanelSizeAction(size))
-  }
+  const setConfigTreePanelSize = (size: number) => {
+    dispatch(SetConfigTreePanelSizeAction(size));
+  };
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   const actions = {
@@ -68,7 +68,7 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
     setCanvasWidth,
     setCanvasZoom,
     setCanvasAutoZoom,
-    setConfigTreePanelSize
+    setConfigTreePanelSize,
     /* NEW_ACTION_GOES_HERE */
   };
 

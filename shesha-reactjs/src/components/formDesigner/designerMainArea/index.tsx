@@ -82,11 +82,11 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                                         <DebugPanel />
                                     )}
                                 </ConfigurableFormRenderer>
-                                
+
                             </DataContextProvider>
                         </ParentProvider>
                     </ConditionalWrap>
-                   
+
             </ConditionalWrap>
         </div>
   );

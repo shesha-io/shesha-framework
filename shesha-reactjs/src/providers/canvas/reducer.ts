@@ -42,7 +42,6 @@ export default handleActions<ICanvasStateContext, any>(
       };
     },
     [CanvasConfigActionEnums.SetCanvasAutoZoom]: (state: ICanvasStateContext) => {
-
       return {
         ...state,
         autoZoom: !state.autoZoom,

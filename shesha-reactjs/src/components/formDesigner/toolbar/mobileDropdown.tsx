@@ -13,9 +13,9 @@ export const DeviceOptions: FC<IPreviewButtonProps> = () => {
     <CustomDropdown
       placeholder="Select a device"
       optionFilterProp="label"
-      defaultValue={'1024px'}
+      defaultValue="1024px"
       style={{ width: '120px' }}
-      size='small'
+      size="small"
       customTooltip='Add a custom screen size e.g "1440px".'
       popupMatchSelectWidth={false}
       onChange={(val) => {
@@ -24,15 +24,14 @@ export const DeviceOptions: FC<IPreviewButtonProps> = () => {
       }}
       value={typeof designerWidth === 'number' ? `${designerWidth}px` : designerWidth}
       labelRender={({ label, value }) => {
-        const option = screenSizeOptions.find(opt => opt.value === value);
+        const option = screenSizeOptions.find((opt) => opt.value === value);
         const Icon = option?.icon;
         return (
           <Tooltip title={value}>
             {Icon ? <Icon /> : null} {label ?? value}
           </Tooltip>
         );
-      }
-      }
+      }}
       options={screenSizeOptions}
     />
   );

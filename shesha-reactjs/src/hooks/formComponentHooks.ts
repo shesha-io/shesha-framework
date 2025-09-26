@@ -180,7 +180,7 @@ export const useFormComponentStyles = <TModel>(
 ): IFormComponentStyles => {
   const app = useSheshaApplication();
   const jsStyle = useActualContextExecution(model.style, null, {}); // use default style if empty or error
-  const {designerWidth} = useCanvas();
+  const { designerWidth } = useCanvas();
 
   const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 

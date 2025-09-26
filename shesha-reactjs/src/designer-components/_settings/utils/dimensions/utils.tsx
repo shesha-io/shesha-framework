@@ -13,8 +13,8 @@ const getDimension = (main: string | number, left: any, right: any, canvasWidth?
 export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyles?: CSSProperties, canvasWidth?): CSSProperties => {
   return {
     width: dimensions?.width
-      ? hasNumber(dimensions.width) ?
-        getDimension(dimensions.width, additionalStyles?.marginLeft, additionalStyles?.marginRight, canvasWidth)
+      ? hasNumber(dimensions.width)
+        ? getDimension(dimensions.width, additionalStyles?.marginLeft, additionalStyles?.marginRight, canvasWidth)
         : dimensions.width
       : undefined,
     height: dimensions?.height

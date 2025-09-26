@@ -25,7 +25,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   children,
   allowFullCollapse = false,
   noPadding,
-  canZoom = false
+  canZoom = false,
 }) => {
   const { formMode } = useShaFormInstance();
   const { styles } = useStyles();
@@ -33,17 +33,16 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const [isOpenRight, setIsOpenRight] = useState(false);
   const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom, configTreePanelSize } = useCanvas();
 
-  console.log("configTreePanelSize : ", configTreePanelSize)
+  console.log("configTreePanelSize : ", configTreePanelSize);
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
   const handleDragSizesChange = useCallback((sizes: number[]) => {
-    /*debounce*/
+    /* debounce*/
     setCurrentSizes(sizes);
   }, []);
 
   const handleZoomChange = useCallback((newZoom: number) => {
     setCanvasZoom(newZoom);
-    
   }, [setCanvasZoom]);
 
   const canvasRef = usePinchZoom(
@@ -71,7 +70,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
           currentZoom: zoom,
           designerWidth,
           sizes: currentSizes,
-          configTreePanelSize: configTreePanelSize
+          configTreePanelSize: configTreePanelSize,
         });
 
         // Use debounced update for configTreePanelSize changes, immediate for others
@@ -81,10 +80,10 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       }
     }
   }, [canZoom, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize]);
-  
-  useEffect(()=> {
+
+  useEffect(() => {
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
-  },[isOpenRight, isOpenLeft]);
+  }, [isOpenRight, isOpenLeft]);
 
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]

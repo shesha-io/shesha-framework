@@ -10,7 +10,7 @@ export interface IUndoRedoButtonsProps extends Pick<ButtonProps, 'size' | 'type'
 export const UndoRedoButtons: FC<IUndoRedoButtonsProps> = (props) => {
   const { canUndo, canRedo } = useFormDesignerUndoableState();
   const { undo, redo } = useFormDesignerActions();
-    
+
   return (
         <>
             <Button

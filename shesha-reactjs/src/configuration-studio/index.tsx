@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/workArea';
@@ -17,7 +17,7 @@ import { SheshaDocumentDefinitions } from './document-definitions';
 import { useCanvas } from '@/providers';
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
-  const { setConfigTreePanelSize,  configTreePanelSize} = useCanvas();
+  const { setConfigTreePanelSize } = useCanvas();
 
 
   return (
@@ -47,15 +47,14 @@ const ConfigurationStudio: FC = () => {
           </div>
         </Layout.Header>
         <Layout.Content className={styles.csContent}>
-          <Splitter onResizeEnd={sizes => {
-              setConfigTreePanelSize(sizes[0]);
-            }
-          }
+          <Splitter onResizeEnd={(sizes) => {
+            setConfigTreePanelSize(sizes[0]);
+          }}
           >
             <Splitter.Panel
               collapsible
               min="5%"
-              defaultSize={'20%'}
+              defaultSize="20%"
               className={styles.csTreeArea}
             >
               <ConfigurationTree />
