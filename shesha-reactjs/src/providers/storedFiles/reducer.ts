@@ -113,14 +113,14 @@ export function storedFilesReducer(
 
       return {
         ...state,
-        fileList: updateDownloadedAFile(state.fileList, fileId) || [],
+        fileList: updateDownloadedAFile(state.fileList, fileId) ?? state.fileList,
       };
     }
 
     case StoredFilesActionEnums.UpdateAllFilesDownloadedSuccess: {
       return {
         ...state,
-        fileList: updateAllFilesDownloaded(state.fileList) || [],
+        fileList: updateAllFilesDownloaded(state.fileList) ?? state.fileList,
       };
     }
 

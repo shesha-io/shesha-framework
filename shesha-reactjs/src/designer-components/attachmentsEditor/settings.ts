@@ -306,7 +306,7 @@ export const getSettings = () => {
                 propertyName: 'onDownload',
                 label: 'On Download',
                 labelAlign: 'right',
-                parentId: 'root',
+                parentId: eventsTabId,
                 hidden: false,
                 description: 'Callback that is triggered when a file is downloaded.',
                 validate: {},
