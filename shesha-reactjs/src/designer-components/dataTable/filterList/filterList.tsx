@@ -107,7 +107,7 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
                 />
             </div>
 
-            {filters.length > 1 &&
+            {filters.length > 1 && (
                 <Button
                   onClick={clearFilters}
                   type="link"
@@ -115,7 +115,7 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
                 >
                     clear all
                 </Button>
-            }
+            )}
         </div>
   );
 };

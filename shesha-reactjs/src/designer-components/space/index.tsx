@@ -58,8 +58,7 @@ const SpaceComponent: IToolboxComponent<ISpaceProps> = {
   }),
   migrator: (m) => m
     .add<ISpaceProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<ISpaceProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
-  ,
+    .add<ISpaceProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) })),
 };
 
 export default SpaceComponent;

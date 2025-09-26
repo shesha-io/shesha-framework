@@ -13,11 +13,11 @@ export const NotAuthorized: FC<INotAuthorizedProps> = () => {
         status="403"
         title="403"
         subTitle="Sorry, you are not authorized to access this page."
-        extra={
+        extra={(
           <Button type="primary" onClick={() => router?.push('/')}>
             Back Home
           </Button>
-        }
+        )}
       />
     </div>
   );

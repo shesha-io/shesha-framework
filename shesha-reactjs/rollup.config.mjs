@@ -9,6 +9,7 @@ import json from '@rollup/plugin-json';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import pkg from './package.json' with { type: 'json' };
 import { codeAsText } from "./src/rollup-plugins/codeAsText.js";
+import { memoryTrace } from "./src/rollup-plugins/memoryTrace.js";
 
 export default {
   input: ['src/index.tsx', 'src/providers/index.ts'],
@@ -60,6 +61,7 @@ export default {
     'zlib',
   ],
   plugins: [
+    memoryTrace(false),
     codeAsText(),
     multi(),
     peerDepsExternal({

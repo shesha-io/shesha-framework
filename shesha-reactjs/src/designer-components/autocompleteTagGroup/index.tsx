@@ -29,7 +29,7 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) =>
+        {(value, onChange) => (
           <AutocompleteTagGroup
             value={value}
             defaultValue={model?.defaultValue}
@@ -37,7 +37,7 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
             autocompleteUrl={model?.autocompleteUrl}
             readOnly={model?.readOnly}
           />
-        }
+        )}
       </ConfigurableFormItem>
     );
   },
@@ -49,8 +49,7 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
     .add<IAutocompleteTagsOutlinedComponentProps>(2, (prev) => ({
       ...migrateFormApi.eventsAndProperties(prev),
       defaultValue: migrateFormApi.withoutFormData(prev?.defaultValue),
-    }))
-  ,
+    })),
 };
 
 export default AutocompleteTagGroupComponent;

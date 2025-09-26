@@ -121,7 +121,8 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
                 color: maxLength && currentLength > maxLength ? '#ff4d4f' : '#8c8c8c',
                 marginTop: '0px',
                 marginBottom: '0px',
-              }}>
+              }}
+              >
                 {currentLength}
                 {maxLength ? `/${maxLength}` : ''}
               </div>
@@ -198,8 +199,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ITextAreaComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-  ,
+      .add<ITextAreaComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, _): ITextAreaComponentProps => {
     return {
       ...model,

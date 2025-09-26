@@ -29,7 +29,7 @@ const DragHandleContext = React.createContext(null);
 
 const tooltip = () => (
   <Tooltip title={strings.tooltip}>
-    {<QuestionCircleOutlined className="tooltip-question-icon" size={14} color="gray" />}
+    <QuestionCircleOutlined className="tooltip-question-icon" size={14} color="gray" />
   </Tooltip>
 );
 
@@ -69,11 +69,16 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   const flexDirectionValues = ['row', 'column', 'row-reverse', 'column-reverse'];
 
   const Dropdown = (ref, values) =>
-    (<Select ref={ref} onSelect={save} onBlur={save}>
-    {values.map((value, i) => <Option key={i} value={value}>{value.split('-').map((word) => {
-      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-    }).join(' ')}</Option>)}
-  </Select>);
+    (
+<Select ref={ref} onSelect={save} onBlur={save}>
+    {values.map((value, i) => (
+<Option key={i} value={value}>{value.split('-').map((word) => {
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+}).join(' ')}
+</Option>
+    ))}
+</Select>
+    );
 
   if (editable) {
     childNode = editing ? (
@@ -299,9 +304,9 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => 
       >
         <Space direction="vertical" style={{ width: '100%' }}>
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId={'columns'}>
+            <Droppable droppableId="columns">
               {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
-                <div ref={provided.innerRef} {...provided.droppableProps} style={{ ...getListStyle(snapshot.isDraggingOver), overflow: "hidden" }} >
+                <div ref={provided.innerRef} {...provided.droppableProps} style={{ ...getListStyle(snapshot.isDraggingOver), overflow: "hidden" }}>
                   <Table
                     style={{ overflow: "hidden" }}
                     bordered

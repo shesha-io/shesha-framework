@@ -18,6 +18,6 @@ export interface ICodeEditorMayHaveTemplateProps extends IMonacoEditorProps, Par
  */
 export const CodeEditorMayHaveTemplate: FC<ICodeEditorMayHaveTemplateProps> = ({ template, ...restProps }) => {
   return template
-    ? <ConstrainedCodeEditor {...restProps} template={template} loading={<CodeEditorLoadingProgressor />}/>
-    : <Editor {...restProps} loading={<CodeEditorLoadingProgressor />}/>;
+    ? <ConstrainedCodeEditor {...restProps} template={template} loading={<CodeEditorLoadingProgressor />} />
+    : <Editor {...restProps} loading={<CodeEditorLoadingProgressor />} />;
 };

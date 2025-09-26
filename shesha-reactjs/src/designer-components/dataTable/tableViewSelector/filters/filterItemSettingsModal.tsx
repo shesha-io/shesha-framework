@@ -28,7 +28,7 @@ export const FilterItemSettingsModal: FC<IFilterItemSettingsModalProps> = ({ val
           onOk={onOk}
           okButtonProps={{ hidden: readOnly }}
         >
-            <FilterItemSettingsEditor value={localValue} onChange={setLocalValue} readOnly={readOnly}/>
+            <FilterItemSettingsEditor value={localValue} onChange={setLocalValue} readOnly={readOnly} />
         </Modal>
   );
 };

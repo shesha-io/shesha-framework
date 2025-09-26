@@ -37,7 +37,7 @@ export const BUILT_IN_PLACEMENTS = {
   },
 };
 
-export const calcTextWidth = function(str, fontFamily = DEFAULT_FONT_FAMILY, fontSize = DEFAULT_FONT_SIZE) {
+export const calcTextWidth = function (str, fontFamily = DEFAULT_FONT_FAMILY, fontSize = DEFAULT_FONT_SIZE) {
   var div = document.createElement("div");
   div.innerHTML = str;
   var css = {

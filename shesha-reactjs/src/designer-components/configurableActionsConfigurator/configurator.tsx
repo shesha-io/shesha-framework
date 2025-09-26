@@ -105,7 +105,8 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 
   return (
     <div
-      style={props.level > 1 ? { paddingLeft: 10 } : {}} className="sha-action-props"
+      style={props.level > 1 ? { paddingLeft: 10 } : {}}
+      className="sha-action-props"
     >
       <Form
         component={false}
@@ -141,7 +142,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
                   <Panel header={<StyledLabel label="On Success Handler" />} key="1">
                     <Form.Item name="onSuccess">
                       <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
-                    </Form.Item >
+                    </Form.Item>
                   </Panel>
                 </Collapse>
               )
@@ -160,7 +161,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
             }
           </>
         )}
-      </Form >
+      </Form>
     </div>
   );
 };

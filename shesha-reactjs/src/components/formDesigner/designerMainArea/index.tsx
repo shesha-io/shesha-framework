@@ -31,27 +31,30 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
   const shaForm = useShaFormInstance();
   const { styles } = useStyles();
 
-  useEffect(()=>{
-    if(shaForm) {
+  useEffect(() => {
+    if (shaForm) {
       shaForm.applyMarkupAsync({
         formFlatMarkup: shaForm.flatStructure,
         formSettings: formSettings,
       });
     }
-  },[formSettings, shaForm]);
+  }, [formSettings, shaForm]);
 
   const leftSidebarProps = useMemo(() =>
-    readOnly ? null : { title: 'Builder Components', content: () => <Toolbox />, placeholder: 'Builder Components' }
-  , [readOnly]);
+    readOnly ? null : { title: 'Builder Components', content: () => <Toolbox />, placeholder: 'Builder Components' },
+  [readOnly]);
 
   return (
-        <div className={styles.mainArea} style={{
-          borderTop: '1px solid #d3d3d3',
-          ...(formMode !== 'designer' && {
-            maxHeight: '85vh',
-            overflow: 'auto',
-          }),
-        }}>
+        <div
+          className={styles.mainArea}
+          style={{
+            borderTop: '1px solid #d3d3d3',
+            ...(formMode !== 'designer' && {
+              maxHeight: '85vh',
+              overflow: 'auto',
+            }),
+          }}
+        >
             <ConditionalWrap
               condition={formMode === 'designer'}
               wrap={(children) => (
@@ -69,7 +72,10 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                       wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
                     >
                         <ParentProvider model={null} formMode="designer">
-                            <DataContextProvider id={SheshaCommonContexts.FormContext} name={SheshaCommonContexts.FormContext} type={'form'}
+                            <DataContextProvider
+                              id={SheshaCommonContexts.FormContext}
+                              name={SheshaCommonContexts.FormContext}
+                              type="form"
                               description="Form designer"
                             >
                                 <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>

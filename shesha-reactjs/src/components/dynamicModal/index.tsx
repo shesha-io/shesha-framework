@@ -139,7 +139,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
       onCancel={handleCancel}
       footer={showDefaultSubmitButtons ? undefined : null}
       showCloseIcon={showCloseIcon}
-      content={
+      content={(
         <ConfigurableForm {...formProps}>
           <ConditionalWrap
             condition={Boolean(wrapper)}
@@ -147,12 +147,12 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
           >
             <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
+                <ButtonGroup items={buttons || []} id="" size="middle" isInline noStyles form={form} />
               </div>
             </Show>
           </ConditionalWrap>
         </ConfigurableForm>
-      }
+      )}
     />
   );
 };

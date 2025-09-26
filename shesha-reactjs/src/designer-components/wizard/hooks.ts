@@ -88,7 +88,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         id: model.id,
         validate: () => {
           var formInstance = allData?.form?.formInstance;
-          return formInstance?.validateFields(componentsNames, {recursive: false})
+          return formInstance?.validateFields(componentsNames, { recursive: false })
             .catch((e) => {
               if (e.errorFields?.length > 0)
                 throw e;

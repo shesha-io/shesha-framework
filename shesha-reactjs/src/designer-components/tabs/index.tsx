@@ -86,11 +86,13 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           animated: animated,
           destroyOnHidden: destroyInactiveTabPane,
           closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
-          disabled: selectMode === 'readOnly' || selectMode === 'inherited' && readOnly,
+          disabled: selectMode === 'readOnly' || (selectMode === 'inherited' && readOnly),
           children: (
             <ParentProvider model={item}>
               <ComponentsContainer
-                containerId={id} dynamicComponents={model?.isDynamic ? components : []} />
+                containerId={id}
+                dynamicComponents={model?.isDynamic ? components : []}
+              />
             </ParentProvider>
           ),
         };

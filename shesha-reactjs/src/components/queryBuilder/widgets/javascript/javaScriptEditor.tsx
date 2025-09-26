@@ -17,7 +17,7 @@ export const JavaScriptEditor: FC<JavaScriptEditorProps> = ({ value, onChange })
           value={value}
           onChange={onChange}
           mode="dialog"
-          propertyName={'specificationCondition'}
+          propertyName="specificationCondition"
           label="JavaScript Expression"
           description="Enter an JavaScript expression that returns true or false."
         />

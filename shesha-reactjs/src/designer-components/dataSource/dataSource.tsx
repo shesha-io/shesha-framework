@@ -17,7 +17,7 @@ import { useDeepCompareEffect } from 'react-use';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 const getPageSize = (value?: number) => {
-  return Boolean(value) ? value : 1147489646 /* get all data */;
+  return Boolean(value) ? value : 1147489646;
 };
 
 const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: name, filters, maxResultCount }) => {
@@ -51,7 +51,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
       [
         { match: 'data', data: formData },
         { match: 'globalState', data: globalState },
-        { match: 'pageContext', data: {...pageContext?.getFull()} },
+        { match: 'pageContext', data: { ...pageContext?.getFull() } },
       ],
       propertyMetadataAccessor
     ).then((evaluatedFilters) => {
@@ -92,14 +92,17 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = (props) => {
         dataFetchingMode="paging"
       >
         <DataSourceAccessor {...props} />
-      </DataTableProvider>);
+      </DataTableProvider>
+    );
   }, [props]);
 
   const providerWrapper = useMemo(() => {
     return sourceType === 'Form'
-      ? <FormItem name={props.propertyName}>
+      ? (
+<FormItem name={props.propertyName}>
         {provider}
-      </FormItem>
+</FormItem>
+      )
       : provider;
   }, [sourceType]);
 

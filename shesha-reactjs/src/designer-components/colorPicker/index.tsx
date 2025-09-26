@@ -45,8 +45,7 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps, IColor
     .add<IColorPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IColorPickerComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IColorPickerComponentProps>(2, (prev) => ({ ...prev, allowClear: false, showText: false }))
-    .add<IColorPickerComponentProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
-  ,
+    .add<IColorPickerComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) })),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 

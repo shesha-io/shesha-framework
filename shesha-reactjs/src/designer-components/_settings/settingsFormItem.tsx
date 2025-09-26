@@ -48,24 +48,26 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
   if (typeof props.children === 'function') {
     const children = props.children as SettingsControlChildrenType;
     if (!props.jsSetting) {
-      return <ConfigurableFormItem
-        model={{
-          propertyName: props.name,
-          label: props.label,
-          type: '',
-          id: '',
-          description: props.tooltip,
-          validate: { required: props.required },
-          hidden: props.hidden,
-        }}
-        className="sha-js-label"
-      >
+      return (
+<ConfigurableFormItem
+  model={{
+    propertyName: props.name,
+    label: props.label,
+    type: '',
+    id: '',
+    description: props.tooltip,
+    validate: { required: props.required },
+    hidden: props.hidden,
+  }}
+  className="sha-js-label"
+>
                 {children}
-            </ConfigurableFormItem>;
+</ConfigurableFormItem>
+      );
     }
 
     return (
-            <Form.Item {...formProps} label={props.label} >
+            <Form.Item {...formProps} label={props.label}>
                 <SettingsControl propertyName={props.name} mode={mode}>
                     {(value, onChange, propertyName) => children(value, onChange, propertyName)}
                 </SettingsControl>
@@ -98,7 +100,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
               return (
                     <SettingsControl
                       propertyName={props.name}
-                      mode={'value'}
+                      mode="value"
                       onChange={onChange}
                       value={value}
                       readOnly={readOnly}
@@ -137,7 +139,7 @@ const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
   }, [settingsPanel, props.name]);
 
   const { propertyFilter } = useSettingsForm<any>();
-  return !Boolean(propertyFilter) || typeof propertyFilter === 'function' && propertyFilter(props.name?.toString())
+  return !Boolean(propertyFilter) || (typeof propertyFilter === 'function' && propertyFilter(props.name?.toString()))
     ? <SettingsFormComponent {...props} />
     : null;
 };

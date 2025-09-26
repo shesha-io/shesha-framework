@@ -9,7 +9,7 @@ interface IProps {
 export const ConfimPasswordChecklist: FC<IProps> = ({ password, confirmPassword }) => {
   return (
     <div className="confim-password-checklist">
-      {<ValidationIcon valid={Boolean(password) && password === confirmPassword} />} confirm password must match the
+      <ValidationIcon valid={Boolean(password) && password === confirmPassword} /> confirm password must match the
       password
     </div>
   );
