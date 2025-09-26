@@ -26,8 +26,7 @@ const DataSourceComponent: IToolboxComponent<IDataSourceComponentProps> = {
     })
       .add<IDataSourceComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IDataSourceComponentProps>(2, (prev) => migrateVisibility(prev))
-      .add<IDataSourceComponentProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
-  ,
+      .add<IDataSourceComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) })),
   settingsFormFactory: (props) => (<DataSourceSettingsForm {...props} />),
 };
 

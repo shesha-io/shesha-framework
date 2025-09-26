@@ -31,8 +31,7 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
   migrator: (m) => m
     .add<IQueryBuilderComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IQueryBuilderComponentProps>(1, (prev) => migrateVisibility(prev))
-    .add<IQueryBuilderComponentProps>(2, (prev) => migrateReadOnly(prev))
-  ,
+    .add<IQueryBuilderComponentProps>(2, (prev) => migrateReadOnly(prev)),
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 

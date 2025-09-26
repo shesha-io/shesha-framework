@@ -31,7 +31,8 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
   const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
 
   return isHidden ? null
-    : <div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
+    : (
+<div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
             <ConditionalWrap
               condition={Boolean(modelType)}
               wrap={(content) => <MetadataProvider modelType={evaluatedModelType}>{content}</MetadataProvider>}
@@ -44,20 +45,26 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
                   required={validate?.required}
                   layout="vertical"
                   jsSetting={type === 'codeEditor' || rest.inputType === 'codeEditor' ? false : jsSetting}
-                  readOnly={readOnly}>
-                    {children || CustomComponent ? <CustomComponent{...rest} /> : <InputComponent size={size ?? 'small'}
-                      label={label}
-                      type={rest.inputType || type}
-                      dropdownOptions={dropdownOptions}
-                      buttonGroupOptions={buttonGroupOptions}
-                      hasUnits={hasUnits} propertyName={property}
-                      tooltip={tooltip}
-                      readOnly={readOnly}
-                      modelType={evaluatedModelType}
-                      {...rest} />
-                    }
+                  readOnly={readOnly}
+                >
+                    {children || CustomComponent ? <CustomComponent{...rest} /> : (
+<InputComponent
+  size={size ?? 'small'}
+  label={label}
+  type={rest.inputType || type}
+  dropdownOptions={dropdownOptions}
+  buttonGroupOptions={buttonGroupOptions}
+  hasUnits={hasUnits}
+  propertyName={property}
+  tooltip={tooltip}
+  readOnly={readOnly}
+  modelType={evaluatedModelType}
+  {...rest}
+/>
+                    )}
                 </FormItem>
             </ConditionalWrap>
-        </div>
+</div>
+    )
   ;
 };

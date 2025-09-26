@@ -42,7 +42,7 @@ const ActionButton: FC<IActionButtonProps> = ({
       title={title}
       loading={loading}
       danger={Boolean(error)}
-      className={"sha-link sha-action-button"}
+      className="sha-link sha-action-button"
     />
   );
 

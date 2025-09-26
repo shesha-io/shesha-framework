@@ -38,7 +38,7 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
       const baseContent = onClick
         ? ((navigationType === 'url' || navigationType === 'form')
           ? <Link className={className} href={url} onClick={clickHandler}>{label}</Link>
-          : <Link href={''} className={className} onClick={clickHandler}>{label}</Link>)
+          : <Link href="" className={className} onClick={clickHandler}>{label}</Link>)
         : <span className={className}>{label}</span>;
 
       if (!tooltip) return baseContent;

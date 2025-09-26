@@ -33,16 +33,16 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
           <Select.Option key="Url" value="Url">URL</Select.Option>
         </Select>
       </SettingsFormItem>
-      {(state.sourceType === 'Entity') &&
+      {(state.sourceType === 'Entity') && (
         <SettingsFormItem key="entityType" name="entityType" label="Entity Type" jsSetting>
           <Autocomplete.Raw dataSourceType="url" dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete" />
         </SettingsFormItem>
-      }
-      {(state.sourceType === 'Entity' || state.sourceType === 'Url') &&
+      )}
+      {(state.sourceType === 'Entity' || state.sourceType === 'Url') && (
         <SettingsFormItem key="endpoint" name="endpoint" label="Endpoint" jsSetting>
           <EndpointsAutocomplete />
         </SettingsFormItem>
-      }
+      )}
       <SettingsCollapsiblePanel header="Filters">
         <SettingsFormItem name="maxResultCount" label="Max result count" tooltip="Leave empty to get all records" jsSetting>
           <InputNumber min={0} />

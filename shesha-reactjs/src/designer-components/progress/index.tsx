@@ -121,7 +121,8 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               defaultValue={defaultValue}
               gapDegree={gapDegree}
               style={finalStyle}
-            />);
+            />
+          );
         }}
       </ConfigurableFormItem>
     );
@@ -130,7 +131,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IProgressProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<IProgressProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<IProgressProps>(2, (prev) => {
       const styles: IInputStyles = {
         stylingBox: prev.stylingBox,
@@ -138,8 +139,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IProgressProps>(3, (prev) => ({ ...migratePrevStyles(prev, {}) }))
-  ,
+    .add<IProgressProps>(3, (prev) => ({ ...migratePrevStyles(prev, {}) })),
 };
 
 export default ProgressComponent;

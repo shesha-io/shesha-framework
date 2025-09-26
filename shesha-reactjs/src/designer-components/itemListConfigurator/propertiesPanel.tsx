@@ -54,7 +54,9 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
 
   return Boolean(item)
     ? (<>{editor}</>)
-    : (<div>
+    : (
+<div>
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
-        </div>);
+</div>
+    );
 };

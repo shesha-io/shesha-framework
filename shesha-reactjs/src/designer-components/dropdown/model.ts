@@ -9,5 +9,5 @@ export interface ILabelValue<TValue = any> {
   value: TValue;
 }
 
-export interface IDropdownComponentProps extends Omit<IDropdownProps, 'style'>, IConfigurableFormComponent,IInputStyles {
+export interface IDropdownComponentProps extends Omit<IDropdownProps, 'style'>, IConfigurableFormComponent, IInputStyles {
 }

@@ -114,7 +114,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           </SettingsFormItem>
         )}
 
-        <SettingsFormItem name="entityReferenceType" initialValue={'Quickview'} label="Entity Reference Type">
+        <SettingsFormItem name="entityReferenceType" initialValue="Quickview" label="Entity Reference Type">
           <Select disabled={readOnly}>
             <Select.Option value="Quickview">Quickview</Select.Option>
             <Select.Option value="NavigateLink">Navigate Link</Select.Option>
@@ -122,7 +122,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           </Select>
         </SettingsFormItem>
 
-        <SettingsFormItem name="formSelectionMode" initialValue={'name'} label="Form selection mode">
+        <SettingsFormItem name="formSelectionMode" initialValue="name" label="Form selection mode">
           <Select disabled={readOnly}>
             <Select.Option value="name">Name</Select.Option>
             <Select.Option value="dynamic">Dynamic</Select.Option>
@@ -144,8 +144,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
                   ).map((i) => {
                     return { value: i };
                   })
-                )
-              }
+                )}
             />
           </SettingsFormItem>
         )}
@@ -186,7 +185,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
 
           {values?.showModalFooter ||
             (values?.footerButtons === 'default' && (
-              <SettingsFormItem name="submitHttpVerb" initialValue={'POST'} label="Submit Http Verb" jsSetting>
+              <SettingsFormItem name="submitHttpVerb" initialValue="POST" label="Submit Http Verb" jsSetting>
                 <Select disabled={readOnly}>
                   <Select.Option value="POST">POST</Select.Option>
                   <Select.Option value="PUT">PUT</Select.Option>

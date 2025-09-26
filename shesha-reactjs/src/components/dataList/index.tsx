@@ -424,7 +424,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     };
 
     const selected =
-      selectedRow?.index === index && !(selectedRows?.length > 0) ||
+      (selectedRow?.index === index && !(selectedRows?.length > 0)) ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
 
     const itemStyles: CSSProperties = {
@@ -434,7 +434,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         border: '1px solid #d3d3d3',
         borderRadius: '8px',
       }),
-      ...(orientation !== 'wrap'  &&  {
+      ...(orientation !== 'wrap' && {
         marginTop: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px',
       }),
     };
@@ -449,7 +449,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               checked={selected}
               onChange={() => {
                 onSelectRowLocal(index, item);
-              }}>
+              }}
+            >
               {children}
             </Checkbox>
           )}
@@ -462,7 +463,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={{...itemStyles, width: orientation === 'wrap' ?  'unset' : itemStyles.width, overflow: 'auto'}}
+            style={{ ...itemStyles, width: orientation === 'wrap' ? 'unset' : itemStyles.width, overflow: 'auto' }}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
@@ -560,7 +561,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   return (
     <>
-      {createModalOpen && createFormInfo?.current?.formConfiguration &&
+      {createModalOpen && createFormInfo?.current?.formConfiguration && (
         <DataListItemCreateModal
           id={id}
           formInfo={persistedCreateFormProps}
@@ -571,9 +572,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           data={onNewListItemInitialize}
           width={props.modalWidth}
         />
-      }
+      )}
       <div>
-        <Show when={selectionMode === 'multiple'} >
+        <Show when={selectionMode === 'multiple'}>
           <Checkbox
             onChange={(e) => {
               onSelectAllRowsLocal(e.target.checked);

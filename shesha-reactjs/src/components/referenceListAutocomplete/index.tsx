@@ -30,7 +30,7 @@ const baseItemFilter = [
 const baseListFilter = {
   "!=": [
     {
-      "var": "module",
+      var: "module",
     },
     null,
   ],
@@ -40,8 +40,8 @@ const getFilter = (term: string) => {
   const termFilter = term
     ? {
       or: [
-        { 'in': [term, { 'var': 'name' }] },
-        { 'in': [term, { 'var': 'module.name' }] },
+        { in: [term, { var: 'name' }] },
+        { in: [term, { var: 'module.name' }] },
       ],
     }
     : undefined;
@@ -74,10 +74,10 @@ const getSelectedValueQueryParams = (value?: IReferenceListIdentifier): IGeneric
 
   const filters = [
     ...baseItemFilter,
-    { '==': [{ 'var': 'name' }, value.name] },
+    { '==': [{ var: 'name' }, value.name] },
   ];
   if (value.module !== undefined)
-    filters.push({ '==': [{ 'var': 'module.name' }, value.module] });
+    filters.push({ '==': [{ var: 'module.name' }, value.module] });
 
   const expression = { and: filters };
 

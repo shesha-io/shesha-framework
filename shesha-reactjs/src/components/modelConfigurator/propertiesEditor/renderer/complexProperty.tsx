@@ -57,7 +57,7 @@ export const ComplexProperty: FC<IProps> = (props) => {
           parent: props.data,
           onChange: (newItems, changeDetails) => {
             if (props.onChange)
-              props.onChange({...props.data, properties: [...newItems]}, changeDetails);
+              props.onChange({ ...props.data, properties: [...newItems] }, changeDetails);
           },
         })}
       </div>

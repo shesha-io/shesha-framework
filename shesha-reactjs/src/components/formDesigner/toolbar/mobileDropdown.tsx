@@ -20,7 +20,7 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
             showSearch
             placeholder="Select a device"
             optionFilterProp="label"
-            defaultValue={'428'}
+            defaultValue="428"
             value={activeDevice === 'mobile' ? width.toString() : '428'}
             style={{ width: '100%' }}
             onChange={(val) => {

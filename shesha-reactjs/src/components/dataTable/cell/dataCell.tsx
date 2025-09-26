@@ -71,11 +71,11 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   const component = toolboxComponents[customComponent.type];
   const injectables = getInjectables(props);
 
-  const model = useMemo(() =>  upgradeComponent(
+  const model = useMemo(() => upgradeComponent(
     customComponent.settings,
     component,
     DEFAULT_FORM_SETTINGS,
-    { allComponents: { 'component': customComponent.settings }, componentRelations: {} }
+    { allComponents: { component: customComponent.settings }, componentRelations: {} }
   ), [customComponent.settings]);
 
   const actualModel = useActualContextData(
@@ -85,7 +85,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     }
   );
 
-  const componentModel: IConfigurableFormComponent  = useDeepCompareMemo(() => {
+  const componentModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
     // migrate component
     let editorModel: IColumnEditorProps = {
       ...actualModel,

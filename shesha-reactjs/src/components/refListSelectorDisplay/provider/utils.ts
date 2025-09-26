@@ -5,7 +5,7 @@ export const getRefListItems = (referenceList: string) => {
       skipCount: 0,
       entityType: 'Shesha.Framework.ReferenceListItem',
       maxResultCount: -1,
-      filter: JSON.stringify({"and": [{"==": [{"var": "referenceList"},referenceList]}]}),
+      filter: JSON.stringify({ and: [{ "==": [{ var: "referenceList" }, referenceList] }] }),
     },
   };
 };

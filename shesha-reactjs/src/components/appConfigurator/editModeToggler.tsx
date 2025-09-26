@@ -44,7 +44,8 @@ export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
   return (
     <Space className={styles.shaConfigItemModeToggler}>
       <span className={styles.shaConfigurableModeSwitcherLabel}>{Boolean(formInfoBlockVisible) ? 'Edit Mode' : 'Live Mode'}</span>
-      <Switch className={styles.shaConfigurableModeSwitcherSwitcher}
+      <Switch
+        className={styles.shaConfigurableModeSwitcherSwitcher}
         title={Boolean(formInfoBlockVisible) ? 'Switch to Live mode' : 'Switch to Edit mode'}
         checked={formInfoBlockVisible}
         onChange={(checked, event) => {

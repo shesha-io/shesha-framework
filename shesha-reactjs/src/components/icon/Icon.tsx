@@ -50,7 +50,8 @@ export const Icon = ({
               justifyContent: 'space-between',
               verticalAlign: 'middle',
               top: 10,
-            }}>
+            }}
+            >
                 <Space>
                     {size}
                     <Tooltip className={styles.icon} title={hint}>

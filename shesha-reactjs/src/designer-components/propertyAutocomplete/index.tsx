@@ -64,7 +64,6 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
       } else {
         return { ...prev };
       }
-    })
-  ,
+    }),
 };
 

@@ -178,7 +178,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
           font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, '400'),
           color: tickFont?.color || '#000000',
           padding: isSmallScreen ? 4 : 8,
-          callback: function(value) {
+          callback: function (value) {
             // Format large numbers on mobile
             if (isSmallScreen && value >= 1000) {
               return (value / 1000).toFixed(1) + 'k';

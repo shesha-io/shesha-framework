@@ -10,9 +10,11 @@ export interface IShaSpin {
 
 export const ShaSpin: FC<PropsWithChildren<IShaSpin>> = ({ children, spinning, spinIconSize = 24, tip }) => {
   const indicator = useMemo(() => <LoadingOutlined style={{ fontSize: spinIconSize }} spin />, [spinIconSize]);
-  return <Spin className="sha-spin" spinning={Boolean(spinning) || false} indicator={indicator} tip={tip}>
+  return (
+<Spin className="sha-spin" spinning={Boolean(spinning) || false} indicator={indicator} tip={tip}>
     {children}
-  </Spin>;
+</Spin>
+  );
 };
 
 export default ShaSpin;

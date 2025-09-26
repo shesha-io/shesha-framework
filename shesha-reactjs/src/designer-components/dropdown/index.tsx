@@ -31,7 +31,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
   isHidden: false,
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
-  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList,
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
   calculateModel: (model, allData) => ({
     eventHandlers: customDropDownEventHandler(model, allData),
     // quick fix not to default to empty string or null while working with multi-mode
@@ -61,16 +61,18 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
               onChange(...args);
           };
 
-          return <Dropdown
-            {...model}
-            style={finalStyle}
-            {...customEvent}
-            defaultValue={calculatedModel.defaultValue}
-            value={value}
-            size={model?.size}
-            tagStyle={{ ...tagStyle, alignContent: 'center', justifyContent: tagStyle.textAlign }}
-            onChange={onChangeInternal}
-          />;
+          return (
+<Dropdown
+  {...model}
+  style={finalStyle}
+  {...customEvent}
+  defaultValue={calculatedModel.defaultValue}
+  value={value}
+  size={model?.size}
+  tagStyle={{ ...tagStyle, alignContent: 'center', justifyContent: tagStyle.textAlign }}
+  onChange={onChangeInternal}
+/>
+          );
         }}
       </ConfigurableFormItem>
     );

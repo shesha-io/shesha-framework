@@ -16,7 +16,7 @@ export const useStyles = createStyles(({ css, cx, token }, {
   borderRadius,
 }) => {
   const dataTable = cx("sha-data-table", css`
-    ${ `
+    ${`
       .ant-table {
         border-radius: ${borderRadius};
         font-family: ${fontFamily};

@@ -90,7 +90,7 @@ export type PlaceholderEvaluatorContext = {
  */
 export type PlaceholderEvaluator = (ctx: PlaceholderEvaluatorContext) => string | Placeholder;
 const isPlaceholderEvaluator = (value: string | PlaceholderEvaluator): value is PlaceholderEvaluator => {
-  return typeof(value) === 'function';
+  return typeof (value) === 'function';
 };
 
 /**
@@ -120,7 +120,7 @@ export const makeCodeTemplate = (strings: TemplateStringsArray, ...expr: (string
         })
         : item;
       // note: string values are always read-only
-      const readonly = typeof(placeholderContent) === 'string' || placeholderContent.readOnly;
+      const readonly = typeof (placeholderContent) === 'string' || placeholderContent.readOnly;
 
       const placeholderText = placeholderContent?.toString();
       if (placeholderText)

@@ -99,7 +99,8 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         components: visibleComponents,
         children: visibleComponents.length === 0
           ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
-          : <ParentProvider model={model}>
+          : (
+<ParentProvider model={model}>
                          <Input
                            type="search"
                            size="small"
@@ -123,8 +124,10 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
                          />
                         <ComponentsContainer
                           containerId={tab.id + tab.key}
-                          dynamicComponents={visibleComponents} />
-                    </ParentProvider>,
+                          dynamicComponents={visibleComponents}
+                        />
+</ParentProvider>
+          ),
         forceRender: true,
         hidden: tab.hidden || !hasVisibleComponents,
       };
@@ -153,15 +156,16 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
   return (
         <>
-            {newFilteredTabs.length === 0 && <div
-              className={styles.searchField}
-              style={{
-                position: 'sticky',
-                top: -16,
-                zIndex: 2,
-                padding: '8px 0',
-              }}
-            >
+            {newFilteredTabs.length === 0 && (
+<div
+  className={styles.searchField}
+  style={{
+    position: 'sticky',
+    top: -16,
+    zIndex: 2,
+    padding: '8px 0',
+  }}
+>
                 <Input
                   type="search"
                   size="small"
@@ -174,20 +178,21 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
                         <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
                   }
                 />
-            </div>
-            }
+</div>
+            )}
             {newFilteredTabs.length === 0 && searchQuery
               ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
-              : <Tabs
-                  activeKey={activeTabKey}
-                  onChange={handleTabChange}
-                  size={model.size}
-                  type={model.tabType || 'card'}
-                  tabPosition={model.position || 'top'}
-                  items={newFilteredTabs}
-                  className={styles.content}
-              />
-            }
+              : (
+<Tabs
+  activeKey={activeTabKey}
+  onChange={handleTabChange}
+  size={model.size}
+  type={model.tabType || 'card'}
+  tabPosition={model.position || 'top'}
+  items={newFilteredTabs}
+  className={styles.content}
+/>
+              )}
         </>
   );
 };

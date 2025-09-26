@@ -72,9 +72,11 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         style: stepStyle,
         // render only current step
         content: current === index
-          ? <ParentProvider model={{ ...model, readOnly: isDisabledByCondition }}>
+          ? (
+<ParentProvider model={{ ...model, readOnly: isDisabledByCondition }}>
                         <ComponentsContainer wrapperStyle={{ height: '100%', display: 'grid', ...getOverflowStyle(model.overflow ?? true, model.hideScrollBar ?? false) }} containerId={id} dynamicComponents={isDynamic ? components : []} />
-                    </ParentProvider>
+</ParentProvider>
+          )
           : undefined,
       };
     });
