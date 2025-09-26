@@ -42,7 +42,7 @@ const getListFetcherQueryParams = (maxResultCount): IGenericGetAllPayload => {
     maxResultCount: maxResultCount ?? -1,
     entityType: 'Shesha.Domain.SettingConfiguration',
     properties:
-      'id category dataType editorFormModule editorFormName isClientSpecific name, module { id name }, label, description, versionNo',
+      'id category dataType editorFormModule editorFormName isClientSpecific name, module { id name }, label, description',
     quickSearch: null,
     sorting: 'module.name, name',
   };
@@ -57,7 +57,6 @@ interface SettingConfigurationDto {
   name: string;
   label?: string;
   description?: string;
-  versionNo?: number;
   module?: {
     id: string;
     name: string;
