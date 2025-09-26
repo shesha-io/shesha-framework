@@ -36,7 +36,7 @@ export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
   disabled,
 }) => {
   const { router, getFormUrl } = useShaRouting();
-  const {styles, cx} = useStyles();
+  const { styles, cx } = useStyles();
 
   const paramsStr = useMemo(() => {
     if (!params) return undefined;

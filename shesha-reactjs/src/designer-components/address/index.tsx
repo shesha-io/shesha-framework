@@ -45,8 +45,7 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
     .add<IAddressCompomentProps>(2, (prev) => migrateReadOnly(prev))
     .add<IAddressCompomentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IAddressCompomentProps>(4, (prev) => ({ ...prev, onSelectCustom: migrateFormApi.withoutFormData(prev.onSelectCustom) }))
-    .add<IAddressCompomentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-  ,
+    .add<IAddressCompomentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default AddressCompoment;

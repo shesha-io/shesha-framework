@@ -135,7 +135,7 @@ export const updateJsSettingsForComponents = (
     const componentRegistration = toolboxComponents[component.type];
     const newComponent: IConfigurableFormComponent = {
       ...component,
-      jsSetting: componentRegistration?.canBeJsSetting && component.jsSetting !== false || component.jsSetting === true,
+      jsSetting: (componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting === true,
     };
 
     // Check all child containers

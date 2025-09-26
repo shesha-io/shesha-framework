@@ -73,7 +73,7 @@ const Page: PageWithLayout<{}> = () => {
       quickSearch: null,
       filter: {
         and: [
-          { '==': [{ 'var': 'module.name' }, formsModule] },
+          { '==': [{ var: 'module.name' }, formsModule] },
         ],
       },
       sorting: 'module.name, name',

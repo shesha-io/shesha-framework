@@ -128,8 +128,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCal
   migrator: (m) => m
     .add<IAlertComponentProps>(0, (prev: IAlertComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAlertComponentProps>(1, (prev) => migrateVisibility(prev))
-    .add<IAlertComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-  ,
+    .add<IAlertComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };

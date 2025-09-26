@@ -32,8 +32,7 @@ const ReferenceListAutocompleteComponent: IToolboxComponent<IReferenceListAutoco
         version: 0,
         entityType: 'Shesha.Framework.ReferenceList',
       };
-    })
-  ,
+    }),
 };
 
 export default ReferenceListAutocompleteComponent;

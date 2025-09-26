@@ -56,7 +56,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
               ) : (
                     <SettingsControl
                       propertyName={name}
-                      mode={'value'}
+                      mode="value"
                       onChange={onChange}
                       value={value}
                       setHasCode={setHasCode}
@@ -65,8 +65,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
                     >
                         {(value, onChange) => createClonedElement(value, onChange,)}
                     </SettingsControl>
-              )
-            }
+              )}
         </ConfigurableFormItem>
   );
 };

@@ -87,7 +87,8 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-              }}>
+              }}
+              >
                 {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType="bar" evaluatedFilters={stateEvaluatedFilters} />}
               </div>
             </ChartDataProvider>

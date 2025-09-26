@@ -47,7 +47,8 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
               checked={value}
               defaultChecked={model.defaultChecked}
               defaultValue={model.defaultValue}
-              onChange={onChangeInternal} />
+              onChange={onChangeInternal}
+            />
           );
         }}
       </ConfigurableFormItem>
@@ -73,8 +74,7 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-    })
-  ,
+    }),
 };
 
 export default SwitchComponent;

@@ -28,15 +28,15 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       : dts;
 
     return dataSource
-      ? <DataListControl {...model} dataSourceInstance={dataSource}/>
+      ? <DataListControl {...model} dataSourceInstance={dataSource} />
       : <NotConfiguredWarning />;
   },
   migrator: (m) => m
-    .add<IDataListComponentProps>(0, (prev) => ({...prev, formSelectionMode: 'name', selectionMode: 'none', items: []}))
-    .add<IDataListComponentProps>(1, (prev) => ({...prev, orientation: 'vertical', listItemWidth: 1 }))
+    .add<IDataListComponentProps>(0, (prev) => ({ ...prev, formSelectionMode: 'name', selectionMode: 'none', items: [] }))
+    .add<IDataListComponentProps>(1, (prev) => ({ ...prev, orientation: 'vertical', listItemWidth: 1 }))
     .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IDataListComponentProps>(3, (prev) => migrateVisibility(prev))
-    .add<IDataListComponentProps>(4, (prev) => ({...prev, collapsible: true}))
+    .add<IDataListComponentProps>(4, (prev) => ({ ...prev, collapsible: true }))
     .add<IDataListComponentProps>(5, (prev) => {
       return {
         ...prev,
@@ -59,7 +59,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     .add<IDataListComponentProps>(9, (prev) => {
       return {
         ...prev,
-        desktop: {...prev.desktop,
+        desktop: { ...prev.desktop,
           gap: prev.cardSpacing,
           dimensions: {
             ...prev.desktop.dimensions,
@@ -67,7 +67,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
             maxWidth: prev.cardMaxWidth,
             width: prev.customWidth,
             height: prev.cardHeight,
-          }},
+          } },
       };
     }).add<IDataListComponentProps>(10, (prev) => {
       const cardSpacing = prev.cardSpacing || '0px';

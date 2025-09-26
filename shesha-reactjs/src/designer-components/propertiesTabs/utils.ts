@@ -84,8 +84,8 @@ export const filterDynamicComponents = (components, query) => {
     // Check if component matches query directly
     const directMatch = (
       matchesQuery(c.label) ||
-            matchesQuery(c.propertyName) ||
-            (c.propertyName && matchesQuery(c.propertyName.split('.').join(' ')))
+      matchesQuery(c.propertyName) ||
+      (c.propertyName && matchesQuery(c.propertyName.split('.').join(' ')))
     );
 
     // Handle propertyRouter
@@ -125,8 +125,8 @@ export const filterDynamicComponents = (components, query) => {
     if (c.type === 'settingsInputRow') {
       const filteredInputs = c.inputs?.filter((input) =>
         matchesQuery(input.label) ||
-                matchesQuery(input.propertyName) ||
-                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
+        matchesQuery(input.propertyName) ||
+        (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
       ) || [];
 
       return {
@@ -162,8 +162,8 @@ export const filterDynamicComponents = (components, query) => {
     // Evaluate final hidden state
     const hasVisibleChildren = (
       (c.components && c.components.length > 0) ||
-            (c.content?.components && c.content.components.length > 0) ||
-            (c.inputs && c.inputs.length > 0)
+      (c.content?.components && c.content.components.length > 0) ||
+      (c.inputs && c.inputs.length > 0)
     );
 
     return !c.hidden || hasVisibleChildren;

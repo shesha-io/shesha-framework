@@ -57,7 +57,7 @@ export const get = <
   props: Omit<GetProps<TData, TError, TQueryParams, _TPathParams>, 'queryParams'>,
   signal?: RequestInit['signal']
 ): Promise<TData | null> => {
-  const url = constructUrl(props?.base, path, typeof(queryParams) === 'object' ? queryParams as object : undefined);
+  const url = constructUrl(props?.base, path, typeof (queryParams) === 'object' ? queryParams as object : undefined);
   const headers = {
     'content-type': 'application/json',
     ...(props?.headers || {}),
@@ -106,7 +106,7 @@ export const mutate = <
   if (method === 'DELETE' && typeof data === 'string') {
     fixedPath += `/${data}`;
   }
-  const url = constructUrl(props.base, fixedPath, typeof(props.queryParams) === 'object' ? props.queryParams as object : undefined);
+  const url = constructUrl(props.base, fixedPath, typeof (props.queryParams) === 'object' ? props.queryParams as object : undefined);
 
   const headers = {
     'content-type': 'application/json',

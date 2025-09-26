@@ -113,7 +113,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
         onStart={onDragStart}
         onEnd={onDragEnd}
       >
-        <div className={styles.shaToolboxComponent} >
+        <div className={styles.shaToolboxComponent}>
           {icon}
           <div className={styles.shaComponentTitle}>{getTitle(node.meta)}</div>
         </div>

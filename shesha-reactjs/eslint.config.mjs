@@ -8,11 +8,36 @@ import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
+import memoryTracePlugin from "./src/eslint-plugins/eslint-plugin-memory-monitor.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const isLightBuild = process.env.SHA_LIGHT_BUILD ? "true" : "false";
+console.log(`Light build is: ${isLightBuild}`);
+
+const strictFolders = isLightBuild
+    ? []
+    : [
+        "src/configuration-studio",
+        //"src/utils",
+
+        "src/providers/referenceListDispatcher",
+        "src/providers/metadataDispatcher",
+        "src/providers/metadata",
+        "src/providers/configurationItemsLoader",
+        "src/providers/formPersisterProvider",
+        "src/providers/formMarkupConverter",
+        "src/providers/formManager",
+        "src/providers/configurableActionsDispatcher",
+        "src/providers/auth",
+        "src/providers/appConfigurator",
+        "src/providers/dataContextManager",
+        "src/providers/dataContextProvider",
+    ];
+
 const stylisticOverrides = {
+    ...stylistic.configs.recommended.rules,
     "@stylistic/brace-style": ["error", "1tbs", { "allowSingleLine": false }],
     "@stylistic/jsx-indent-props": [
         'error',
@@ -58,6 +83,7 @@ const stylisticOverrides = {
         "ignoredNodes": ["JSXElement", "JSXAttribute", "JSXSpreadAttribute", "JSXText", "JSXFragment"]
     }],
     "@stylistic/space-infix-ops": "error",
+    "@stylistic/multiline-ternary": "off"
 };
 
 const legacyTypescriptOverrides = {
@@ -154,6 +180,7 @@ const baseTsConfig = {
         "**/__tests__/**/*",
     ],
     plugins: {
+        "memory-monitor": memoryTracePlugin,
         jsdoc,
         "react": reactPlugin,
         "react-hooks": hooksPlugin,
@@ -171,7 +198,8 @@ const baseTsConfig = {
         sourceType: "module",
 
         parserOptions: {
-            project: "tsconfig.json",
+            //project: ["tsconfig.json", ...strictFolders.map(f => `${f}/tsconfig.json`)],
+            projectService: true, // Enable project service
             tsconfigRootDir: __dirname,
         },
     },
@@ -227,6 +255,7 @@ const baseTsConfig = {
     },
 
     rules: {
+        "memory-monitor/track-memory": "off",
         ...hooksPlugin.configs.recommended.rules,
         ...reactPlugin.configs.recommended.rules,
         "react/prop-types": ["off"],
@@ -335,7 +364,8 @@ const makeStrictConfig = (path) => {
         languageOptions: {
             ...baseTsConfig.languageOptions,
             parserOptions: {
-                project: `${path}/tsconfig.json`,
+                //project: `${path}/tsconfig.json`,
+                projectService: true, // Enable project service
                 tsconfigRootDir: __dirname,
             },
         },
@@ -343,7 +373,6 @@ const makeStrictConfig = (path) => {
             ...baseTsConfig.rules,
             ...typescriptEslint.configs.recommended.rules,
             ...typescriptOverrides,
-            ...stylistic.configs.recommended.rules,
             ...stylisticOverrides,
 
             "react-hooks/exhaustive-deps": "error",
@@ -351,24 +380,6 @@ const makeStrictConfig = (path) => {
         },
     };
 }
-
-const strictFolders = [
-    "src/configuration-studio",
-    //"src/utils",
-
-    "src/providers/referenceListDispatcher",
-    "src/providers/metadataDispatcher",
-    "src/providers/metadata",
-    "src/providers/configurationItemsLoader",
-    "src/providers/formPersisterProvider",
-    "src/providers/formMarkupConverter",
-    "src/providers/formManager",
-    "src/providers/configurableActionsDispatcher",
-    "src/providers/auth",
-    "src/providers/appConfigurator",
-    "src/providers/dataContextManager",
-    "src/providers/dataContextProvider",
-];
 
 export default [
     {

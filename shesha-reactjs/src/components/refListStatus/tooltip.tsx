@@ -20,8 +20,8 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
   return showToolTip ? (
     <Tooltip
       placement="right"
-      title={
-        <div >
+      title={(
+        <div>
           {popReflistName && (
             <>
               <span>{currentStatus?.item}</span>
@@ -30,7 +30,7 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
           )}
           <span>{currentStatus.description}</span>
         </div>
-      }
+      )}
     >
       <>{children}</>
     </Tooltip>

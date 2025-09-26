@@ -26,14 +26,15 @@ const FieldWidget: FieldWidgetType = {
 
     return (
             <>
-                {false && <Typography.Paragraph
-                  copyable={{
-                    text: () => JSON.stringify(filterProps, null, 2),
-                  }}
-                >
+                {false && (
+<Typography.Paragraph
+  copyable={{
+    text: () => JSON.stringify(filterProps, null, 2),
+  }}
+>
                     Copy widget props.
-                </Typography.Paragraph>
-                }
+</Typography.Paragraph>
+                )}
                 <FieldWidgetProvider widgetProps={props}>
                     {RCE(ValueFieldWidget, fieldSelectorProps)}
                 </FieldWidgetProvider>

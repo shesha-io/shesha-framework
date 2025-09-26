@@ -31,13 +31,13 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
             </SettingsFormItem>
 
             <SettingsFormItem name="orientation" label="Orientation">
-                <Select >
+                <Select>
                     <Option value="horizontal">Horizontal</Option>
                     <Option value="vertical">Vertical</Option>
                 </Select>
             </SettingsFormItem>
 
-            <SettingsFormItem name="backgroundColor" label="Background Color" jsSetting >
+            <SettingsFormItem name="backgroundColor" label="Background Color" jsSetting>
                 <ColorPicker readOnly={readOnly} allowClear />
             </SettingsFormItem>
 
@@ -47,7 +47,7 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
 
             <Show when={values.orientation === "horizontal"}>
                 <SettingsFormItem name="alignItems" label="Align Items">
-                    <Select >
+                    <Select>
                         <Option value="flex-start">Flex Start</Option>
                         <Option value="flex-end">Flex End</Option>
                         <Option value="center">Center</Option>
@@ -77,7 +77,7 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 <Input readOnly={readOnly} />
             </SettingsFormItem>
 
-            <SettingsFormItem name="dividerColor" label="Divider Color" jsSetting >
+            <SettingsFormItem name="dividerColor" label="Divider Color" jsSetting>
                 <ColorPicker readOnly={readOnly} allowClear />
             </SettingsFormItem>
             <SectionSeparator title="Style" />

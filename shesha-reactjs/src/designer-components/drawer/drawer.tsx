@@ -203,7 +203,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
       }}
       title={label}
       size="large"
-      footer={
+      footer={(
         <Space>
           <Button onClick={onCancelHandler} disabled={cancelButtonDisabled}>
             {cancelText || 'Cancel'}
@@ -213,7 +213,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
             {okText || 'Ok'}
           </Button>
         </Space>
-      }
+      )}
     >
       <ParentProvider model={props}>
         <ComponentsContainer

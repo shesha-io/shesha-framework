@@ -154,7 +154,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     if (headerElement) {
       mutationObserver.observe(headerElement, {
         childList: true, // Only direct children changes
-        subtree: false,  // Don't observe deep changes
+        subtree: false, // Don't observe deep changes
         attributes: true,
         attributeFilter: ['style'], // Only style changes
       });

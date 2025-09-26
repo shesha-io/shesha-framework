@@ -29,7 +29,7 @@ const ERROR_LABEL = 'Please configure label configuration for this component.';
 
 const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) => {
   const { styles } = useStyles();
-  const [ open, setOpen ] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
   const activeValue = useRef<IChildEntitiesTagGroupSelectOptions>(null);
   const { deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, propertyName, componentName } = model;
 
@@ -125,9 +125,11 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
 
   const tagRender = ({ label, value }) => {
     const val = options.find((x) => x.value === value);
-    return <Tag closable={isEditable} onClick={onClickTag(val)} onClose={onCloseTag(value)}>
+    return (
+<Tag closable={isEditable} onClick={onClickTag(val)} onClose={onCloseTag(value)}>
       {label}
-    </Tag>;
+</Tag>
+    );
   };
 
   const inputGroupProps = isEditable ? {} : { className: styles.childEntityTagFullWidth };
@@ -142,8 +144,8 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
   const contextId = [parent?.subFormIdPrefix, propertyName].filter((x) => !!x).join('.');
 
   const initData = useMemo(() => {
-    return open ? new Promise<any>((resolve) => resolve({ [propertyName]: {...activeValue.current?.data} })) : null;
-  }, [propertyName, open ]);
+    return open ? new Promise<any>((resolve) => resolve({ [propertyName]: { ...activeValue.current?.data } })) : null;
+  }, [propertyName, open]);
 
 
   return (
@@ -172,7 +174,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
       )}
 
       <Space.Compact style={{ width: "100%" }} {...inputGroupProps}>
-        <Select mode="tags" value={options} tagRender={tagRender} styles={{ popup: { root: {display: 'none'} } }} searchValue="" />
+        <Select mode="tags" value={options} tagRender={tagRender} styles={{ popup: { root: { display: 'none' } } }} searchValue="" />
         {isEditable && <Button onClick={onOpenModal} className={styles.childEntityTagAdd} icon={<PlusOutlined />} />}
       </Space.Compact>
     </div>

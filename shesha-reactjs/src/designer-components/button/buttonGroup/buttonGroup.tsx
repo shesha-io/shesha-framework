@@ -188,7 +188,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     if (group.hideWhenEmpty) {
       const firstVisibleItem = group.childItems.find((item) => {
         // analyze buttons and groups only
-        return (isItem(item) && item.itemSubType === 'button' || isGroup(item)) && itemVibilityFunc(item);
+        return ((isItem(item) && item.itemSubType === 'button') || isGroup(item)) && itemVibilityFunc(item);
       });
       if (!firstVisibleItem)
         return false;
@@ -202,7 +202,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     if (isDesignMode)
       return true; // show visibility indicator
 
-    return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item, getIsVisible);
+    return (isItem(item) && isVisibleBase(item)) || (isGroup(item) && isGroupVisible(item, getIsVisible));
   };
 
   const resolvedItems = props.items;

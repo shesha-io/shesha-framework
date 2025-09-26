@@ -8,5 +8,5 @@ import classNames from 'classnames';
  */
 export const SizableColumns: FC<SplitProps> = (props) => {
   const { styles } = useStyles();
-  return (<Split {...props}  className={classNames(props.className, styles.split)} />);
+  return (<Split {...props} className={classNames(props.className, styles.split)} />);
 };

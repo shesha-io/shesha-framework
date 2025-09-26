@@ -103,7 +103,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const entityType = props.entityType ?? props.value?._className;
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
 
-  const {styles, cx} = useStyles();
+  const { styles, cx } = useStyles();
 
   useEffect(() => {
     const fetchFormId = async () => {
@@ -285,7 +285,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   if (props.formSelectionMode === 'name' && !props.formIdentifier)
     return (
       <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
-        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={'Form identifier is not configured'}>Form identifier is not configured</span>
+        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title="Form identifier is not configured">Form identifier is not configured</span>
       </Button>
     );
 

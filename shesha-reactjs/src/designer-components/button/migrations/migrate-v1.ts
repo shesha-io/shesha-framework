@@ -109,16 +109,16 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
 //#region old types
 
 type ButtonActionTypeV0 =
-    | 'navigate' |
-    'dialogue' |
-    'executeScript' |
-    'executeFormAction' | // This is the old one which is now only being used for backward compatibility. The new one is 'customAction' to be consistent with the ButtonGroup
-    'customAction' | // This is the new one. Old one is 'executeFormAction'
-    'submit' |
-    'reset' |
-    'startFormEdit' |
-    'cancelFormEdit' |
-    'dispatchAnEvent';
+  | 'navigate' |
+  'dialogue' |
+  'executeScript' |
+  'executeFormAction' | // This is the old one which is now only being used for backward compatibility. The new one is 'customAction' to be consistent with the ButtonGroup
+  'customAction' | // This is the new one. Old one is 'executeFormAction'
+  'submit' |
+  'reset' |
+  'startFormEdit' |
+  'cancelFormEdit' |
+  'dispatchAnEvent';
 type ToolbarItemSubTypeV0 = 'button' | 'separator' | 'line';
 
 type SizeTypeV0 = 'small' | 'middle' | 'large';

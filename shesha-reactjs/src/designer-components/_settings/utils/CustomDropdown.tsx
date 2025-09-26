@@ -56,16 +56,18 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
                 <Space.Compact size="large">
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 8px', width: '100%' }}>
 
-                        <div >
+                        <div>
                             <Space style={{ display: 'flex', flexDirection: 'row' }}>
                                 <Input
                                   readOnly={readOnly}
                                   value={customOption}
                                   onChange={(e) => setCustomOption(e.target.value)}
                                   size="small"
-                                  prefix={<Tooltip title={customTooltip} placement="top">
+                                  prefix={(
+<Tooltip title={customTooltip} placement="top">
                                         <QuestionCircleOutlined style={{ marginLeft: '2px', color: '#00000073' }} />
-                                    </Tooltip>}
+</Tooltip>
+                                  )}
                                   onClick={(e) => e.stopPropagation()}
                                 />
                             </Space>

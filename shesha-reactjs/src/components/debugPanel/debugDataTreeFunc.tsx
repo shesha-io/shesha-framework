@@ -3,7 +3,7 @@ import { IDebugDataTreeItemProps } from "./model";
 
 function getFnParamNames(fn: Function) {
   var fstr = fn.toString();
-  return fstr.match(/\(.*?\)/)[0].replace(/[()]/gi,'').replace(/\s/gi,'').split(',');
+  return fstr.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
 }
 
 export const DebugDataTreeFunc: FC<IDebugDataTreeItemProps> = (props) => {
@@ -13,10 +13,12 @@ export const DebugDataTreeFunc: FC<IDebugDataTreeItemProps> = (props) => {
       props.value();
   };
 
-  return <>
+  return (
+<>
         <span style={{ color: 'green', fontWeight: 'bold' }} onClick={onClick}>{props.name}</span>
-        <span style={{ color: 'black' }} >(</span>
+        <span style={{ color: 'black' }}>(</span>
         <span style={{ color: 'blue' }}>{getFnParamNames(props.value).join(', ')}</span>
         <span style={{ color: 'balck' }}>)</span>
-    </>;
+</>
+  );
 };

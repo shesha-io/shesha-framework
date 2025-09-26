@@ -70,11 +70,11 @@ export interface UNM49 {
 }
 
 export interface Regions {
-  AFRICA: string;
-  SOUTHERN_AFRICA: string;
+  "AFRICA": string;
+  "SOUTHERN_AFRICA": string;
   'SUB-SAHARAN_AFRICA': string;
-  WORLD: string;
-  ZA: string;
+  "WORLD": string;
+  "ZA": string;
 }
 
 export interface Currency {
@@ -136,19 +136,19 @@ export interface NortheastOrSouthwestOrGeometry {
 export interface Components {
   'ISO_3166-1_alpha-2'?: string;
   'ISO_3166-1_alpha-3'?: string;
-  _category?: string;
-  _type?: string;
-  city?: string;
-  continent?: string;
-  country?: string;
-  country_code?: string;
-  county?: string;
-  postcode?: string;
-  road?: string;
-  road_type?: string;
-  state?: string;
-  state_code?: string;
-  suburb?: string;
+  "_category"?: string;
+  "_type"?: string;
+  "city"?: string;
+  "continent"?: string;
+  "country"?: string;
+  "country_code"?: string;
+  "county"?: string;
+  "postcode"?: string;
+  "road"?: string;
+  "road_type"?: string;
+  "state"?: string;
+  "state_code"?: string;
+  "suburb"?: string;
 }
 
 export interface Status {

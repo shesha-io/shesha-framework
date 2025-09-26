@@ -16,7 +16,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   const shaToolbarItemName = "sha-toolbar-item-name";
   const shaHelpIcon = "sha-help-icon";
 
-  const  shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
+  const shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
     .${shaActionButtons} {
         margin: 8px 0;
         .ant-btn {

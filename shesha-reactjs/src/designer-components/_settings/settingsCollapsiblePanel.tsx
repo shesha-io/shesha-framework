@@ -23,7 +23,7 @@ const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => 
   const settingsCollapsiblePanelActions: ISettingsCollapsiblePanelActionsContext = { registerField };
 
   const show = !fields || fields.length === 0 || typeof propertyFilter !== 'function' ||
-        Boolean(fields.find((x) => (propertyFilter(x))));
+    Boolean(fields.find((x) => (propertyFilter(x))));
 
   return (
         <SettingsCollapsiblePanelActionsContext.Provider value={settingsCollapsiblePanelActions}>
