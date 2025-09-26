@@ -10,6 +10,7 @@ import { GetShaContextDataAccessor, IShaDataWrapper } from "./contexts/shaDataAc
 import { IAnyObject } from "@/interfaces";
 import { isDefined } from "@/utils/nullables";
 import { Path } from "@/utils/dotnotation";
+import { useRefInitialized } from '@/hooks';
 
 export interface IDataContextProviderProps<TData extends object> {
   id: string;
@@ -39,7 +40,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
   const allData = useRef<IApplicationContext>(undefined);
   allData.current = useAvailableConstantsDataNoRefresh({ topContextId: id });
 
-  const storage = useRef<IShaDataWrapper<TData>>(GetShaContextDataAccessor<TData>(onChangeContextData) as IShaDataWrapper<TData>);
+  const storage = useRefInitialized<IShaDataWrapper<TData>>(() => GetShaContextDataAccessor<TData>(onChangeContextData) as IShaDataWrapper<TData>);
 
   const initialDataRef = useRef<IAnyObject>(undefined);
 
