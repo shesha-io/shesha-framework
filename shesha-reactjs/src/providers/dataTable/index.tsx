@@ -131,7 +131,7 @@ interface IDataTableProviderBaseProps {
    * Disable refresh data expression
    * Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)
    */
-  disableRefresh?: boolean;
+  disableRefresh?: boolean | (() => boolean);
 
   /**
    * Custom reorder endpoint
@@ -268,6 +268,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     allowReordering = false,
     permanentFilter,
     customReorderEndpoint,
+    disableRefresh = false,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -413,7 +414,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const fetchTableDataInternal = (payload: IGetListDataPayload) => {
-    if (tableIsReady.current === true && !props.disableRefresh) {
+    if (tableIsReady.current === true && (disableRefresh === false || typeof disableRefresh === 'function' && disableRefresh() === false)) {
       dispatch(fetchTableDataAction(payload));
       debouncedFetch(payload);
     }
@@ -453,7 +454,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const refreshTable = () => {
-    if (tableIsReady.current === true && !props.disableRefresh) {
+    if (tableIsReady.current === true && (disableRefresh === false || typeof disableRefresh === 'function' && disableRefresh() === false)) {
       fetchTableData(state);
     }
   };
@@ -607,13 +608,13 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const onSort = (sorting: IColumnSorting[]) => {
-    if (tableIsReady.current === true && !props.disableRefresh) {
+    if (tableIsReady.current === true && (disableRefresh === false || typeof disableRefresh === 'function' && disableRefresh() === false)) {
       dispatch(onSortAction(sorting));
     }
   };
 
   const onGroup = (grouping: ISortingItem[]) => {
-    if (tableIsReady.current === true && !props.disableRefresh) {
+    if (tableIsReady.current === true && (disableRefresh === false || typeof disableRefresh === 'function' && disableRefresh() === false)) {
       dispatch(onGroupAction(grouping));
     }
   };
