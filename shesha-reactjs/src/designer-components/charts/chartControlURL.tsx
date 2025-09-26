@@ -162,13 +162,16 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         message={isUserCancelled ? "Request cancelled" : isTimeoutError ? "Request timed out" : "Error loading chart data from URL"}
         description={error}
         type={isUserCancelled ? "info" : isTimeoutError ? "warning" : "error"}
-        action={
-          <Button color="danger" onClick={() => {
-            fetchData();
-          }}>
+        action={(
+          <Button
+            color="danger"
+            onClick={() => {
+              fetchData();
+            }}
+          >
             Retry
           </Button>
-        }
+        )}
       />
     );
   }, [error, theme.application.errorColor]);
@@ -194,18 +197,20 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     if (!state.isLoaded) {
       return (
         <div className={cx(styles.loadingContainer)}>
-          <ChartLoader chartType={chartType} handleCancelClick={() => {
-            if (isFetchingRef.current && currentControllerRef.current) {
-              try {
-                currentControllerRef.current.abort("Request cancelled by user");
-              } catch {
-                // Ignore abort errors during user cancellation - this is expected behavior
+          <ChartLoader
+            chartType={chartType}
+            handleCancelClick={() => {
+              if (isFetchingRef.current && currentControllerRef.current) {
+                try {
+                  currentControllerRef.current.abort("Request cancelled by user");
+                } catch {
+                  // Ignore abort errors during user cancellation - this is expected behavior
+                }
+                isFetchingRef.current = false;
+                setError('Request cancelled by user');
+                setIsLoaded(true);
               }
-              isFetchingRef.current = false;
-              setError('Request cancelled by user');
-              setIsLoaded(true);
-            }
-          }}
+            }}
           />
           <div className={cx(styles.loadingText)}>Loading data...</div>
         </div>

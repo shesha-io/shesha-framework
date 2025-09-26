@@ -67,13 +67,16 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
           tooltip="This name will be used as identifier and in the code editor"
           required
         >
-          {(value) =>
-            <Input readOnly={readOnly} value={value} onChange={(e) => {
-              const name = e.target.value;
-              onValuesChange({ componentName: name, propertyName: name });
-            }}
+          {(value) => (
+            <Input
+              readOnly={readOnly}
+              value={value}
+              onChange={(e) => {
+                const name = e.target.value;
+                onValuesChange({ componentName: name, propertyName: name });
+              }}
             />
-          }
+          )}
         </SettingsFormItem>
 
         <SettingsFormItem name="description" label="Description" jsSetting>
@@ -178,11 +181,15 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
           setOpen(false);
         }}
         onOk={() => setOpen(false)}
-        width={'50%'}
+        width="50%"
       >
-        <PropertiesEditor allowAdd value={items} onChange={(value) => {
-          onValuesChange({ items: value?.map((item) => convertModelItemToPropertyMetadata(item)) });
-        }} />
+        <PropertiesEditor
+          allowAdd
+          value={items}
+          onChange={(value) => {
+            onValuesChange({ items: value?.map((item) => convertModelItemToPropertyMetadata(item)) });
+          }}
+        />
       </Modal>
     </>
   );

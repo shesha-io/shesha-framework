@@ -45,16 +45,21 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
 
   return (
         <div>
-            {props.value && props.value.map((item, index) =>
-                <Row className={'ant-form-item-row'} key={index}>
+            {props.value && props.value.map((item, index) => (
+                <Row className="ant-form-item-row" key={index}>
                     <Col span={6} style={{ textAlign: 'right' }}>
                         <div className="ant-form-item-label">
                             {item.isStandard
                               ? <label>{item.type}</label>
-                              : <Input value={item.type} style={{ textAlign: 'right' }} onChange={(e) => {
-                                onChangeType(item, e.target.value);
-                              }} />
-                            }
+                              : (
+<Input
+  value={item.type}
+  style={{ textAlign: 'right' }}
+  onChange={(e) => {
+    onChangeType(item, e.target.value);
+  }}
+/>
+                              )}
                         </div>
                     </Col>
                     <Col span={18}>
@@ -67,15 +72,22 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
                             </Col>
                             <Col span={2} style={{ textAlign: 'center' }}>
                                 {
-                                  !item.isStandard &&
-                                    <Button icon={<DeleteFilled color="red" />} onClick={() => {
-                                      onDeleteClick(item.type);
-                                    }} size="small" danger />
+                                  !item.isStandard && (
+                                    <Button
+                                      icon={<DeleteFilled color="red" />}
+                                      onClick={() => {
+                                        onDeleteClick(item.type);
+                                      }}
+                                      size="small"
+                                      danger
+                                    />
+                                  )
                                 }
                             </Col>
                         </Row>
                     </Col>
                 </Row>
+            )
             )}
             <Row>
                 <Col offset={5} span={8}>
@@ -88,7 +100,7 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
 
 export const ViewsEditorComponent: FC<IViewsEditorProps> = (props) => {
   return (
-        <Form.Item className="shaViewsEditorForm" name={"viewConfigurations"} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+        <Form.Item className="shaViewsEditorForm" name="viewConfigurations" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
             <ViewsEditor {...props} />
         </Form.Item>
   );

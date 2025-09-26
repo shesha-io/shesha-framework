@@ -99,8 +99,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
                   ${responsiveDimensions.svgHeight * 0.27} ${responsiveDimensions.svgWidth * 0.75},
                   ${responsiveDimensions.svgHeight * 0.47} ${responsiveDimensions.svgWidth * 0.875},
                   ${responsiveDimensions.svgHeight * 0.33} ${responsiveDimensions.svgWidth},
-                  ${responsiveDimensions.svgHeight * 0.2}`
-                }
+                  ${responsiveDimensions.svgHeight * 0.2}`}
               />
               {[
                 [0, responsiveDimensions.svgHeight * 0.8],
@@ -178,7 +177,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
         onClick={handleCancelClick}
       >
           Cancel
-        </Button>
+      </Button>
       )}
     </div>
   );

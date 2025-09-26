@@ -44,29 +44,33 @@ const RateComponent: IToolboxComponent<IRateProps> = {
 
     return model.hidden
       ? null
-      : <ConfigurableFormItem model={model}>
-        {(value,  onChange) => {
+      : (
+<ConfigurableFormItem model={model}>
+        {(value, onChange) => {
           const customEvent = calculatedModel.eventHandlers;
           const onChangeInternal = (value: number) => {
-            customEvent.onChange({value});
+            customEvent.onChange({ value });
             if (typeof onChange === 'function') onChange(value);
           };
 
-          return <Rate
-            allowClear={allowClear}
-            // allowHalf={allowHalf}
-            character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
-            disabled={readOnly}
-            count={localCount ?? 5}
-            tooltips={tooltips}
-            className={classNames(className, 'sha-rate')}
-            style={model.allStyles.fullStyle}
-            {...customEvent}
-            value={value}
-            onChange={onChangeInternal}
-          />;
+          return (
+<Rate
+  allowClear={allowClear}
+  // allowHalf={allowHalf}
+  character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
+  disabled={readOnly}
+  count={localCount ?? 5}
+  tooltips={tooltips}
+  className={classNames(className, 'sha-rate')}
+  style={model.allStyles.fullStyle}
+  {...customEvent}
+  value={value}
+  onChange={onChangeInternal}
+/>
+          );
         }}
-      </ConfigurableFormItem>
+</ConfigurableFormItem>
+      )
     ;
   },
   settingsFormMarkup: (data) => getSettings(data),
@@ -75,13 +79,12 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     .add<IRateProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRateProps>(1, (prev) => migrateVisibility(prev))
     .add<IRateProps>(2, (prev) => migrateReadOnly(prev))
-    .add<IRateProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IRateProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IRateProps>(4, (prev) => {
       prev.hideLabel = true;
       if (!prev.icon) prev.icon = 'StarFilled';
       return prev;
-    })
-  ,
+    }),
 };
 
 export default RateComponent;

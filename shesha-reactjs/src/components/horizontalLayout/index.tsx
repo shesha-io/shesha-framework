@@ -73,7 +73,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
     <Layout style={style} className={styles.horizontalLayout}>
       <div>
         <ConfigurableForm
-          mode={'readonly'}
+          mode="readonly"
           formId={HEADER_CONFIGURATION}
           showFormInfoOverlay={false}
           showDataLoadingIndicator={false}
@@ -110,7 +110,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
           <NodeOrFuncRenderer>{footer}</NodeOrFuncRenderer>
         ) : (
           <ConfigurableForm
-            mode={'readonly'}
+            mode="readonly"
             formId={FOOTER_CONFIGURATION}
             showFormInfoOverlay={false}
             showDataLoadingIndicator={false}

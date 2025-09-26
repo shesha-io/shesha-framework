@@ -52,7 +52,7 @@ const filter = (inputValue: string, path: Option[]) =>
   path.some(
     (option) =>
       option.labelText.toLowerCase().indexOf(inputValue.toLowerCase()) >
-            -1
+      -1
   );
 
 const renderDotNotation = (

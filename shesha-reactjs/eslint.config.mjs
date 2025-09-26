@@ -14,6 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const stylisticOverrides = {
+    ...stylistic.configs.recommended.rules,
     "@stylistic/brace-style": ["error", "1tbs", { "allowSingleLine": false }],
     "@stylistic/jsx-indent-props": [
         'error',
@@ -347,7 +348,6 @@ const makeStrictConfig = (path) => {
             ...baseTsConfig.rules,
             ...typescriptEslint.configs.recommended.rules,
             ...typescriptOverrides,
-            ...stylistic.configs.recommended.rules,
             ...stylisticOverrides,
 
             "react-hooks/exhaustive-deps": "error",

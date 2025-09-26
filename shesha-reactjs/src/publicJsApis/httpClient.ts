@@ -10,13 +10,13 @@ export interface HttpResponse<T = any> {
 }
 
 export type ResponseType =
-    | 'arraybuffer' |
-    'blob' |
-    'document' |
-    'json' |
-    'text' |
-    'stream' |
-    'formdata';
+  | 'arraybuffer' |
+  'blob' |
+  'document' |
+  'json' |
+  'text' |
+  'stream' |
+  'formdata';
 
 /**
  * Http request configuration

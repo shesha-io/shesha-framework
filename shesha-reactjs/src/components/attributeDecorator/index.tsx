@@ -37,10 +37,12 @@ const AttributeDecorator: React.FC<AttributeDecoratorProps> = (props) => {
     }
   }, [ref.current]);
 
-  return <>
+  return (
+<>
     <Wrapper ref={Wrapper !== 'div' ? undefined : ref} />
     {props.children}
-  </>;
+</>
+  );
 };
 
 export default AttributeDecorator;

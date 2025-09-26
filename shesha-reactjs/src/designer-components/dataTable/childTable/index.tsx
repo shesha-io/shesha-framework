@@ -40,8 +40,7 @@ const ChildTableComponent: IToolboxComponent<IPanelComponentProps> = {
       .add<IChildTableComponentProps>(3, migrateV2toV3)
       .add(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IChildTableComponentProps>(5, (prev) => migrateVisibility(prev))
-      .add<IPanelComponentProps>(6, (prev, context) => migrateToTable(prev, context))
-  ,
+      .add<IPanelComponentProps>(6, (prev, context) => migrateToTable(prev, context)),
 };
 
 export default ChildTableComponent;

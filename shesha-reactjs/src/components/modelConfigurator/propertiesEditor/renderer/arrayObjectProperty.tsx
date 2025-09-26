@@ -50,7 +50,7 @@ export const ArrayObjectProperty: FC<IProps> = (props) => {
           disableDrag: true,
           onChange: (newItems, changeDetails) => {
             if (props.onChange)
-              props.onChange({...props.data, properties: [...newItems]}, changeDetails);
+              props.onChange({ ...props.data, properties: [...newItems] }, changeDetails);
           },
         })}
       </div>

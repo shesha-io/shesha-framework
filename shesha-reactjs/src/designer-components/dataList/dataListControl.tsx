@@ -225,9 +225,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   if (isDesignMode &&
     (
       !repository ||
-      !props.formId && props.formSelectionMode === "name" ||
-      !props.formType && props.formSelectionMode === "view" ||
-      !props.formIdExpression && props.formSelectionMode === "expression"
+      (!props.formId && props.formSelectionMode === "name") ||
+      (!props.formType && props.formSelectionMode === "view") ||
+      (!props.formIdExpression && props.formSelectionMode === "expression")
     )) return <NotConfiguredWarning />;
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;

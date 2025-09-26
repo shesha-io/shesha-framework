@@ -67,7 +67,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   isOutput: true,
   calculateModel: (model, allData) => ({
     ownerId: evaluateValue(model.ownerId, allData),
-    dataId: (allData.data as {Id: string})?.Id, // TODO: review and remove
+    dataId: (allData.data as { Id: string })?.Id, // TODO: review and remove
     formModelType: allData.form.formSettings?.modelType,
   }),
   Factory: ({ model, calculatedModel }) => {
@@ -94,7 +94,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
         {(value, onChange) => {
           const uploadedFileUrl = model.base64 || value;
 
-          const readonly = model.readOnly || model.dataSource === 'base64' && Boolean(model.base64);
+          const readonly = model.readOnly || (model.dataSource === 'base64' && Boolean(model.base64));
 
           const val = model.dataSource === 'storedFile'
             ? model.storedFileId || value?.id || value

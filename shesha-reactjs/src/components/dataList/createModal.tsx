@@ -59,13 +59,14 @@ const CreateModal: FC<ICreateModalProps> = ({
       onCancel={onCancel}
       title="Add new item"
       width={width}
-      okButtonProps={{ disabled: buttonDisabled, loading: buttonLoading }}>
+      okButtonProps={{ disabled: buttonDisabled, loading: buttonLoading }}
+    >
       <FormInfo formProps={formInfo} visible={!!formInfo}>
         <Skeleton loading={loading}>
           <ValidationErrors error={saveError} />
           <ParentProvider model={null} formMode="edit">
             <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
-              <ComponentsContainer containerId={'root'} />
+              <ComponentsContainer containerId="root" />
             </ComponentsContainerProvider>
           </ParentProvider>
         </Skeleton>

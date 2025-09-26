@@ -31,7 +31,8 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
   return (
     <>
       <SettingsCollapsiblePanel header="Display">
-        <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
+        <ContextPropertyAutocomplete
+          id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
           onValuesChange={onValuesChange}

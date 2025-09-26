@@ -563,12 +563,12 @@ export const ReactTable: FC<IReactTableProps> = ({
   return (
     <Spin
       spinning={loading}
-      indicator={
+      indicator={(
         <span style={{ display: 'flex', alignItems: 'center' }}>
           <LoadingOutlined style={{ fontSize: 24 }} spin />
           <span style={{ marginLeft: 12, fontSize: 14, color: 'black' }}>loading...</span>
         </span>
-      }
+      )}
     >
       <div className={mainStyles.shaReactTable} style={containerStyleFinal}>
         <div {...getTableProps()} className={styles.shaTable} style={tableStyle}>

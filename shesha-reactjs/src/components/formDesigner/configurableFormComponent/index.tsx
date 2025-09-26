@@ -85,7 +85,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   return (
     <div
       className={classNames(styles.shaComponent, {
-        selected: isSelected,
+        "selected": isSelected,
         'has-config-errors': invalidConfiguration,
       })}
     >
@@ -116,7 +116,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
       <div>
-        <DragWrapper componentId={componentModel.id} readOnly={readOnly} >
+        <DragWrapper componentId={componentModel.id} readOnly={readOnly}>
           <div style={{ padding: '5px 3px' }}>
             <FormComponent componentModel={componentModel} />
           </div>
@@ -135,7 +135,7 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   const hidden = getActualPropertyValue(props.componentModel, allData, 'hidden')?.hidden;
   const componentEditMode = getActualPropertyValue(props.componentModel, allData, 'editMode')?.editMode as EditMode;
 
-  return <ConfigurableFormComponentDesignerMemo {...props} {...{selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode}}/>;
+  return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode }} />;
 };
 
 export interface IConfigurableFormComponentProps {
@@ -143,7 +143,7 @@ export interface IConfigurableFormComponentProps {
   model?: IConfigurableFormComponent;
 }
 
-export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({id, model}) => {
+export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id, model }) => {
   const isDrawing = useIsDrawingForm();
 
   const componentMarkupModel = ShaForm.useComponentModel(id);
@@ -154,6 +154,6 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     : ConfigurableFormComponentDesigner;
 
   return (
-    <ComponentRenderer componentModel={componentModel}  />
+    <ComponentRenderer componentModel={componentModel} />
   );
 };

@@ -406,12 +406,12 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
         showIcon
         message={message}
         description={error}
-        type={"error"}
-        action={
+        type="error"
+        action={(
           <Button color="danger" size="small" onClick={retryFetch}>
             Retry
           </Button>
-        }
+        )}
       />
     );
   }, [error, retryFetch]);
@@ -420,19 +420,21 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
   const loaderComponent = useMemo(() => {
     return (
       <div className={cx(styles.loadingContainer)}>
-        <ChartLoader chartType={chartType} handleCancelClick={() => {
-          if (isFetchingRef.current && currentControllerRef.current) {
-            isFetchingRef.current = false;
-            setError('Request cancelled by user');
-            setIsLoaded(true);
-            setMetadataProcessed(false);
-            try {
-              currentControllerRef.current.abort('Request cancelled by user');
-            } catch {
-              // Ignore abort errors during user cancellation - this is expected behavior
+        <ChartLoader
+          chartType={chartType}
+          handleCancelClick={() => {
+            if (isFetchingRef.current && currentControllerRef.current) {
+              isFetchingRef.current = false;
+              setError('Request cancelled by user');
+              setIsLoaded(true);
+              setMetadataProcessed(false);
+              try {
+                currentControllerRef.current.abort('Request cancelled by user');
+              } catch {
+                // Ignore abort errors during user cancellation - this is expected behavior
+              }
             }
-          }
-        }}
+          }}
         />
         <div className={cx(styles.loadingText)}>Fetching data...</div>
       </div>

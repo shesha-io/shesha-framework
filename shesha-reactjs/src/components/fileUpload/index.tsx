@@ -240,14 +240,16 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const showUploadButton = allowUpload && !isUploading;
 
   const uploadButton = (
-    allowUpload && <Button
-      icon={!fileInfo ? <UploadOutlined /> : <PictureOutlined />}
-      type="link"
-      disabled={!showUploadButton}
-      style={{width: '100%', height: '100%'}}
-    >
+    allowUpload && (
+<Button
+  icon={!fileInfo ? <UploadOutlined /> : <PictureOutlined />}
+  type="link"
+  disabled={!showUploadButton}
+  style={{ width: '100%', height: '100%' }}
+>
       {listType === 'text' ? `(press to upload)` : null}
-    </Button>
+</Button>
+    )
   );
 
   const renderStub = () => {
@@ -287,9 +289,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
     return (
       <div>
-        {!isUploading && <Upload {...fileProps} listType={antListType}>
+        {!isUploading && (
+<Upload {...fileProps} listType={antListType}>
           {!fileInfo && uploadButton}
-        </Upload>}
+</Upload>
+        )}
       </div>
     );
   };
@@ -305,12 +309,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
             onVisibleChange: (visible) => setPreviewOpen(visible),
             toolbarRender: (original) => (
               <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                {
-                  <DownloadOutlined
-                    className={styles.antPreviewDownloadIcon}
-                    onClick={() => downloadFile({ fileId: previewImage?.uid, fileName: previewImage?.name })}
-                  />
-                }
+                <DownloadOutlined
+                  className={styles.antPreviewDownloadIcon}
+                  onClick={() => downloadFile({ fileId: previewImage?.uid, fileName: previewImage?.name })}
+                />
                 {original}
               </div>
             ),

@@ -94,8 +94,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IDateFieldProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-  ,
+    .add<IDateFieldProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
     return {
       ...model,

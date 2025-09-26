@@ -263,7 +263,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
       <Button size="small" onClick={toggleModal}>{ readOnly ? 'View Columns' : 'Configure Columns' }</Button>
 
       <Modal
-        title={ readOnly ? 'View Columns' : 'Configure Columns' }
+        title={readOnly ? 'View Columns' : 'Configure Columns'}
         open={showDialog}
         width="650px"
 
@@ -275,7 +275,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
       >
         <Space direction="vertical" style={{ width: '100%' }}>
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId={'columns'}>
+            <Droppable droppableId="columns">
               {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
                 <div ref={provided.innerRef} {...provided.droppableProps} style={getListStyle(snapshot.isDraggingOver)}>
                   <Table

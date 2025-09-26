@@ -63,13 +63,18 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   ), [actualModel, actualModel.hidden, actualModel.jsStyle, calculatedModel]);
 
   if (!toolboxComponent)
-    return <ComponentError errors={{
-      hasErrors: true, componentId: componentModel.id, componentName: componentModel.componentName, componentType: componentModel.type,
-    }} message={`Component '${componentModel.type}' not found`} type="error"
-    />;
+    return (
+<ComponentError
+  errors={{
+    hasErrors: true, componentId: componentModel.id, componentName: componentModel.componentName, componentType: componentModel.type,
+  }}
+  message={`Component '${componentModel.type}' not found`}
+  type="error"
+/>
+    );
 
   if (shaForm.formMode === 'designer') {
-    const validationResult: IModelValidation = {hasErrors: false, errors: []};
+    const validationResult: IModelValidation = { hasErrors: false, errors: [] };
     toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
       validationResult.hasErrors = true;
       validationResult.errors.push({ propertyName, error });
@@ -78,7 +83,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
       validationResult.componentId = componentModel.id;
       validationResult.componentName = componentModel.componentName;
       validationResult.componentType = componentModel.type;
-      return <ComponentError errors={validationResult} message="" type="warning"/>;
+      return <ComponentError errors={validationResult} message="" type="warning" />;
     }
   }
 

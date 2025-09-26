@@ -291,19 +291,19 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             defaultPageSize: ROW_COUNT,
             sortMode: "standard",
             permanentFilter: {
-              "and": [
+              and: [
                 {
                   "==": [
                     {
                       // Fallback to "parentId" if no matching property is found
-                      "var": filterProperty ? toCamelCase(filterProperty) : "parentId",
+                      var: filterProperty ? toCamelCase(filterProperty) : "parentId",
                     },
                     {
-                      "evaluate": [
+                      evaluate: [
                         {
-                          "expression": "{{data.id}}",
-                          "required": true,
-                          "type": "mustache",
+                          expression: "{{data.id}}",
+                          required: true,
+                          type: "mustache",
                         },
                       ],
                     },

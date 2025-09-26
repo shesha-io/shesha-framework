@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from 'antd';
 import { ShaIcon, IconType } from '@/index';
-import {useStyles} from './styles/styles';
+import { useStyles } from './styles/styles';
 
 const { Title, Paragraph } = Typography;
 
@@ -16,7 +16,7 @@ const EmptyState: React.FC<IEmptyStateProps> = ({ noDataIcon, noDataText, noData
 
   return (
     <div className={styles.shaGlobalEmptyState}>
-      {noDataIcon && <ShaIcon className="sha-icon" iconName={noDataIcon as IconType}/>}
+      {noDataIcon && <ShaIcon className="sha-icon" iconName={noDataIcon as IconType} />}
       <Title level={4} className="no-data-title">{noDataText}</Title>
       <Paragraph className="no-data-paragraph">{noDataSecondaryText}</Paragraph>
     </div>

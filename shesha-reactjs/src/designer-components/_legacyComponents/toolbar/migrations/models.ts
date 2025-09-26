@@ -31,16 +31,16 @@ export interface IToolbarButton extends IToolbarItemBase {
 }
 
 type ButtonActionType =
-    | 'navigate' |
-    'dialogue' |
-    'executeScript' |
-    'executeFormAction' | // This is the old one which is now only being used for backward compatibility. The new one is 'customAction' to be consistent with the ButtonGroup
-    'customAction' | // This is the new one. Old one is 'executeFormAction'
-    'dispatchAnEvent' |
-    'submit' |
-    'reset' |
-    'startFormEdit' |
-    'cancelFormEdit';
+  | 'navigate' |
+  'dialogue' |
+  'executeScript' |
+  'executeFormAction' | // This is the old one which is now only being used for backward compatibility. The new one is 'customAction' to be consistent with the ButtonGroup
+  'customAction' | // This is the new one. Old one is 'executeFormAction'
+  'dispatchAnEvent' |
+  'submit' |
+  'reset' |
+  'startFormEdit' |
+  'cancelFormEdit';
 
 type ToolbarItemType = 'item' | 'group';
 
