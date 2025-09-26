@@ -72,7 +72,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                             <DataContextProvider id={SheshaCommonContexts.FormContext} name={SheshaCommonContexts.FormContext} type={'form'}
                               description="Form designer"
                             >
-                                <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
+                                <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
                                     {isDebug && (
                                         <DebugPanel />
                                     )}
