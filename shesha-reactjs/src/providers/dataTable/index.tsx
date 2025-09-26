@@ -685,7 +685,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         return Promise.resolve();
       },
     },
-    [state]
+    [state, props.disableRefresh]
   );
 
   useConfigurableAction(
