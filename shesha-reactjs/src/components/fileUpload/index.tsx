@@ -198,7 +198,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return (
       <div>
         {showThumbnailControls && styledfileControls()}
-        <span title={file.name}>
+        <a title={file.name}>
           <Space>
             <div className="thumbnail-item-name">
               {(listType === 'text' || !hideFileName) && (
@@ -214,7 +214,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
               {showTextControls && fileControls(theme.application.primaryColor)}
             </div>
           </Space>
-        </span>
+        </a>
       </div>
     );
   };
@@ -244,7 +244,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       icon={!fileInfo ? <UploadOutlined /> : <PictureOutlined />}
       type="link"
       disabled={!showUploadButton}
-      style={{width: '100%', height: '100%', justifyContent: props?.style?.textAlign || 'left'}}
+      style={{width: '100%', height: '100%'}}
     >
       {listType === 'text' ? `(press to upload)` : null}
     </Button>
