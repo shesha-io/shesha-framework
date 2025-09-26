@@ -26,7 +26,6 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
   canBeJsSetting: true,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
-
     const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
       ...model.allStyles.fontStyles,
       ...model.allStyles.dimensionsStyles,
@@ -42,15 +41,15 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
             if (typeof onChange === 'function') onChange(checked);
           };
 
-          return ( <Switch
-              className="sha-switch"
-              disabled={model.readOnly}
-              style={finalStyle}
-              size={model.size as SwitchSize}
-              checked={value}
-              defaultChecked={model.defaultChecked}
-              defaultValue={model.defaultValue}
-              onChange={onChangeInternal} />
+          return (<Switch
+            className="sha-switch"
+            disabled={model.readOnly}
+            style={finalStyle}
+            size={model.size as SwitchSize}
+            checked={value}
+            defaultChecked={model.defaultChecked}
+            defaultValue={model.defaultValue}
+            onChange={onChangeInternal} />
           );
         }}
       </ConfigurableFormItem>
