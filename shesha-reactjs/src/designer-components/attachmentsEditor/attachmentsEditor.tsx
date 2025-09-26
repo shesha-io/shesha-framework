@@ -4,23 +4,22 @@ import moment from 'moment';
 import React from 'react';
 import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { DataTypes, IToolboxComponent } from '@/interfaces';
-import { IStyleType, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
+import { IToolboxComponent } from '@/interfaces';
+import { IStyleType, useDataContextManagerActions, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValue,
-  executeScript,
+  executeScriptSync,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import StoredFilesProvider from '@/providers/storedFiles';
-import { IStoredFile } from '@/providers/storedFiles/contexts';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { containerDefaultStyles, defaultStyles } from './utils';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
+import { containerDefaultStyles, defaultStyles } from './utils';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -37,6 +36,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   isDragger?: boolean;
   maxHeight?: string;
   onFileChanged?: string;
+  onDownload?: string;
   downloadZip?: boolean;
   filesLayout?: layoutType;
   listType: listType;
@@ -46,7 +46,6 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   hideFileName?: boolean;
   container?: IStyleType;
   primaryColor?: string;
-  removeFieldFromPayload?: boolean;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -54,7 +53,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   isInput: true,
   name: 'File list',
   icon: <FolderAddOutlined />,
-  dataTypeSupported: (dataTypeInfo) => dataTypeInfo.dataType === DataTypes.advanced && dataTypeInfo.dataFormat === 'attachmentsEditor',
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
     const httpClient = useHttpClient();
@@ -62,17 +60,14 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { message } = App.useApp();
-
+    const pageContext = useDataContextManagerActions()?.getPageContext();
     const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
     const enabled = !model.readOnly;
 
-    const onFileListChanged = (fileList: IStoredFile[]) => {
-      if (!model.onFileChanged)
-        return;
-
-      executeScript<void>(model.onFileChanged, {
-        fileList,
+    const executeScript = (script, value) => {
+      executeScriptSync(script, {
+        value,
         data,
         form: getFormApi(form),
         globalState,
@@ -80,14 +75,25 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         message,
         moment,
         setGlobalState,
+        pageContext,
       });
     };
 
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
-      <ConfigurableFormItem model={{ ...model, propertyName: !model.removeFieldFromPayload && model.propertyName ? model.propertyName : `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
+      <ConfigurableFormItem model={{ ...model, propertyName: model.propertyName || `${GHOST_PAYLOAD_KEY}_${model.id}` }}>
         {(value, onChange) => {
+          const onFileListChanged = (fileList) => {
+            onChange(fileList);
+            if (model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
+          };
+
+          const onDownload = (fileList) => {
+            onChange(fileList);
+            if (model.onDownload) executeScript(model.onDownload, fileList);
+          };
+
           return (
             <StoredFilesProvider
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
@@ -98,7 +104,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               filesCategory={model.filesCategory}
               baseUrl={backendUrl}
               // used for requered field validation
-              onChange={onChange}
+              onChange={onFileListChanged}
+              onDownload={onDownload}
               value={value}
             >
               <CustomFile
@@ -111,7 +118,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 allowedFileTypes={model.allowedFileTypes}
                 maxHeight={model.maxHeight}
                 isDragger={model?.isDragger}
-                onFileListChanged={onFileListChanged}
                 downloadZip={model.downloadZip}
                 filesLayout={model.filesLayout}
                 listType={model.listType}
@@ -156,7 +162,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
     .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
-    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, removeFieldFromPayload: true })),
+    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged })),
 };
 
 export default AttachmentsEditor;

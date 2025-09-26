@@ -31,6 +31,7 @@ export interface IStoredFile extends UploadFile {
   fileCategory?: string | null;
   url?: string | null;
   temporary?: boolean;
+  userHasDownloaded?: boolean;
 }
 
 export interface IRequestFilePayload {
@@ -54,7 +55,7 @@ export interface IStoredFilesStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   fileList?: IStoredFile[];
   newFile?: IStoredFile;
-  fileIdToDelete?: string;
+  fileId?: string;
   url?: string;
 }
 

@@ -15,15 +15,15 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
   return (
     <div className={styles.shaDesignerCanvasConfig}>
       <Radio.Group className="radio-group" value={designerDevice} buttonStyle="solid" size="middle">
-        <Radio.Button className="radio-button" value="desktop" onClick={() => setDesignerDevice('desktop')} title="Desktop">
+        <Radio.Button className="radio-button" value="desktop" onClick={() => setDesignerDevice("desktop")} title="Desktop">
           <DesktopOutlined />
         </Radio.Button>
 
-        <Radio.Button className="radio-button" value="tablet" onClick={() => setDesignerDevice('tablet')} title="Tablet">
+        <Radio.Button className="radio-button" value="tablet" onClick={() => setDesignerDevice("tablet")} title="Tablet">
           <TabletOutlined />
         </Radio.Button>
 
-        <Radio.Button className="radio-button" value="mobile" onClick={() => setDesignerDevice('mobile')} title="Mobile">
+        <Radio.Button className="radio-button" value="mobile" onClick={() => setDesignerDevice("mobile")} title="Mobile">
           <MobileOutlined />
         </Radio.Button>
       </Radio.Group>
