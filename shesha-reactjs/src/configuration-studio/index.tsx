@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useCallback } from 'react';
+import React, { FC, useEffect } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/workArea';
@@ -14,16 +14,11 @@ import { QuickInfoIcons } from './components/quick-info-icons';
 import { ItemToolbarHolder } from './components/item-toolbar-holder';
 import { DocumentDefinitionRegistration } from './document-definitions/documentDefinitionRegistration';
 import { SheshaDocumentDefinitions } from './document-definitions';
-import { useSheshaApplication } from '@/providers';
-import { DEFAULT_OPTIONS } from '@/providers/canvas/utils';
-
+import { useCanvas } from '@/providers';
 const ConfigurationStudio: FC = () => {
-    const { styles } = useStyles();
-    const { setGlobalVariables } = useSheshaApplication();
+  const { styles } = useStyles();
+  const { setConfigTreePanelSize,  configTreePanelSize} = useCanvas();
 
-    useEffect(() => {
-        if(setGlobalVariables) setGlobalVariables({ configTreePanelSize: DEFAULT_OPTIONS.configTreePanelSize});
-      },[])
 
   return (
     <ConfigurationStudioProvider>
@@ -52,10 +47,8 @@ const ConfigurationStudio: FC = () => {
           </div>
         </Layout.Header>
         <Layout.Content className={styles.csContent}>
-          <Splitter onResizeEnd={sizes => {
-            if (setGlobalVariables) {
-                  setGlobalVariables({ configTreePanelSize: sizes[0] });
-              }
+          <Splitter onResize={sizes => {
+              setConfigTreePanelSize(sizes[0]);
             }
           }
           >

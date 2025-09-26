@@ -48,6 +48,13 @@ export default handleActions<ICanvasStateContext, any>(
         autoZoom: !state.autoZoom,
       };
     },
+    [CanvasConfigActionEnums.SetConfigTreePanelSize]: (state: ICanvasStateContext, action: ReduxActions.Action<number>) => {
+      const { payload } = action;
+      return {
+        ...state,
+        configTreePanelSize: payload,
+      };
+    },
   },
   CANVAS_CONTEXT_INITIAL_STATE
 );

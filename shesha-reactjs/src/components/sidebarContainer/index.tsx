@@ -6,7 +6,7 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import { useCanvas, useShaFormInstance, useSheshaApplication } from '@/index';
+import { useCanvas, useShaFormInstance } from '@/index';
 import { calculateAutoZoom, DEFAULT_OPTIONS, usePinchZoom, debounce } from '@/providers/canvas/utils';
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;
@@ -31,11 +31,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const { styles } = useStyles();
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
-  const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom } = useCanvas();
-  const { globalVariables } = useSheshaApplication();
+  const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom, configTreePanelSize } = useCanvas();
 
-  const configTreePanelSize = globalVariables.configTreePanelSize;
-
+  console.log("configTreePanelSize : ", configTreePanelSize)
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
   const handleDragSizesChange = useCallback((sizes: number[]) => {

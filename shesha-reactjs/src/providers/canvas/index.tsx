@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
 import CanvasReducer from './reducer';
-import { SetCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setDesignerDeviceAction, setScreenWidthAction } from './actions';
+import { SetCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, SetConfigTreePanelSizeAction, setDesignerDeviceAction, setScreenWidthAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasStateContext, IDeviceTypes } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { DataTypes, IObjectMetadata } from '@/index';
@@ -57,13 +57,18 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
   const setCanvasAutoZoom = () => {
     dispatch(SetCanvasAutoZoomAction());
   };
+
+  const setConfigTreePanelSize = (size: number ) => {
+    dispatch(SetConfigTreePanelSizeAction(size))
+  }
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   const actions = {
     setDesignerDevice,
     setCanvasWidth,
     setCanvasZoom,
-    setCanvasAutoZoom
+    setCanvasAutoZoom,
+    setConfigTreePanelSize
     /* NEW_ACTION_GOES_HERE */
   };
 
