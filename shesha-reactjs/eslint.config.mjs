@@ -13,8 +13,8 @@ import memoryTracePlugin from "./src/eslint-plugins/eslint-plugin-memory-monitor
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const isLightBuild = process.env.SHA_LIGHT_BUILD ? "true" : "false";
-console.log(`Light build is: ${isLightBuild}`);
+const isLightBuild = process.env.SHA_LIGHT_BUILD === "1" ? true : false;
+console.log(`Light build is: ${Boolean(isLightBuild) ? "🔛 ON" : "📴 OFF"}`);
 
 const strictFolders = isLightBuild
     ? []

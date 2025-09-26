@@ -84,8 +84,8 @@ export const getSourcesTree = (monaco: Monaco): Directory => {
   // sort
   cache.forEach((item) => {
     if (isDirectory(item)) {
-      item.dirs = item.dirs.sort((a, b) => a.name.localeCompare(b.name));
-      item.files = item.files.sort((a, b) => a.name.localeCompare(b.name));
+      item.dirs = [...item.dirs].sort((a, b) => a.name.localeCompare(b.name));
+      item.files = [...item.files].sort((a, b) => a.name.localeCompare(b.name));
     }
   });
 

@@ -174,7 +174,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
           >
             <Select
               size={size}
-              onDropdownVisibleChange={(_e) => {
+              onOpenChange={(_e) => {
                 selectRef.current.blur();
                 showPickerDialog();
               }}
