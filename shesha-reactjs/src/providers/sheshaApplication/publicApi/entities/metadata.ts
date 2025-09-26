@@ -139,7 +139,7 @@ const createEntityBaseModels = (context: ITypeDefinitionLoadingContext) => {
 };
 
 const sortByPath = <TProp extends IPropertyMetadata = IPropertyMetadata>(arr: TProp[]): TProp[] => {
-  return arr.sort((a, b) => a.path.localeCompare(b.path));
+  return [...arr].sort((a, b) => a.path.localeCompare(b.path));
 };
 
 const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfigurationDto[], context: ITypeDefinitionLoadingContext): Promise<TypeDefinition> => {

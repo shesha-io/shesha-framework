@@ -144,7 +144,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       }
 
       const modules: GuidEntityReferenceDto[] = [];
-      const sorted = allItems.sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
+      const sorted = [...allItems].sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
 
       sorted?.forEach((item) => {
         if (!modules.find((m) => m?.id === item.module?.id))
@@ -410,7 +410,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     const result: IPermissionModule[] = [];
     if (!items) return result;
 
-    const sorted = items.sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
+    const sorted = [...items].sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
 
     sorted?.forEach((item) => {
       const moduleName = item.module?._displayName ?? withoutModule;
