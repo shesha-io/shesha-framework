@@ -144,11 +144,11 @@ const IconPicker: FC<IIconPickerProps> = ({
         >
           {localSelectedIcon ? (
             <ShaIcon
-                className={styles.shaIconPicker}
-                iconName={localSelectedIcon}
-                {...props}
-                style={{ fontSize: iconSize || 24, color: twoToneColor}}
-                name={localSelectedIcon}
+              className={styles.shaIconPicker}
+              iconName={localSelectedIcon}
+              {...props}
+              style={{ fontSize: iconSize || 24, color: twoToneColor}}
+              name={localSelectedIcon}
             />
           ) : (
             <Button

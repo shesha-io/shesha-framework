@@ -53,17 +53,19 @@ import {
   IDataContextManagerFullInstance,
   IDataContextsData,
   RootContexts,
-  useDataContextManager,
-  useDataContextManagerActions,
+  useDataContextManagerActionsOrUndefined,
+  useDataContextManagerOrUndefined,
 } from '@/providers/dataContextManager';
 import moment from 'moment';
 import FileSaver from 'file-saver';
 import { App } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
-import { ContextGetData, IDataContextFull, useDataContext } from '@/providers/dataContextProvider/contexts';
+import { IDataContextFull, useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
 import {
   HttpClientApi,
   IApplicationApi,
+  STYLE_BOX_CSS_POPERTIES,
+  StyleBoxValue,
   useDataTableState,
   useGlobalState,
   useHttpClient,
@@ -84,11 +86,11 @@ import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataA
 import { jsonSafeParse, unproxyValue } from '@/utils/object';
 
 /** Interface to get all avalilable data */
-export interface IApplicationContext<Value = any> {
+export interface IApplicationContext<Value extends object = object> {
   application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
   /** Form data */
-  data?: any;
+  data?: Value;
 
   form?: IFormApi<Value>;
   /** Contexts datas */
@@ -130,9 +132,9 @@ export interface IApplicationContext<Value = any> {
   test?: any;
 }
 
-export type GetAvailableConstantsDataArgs = {
+export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
   topContextId?: string;
-  shaForm?: IShaFormInstance;
+  shaForm?: IShaFormInstance<TValues>;
   queryStringGetter?: () => QueryStringParams;
 };
 
@@ -207,7 +209,7 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
   const { globalState, setState: setGlobalState } = useGlobalState();
   // get closest data context Id
-  const closestContextId = useDataContext(false)?.id;
+  const closestContextId = useDataContextOrUndefined()?.id;
   // get selected row if exists
   const selectedRow = useDataTableState(false)?.selectedRow;
 
@@ -238,7 +240,7 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
 export const useAvailableConstantsContextsNoRefresh = (): AvailableConstantsContext => {
   const baseContext = useBaseAvailableConstantsContexts();
   // get DataContext Manager
-  const dcm = useDataContextManagerActions(false);
+  const dcm = useDataContextManagerActionsOrUndefined();
 
   const parent = useParent(false);
   const form = useShaFormInstance(false);
@@ -251,7 +253,7 @@ export const useAvailableConstantsContextsNoRefresh = (): AvailableConstantsCont
 export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const baseContext = useBaseAvailableConstantsContexts();
   // get DataContext Manager
-  const dcm = useDataContextManager(false);
+  const dcm = useDataContextManagerOrUndefined();
   useShaFormDataUpdate();
 
   const parent = useParent(false);
@@ -262,13 +264,13 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   return baseContext;
 };
 
-export type WrapConstantsDataArgs = GetAvailableConstantsDataArgs & {
+export type WrapConstantsDataArgs<TValues extends object = object> = GetAvailableConstantsDataArgs<TValues> & {
   fullContext: AvailableConstantsContext;
 };
 
 const EMPTY_DATA = {};
 
-export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesAccessors<IApplicationContext> => {
+export const wrapConstantsData = <TValues extends object = object>(args: WrapConstantsDataArgs<TValues>): ProxyPropertiesAccessors<IApplicationContext<TValues>> => {
   const { topContextId, shaForm, fullContext, queryStringGetter } = args;
   const { closestShaFormApi: closestShaForm,
     selectedRow,
@@ -280,14 +282,14 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     message,
     test,
   } = fullContext;
-  const shaFormInstance = shaForm?.getPublicFormApi() ?? closestShaForm;
+  const shaFormInstance = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues>;
 
-  const accessors: ProxyPropertiesAccessors<IApplicationContext> = {
+  const accessors: ProxyPropertiesAccessors<IApplicationContext<TValues>> = {
     application: () => {
       // get application context
       const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
       const applicationData = application?.getData();
-      return applicationData;
+      return applicationData as IApplicationApi;
     },
     contexts: () => {
       const tcId = topContextId || closestContextId;
@@ -307,7 +309,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     http: () => httpClient,
     message: () => message,
     fileSaver: () => FileSaver,
-    data: () => !shaFormInstance ? EMPTY_DATA : GetShaFormDataAccessor(shaFormInstance),
+    data: () => (!shaFormInstance ? EMPTY_DATA : GetShaFormDataAccessor<TValues>(shaFormInstance)) as TValues,
     form: () => shaFormInstance,
     query: () => queryStringGetter?.() ?? {},
     initialValues: () => shaFormInstance?.initialValues,
@@ -353,8 +355,8 @@ export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = 
   return result;
 };
 
-export const useApplicationContextData = (): ContextGetData => {
-  return useDataContextManagerActions(false)
+export const useApplicationContextData = (): object | undefined => {
+  return useDataContextManagerActionsOrUndefined()
     ?.getDataContext(SheshaCommonContexts.ApplicationContext)
     ?.getData();
 };
@@ -605,12 +607,12 @@ export const upgradeComponent = (
 
   const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent>();
   const fluent = definition.migrator(migrator);
-  if (componentModel.version === undefined) componentModel.version = -1;
-  const model = fluent.migrator.upgrade(componentModel, {
+  const versionedModel = { ...componentModel, version: componentModel.version ?? -1 };
+  const model = fluent.migrator.upgrade(versionedModel, {
     isNew,
     formSettings,
     flatStructure,
-    componentId: componentModel.id,
+    componentId: versionedModel.id,
   });
   return model;
 };
@@ -707,17 +709,19 @@ export const componentsFlatStructureToTree = (
 
         const customContainers = componentRegistration?.customContainerNames || [];
         customContainers.forEach((containerName) => {
-          const childContainers = component[containerName]
-            ? Array.isArray(component[containerName])
-              ? (component[containerName] as IComponentsContainer[])
-              : [component[containerName] as IComponentsContainer]
-            : undefined;
+          const processContainer = (container: IComponentsContainer): IComponentsContainer => {
+            const childComponents: IConfigurableFormComponent[] = [];
+            processComponent(childComponents, container.id);
+            return { ...container, components: childComponents };
+          };
+
+          const childContainers = component[containerName];
           if (childContainers) {
-            childContainers.forEach((c) => {
-              const childComponents: IConfigurableFormComponent[] = [];
-              processComponent(childComponents, c.id);
-              c.components = childComponents;
-            });
+            if (Array.isArray(childContainers)) {
+              component[containerName] = childContainers.map(processContainer);
+            } else {
+              component[containerName] = processContainer(childContainers);
+            }
           }
         });
       }
@@ -783,18 +787,12 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
     if (!template || typeof template !== 'string')
       return template;
 
-    const localData: IAnyObject = !data ? undefined
-      : data instanceof ObservableProxy
-        ? { ...data } // unpropsy the observable
-        : data;
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
-      var dateFormat = data?.dateFormat;
-
-      if (localData) {
+      const view = {
+        ...data,
         // adding a function to the data object that will format datetime
-
-        localData.dateFormat = function () {
+        dateFormat: function () {
           return function (timestamp, render) {
             return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
               year: 'numeric',
@@ -802,12 +800,9 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
               day: 'numeric',
             });
           };
-        };
-      }
+        },
+      };
 
-      const view = localData ?? {};
-
-      let result = undefined;
       if (skipUnknownTags) {
         template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
           const mathes = x.match(/[\w\.]+/);
@@ -829,18 +824,9 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
             : value;
         };
 
-        result = Mustache.render(template, view, undefined, { escape });
+        return Mustache.render(template, view, undefined, { escape });
       } else
-        result = Mustache.render(template, view);
-
-      if (Boolean(dateFormat))
-        localData.dateFormat = dateFormat;
-      else {
-        localData.dateFormat = undefined; // for proxy objects
-        delete localData.dateFormat;
-      }
-
-      return result;
+        return Mustache.render(template, view);
     } catch (error) {
       console.warn('evaluateString ', error);
       return template;
@@ -1416,22 +1402,22 @@ export const cloneComponents = (
 
 export const getDefaultFormMarkup = (type: ViewType = 'blank') => {
   switch (type) {
-  case 'blank':
-    return blankViewMarkup;
-  case 'dashboard':
-    return dashboardViewMarkup;
-  case 'details':
-    return detailsViewMarkup;
-  case 'form':
-    return formViewMarkup;
-  case 'masterDetails':
-    return masterDetailsViewMarkup;
-  case 'menu':
-    return menuViewMarkup;
-  case 'table':
-    return tableViewMarkup;
-  default:
-    return blankViewMarkup;
+    case 'blank':
+      return blankViewMarkup;
+    case 'dashboard':
+      return dashboardViewMarkup;
+    case 'details':
+      return detailsViewMarkup;
+    case 'form':
+      return formViewMarkup;
+    case 'masterDetails':
+      return masterDetailsViewMarkup;
+    case 'menu':
+      return menuViewMarkup;
+    case 'table':
+      return tableViewMarkup;
+    default:
+      return blankViewMarkup;
   }
 };
 export const createComponentModelForDataProperty = (
@@ -1571,25 +1557,16 @@ export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: st
   return response;
 };
 
-export const pickStyleFromModel = (model: IConfigurableFormComponent, ...args: any[]): CSSProperties => {
+export const pickStyleFromModel = (model: StyleBoxValue, ...args: any[]): CSSProperties => {
   let style = {};
 
-  if (!args.length) {
-    args = [
-      'paddingTop',
-      'paddingRight',
-      'paddingBottom',
-      'paddingLeft',
-      'marginTop',
-      'marginRight',
-      'marginBottom',
-      'marginLeft',
-    ];
-  }
+  const propsToCopy = !args.length
+    ? STYLE_BOX_CSS_POPERTIES
+    : args;
 
   if (model) {
-    args.forEach((arg) => {
-      if (model[arg]) style = { ...style, [arg]: `${model[arg]}px` };
+    propsToCopy.forEach((prop) => {
+      if (model[prop]) style = { ...style, [prop]: `${model[prop]}px` };
     });
   }
 
@@ -1609,7 +1586,7 @@ export const getStyle = (
 };
 
 export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: string]: any }) => {
-  const styling = jsonSafeParse(model?.stylingBox || '{}');
+  const styling = jsonSafeParse<StyleBoxValue>(model?.stylingBox || '{}');
   let style = pickStyleFromModel(styling);
 
   try {

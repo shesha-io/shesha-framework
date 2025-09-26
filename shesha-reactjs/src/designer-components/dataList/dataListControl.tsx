@@ -28,7 +28,6 @@ export type OnSaveSuccessHandler = (
 ) => void;
 
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
-
   const {
     dataSourceInstance: dataSource,
     onListItemSave,
@@ -56,7 +55,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     modelType,
     grouping,
     groupingColumns,
-    setRowData
+    setRowData,
   } = dataSource;
   const { styles } = useStyles();
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
@@ -99,30 +98,30 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   }, [isDesignMode, tableData, orientation]);
 
   // http, moment, setFormData
-     const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
-        if (!onRowDeleteSuccessAction)
-          return () => {
-            /*nop*/
-          };
-        return (data, formApi, globalState, setGlobalState) => {
-          const evaluationContext = {
-            data,
-            formApi,
-            globalState,
-            setGlobalState,
-            http: httpClient,
-            moment,
-          };
-          try {
-            executeAction({
-              actionConfiguration: onRowDeleteSuccessAction,
-              argumentsEvaluationContext: evaluationContext,
-            });
-          } catch (error) {
-            console.error('Error executing row delete success action:', error);
-          }
-        };
-      }, [onRowDeleteSuccessAction, httpClient]);
+  const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
+    if (!onRowDeleteSuccessAction)
+      return () => {
+        /* nop*/
+      };
+    return (data, formApi, globalState, setGlobalState) => {
+      const evaluationContext = {
+        data,
+        formApi,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+      try {
+        executeAction({
+          actionConfiguration: onRowDeleteSuccessAction,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row delete success action:', error);
+      }
+    };
+  }, [onRowDeleteSuccessAction, httpClient]);
 
 
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
@@ -138,7 +137,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onListItemSaveSuccessAction)
       return () => {
-        //nop
+        // nop
       };
 
     return (data, form, contexts, globalState, setGlobalState) => {
@@ -170,7 +169,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
           : undefined;
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
-        setRowData(rowIndex, preparedData/*, response*/);
+        setRowData(rowIndex, preparedData/* , response*/);
         performOnRowSaveSuccess(preparedData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
         return response;
       });
@@ -223,21 +222,21 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  if (isDesignMode
-    && (
-      !repository
-      || !props.formId && props.formSelectionMode === "name"
-      || !props.formType && props.formSelectionMode === "view"
-      || !props.formIdExpression && props.formSelectionMode === "expression"
+  if (isDesignMode &&
+    (
+      !repository ||
+      !props.formId && props.formSelectionMode === "name" ||
+      !props.formType && props.formSelectionMode === "view" ||
+      !props.formIdExpression && props.formSelectionMode === "expression"
     )) return <NotConfiguredWarning />;
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
   if (groupingColumns?.length > 0 && orientation === "wrap") {
-    return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.' />;
+    return <EmptyState noDataText="Configuration Error" noDataSecondaryText="Wrap Orientation is not supported when Grouping is enabled." />;
   }
 
-  
+
   return (
     <ConfigurableFormItem
       model={{ ...props, hideLabel: true }}
@@ -250,7 +249,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
       <DataList
         {...props}
-         onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
+        onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
         style={allStyles.fullStyle as string}
         createFormId={props.createFormId ?? props.formId}
         createFormType={props.createFormType ?? props.formType}
@@ -267,7 +266,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         selectedRows={selectedRows}
         records={data}
         grouping={grouping}
-        groupingMetadata={groupingColumns?.map(item => item.metadata) ?? []}
+        groupingMetadata={groupingColumns?.map((item) => item.metadata) ?? []}
         isFetchingTableData={isFetchingTableData}
         selectedIds={selectedIds}
         changeSelectedIds={changeSelectedIds}

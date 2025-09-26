@@ -6,13 +6,13 @@ const PermissionTagGroupComponent = {
   ...AutocompleteTagGroupComponent,
   type: 'permissionTagGroup',
   name: 'Permission Tag Group',
-  initModel: model => {
+  initModel: (model) => {
     const customProps: IAutocompleteTagsOutlinedComponentProps = {
       ...model,
-      autocompleteUrl: "/api/services/app/permission/autocomplete"
+      autocompleteUrl: "/api/services/app/permission/autocomplete",
     };
     return customProps;
-  }
+  },
 };
 
 export default PermissionTagGroupComponent;

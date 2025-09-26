@@ -78,7 +78,7 @@ export const CrudActionButtons = () => {
           onSaveUpdateClick();
         },
         icon: <SaveOutlined />,
-        isVisible: /*!autoSave &&*/ allowEdit && mode === 'update',
+        isVisible: /* !autoSave &&*/ allowEdit && mode === 'update',
         loading: isSaving,
         error: saveError,
       },
@@ -88,7 +88,7 @@ export const CrudActionButtons = () => {
           onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
-        isVisible: /*!autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
+        isVisible: /* !autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
       },
       {
         title: 'Reset',
@@ -96,7 +96,7 @@ export const CrudActionButtons = () => {
           onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
-        isVisible: /*!autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
+        isVisible: /* !autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
       },
       {
         title: 'Delete',
@@ -126,7 +126,7 @@ export const CrudActionButtons = () => {
   return (
     <div className={styles.shaDatalistComponentItemCheckbox}>
       {buttons.map((btn, idx) => (
-        <ActionButton {...btn} key={idx} type='default' shape='circle' />
+        <ActionButton {...btn} key={idx} type="default" shape="circle" />
       ))}
     </div>
   );

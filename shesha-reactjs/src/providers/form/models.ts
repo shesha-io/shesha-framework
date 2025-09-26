@@ -492,8 +492,12 @@ export const DEFAULT_FORM_SETTINGS: IFormSettings = {
 };
 
 export type ActionParametersJs = string;
-//export type ActionParametersDictionary = [{ key: string; value: string }];
-export type ActionParametersDictionary = { [key: string]: any; };
+// export type ActionParametersDictionary = [{ key: string; value: string }];
+export type ActionParametersDictionary = { [key: string]: any };
 export type ActionParameters = ActionParametersJs | ActionParametersDictionary;
 export type ActionArguments = { [key: string]: any };
 export type GenericDictionary = { [key: string]: any };
+
+export const STYLE_BOX_CSS_POPERTIES = ['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'] as const;
+export type StyleBoxCssProperties = typeof STYLE_BOX_CSS_POPERTIES[number];
+export type StyleBoxValue = Pick<CSSProperties, StyleBoxCssProperties>;

@@ -14,26 +14,26 @@ export function storedFilesReducer(
   //#endregion
 
   switch (type) {
-  case StoredFilesActionEnums.DownloadFileRequest:
-  case StoredFilesActionEnums.DownloadFileSuccess:
-  case StoredFilesActionEnums.DownloadFileError:
-  case StoredFilesActionEnums.FetchFileListSuccess:
-  case StoredFilesActionEnums.DowloadZipRequest:
-  case StoredFilesActionEnums.DowloadZipSuccess:
-  case StoredFilesActionEnums.DeleteFileRequest:
-  case StoredFilesActionEnums.DowloadZipError:
-  case StoredFilesActionEnums.FetchFileListRequest:
-  case StoredFilesActionEnums.FetchFileListError:
-  case StoredFilesActionEnums.DownloadZipRequest:
-  case StoredFilesActionEnums.DownloadZipSuccess:
-  case StoredFilesActionEnums.DownloadZipError:
-  case StoredFilesActionEnums.InitializeFileList:
-    /* NEW_ACTION_ENUM_GOES_HERE */
+    case StoredFilesActionEnums.DownloadFileRequest:
+    case StoredFilesActionEnums.DownloadFileSuccess:
+    case StoredFilesActionEnums.DownloadFileError:
+    case StoredFilesActionEnums.FetchFileListSuccess:
+    case StoredFilesActionEnums.DowloadZipRequest:
+    case StoredFilesActionEnums.DowloadZipSuccess:
+    case StoredFilesActionEnums.DeleteFileRequest:
+    case StoredFilesActionEnums.DowloadZipError:
+    case StoredFilesActionEnums.FetchFileListRequest:
+    case StoredFilesActionEnums.FetchFileListError:
+    case StoredFilesActionEnums.DownloadZipRequest:
+    case StoredFilesActionEnums.DownloadZipSuccess:
+    case StoredFilesActionEnums.DownloadZipError:
+    case StoredFilesActionEnums.InitializeFileList:
+      /* NEW_ACTION_ENUM_GOES_HERE */
 
-    return {
-      ...state,
-      ...payload,
-    };
+      return {
+        ...state,
+        ...payload,
+      };
 
     case StoredFilesActionEnums.DeleteFileSuccess:
     case StoredFilesActionEnums.OnFileDeleted:
@@ -50,63 +50,63 @@ export function storedFilesReducer(
       const { fileList } = state;
       const { newFile } = payload;
 
-    return {
-      ...state,
-      fileList: fileList.map((file) => {
-        if (file.uid === newFile.uid) {
-          return {
-            ...newFile,
-            uid: newFile.id, // We want to reset the uid to the id because we use it to delete the file
-          };
-        } else {
-          return file;
-        }
-      }),
-    };
-  }
-  case StoredFilesActionEnums.OnFileAdded: {
-    const { fileList } = state;
-    const { newFile } = payload;
-
-    const foundFile = fileList.find(({ id }) => id === newFile.id);
-
-    if (foundFile) {
-      return state;
-    }
-
-    return {
-      ...state,
-      fileList: [newFile, ...fileList],
-    };
-  }
-  case StoredFilesActionEnums.UploadFileError: {
-    const { fileList } = state;
-    const { newFile } = payload;
-
-    return {
-      ...state,
-      fileList: fileList.map((file) => {
-        if (file.uid === newFile.uid) {
-          return {
-            ...newFile,
-          };
-        } else {
-          return file;
-        }
-      }),
-    };
-  }
-  case StoredFilesActionEnums.DeleteFileError: {
-    if (state.fileList?.find(x => x.uid === payload.fileId)?.status === 'error')
       return {
         ...state,
-        fileList: state.fileList.filter(
-          ({ id, uid }) => id !== payload.fileId && uid !== payload.fileId
-        ),
+        fileList: fileList.map((file) => {
+          if (file.uid === newFile.uid) {
+            return {
+              ...newFile,
+              uid: newFile.id, // We want to reset the uid to the id because we use it to delete the file
+            };
+          } else {
+            return file;
+          }
+        }),
       };
-      
-    return state;
-  }
+    }
+    case StoredFilesActionEnums.OnFileAdded: {
+      const { fileList } = state;
+      const { newFile } = payload;
+
+      const foundFile = fileList.find(({ id }) => id === newFile.id);
+
+      if (foundFile) {
+        return state;
+      }
+
+      return {
+        ...state,
+        fileList: [newFile, ...fileList],
+      };
+    }
+    case StoredFilesActionEnums.UploadFileError: {
+      const { fileList } = state;
+      const { newFile } = payload;
+
+      return {
+        ...state,
+        fileList: fileList.map((file) => {
+          if (file.uid === newFile.uid) {
+            return {
+              ...newFile,
+            };
+          } else {
+            return file;
+          }
+        }),
+      };
+    }
+    case StoredFilesActionEnums.DeleteFileError: {
+      if (state.fileList?.find((x) => x.uid === payload.fileId)?.status === 'error')
+        return {
+          ...state,
+          fileList: state.fileList.filter(
+            ({ id, uid }) => id !== payload.fileId && uid !== payload.fileId
+          ),
+        };
+
+      return state;
+    }
 
     case StoredFilesActionEnums.UpdateIsDownloadedSuccess: {
       const { fileId } = payload;
@@ -124,8 +124,8 @@ export function storedFilesReducer(
       };
     }
 
-  default: {
-    return state;
-  }
+    default: {
+      return state;
+    }
   }
 }

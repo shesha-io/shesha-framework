@@ -2,7 +2,7 @@ import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-    const shaIndexTableColumnFilters = cx("sha-index-table-column-filters", css`
+  const shaIndexTableColumnFilters = cx("sha-index-table-column-filters", css`
         display: flex;
         flex-direction: column;
       
@@ -16,8 +16,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           overflow-y: auto;
         }
     `);
-    
-    return {
-        shaIndexTableColumnFilters,
-    };
+
+  return {
+    shaIndexTableColumnFilters,
+  };
 });

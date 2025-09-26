@@ -3,7 +3,7 @@ import { getFormFullName } from '@/utils/form';
 import { FormIdentifier } from '../form/models';
 import { isFormFullName, isFormRawId } from '../form/utils';
 import { getReferenceListFullName } from '../referenceListDispatcher/utils';
-import { isDefined } from '@/configuration-studio/types';
+import { isDefined } from '@/utils/nullables';
 
 export const getFormNotFoundMessage = (formId: FormIdentifier): string => {
   if (isFormRawId(formId)) return `Form with id='${formId}' not found`;

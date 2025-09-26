@@ -79,7 +79,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
           onSaveUpdateClick();
         },
         icon: <SaveOutlined />,
-        isVisible: /*!autoSave &&*/ allowEdit && mode === 'update',
+        isVisible: /* !autoSave &&*/ allowEdit && mode === 'update',
         loading: isSaving,
         error: saveError,
       },
@@ -89,7 +89,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
           onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
-        isVisible: /*!autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
+        isVisible: /* !autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
       },
       {
         title: 'Reset',
@@ -97,7 +97,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
           onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
-        isVisible: /*!autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
+        isVisible: /* !autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
       },
       {
         title: 'Delete',

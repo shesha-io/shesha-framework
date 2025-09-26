@@ -16,7 +16,7 @@ import { ConfigurationItemsExportFooter } from "@/providers/sheshaApplication/co
 import { createManualRef } from "./utils";
 import { ConfigurationItemsImport, IImportInterface } from "@/components/configurationFramework/itemsImport";
 import { ConfigurationItemsImportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-import";
-import { isDefined, isNullOrWhiteSpace } from "../types";
+import { isDefined, isNullOrWhiteSpace } from "../../utils/nullables";
 
 export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
 export interface ProcessingState {

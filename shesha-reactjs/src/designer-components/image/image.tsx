@@ -52,7 +52,6 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   }, [isStoredFile, fileInfo]);
 
   const content = useMemo(() => {
-
     return isRawUrl
       ? value
       : isBase64
@@ -80,12 +79,12 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
           onChange(await toBase64(file));
       } else if (imageSource === 'storedFile') {
         uploadFile({ file: file }, () => {
-          //if (value)
-          //fetchStoredFile();
+          // if (value)
+          // fetchStoredFile();
         });
       }
     },
-    fileList: []
+    fileList: [],
   };
 
   return (
@@ -106,12 +105,12 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
             <Upload
               {...uploadProps}
             >
-              {content && <Tooltip title='Upload'><Button shape='circle' ghost icon={<UploadOutlined />} /></Tooltip>}
+              {content && <Tooltip title="Upload"><Button shape="circle" ghost icon={<UploadOutlined />} /></Tooltip>}
               {!content && <Button icon={<UploadOutlined />} type="link">(press to upload)</Button>}
             </Upload>
           </div>
           <div style={{ position: 'absolute', top: 'calc(50% - 50px)', left: 'calc(50% + 10px)' }}>
-            {content && <Tooltip title='Remove'><Button shape='circle' ghost icon={<DeleteOutlined />} onClick={onRemove} /></Tooltip>}
+            {content && <Tooltip title="Remove"><Button shape="circle" ghost icon={<DeleteOutlined />} onClick={onRemove} /></Tooltip>}
           </div>
         </>
       }

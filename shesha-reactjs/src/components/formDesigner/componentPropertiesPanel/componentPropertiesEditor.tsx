@@ -58,7 +58,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
   const { autoSave, onSave, formRef, propertyFilter, layoutSettings } = props;
 
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       onSave(values);
     },
     // delay in ms

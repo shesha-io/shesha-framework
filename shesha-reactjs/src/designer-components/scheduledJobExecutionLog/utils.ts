@@ -21,5 +21,5 @@ export interface IScheduledJobExecutionLogDisplay {
 
 export const getLogText = (hubEvents: IExecutionLogEvent[]) =>
   hubEvents.length > 0
-    ? hubEvents.map(e => `${e.timeStamp.format('DD/MM/YYYY HH:mm:ss.SSS')}: ${e.message}`).join('\r')
+    ? hubEvents.map((e) => `${e.timeStamp.format('DD/MM/YYYY HH:mm:ss.SSS')}: ${e.message}`).join('\r')
     : ' ';

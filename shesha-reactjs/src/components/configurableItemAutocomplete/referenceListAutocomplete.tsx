@@ -8,10 +8,10 @@ export type IReferenceListAutocompleteRuntimeProps = ConfigurableItemAutocomplet
 const REFERENCE_LIST_ENTITY_TYPE = 'Shesha.Framework.ReferenceList';
 
 export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProps> = (props) => {
-    return (
+  return (
         <GenericConfigItemAutocomplete
-            {...props}
-            entityType={REFERENCE_LIST_ENTITY_TYPE}
+          {...props}
+          entityType={REFERENCE_LIST_ENTITY_TYPE}
         />
-    );
+  );
 };

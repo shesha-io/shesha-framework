@@ -13,8 +13,8 @@ import { CustomActions } from './customActions';
 export interface IProps { }
 
 export const FormDesignerToolbar: FC<IProps> = () => {
-  const readOnly = useFormDesignerStateSelector(x => x.readOnly);
-  const formSettings = useFormDesignerStateSelector(x => x.formSettings);
+  const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
+  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
   const { styles } = useStyles();
 
   const { anyOfPermissionsGranted } = useSheshaApplication();

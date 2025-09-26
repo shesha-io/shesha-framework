@@ -13,7 +13,6 @@ const reducerFactory = <TItem extends any>(
         state: IListEditorStateContext<TItem>,
         _action: ReduxActions.Action<ISwitchModeActionPayload>
       ) => {
-
         return {
           ...state,
         };

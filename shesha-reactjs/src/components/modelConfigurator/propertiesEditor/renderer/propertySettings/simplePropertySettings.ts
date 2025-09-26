@@ -2,7 +2,6 @@ import { DesignerToolbarSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 
 export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array', propName: string = '') => {
-
   const codePropName = propName.replaceAll('.', '?.');
 
   const stringFormatId = nanoid();
@@ -44,19 +43,19 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
 
     // Date & Time format
     .addSettingsInputRow({ parentId: dataTabId, inputs: [
-        { type: 'textField', propertyName: `${propName}dataFormat`, label: 'Date Format', 
-          tooltip: 'Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/',
-        }],
-        hidden: { _code: `return data?.${codePropName}dataType !== \'date\' && data?.${codePropName}  dataType !== \'date-time\';`, _mode: 'code', '_value': false },
+      { type: 'textField', propertyName: `${propName}dataFormat`, label: 'Date Format',
+        tooltip: 'Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/',
+      }],
+    hidden: { _code: `return data?.${codePropName}dataType !== \'date\' && data?.${codePropName}  dataType !== \'date-time\';`, _mode: 'code', '_value': false },
     })
     .addSettingsInputRow({ parentId: dataTabId, inputs: [
-        { type: 'textField', propertyName: `${propName}dataFormat`, label: 'Time Format',
-          tooltip: 'Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/',
-        }],
-        hidden: { '_code': `return data?.${codePropName}dataType !== \'time\';`, '_mode': 'code', '_value': false },
+      { type: 'textField', propertyName: `${propName}dataFormat`, label: 'Time Format',
+        tooltip: 'Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/',
+      }],
+    hidden: { '_code': `return data?.${codePropName}dataType !== \'time\';`, '_mode': 'code', '_value': false },
     })
 
-    // String format
+  // String format
 
     .addContainer({ id: stringFormatId, parentId: dataTabId, hidden: { '_code': `return data?.${codePropName}dataType !== \'string\';`, '_mode': 'code', '_value': false },
       components: [...new DesignerToolbarSettings()
@@ -69,20 +68,20 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
             { label: 'Javascript', value: 'javascript' },
             { label: 'Password', value: 'password' },
             { label: 'Email', value: 'email' },
-            { label: 'Phone', value: 'phone' }
-          ]
+            { label: 'Phone', value: 'phone' },
+          ],
         })
-        .addSettingsInput({ parentId: stringFormatId, inputType: 'numberField', propertyName: `${propName}minLength`, label: 'Min Length', 
+        .addSettingsInput({ parentId: stringFormatId, inputType: 'numberField', propertyName: `${propName}minLength`, label: 'Min Length',
           editMode: { '_code': `return !data.${codePropName}sizeHardcoded;`, '_mode': 'code', '_value': false } as any,
         })
-        .addSettingsInput({ parentId: stringFormatId, inputType: 'numberField', propertyName: `${propName}maxLength`, label: 'Max Length', 
+        .addSettingsInput({ parentId: stringFormatId, inputType: 'numberField', propertyName: `${propName}maxLength`, label: 'Max Length',
           editMode: { '_code': `return !data.${codePropName}sizeHardcoded;`, '_mode': 'code', '_value': false } as any,
         })
-        .toJson()
+        .toJson(),
       ],
     })
 
-    // Number format
+  // Number format
 
     .addContainer({ id: numberFormatId, parentId: dataTabId, hidden: { '_code': `return data?.${codePropName}dataType !== \'number\';`, '_mode': 'code', '_value': false },
       components: [...new DesignerToolbarSettings()
@@ -92,38 +91,38 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
             { label: 'Integer', value: 'int64' },
             { label: 'Float', value: 'float' },
             { label: 'Decimal', value: 'decimal' },
-          ]
-        })
-        .addSettingsInputRow({ parentId: numberFormatId, inputs: [
-            { type: 'numberField', propertyName: `${propName}formatting.numDecimalPlaces`, label: 'Num decimal places',
-              editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
-            },
-            { type: 'switch', propertyName: `${propName}formatting.showAsPercentage`, label: 'Show as percentage' },
-          ],
-          hidden: { '_code': `return data?.${codePropName}dataFormat !== \'decimal\';`, '_mode': 'code', '_value': false },
-        })
-        .addSettingsInputRow({ parentId: numberFormatId, inputs: [
-            { type: 'switch', propertyName: `${propName}formatting.showThousandsSeparator`, label: 'Thousands separator' },
-            { type: 'textField', propertyName: `${propName}formatting.customFormat`, label: 'Custom format', tooltip: 'numbro.js like format (https://numbrojs.com/old-format.html)', },
           ],
         })
         .addSettingsInputRow({ parentId: numberFormatId, inputs: [
-            { type: 'numberField', propertyName: `${propName}min`, label: 'Min', editMode: { _code: `return !data.${codePropName}sizeHardcoded;`, _mode: 'code', _value: false } as any },
-            { type: 'numberField', propertyName: `${propName}max`, label: 'Max', editMode: { _code: `return !data.${codePropName}sizeHardcoded;`, _mode: 'code', _value: false } as any },
-          ],
+          { type: 'numberField', propertyName: `${propName}formatting.numDecimalPlaces`, label: 'Num decimal places',
+            editMode: { '_value': 'inherited', '_mode': 'code', '_code': 'return !data.createdInDb && data.source != 1;' } as any,
+          },
+          { type: 'switch', propertyName: `${propName}formatting.showAsPercentage`, label: 'Show as percentage' },
+        ],
+        hidden: { '_code': `return data?.${codePropName}dataFormat !== \'decimal\';`, '_mode': 'code', '_value': false },
         })
-        .toJson()
+        .addSettingsInputRow({ parentId: numberFormatId, inputs: [
+          { type: 'switch', propertyName: `${propName}formatting.showThousandsSeparator`, label: 'Thousands separator' },
+          { type: 'textField', propertyName: `${propName}formatting.customFormat`, label: 'Custom format', tooltip: 'numbro.js like format (https://numbrojs.com/old-format.html)' },
+        ],
+        })
+        .addSettingsInputRow({ parentId: numberFormatId, inputs: [
+          { type: 'numberField', propertyName: `${propName}min`, label: 'Min', editMode: { _code: `return !data.${codePropName}sizeHardcoded;`, _mode: 'code', _value: false } as any },
+          { type: 'numberField', propertyName: `${propName}max`, label: 'Max', editMode: { _code: `return !data.${codePropName}sizeHardcoded;`, _mode: 'code', _value: false } as any },
+        ],
+        })
+        .toJson(),
       ],
     })
 
-    // Reference list format
+  // Reference list format
 
     .addContainer({ id: refListFormatId, parentId: dataTabId, hidden: { '_code': `return data?.${codePropName}dataType !== \'reference-list-item\';`, '_mode': 'code', '_value': false },
       components: [...new DesignerToolbarSettings()
-        .addSettingsInput({ parentId: refListFormatId, inputType: 'referenceListAutocomplete', propertyName: `${propName}referenceListId`, label: 'Reference List', })
-        .toJson()
+        .addSettingsInput({ parentId: refListFormatId, inputType: 'referenceListAutocomplete', propertyName: `${propName}referenceListId`, label: 'Reference List' })
+        .toJson(),
       ],
     })
 
-    ;
+  ;
 };

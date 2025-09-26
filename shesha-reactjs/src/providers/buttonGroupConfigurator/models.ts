@@ -47,7 +47,7 @@ export interface IButtonGroupItemBase extends IStyleType {
   width?: string;
   height?: string;
   backgroundColor?: string;
-  fontSize?: number;
+  fontSize?: number | undefined;
   color?: string;
   fontWeight?: string;
   borderWidth?: string;

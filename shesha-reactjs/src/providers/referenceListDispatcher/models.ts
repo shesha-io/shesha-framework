@@ -6,7 +6,7 @@ export interface IReferenceListDictionary {
 }
 
 export interface ILoadingState<TData> {
-  data: TData | null;
+  data: TData | undefined;
   error?: unknown;
   loading: boolean;
 }

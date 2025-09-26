@@ -171,8 +171,8 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
       { base: backendUrl, headers: httpHeaders }
     )
       .then((response) => {
-        return isAjaxSuccessResponse(response) 
-          ? response.result 
+        return isAjaxSuccessResponse(response)
+          ? response.result
           : undefined;
       })
       .catch((error) => {

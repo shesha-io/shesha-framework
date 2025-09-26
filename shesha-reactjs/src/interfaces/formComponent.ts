@@ -17,9 +17,9 @@ export interface IFormComponent {
   name?: string;
   type?: string;
   form?: string;
-  parent?: string; //form component
+  parent?: string; // form component
   orderIndex?: number;
-  label?: string; //also use as a title
+  label?: string; // also use as a title
   value?: any; // This should not be of `any` type. We should accomodate string, number, tag, drill-down, quick-view and stored file
   required?: boolean;
   editable?: boolean;

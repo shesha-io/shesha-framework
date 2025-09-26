@@ -150,7 +150,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         listType: 'text',
         filesLayout: 'horizontal',
         hideFileName: true,
-        editMode: 'inherited'
+        editMode: 'inherited',
       };
     })
     .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

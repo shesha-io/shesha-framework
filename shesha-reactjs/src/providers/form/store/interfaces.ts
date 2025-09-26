@@ -51,8 +51,8 @@ export type SubmitDataPayload = {
   customSubmitCaller?: SubmitCaller;
 };
 
-export type OnValuesChangeHandler<Values = any> = (changedValues: any, values: Values) => void;
-export type OnMarkupLoadedHandler<Values = any> = (shaForm: IShaFormInstance<Values>) => Promise<void>;
+export type OnValuesChangeHandler<Values extends object = object> = (changedValues: any, values: Values) => void;
+export type OnMarkupLoadedHandler<Values extends object = object> = (shaForm: IShaFormInstance<Values>) => Promise<void>;
 
 export interface IDataSubmitContext {
   getDelayedUpdates: () => IDelayedUpdateGroup[];
@@ -60,7 +60,7 @@ export interface IDataSubmitContext {
 
 export type ForceUpdateTrigger = () => void;
 
-export interface IShaFormInstance<Values = any> {
+export interface IShaFormInstance<Values extends object = object> {
   applyMarkupAsync(args: { formFlatMarkup: IFlatComponentsStructure; formSettings: any }): unknown;
   setDataSubmitContext: (context: IDataSubmitContext) => void;
   setInitialValues: (values: Values) => void;

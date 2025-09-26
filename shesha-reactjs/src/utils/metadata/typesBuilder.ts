@@ -324,30 +324,30 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
 
   #getArrayType = async (property: DataTypeInfo, context?: BuildTypeContext): Promise<TypeAndLocation> => {
     switch (property.dataFormat) {
-    case DataTypes.entityReference: {
-      if (isIHasEntityType(property)) {
-        const itemTypeFixed: IPropertyMetadata & IHasEntityType = {
-          path: 'item',
-          dataType: DataTypes.entityReference,
-          // dataFormat: property.entityType,
-          entityType: property.entityType,
-          moduleAccessor: property.moduleAccessor,
-        };
-        const itemType = await this.#getTypescriptType(itemTypeFixed);
+      case DataTypes.entityReference: {
+        if (isIHasEntityType(property)) {
+          const itemTypeFixed: IPropertyMetadata & IHasEntityType = {
+            path: 'item',
+            dataType: DataTypes.entityReference,
+            // dataFormat: property.entityType,
+            entityType: property.entityType,
+            moduleAccessor: property.moduleAccessor,
+          };
+          const itemType = await this.#getTypescriptType(itemTypeFixed);
 
-        if (itemType?.typeName) {
-          if (itemType.filePath && context?.onUseComplexType)
-            context.onUseComplexType({ typeName: itemType.typeName, filePath: itemType.filePath });
-          return { typeName: `${itemType.typeName}[]` };
-        } else {
-          console.warn(`Failed to build type ${property.entityType}`, property);
+          if (itemType?.typeName) {
+            if (itemType.filePath && context?.onUseComplexType)
+              context.onUseComplexType({ typeName: itemType.typeName, filePath: itemType.filePath });
+            return { typeName: `${itemType.typeName}[]` };
+          } else {
+            console.warn(`Failed to build type ${property.entityType}`, property);
+          }
         }
+        break;
       }
-      break;
-    }
-    case DataTypes.referenceListItem: {
-      return { typeName: `number[]` };
-    }
+      case DataTypes.referenceListItem: {
+        return { typeName: `number[]` };
+      }
     }
 
     if (isIHasItemsType(property)) {
@@ -423,30 +423,30 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     }
 
     switch (property.dataType) {
-    case DataTypes.boolean:
-      return { typeName: 'boolean' };
-    case DataTypes.number:
-    case DataTypes.referenceListItem:
-      return { typeName: 'number' };
-    case DataTypes.string:
-    case DataTypes.guid:
-      return { typeName: 'string' };
-    case DataTypes.date:
-      return { typeName: 'Date' };
-    case DataTypes.dateTime:
-      return { typeName: 'Date' };
-    case DataTypes.any:
-      return { typeName: 'any' };
-    case DataTypes.entityReference:
-      return await this.#getEntityPropertyType(property, context);
-    case DataTypes.object:
-      return isIMemberMetadata(property) && isDataPropertyMetadata(property)
-        ? await this.#getObjectType(property.path, property.properties)
-        : undefined;
-    case DataTypes.array:
-      return await this.#getArrayType(property, context);
-    default:
-      return undefined;
+      case DataTypes.boolean:
+        return { typeName: 'boolean' };
+      case DataTypes.number:
+      case DataTypes.referenceListItem:
+        return { typeName: 'number' };
+      case DataTypes.string:
+      case DataTypes.guid:
+        return { typeName: 'string' };
+      case DataTypes.date:
+        return { typeName: 'Date' };
+      case DataTypes.dateTime:
+        return { typeName: 'Date' };
+      case DataTypes.any:
+        return { typeName: 'any' };
+      case DataTypes.entityReference:
+        return await this.#getEntityPropertyType(property, context);
+      case DataTypes.object:
+        return isIMemberMetadata(property) && isDataPropertyMetadata(property)
+          ? await this.#getObjectType(property.path, property.properties)
+          : undefined;
+      case DataTypes.array:
+        return await this.#getArrayType(property, context);
+      default:
+        return undefined;
     }
   };
 
