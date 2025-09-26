@@ -1,12 +1,12 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-    const childEntityTagBtnWidth = "45px";
+  const childEntityTagBtnWidth = "45px";
 
-    const childEntityTagAdd = "child-entity-tag-add";
-    const childEntityTagFullWidth = "child-entity-tag-full-width";
-    const globalTablefilter = "global-tablefilter";
-    const childEntityTagContainer = cx("child-entity-tag-container", css`
+  const childEntityTagAdd = "child-entity-tag-add";
+  const childEntityTagFullWidth = "child-entity-tag-full-width";
+  const globalTablefilter = "global-tablefilter";
+  const childEntityTagContainer = cx("child-entity-tag-container", css`
         width: 100%;
       
         .${prefixCls}-tag,
@@ -36,10 +36,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           padding-right: unset !important;
         }
     `);
-    return {
-        childEntityTagContainer,
-        childEntityTagAdd,
-        childEntityTagFullWidth,
-        globalTablefilter,
-    };
-  });
+  return {
+    childEntityTagContainer,
+    childEntityTagAdd,
+    childEntityTagFullWidth,
+    globalTablefilter,
+  };
+});

@@ -28,7 +28,7 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
   modalWidth: width = '60%',
   open,
   onToggle,
-  onChange
+  onChange,
 }) => {
   const { formInfoBlockVisible } = useAppConfigurator();
   const context = useDataContextManagerActions().getDataContext(contextId);

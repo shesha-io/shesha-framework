@@ -23,7 +23,7 @@ import { IFormsDictionary, IReferenceListsDictionary } from './models';
 import { getFormForbiddenMessage, getFormNotFoundMessage, getReferenceListNotFoundMessage } from './utils';
 import { migrateFormSettings } from '../form/migration/formSettingsMigrations';
 import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
-import { isDefined } from '@/configuration-studio/types';
+import { isDefined } from '@/utils/nullables';
 import { buildUrl } from '@/utils/url';
 import { HttpResponse } from '@/publicJsApis/httpClient';
 import axios from 'axios';
@@ -48,7 +48,7 @@ const mapRefListItemDtoToRefListItem = (item: ReferenceListItemDto): IReferenceL
     itemValue: item.itemValue,
     orderIndex: item.orderIndex,
     shortAlias: item.shortAlias,
-  };
+  } satisfies IReferenceListItem;
 };
 
 const ConfigurationItemsLoaderProvider: FC<PropsWithChildren> = ({
@@ -136,7 +136,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren> = ({
         normalizedAccess = 3;
       }
       result.settings.access = normalizedAccess;
-      result.settings.permissions = result.settings.permissions ?? dto.permissions ?? [];
+      result.settings.permissions = result.settings.permissions ?? dto.permissions;
     }
 
     return result;
@@ -193,16 +193,16 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren> = ({
           .catch((e) => {
             if (axios.isAxiosError(e)) {
               switch (e.status) {
-              case 304:
+                case 304:
                 // code 304 indicates that the content ws not modified - use cached value
-                if (cachedDto)
-                  resolve(cachedDto);
-                else
-                  reject(new Error('Unknown cache error', { cause: e }));
-                return;
-              case 404:
-                reject({ code: e.status, message: getReferenceListNotFoundMessage(refListId) });
-                return;
+                  if (cachedDto)
+                    resolve(cachedDto);
+                  else
+                    reject(new Error('Unknown cache error', { cause: e }));
+                  return;
+                case 404:
+                  reject({ code: e.status, message: getReferenceListNotFoundMessage(refListId) });
+                  return;
               }
             }
             reject(e);
@@ -286,20 +286,20 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren> = ({
           .catch((e) => {
             if (axios.isAxiosError(e)) {
               switch (e.status) {
-              case 304:
-                if (cachedDto) {
-                  const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(cachedDto), designerComponents);
-                  resolve(dto);
-                } else
-                  reject(new Error('Unknown cache error', { cause: e }));
-                return;
-              case 404:
-                reject({ code: e.status, message: getFormNotFoundMessage(formId) });
-                return;
-              case 401:
-              case 403:
-                reject({ code: e.status, message: getFormForbiddenMessage(formId) });
-                return;
+                case 304:
+                  if (cachedDto) {
+                    const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(cachedDto), designerComponents);
+                    resolve(dto);
+                  } else
+                    reject(new Error('Unknown cache error', { cause: e }));
+                  return;
+                case 404:
+                  reject({ code: e.status, message: getFormNotFoundMessage(formId) });
+                  return;
+                case 401:
+                case 403:
+                  reject({ code: e.status, message: getFormForbiddenMessage(formId) });
+                  return;
               }
             }
             reject(e);

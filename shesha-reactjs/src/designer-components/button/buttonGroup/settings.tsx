@@ -16,7 +16,7 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
 
   return (
     <>
-      <SettingsCollapsiblePanel header='UX'>
+      <SettingsCollapsiblePanel header="UX">
         <SettingsFormItem name="componentName" label="Component name" required={true}>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
@@ -50,7 +50,7 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Customization'>
+      <SettingsCollapsiblePanel header="Customization">
         <SettingsFormItem name="items">
           <ButtonGroupConfigurator readOnly={readOnly} />
         </SettingsFormItem>

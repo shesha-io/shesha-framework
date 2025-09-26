@@ -29,15 +29,14 @@ export const SettingsFormActionsContext = createNamedContext<ISettingsFormAction
 export interface SettingsFormProps<TModel> extends ISettingsFormFactoryArgs<TModel> {
 }
 
-const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel>>) => {
-
+const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormProps<TModel>>) => {
   const {
     onSave,
     model,
     onValuesChange,
     propertyFilter,
     formRef,
-    layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS
+    layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS,
   } = props;
 
   const [form] = Form.useForm();
@@ -50,11 +49,11 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
     };
 
   const valuesChange = (changedValues) => {
-      const model = form.getFieldValue([]);
-      const incomingState = updateSettingsFromValues(model, changedValues);
-      setState({model: incomingState, values: getValuesFromSettings(incomingState)});
-      onValuesChange(changedValues, incomingState);
-      form.setFieldsValue(incomingState);
+    const model = form.getFieldValue([]);
+    const incomingState = updateSettingsFromValues(model, changedValues);
+    setState({model: incomingState, values: getValuesFromSettings(incomingState)});
+    onValuesChange(changedValues, incomingState);
+    form.setFieldsValue(incomingState);
   };
 
   const settingsChange = (changedValues) => {
@@ -77,8 +76,8 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
     const currentModel = form.getFieldValue([]) as TModel;
 
     const wrapper = props.toolboxComponent.linkToModelMetadata
-      ? m => linkComponentToModelMetadata(props.toolboxComponent, m, metadata)
-      : m => m;
+      ? (m) => linkComponentToModelMetadata(props.toolboxComponent, m, metadata)
+      : (m) => m;
 
     const newModel: TModel = wrapper({
       ...currentModel,
@@ -99,7 +98,7 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
             {...layoutSettings}
             onValuesChange={settingsChange}
             initialValues={model}
-            size='small'
+            size="small"
           >
             {props.children}
           </Form>

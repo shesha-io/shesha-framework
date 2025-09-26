@@ -138,7 +138,7 @@ export interface IWizardComponentPropsV1 extends Omit<IConfigurableFormComponent
   steps: IWizardStepPropsV1[];
   wizardType?: 'default' | 'navigation';
   visibility?: 'Yes' | 'No' | 'Removed';
-  //uniqueStateId?: string;
+  // uniqueStateId?: string;
   permissions?: string[];
   hidden?: boolean;
   customVisibility?: string;
@@ -160,7 +160,7 @@ export const migrateV0toV1 = (
 ): IWizardComponentPropsV1 => {
   const { tabs, ...restProps } = props;
 
-  const steps = tabs?.map<IWizardStepProps>(tab => {
+  const steps = tabs?.map<IWizardStepProps>((tab) => {
     const {
       cancelButtonAction,
       nextButtonAction,

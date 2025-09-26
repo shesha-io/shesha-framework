@@ -101,7 +101,7 @@ export const useStyles = createStyles(({ css, cx }) => {
       }
     `);
 
-    const tableErrorContainer = cx("sha-table-error-container", css`
+  const tableErrorContainer = cx("sha-table-error-container", css`
         margin-top: 0;
     
         &:empty {
@@ -109,18 +109,18 @@ export const useStyles = createStyles(({ css, cx }) => {
         }    
     `);
 
-    const shaSpanCenterVertically = css`
+  const shaSpanCenterVertically = css`
       display: flex;
       align-items: center;
       justify-content: center;
       height: 100%;
     `;
 
-    return {
-        shaChildTableErrorContainer: tableErrorContainer,
-        shaFormCell,
-        shaDataCell,
-        shaMultiEntityCell,
-        shaSpanCenterVertically,
-    };
+  return {
+    shaChildTableErrorContainer: tableErrorContainer,
+    shaFormCell,
+    shaDataCell,
+    shaMultiEntityCell,
+    shaSpanCenterVertically,
+  };
 });

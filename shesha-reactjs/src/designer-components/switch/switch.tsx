@@ -72,7 +72,7 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
     .add<ISwitchComponentProps>(6, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
-        style: prev.style
+        style: prev.style,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };

@@ -1,7 +1,6 @@
 import { IStyleType } from "@/index";
 
 export const defaultStyles = (): IStyleType => {
-
   return {
     font: {
       color: '#000',
@@ -10,8 +9,8 @@ export const defaultStyles = (): IStyleType => {
       weight: '400',
     },
     dimensions: {
-        width: 'auto',
-        height: 30
-    }
+      width: 'auto',
+      height: 30,
+    },
   };
 };

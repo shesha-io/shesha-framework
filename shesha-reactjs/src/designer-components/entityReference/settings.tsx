@@ -138,8 +138,8 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
                 setFormTypesOptions(
                   (t
                     ? formTypes.filter((f) => {
-                        return f.toLowerCase().includes(t.toLowerCase());
-                      })
+                      return f.toLowerCase().includes(t.toLowerCase());
+                    })
                     : formTypes
                   ).map((i) => {
                     return { value: i };

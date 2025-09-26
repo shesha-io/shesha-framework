@@ -9,9 +9,9 @@ export interface IOpenOnNewPageButtonProps {
 }
 
 export const OpenOnNewPageButton: FC<IOpenOnNewPageButtonProps> = () => {
-    const { formId } = useFormPersister();
-    const formDesignerUrl = useFormDesignerUrl(formId);
-    return (
+  const { formId } = useFormPersister();
+  const formDesignerUrl = useFormDesignerUrl(formId);
+  return (
         <Button icon={<ArrowsAltOutlined />} onClick={() => window?.open(formDesignerUrl, '_blank')} type={'default'} shape="circle" title="Expand" />
-    );
+  );
 };

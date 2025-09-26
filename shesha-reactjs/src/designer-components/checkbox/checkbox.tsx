@@ -57,7 +57,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
             onChange: (e: CheckboxChangeEvent) => {
               calculatedModel.eventHandlers.onChange({ value: e.target.checked }, e);
               if (typeof onChange === 'function') onChange(e);
-            }
+            },
           };
 
           return  <Checkbox className={styles.checkbox} disabled={model.readOnly} checked={value} {...events} />;

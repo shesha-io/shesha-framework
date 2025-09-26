@@ -48,7 +48,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     if ((typeof value === 'undefined' || value === null) && (type === 'dropdown' || type === 'dropdownMultiple')) {
       return '';
 
-      //eliminating null values
+      // eliminating null values
     } else if ((typeof value === 'undefined' || value === null) && type === 'string') {
       return '';
     }
@@ -63,33 +63,33 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
           if (quickviewEnabled && quickviewFormPath) {
             return quickviewFormPath && quickviewGetEntityUrl
               ? <QuickView
-                entityId={entityId}
-                formIdentifier={quickviewFormPath}
-                getEntityUrl={quickviewGetEntityUrl}
-                displayProperty={quickviewDisplayPropertyName}
-                width={quickviewWidth}
+                  entityId={entityId}
+                  formIdentifier={quickviewFormPath}
+                  getEntityUrl={quickviewGetEntityUrl}
+                  displayProperty={quickviewDisplayPropertyName}
+                  width={quickviewWidth}
               />
               : <GenericQuickView
-                entityId={entityId}
-                className={className}
-                displayName={displayName}
-                displayProperty={quickviewDisplayPropertyName}
-                width={quickviewWidth}
+                  entityId={entityId}
+                  className={className}
+                  displayName={displayName}
+                  displayProperty={quickviewDisplayPropertyName}
+                  width={quickviewWidth}
               />;
           } else {
             return dropdownDisplayMode === 'tags'
               ? <ReflistTag
-                value={value}
-                color={value?.color}
-                icon={value?.icon}
-                showIcon={showIcon}
-                tagStyle={tagStyle}
-                description={value?.description}
-                solidColor={solidColor}
-                showItemName={showItemName}
-                label={displayName}
-              /> :
-              <InputField style={style} value={displayName ?? (typeof value === 'object' ? null : value)} />;
+                  value={value}
+                  color={value?.color}
+                  icon={value?.icon}
+                  showIcon={showIcon}
+                  tagStyle={tagStyle}
+                  description={value?.description}
+                  solidColor={solidColor}
+                  showItemName={showItemName}
+                  label={displayName}
+              />
+              : <InputField style={style} value={displayName ?? (typeof value === 'object' ? null : value)} />;
           }
         }
         return null;
@@ -149,7 +149,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     quickviewFormPath,
     quickviewDisplayPropertyName,
     quickviewGetEntityUrl,
-    quickviewWidth
+    quickviewWidth,
   ]);
 
   return (

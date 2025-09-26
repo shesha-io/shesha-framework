@@ -41,8 +41,8 @@ export const calcTextWidth = function(str, fontFamily = DEFAULT_FONT_FAMILY, fon
   var div = document.createElement("div");
   div.innerHTML = str;
   var css = {
-    "position": "absolute", "float": "left", "white-space": "nowrap", "visibility": "hidden", 
-    "font-size": fontSize, "font-family": fontFamily
+    "position": "absolute", "float": "left", "white-space": "nowrap", "visibility": "hidden",
+    "font-size": fontSize, "font-family": fontFamily,
   };
   for (const k in css) {
     if (css.hasOwnProperty(k))

@@ -50,7 +50,7 @@ export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
   const changeRoute = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.preventDefault();
 
-    if (url) router?.push(url /*.toLowerCase() - it causes problems on prod because of case sensitivity of routings!*/);
+    if (url) router?.push(url /* .toLowerCase() - it causes problems on prod because of case sensitivity of routings!*/);
   };
 
   const childrenOrDisplayText = children || displayName;

@@ -38,7 +38,7 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
         buttonType: 'link',
         hideWhenEmpty: true,
         childItems: [],
-        editMode: 'inherited'
+        editMode: 'inherited',
       };
       return group;
     });
@@ -52,16 +52,16 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
     ? level === 1
       ? (
         <div className={styles.customActionButtons}>
-          <Button onClick={onAddGroupClick} type='primary'>Add Group</Button>
-          <Button onClick={onAddItemClick} type='primary'>Add New Item</Button>
+          <Button onClick={onAddGroupClick} type="primary">Add Group</Button>
+          <Button onClick={onAddItemClick} type="primary">Add New Item</Button>
         </div>
       )
       : !(parent.childItems?.length)
         ? (
           <Divider style={{ marginTop: 0, marginBottom: 0 }}>
-            <Button shape='round' size='small' type='link' onClick={onAddItemClick}>Add item</Button>
+            <Button shape="round" size="small" type="link" onClick={onAddItemClick}>Add item</Button>
             <Divider type="vertical" />
-            <Button shape='round' size='small' type='link' onClick={onAddGroupClick}>Add group</Button>
+            <Button shape="round" size="small" type="link" onClick={onAddGroupClick}>Add group</Button>
           </Divider>)
         : null
     : null;
@@ -81,7 +81,7 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
       itemSubType: 'button',
       buttonType: 'link',
       editMode: 'inherited',
-      ...initialValues()
+      ...initialValues(),
     };
 
     return newItem;

@@ -1,4 +1,4 @@
 export interface IDynamicActionsConfiguration {
-    providerUid?: string;
-    settings?: any;
+  providerUid?: string;
+  settings?: any;
 }

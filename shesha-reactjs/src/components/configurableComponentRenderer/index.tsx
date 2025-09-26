@@ -44,7 +44,7 @@ const BlockOverlay: FC<PropsWithChildren<IBlockOverlayProps>> = ({ onClick, chil
   );
 };
 
-export const ConfigurableComponentRenderer = <TSettings extends any>({
+export const ConfigurableComponentRenderer = <TSettings extends object>({
   children,
   canConfigure = true,
   onStartEdit,
@@ -90,7 +90,7 @@ export const ConfigurableComponentRenderer = <TSettings extends any>({
       .then(() => {
         setEditorIsVisible(false);
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
       });
   };

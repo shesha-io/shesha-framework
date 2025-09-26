@@ -32,9 +32,9 @@ export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
   const onSearch = (
     value: string,
     event?:
-      | React.MouseEvent<HTMLElement, MouseEvent>
-      | React.ChangeEvent<HTMLInputElement>
-      | React.KeyboardEvent<HTMLInputElement>
+      | React.MouseEvent<HTMLElement, MouseEvent> |
+      React.ChangeEvent<HTMLInputElement> |
+      React.KeyboardEvent<HTMLInputElement>
   ) => {
     event?.stopPropagation();
     event?.preventDefault();

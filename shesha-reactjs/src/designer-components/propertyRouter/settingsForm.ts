@@ -22,7 +22,7 @@ export const getSettings = (data: any) =>
               parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
               label: 'Component name',
               validate: { required: true },
-              jsSetting: false
+              jsSetting: false,
             })
             .addCheckbox({
               id: 'bf1823d6-dca4-408a-b7d8-5b42eacb076d',
@@ -66,8 +66,8 @@ export const getSettings = (data: any) =>
             parentId: 'root',
             hidden: false,
             validate: {},
-          }).toJson()
-        ]
-      }
+          }).toJson(),
+        ],
+      },
     })
     .toJson();

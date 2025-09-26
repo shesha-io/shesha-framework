@@ -103,7 +103,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
     return list;
   }, [response, showSuppress, showNotImplemented]);
 
-  //useEffect(() => {fetcher.refetch();}, [showSuppress])
+  // useEffect(() => {fetcher.refetch();}, [showSuppress])
 
   const refresh = (id: string) => {
     fetcher.refetch();

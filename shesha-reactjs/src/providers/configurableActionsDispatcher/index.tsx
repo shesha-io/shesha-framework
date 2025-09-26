@@ -21,7 +21,7 @@ import {
 import { genericActionArgumentsEvaluator } from '../form/utils';
 import { ActionParametersDictionary, GenericDictionary } from '@/interfaces';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
-import { isDefined } from '@/configuration-studio/types';
+import { isDefined } from '@/utils/nullables';
 
 const getActualActionArguments = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(action: IConfigurableActionDescriptor<TArguments>, actionArguments: TArguments): TArguments => {
   const { migrator } = action;

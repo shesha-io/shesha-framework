@@ -91,7 +91,7 @@ export const useProcessedChartData = (): IChartData => {
     const colors = labels.map((label) => {
       const labelStr = typeof label === 'string' ? label : label + '';
       // Use more transparent colors for polar area charts
-      return chartType === 'polarArea' 
+      return chartType === 'polarArea'
         ? getPredictableColorPolarArea(labelStr)
         : getPredictableColor(labelStr);
     });
@@ -121,7 +121,7 @@ export const useProcessedChartData = (): IChartData => {
 
     datasets = legendItems?.map((legend) => {
       const strLegend = typeof legend === 'string' ? legend : legend + '';
-      const barBackgroundColor = chartType === 'polarArea' 
+      const barBackgroundColor = chartType === 'polarArea'
         ? getPredictableColorPolarArea(strLegend)
         : getPredictableColor(strLegend);
       let colors: string[] = [];
@@ -139,7 +139,7 @@ export const useProcessedChartData = (): IChartData => {
               break;
             default:
               const strLabel = typeof label === 'string' ? label : label + '';
-              colors.push(chartType === 'polarArea' 
+              colors.push(chartType === 'polarArea'
                 ? getPredictableColorPolarArea(strLabel)
                 : getPredictableColor(strLabel));
               break;

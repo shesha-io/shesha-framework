@@ -4,7 +4,7 @@ import React from "react";
 import { ConfigItemTreeNode, FolderTreeNode, isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, ModuleTreeNode, TreeNode, TreeNodeType } from "./models";
 import { getIcon } from "./tree-utils";
 import { IConfigurationStudio } from "./cs/configurationStudio";
-import { isDefined } from "./types";
+import { isDefined } from "../utils/nullables";
 
 type MenuItemType = NonNullable<MenuProps["items"]>[number];
 
