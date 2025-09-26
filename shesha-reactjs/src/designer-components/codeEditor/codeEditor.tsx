@@ -141,7 +141,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     ]
     : undefined;
 
-  const buttonValue = value?.replace('return', '').replace(/;+$/, "");;
+  const buttonValue = value?.replace('return', '').replace(/;+$/, ""); ;
 
   return readOnly && !hasValue
     ? (<Typography.Text disabled>No Code</Typography.Text>)
@@ -153,7 +153,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
           onClick={openEditorDialog}
           style={hasValue ? { fontFamily: 'monospace', fontSize: '12px', width: '100%' } : { width: '100%' }}
         >
-          {<><CodeOutlined /> {hasValue ? buttonValue : '...'}</>}
+          <><CodeOutlined /> {hasValue ? buttonValue : '...'}</>
         </Button>
         {showDialog && (
           <Modal
@@ -169,9 +169,11 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
             className={styles.codeEditorModal}
             width={null}
             footer={[
-              hasValue && <Button key="clear" danger onClick={onClear} disabled={readOnly}>
+              hasValue && (
+<Button key="clear" danger onClick={onClear} disabled={readOnly}>
                 Clear
-              </Button>,
+</Button>
+              ),
               <Button key="cancel" onClick={onDialogCancel}>
                 {readOnly ? 'Close' : 'Cancel'}
               </Button>,

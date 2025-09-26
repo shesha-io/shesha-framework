@@ -85,9 +85,9 @@ export const DataTypes = {
       case DataTypes.array:
         switch (dataFormat) {
           case ArrayFormats.entityReference:
-            return ['autocomplete','entityPicker'];
+            return ['autocomplete', 'entityPicker'];
           case ArrayFormats.manyToManyEntities:
-            return ['autocomplete','entityPicker'];
+            return ['autocomplete', 'entityPicker'];
           case ArrayFormats.childObjects:
             return ['childEntitiesTagGroup'];
           case ArrayFormats.multivalueReferenceList:

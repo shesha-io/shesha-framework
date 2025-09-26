@@ -9,7 +9,7 @@ export const ComponentsContainerFormInner: FC<IComponentsContainerProps> = (prop
   const isDrawing = useIsDrawingForm();
 
   return props.dynamicComponents && props.dynamicComponents.length > 0
-    ? <ComponentsContainerDynamic {...props}/>
+    ? <ComponentsContainerDynamic {...props} />
     : isDrawing
       ? <ComponentsContainerDesigner {...props} />
       : <ComponentsContainerLive {...props} />;

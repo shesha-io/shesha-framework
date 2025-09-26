@@ -26,13 +26,13 @@ export const PageMarkupLoadingError: FC<MarkupLoadingErrorRenderProps> = ({ form
                   style={{ height: '100vh - 55px' }}
                   title="404"
                   subTitle="Sorry, the page you visited does not exist."
-                  extra={
+                  extra={(
                         <Button type="primary">
-                            <Link href={'/'}>
+                            <Link href="/">
                                 Back Home
                             </Link>
                         </Button>
-                  }
+                  )}
                 />
             )}
             {(markupLoadingState.error?.code === 401 || markupLoadingState.error?.code === 403) && (
@@ -41,13 +41,13 @@ export const PageMarkupLoadingError: FC<MarkupLoadingErrorRenderProps> = ({ form
                   style={{ height: '100vh - 55px' }}
                   title="403"
                   subTitle={getFormForbiddenMessage(formId)}
-                  extra={
+                  extra={(
                         <Button type="primary">
-                            <Link href={'/'}>
+                            <Link href="/">
                                 Back Home
                             </Link>
                         </Button>
-                  }
+                  )}
                 />
             )}
         </>

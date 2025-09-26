@@ -147,16 +147,17 @@ const IconPicker: FC<IIconPickerProps> = ({
               className={styles.shaIconPicker}
               iconName={localSelectedIcon}
               {...props}
-              style={{ fontSize: iconSize || 24, color: twoToneColor}}
+              style={{ fontSize: iconSize || 24, color: twoToneColor }}
               name={localSelectedIcon}
             />
           ) : (
             <Button
               size={selectBtnSize}
-              title={'Select icon'}
+              title="Select icon"
               disabled={readOnly}
               icon={<SelectOutlined style={{ margin: 0 }} size={iconSize || 24} />}
-            ></Button>
+            >
+            </Button>
           )}
         </div>
       </div>
@@ -166,14 +167,14 @@ const IconPicker: FC<IIconPickerProps> = ({
         open={showModal}
         width={950}
         title="Select Icon"
-        footer={
+        footer={(
           <div>
             <Button onClick={onClear} type="primary" danger>
               Clear
             </Button>
             <Button onClick={toggleModalVisibility}>Cancel</Button>
           </div>
-        }
+        )}
         className={styles.shaIconPickerModal}
       >
         <div className={styles.shaIconPickerSearch}>

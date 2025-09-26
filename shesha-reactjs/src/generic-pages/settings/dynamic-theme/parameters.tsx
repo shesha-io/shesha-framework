@@ -166,7 +166,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           },
         ]}
       >
-        <Form.Item label="Label" name={'label'}>
+        <Form.Item label="Label" name="label">
           <InputNumber
             placeholder="Label Span"
             style={{ width: '100%' }}
@@ -180,7 +180,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           />
         </Form.Item>
 
-        <Form.Item label="Component" name={'component'}>
+        <Form.Item label="Component" name="component">
           <InputNumber
             placeholder="Component Span"
             style={{ width: '100%' }}

@@ -58,6 +58,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
   const {
     backgroundImage: headerBgImage,
     backgroundColor: headerBgColor,
+    backgroundSize: headerBackgroundSize,
+    backgroundPosition: headerBackgroundPosition,
+    backgroundRepeat: headerBackgroundRepeat,
     height: headerHeight,
     minHeight: headerMinHeight,
     maxHeight: headerMaxHeight,
@@ -158,6 +161,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
       background: ${headerBgImage || headerBgColor};
       width: ${width};
+      background-size: ${headerBackgroundSize};
+      background-repeat: ${headerBackgroundRepeat};
+      background-position: ${headerBackgroundPosition};
       min-width: ${minWidth};
       max-width: ${maxWidth};
       height: ${headerHeight};

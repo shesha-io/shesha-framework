@@ -54,7 +54,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
     } else {
       return (
         <ConfigurableFormItem model={model}>
-          {(value, onChange) =>
+          {(value, onChange) => (
             <PermissionsTree
               onSelectAction={model.onSelectAction}
               formComponentId={model?.id}
@@ -66,8 +66,8 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
               mode={model?.mode ?? "Select"}
               height={model?.height}
             />
-          }
-          </ConfigurableFormItem>
+          )}
+        </ConfigurableFormItem>
       );
     };
   },
@@ -86,8 +86,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
   migrator: (m) => m
     .add<IPermissionsTreeComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IPermissionsTreeComponentProps)
     .add<IPermissionsTreeComponentProps>(1, (prev) => migrateReadOnly(prev))
-    .add<IPermissionsTreeComponentProps>(2, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-  ,
+    .add<IPermissionsTreeComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
 };
 
 export default PermissionedObjectsTreeComponent;

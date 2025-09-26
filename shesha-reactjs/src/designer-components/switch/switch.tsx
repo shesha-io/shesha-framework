@@ -41,6 +41,7 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
             if (typeof onChange === 'function') onChange(checked);
           };
 
+
           return (<Switch
             className="sha-switch"
             disabled={model.readOnly}
@@ -75,8 +76,7 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-    })
-  ,
+    }),
 };
 
 export default SwitchComponent;

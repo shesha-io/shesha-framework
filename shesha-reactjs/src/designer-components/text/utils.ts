@@ -91,7 +91,7 @@ export const defaultStyles = (textType: string): IStyleType => {
     font: {
       color: '#000',
       type: 'Segoe UI',
-      size:  textType === 'title' ? undefined : 14,
+      size: textType === 'title' ? undefined : 14,
     },
     background: { type: 'color', color: '' },
     border: {

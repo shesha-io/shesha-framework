@@ -78,7 +78,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
           font: createFontConfig(legendFont, 12, '400'),
           color: legendFont?.color || '#000000',
           usePointStyle: true, // Use point style for better visual consistency
-          generateLabels: function(chart) {
+          generateLabels: function (chart) {
             const data = chart.data;
             if (data.labels.length && data.datasets.length) {
               return data.labels.map((label, i) => {

@@ -43,7 +43,8 @@ export const ExportFilter: FC<IExportFilterProps> = ({ value: filterValue, onCha
                   onChange={(e) => {
                     const { value } = e.target;
                     onFilterChange({ ...filterValue, quickSearch: value });
-                  }}/>
+                  }}
+                />
             </Col>
         </Row>
   );

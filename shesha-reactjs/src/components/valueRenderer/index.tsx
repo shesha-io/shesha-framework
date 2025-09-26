@@ -37,7 +37,7 @@ const MultivalueReferenceListDisplayInternal: FC<ValueRendererProps> = (props) =
 
   const mapped = useMemo(() => {
     if (!refListItems || !Array.isArray(refListItems) ||
-            !value || !Array.isArray(value))
+      !value || !Array.isArray(value))
       return null;
 
     const mappedArray = value.map((item) => refListItems.find((i) => i.itemValue === item)?.item);

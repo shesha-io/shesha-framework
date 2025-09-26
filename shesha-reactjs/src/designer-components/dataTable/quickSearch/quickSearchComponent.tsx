@@ -25,7 +25,7 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
   isInput: false,
   name: 'Quick Search',
   icon: <SearchOutlined />,
-  Factory: ({ model: { block, hidden, dimensions, size: _size} }) => {
+  Factory: ({ model: { block, hidden, dimensions, size: _size } }) => {
     const store = useDataTableStore(false);
 
     const size = useMemo(() => _size, [_size]);
@@ -39,14 +39,22 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
     return hidden
       ? null
       : store
-        ? <GlobalTableFilter block={block} style={finalStyle} searchProps={{
-          size,
-        }} />
-        : <Alert
-            className="sha-designer-warning"
-            message="Quick Search must be used within a Data Table Context"
-            type="warning"
-        />;
+        ? (
+<GlobalTableFilter
+  block={block}
+  style={finalStyle}
+  searchProps={{
+    size,
+  }}
+/>
+        )
+        : (
+<Alert
+  className="sha-designer-warning"
+  message="Quick Search must be used within a Data Table Context"
+  type="warning"
+/>
+        );
   },
   initModel: (model: IQuickSearchComponentProps) => {
     return {
@@ -59,9 +67,8 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
     m
       .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IQuickSearchComponentProps>(1, (prev) => migrateVisibility(prev))
-      .add<IQuickSearchComponentProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
-      .add<IQuickSearchComponentProps>(3, (prev) => ({ ...migratePrevStyles(prev, { size: 'small' }) }))
-  ,
+      .add<IQuickSearchComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
+      .add<IQuickSearchComponentProps>(3, (prev) => ({ ...migratePrevStyles(prev, { size: 'small' }) })),
   settingsFormMarkup: (context) => getSettings(context),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };

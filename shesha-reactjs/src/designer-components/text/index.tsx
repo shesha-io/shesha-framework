@@ -84,7 +84,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
         const px = remToPx(rem);
         return {
           ...prev,
-          desktop: {...prev?.desktop, font: {...prev?.desktop?.font, size: px}},
+          desktop: { ...prev?.desktop, font: { ...prev?.desktop?.font, size: px } },
         };
       }),
 };

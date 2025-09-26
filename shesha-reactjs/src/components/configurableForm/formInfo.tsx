@@ -69,9 +69,12 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
       className={classNames(styles.shaFormContainer, { [styles.shaEditMode]: displayEditMode })}
     >
 
-      <div className={`${styles.shaFormInfoCardParent}`} style={{
-        height: Boolean(displayEditMode) ? '40px' : '0px',
-      }}>
+      <div
+        className={`${styles.shaFormInfoCardParent}`}
+        style={{
+          height: Boolean(displayEditMode) ? '40px' : '0px',
+        }}
+      >
         <div
           className={`${styles.shaFormInfoCard}`}
           style={{
@@ -99,7 +102,8 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
             <p
               onClick={() => onModalOpen()}
               title={getFormFullName(module, name)}
-              className={styles.shaFormInfoCardTitle}>
+              className={styles.shaFormInfoCardTitle}
+            >
               {getFormFullName(module, name)}
             </p>
 

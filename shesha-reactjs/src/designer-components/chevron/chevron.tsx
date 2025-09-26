@@ -23,7 +23,8 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
           <RefListItemGroupConfiguratorProvider value={value} items={model.items} referenceList={model.referenceList} readOnly={model.readOnly}>
             <ChevronControl
               value={value}
-              {...model}/>
+              {...model}
+            />
           </RefListItemGroupConfiguratorProvider>
         )}
       </ConfigurableFormItem>

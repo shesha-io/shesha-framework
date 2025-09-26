@@ -84,19 +84,21 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
           };
 
 
-          return <Autocomplete
-            {...model}
-            grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
-            keyValueFunc={keyValueFunc}
-            outcomeValueFunc={outcomeValueFunc}
-            displayValueFunc={displayValueFunc}
-            filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
-            style={finalStyle}
-            size={model?.size ?? 'middle'}
-            value={value}
-            onChange={onChangeInternal}
-            allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}
-          />;
+          return (
+<Autocomplete
+  {...model}
+  grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
+  keyValueFunc={keyValueFunc}
+  outcomeValueFunc={outcomeValueFunc}
+  displayValueFunc={displayValueFunc}
+  filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
+  style={finalStyle}
+  size={model?.size ?? 'middle'}
+  value={value}
+  onChange={onChangeInternal}
+  allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}
+/>
+          );
         }}
       </ConfigurableFormItem>
     );
@@ -160,8 +162,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         keyPropName: prev.dataSourceType === 'url' && prev['useRawValues'] ? prev.keyPropName || 'value' : prev.keyPropName,
       };
     })
-    .add<IAutocompleteComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-  ,
+    .add<IAutocompleteComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {
       ...model,
@@ -176,7 +177,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         ? 'entityReference'
         : 'simple',
       filter: typeof propMetadata.formatting?.filter === 'object' && propMetadata.formatting?.filter
-        ? {...propMetadata.formatting?.filter}
+        ? { ...propMetadata.formatting?.filter }
         : null,
     };
   },

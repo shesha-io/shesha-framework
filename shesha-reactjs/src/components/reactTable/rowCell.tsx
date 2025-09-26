@@ -59,7 +59,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
     if (!root) return null;
     if (
       root.childNodes.length === 1 &&
-    root.childNodes[0].nodeType === Node.TEXT_NODE
+      root.childNodes[0].nodeType === Node.TEXT_NODE
     ) {
       return root;
     }
@@ -70,8 +70,8 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
     let node: HTMLElement = root;
     while (
       node.children &&
-    node.children.length === 1 &&
-    node.children[0] instanceof HTMLElement
+      node.children.length === 1 &&
+      node.children[0] instanceof HTMLElement
     ) {
       node = node.children[0] as HTMLElement;
     }
@@ -91,7 +91,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
   useEffect(() => {
     const overflowEl = findOverflowElement(cellRef.current);
     if (!cellRef.current) return;
-    if(!showExpandedView) {
+    if (!showExpandedView) {
       overflowEl.classList.remove("ellipsis");
       overflowEl.style.textOverflow = "initial";
       overflowEl.style.setProperty('display', 'flex', 'important');
@@ -125,17 +125,15 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
       })}
     >
       {preContent}
-      {
-          <div
-            ref={cellRef}
-            className={showExpandedView && (cell.column as unknown as { columnType: string }).columnType === 'data' && (typeof cell.value === 'string' || typeof cell.value === 'object')  ? styles.shaCellParent :  styles.shaCellParentFW}
-            onMouseOver={() => {
-              void (showExpandedView ? getCellRef(cellRef, checkOverflow()) : getCellRef(null, null));
-            }}
-          >
+      <div
+        ref={cellRef}
+        className={showExpandedView && (cell.column as unknown as { columnType: string }).columnType === 'data' && (typeof cell.value === 'string' || typeof cell.value === 'object') ? styles.shaCellParent : styles.shaCellParentFW}
+        onMouseOver={() => {
+          void (showExpandedView ? getCellRef(cellRef, checkOverflow()) : getCellRef(null, null));
+        }}
+      >
             {cell.render('Cell')}
-          </div>
-      }
+      </div>
 
     </div>
   );

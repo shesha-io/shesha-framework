@@ -53,13 +53,15 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
             customEvents.onChange({ value, timeString });
             if (typeof onChange === 'function') onChange(value, timeString);
           };
-          return <TimePickerWrapper
-            {...model}
-            {...customEvents}
-            style={finalStyle}
-            value={value}
-            onChange={onChangeInternal}
-          />;
+          return (
+<TimePickerWrapper
+  {...model}
+  {...customEvents}
+  style={finalStyle}
+  value={value}
+  onChange={onChangeInternal}
+/>
+          );
         }}
       </ConfigurableFormItem>
     );

@@ -94,7 +94,7 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
   }, [applicationsLoadingState, configsLoadingState, selectedApplication]);
 
   const onCollapseChange = (key: string | string[]) => {
-    setOpenedKeys({...openedKeys, [selectedApplication?.appKey ?? 'general']: Array.isArray(key) ? key : [key]});
+    setOpenedKeys({ ...openedKeys, [selectedApplication?.appKey ?? 'general']: Array.isArray(key) ? key : [key] });
   };
 
   const filteredGroups = useMemo<ISettingGroup[]>(() => {

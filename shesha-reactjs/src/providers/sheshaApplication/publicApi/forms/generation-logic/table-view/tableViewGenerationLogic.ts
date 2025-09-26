@@ -80,10 +80,10 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
           name: spec.friendlyName,
           sortOrder: index + 2,
           expression: {
-            "and": [
+            and: [
               {
-                "is_satisfied": {
-                  "var": spec.name,
+                is_satisfied: {
+                  var: spec.name,
                 },
               },
             ],

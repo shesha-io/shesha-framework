@@ -55,13 +55,13 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     const match = [
       { match: 'data', data: formData },
       { match: 'globalState', data: globalState },
-      { match: 'pageContext', data: {...pageContext?.getFull()} },
+      { match: 'pageContext', data: { ...pageContext?.getFull() } },
     ];
 
     if (dataContextManager)
       match.push({ match: 'contexts', data: dataContextManager.getDataContextsData(dataContext?.id) });
 
-    const permissionedFilters = filters.filter((f) => !f.permissions || f.permissions && application.anyOfPermissionsGranted(f.permissions));
+    const permissionedFilters = filters.filter((f) => !f.permissions || (f.permissions && application.anyOfPermissionsGranted(f.permissions)));
 
     evaluateDynamicFilters(
       permissionedFilters,

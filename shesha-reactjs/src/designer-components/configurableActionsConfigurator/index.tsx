@@ -28,8 +28,7 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   validateSettings: (model) => validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
   migrator: (m) => m
     .add<IConfigurableActionConfiguratorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IConfigurableActionConfiguratorComponentProps>(1, (prev) => migrateVisibility(prev))
-  ,
+    .add<IConfigurableActionConfiguratorComponentProps>(1, (prev) => migrateVisibility(prev)),
 };
 
 export default ConfigurableActionConfiguratorComponent;
