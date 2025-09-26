@@ -1,3 +1,3 @@
 import { IAjaxResponse } from './ajaxResponse';
 
-export interface IResult<T> extends IAjaxResponse<T> {}
+export type IResult<T> = IAjaxResponse<T>;

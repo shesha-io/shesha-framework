@@ -8,7 +8,6 @@ interface ITagProps {
 }
 
 const RefTag: FC<PropsWithChildren<ITagProps>> = ({ children, ...props }) => {
-
   if (!children && !props?.icon) return null;
 
   return (

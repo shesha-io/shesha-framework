@@ -22,6 +22,7 @@ import { useStyles } from './styles/styles';
 import SectionSeparator from '../sectionSeparator';
 import { useConfigurableFormActions } from '@/providers/form/actions';
 import { ShaSpin } from '..';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -83,8 +84,8 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
 
   useEffect(() => {
     if (!isFetchingData) {
-      if (fetchingDataResponse) {
-        const fetchedData = fetchingDataResponse?.result;
+      if (isAjaxSuccessResponse(fetchingDataResponse)) {
+        const fetchedData = fetchingDataResponse.result;
         if (fetchedData) {
           setResponse(fetchedData);
           if (refershId !== objectId) {
@@ -102,7 +103,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
     return list;
   }, [response, showSuppress, showNotImplemented]);
 
-  //useEffect(() => {fetcher.refetch();}, [showSuppress])
+  // useEffect(() => {fetcher.refetch();}, [showSuppress])
 
   const refresh = (id: string) => {
     fetcher.refetch();

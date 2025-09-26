@@ -4,7 +4,7 @@ import { GenericQuickView } from '@/components/quickView';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { IKeyValue } from '@/interfaces/keyValue';
-import { isPropertiesArray } from '@/interfaces/metadata';
+import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import {
   ButtonGroupItemProps,
   FormIdentifier,
@@ -95,7 +95,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     props.formSelectionMode === 'name' ? props.formIdentifier : null
   );
   const [fetched, setFetched] = useState(false);
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState<IPropertyMetadata[]>([]);
 
   const [displayText, setDisplayText] = useState((!props.value ? props.placeholder : props.value._displayName) ?? '');
 
@@ -106,7 +106,6 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const {styles, cx} = useStyles();
 
   useEffect(() => {
-
     const fetchFormId = async () => {
       if (
         props.formSelectionMode === 'dynamic' &&
@@ -130,7 +129,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       if (entityType) {
         try {
           const res = await getMetadata({ modelType: entityType, dataType: null });
-            setProperties(isPropertiesArray(res?.properties) ? res.properties : []);
+          setProperties(isPropertiesArray(res?.properties) ? res.properties : []);
         } catch (error) {
           console.error('Error fetching metadata:', error);
         }
@@ -192,7 +191,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         buttons: props.buttons,
         footerButtons: props?.footerButtons,
         additionalProperties:
-          Boolean(props.additionalProperties) && props.additionalProperties?.length > 0 && props.additionalProperties.some(p => p.key === 'id')
+          Boolean(props.additionalProperties) && props.additionalProperties?.length > 0 && props.additionalProperties.some((p) => p.key === 'id')
             ? props.additionalProperties
             : [{ key: 'id', value: '{{entityReference.id}}' }],
         modalWidth: addPx(props.modalWidth),
@@ -218,7 +217,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       argumentsEvaluationContext: evaluationContext,
     });
   };
- 
+
   const displayTextByType = useMemo(() => {
     const displayIfNotIcon = props.displayType === 'textTitle' ? props.textTitle : displayText;
 

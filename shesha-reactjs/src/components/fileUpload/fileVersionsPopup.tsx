@@ -5,6 +5,7 @@ import { DateDisplay } from '@/components/';
 import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
 import filesize from 'filesize';
 import { useStoredFile } from '@/providers';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 interface IProps {
   readonly fileId: string;
@@ -14,7 +15,7 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
   const {
     loading: loading,
     refetch: fetchHistory,
-    /*error: fetchError, */ data: serverData,
+    /* error: fetchError, */ data: serverData,
   } = useStoredFileGetFileVersions({
     fileId,
     lazy: true,
@@ -28,7 +29,7 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
     if (open && !serverData) fetchHistory();
   };
 
-  const uploads = serverData?.result;
+  const uploads = isAjaxSuccessResponse(serverData) ? serverData.result : undefined;
 
   const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto) => {
     downloadFile({ fileId, versionNo: fileVersion.versionNo, fileName: fileVersion.fileName });

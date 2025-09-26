@@ -29,7 +29,7 @@ export interface IFormStateInternalContext {
 }
 
 export interface IFormStateContext extends IFormStateInternalContext {
-  
+
 }
 
 export interface ISetFormDataPayload {

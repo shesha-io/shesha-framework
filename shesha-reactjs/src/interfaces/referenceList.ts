@@ -8,27 +8,27 @@ export interface IReferenceList {
 }
 
 export interface IReferenceListItem {
-  id?: string;
-  item?: string | null;
-  itemValue?: number;
-  description?: string | null;
-  orderIndex?: number;
+  id: string;
+  item: string | null;
+  itemValue: number;
+  description: string | null;
+  orderIndex: number;
 
   /**
    * Color associated with the item
    */
-  color?: string | null;
+  color: string | null;
   /**
    * Icon associated with the item
    */
-  icon?: string | null;
+  icon: string | null;
   /**
    * Short alias
    */
-  shortAlias?: string | null;
+  shortAlias: string | null;
 }
 
 export interface IReferenceListIdentifier {
-  module?: string;
+  module: string | null;
   name: string;
 }

@@ -9,18 +9,18 @@ export interface IDesignerTitleProps {
 }
 
 export const DesignerTitle: FC<IDesignerTitleProps> = ({ }) => {
-    const { formProps } = useFormPersister();
-    const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
-    const title = formProps?.label ? `${formProps.label} (${fullName})` : fullName;
+  const { formProps } = useFormPersister();
+  const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
+  const title = formProps?.label ? `${formProps.label} (${fullName})` : fullName;
 
-    return (
+  return (
         <Space>
             {title && (
                 <p style={{ margin: 'unset' }}>
-                    {title} v{formProps.versionNo}
+                    {title}
                 </p>
             )}
             <HelpTextPopover content={formProps.description}></HelpTextPopover>
         </Space>
-    );
+  );
 };

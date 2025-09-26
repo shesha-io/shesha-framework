@@ -4,7 +4,7 @@ import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { FormMetadataHelper } from "../formMetadataHelper";
 import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, addDetailsPanel } from "../viewGenerationUtils";
+import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, addDetailsPanel, getDataTypePriority, getColumnWidthByDataType } from "../viewGenerationUtils";
 import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson";
 import { ROW_COUNT } from "../../constants";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
@@ -20,16 +20,17 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
     const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
     return extensionJson?.modelType || null;
   }
-  
+
   protected async addComponentsToMarkup(
-    markup: any, 
-    entity: IEntityMetadata, 
+    markup: any,
+    entity: IEntityMetadata,
     nonFrameworkProperties: PropertyMetadataDto[],
-    metadataHelper: FormMetadataHelper
+    metadataHelper: FormMetadataHelper,
+    replacements: object
   ): Promise<void> {
     try {
-      const extensionJson = castToExtensionType<DetailsViewExtensionJson>({});
-      
+      const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
+
       // Add header components
       this.addHeader(entity, nonFrameworkProperties, markup, extensionJson, metadataHelper);
 
@@ -88,7 +89,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
       if (keyInfoBarContainer.length === 0) {
         throw new Error("No key information bar container found in the markup.");
       }
-      const keyInfoProperties = metadata.filter(x =>
+      const keyInfoProperties = metadata.filter((x) =>
         extensionJson.keyInformationBarProperties?.includes(x.path || x.label || '')
       );
 
@@ -104,8 +105,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           hideLabel: true,
           hidden: false,
           componentName: "keyInformationBar",
-          columns: keyInfoProperties.map(prop => {
+          columns: keyInfoProperties.map((prop) => {
             const keyInfoBuilder = new DesignerToolbarSettings({});
+            const keyInfoBarContainer = new DesignerToolbarSettings({});
 
             keyInfoBuilder.addText({
               id: nanoid(),
@@ -119,19 +121,36 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               contentDisplay: 'content',
               textType: "span",
               color: 'default',
-              strong: true
+              desktop: {
+                weight: 500,
+              },
+              strong: true,
             });
 
             metadataHelper.getConfigFields(prop, keyInfoBuilder, true);
+
+            keyInfoBarContainer.addContainer({
+              id: nanoid(),
+              propertyName: 'keyInfoContainer',
+              label: 'Key Information',
+              editMode: 'inherited' as EditMode,
+              hidden: false,
+              componentName: 'keyInfoContainer',
+              direction: 'vertical',
+              desktop: {
+                justifyContent: 'center',
+              },
+              components: keyInfoBuilder.toJson(),
+            });
 
             return {
               id: nanoid(),
               width: 200,
               flexDirection: 'row',
               textAlign: 'start',
-              components: keyInfoBuilder.toJson()
+              components: keyInfoBarContainer.toJson(),
             };
-          })
+          }),
         });
 
         if (keyInfoBarContainer[0].components && Array.isArray(keyInfoBarContainer[0].components)) {
@@ -203,10 +222,27 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'right',
-            components: childTableAccessoriesBuilder.toJson()
+            components: childTableAccessoriesBuilder.toJson(),
           });
 
-          const columns: IConfigurableColumnsProps[] = nonFrameworkProperties.map((prop, idx) => {
+          // Sort the properties: required fields first, then by dataType priority
+          const sortedProperties = [...nonFrameworkProperties].sort((a, b) => {
+            // Sort by required status (required first)
+            if (a.required !== b.required) {
+              return a.required ? -1 : 1;
+            }
+
+            // Sort by dataType priority only
+            const priorityA = getDataTypePriority(a.dataType, a.dataFormat);
+            const priorityB = getDataTypePriority(b.dataType, b.dataFormat);
+
+            return priorityA - priorityB;
+          });
+
+          const columns: IConfigurableColumnsProps[] = sortedProperties.map((prop, idx) => {
+            // Get column width based on data type
+            const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
+
             return {
               id: nanoid(),
               columnType: 'data',
@@ -215,7 +251,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               isVisible: true,
               description: prop.description || '',
               sortOrder: idx,
-              itemType: 'item'
+              itemType: 'item',
+              minWidth: width.min,
+              maxWidth: width.max,
             };
           });
 
@@ -232,11 +270,13 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
                 caption: '',
                 isVisible: true,
                 sortOrder: -1,
-                itemType: 'item'
+                itemType: 'item',
               },
-              ...columns
-            ]
+              ...columns,
+            ],
           });
+
+          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
 
           const childTableContextBuilder = new DesignerToolbarSettings({});
           childTableContextBuilder.addDatatableContext({
@@ -256,26 +296,23 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
                   "==": [
                     {
                       // Fallback to "parentId" if no matching property is found
-                      "var": (childTable.properties as PropertyMetadataDto[])
-                        .find(p => p.entityType === extensionJson.modelType)
-                        ?.path
-                        || "parentId",
+                      "var": filterProperty ? toCamelCase(filterProperty) : "parentId",
                     },
                     {
                       "evaluate": [
                         {
                           "expression": "{{data.id}}",
                           "required": true,
-                          "type": "mustache"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
+                          "type": "mustache",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
             },
             entityType: extensionJson.childTablesList[index] || '',
-            components: childTableBuilder.toJson()
+            components: childTableBuilder.toJson(),
           });
 
           return {
@@ -284,9 +321,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             key: String(index),
             label: humanizeModelType(childTable.typeAccessor || ''),
             closable: false,
-            components: childTableContextBuilder.toJson()
+            components: childTableContextBuilder.toJson(),
           };
-        }))
+        })),
       });
 
       if (childTableContainer[0].components && Array.isArray(childTableContainer[0].components)) {
@@ -294,5 +331,4 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
       }
     }
   }
-
 }

@@ -2,7 +2,7 @@ import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useRef
 import { setItemsAction, setLoadedMenuAction } from './actions';
 import { IConfigurableMainMenu, MAIN_MENU_CONTEXT_INITIAL_STATE, MainMenuActionsContext, MainMenuStateContext } from './contexts';
 import { uiReducer } from './reducer';
-import { FormFullName, isNavigationActionConfiguration, useSettingValue, useSheshaApplication, useAuth } from '..';
+import { FormFullName, isNavigationActionConfiguration, useSettingValue, useSheshaApplication, useAuthOrUndefined } from '..';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 import { mainMenuMigration } from './migrations/migration';
 import { getActualModel, useAvailableConstantsData } from '../form/utils';
@@ -11,6 +11,7 @@ import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/fo
 import { FormIdFullNameDto } from '@/apis/entityConfig';
 import { settingsUpdateValue } from '@/apis/settings';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface MainMenuProviderProps {
   mainMenuConfigKey?: string;
@@ -20,7 +21,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
   const [state, dispatch] = useReducer(uiReducer, { ...MAIN_MENU_CONTEXT_INITIAL_STATE });
 
   const { loadingState, value: fetchedMainMenu } = useSettingValue({ module: 'Shesha', name: 'Shesha.MainMenuSettings' });
-  const auth = useAuth(false);
+  const auth = useAuthOrUndefined();
 
   const { applicationKey, anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
   const allData = useAvailableConstantsData();
@@ -46,16 +47,16 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
 
   const updatetFormNamigationVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
     if (
-      item.actionConfiguration?.actionOwner === 'shesha.common'
-      && item.actionConfiguration?.actionName === 'Navigate'
-      && item.actionConfiguration?.actionArguments?.navigationType === 'form'
-      && item.actionConfiguration?.actionArguments?.formId?.name
-      && item.actionConfiguration?.actionArguments?.formId?.module
+      item.actionConfiguration?.actionOwner === 'shesha.common' &&
+      item.actionConfiguration?.actionName === 'Navigate' &&
+      item.actionConfiguration?.actionArguments?.navigationType === 'form' &&
+      item.actionConfiguration?.actionArguments?.formId?.name &&
+      item.actionConfiguration?.actionArguments?.formId?.module
     ) {
       // form navigation, check form permissions
-      const form = formsPermission.find(x =>
-        x.module === item.actionConfiguration?.actionArguments?.formId?.module
-        && x.name === item.actionConfiguration?.actionArguments?.formId?.name
+      const form = formsPermission.find((x) =>
+        x.module === item.actionConfiguration?.actionArguments?.formId?.module &&
+        x.name === item.actionConfiguration?.actionArguments?.formId?.name
       );
       item.hidden = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
     }
@@ -70,10 +71,10 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
       }
 
       if (
-        isNavigationActionConfiguration(item.actionConfiguration)
-        && item.actionConfiguration?.actionArguments?.navigationType === 'form'
-        && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
-        && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
+        isNavigationActionConfiguration(item.actionConfiguration) &&
+        item.actionConfiguration?.actionArguments?.navigationType === 'form' &&
+        (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name &&
+        (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
       ) {
         itemsToCheck.push(item);
       }
@@ -84,10 +85,10 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
 
   const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
     if (itemsToCheck.length > 0) {
-      const request = itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto);
+      const request = itemsToCheck.map((x) => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto);
       formConfigurationCheckPermissions(request, { base: backendUrl, headers: httpHeaders })
         .then((result) => {
-          if (result.success) {
+          if (isAjaxSuccessResponse(result)) {
             itemsToCheck.forEach((item) => {
               return updatetFormNamigationVisible(item, result.result);
             });
@@ -155,7 +156,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
       <MainMenuActionsContext.Provider
         value={{
           changeMainMenu,
-          saveMainMenu
+          saveMainMenu,
         }}
       >
         {children}

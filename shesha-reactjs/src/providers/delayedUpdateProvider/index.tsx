@@ -20,16 +20,16 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
             ...state.current.groups.map((gr) => {
               return gr.name === groupName
                 ? {
-                    name: groupName,
-                    items: [...gr.items.map((it) => it.id === id ? { id, data } : it),
-                    ],
-                  }
+                  name: groupName,
+                  items: [...gr.items.map((it) => it.id === id ? { id, data } : it),
+                  ],
+                }
                 : gr;
             }),
           ],
         };
       } else {
-        state.current ={
+        state.current = {
           groups: [
             ...state.current.groups.map((gr) => gr.name === groupName ? { ...gr, items: [...gr.items, { id, data }] } : gr),
           ],

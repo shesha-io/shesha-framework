@@ -30,7 +30,7 @@ export interface IHasActions {
   items: ButtonGroupItemProps[]; // TODO: make a generic interface with minimal number of properties, ButtonGroupItemProps will implement/extend this interface
 }
 
-const DynamicActionsProvider = <TSettings, >({ id, name, useEvaluator, children, hasArguments = false, settingsFormFactory, settingsFormMarkup }: PropsWithChildren<IDynamicActionsProps<TSettings>>) => {
+const DynamicActionsProvider = <TSettings = unknown>({ id, name, useEvaluator, children, hasArguments = false, settingsFormFactory, settingsFormMarkup }: PropsWithChildren<IDynamicActionsProps<TSettings>>) => {
   const initial: IDynamicActionsStateContext<TSettings> = {
     ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
     id,
@@ -41,13 +41,13 @@ const DynamicActionsProvider = <TSettings, >({ id, name, useEvaluator, children,
     settingsFormMarkup,
   };
 
-  const [state/*, dispatch*/] = useThunkReducer(metadataReducer, initial);
+  const [state/* , dispatch*/] = useThunkReducer(metadataReducer, initial);
 
   // register provider in the dispatcher if exists
   const { registerProvider } = useDynamicActionsDispatcher();
 
   const dynamicActions: IDynamicActionsActionsContext = {
-    /* NEW_ACTION_GOES_HERE */    
+    /* NEW_ACTION_GOES_HERE */
   };
 
   const contextValue: IDynamicActionsContext = { ...state, ...dynamicActions };

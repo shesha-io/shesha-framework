@@ -45,14 +45,14 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
     .add<IImageProps>(2, (prev) => migrateReadOnly(prev))
     .add<IImageProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
-  initModel: model => {
+  initModel: (model) => {
     const customModel: IImageProps = {
       ...model,
     };
     return customModel;
   },
   settingsFormMarkup: AnnotationSettingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(AnnotationSettingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(AnnotationSettingsForm, model),
 };
 
 export default ImageAnnotationComponent;

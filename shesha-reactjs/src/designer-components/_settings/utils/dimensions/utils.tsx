@@ -18,28 +18,28 @@ export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyle
         : dimensions.width
       : undefined,
     height: dimensions?.height
-      ? hasNumber(dimensions.height) ?
-        getDimension(dimensions.height, additionalStyles?.marginTop, additionalStyles?.marginBottom)
+      ? hasNumber(dimensions.height)
+        ? getDimension(dimensions.height, additionalStyles?.marginTop, additionalStyles?.marginBottom)
         : dimensions.height
       : undefined,
     minWidth: dimensions?.minWidth
-      ? hasNumber(dimensions.minWidth) ?
-        getDimension(dimensions.minWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
+      ? hasNumber(dimensions.minWidth)
+        ? getDimension(dimensions.minWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
         : dimensions.minWidth
       : undefined,
     minHeight: dimensions?.minHeight
-      ? hasNumber(dimensions.minHeight) ?
-        getDimension(dimensions.minHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
+      ? hasNumber(dimensions.minHeight)
+        ? getDimension(dimensions.minHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
         : dimensions.minHeight
       : undefined,
     maxWidth: dimensions?.maxWidth
-      ? hasNumber(dimensions.maxWidth) ?
-        getDimension(dimensions.maxWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
+      ? hasNumber(dimensions.maxWidth)
+        ? getDimension(dimensions.maxWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
         : dimensions.maxWidth
       : undefined,
     maxHeight: dimensions?.maxHeight
-      ? hasNumber(dimensions.maxHeight) ?
-        getDimension(dimensions.maxHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
+      ? hasNumber(dimensions.maxHeight)
+        ? getDimension(dimensions.maxHeight, additionalStyles?.marginTop, additionalStyles?.marginBottom)
         : dimensions.maxHeight
       : undefined,
   };

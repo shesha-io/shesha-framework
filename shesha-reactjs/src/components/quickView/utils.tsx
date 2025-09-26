@@ -1,6 +1,7 @@
 import React from 'react';
 import { Spin } from 'antd';
 import { getDataProperty, getFormatContent } from '@/utils/metadata';
+import { IPropertyMetadata } from '@/interfaces/metadata';
 
 export const formItemLayout = {
   labelCol: {
@@ -34,9 +35,9 @@ export const innerEntityReferenceButtonBoxStyle = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
-};  
+};
 
-export const compareValueToProperty = (key: string, value: string, properties: Array<{ [key in string]: any }>) => {
+export const compareValueToProperty = (key: string, value: string, properties: IPropertyMetadata[]) => {
   const dataType = getDataProperty(properties, key, 'dataType');
   const dataFormat = getDataProperty(properties, key, 'dataFormat');
 
@@ -45,7 +46,7 @@ export const compareValueToProperty = (key: string, value: string, properties: A
 
 export const getQuickViewInitialValues = (
   data: { [key in string]: any },
-  properties: Array<{ [key in string]: any }>
+  properties: IPropertyMetadata[]
 ) =>
   Object.entries(data || {})
     .map(([key, value]) => compareValueToProperty(key, value, properties))

@@ -28,6 +28,7 @@ import {
   ModelConfiguratorStateContext,
 } from './contexts';
 import modelReducer from './reducer';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface IModelConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -56,7 +57,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
       // { name: state.className, namespace: state.namespace }
       modelConfigurationsGetById({}, { id: state.id, base: backendUrl, headers: httpHeaders })
         .then((response) => {
-          if (response.success) {
+          if (isAjaxSuccessResponse(response)) {
             dispatch(loadSuccessAction(response.result));
           } else dispatch(loadErrorAction(response.error));
         })
@@ -67,7 +68,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     else
       console.error("Failed to fetch a model configuraiton by Id - Id not specified");*/
   };
-    
+
   useEffect(() => {
     load();
   }, [state.id]);
@@ -103,7 +104,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
 
       mutate(preparedValues, { base: backendUrl, headers: httpHeaders })
         .then((response) => {
-          if (response.success) {
+          if (isAjaxSuccessResponse(response)) {
             dispatch(saveSuccessAction(response.result));
             resolve(response.result);
           } else {

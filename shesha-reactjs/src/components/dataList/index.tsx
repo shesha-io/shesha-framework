@@ -79,7 +79,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   onRowDeleteSuccessAction,
   ...props
 }) => {
-
   const { styles } = useStyles();
 
   let skipCache = false;
@@ -112,7 +111,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   }, [selectedRow, selectedRows, selectionMode]);
 
   const allData = useAvailableConstantsData();
-  const { configurationItemMode } = useAppConfigurator();
   const { executeAction, useActionDynamicContext } = useConfigurableActionDispatcher();
 
   const dynamicContext = useActionDynamicContext(props.dblClickActionConfiguration);
@@ -185,7 +183,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const fcContainerStyles = useFormComponentStyles({ ...props.container ?? {} });
 
   const isReady = (forms: EntityForm[]) => {
-    if (!(!forms || forms.length === 0 || forms.find(x => !x.formConfiguration))) {
+    if (!(!forms || forms.length === 0 || forms.find((x) => !x.formConfiguration))) {
       updateRows();
       updateContent();
     }
@@ -207,19 +205,18 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       return !!entityForm.formConfiguration;
 
     if (!!entityForm.formId) {
-      getForm({ formId: entityForm.formId, configurationItemMode, skipCache })
-        .then(response => {
+      getForm({ formId: entityForm.formId, skipCache })
+        .then((response) => {
           entityForm.formConfiguration = response;
           isReady(entityForms.current);
         });
     } else {
-
-      const f = loadedFormId.current[`${entityForm.entityType}_${fType}`]
-        ?? getEntityFormId(entityForm.entityType, fType);
+      const f = loadedFormId.current[`${entityForm.entityType}_${fType}`] ??
+        getEntityFormId(entityForm.entityType, fType);
 
       f.then((e) =>
-        getForm({ formId: e, configurationItemMode, skipCache })
-          .then(response => {
+        getForm({ formId: e, skipCache })
+          .then((response) => {
             entityForm.formId = e;
             entityForm.formConfiguration = response;
             isReady(entityForms.current);
@@ -293,7 +290,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         const evaluationContext = {
           ...allData,
           selectedRow: item,
-          ...dynamicContext
+          ...dynamicContext,
         };
         executeAction({
           actionConfiguration: props.dblClickActionConfiguration,
@@ -322,7 +319,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             formSettings={entityForm?.formConfiguration?.settings}
             data={item}
             listId={id}
-            listName='Data List'
+            listName="Data List"
             itemIndex={index}
             itemId={item['id']}
             allowEdit={canEditInline}
@@ -348,7 +345,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         currentGroup: null,
         propertyName: g.propertyName,
         index: index,
-        propertyPath: g.propertyName.split('.')
+        propertyPath: g.propertyName.split('.'),
       }));
 
       const getValue = (container: object, path: string[]) => {
@@ -366,7 +363,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             g.currentGroup = {
               index: index,
               value: groupValue,
-              $childs: []
+              $childs: [],
             };
             parent.push(g.currentGroup);
             differenceFound = true;
@@ -386,9 +383,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       if (!!style)
         return <Typography.Text style={style}>(empty)</Typography.Text>;
       else
-        return <Typography.Text type='secondary'>(empty)</Typography.Text>;
+        return <Typography.Text type="secondary">(empty)</Typography.Text>;
     }
-    const propertyMeta = groupingMetadata.find(p => toCamelCase(p.path) === propertyName);
+    const propertyMeta = groupingMetadata.find((p) => toCamelCase(p.path) === propertyName);
     return <Typography.Text style={style}><ValueRenderer value={value} meta={propertyMeta} /></Typography.Text>;
   };
 
@@ -398,7 +395,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       <Collapse
         key={key}
         defaultActiveKey={collapseByDefault ? [] : ['1']}
-        expandIconPosition='start'
+        expandIconPosition="start"
         className={`sha-group-level-${group.index}`}
         collapsible={collapsible ? undefined : 'disabled'}
         style={computedGroupStyle}
@@ -414,14 +411,13 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     );
   };
 
-  
 
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
     const stylesAsCSS = style as CSSProperties;
 
     const hasBorder = () => {
       const borderProps = ['border', 'borderWidth', 'borderTop', 'borderBottom', 'borderLeft', 'borderRight'];
-      return borderProps.some(prop => {
+      return borderProps.some((prop) => {
         const value = stylesAsCSS?.[prop];
         return value && value !== 'none' && value !== '0' && value !== '0px';
       });
@@ -519,10 +515,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       gap: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px',
       ...fcContainerStyles.jsStyle,
       ...fcContainerStyles.stylingBoxAsCSS,
-      ...fcContainerStyles.dimensionsStyles
+      ...fcContainerStyles.dimensionsStyles,
 
     };
-    
+
 
     const rawItemWidth =
       (style as CSSProperties)?.width ?? props.container?.dimensions?.width;
@@ -548,7 +544,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           ...containerStyles,
           display: 'grid',
           gridTemplateColumns: `repeat(auto-fill, ${itemWidth})`,
-          alignItems: 'start'
+          alignItems: 'start',
         };
 
       case 'vertical':
@@ -557,7 +553,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           ...containerStyles,
           display: 'grid',
           gridTemplateColumns: '1fr',
-          alignItems: 'stretch'
+          alignItems: 'stretch',
         };
     }
   };
@@ -600,7 +596,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               loading: isFetchingTableData && records?.length === 0,
               horizontal: orientation === 'horizontal',
               wrap: orientation === 'wrap',
-              vertical: orientation === 'vertical'
+              vertical: orientation === 'vertical',
             })}
           >
             <Show when={records?.length === 0}>
@@ -618,8 +614,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                   style: {
                     ...child.props.style,
                     overflow: 'visible',
-                    flex: '0 0 100%'
-                  }
+                    flex: '0 0 100%',
+                  },
                 });
               })}
             </Show>

@@ -27,12 +27,12 @@ export interface IPropertiesEditorProviderProps {
   onChange?: (items: IModelItem[]) => void;
 }
 
-const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderProps>> = props => {
+const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderProps>> = (props) => {
   const { children } = props;
   const selRef = useRef(null);
   const [state, dispatch] = useThunkReducer(modelReducer, {
     ...PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
-    items: props.items?.filter(x => !x.isFrameworkRelated) || [],
+    items: props.items?.filter((x) => !x.isFrameworkRelated) || [],
     onChange: props.onChange,
     selectedItemRef: selRef,
   });
@@ -53,15 +53,16 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
       if (props.onChange) {
         const updatedItems = getState()?.items;
         props.onChange(updatedItems);
-      }        
+      }
     });
   };
 
   const addItem = (parentId?: string) => {
-    //return dispatchDeferred
+    // return dispatchDeferred
     return new Promise<IModelItem>((resolve) => {
       const item: IModelItem = {
         id: nanoid(),
+        dataType: '',
       };
       dispatchAndFire(addItemAction({ parentId, item }));
       resolve(item);

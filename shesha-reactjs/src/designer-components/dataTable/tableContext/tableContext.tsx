@@ -14,68 +14,67 @@ interface ITableContextInnerProps extends ITableContextComponentProps {
 }
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
-    const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering } = props;
-    const { formMode } = useForm();
-    const { data } = useFormData();
+  const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering } = props;
+  const { formMode } = useForm();
+  const { data } = useFormData();
 
-    const disableRefresh: boolean = useActualContextExecution(props.disableRefresh, null, false);
+  const disableRefresh: boolean = useActualContextExecution(props.disableRefresh, null, false);
 
-    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
-    const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
+  const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
 
-    const getDataPath = evaluateString(endpoint, { data });
+  const getDataPath = evaluateString(endpoint, { data });
 
-    if (!sourceType)
-      throw SheshaError.throwPropertyError('sourceType');
-    if (sourceType === 'Entity' && !entityType)
-      throw SheshaError.throwPropertyError('entityType');
-    if (sourceType === 'Url' && !endpoint)
-      throw SheshaError.throwPropertyError('endpoint');
-    if (sourceType === 'Form' && !propertyName)
-      throw SheshaError.throwPropertyError('propertyName');
+  if (!sourceType)
+    throw SheshaError.throwPropertyError('sourceType');
+  if (sourceType === 'Entity' && !entityType)
+    throw SheshaError.throwPropertyError('entityType');
+  if (sourceType === 'Url' && !endpoint)
+    throw SheshaError.throwPropertyError('endpoint');
+  if (sourceType === 'Form' && !propertyName)
+    throw SheshaError.throwPropertyError('propertyName');
 
-    const provider = (getFieldValue = undefined, onChange = undefined) => (
+  const provider = (getFieldValue = undefined, onChange = undefined) => (
         <DataTableProvider
-            userConfigId={props.id}
-            entityType={entityType}
-            getDataPath={getDataPath}
-            propertyName={propertyName}
-            actionOwnerId={id}
-            actionOwnerName={componentName}
-            sourceType={props.sourceType}
-            initialPageSize={props.defaultPageSize ?? 10}
-            dataFetchingMode={props.dataFetchingMode ?? 'paging'}
-            getFieldValue={getFieldValue}
-            onChange={onChange}
-            grouping={props.grouping}
-            sortMode={props.sortMode}
-            strictSortBy={props.strictSortBy}
-            strictSortOrder={props.strictSortOrder}
-            standardSorting={props.standardSorting}
-            allowReordering={evaluateYesNo(allowReordering, formMode)}
-            permanentFilter={permanentFilter}
-            disableRefresh={disableRefresh}
-            customReorderEndpoint={customReorderEndpoint}
+          userConfigId={props.id}
+          entityType={entityType}
+          getDataPath={getDataPath}
+          propertyName={propertyName}
+          actionOwnerId={id}
+          actionOwnerName={componentName}
+          sourceType={props.sourceType}
+          initialPageSize={props.defaultPageSize ?? 10}
+          dataFetchingMode={props.dataFetchingMode ?? 'paging'}
+          getFieldValue={getFieldValue}
+          onChange={onChange}
+          grouping={props.grouping}
+          sortMode={props.sortMode}
+          strictSortBy={props.strictSortBy}
+          strictSortOrder={props.strictSortOrder}
+          standardSorting={props.standardSorting}
+          allowReordering={evaluateYesNo(allowReordering, formMode)}
+          permanentFilter={permanentFilter}
+          disableRefresh={disableRefresh}
+          customReorderEndpoint={customReorderEndpoint}
         >
             <ComponentsContainer containerId={id} />
         </DataTableProvider>
-    );
+  );
 
-    if (props?.hidden) {
-        return null;
-    }
-    return sourceType === 'Form'
-        ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
+  if (props?.hidden) {
+    return null;
+  }
+  return sourceType === 'Form'
+    ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
             {(value, onChange) => provider(() => value, onChange)}
         </ConfigurableFormItem>
-        : provider();
+    : provider();
 };
 
 export const TableContext: FC<ITableContextComponentProps> = (props) => {
+  const uniqueKey = useMemo(() => {
+    return `${props.sourceType}_${props.propertyName}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
+  }, [props.sourceType, props.propertyName, props.entityType]);
 
-    const uniqueKey = useMemo(() => {
-        return `${props.sourceType}_${props.propertyName}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
-    }, [props.sourceType, props.propertyName, props.entityType]);
-
-    return <TableContextInner key={uniqueKey} {...props} />;
+  return <TableContextInner key={uniqueKey} {...props} />;
 };

@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useRef, useCallback } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/workArea';
@@ -25,63 +25,59 @@ const ConfigurationStudio: FC = () => {
         if(setGlobalVariables) setGlobalVariables({ configTreePanelSize: DEFAULT_OPTIONS.configTreePanelSize});
       },[])
 
-    return (
-        <ConfigurationStudioProvider>
-            <DocumentDefinitionRegistration definitions={SheshaDocumentDefinitions} />
+  return (
+    <ConfigurationStudioProvider>
+      <DocumentDefinitionRegistration definitions={SheshaDocumentDefinitions} />
 
-            <Layout className={styles.configStudio}>
-                <Layout.Header className={styles.csHeader}>
-                    <div className={styles.csHeaderLeft}>
-                        <Image
-                            src="/favicon.ico"
-                            alt="Shesha"
-                            width={32}
-                            height={32}
-                            className={styles.csLogo}
-                        />
-                        <NewButton />
-                    </div>
-                    <div className={styles.csHeaderCenter}>
-                        <ConfigurationItemMenu />
-                        <QuickInfoIcons />
-                    </div>
-                    <div className={styles.csHeaderRight}>
-                        <ItemToolbarHolder />
-                        <Divider type="vertical" />
-                        <UserProfileBlock />
-                    </div>
-                </Layout.Header>
-                <Layout.Content className={styles.csContent}>
-                    <Splitter onResizeEnd={sizes => {
-                        if (setGlobalVariables) {
-                            const total = sizes.reduce((prev, curr) => prev + curr, 0);
-                            const size = ((((sizes[0] ?? 20) / total) * 100) / 100) * window.innerWidth;
-                            if (total > 0) {
-                                    setGlobalVariables({ configTreePanelSize: size });
-                                }
-                            }
-                        }
-                    }
-                    >
-                        <Splitter.Panel
-                            collapsible
-                            min="5%"
-                            defaultSize={'20%'}
-                            className={styles.csTreeArea}
-                        >
-                            <ConfigurationTree />
-                        </Splitter.Panel>
-                        <Splitter.Panel
-                            min="20%"
-                            className={styles.csWorkArea}
-                        >
-                            <WorkArea />
-                        </Splitter.Panel>
-                    </Splitter>
-                </Layout.Content>
-            </Layout>
-        </ConfigurationStudioProvider>
-    );
+      <Layout className={styles.configStudio}>
+        <Layout.Header className={styles.csHeader}>
+          <div className={styles.csHeaderLeft}>
+            <Image
+              src="/favicon.ico"
+              alt="Shesha"
+              width={32}
+              height={32}
+              className={styles.csLogo}
+            />
+            <NewButton />
+          </div>
+          <div className={styles.csHeaderCenter}>
+            <ConfigurationItemMenu />
+            <QuickInfoIcons />
+          </div>
+          <div className={styles.csHeaderRight}>
+            <ItemToolbarHolder />
+            <Divider type="vertical" />
+            <UserProfileBlock />
+          </div>
+        </Layout.Header>
+        <Layout.Content className={styles.csContent}>
+          <Splitter onResizeEnd={sizes => {
+            if (setGlobalVariables) {
+                  setGlobalVariables({ configTreePanelSize: sizes[0] });
+              }
+            }
+          }
+          >
+            <Splitter.Panel
+              collapsible
+              min="5%"
+              defaultSize={'20%'}
+              className={styles.csTreeArea}
+            >
+              <ConfigurationTree />
+            </Splitter.Panel>
+            <Splitter.Panel
+              min="20%"
+              className={styles.csWorkArea}
+            >
+              <WorkArea />
+            </Splitter.Panel>
+          </Splitter>
+        </Layout.Content>
+      </Layout>
+    </ConfigurationStudioProvider>
+  );
 };
 
 export default withAuth(ConfigurationStudio);

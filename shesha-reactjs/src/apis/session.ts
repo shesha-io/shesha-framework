@@ -43,7 +43,7 @@ export interface GetCurrentLoginInfoOutput {
   tenant?: TenantLoginInfoDto;
 }
 
-export interface GetCurrentLoginInfoOutputAjaxResponse extends IAjaxResponse<GetCurrentLoginInfoOutput> {}
+export type GetCurrentLoginInfoOutputAjaxResponse = IAjaxResponse<GetCurrentLoginInfoOutput>;
 
 export type sessionGetCurrentLoginInfoProps = Omit<
   RestfulShesha.GetProps<GetCurrentLoginInfoOutputAjaxResponse, IAjaxResponseBase, void, void>,

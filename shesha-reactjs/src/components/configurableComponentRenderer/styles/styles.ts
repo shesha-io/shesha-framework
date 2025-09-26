@@ -1,8 +1,7 @@
 import { createStyles } from "antd-style";
 
 export const useStyles = createStyles(({ css, cx, token }) => {
-
-    const shaSidebarEditModeContainer = cx("sha-sidebar-edit-mode-container", css`
+  const shaSidebarEditModeContainer = cx("sha-sidebar-edit-mode-container", css`
         width: 100%;
         height: 100%;
         position: absolute;
@@ -28,7 +27,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
     `);
 
-    return {
-        shaSidebarEditModeContainer
-    };
+  return {
+    shaSidebarEditModeContainer,
+  };
 });

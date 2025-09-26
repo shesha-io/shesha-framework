@@ -13,7 +13,7 @@ export function shaRoutingReducer(
 
   switch (type) {
     case RouteActionEnums.GoingToRoute:
-      /* NEW_ACTION_ENUM_GOES_HERE */
+    /* NEW_ACTION_ENUM_GOES_HERE */
       return {
         ...incomingState,
         ...payload,

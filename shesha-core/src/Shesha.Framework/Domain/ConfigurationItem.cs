@@ -1,7 +1,6 @@
 ﻿using Abp.Auditing;
 using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
-using Shesha.ConfigurationItems;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;

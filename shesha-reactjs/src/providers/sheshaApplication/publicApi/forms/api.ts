@@ -13,12 +13,12 @@ import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 export interface IFormsApi {
   /**
    * Prepare form markup using form template
-   * 
+   *
    * Uses reflection to instantiate the appropriate GenerationLogic implementation
-   * based on the template type. Different templates (like DetailsViewGenerationLogic 
+   * based on the template type. Different templates (like DetailsViewGenerationLogic
    * or TableViewGenerationLogic) will have specialized processing for adding
    * components based on the modelType and other replacements.
-   * 
+   *
    * @param templateId The ID of the form template to use
    * @param replacements An object with properties to replace in the template, including modelType
    * @returns Promise resolving to the processed markup string
@@ -35,17 +35,18 @@ export class FormsApi implements IFormsApi {
   readonly _httpClient: HttpClientApi;
 
   readonly _generationLogicFactory: GenerationLogicFactory;
+
   readonly _entityMetadataHelper: FormMetadataHelper;
 
   constructor(httpClient: HttpClientApi, metadataDispatcher: IMetadataDispatcher) {
     this._formsManager = new FormsManager(httpClient);
     this._httpClient = httpClient;
     this._generationLogicFactory = new GenerationLogicFactory();
-    
+
     this._entityMetadataHelper = new FormMetadataHelper(metadataDispatcher);
   }
 
-  
+
   prepareTemplateAsync = (templateId: string, replacements: object): Promise<string> => {
     if (!templateId)
       return Promise.resolve('');
@@ -62,7 +63,7 @@ export class FormsApi implements IFormsApi {
         if (!template) {
           return '';
         }
-        
+
         const markup = template.markup;
 
         const enhancedReplacements = {
@@ -71,7 +72,7 @@ export class FormsApi implements IFormsApi {
           ...(replacements ?? {}),
         };
 
-         try {
+        try {
           if (!markup) {
             throw new Error('Markup parameter is required');
           }
@@ -83,14 +84,14 @@ export class FormsApi implements IFormsApi {
 
           // Process the template using the appropriate generation logic
           const preparedMarkup = await generationLogic.processTemplate(
-            markup, 
+            markup,
             replacements,
             this._entityMetadataHelper
           );
           return preparedMarkup;
         } catch (error) {
           console.error('Error preparing template markup:', error);
-          
+
           // In case of error, fall back to basic string replacement
           return evaluateString(markup ?? '', enhancedReplacements, true);
         }

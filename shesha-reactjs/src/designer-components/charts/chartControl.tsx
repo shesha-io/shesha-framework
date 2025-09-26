@@ -21,7 +21,7 @@ const chartInnerStyle = {
   justifyContent: 'center',
   padding: 0,
   margin: 0,
-  overflow: 'hidden'
+  overflow: 'hidden',
 };
 
 const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = React.memo(({ evaluatedFilters }) => {
@@ -50,7 +50,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsLoaded, setAxisPropertyLabel, setValuePropertyLabel } = useChartDataActionsContext();
-    // Optimize state initialization with lazy initial state
+  // Optimize state initialization with lazy initial state
   const [metadataProcessed, setMetadataProcessed] = useState(false);
   const isFetchingRef = useRef(false);
   const [faultyProperties, setFaultyProperties] = useState<string[]>([]);
@@ -68,7 +68,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
 
     return {
       hasMissingProperties: missingProperties.length > 0,
-      descriptionMessage: `Please make sure that you've configured the following properties correctly: ${[...new Set(missingProperties)].join(', ')}.`
+      descriptionMessage: `Please make sure that you've configured the following properties correctly: ${[...new Set(missingProperties)].join(', ')}.`,
     };
   }, [entityType, chartType, valueProperty, axisProperty]);
 
@@ -84,7 +84,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     padding: '16px',
     margin: 0,
     boxSizing: 'border-box' as const,
-    overflow: 'hidden'
+    overflow: 'hidden',
   }), [state]);
 
   const processAndUpdateData = (items: {}[], refListMap: Map<string, Map<number, string>>) => {
@@ -284,7 +284,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     setValuePropertyLabel,
     setMetadataProcessed,
     setError,
-    setFaultyProperties
+    setFaultyProperties,
   ]);
 
   useEffect(() => {

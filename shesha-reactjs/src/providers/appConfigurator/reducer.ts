@@ -1,59 +1,25 @@
-import { handleActions } from 'redux-actions';
-import { AppConfiguratorActionEnums } from './actions';
-import { APP_CONTEXT_INITIAL_STATE, IAppStateContext } from './contexts';
-import { ApplicationMode } from './models';
+import { softToggleInfoBlockAction, switchApplicationModeAction, toggleCloseEditModeConfirmationAction, toggleEditModeConfirmationAction } from './actions';
+import { APP_CONTEXT_INITIAL_STATE } from './contexts';
+import { createReducer } from '@reduxjs/toolkit';
 
-export default handleActions<IAppStateContext, any>(
-  {
-    [AppConfiguratorActionEnums.SwitchMode]: (
-      state: IAppStateContext,
-      action: ReduxActions.Action<ApplicationMode>
-    ) => {
-      const { payload } = action;
+const reducer = createReducer(APP_CONTEXT_INITIAL_STATE, (builder) => {
+  builder
+    .addCase(switchApplicationModeAction, (state, { payload }) => {
+      state.mode = payload;
+      state.editModeConfirmationVisible = false;
+      state.closeEditModeConfirmationVisible = false;
+    })
+    .addCase(toggleEditModeConfirmationAction, (state, { payload }) => {
+      state.editModeConfirmationVisible = payload;
+      state.closeEditModeConfirmationVisible = !payload;
+    })
+    .addCase(toggleCloseEditModeConfirmationAction, (state, { payload }) => {
+      state.closeEditModeConfirmationVisible = payload;
+      state.editModeConfirmationVisible = !payload;
+    })
+    .addCase(softToggleInfoBlockAction, (state, { payload }) => {
+      state.softInfoBlock = payload;
+    });
+});
 
-      return {
-        ...state,
-        mode: payload,
-        editModeConfirmationVisible: false,
-        closeEditModeConfirmationVisible: false,
-      };
-    },
-    [AppConfiguratorActionEnums.ToggleEditModeConfirmation]: (
-      state: IAppStateContext,
-      action: ReduxActions.Action<boolean>
-    ) => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        editModeConfirmationVisible: payload,
-        closeEditModeConfirmationVisible: !payload,
-      };
-    },
-    [AppConfiguratorActionEnums.ToggleCloseEditModeConfirmation]: (
-      state: IAppStateContext,
-      action: ReduxActions.Action<boolean>
-    ) => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        closeEditModeConfirmationVisible: payload,
-        editModeConfirmationVisible: !payload,
-      };
-    },
-    [AppConfiguratorActionEnums.SoftToggleInfoBlock]: (
-      state: IAppStateContext,
-      action: ReduxActions.Action<boolean>
-    ) => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        softInfoBlock: payload,
-      };
-    },
-  },
-
-  APP_CONTEXT_INITIAL_STATE
-);
+export default reducer;

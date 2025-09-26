@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, ReactNode, useEffect, useState, useMemo, useCallback } from 'react';
+import React, { FC, PropsWithChildren, ReactNode, useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import classNames from 'classnames';
 
 import { ISidebarProps, SidebarPanelPosition } from './models';
@@ -7,7 +7,7 @@ import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
 import { useCanvas, useShaFormInstance, useSheshaApplication } from '@/index';
-import { calculateAutoZoom, DEFAULT_OPTIONS, usePinchZoom } from '@/providers/canvas/utils';
+import { calculateAutoZoom, DEFAULT_OPTIONS, usePinchZoom, debounce } from '@/providers/canvas/utils';
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;
   rightSidebarProps?: ISidebarProps;
@@ -56,10 +56,31 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     autoZoom
   );
 
+  // Debounce zoom calculation to prevent excessive updates during resize
+  const debouncedZoomUpdate = useRef<((zoom: number) => void) | null>(null);
+  if (!debouncedZoomUpdate.current) {
+    debouncedZoomUpdate.current = debounce((newZoom: number) => {
+      setCanvasZoom(newZoom);
+    }, 100);
+  }
+
   useEffect(() => {
     if (canZoom) {
       setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
-      setCanvasZoom(autoZoom ? calculateAutoZoom({currentZoom: zoom, designerWidth, sizes: currentSizes, configTreePanelSize: configTreePanelSize}) : zoom);
+
+      if (autoZoom) {
+        const newZoom = calculateAutoZoom({
+          currentZoom: zoom,
+          designerWidth,
+          sizes: currentSizes,
+          configTreePanelSize: configTreePanelSize
+        });
+
+        // Use debounced update for configTreePanelSize changes, immediate for others
+        if (debouncedZoomUpdate.current) {
+          debouncedZoomUpdate.current(newZoom);
+        }
+      }
     }
   }, [canZoom, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize]);
   

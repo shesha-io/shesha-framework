@@ -16,7 +16,7 @@ const DEFAULT_DYNAMIC_EVALUATOR: IDynamicActionsContext = {
 };
 
 export const getDynamicItemKey = (item: IResolvedDynamicItem): string => {
-  const { providerUid } = item.dynamicItemsConfiguration ?? {};  
+  const { providerUid } = item.dynamicItemsConfiguration ?? {};
   return `${item.id}:${providerUid}`;
 };
 
@@ -39,11 +39,11 @@ export const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = (
   });
 
   useEffect(() => {
-    if (item.resolvedItems !== evaluatedItems){
+    if (item.resolvedItems !== evaluatedItems) {
       item.resolvedItems = evaluatedItems;
       item.isResolved = true;
       onEvaluated(evaluatedItems);
-    }    
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [evaluatedItems, item.resolvedItems]);
 

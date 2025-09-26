@@ -2,6 +2,17 @@ import { IDeviceTypes } from "./contexts";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useRef } from 'react';
 
+export const debounce = <T extends (...args: any[]) => void>(
+  func: T,
+  wait: number
+): ((...args: Parameters<T>) => void) => {
+  let timeout: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
+
 export const getDeviceTypeByWidth = (width: number): IDeviceTypes => {
   return width > 724
     ? 'desktop'

@@ -30,22 +30,22 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
 
     const size = useMemo(() => _size, [_size]);
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
-    
+
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...dimensionsStyles,
     });
     const finalStyle = removeUndefinedProps({ ...additionalStyles });
 
-    return hidden 
-      ? null 
-      : store 
+    return hidden
+      ? null
+      : store
         ? <GlobalTableFilter block={block} style={finalStyle} searchProps={{
-          size
+          size,
         }} />
         : <Alert
-          className="sha-designer-warning"
-          message="Quick Search must be used within a Data Table Context"
-          type="warning"
+            className="sha-designer-warning"
+            message="Quick Search must be used within a Data Table Context"
+            type="warning"
         />;
   },
   initModel: (model: IQuickSearchComponentProps) => {

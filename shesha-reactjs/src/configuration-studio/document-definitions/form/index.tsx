@@ -9,32 +9,32 @@ import { useMainStyles } from "@/components/formDesigner/styles/styles";
 import { CanvasConfig } from "@/components/formDesigner/toolbar/canvasConfig";
 
 export const FormDocumentDefinition: DocumentDefinition = {
-    documentType: ITEM_TYPES.FORM,
-    Editor: (_props: ItemEditorProps): ReactNode => {
-        const { styles } = useMainStyles();
-        return (
-            <div className={styles.formDesigner}>
-                <DesignerMainArea />
-            </div>
-        );
-    },
-    Provider: ({ children, doc: document }: ProviderRendererProps): ReactNode => {
-        return (
-            <FormDesigner.NonVisual formId={document.itemId}>
-                {children}
-            </FormDesigner.NonVisual>
-        );
-    },
-    Toolbar: (_props: ItemEditorProps): ReactNode => {
-        return (
+  documentType: ITEM_TYPES.FORM,
+  Editor: (_props: ItemEditorProps): ReactNode => {
+    const { styles } = useMainStyles();
+    return (
+      <div className={styles.formDesigner}>
+        <DesignerMainArea />
+      </div>
+    );
+  },
+  Provider: ({ children, doc: document }: ProviderRendererProps): ReactNode => {
+    return (
+      <FormDesigner.NonVisual formId={document.itemId}>
+        {children}
+      </FormDesigner.NonVisual>
+    );
+  },
+  Toolbar: (_props: ItemEditorProps): ReactNode => {
+    return (
             <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center'}}>
             <CanvasConfig/>
-            <FormToolbar />
+      <FormToolbar />
             </div>
-        );
-    },
-    documentInstanceFactory: (args) => {
-        return new DocumentInstance({ ...args, itemType: FormDocumentDefinition.documentType, definition: FormDocumentDefinition });
-    },
-    createModalFooterButtons: 'none',
+    );
+  },
+  documentInstanceFactory: (args) => {
+    return new DocumentInstance({ ...args, itemType: FormDocumentDefinition.documentType, definition: FormDocumentDefinition });
+  },
+  createModalFooterButtons: 'none',
 };

@@ -5,6 +5,7 @@ import { useApiEndpoints } from '@/apis/api';
 import { useDebouncedCallback } from 'use-debounce';
 import { IApiEndpoint } from '@/interfaces';
 import { DefaultOptionType } from 'antd/lib/select';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface IHttpVerb {
   id: string;
@@ -47,7 +48,7 @@ export interface VerbSelectorProps {
 }
 export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange, size }) => {
   const options: DefaultOptionType[] = useMemo(() => {
-    return (verbs ?? []).map<DefaultOptionType>(verb => ({
+    return (verbs ?? []).map<DefaultOptionType>((verb) => ({
       value: verb.value,
       label: verb.label,
     }));
@@ -80,7 +81,6 @@ const getVerbFromValue = (value?: EndpointsAutocompleteValue) => {
 };
 
 export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnly = false, mode = 'url', ...props }) => {
-
   const endpointsFetcher = useApiEndpoints({ lazy: true });
 
   const doFetchItems = (term: string, verb: string) => {
@@ -100,7 +100,9 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     debouncedFetchItems(url, currentVerb);
   }, [currentVerb]);
 
-  const loadedEndpoints = endpointsFetcher.data?.result;
+  const loadedEndpoints = isAjaxSuccessResponse(endpointsFetcher.data)
+    ? endpointsFetcher.data.result
+    : undefined;
   const options = useMemo(() => {
     return (loadedEndpoints ?? []).map<IOption>((ep, idx) => ({
       key: idx,

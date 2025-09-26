@@ -10,23 +10,23 @@ import { IPropertyMetadata, IStyleType } from "@/interfaces";
 export const MAX_TITLE_LINE_LENGTH = 12;
 
 export const defaultStyles = (): IStyleType => {
-    return {
-        background: { type: 'color', color: '#fff' },
-        font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
-        border: {
-            border: {
-                all: { width: '1px', style: 'solid', color: '#d9d9d9' },
-                top: { width: '1px', style: 'solid', color: '#d9d9d9' },
-                bottom: { width: '1px', style: 'solid', color: '#d9d9d9' },
-                left: { width: '1px', style: 'solid', color: '#d9d9d9' },
-                right: { width: '1px', style: 'solid', color: '#d9d9d9' },
-            },
-            radius: { all: 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
-            borderType: 'all',
-            radiusType: 'all'
-        },
-        dimensions: { width: '100%', height: '400px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
-    };
+  return {
+    background: { type: 'color', color: '#fff' },
+    font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
+    border: {
+      border: {
+        all: { width: '1px', style: 'solid', color: '#d9d9d9' },
+        top: { width: '1px', style: 'solid', color: '#d9d9d9' },
+        bottom: { width: '1px', style: 'solid', color: '#d9d9d9' },
+        left: { width: '1px', style: 'solid', color: '#d9d9d9' },
+        right: { width: '1px', style: 'solid', color: '#d9d9d9' },
+      },
+      radius: { all: 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
+      borderType: 'all',
+      radiusType: 'all',
+    },
+    dimensions: { width: '100%', height: '400px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+  };
 };
 
 /**
@@ -38,7 +38,7 @@ export const defaultStyles = (): IStyleType => {
  */
 export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProperty: string | null, valueProperty: string | null, groupingProperty: string | null) => {
   const faultyProperties: string[] = [];
-  
+
   if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.split('.')[0]?.toLowerCase())) {
     faultyProperties.push(`'axisProperty'`);
   }
@@ -53,57 +53,57 @@ export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProp
 
 // Optimized data processing function
 export const processItems = (items: any[], refListMap: Map<string, Map<any, string>>) => {
-    const processedItems = new Array(items.length);
+  const processedItems = new Array(items.length);
 
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      const processedItem: any = {};
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    const processedItem: any = {};
 
-      // Process all properties in a single pass
-      for (const key in item) {
-        if (Object.hasOwn(item, key)) {
-          let value = item[key];
+    // Process all properties in a single pass
+    for (const key in item) {
+      if (Object.hasOwn(item, key)) {
+        let value = item[key];
 
-          // Handle null/undefined values
-          value ??= 'undefined';
+        // Handle null/undefined values
+        value ??= 'undefined';
 
-          // Apply reference list mapping if available
-          if (refListMap.has(key)) {
-            const refMap = refListMap.get(key);
-            value = refMap.get(value) || value;
-          }
-
-          processedItem[key] = value;
+        // Apply reference list mapping if available
+        if (refListMap.has(key)) {
+          const refMap = refListMap.get(key);
+          value = refMap.get(value) || value;
         }
+
+        processedItem[key] = value;
+      }
+    }
+
+    processedItems[i] = processedItem;
+  }
+
+  return processedItems;
+};
+
+// Optimized sorting function
+export const sortItems = (items: any[], isTimeSeries: boolean, property: string) => {
+  if (isTimeSeries) {
+    return items.sort((a, b) => {
+      const aTime = new Date(a[property]).getTime();
+      const bTime = new Date(b[property]).getTime();
+      return aTime - bTime;
+    });
+  } else {
+    return items.sort((a, b) => {
+      const aVal = a[property];
+      const bVal = b[property];
+
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return aVal - bVal;
       }
 
-      processedItems[i] = processedItem;
-    }
-
-    return processedItems;
-  };
-
-  // Optimized sorting function
-export const sortItems = (items: any[], isTimeSeries: boolean, property: string) => {
-    if (isTimeSeries) {
-      return items.sort((a, b) => {
-        const aTime = new Date(a[property]).getTime();
-        const bTime = new Date(b[property]).getTime();
-        return aTime - bTime;
-      });
-    } else {
-      return items.sort((a, b) => {
-        const aVal = a[property];
-        const bVal = b[property];
-
-        if (typeof aVal === 'number' && typeof bVal === 'number') {
-          return aVal - bVal;
-        }
-
-        return String(aVal).localeCompare(String(bVal));
-      });
-    }
-  };
+      return String(aVal).localeCompare(String(bVal));
+    });
+  }
+};
 
 /**
  * Function to manage the length of the title, ie if the title is too long, we need to split it into multiple lines
@@ -114,10 +114,10 @@ export const sortItems = (items: any[], isTimeSeries: boolean, property: string)
  */
 export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_TITLE_LINE_LENGTH, lineCount: number = 5): string | string[] => {
   if (!title) return '';
-  
+
   const words = title.split(' ');
   const MAX_CHARS_PER_LINE = 30;
-  
+
   // If there's only one word (no spaces), handle character-based splitting
   if (words.length === 1) {
     const singleWord = words[0];
@@ -125,7 +125,7 @@ export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_
     if (singleWord.length <= 10) {
       return title;
     }
-    
+
     // Split the long word into chunks, ensuring no line exceeds 30 characters
     const lines = [];
     for (let i = 0; i < singleWord.length; i += MAX_CHARS_PER_LINE) {
@@ -138,7 +138,7 @@ export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_
     }
     return lines;
   }
-  
+
   // Handle multiple words with character limit enforcement
   const lines = [];
   let currentLine = '';
@@ -152,7 +152,7 @@ export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_
     // Check if adding this word would exceed the line word limit OR character limit
     const currentWordCount = currentLine ? currentLine.split(' ').length : 0;
     const potentialLine = currentLine + (currentLine ? ' ' : '') + word;
-    
+
     if (currentWordCount < lineWordLength && potentialLine.length <= MAX_CHARS_PER_LINE) {
       // Add word to current line
       currentLine = potentialLine;
@@ -163,7 +163,7 @@ export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_
         lines.push(currentLine + "...");
         return lines;
       }
-      
+
       lines.push(currentLine);
       currentLine = word; // Start new line with current word
     }
@@ -191,23 +191,23 @@ export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_
 export const getResponsiveStyle = (props: IChartsProps) => {
   // Check if we're on a small screen (iPhone SE width is 375px)
   const isSmallScreen = typeof window !== 'undefined' && window.innerWidth <= 480;
-  
+
   return {
     // Responsive height with better mobile support
-    height: props?.height 
+    height: props?.height
       ? `${props.height}px`
-      : isSmallScreen 
+      : isSmallScreen
         ? 'clamp(300px, 60vh, 600px)'  // Better mobile height utilization
         : 'clamp(400px, 70vh, 800px)', // Better desktop height utilization
-    
+
     // Responsive width - use full available space
-    width: props?.width 
+    width: props?.width
       ? `${props.width}px`
       : '100%', // Use full width available
-    
+
     // Additional responsive optimizations
     minHeight: isSmallScreen ? '300px' : '400px',
-    maxHeight: isSmallScreen ? '600px' : '800px'
+    maxHeight: isSmallScreen ? '600px' : '800px',
   };
 };
 
@@ -246,7 +246,7 @@ export const defaultConfigFiller: {
   valueProperty: string;
   aggregationMethod: TAggregationMethod;
 } = {
-  showTitle: true, 
+  showTitle: true,
   simpleOrPivot: 'simple',
   dataMode: 'entityType',
   entityType: 'Shesha.Domain.FormConfiguration',
@@ -261,7 +261,7 @@ export const defaultConfigFiller: {
  * @returns array of objects with stringified values
  */
 export const stringifyValues = (data: object[]) => {
-  return data?.map(item => {
+  return data?.map((item) => {
     const processValue = (value: any): any => {
       if (value === null || value === undefined) {
         return 'undefined';
@@ -314,7 +314,7 @@ function removePropertyDuplicates(str) {
 function convertNestedPropertiesToObjectFormat(array?: string[]) {
   if (!array) return '';
 
-  return array?.filter(path => path && path?.trim() !== '')?.map(path => {
+  return array?.filter((path) => path && path?.trim() !== '')?.map((path) => {
     let parts = path.split('.');
     let result = '';
     let indentation = 0;
@@ -399,7 +399,7 @@ export function getLastPartOfProperty(property: string) {
 }
 
 /**
- * Function to check if a value is an ISO string  
+ * Function to check if a value is an ISO string
  * - An ISO string is a string that matches the ISO 8601 format
  * - Example: '2021-08-25T12:00:00.000Z'
  * - The format is 'YYYY-MM-DDTHH:MM:SS.sssZ'
@@ -423,10 +423,10 @@ export function formatDate(data, timeUnit: TTimeSeriesFormat, properties: string
   const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
 
-  return data?.map(item => {
+  return data?.map((item) => {
     let modifiedItem = { ...item };
 
-    properties.forEach(property => {
+    properties.forEach((property) => {
       if (item[property] && isIsoString(item[property])) {
         const date = new Date(item[property]);
 
@@ -762,7 +762,7 @@ export function aggregateValues(items: object[], aggregationMethod: TAggregation
     // Ensure we have a number
     return typeof value === 'number' ? value : 0;
   });
-  
+
   switch (aggregationMethod) {
     case 'sum':
       return values.reduce((acc, val) => acc + val, 0);
