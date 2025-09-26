@@ -40,6 +40,7 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 export interface IStoredFilesProviderProps {
   ownerId: string;
@@ -87,7 +88,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const {
+    loading: isFetchingFileList,
     refetch: fetchFileListHttp,
+    data: fileListResponse,
   } = useGet<IAjaxResponse<IStoredFile[]>>({
     path: filesListEndpoint.url,
     queryParams: {
@@ -123,6 +126,19 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         });
     }
   }, [ownerId, ownerType, filesCategory, propertyName]);
+
+  useEffect(() => {
+    if (!isFetchingFileList) {
+      if (isAjaxSuccessResponse(fileListResponse)) {
+        const { result } = fileListResponse;
+        const fileList = filesReducer(result as IStoredFile[]);
+
+        dispatch(fetchFileListSuccessAction(fileList));
+      } else {
+        dispatch(fetchFileListErrorAction());
+      }
+    }
+  }, [isFetchingFileList, fileListResponse]);
 
   //#region Register signal r events
   useEffect(() => {
@@ -170,7 +186,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       return;
     }
 
-    // Dispatch and notify optimistically with the uploading item
     dispatch(uploadFileRequestAction(newFile));
 
     uploadFileHttp(uploadFileEndpoint, formData)
@@ -216,9 +231,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
         }; 
       })
-      .catch(() => {
-        deleteFileError(fileIdToDelete);
-      });
+      .catch(() => deleteFileError(fileIdToDelete));
   };
 
   //#endregion
