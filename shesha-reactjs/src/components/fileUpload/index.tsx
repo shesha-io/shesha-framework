@@ -198,7 +198,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return (
       <div>
         {showThumbnailControls && styledfileControls()}
-        <span title={file.name}>
+        <a title={file.name}>
           <Space>
             <div className="thumbnail-item-name">
               {(listType === 'text' || !hideFileName) && (
@@ -214,7 +214,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
               {showTextControls && fileControls(theme.application.primaryColor)}
             </div>
           </Space>
-        </span>
+        </a>
       </div>
     );
   };
