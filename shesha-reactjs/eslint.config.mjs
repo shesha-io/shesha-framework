@@ -13,6 +13,29 @@ import memoryTracePlugin from "./src/eslint-plugins/eslint-plugin-memory-monitor
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const isLightBuild = process.env.SHA_LIGHT_BUILD ? "true" : "false";
+console.log(`Light build is: ${isLightBuild}`);
+
+const strictFolders = isLightBuild
+    ? []
+    : [
+        "src/configuration-studio",
+        //"src/utils",
+
+        "src/providers/referenceListDispatcher",
+        "src/providers/metadataDispatcher",
+        "src/providers/metadata",
+        "src/providers/configurationItemsLoader",
+        "src/providers/formPersisterProvider",
+        "src/providers/formMarkupConverter",
+        "src/providers/formManager",
+        "src/providers/configurableActionsDispatcher",
+        "src/providers/auth",
+        "src/providers/appConfigurator",
+        "src/providers/dataContextManager",
+        "src/providers/dataContextProvider",
+    ];
+
 const stylisticOverrides = {
     ...stylistic.configs.recommended.rules,
     "@stylistic/brace-style": ["error", "1tbs", { "allowSingleLine": false }],
@@ -175,7 +198,8 @@ const baseTsConfig = {
         sourceType: "module",
 
         parserOptions: {
-            project: "tsconfig.json",
+            //project: ["tsconfig.json", ...strictFolders.map(f => `${f}/tsconfig.json`)],
+            projectService: true, // Enable project service
             tsconfigRootDir: __dirname,
         },
     },
@@ -340,7 +364,8 @@ const makeStrictConfig = (path) => {
         languageOptions: {
             ...baseTsConfig.languageOptions,
             parserOptions: {
-                project: `${path}/tsconfig.json`,
+                //project: `${path}/tsconfig.json`,
+                projectService: true, // Enable project service
                 tsconfigRootDir: __dirname,
             },
         },
@@ -355,24 +380,6 @@ const makeStrictConfig = (path) => {
         },
     };
 }
-
-const strictFolders = [
-    "src/configuration-studio",
-    //"src/utils",
-
-    "src/providers/referenceListDispatcher",
-    "src/providers/metadataDispatcher",
-    "src/providers/metadata",
-    "src/providers/configurationItemsLoader",
-    "src/providers/formPersisterProvider",
-    "src/providers/formMarkupConverter",
-    "src/providers/formManager",
-    "src/providers/configurableActionsDispatcher",
-    "src/providers/auth",
-    "src/providers/appConfigurator",
-    "src/providers/dataContextManager",
-    "src/providers/dataContextProvider",
-];
 
 export default [
     {

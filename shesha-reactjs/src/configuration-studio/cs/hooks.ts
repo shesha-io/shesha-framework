@@ -70,7 +70,9 @@ export const useCsTreeDnd = (): UseCsTreeDndResponse => {
     }
     : {
       isDragging: false,
-      setIsDragging: () => {},
+      setIsDragging: () => {
+        //
+      },
     };
 };
 
