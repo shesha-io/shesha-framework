@@ -32,7 +32,7 @@ export const DeviceOptions: FC<IPreviewButtonProps> = () => {
           </Tooltip>
         );
       }}
-      options={screenSizeOptions}
+      options={screenSizeOptions.map((opt) => ({ ...opt, title: opt.value }))}
     />
   );
 };

@@ -29,6 +29,7 @@ export const CANVAS_CONTEXT_INITIAL_STATE: ICanvasStateContext = {
   zoom: 100,
   autoZoom: true,
   designerDevice: 'desktop',
+  designerWidth: '1024px',
   configTreePanelSize: (20 / 100) * window.innerWidth,
 };
 

@@ -60,31 +60,30 @@ export interface IAutoZoomParams {
   designerWidth?: string;
   sizes?: number[];
   isSidebarCollapsed?: boolean;
-  renderSource?: 'modal' | 'designer-page';
   configTreePanelSize?: number;
 };
 
 export const DEFAULT_OPTIONS = {
   minZoom: 25,
   maxZoom: 200,
-  defaultSizes: [25, 50, 25],
-  configTreePanelSize: (20 / 100) * window.innerWidth,
-  sizeablePanelsGutter: 4,
+  sizes: [25, 50, 25],
+  configTreePanelWidth: (val: number = 20) => (val / 100) * window.innerWidth,
+  gutter: 4,
+  designerWidth : '1024px'
 };
 
 const valueToPercent = (value: number) => value / 100;
 
 export function calculateAutoZoom(params: IAutoZoomParams): number {
-  const { designerWidth = '1024px', sizes = DEFAULT_OPTIONS.defaultSizes, configTreePanelSize = DEFAULT_OPTIONS.configTreePanelSize } = params;
-  const availableWidthPercent = sizes[1] || 100;
+  const { designerWidth = DEFAULT_OPTIONS.designerWidth, sizes = DEFAULT_OPTIONS.sizes, configTreePanelSize = DEFAULT_OPTIONS.configTreePanelWidth() } = params;
+  const availableWidthPercent = sizes[1];
 
   if (typeof window === 'undefined') {
     return 100;
   }
 
-  const guttersSize = 3 * DEFAULT_OPTIONS.sizeablePanelsGutter;
-  const safePanelSize = typeof configTreePanelSize === 'number' ? configTreePanelSize : 0;
-  const viewportWidth = Math.max(0, window.innerWidth - safePanelSize - guttersSize);
+  const guttersAndScrollersSize = 28;
+  const viewportWidth = Math.max(0, window.innerWidth - configTreePanelSize - guttersAndScrollersSize);
   const availableWidth = valueToPercent(availableWidthPercent) * viewportWidth;
 
   let canvasWidth: number;

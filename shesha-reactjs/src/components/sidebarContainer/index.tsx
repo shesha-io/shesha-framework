@@ -16,6 +16,7 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   allowFullCollapse?: boolean;
   canZoom?: boolean;
   configTreePanelSize?: string | number;
+  noPadding?: boolean;
 }
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({
@@ -53,7 +54,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
   useEffect(() => {
     if (canZoom) {
-      setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
       if (autoZoom) {
         const newZoom = calculateAutoZoom({
           currentZoom: zoom,
@@ -61,7 +61,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
           sizes: currentSizes,
           configTreePanelSize: configTreePanelSize,
         });
-
         setCanvasZoom(newZoom);
       }
     }
@@ -103,7 +102,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         maxSize={sizes?.maxSizes}
         onDrag={handleDragSizesChange}
         onDragEnd={handleDragSizesChange}
-        gutterSize={DEFAULT_OPTIONS.sizeablePanelsGutter}
+        gutterSize={DEFAULT_OPTIONS.gutter}
         gutterAlign="center"
         snapOffset={5}
         dragInterval={12}
@@ -125,7 +124,19 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse }
           )}
         >
-          <div ref={canvasRef} className={styles.sidebarContainerMainAreaBody} style={isDesigner && canZoom ? { width: designerWidth, zoom: `${zoom}%`, transformOrigin: 'top left', overflow: 'auto', margin: '0 auto' } : {}}>{children}</div>
+          <div
+            ref={canvasRef}
+            className={classNames(
+              styles.sidebarContainerMainAreaBody,
+              { [styles.designerCanvas]: isDesigner && canZoom }
+            )}
+            style={isDesigner && canZoom ? {
+              width: designerWidth,
+              zoom: `${zoom}%`
+            } : {}}
+          >
+            {children}
+          </div>
         </div>
         {renderSidebar('right')}
       </SizableColumns>

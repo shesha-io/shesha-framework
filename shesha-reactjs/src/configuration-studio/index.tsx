@@ -17,8 +17,7 @@ import { SheshaDocumentDefinitions } from './document-definitions';
 import { useCanvas } from '@/providers';
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
-  const { setConfigTreePanelSize } = useCanvas();
-
+  const canvas = useCanvas();
 
   return (
     <ConfigurationStudioProvider>
@@ -48,7 +47,7 @@ const ConfigurationStudio: FC = () => {
         </Layout.Header>
         <Layout.Content className={styles.csContent}>
           <Splitter onResizeEnd={(sizes) => {
-            setConfigTreePanelSize(sizes[0]);
+            canvas?.setConfigTreePanelSize(sizes[0] || 0);
           }}
           >
             <Splitter.Panel

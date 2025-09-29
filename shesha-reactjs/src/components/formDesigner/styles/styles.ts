@@ -372,6 +372,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
         .${designerWorkArea}{
             background-color: white;
+            height: 100%;
             .${shaComponentsContainer} {
                 border-radius: 2px;
             
@@ -389,11 +390,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
 
             > div {
+             height: 100%;
              .sha-drop-hint {
                 display: none;
              }
                 > div:not(.sha-drop-hint) {
                     min-height: 100vh;
+                    height: 100%;
                 }
                     
                 > .sha-components-container-inner:not(:has(.sha-component)) {
