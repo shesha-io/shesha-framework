@@ -491,17 +491,17 @@ export const ReactTable: FC<IReactTableProps> = ({
       >
           <div
             style={{
-                maxHeight: 300,
-                overflowY: "auto",
-                backgroundColor: "white",
-                padding: 8,
-                border: "1px solid rgba(0,0,0,0.15)",
-                borderRadius: 4,
-                boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
-                display: "inline-block",
-                whiteSpace: "pre-wrap",
-                maxWidth: "80vw",
-                wordBreak: "break-word",
+              maxHeight: 300,
+              overflowY: "auto",
+              backgroundColor: "white",
+              padding: 8,
+              border: "1px solid rgba(0,0,0,0.15)",
+              borderRadius: 4,
+              boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
+              display: "inline-block",
+              whiteSpace: "pre-wrap",
+              maxWidth: "80vw",
+              wordBreak: "break-word",
             }}
           >
             {cellRef?.current?.innerText}
