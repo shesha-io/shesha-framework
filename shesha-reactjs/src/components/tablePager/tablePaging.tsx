@@ -93,7 +93,7 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
         <Select
           size="small"
           className={styles.dropdown}
-          style={{ width: 100 }}
+          style={{ width: 100, ...style }}
           classNames={{ popup: { root: styles.popup } }}
           options={pageSizeOptions.map((s) => ({ label: `${s} / page`, value: s }))}
           value={selectedPageSize}
