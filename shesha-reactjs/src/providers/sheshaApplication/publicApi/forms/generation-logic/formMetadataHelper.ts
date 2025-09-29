@@ -11,6 +11,7 @@ import { isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
  */
 export class FormMetadataHelper {
   private _metadataDispatcher: IMetadataDispatcher;
+  private _modelType: string | null = null;
 
   /**
    * Creates an instance of FormMetadataHelper.
@@ -19,7 +20,7 @@ export class FormMetadataHelper {
   constructor(metadataDispatcher: IMetadataDispatcher) {
     this._metadataDispatcher = metadataDispatcher;
   }
-
+  
   /**
    * Fetches entity metadata from the backend or an API service using IMetadataDispatcher.
    * @param modelType The type of model to fetch metadata for.
@@ -32,6 +33,9 @@ export class FormMetadataHelper {
     }
 
     try {
+      // Store the model type for use in other methods
+      this._modelType = modelType;
+      
       const metadata = await this._metadataDispatcher.getMetadata({
         modelType: modelType,
         dataType: DataTypes.entityReference,
@@ -194,6 +198,15 @@ export class FormMetadataHelper {
         builder.addDropdown({
           ...commonProps,
           dataSourceType: 'referenceList',
+          border: {
+            hideBorder: false,
+            radiusType: 'all',
+            borderType: 'all',
+            border: {
+              all: { width: 1, style: 'solid', color: '#d9d9d9' }
+            },
+            radius: { all: 8 }
+          },
           referenceListName: property.referenceListName,
           referenceListId: {
             module: property.referenceListModule,
@@ -205,6 +218,26 @@ export class FormMetadataHelper {
         builder.addCheckbox(commonProps);
         break;
 
+      case DataTypes.date:
+      case DataTypes.dateTime:
+        builder.addDateField(commonProps);
+        break;
+
+      case DataTypes.time:
+        builder.addTimePicker(commonProps);
+        break;
+
+      case DataTypes.file:
+        builder.addFileUpload({
+          ...commonProps,
+          font: {
+            size: 14,
+          },
+          ownerId: '{data.id}',
+          ownerType: this._modelType || '',
+        });
+        break;
+      
       default:
         break;
     }
