@@ -109,7 +109,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         dragInterval={12}
         direction="horizontal"
         cursor="col-resize"
-        // className={classNames(styles.sidebarContainerBody)}
+        className={classNames(styles.sidebarContainerBody)}
       >
         {renderSidebar('left')}
 
