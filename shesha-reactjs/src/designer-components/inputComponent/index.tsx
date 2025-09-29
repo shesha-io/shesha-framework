@@ -34,6 +34,7 @@ import { CustomLabelValueEditorInputs, getEditor } from './utils';
 import EditModeSelector from '@/components/editModeSelector';
 import Icon from '@/components/icon/Icon';
 import { DatePickerWrapper } from '../dateField/datePickerWrapper';
+import CalendarSelectorSettingsModal from '@/components/calendar/options/modal';
 
 const { Password } = Input;
 
@@ -336,6 +337,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
         case 'date':
             return <DatePickerWrapper {...props} />;
+
+        case 'calendarSelectorSettingsModal':
+            return <CalendarSelectorSettingsModal readOnly {...props} />
 
         default:
             return <Input
