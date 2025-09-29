@@ -41,6 +41,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   }, []);
 
   const handleZoomChange = useCallback((newZoom: number) => {
+    if (!canZoom) return;
     setCanvasZoom(newZoom);
   }, [setCanvasZoom]);
 
@@ -64,11 +65,11 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         setCanvasZoom(newZoom);
       }
     }
-  }, [canZoom, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize]);
+  }, [canZoom, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize, zoom]);
 
   useEffect(() => {
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
-  }, [isOpenRight, isOpenLeft]);
+  }, [isOpenRight, isOpenLeft, leftSidebarProps, rightSidebarProps, allowFullCollapse]);
 
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
@@ -108,7 +109,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         dragInterval={12}
         direction="horizontal"
         cursor="col-resize"
-        className={classNames(styles.sidebarContainerBody)}
+        // className={classNames(styles.sidebarContainerBody)}
       >
         {renderSidebar('left')}
 
