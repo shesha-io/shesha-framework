@@ -30,12 +30,12 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
   ): Promise<void> {
     try {
       const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
-      
+
       // Add header components and get properties used in key information bar
       const usedKeyInfoPropertyPaths = this.addHeader(entity, nonFrameworkProperties, markup, extensionJson, metadataHelper);
 
       // Filter out properties shown in the key information bar
-      const propertiesForDetailsPanel = nonFrameworkProperties.filter(prop => {
+      const propertiesForDetailsPanel = nonFrameworkProperties.filter((prop) => {
         const propIdentifier = prop.path || prop.label || '';
         return !usedKeyInfoPropertyPaths.includes(propIdentifier);
       });
@@ -98,12 +98,12 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
       if (keyInfoBarContainer.length === 0) {
         throw new Error("No key information bar container found in the markup.");
       }
-      
+
       // Save paths of properties that will be used in the key info bar
-      extensionJson.keyInformationBarProperties.forEach(path => {
+      extensionJson.keyInformationBarProperties.forEach((path) => {
         usedKeyInfoPropertyPaths.push(path);
       });
-      
+
       const keyInfoProperties = metadata.filter((x) =>
         extensionJson.keyInformationBarProperties?.includes(x.path || x.label || '')
       );
@@ -113,7 +113,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
         return usedKeyInfoPropertyPaths;
       } else {
         const keyInfoBarBuilder = new DesignerToolbarSettings({});
-        
+
         keyInfoBarBuilder.addKeyInformationBar({
           id: nanoid(),
           propertyName: "keyInformationBar",
@@ -160,7 +160,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
         }
       }
     }
-    
+
     return usedKeyInfoPropertyPaths;
   }
 

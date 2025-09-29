@@ -134,7 +134,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     // Implementation for adding columns to the markup
     const builder = new DesignerToolbarSettings({});
 
-    var dataTableName = `datatable ${nanoid()}`
+    const dataTableName = `datatable ${nanoid()}`;
     builder.addDatatable({
       id: nanoid(),
       propertyName: dataTableName,
