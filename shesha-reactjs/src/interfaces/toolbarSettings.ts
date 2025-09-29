@@ -168,6 +168,11 @@ export class DesignerToolbarSettings<T> {
   ) {
     const obj = typeof props !== 'function' ? props : props(this.data);
     obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
+    if (!obj.header)
+      obj.header = {
+        id: nanoid(),
+        components: [],
+      };
     return this.addProperty(obj, 'collapsiblePanel');
   }
 
