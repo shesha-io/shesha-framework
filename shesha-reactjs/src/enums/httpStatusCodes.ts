@@ -52,6 +52,6 @@ export enum HttpStatusCodes {
   BadGateway = 502, // The server was acting as a gateway or proxy and received an invalid response from the upstream serve
   ServiceUnavailable = 503, // The server is currently unavailable (overloaded or down)
   GatewayTimeout = 504, // The server was acting as a gateway or proxy and did not receive a timely response from the upstream server
-  HTTPVersionNotSupported = 505, // 	The server does not support the HTTP protocol version used in the request
+  HTTPVersionNotSupported = 505, // The server does not support the HTTP protocol version used in the request
   NetworkAuthenticationRequired = 511, // The client needs to authenticate to gain network access
 }

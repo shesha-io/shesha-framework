@@ -19,7 +19,7 @@ interface IQueryParams {
   [key: string]: any;
 }
 
-export interface UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams> {
+export interface UseGetProps<TData, TQueryParams, TPathParams> {
   /**
    * The path at which to request data,
    * typically composed by parent Gets or the RestfulProvider.
@@ -52,7 +52,7 @@ export interface UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams> {
   headers?: IHttpHeadersDictionary;
 }
 
-type RefetchOptions<TData, /* TError,*/ TQueryParams, TPathParams> = Partial<
+type RefetchOptions<TData, TQueryParams, TPathParams> = Partial<
   Omit<UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams>, 'lazy'>
 >;
 

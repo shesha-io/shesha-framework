@@ -54,8 +54,8 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
       data.forEach((node) => {
         if (isConfigItemTreeNode(node)) {
           const filterPassed = mode === 'all' ||
-            mode === 'updated' && node.flags.isUpdated ||
-            mode === 'updated-by-me' && node.flags.isUpdatedByMe;
+            (mode === 'updated' && node.flags.isUpdated) ||
+            (mode === 'updated-by-me' && node.flags.isUpdatedByMe);
           if (filterPassed) {
             if (quickSearch) {
               const newTitle = getTitleWithHighlight(node, quickSearch);

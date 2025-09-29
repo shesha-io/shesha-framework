@@ -122,17 +122,17 @@ export type TOrderDirection = 'asc' | 'desc';
  * To be used in the filter component
  */
 export type TOperator =
-    'equals' |
-    'not_equals' |
-    'contains' |
-    'does_not_contain' |
-    'is_empty' |
-    'is_not_empty' |
-    'is_greater_than' |
-    'is_less_than' |
-    'is_greater_than_or_equals' |
-    'is_less_than_or_equals' |
-    'starts_with' |
-    'ends_with' |
-    'is' |
-    'is_not';
+  'equals' |
+  'not_equals' |
+  'contains' |
+  'does_not_contain' |
+  'is_empty' |
+  'is_not_empty' |
+  'is_greater_than' |
+  'is_less_than' |
+  'is_greater_than_or_equals' |
+  'is_less_than_or_equals' |
+  'starts_with' |
+  'ends_with' |
+  'is' |
+  'is_not';

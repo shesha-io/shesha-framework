@@ -148,7 +148,7 @@ export const getFormCacheKey = (formId: FormIdentifier): string => {
  * Convert size value (numeric or string) to a valid css property value. Numeric values are converted to pixels, string values remain as is.
  */
 export const toSizeCssProp = (value: string | number): string | undefined => {
-  return typeof (value) === 'string' && isNumeric(value) || typeof (value) === 'number'
+  return (typeof (value) === 'string' && isNumeric(value)) || typeof (value) === 'number'
     ? `${value}px`
     : Boolean(value)
       ? value

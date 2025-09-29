@@ -37,11 +37,11 @@ import {
 type MenuItem = MenuProps['items'][number];
 
 const allOptions: IDictionary<IndexColumnFilterOption[]> = {
-  date: ['equals', 'between', 'before', 'after'],
+  "date": ['equals', 'between', 'before', 'after'],
   'date-time': ['equals', 'between', 'before', 'after'],
-  time: ['equals', 'between', 'before', 'after'],
-  number: ['lessThan', 'greaterThan', 'equals', 'between'],
-  string: ['contains', 'startsWith', 'endsWith', 'equals'],
+  "time": ['equals', 'between', 'before', 'after'],
+  "number": ['lessThan', 'greaterThan', 'equals', 'between'],
+  "string": ['contains', 'startsWith', 'endsWith', 'equals'],
 };
 
 export const getFilterOptions = (dataType: string): IndexColumnFilterOption[] => {

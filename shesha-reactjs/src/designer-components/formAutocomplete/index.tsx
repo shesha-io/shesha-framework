@@ -30,11 +30,10 @@ const FormAutocompleteComponent: IToolboxComponent<IFormAutocompleteComponentPro
         mode: 'single',
         entityType: 'Shesha.Core.FormConfiguration',
         filter: {
-          "==": [{ "var": "isTemplate" }, false],
+          "==": [{ var: "isTemplate" }, false],
         },
       };
-    })
-  ,
+    }),
 };
 
 export default FormAutocompleteComponent;

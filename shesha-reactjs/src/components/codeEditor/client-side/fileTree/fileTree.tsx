@@ -35,12 +35,12 @@ export const FileTree: FC<IFileTreeProps> = (props) => {
 
     const getParentNode = (node: FileTreeNode): FileTreeNode => {
       return node.parentId
-        ?  treeNodes.map[node.parentId]
+        ? treeNodes.map[node.parentId]
         : undefined;
     };
 
     let currentNode = getParentNode(node);
-    while(currentNode) {
+    while (currentNode) {
       result.push(currentNode.key);
       currentNode = getParentNode(currentNode);
     }

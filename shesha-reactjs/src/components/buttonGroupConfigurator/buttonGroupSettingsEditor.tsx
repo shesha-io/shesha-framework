@@ -62,7 +62,8 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
             <Button shape="round" size="small" type="link" onClick={onAddItemClick}>Add item</Button>
             <Divider type="vertical" />
             <Button shape="round" size="small" type="link" onClick={onAddGroupClick}>Add group</Button>
-          </Divider>)
+          </Divider>
+        )
         : null
     : null;
 };

@@ -205,8 +205,8 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
             <QueryBuilderRenderer
               readOnly={readOnly}
               propertyName="filters"
-              type={''}
-              id={''}
+              type=""
+              id=""
               label="Query builder"
             />
           </QueryBuilderWithModelType>

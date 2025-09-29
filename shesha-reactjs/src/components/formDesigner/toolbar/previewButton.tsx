@@ -15,7 +15,7 @@ export const PreviewButton: FC<IPreviewButtonProps> = (props) => {
 
   return (
         <Button
-          icon={<EyeOutlined/>}
+          icon={<EyeOutlined />}
           onClick={() => {
             setFormMode(formMode === 'designer' ? 'edit' : 'designer');
             setFormDesignerMode(formMode === 'designer' ? 'edit' : 'designer');

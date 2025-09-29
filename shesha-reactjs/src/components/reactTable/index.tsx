@@ -499,10 +499,9 @@ export const ReactTable: FC<IReactTableProps> = ({
               borderRadius: 4,
               boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
               display: "inline-block",
-              whiteSpace: "nowrap",
-              overflowX: "auto",
-              maxWidth: "100vw",
-              wordBreak: "keep-all",
+              whiteSpace: "pre-wrap",
+              maxWidth: "80vw",
+              wordBreak: "break-word",
             }}
           >
             {cellRef?.current?.innerText}
@@ -563,12 +562,12 @@ export const ReactTable: FC<IReactTableProps> = ({
   return (
     <Spin
       spinning={loading}
-      indicator={
+      indicator={(
         <span style={{ display: 'flex', alignItems: 'center' }}>
           <LoadingOutlined style={{ fontSize: 24 }} spin />
           <span style={{ marginLeft: 12, fontSize: 14, color: 'black' }}>loading...</span>
         </span>
-      }
+      )}
     >
       <div className={mainStyles.shaReactTable} style={containerStyleFinal}>
         <div {...getTableProps()} className={styles.shaTable} style={tableStyle}>

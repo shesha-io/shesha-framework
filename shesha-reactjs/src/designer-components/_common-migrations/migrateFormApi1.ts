@@ -29,10 +29,10 @@ const properties = <T>(model: T): T => {
 
     if (isPropertySettings(prop)) {
       // migrate JS settings
-      return {...prop, _code: withoutFormData(prop?._code)};
+      return { ...prop, _code: withoutFormData(prop?._code) };
     } else if (prop['_type'] === StandardNodeTypes.ConfigurableActionConfig && prop['actionName'] === 'Execute Script') {
       // migrate configurable actions
-      return {...prop, actionArguments: {expression: withoutFormData(prop['actionArguments']?.expression)}};
+      return { ...prop, actionArguments: { expression: withoutFormData(prop['actionArguments']?.expression) } };
     } else {
       // migrate complex settings
       return properties(prop);
@@ -46,8 +46,8 @@ const properties = <T>(model: T): T => {
     }) as T;
   };
 
-  var newModel = {...model};
-  for(const propName in newModel) {
+  var newModel = { ...model };
+  for (const propName in newModel) {
     if (newModel.hasOwnProperty(propName)) {
       const prop = newModel[propName];
       if (prop && typeof prop === 'object') {

@@ -93,7 +93,8 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
                 status={formStore.loadError.code as ResultStatusType}
                 title={formStore.loadError.code}
                 subTitle={formStore.loadError.message}
-              />);
+              />
+            );
 
           return null;
         }}

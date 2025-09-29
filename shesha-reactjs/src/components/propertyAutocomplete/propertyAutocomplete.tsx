@@ -208,7 +208,8 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
             {option.label}
           </Select.Option>
         ))}
-      </Select>);
+      </Select>
+    );
 
   const forMap = (tag: string) => {
     const tagElem = (
@@ -263,7 +264,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
           size={props.size}
         />
       </Space.Compact>
-      <div >
+      <div>
         {tagChild}
       </div>
     </>

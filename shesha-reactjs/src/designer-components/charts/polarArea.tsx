@@ -87,7 +87,8 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-              }}>
+              }}
+              >
                 {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType="polarArea" evaluatedFilters={stateEvaluatedFilters} />}
               </div>
             </ChartDataProvider>

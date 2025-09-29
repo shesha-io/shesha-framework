@@ -29,11 +29,11 @@ export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, render
         <div className="sha-designer-toolbar">
             <div className="sha-designer-toolbar-left">
                 {!readOnly && (
-                    <SaveMenu onSaved={onSaved}/>
+                    <SaveMenu onSaved={onSaved} />
                 )}
             </div>
-            <CanvasConfig/>
-            <div className="sha-designer-toolbar-right" style={{marginRight: renderSource === "modal" ? "30px" : "auto"}}>
+            <CanvasConfig />
+            <div className="sha-designer-toolbar-right" style={{ marginRight: renderSource === "modal" ? "30px" : "auto" }}>
                 <FormSettingsButton />
                 <OpenOnNewPageButton />
                 <PreviewButton />

@@ -40,15 +40,15 @@ export const ItemListConfigurator = <TItem extends ListItemWithId>(props: IItemL
                   onChange={itemProps.onChange}
                   readOnly={itemProps.readOnly}
                   settingsMarkupFactory={settingsMarkupFactory}
-                />)}
+                />
+          )}
         >
             {(itemProps) => {
               const rendered = itemRenderer(itemProps);
               return isDefaultItemRenderingProps(rendered)
-                ? <DefaultListItem item={rendered}/>
+                ? <DefaultListItem item={rendered} />
                 : rendered;
-            }
-            }
+            }}
         </ListEditorWithPropertiesPanel>
   );
 };

@@ -12,7 +12,7 @@ export const migrateV1toV2 = (props: ITableComponentProps, context: SettingsMigr
 
     const column = item as IConfigurableActionColumnsProps;
     if (column.columnType !== 'action')
-      return  item;
+      return item;
 
     return { ...column, actionConfiguration: upgradeActionConfig(column.actionConfiguration, context) };
   });

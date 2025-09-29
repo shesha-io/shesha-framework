@@ -29,8 +29,8 @@ export const SettingEditor: FC<ISettingEditorProps> = () => {
         appKey: settingSelection.app?.appKey,
       }).then((response) => {
         const editor = settingSelection.setting.editorForm
-          ? <CustomFormSettingEditor selection={settingSelection} value={response} key={settingSelection.setting.name}/>
-          : <GenericSettingEditor selection={settingSelection} value={response} key={settingSelection.setting.name}/>;
+          ? <CustomFormSettingEditor selection={settingSelection} value={response} key={settingSelection.setting.name} />
+          : <GenericSettingEditor selection={settingSelection} value={response} key={settingSelection.setting.name} />;
         setState((prev) => ({ ...prev, isLoading: false, value: response, initialValue: response, editor }));
       });
     } else {
@@ -40,7 +40,7 @@ export const SettingEditor: FC<ISettingEditorProps> = () => {
 
   return state.editor
     ? state.editor
-    : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={'Please select a setting to begin editing'}/>;
+    : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Please select a setting to begin editing" />;
 };
 
 export default SettingEditor;

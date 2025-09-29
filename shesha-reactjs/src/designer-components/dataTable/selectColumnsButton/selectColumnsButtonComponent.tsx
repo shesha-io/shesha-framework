@@ -30,8 +30,7 @@ const SelectColumnsButtonComponent: IToolboxComponent<ISelectColumnsButtonCompon
   migrator: (m) => m
     .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISelectColumnsButtonComponentProps>(1, (prev) => migrateVisibility(prev))
-    .add<ISelectColumnsButtonComponentProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
-  ,
+    .add<ISelectColumnsButtonComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) })),
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   isHidden: true, // note: to be removed, now is used only for backward compatibility

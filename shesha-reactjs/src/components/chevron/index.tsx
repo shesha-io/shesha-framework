@@ -56,7 +56,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
                   key={uuid}
                   {...props}
                   icon={showIcons ? props.icon : null}
-                  style={{...newStyles, ...stylingBoxCSS, alignContent: fontStyles.textAlign, justifyContent: fontStyles.textAlign}}
+                  style={{ ...newStyles, ...stylingBoxCSS, alignContent: fontStyles.textAlign, justifyContent: fontStyles.textAlign }}
                   readOnly={props.readOnly}
                   buttonType="text"
                   form={form}

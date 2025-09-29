@@ -46,7 +46,7 @@ const StackedNavigationModal: FC<IStackedNavigationModalProps> = ({
         centered={false}
         footer={null}
         closable={false}
-        title={
+        title={(
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>
               <Link href={`${removeURLParameter(router?.fullPath, 'navMode')}`}>
@@ -64,7 +64,7 @@ const StackedNavigationModal: FC<IStackedNavigationModalProps> = ({
               <Button type="link" onClick={(event) => closeDialog(event)} icon={<CloseOutlined />} />
             </span>
           </div>
-        }
+        )}
         {...props}
       >
         {children}

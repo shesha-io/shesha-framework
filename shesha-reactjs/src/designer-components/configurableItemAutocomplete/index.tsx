@@ -64,7 +64,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) =>
+        {(value, onChange) => (
           <ConfigItemAutocomplete
             entityType={model.entityType}
             readOnly={model.readOnly}
@@ -72,7 +72,8 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
             onChange={onChange}
             mode={model.mode}
             filter={evaluatedFilter}
-          />}
+          />
+        )}
       </ConfigurableFormItem>
     );
   },

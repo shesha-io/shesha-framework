@@ -53,25 +53,24 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
         const simpleItems = items.filter((it) => !it.items);
         const complexItems = items.filter((it) => !!it.items);
         const gr = simpleItems.length
-          ? [<OptGroup
-              key={pathKey}
-              label={groupPrefix + label}
-          >{renderSelectItems(simpleItems, level + 1)}</OptGroup>]
+          ? [<OptGroup key={pathKey} label={groupPrefix + label}>{renderSelectItems(simpleItems, level + 1)}</OptGroup>]
           : [];
         const list = complexItems.length ? renderSelectItems(complexItems, level + 1) : [];
         return [...gr, ...list];
       } else {
         const option = tooltip ? <Tooltip title={tooltip}>{prefix + label}</Tooltip> : prefix + label;
-        return <Option
-          key={pathKey}
-          value={pathKey}
-          title={altLabel}
-          grouplabel={grouplabel}
-          label={label}
-          disabled={disabled}
-        >
-                    {option}
-                </Option>;
+        return (
+          <Option
+            key={pathKey}
+            value={pathKey}
+            title={altLabel}
+            grouplabel={grouplabel}
+            label={label}
+            disabled={disabled}
+          >
+            {option}
+          </Option>
+        );
       }
     }).flat(Infinity);
   };
@@ -79,17 +78,18 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
   const fieldSelectItems = renderSelectItems(items);
 
   return (
-        <Select
-          dropdownAlign={dropdownAlign}
-          popupMatchSelectWidth={false}
-          style={{ width }}
-          placeholder={placeholder}
-          size={ config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize }
-          onChange={onChange}
-          value={selectedKey || undefined}
-          filterOption={filterOption}
-          disabled={readonly}
-          {...customProps}
-        >{fieldSelectItems}</Select>
+    <Select
+      dropdownAlign={dropdownAlign}
+      popupMatchSelectWidth={false}
+      style={{ width }}
+      placeholder={placeholder}
+      size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
+      onChange={onChange}
+      value={selectedKey || undefined}
+      filterOption={filterOption}
+      disabled={readonly}
+      {...customProps}
+    >{fieldSelectItems}
+    </Select>
   );
 };

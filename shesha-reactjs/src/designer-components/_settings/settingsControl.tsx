@@ -117,9 +117,11 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
         onClick={onSwitchMode}
       />
       {mode === 'code' && editor}
-      {mode === 'value' && <div className={styles.jsContent} style={{ marginLeft: 0 }}>
+      {mode === 'value' && (
+<div className={styles.jsContent} style={{ marginLeft: 0 }}>
         {props.children(setting?._value, valueOnChange, propertyName)}
-      </div>}
+</div>
+      )}
     </div>
   );
 };

@@ -25,7 +25,7 @@ export const loadingBox = (cx: (className: string) => string, styles: { innerEnt
 
 export const innerEntityReferenceButtonBoxStyle = {
   backgroundColor: 'transparent',
-  whiteSpace:  'nowrap',
+  whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   width: '100%',

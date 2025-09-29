@@ -23,7 +23,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
     return (
       <ParentProvider model={model}>
         <KeyInformationBar {...model} />
-      </ParentProvider >
+      </ParentProvider>
     );
   },
   migrator: (m) =>

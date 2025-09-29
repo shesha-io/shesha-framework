@@ -89,8 +89,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
                 <span className={styles.shaPackageUploadFileThumbnail}>
                     {isPackLoading
                       ? (<LoadingOutlined style={{ fontSize: '26px' }} className="sha-upload-uploading" />)
-                      : (<FileZipTwoTone style={{ fontSize: '26px' }} />)
-                    }
+                      : (<FileZipTwoTone style={{ fontSize: '26px' }} />)}
                 </span>
                 <span className={`${prefixCls}-upload-list-item-name`} title={file.name}>
                     {file.name}

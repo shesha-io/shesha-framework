@@ -307,8 +307,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
                         ownerId: '',
                         ownerType: '',
                         category: '',
-                      })
-                    }
+                      })}
                     okText="Yes"
                     cancelText="No"
                     okButtonProps={{ type: 'primary', danger: true }}

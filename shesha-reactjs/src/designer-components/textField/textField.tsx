@@ -65,7 +65,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
     };
 
     return (
-      <ConfigurableFormItem model={model} >
+      <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: any[]) => {

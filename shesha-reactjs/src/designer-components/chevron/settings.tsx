@@ -22,7 +22,8 @@ export const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () =
   return (
     <>
       <SettingsCollapsiblePanel header="Display">
-        <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
+        <ContextPropertyAutocomplete
+          id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={values.readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
           onValuesChange={onValuesChange}
@@ -60,7 +61,7 @@ export const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () =
           <Autocomplete
             dataSourceType="entitiesList"
             entityType="Shesha.Framework.ReferenceList"
-            filter={{"and":[{"==":[{"var":"isLast"},true]}]}}
+            filter={{ and: [{ "==": [{ var: "isLast" }, true] }] }}
             readOnly={values.readOnly}
           />
         </SettingsFormItem>
@@ -79,29 +80,29 @@ export const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () =
         </SettingsFormItem>
 
         <Show when={values.colorSource === 'custom'}>
-          <SettingsFormItem name="activeColor" label="Active Color" jsSetting >
+          <SettingsFormItem name="activeColor" label="Active Color" jsSetting>
             <ColorPicker readOnly={values.readOnly} allowClear />
           </SettingsFormItem>
         </Show>
 
-        <SettingsFormItem name="fontColor" label="Font Color" jsSetting >
+        <SettingsFormItem name="fontColor" label="Font Color" jsSetting>
             <ColorPicker readOnly={values.readOnly} allowClear />
-          </SettingsFormItem>
+        </SettingsFormItem>
 
         <SettingsFormItem name="showIcons" label="Show Icons?" valuePropName="checked" jsSetting>
           <Checkbox disabled={values.readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="width" label="Width" jsSetting>
-          <Input type="number" disabled={values.readOnly}  />
+          <Input type="number" disabled={values.readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="height" label="Height" jsSetting>
-          <Input type="number" disabled={values.readOnly}  />
+          <Input type="number" disabled={values.readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="fontSize" label="Font Size" jsSetting>
-          <Input type="number" disabled={values.readOnly}  />
+          <Input type="number" disabled={values.readOnly} />
         </SettingsFormItem>
 
       </SettingsCollapsiblePanel>

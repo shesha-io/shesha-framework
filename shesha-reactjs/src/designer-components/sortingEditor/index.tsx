@@ -42,6 +42,5 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<ISortingEditorComponentProps>(0, (prev) => ({ ...prev, modelType: '' }))
-    .add<ISortingEditorComponentProps>(1, (prev) => migrateReadOnly(prev))
-  ,
+    .add<ISortingEditorComponentProps>(1, (prev) => migrateReadOnly(prev)),
 };

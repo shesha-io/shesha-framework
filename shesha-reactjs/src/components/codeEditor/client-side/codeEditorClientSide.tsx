@@ -340,7 +340,8 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
                       size="large"
                       style={{ border: 'none' }}
                       onClick={onExplorerClick}
-                      className={activePane === "explorer" ? "active" : "inactive"} />
+                      className={activePane === "explorer" ? "active" : "inactive"}
+                    />
                 </div>
                 <div className={styles.workspace}>
                     <CodeWrapper

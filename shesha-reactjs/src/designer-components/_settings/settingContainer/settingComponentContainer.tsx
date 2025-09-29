@@ -14,7 +14,7 @@ export const SettingComponentContainerInner: FC<ISettingContainerProps> = (props
   const isDrawing = useIsDrawingForm();
 
   const model = useMemo(() => {
-    return {...props.component, propertyName: props.propertyName};
+    return { ...props.component, propertyName: props.propertyName };
   }, [props.component, props.propertyName]);
 
   return isDrawing

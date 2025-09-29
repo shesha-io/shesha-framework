@@ -26,7 +26,7 @@ export const fileIcons = {
   '.pptx': { component: <FilePptOutlined style={{ color: '#D24726' }} /> },
   '.txt': { component: <FileTextOutlined style={{ color: '#848588' }} /> },
   '.csv': { component: <FileTextOutlined style={{ color: '#848588' }} /> },
-  default: { component: <PaperClipOutlined style={{ color: '#848588' }} /> },
+  "default": { component: <PaperClipOutlined style={{ color: '#848588' }} /> },
 };
 
 export const getFileIcon = (type: string) => {

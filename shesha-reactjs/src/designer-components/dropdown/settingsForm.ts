@@ -252,9 +252,9 @@ export const getSettings = (data: IDropdownComponentProps) => {
                         tooltip: 'Return key from the value',
                         parentId: dataContainerId,
                         hidden: {
-                          "_code": "return  getSettingValue(data?.valueFormat) !== 'custom';",
-                          "_mode": "code",
-                          "_value": false,
+                          _code: "return  getSettingValue(data?.valueFormat) !== 'custom';",
+                          _mode: "code",
+                          _value: false,
                         } as any,
                       },
                       {
@@ -266,9 +266,9 @@ export const getSettings = (data: IDropdownComponentProps) => {
                         tooltip: 'Return value that will be stored as field value',
                         parentId: dataContainerId,
                         hidden: {
-                          "_code": "return  getSettingValue(data?.valueFormat) !== 'custom';",
-                          "_mode": "code",
-                          "_value": false,
+                          _code: "return  getSettingValue(data?.valueFormat) !== 'custom';",
+                          _mode: "code",
+                          _value: false,
                         } as any,
                       },
                     ],

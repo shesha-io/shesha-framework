@@ -128,7 +128,7 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
 
   return (
     <ShaSpin
-      spinning={showMarkupLoadingIndicator && markupLoadingState.status === 'loading' || showDataLoadingIndicator && dataLoadingState.status === 'loading'}
+      spinning={(showMarkupLoadingIndicator && markupLoadingState.status === 'loading') || (showDataLoadingIndicator && dataLoadingState.status === 'loading')}
       tip={dataLoadingState.hint}
       spinIconSize={40}
     >

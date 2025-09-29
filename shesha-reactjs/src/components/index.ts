@@ -93,7 +93,7 @@ export { default as Show, type IShowProps } from './show';
 export { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 export { default as ModelConfigurator } from './modelConfigurator';
 export { ConfigurableApplicationComponent, type IConfigurableApplicationComponentProps } from './configurableComponent';
-export { Autocomplete, type IAutocompleteProps} from './autocomplete';
+export { Autocomplete, type IAutocompleteProps } from './autocomplete';
 export { Page } from './page';
 export { default as EditableTagGroup, type IEditableTagGroupProps } from './editableTagGroup';
 export { default as QuickView, type IQuickViewProps } from './quickView';

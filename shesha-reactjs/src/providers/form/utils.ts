@@ -375,7 +375,7 @@ const getSettingValue = (
 
   const unproxiedValue = unproxyValue(value);
 
-  if (!unproxiedValue || typeof propertyFilter === 'function' && !propertyFilter(propertyName, value))
+  if (!unproxiedValue || (typeof propertyFilter === 'function' && !propertyFilter(propertyName, value)))
     return value;
 
   if (typeof unproxiedValue === 'object' &&
@@ -1680,11 +1680,9 @@ export const isFormFullName = (formId: FormIdentifier): formId is FormFullName =
 };
 
 export const isSameFormIds = (id1: FormIdentifier, id2: FormIdentifier): boolean => {
-  return isFormRawId(id1) && isFormRawId(id2) && id1 === id2 ||
-    isFormFullName(id1) && isFormFullName(id2) && id1.module?.toLowerCase() === id2.module?.toLowerCase() && id1.name?.toLowerCase() === id2.name?.toLowerCase();
+  return (isFormRawId(id1) && isFormRawId(id2) && id1 === id2) ||
+    (isFormFullName(id1) && isFormFullName(id2) && id1.module?.toLowerCase() === id2.module?.toLowerCase() && id1.name?.toLowerCase() === id2.name?.toLowerCase());
 };
-
-export const hasFormIdGotValue = (formId: FormIdentifier) => (typeof formId === 'string' ? !!formId : !!formId?.name);
 
 export const convertToMarkupWithSettings = (markup: FormMarkup, isSettingsForm?: boolean): FormMarkupWithSettings => {
   if (!markup) return null;

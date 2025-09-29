@@ -146,7 +146,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       onChange={onChangeUrl}
       onSearch={handleSearch}
       notFoundContent={null}
-      size={props.size}
+      // size={props.size}
       styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       popupMatchSelectWidth={false}
     >

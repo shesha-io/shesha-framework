@@ -77,5 +77,5 @@ export const getAnchoredCellStyleAccessor = (
     boxShadow: hasShadow ? (anchored?.direction === 'left' ? '5px 0 3px -2px #ccc' : '-5px 0 3px -2px #ccc') : 'unset',
   };
 
-  return {...fixedStyled};
+  return { ...fixedStyled };
 };

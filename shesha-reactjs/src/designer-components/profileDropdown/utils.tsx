@@ -51,7 +51,7 @@ export const getAccountMenuItems = (
   result.push({
     key: 'logout',
     onClick: logoutUser,
-    label: <>{<LoginOutlined />} Logout</>,
+    label: <><LoginOutlined /> Logout</>,
   });
 
   return result;

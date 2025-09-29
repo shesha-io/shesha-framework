@@ -41,36 +41,36 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = (props
 
   const context: IConfigurableComponentContext<ISideBarMenuProps> = {
     settings: loadedMenu,
-    load: () => {/**/},
+    load: () => { /**/ },
     save: (settings: ISideBarMenuProps) => {
-      return saveMainMenu({...loadedMenu, ...settings})
+      return saveMainMenu({ ...loadedMenu, ...settings })
         .then(() => {
-          changeMainMenu({...loadedMenu, ...settings});
+          changeMainMenu({ ...loadedMenu, ...settings });
         });
     },
-    setIsInProgressFlag: () => {/**/},
-    setSucceededFlag: () => {/**/},
-    setFailedFlag: () => {/**/},
-    setActionedFlag: () => {/**/},
-    resetIsInProgressFlag: () => {/**/},
-    resetSucceededFlag: () => {/**/},
-    resetFailedFlag: () => {/**/},
-    resetActionedFlag: () => {/**/},
-    resetAllFlag: () => {/**/},
+    setIsInProgressFlag: () => { /**/ },
+    setSucceededFlag: () => { /**/ },
+    setFailedFlag: () => { /**/ },
+    setActionedFlag: () => { /**/ },
+    resetIsInProgressFlag: () => { /**/ },
+    resetSucceededFlag: () => { /**/ },
+    resetFailedFlag: () => { /**/ },
+    resetActionedFlag: () => { /**/ },
+    resetAllFlag: () => { /**/ },
   };
 
   return (
     <ConfigurableComponentRenderer
       canConfigure={true}
       contextAccessor={() => context}
-      settingsEditor={{render: editor}}
+      settingsEditor={{ render: editor }}
     >
       {(componentState, BlockOverlay) => {
         return (
-            <div className={`sidebar ${componentState.wrapperClassName}`} style={{position: 'relative'}}>
-                <div style={{position: 'absolute', top: 0, width: '10px', height: '100px', overflowY: 'hidden'}}>
+            <div className={`sidebar ${componentState.wrapperClassName}`} style={{ position: 'relative' }}>
+                <div style={{ position: 'absolute', top: 0, width: '10px', height: '100px', overflowY: 'hidden' }}>
                 <BlockOverlay>
-                  <EditOutlined style={{color: "#FFFFFF"}}/>
+                  <EditOutlined style={{ color: "#FFFFFF" }} />
                 </BlockOverlay>
                 </div>
 

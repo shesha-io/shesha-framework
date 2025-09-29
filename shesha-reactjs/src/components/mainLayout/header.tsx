@@ -18,8 +18,8 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, headerFormId }) => {
     <div className={classNames(styles.layoutHeader, { collapsed })}>
       <div className={styles.headerWrapper}>
         <ConfigurableForm
-          mode={'readonly'}
-          formId={ localHeaderFormId }
+          mode="readonly"
+          formId={localHeaderFormId}
           showFormInfoOverlay={false}
           showDataLoadingIndicator={false}
           showMarkupLoadingIndicator={false}

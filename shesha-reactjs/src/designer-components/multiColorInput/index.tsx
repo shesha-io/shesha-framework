@@ -15,7 +15,7 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
 
   useEffect(() => {
     if (!value || Object.entries(value).length === 0) {
-      const defaultColors = { '1': theme.application.primaryColor, '2': '#fff' };
+      const defaultColors = { 1: theme.application.primaryColor, 2: '#fff' };
       onChange(defaultColors);
       setColors(defaultColors);
     }
@@ -41,14 +41,15 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
                               label="color"
                               hideLabel={true}
                               readOnly={readOnly}
-                              type="colorPicker" id={id}
+                              type="colorPicker"
+                              id={id}
                             />
                         </Tag>
                   );
                 })}
             </Row>
 
-            <InputRow inline={true} readOnly={readOnly} inputs={[{ id: nanoid(), propertyName: propertyName.replace('gradient.colors', 'gradient.direction'), label: 'Direction', hideLabel: true, width: '120px', type: 'dropdown', dropdownOptions: gradientDirectionOptions }]} >
+            <InputRow inline={true} readOnly={readOnly} inputs={[{ id: nanoid(), propertyName: propertyName.replace('gradient.colors', 'gradient.direction'), label: 'Direction', hideLabel: true, width: '120px', type: 'dropdown', dropdownOptions: gradientDirectionOptions }]}>
                 <FormItem>
                     <Button
                       type="primary"

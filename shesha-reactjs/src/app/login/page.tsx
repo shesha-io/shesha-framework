@@ -9,7 +9,7 @@ import { PageWithLayout } from '@/index';
 interface IProps {}
 
 const Login: PageWithLayout<IProps> = () => (
-  <ConfigurableForm mode={'edit'} formId={LOGIN_CONFIGURATION as FormFullName} />
+  <ConfigurableForm mode="edit" formId={LOGIN_CONFIGURATION as FormFullName} />
 );
 
 export default Login;

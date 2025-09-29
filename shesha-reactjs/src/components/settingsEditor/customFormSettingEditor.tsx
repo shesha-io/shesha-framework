@@ -47,7 +47,7 @@ export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
   };
 
   const cancel = () => {
-    formRef?.current.setFormData({values: initialValue, mergeValues: false});
+    formRef?.current.setFormData({ values: initialValue, mergeValues: false });
   };
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
   useEffect(() => {
     setInitialValue(value);
     formRef.current.setInitialValues(value);
-    formRef.current.setFormData({values: value, mergeValues: false});
+    formRef.current.setFormData({ values: value, mergeValues: false });
   }, [value]);
 
   const initialValues = useMemo(() => {

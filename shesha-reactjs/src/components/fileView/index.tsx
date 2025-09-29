@@ -44,7 +44,7 @@ const FileView: FC<IImageProps> = ({ dataSource, url, storedFileId, base64, heig
 
   return (
     <div className="container">
-      {content &&
+      {content && (
         <img
           src={content}
           alt="image"
@@ -52,7 +52,7 @@ const FileView: FC<IImageProps> = ({ dataSource, url, storedFileId, base64, heig
           height={height}
           style={styles}
         />
-      }
+      )}
       {!content && <Spin />}
     </div>
   );

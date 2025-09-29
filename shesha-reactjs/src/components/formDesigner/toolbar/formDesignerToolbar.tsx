@@ -23,7 +23,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
 
   return (
     <div className={styles.shaDesignerToolbar}>
-      {isGranted &&
+      {isGranted && (
         <>
           <div className={styles.shaDesignerToolbarLeft}>
             {!readOnly && (
@@ -31,7 +31,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
             )}
           </div>
           <div className={styles.shaDesignerToolbarCenter}>
-            <CanvasConfig/>
+            <CanvasConfig />
           </div>
           <div className={styles.shaDesignerToolbarRight}>
             <FormSettingsButton />
@@ -42,7 +42,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
             <CustomActions />
           </div>
         </>
-      }
+      )}
     </div>
   );
 };

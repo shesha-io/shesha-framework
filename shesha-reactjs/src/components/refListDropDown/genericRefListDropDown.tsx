@@ -150,33 +150,37 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
   };
 
   if (mode !== 'multiple' && mode !== 'tags' && displayStyle === 'tags') {
-    return <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
-      {...commonSelectProps}
-      popupMatchSelectWidth={false}
-      style={{ width: 'max-content', height: 'max-content' }}
-      placeholder={placeholder}
-      labelRender={(props) => {
-        const option = options.find((o) => o.value === props.value);
-        return <ReflistTag
-          key={option?.value}
-          value={option?.value}
-          description={option?.description}
-          color={option?.color}
-          icon={option?.icon}
-          showIcon={showIcon}
-          tagStyle={tagStyle}
-          solidColor={solidColor}
-          showItemName={showItemName}
-          label={option?.label}
-        />;
-      }}
-    >
+    return (
+<Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+  {...commonSelectProps}
+  popupMatchSelectWidth={false}
+  style={{ width: 'max-content', height: 'max-content' }}
+  placeholder={placeholder}
+  labelRender={(props) => {
+    const option = options.find((o) => o.value === props.value);
+    return (
+<ReflistTag
+  key={option?.value}
+  value={option?.value}
+  description={option?.description}
+  color={option?.color}
+  icon={option?.icon}
+  showIcon={showIcon}
+  tagStyle={tagStyle}
+  solidColor={solidColor}
+  showItemName={showItemName}
+  label={option?.label}
+/>
+    );
+  }}
+>
       {options?.map(({ value: localValue, label, data, disabled }) => (
         <Select.Option value={localValue} key={localValue} data={data} disabled={disabled}>
           {label}
         </Select.Option>
       ))}
-    </Select>;
+</Select>
+    );
   }
 
   return (
@@ -189,17 +193,19 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
       {...(displayStyle === 'tags' ? {
         labelRender: (props) => {
           const option = options.find((o) => o.value === props.value);
-          return <ReflistTag
-            value={option?.value}
-            description={option?.description}
-            color={option?.color}
-            icon={option?.icon}
-            showIcon={showIcon}
-            tagStyle={tagStyle}
-            solidColor={solidColor}
-            showItemName={showItemName}
-            label={option?.label}
-          />;
+          return (
+<ReflistTag
+  value={option?.value}
+  description={option?.description}
+  color={option?.color}
+  icon={option?.icon}
+  showIcon={showIcon}
+  tagStyle={tagStyle}
+  solidColor={solidColor}
+  showItemName={showItemName}
+  label={option?.label}
+/>
+          );
         },
       } : {})}
     >

@@ -62,7 +62,7 @@ export const getItemSettings = () => {
                   },
                 ],
                 validate: {
-                  "required": true,
+                  required: true,
                 },
               })
               .addContainer({

@@ -1,4 +1,4 @@
-import { ConfigurableForm,  FormMarkup, useModelConfigurator } from '@/index';
+import { ConfigurableForm, FormMarkup, useModelConfigurator } from '@/index';
 import { Modal, App } from 'antd';
 import React, { FC } from 'react';
 
@@ -27,14 +27,14 @@ export const CreateModelModal: FC<ICreateModelModalProps> = () => {
       });
   };
 
-  return isCreateNew &&
+  return isCreateNew && (
     <>
       <Modal
         title="Create entity confifurations"
         open={isCreateNew}
         onOk={handleOk}
         onCancel={cancel}
-        width={'50%'}
+        width="50%"
       >
         <ConfigurableForm
           layout="horizontal"
@@ -49,5 +49,5 @@ export const CreateModelModal: FC<ICreateModelModalProps> = () => {
         />
       </Modal>
     </>
-  ;
+  );
 };

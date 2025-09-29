@@ -20,7 +20,6 @@ export const ConfigurabeleEditor: FC<IConfigurabeleEditorProps> = (props) => {
       mode="edit"
       formArguments={{ id: itemId }}
       isActionsOwner={true}
-      logEnabled={true}
     />
   );
 };

@@ -131,9 +131,18 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         key={rowId}
       >
         {row.cells.map((cell, cellIndex) => {
-          return <RowCell showExpandedView={showExpandedView} cell={cell} getCellRef={(cellRef, isContentOverflowing) => {
-            onMouseOver(cellRef, isContentOverflowing);
-          }} key={cellIndex} row={row.cells} rowIndex={index} />;
+          return (
+<RowCell
+  showExpandedView={showExpandedView}
+  cell={cell}
+  getCellRef={(cellRef, isContentOverflowing) => {
+    onMouseOver(cellRef, isContentOverflowing);
+  }}
+  key={cellIndex}
+  row={row.cells}
+  rowIndex={index}
+/>
+          );
         })}
       </div>
     </CrudProvider>

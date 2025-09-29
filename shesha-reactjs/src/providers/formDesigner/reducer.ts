@@ -126,6 +126,11 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       } = action;
 
       const { formFlatMarkup, toolboxComponentGroups } = state;
+      const newFlatMarkup = {
+        ...formFlatMarkup,
+        allComponents: { ...formFlatMarkup.allComponents },
+        componentRelations: { ...formFlatMarkup.componentRelations },
+      };
       const formComponent = createComponentModelForDataProperty(state.toolboxComponentGroups, propertyMetadata,
         (fc, tc) => {
           return upgradeComponent(fc, tc, state.formSettings, {
@@ -137,7 +142,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       if (!Boolean(formComponent)) return state;
 
       formComponent.parentId = containerId; // set parent
-      const newStructure = addComponentToFlatStructure(formFlatMarkup, toolboxComponentGroups, [formComponent], containerId, index);
+      const newStructure = addComponentToFlatStructure(newFlatMarkup, toolboxComponentGroups, [formComponent], containerId, index);
 
       return {
         ...state,
@@ -161,6 +166,11 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
       const { formFlatMarkup, toolboxComponentGroups } = state;
 
+      const newFlatMarkup = {
+        ...formFlatMarkup,
+        allComponents: { ...formFlatMarkup.allComponents },
+        componentRelations: { ...formFlatMarkup.componentRelations },
+      };
       let newComponents: IConfigurableFormComponent[] = [];
       if (toolboxComponent.isTemplate) {
         const allComponents = toolbarGroupsToComponents(state.toolboxComponentGroups);
@@ -168,8 +178,8 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       } else {
         // create new component
         let count = 0;
-        for (const key in formFlatMarkup.allComponents) {
-          if (formFlatMarkup.allComponents[key].type === toolboxComponent.type) count++;
+        for (const key in newFlatMarkup.allComponents) {
+          if (newFlatMarkup.allComponents[key].type === toolboxComponent.type) count++;
         }
         const componentName = `${toolboxComponent.name}${count + 1}`;
 
@@ -185,26 +195,18 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
           isDynamic: false,
         };
         if (toolboxComponent.initModel) formComponent = toolboxComponent.initModel(formComponent);
+
         if (toolboxComponent.migrator) {
           formComponent = upgradeComponent(formComponent, toolboxComponent, state.formSettings, {
-            allComponents: formFlatMarkup.allComponents,
-            componentRelations: formFlatMarkup.componentRelations,
+            allComponents: newFlatMarkup.allComponents,
+            componentRelations: newFlatMarkup.componentRelations,
           }, true);
-
-          // run migrations if available
-          // TODO: convert components to clases and run migrations there to check types properly
-          /*
-          const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent>();
-          const fluent = toolboxComponent.migrator(migrator);
-          const model = fluent.migrator.upgrade(formComponent.version ?? -1, formComponent);
-          formComponent = model;
-          */
         }
 
         newComponents.push(formComponent);
       }
 
-      const newStructure = addComponentToFlatStructure(formFlatMarkup, toolboxComponentGroups, newComponents, containerId, index);
+      const newStructure = addComponentToFlatStructure(newFlatMarkup, toolboxComponentGroups, newComponents, containerId, index);
 
       return {
         ...state,

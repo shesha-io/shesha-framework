@@ -72,7 +72,7 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
     response.sourceFiles.push({ filePath: fileName, content });
   };
 
-  const properties = await fetchProperties(availableConstants?.properties ?? []);;
+  const properties = await fetchProperties(availableConstants?.properties ?? []); ;
 
   const variablesFileName = getVariablesFileName(fileName);
 

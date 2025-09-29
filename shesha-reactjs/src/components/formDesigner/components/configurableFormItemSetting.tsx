@@ -52,13 +52,14 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
         hidden: model.hidden,
       }}
       className="sha-js-label"
-      labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}
+      labelCol={{ span: 24 }}
+      wrapperCol={{ span: 24 }}
     >
       {(value, onChange) => {
         return (
           <SettingsControl
             propertyName={model.propertyName}
-            mode={'value'}
+            mode="value"
             onChange={onChange}
             value={value}
             readOnly={readOnly}

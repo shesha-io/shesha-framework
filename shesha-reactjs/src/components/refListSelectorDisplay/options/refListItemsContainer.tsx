@@ -31,7 +31,7 @@ export const RefListItemsContainer: FC<IRefListItemsContainerProps> = (props) =>
   }
 
   return (
-    <div className={styles.sidebarContainerMainArea} style={{marginTop: '5px'}}>
+    <div className={styles.sidebarContainerMainArea} style={{ marginTop: '5px' }}>
       <ReactSortable
         disabled={readOnly}
         list={props.items}

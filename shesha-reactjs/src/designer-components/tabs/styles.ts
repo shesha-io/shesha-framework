@@ -130,7 +130,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 background-size: ${cardStyles.backgroundSize} !important;
                 background-position: ${cardStyles.backgroundPosition} !important;
                 box-shadow: ${tabType === 'card' && boxShadow} !important;
-                ${isLeft && 'border-right-width: 0px !important' || isRight && 'border-left-width: 0px !important' || isTop && 'border-bottom-width: 0px !important' || isBottom && 'border-top-width: 0px !important'};
+                ${(isLeft && 'border-right-width: 0px !important') || (isRight && 'border-left-width: 0px !important') || (isTop && 'border-bottom-width: 0px !important') || (isBottom && 'border-top-width: 0px !important')};
                  border-radius: ${isTop ? `${cardTopLeftRadius} ${cardTopRightRadius} 0px 0px`
                     : isBottom ? `0px 0px ${cardBottomLeftRadius} ${cardBottomRightRadius}`
                       : isLeft ? `${cardTopRightRadius} 0px 0px ${cardBottomRightRadius}`
@@ -153,7 +153,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 --ant-color-bg-container: ${backgroundImage || backgroundColor};
                 background: ${tabType === 'card' ? backgroundImage || backgroundColor : ''} !important;
                 ${cardStyles};
-                ${isLeft && `border-right-width: ${styles.borderLeftWidth} !important` || isRight && 'border-left-width: 0px !important' || isTop && 'border-bottom-width: 0px !important' || isBottom && 'border-top-width: 0px !important'};
+                ${(isLeft && `border-right-width: ${styles.borderLeftWidth} !important`) || (isRight && 'border-left-width: 0px !important') || (isTop && 'border-bottom-width: 0px !important') || (isBottom && 'border-top-width: 0px !important')};
                 ${isLeft ? `margin-right: calc(var(--ant-line-width) * -1) !important` : isRight ? `margin-left: calc(var(--ant-line-width) * -1) !important` : isTop ? `margin-bottom: 0` : `margin-top: 0`};
                 width: ${cardWidth};
                 height: ${cardHeight};
@@ -189,7 +189,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
            }
 
            .ant-tabs-nav-list {
-                ${isLeft && `border-right: ${borderMap.left}` || isRight && `border-left: ${borderMap.right}`};
+                ${(isLeft && `border-right: ${borderMap.left}`) || (isRight && `border-left: ${borderMap.right}`)};
                 ${(isLeft || isRight) && `
                     height: ${styles.height} !important;
                     min-height: ${styles.minHeight} !important;

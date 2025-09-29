@@ -41,7 +41,7 @@ export const getSettings = (data: any) => {
                 label: "Property Name",
                 size: "small",
                 validate: {
-                  "required": true,
+                  required: true,
                 },
                 jsSetting: true,
                 styledLabel: true,

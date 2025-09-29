@@ -30,7 +30,7 @@ export const DialogButton: FC<IPreviewButtonProps> = ({ refLink }) => {
               <Input
                 type="number"
                 value={currentWidth}
-                suffix={'px'}
+                suffix="px"
                 onChange={(e) => {
                   setCanvasWidth(parseInt(e.target.value, 10), 'custom');
                 }}
@@ -41,7 +41,7 @@ export const DialogButton: FC<IPreviewButtonProps> = ({ refLink }) => {
                 type="number"
                 defaultValue={100}
                 step={10}
-                suffix={'%'}
+                suffix="%"
                 onChange={(e) => setCanvasZoom(parseInt(e.target.value, 10))}
               />
             </Form.Item>

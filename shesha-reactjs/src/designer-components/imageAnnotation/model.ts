@@ -2,10 +2,10 @@ import { IConfigurableFormComponent } from '@/providers';
 import { IFormItem } from '@/interfaces';
 
 export interface IAnnotation {
-  id: string;    // required,
-  comment: string;  // not required
+  id: string; // required,
+  comment: string; // not required
   mark: {
-    type: "RECT";                  // now only support rect
+    type: "RECT"; // now only support rect
 
     // The number of pixels in the upper left corner of the image
     x: number;

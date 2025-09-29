@@ -8,12 +8,12 @@ import { DebugDataTreeProp } from "./debugDataTreeProp";
 import { DebugDataTreeFunc } from "./debugDataTreeFunc";
 import { useLocalStorage } from "@/hooks";
 
-export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, lastUpdated, metadata, onChange}) => {
+export const DebugDataTree: FC<IDebugDataTreeProps> = ({ editAll, name, data, lastUpdated, metadata, onChange }) => {
   const metadataProperties = isPropertiesArray(metadata?.properties) ? metadata.properties : undefined;
 
   const title = name + (metadata?.name ? `(${metadata?.name})` : '');
 
-  const initTreeData: DataNode = { title, key: 'root', isLeaf: false};
+  const initTreeData: DataNode = { title, key: 'root', isLeaf: false };
 
   const [treeData, setTreeData] = useState([initTreeData]);
 
@@ -77,29 +77,31 @@ export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, las
     const res: DataNode[] = [];
 
     const properties = members.filter((item) => typeof p[item] !== 'function').sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
-    const functions =  members.filter((item) => typeof p[item] === 'function').sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
+    const functions = members.filter((item) => typeof p[item] === 'function').sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
 
     properties.forEach((item) => {
       const key = pkey + '.' + item;
       pm = pl?.find((x) => toCamelCase(x.path) === item);
 
       if (p[item] && typeof p[item] === 'object') {
-        const n: DataNode = {title: <DebugDataTreeProp name={item} metadata={pm} value={JSON.stringify(p[item])}/>, key, isLeaf: false };
+        const n: DataNode = { title: <DebugDataTreeProp name={item} metadata={pm} value={JSON.stringify(p[item])} />, key, isLeaf: false };
         res.push(n);
       } else {
-        const readonly = !editAll && (!pm || isDataPropertyMetadata(pm) && pm?.readonly);
-        res.push({title: <DebugDataTreeProp
-          name={item}
-          metadata={pm}
-          value={p[item]}
-          onChange={(val) => onPropChange(key, val)}
-          readonly={readonly}
-        />, key, children:[], isLeaf: true});
+        const readonly = !editAll && (!pm || (isDataPropertyMetadata(pm) && pm?.readonly));
+        res.push({ title: (
+<DebugDataTreeProp
+  name={item}
+  metadata={pm}
+  value={p[item]}
+  onChange={(val) => onPropChange(key, val)}
+  readonly={readonly}
+/>
+        ), key, children: [], isLeaf: true });
       }
     });
 
     functions.forEach((item) => {
-      res.push({title: <DebugDataTreeFunc name={item} value={p[item]}/>, key: pkey + '.' + item, isLeaf: true});
+      res.push({ title: <DebugDataTreeFunc name={item} value={p[item]} />, key: pkey + '.' + item, isLeaf: true });
     });
 
     return res?.length > 0 ? res : null;
@@ -110,7 +112,7 @@ export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, las
       if (node.key === key)
         return { ...node, children };
       if (node.children)
-        return { ...node, children: loadTreeData(node.children, key, children )};
+        return { ...node, children: loadTreeData(node.children, key, children) };
       return node;
     });
 
@@ -147,7 +149,7 @@ export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, las
 
   return (
         <Tree
-          style={{fontFamily: 'Courier', fontSize: 14, padding: 0}}
+          style={{ fontFamily: 'Courier', fontSize: 14, padding: 0 }}
           treeData={treeData}
           loadData={onLoadData}
           blockNode

@@ -95,7 +95,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="Style" >
+      <SettingsCollapsiblePanel header="Style">
         <SettingsFormItem
           label="Style"
           name="style"

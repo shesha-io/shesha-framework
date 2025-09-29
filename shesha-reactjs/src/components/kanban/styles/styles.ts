@@ -19,7 +19,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
       width: ${isCollapsed ? '45px' : addPx(dimensionsStyles?.width) || '300px'};
       max-width: ${isCollapsed ? '45px' : addPx(dimensionsStyles?.maxWidth) || '500px'};
      ${isCollapsed &&
-        `
+     `
         border: none !important;
         `}
     `

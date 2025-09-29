@@ -17,7 +17,7 @@ const ComponentPropertiesPanelInner: FC<IProps> = () => {
           }
         />
       )}
-      <div style={{paddingBottom: '50px'}} ref={settingsPanelRef}></div>
+      <div style={{ paddingBottom: '50px' }} ref={settingsPanelRef}></div>
     </>
   );
 };

@@ -12,7 +12,7 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
     ghost: true,
     collapsible: 'header',
     content: {
-      id:'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+      id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
       components: [...new DesignerToolbarSettings()
         .addContextPropertyAutocomplete({
           id: "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
@@ -98,7 +98,7 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
     ghost: true,
     collapsible: 'header',
     content: {
-      id:'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
+      id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
       components: [...new DesignerToolbarSettings()
         .addCheckbox({
           id: "3be9da3f-f47e-48ae-b4c3-f5cc36f934d9",
@@ -144,7 +144,7 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
     ghost: true,
     collapsible: 'header',
     content: {
-      id:'pnl34bf6-f76d-4139-a850-c99bf06c8b69',
+      id: 'pnl34bf6-f76d-4139-a850-c99bf06c8b69',
       components: [...new DesignerToolbarSettings()
         .addNumberField({
           id: "417ee22e-a49d-44f2-a1c7-fef42ec87503",
@@ -178,7 +178,7 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
           description: "A script that returns the image url as a string. This should return a string",
           exposedVariables: [
             { id: "fb85d916-39f9-4f88-8d87-c1c53558b078", name: "data", description: "Form values", type: "object" },
-            { "name": "globalState", "description": "The global state of the application", "type": "object" }],
+            { name: "globalState", description: "The global state of the application", type: "object" }],
         }).toJson(),
       ],
     },
@@ -193,7 +193,7 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
     ghost: true,
     collapsible: 'header',
     content: {
-      id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+      id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
       components: [...new DesignerToolbarSettings()
         .addPermissionAutocomplete({
           id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',

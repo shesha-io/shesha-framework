@@ -248,7 +248,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
                         key={selectedItem ? selectedItem.id : 'new-item'}
                         initialValues={t}
                         formId={props.modalFormId}
-                        mode={'readonly'}
+                        mode="readonly"
                         className={styles.taskContainer}
                       />
                       {props.kanbanReadonly || props.readonly || !(props.allowDelete || props.allowEdit) ? null : (

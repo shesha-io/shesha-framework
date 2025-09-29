@@ -52,7 +52,8 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
                                 <Option value="desc">Descending</Option>
                             </Select>
                         </Space.Compact>
-                    </div>);
+                    </div>
+              );
             }}
         </ListEditor>
   );

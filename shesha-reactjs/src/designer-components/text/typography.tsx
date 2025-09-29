@@ -39,7 +39,7 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   }
 
   return (
-    <GenericText {...model} style={{...styles, justifyContent: textAlign, display: 'flex'}}>
+    <GenericText {...model} style={{ ...styles, justifyContent: textAlign, display: 'flex' }}>
       {content}
     </GenericText>
   );

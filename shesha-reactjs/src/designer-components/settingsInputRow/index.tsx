@@ -25,7 +25,8 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
   const { formData } = useShaFormInstance();
 
   const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
-  return isHidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
+  return isHidden ? null : (
+<div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs?.map((props, i) => {
           const { type } = props;
           const isHidden = typeof props.hidden === 'string' ? evaluateString(props.hidden, { data: formData }) : props.hidden;
@@ -33,16 +34,19 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
           const width = getWidth(type, props.width);
 
           return (
-                <SettingInput key={i + props.label}
+                <SettingInput
+                  key={i + props.label}
                   {...props}
                   hidden={isHidden as boolean}
                   readOnly={props.readOnly || readOnly}
                   inline={inline}
-                  width={width} />
+                  width={width}
+                />
           );
         })}
         {children}
-    </div>;
+</div>
+  );
 };
 
 const SettingsInputRow: IToolboxComponent<ISettingsInputRowProps & IConfigurableFormComponent> = {

@@ -30,9 +30,9 @@ export function useDeepCompareMemoize(value: Readonly<any>) {
       item instanceof ShaArrayAccessProxy ||
       item instanceof TouchableProperty ||
       item instanceof TouchableArrayProperty
-        ? {...item.getData()}
+        ? { ...item.getData() }
         : item instanceof ObservableProxy
-          ? {...item}
+          ? { ...item }
           : item
     )
     : value;

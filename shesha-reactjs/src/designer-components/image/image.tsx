@@ -89,7 +89,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
 
   return (
     <div style={{ position: 'relative', float: 'left' }}>
-      {content &&
+      {content && (
         <Image
           src={content}
           alt={props?.alt}
@@ -98,8 +98,8 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
           preview={allowPreview}
           style={styles}
         />
-      }
-      {!readOnly &&
+      )}
+      {!readOnly && (
         <>
           <div style={content ? { position: 'absolute', top: 'calc(50% - 50px)', left: 'calc(50% - 40px)' } : {}}>
             <Upload
@@ -113,7 +113,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
             {content && <Tooltip title="Remove"><Button shape="circle" ghost icon={<DeleteOutlined />} onClick={onRemove} /></Tooltip>}
           </div>
         </>
-      }
+      )}
     </div>
   );
 };

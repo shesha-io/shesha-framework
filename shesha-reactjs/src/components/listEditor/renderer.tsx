@@ -220,7 +220,8 @@ export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRen
                                         );
                                       },
                                     })}
-                                </ListItemWrapper>);
+                                </ListItemWrapper>
+                          );
                         })}
                     </ReactSortable>
 

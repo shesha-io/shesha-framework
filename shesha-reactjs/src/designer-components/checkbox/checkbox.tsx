@@ -42,7 +42,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
-    const {styles} = useStyles({style: model.allStyles.fullStyle});
+    const { styles } = useStyles({ style: model.allStyles.fullStyle });
 
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
@@ -78,8 +78,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev,defaultStyles())))
-  ,
+      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles()))),
 };
 
 export default CheckboxComponent;

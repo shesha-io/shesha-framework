@@ -30,7 +30,8 @@ function ReflistTag({ value, description, color, icon, showIcon, tagStyle, solid
               color={memoizedColor}
               icon={(icon && showIcon) && <Icon type={icon} />}
               style={getTagStyle(tagStyle, !!color)}
-            >{showItemName && labelToRender}</Tag>
+            >{showItemName && labelToRender}
+            </Tag>
         </Tooltip>
   );
 };

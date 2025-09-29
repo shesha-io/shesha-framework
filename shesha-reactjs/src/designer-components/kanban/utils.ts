@@ -2,7 +2,7 @@ import { IStyleType } from "@/index";
 
 export const defaultStyles = (): IStyleType => {
   return {
-    font: { color: '#000', size: 14, weight:  '400', type: 'Segoe UI' },
+    font: { color: '#000', size: 14, weight: '400', type: 'Segoe UI' },
     background: { type: 'color', color: '#fff' },
     dimensions: {
       width: 'auto',
@@ -31,7 +31,7 @@ export const defaultStyles = (): IStyleType => {
 
 export const defaultColumnStyles = (): IStyleType => {
   return {
-    font: { color: '#000', size: 14, weight:  '400', type: 'Segoe UI' },
+    font: { color: '#000', size: 14, weight: '400', type: 'Segoe UI' },
     background: { type: 'color', color: '#00000005' },
     dimensions: { width: '300px', height: '500px', minHeight: '500px', maxHeight: '500px', minWidth: '300px', maxWidth: '300px' },
     shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },

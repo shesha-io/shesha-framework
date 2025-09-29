@@ -19,14 +19,16 @@ export const InsertItemMarker: FC<InsertItemMarkerProps> = ({ onClick, onOpenCha
           onOpenChange={onOpenChange}
           mouseEnterDelay={0}
           mouseLeaveDelay={0}
-          title={(<Button
-            onClick={onClick}
-            icon={<PlusOutlined />}
-            size="small"
-            type="link"
-          >
+          title={(
+<Button
+  onClick={onClick}
+  icon={<PlusOutlined />}
+  size="small"
+  type="link"
+>
                 Add
-            </Button>)}
+</Button>
+          )}
         >
             <div className={styles.listInsertArea}></div>
         </Tooltip>

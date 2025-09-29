@@ -76,11 +76,13 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value) =>
-          <StatusTag {...props} style={getStyle(model?.style, data, globalState)}
+        {(value) => (
+          <StatusTag
+            {...props}
+            style={getStyle(model?.style, data, globalState)}
             value={model?.valueSource !== 'form' ? props.value : value}
           />
-        }
+        )}
       </ConfigurableFormItem>
     );
   },
@@ -98,12 +100,11 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
         migrateCustomFunctions(
           migrateFunctionToProp(
             migrateFunctionToProp(
-              migrateFunctionToProp(prev, 'override', 'overrideCodeEvaluator')
-              , 'value', 'valueCodeEvaluator')
-            , 'color', 'colorCodeEvaluator')
+              migrateFunctionToProp(prev, 'override', 'overrideCodeEvaluator'),
+              'value', 'valueCodeEvaluator'),
+            'color', 'colorCodeEvaluator')
         )))
-    .add<IStatusTagProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
-  ,
+    .add<IStatusTagProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) })),
   initModel: (model) => ({
     mappings: JSON.stringify(DEFAULT_STATUS_TAG_MAPPINGS, null, 2) as any,
     ...model,

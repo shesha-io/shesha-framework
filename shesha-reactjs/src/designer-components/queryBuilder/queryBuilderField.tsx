@@ -58,8 +58,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
             <span onClick={onExpandClick}>
               show json <CaretRightOutlined rotate={0} />
             </span>
-          )
-        }
+          )}
         items={[
           {
             key: '1',
@@ -93,7 +92,8 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
             ),
           },
         ]}
-      ></Collapse>
+      >
+      </Collapse>
       <Modal
         open={modalVisible}
         width={isSmall ? '90%' : '60%'}

@@ -1,7 +1,7 @@
 import { addPx } from '@/utils/style';
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, {height}) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, { height }) => {
   const chevronButton = cx(`${prefixCls}-chevron-btn`, css`
         &:hover {
             background-color: #f0f0f0;

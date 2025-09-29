@@ -87,9 +87,18 @@ namespace Shesha.DynamicEntities
                     continue;
                 }
 
-                var propertyType = await GetDtoPropertyTypeAsync(property, context);
-                if (propertyType != null)
-                    properties.Add(property.Name, propertyType);
+
+                try
+                {
+                    var propertyType = await GetDtoPropertyTypeAsync(property, context);
+                    if (propertyType != null)
+                        properties.Add(property.Name, propertyType);
+                }
+                catch (NotSupportedException ex) 
+                {
+                    Logger.Warn($"Type '{type.FullName}': failed to add property `{property.Name}` of type `{property.DataType}`", ex);
+                    continue;
+                }                
             }
 
             // internal fields

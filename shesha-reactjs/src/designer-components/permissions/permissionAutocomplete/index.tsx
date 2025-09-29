@@ -22,15 +22,14 @@ const PermissionAutocompleteComponent: IToolboxComponent<IPermissionAutocomplete
   Factory: ({ model }) => {
     if (model.hidden) return null;
     return (
-      <ConfigurableFormItem model={model} >
+      <ConfigurableFormItem model={model}>
         {(value, onChange) => <PermissionAutocomplete value={value} onChange={onChange} readOnly={model.readOnly} />}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,
   migrator: (m) => m
-    .add<IPermissionAutocompleteComponentProps>(0, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-  ,
+    .add<IPermissionAutocompleteComponentProps>(0, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
 };
 
 export default PermissionAutocompleteComponent;

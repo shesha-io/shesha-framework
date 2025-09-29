@@ -52,10 +52,13 @@ export function withEnvironment<WrappedProps>(WrappedComponent: ComponentType<Wi
     }, [availableConstants], { constants: undefined, resultType: undefined, state: 'loading' });
 
     return state.state === 'ready'
-      ? (<WrappedComponent {...props}
-          availableConstants={state.constants}
-          resultType={state.resultType}
-      />)
+      ? (
+<WrappedComponent
+  {...props}
+  availableConstants={state.constants}
+  resultType={state.resultType}
+/>
+      )
       : (<Skeleton loading={true} />);
   }, "withEnvironment");
 };

@@ -56,9 +56,9 @@ export const migrateReadOnly = <T>(prev: T, defaultValue?: EditMode) => {
   const readOnly = prev['readOnly'];
   const model = {
     ...prev, editMode:
-      readOnly === true && disabled === true ||
-      readOnly === true && !disabled ||
-      disabled === true && !readOnly
+      (readOnly === true && disabled === true) ||
+      (readOnly === true && !disabled) ||
+      (disabled === true && !readOnly)
         ? 'readOnly'
         : readOnly === true && !!disabled && disabled['_mode'] === 'code'
           ? { _value: 'readOnly', _mode: 'value', _code: disabled['_code'] }

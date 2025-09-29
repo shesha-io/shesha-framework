@@ -38,7 +38,7 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
       if (true /* !item.hidden*/) {
         const childItems = getVisible(item[childFieldName], searchText);
         const matched =
-          Array.isArray(childItems) && childItems.length > 0 ||
+          (Array.isArray(childItems) && childItems.length > 0) ||
           (searchText ?? '') === '' ||
           (typeof props?.isMatch === 'function' ? props.isMatch(item, props.searchText) : false);
 
@@ -108,8 +108,8 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
 
   return (
     <>
-      {groups.length === 1 &&
-        <div key={groups[0].groupName} >
+      {groups.length === 1 && (
+        <div key={groups[0].groupName}>
           <ObjectsTree<TItem>
             items={groups[0].visibleItems}
             searchText={props?.searchText}
@@ -121,7 +121,7 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
             getIsLeaf={groups[0].groupName === '-' ? undefined : props?.getIsLeaf}
           />
         </div>
-      }
+      )}
       {groups.length > 0 && (
         <Collapse
           activeKey={props?.openedKeys}
@@ -130,12 +130,13 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
           items={groups.map((ds) => {
             const defaultExpandAll = props?.searchText.length > 1 && ds.visibleItems.length <= 6;
             return {
-              label: <span >{ds.groupName}</span>,
+              label: <span>{ds.groupName}</span>,
               className: 'sha-toolbox-panel',
               title: ds.groupName,
               forceRender: true,
               children: ds.visibleItems.length === 0 ? null
-                : <div key={ds.groupName}>
+                : (
+<div key={ds.groupName}>
                   <ObjectsTree<TItem>
                     items={ds.visibleItems}
                     searchText={props?.searchText}
@@ -146,7 +147,8 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
                     getIcon={ds.groupName === '-' ? undefined : props?.getIcon}
                     getIsLeaf={ds.groupName === '-' ? undefined : props?.getIsLeaf}
                   />
-                </div>,
+</div>
+                ),
             };
           })}
         >

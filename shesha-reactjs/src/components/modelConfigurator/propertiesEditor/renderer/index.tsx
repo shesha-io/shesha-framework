@@ -1,5 +1,5 @@
 import React, { FC, useMemo, useState } from 'react';
-import { Button} from 'antd';
+import { Button } from 'antd';
 import { SidebarContainer } from '@/components/';
 import { ToolbarItemProperties } from './itemProperties';
 import ItemsContainer from './itemsContainer';
@@ -12,7 +12,7 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
 }) => {
   const { items, addItem, selectedItemRef } = usePropertiesEditor();
   const { styles } = useStyles();
-  const [ rightWidth, setRightWidth ] = useState<number | undefined>(undefined);
+  const [rightWidth, setRightWidth] = useState<number | undefined>(undefined);
 
   const onAddClick = () => {
     addItem().then((_item) => {
@@ -47,12 +47,13 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
 
   return (
     <div className={styles.shaToolbarConfigurator}>
-      {allowAdd &&
+      {allowAdd && (
         <div className={styles.shaActionButtons} style={{ marginBottom: '8px' }}>
           <Button onClick={onAddClick} type="primary">
             Add Property
           </Button>
-        </div>}
+        </div>
+      )}
 
       <SidebarContainer
         onDragEnd={onDragEnd}

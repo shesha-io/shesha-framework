@@ -22,12 +22,13 @@ export const DebugPanel: FC<DebugPanelProps> = () => {
                     <pre>{JSON.stringify(formData, null, 2)}</pre>
                 </Col>
             </CollapsiblePanel>
-            {contexts.map((ctx, index) =>
+            {contexts.map((ctx, index) => (
                 <CollapsiblePanel header={<>{ctx.name}: {ctx.description} <span style={{ color: 'gray' }}>({ctx.id})</span></>} expandIconPosition="start" ghost key={index}>
                     <Col span={24}>
                         <pre>{JSON.stringify(ctx.getData(), null, 2)}</pre>
                     </Col>
                 </CollapsiblePanel>
+            )
             )}
         </>
   );

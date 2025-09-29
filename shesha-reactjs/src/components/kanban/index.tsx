@@ -156,14 +156,14 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     }));
   }, [columns, tasks, groupingProperty, settings]);
 
-  const overflowStyle = getOverflowStyle(true,false);
+  const overflowStyle = getOverflowStyle(true, false);
 
   return (
     <>
       {!columns || columns.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
-        <Flex style={{...stylingBoxAsCSS, ...overflowStyle , overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
+        <Flex style={{ ...stylingBoxAsCSS, ...overflowStyle, overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
           {memoizedFilteredTasks?.map(({ column, tasks: columnTasks }) => (
             <KanbanColumn
               props={props}
@@ -188,8 +188,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
         title={selectedItem ? 'Edit Item' : 'New Item'}
         open={isModalVisible}
         onOk={() =>
-          selectedItem ? editForm.validateFields().then(handleEdit) : form.validateFields().then(handleCreate)
-        }
+          selectedItem ? editForm.validateFields().then(handleEdit) : form.validateFields().then(handleCreate)}
         onCancel={closeModal}
         width={1000}
       >
@@ -202,7 +201,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
             mode="edit"
           />
         ) : (
-          <ConfigurableForm key={'new-item'} form={form} formId={createFormId} mode="edit" />
+          <ConfigurableForm key="new-item" form={form} formId={createFormId} mode="edit" />
         )}
       </Modal>
     </>

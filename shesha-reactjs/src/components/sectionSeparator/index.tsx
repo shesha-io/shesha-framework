@@ -58,8 +58,8 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     '--border-thickness': `${lineThickness ?? 2}px`,
     '--border-style': lineType,
     '--border-color': lineColor || styles.primaryColor,
-    textAlign: labelAlign,
-    marginBottom: marginBottom || '8px',
+    "textAlign": labelAlign,
+    "marginBottom": marginBottom || '8px',
   } as CSSProperties;
 
   const baseStyle: CSSProperties = {
@@ -106,7 +106,8 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     <div
       className={styles.vertical}
       style={{ ...borderStyle, ...containerStyle, width: 'max-content', height: addPx(lineHeight || '0.9em') }}
-    ></div>
+    >
+    </div>
   ) : (
     <div
       style={{

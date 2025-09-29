@@ -51,7 +51,7 @@ export const MetadataEditor: FC<IMetadataEditorProps> = (props) => {
             </Space>
             {modalVisible && (
                 <Modal
-                  title={ label ?? "Metadata Editor" }
+                  title={label ?? "Metadata Editor"}
                   open={modalVisible}
                   onCancel={onModalCancel}
                   onOk={onModalOk}

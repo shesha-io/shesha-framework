@@ -127,7 +127,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   },
   settingsFormMarkup: () => getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
-  linkToModelMetadata: (model, metadata) => ({...model, ownerId: '{data.id}', ownerType: metadata.containerType, filesCategory: metadata.path}),
+  linkToModelMetadata: (model, metadata) => ({ ...model, ownerId: '{data.id}', ownerType: metadata.containerType, filesCategory: metadata.path }),
   migrator: (m) => m
     .add<IAttachmentsEditorProps>(0, (prev) => {
       return {

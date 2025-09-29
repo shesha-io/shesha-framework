@@ -467,7 +467,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   const fetchDataIfReady = () => {
     const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
     const groupingIsReady = !groupingSupported || (grouping ?? []).length === (state.groupingColumns ?? []).length;
-    const columnsAreReady = !(requireColumnRef.current) || Boolean(state.configurableColumns) && state.columns.length === state.configurableColumns.length;
+    const columnsAreReady = !(requireColumnRef.current) || (Boolean(state.configurableColumns) && state.columns.length === state.configurableColumns.length);
     const depsReady = isDataDependenciesReady();
 
     const readyToFetch = repository && groupingIsReady && columnsAreReady && depsReady;

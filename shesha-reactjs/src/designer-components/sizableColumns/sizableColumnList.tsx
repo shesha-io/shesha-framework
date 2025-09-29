@@ -248,7 +248,7 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
       >
         <Space direction="vertical" style={{ width: '100%' }}>
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId={'columns'}>
+            <Droppable droppableId="columns">
               {(provided: DroppableProvided) => (
                 <div ref={provided.innerRef} {...provided.droppableProps}>
                   <Table

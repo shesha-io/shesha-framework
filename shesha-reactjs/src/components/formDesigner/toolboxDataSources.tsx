@@ -85,9 +85,8 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
                     defaultExpandAll={(searchText ?? '') !== ''}
 
                   />
-                )};
-          }).filter((item) => Boolean(item))
-          }
+                ) };
+          }).filter((item) => Boolean(item))}
         />
       </div>
 

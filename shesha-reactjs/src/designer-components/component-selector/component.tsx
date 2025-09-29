@@ -49,6 +49,5 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
   migrator: (m) => m
     .add<IComponentSelectorComponentProps>(0, (prev) => ({ ...prev, componentType: 'input' }))
     .add<IComponentSelectorComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IComponentSelectorComponentProps>(2, (prev) => migrateVisibility(prev))
-  ,
+    .add<IComponentSelectorComponentProps>(2, (prev) => migrateVisibility(prev)),
 };

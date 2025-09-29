@@ -30,7 +30,7 @@ const ShaMenuDrawer: FC<IProps> = ({
 }) => (
   <ShaMenuDrawerStyledWrapper
     title=""
-    placement={"left"}
+    placement="left"
     closable={false}
     onClose={onClose}
     open={open}

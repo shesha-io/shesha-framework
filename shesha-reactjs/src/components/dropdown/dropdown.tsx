@@ -122,7 +122,7 @@ export const Dropdown: FC<IDropdownProps> = ({
               onChange={onChange}
               referenceListId={referenceListId}
               value={value}
-              variant={'borderless'}
+              variant="borderless"
               defaultValue={defaultValue}
               mode={selectedMode}
               disabledValues={disableItemValue ? disabledValues : []}
@@ -158,20 +158,22 @@ export const Dropdown: FC<IDropdownProps> = ({
   };
 
   if (readOnly) {
-    return <ReadOnlyDisplayFormItem
-      showIcon={showIcon}
-      solidColor={solidColor}
-      showItemName={showItemName}
-      tagStyle={tagStyle}
-      style={style}
-      dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
-      type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
-      value={mode === 'multiple'
-        ? displayStyle === 'tags'
-          ? selectedValue?.map((x) => options.find((o) => o.value === x))
-          : getSelectValue()
-        : options.find((o) => o.value === selectedValue)}
-    />;
+    return (
+<ReadOnlyDisplayFormItem
+  showIcon={showIcon}
+  solidColor={solidColor}
+  showItemName={showItemName}
+  tagStyle={tagStyle}
+  style={style}
+  dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
+  type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
+  value={mode === 'multiple'
+    ? displayStyle === 'tags'
+      ? selectedValue?.map((x) => options.find((o) => o.value === x))
+      : getSelectValue()
+    : options.find((o) => o.value === selectedValue)}
+/>
+    );
   }
 
   const commonSelectProps = {
@@ -190,35 +192,39 @@ export const Dropdown: FC<IDropdownProps> = ({
   };
 
   if (mode !== 'multiple' && mode !== 'tags' && displayStyle === 'tags') {
-    return <Select<CustomLabeledValue | CustomLabeledValue>
-      {...commonSelectProps}
-      popupMatchSelectWidth={false}
-      style={{ width: 'max-content', height: 'max-content' }}
-      placeholder={placeholder}
-      showSearch
-      filterOption={filterOption}
-      labelRender={(props) => {
-        const option = options.find((o) => o.value === props.value);
-        return <ReflistTag
-          key={option?.value}
-          value={option?.value}
-          description={option?.description}
-          color={option?.color}
-          icon={option?.icon}
-          showIcon={showIcon}
-          tagStyle={tagStyle}
-          solidColor={solidColor}
-          showItemName={showItemName}
-          label={option?.label}
-        />;
-      }}
-    >
+    return (
+<Select<CustomLabeledValue | CustomLabeledValue>
+  {...commonSelectProps}
+  popupMatchSelectWidth={false}
+  style={{ width: 'max-content', height: 'max-content' }}
+  placeholder={placeholder}
+  showSearch
+  filterOption={filterOption}
+  labelRender={(props) => {
+    const option = options.find((o) => o.value === props.value);
+    return (
+<ReflistTag
+  key={option?.value}
+  value={option?.value}
+  description={option?.description}
+  color={option?.color}
+  icon={option?.icon}
+  showIcon={showIcon}
+  tagStyle={tagStyle}
+  solidColor={solidColor}
+  showItemName={showItemName}
+  label={option?.label}
+/>
+    );
+  }}
+>
             {options?.map(({ value: localValue, label }) => (
                 <Select.Option value={localValue} key={localValue} data={{}}>
                     {label}
                 </Select.Option>
             ))}
-        </Select>;
+</Select>
+    );
   }
 
   return (
@@ -231,17 +237,19 @@ export const Dropdown: FC<IDropdownProps> = ({
           {...(displayStyle === 'tags' ? {
             labelRender: (props) => {
               const option = options.find((o) => o.value === props.value);
-              return <ReflistTag
-                value={option?.value}
-                description={option?.description}
-                color={option?.color}
-                icon={option?.icon}
-                showIcon={showIcon}
-                tagStyle={tagStyle}
-                solidColor={solidColor}
-                showItemName={showItemName}
-                label={option?.label}
-              />;
+              return (
+<ReflistTag
+  value={option?.value}
+  description={option?.description}
+  color={option?.color}
+  icon={option?.icon}
+  showIcon={showIcon}
+  tagStyle={tagStyle}
+  solidColor={solidColor}
+  showItemName={showItemName}
+  label={option?.label}
+/>
+              );
             },
           } : {})
             }
@@ -251,6 +259,6 @@ export const Dropdown: FC<IDropdownProps> = ({
                     {label}
                 </Select.Option>
             ))}
-        </Select >
+        </Select>
   );
 };

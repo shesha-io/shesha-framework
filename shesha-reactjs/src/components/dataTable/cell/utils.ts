@@ -16,7 +16,7 @@ export const adjustWidth = (crudOptions: ICrudOptions) => {
   const isAddEnabled = canAdd === "yes";
   const isDeleteEnabled = canDelete === "yes";
 
-  if (inlineEditMode === 'all-at-once' &&  isDeleteEnabled) {
+  if (inlineEditMode === 'all-at-once' && isDeleteEnabled) {
     return { minWidth: 100, maxWidth: 100 };
   }
 

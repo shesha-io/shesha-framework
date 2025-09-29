@@ -108,14 +108,14 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
       if (!position) return state;
 
       const newArray = position.ownerArray;
-      const prevItem = {...newArray[position.index]};
+      const prevItem = { ...newArray[position.index] };
       const prevItemsTypeIndex = prevItem.properties?.findIndex((p) => p.isItemsType);
-      const prevItemsType = prevItemsTypeIndex !== undefined ? {...prevItem.properties[prevItemsTypeIndex]} : null;
+      const prevItemsType = prevItemsTypeIndex !== undefined ? { ...prevItem.properties[prevItemsTypeIndex] } : null;
       const newItem = { ...prevItem, ...payload.settings };
 
 
       const itemsTypeIndex = newItem.properties?.findIndex((p) => p.isItemsType);
-      let itemsType: IModelItem = itemsTypeIndex !== undefined ? {...newItem.properties[itemsTypeIndex]} : null;
+      let itemsType: IModelItem = itemsTypeIndex !== undefined ? { ...newItem.properties[itemsTypeIndex] } : null;
 
       if (newItem.dataType !== prevItem.dataType) {
         newItem.dataFormat = undefined;
@@ -138,7 +138,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
           newItem.properties = [...(newItem.properties ?? []), itemsType];
         } else {
           // update
-          itemsType = {...itemsType, ...payload.settings.itemsType, name: newItem.name, entityType: newItem.entityType};
+          itemsType = { ...itemsType, ...payload.settings.itemsType, name: newItem.name, entityType: newItem.entityType };
 
           if (payload.settings.dataFormat !== prevItem.dataFormat) {
             switch (payload.settings.dataFormat) {

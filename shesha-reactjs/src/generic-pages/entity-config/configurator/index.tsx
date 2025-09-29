@@ -244,8 +244,8 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
             <Col span="18">
               <Form.Item>
                 <Autocomplete
-                  dataSourceType={'url'}
-                  dataSourceUrl={'/api/services/app/EntityConfig/EntityConfigAutocomplete?implemented=true'}
+                  dataSourceType="url"
+                  dataSourceUrl="/api/services/app/EntityConfig/EntityConfigAutocomplete?implemented=true"
                   value={autocompleteResult}
                   onChange={setAutocompleteResult}
                 />

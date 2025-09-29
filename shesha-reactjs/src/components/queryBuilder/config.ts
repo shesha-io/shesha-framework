@@ -35,12 +35,12 @@ const standardSourceTypes: ValueSource[] = ['value', 'field', 'func'];
 const types = {
   ...standardTypes,
   // non standard types
-  entityReference: EntityReferenceType,
-  refList: RefListType,
-  specification: SpecificationType,
+  "entityReference": EntityReferenceType,
+  "refList": RefListType,
+  "specification": SpecificationType,
   "strict-boolean": StrictBoolean,
-  guid: GuidType,
-  javascript: {
+  "guid": GuidType,
+  "javascript": {
     ...standardTypes.text,
     defaultWidget: 'javascript',
     widgets: {
@@ -53,22 +53,22 @@ const types = {
 };
 
 const typeModifiers: IDictionary<TypeModifier> = {
-  'boolean': {
+  boolean: {
     valueSources: standardSourceTypes,
   },
-  'date': {
+  date: {
     valueSources: standardSourceTypes,
   },
-  'datetime': {
+  datetime: {
     valueSources: standardSourceTypes,
   },
-  'time': {
+  time: {
     valueSources: standardSourceTypes,
   },
-  'number': {
+  number: {
     valueSources: standardSourceTypes,
   },
-  'text': {
+  text: {
     valueSources: standardSourceTypes,
     operators: [
       'equal',
@@ -81,7 +81,7 @@ const typeModifiers: IDictionary<TypeModifier> = {
       'ends_with',
     ],
   },
-  'javascript': {
+  javascript: {
     valueSources: ['value'],
     operators: [
       'equal',
@@ -92,7 +92,7 @@ const typeModifiers: IDictionary<TypeModifier> = {
   },
 };
 
-for(const typeName in typeModifiers) {
+for (const typeName in typeModifiers) {
   if (typeModifiers.hasOwnProperty(typeName)) {
     modifyType(types, typeName, typeModifiers[typeName]);
   }

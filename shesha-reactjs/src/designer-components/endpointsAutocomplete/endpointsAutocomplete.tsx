@@ -33,7 +33,7 @@ const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteCo
               );
             }
           }
-        </ConfigurableFormItem >
+        </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: settingsForm,
@@ -41,8 +41,7 @@ const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteCo
     .add<IEndpointsAutocompleteComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IEndpointsAutocompleteComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IEndpointsAutocompleteComponentProps>(2, (prev) => migrateReadOnly(prev))
-    .add<IEndpointsAutocompleteComponentProps>(3, (prev) => ({ ...prev, mode: 'url' }))
-  ,
+    .add<IEndpointsAutocompleteComponentProps>(3, (prev) => ({ ...prev, mode: 'url' })),
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 

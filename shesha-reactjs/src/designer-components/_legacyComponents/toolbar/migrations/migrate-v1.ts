@@ -162,15 +162,15 @@ type ToolbarItemPropsV0 = IToolbarButtonV0 | IButtonGroupV0;
 
 type ToolbarItemSubTypeV0 = 'button' | 'separator' | 'line';
 type ButtonActionTypeV0 =
-    | 'navigate' |
-    'dialogue' |
-    'executeScript' |
-    'executeFormAction' | // This is the old one which is now only being used for backward compatibility. The new one is 'customAction' to be consistent with the ButtonGroup
-    'customAction' | // This is the new one. Old one is 'executeFormAction'
-    'submit' |
-    'reset' |
-    'startFormEdit' |
-    'cancelFormEdit';
+  | 'navigate' |
+  'dialogue' |
+  'executeScript' |
+  'executeFormAction' | // This is the old one which is now only being used for backward compatibility. The new one is 'customAction' to be consistent with the ButtonGroup
+  'customAction' | // This is the new one. Old one is 'executeFormAction'
+  'submit' |
+  'reset' |
+  'startFormEdit' |
+  'cancelFormEdit';
 
 interface IToolbarItemBaseV0 {
   id: string;

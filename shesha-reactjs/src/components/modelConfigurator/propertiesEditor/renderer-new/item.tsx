@@ -17,40 +17,50 @@ export interface IItemProps {
 
 export const Item: FC<IItemProps> = ({ itemProps, index, containerRendering, onChange }) => {
   if (itemProps.dataType === DataTypes.object || itemProps.dataType === DataTypes.array) {
-    return <ComplexProperty
-      index={index}
-      data={itemProps}
-      containerRendering={containerRendering}
-      onChange={onChange}
-      key={itemProps.id}
-    />;
+    return (
+<ComplexProperty
+  index={index}
+  data={itemProps}
+  containerRendering={containerRendering}
+  onChange={onChange}
+  key={itemProps.id}
+/>
+    );
   } else if (itemProps.dataType === DataTypes.object) {
-    return <JsonProperty
-      id={index}
-      index={index}
-      {...itemProps}
-      key={itemProps.id}
-    />;
+    return (
+<JsonProperty
+  id={index}
+  index={index}
+  {...itemProps}
+  key={itemProps.id}
+/>
+    );
   } else if (itemProps.dataType === DataTypes.entityReference && !itemProps.entityType) {
-    return <GenericEntityProperty
-      id={index}
-      index={index}
-      {...itemProps}
-      key={itemProps.id}
-    />;
+    return (
+<GenericEntityProperty
+  id={index}
+  index={index}
+  {...itemProps}
+  key={itemProps.id}
+/>
+    );
   } else if (itemProps.dataType === DataTypes.entityReference && itemProps.entityType) {
-    return <EntityProperty
-      id={index}
-      index={index}
-      {...itemProps}
-      key={itemProps.id}
-    />;
+    return (
+<EntityProperty
+  id={index}
+  index={index}
+  {...itemProps}
+  key={itemProps.id}
+/>
+    );
   } else {
-    return <SimpleProperty
-      id={index}
-      index={index}
-      {...itemProps}
-      key={itemProps.id}
-    />;
+    return (
+<SimpleProperty
+  id={index}
+  index={index}
+  {...itemProps}
+  key={itemProps.id}
+/>
+    );
   }
 };

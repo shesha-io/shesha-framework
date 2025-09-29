@@ -33,8 +33,7 @@ const EditableTagGroupComponent: IToolboxComponent<IEditableTagGroupComponentPro
     .add<IEditableTagGroupComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IEditableTagGroupComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IEditableTagGroupComponentProps>(2, (prev) => migrateReadOnly(prev))
-    .add<IEditableTagGroupComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-  ,
+    .add<IEditableTagGroupComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 

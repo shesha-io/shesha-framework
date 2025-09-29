@@ -112,36 +112,28 @@ export const safeGetProperty = <T extends object>(obj: T, key: string | symbol):
 
 export const setValueByPropertyName = <TData extends object = object>(data: TData, propertyName: string, value: any, makeCopy: boolean = false): TData => {
   const resultData = makeCopy ? { ...data } : data;
-  const propName = propertyName.split(/\.|\[|\]/g).filter(Boolean);
-  const lastPropName = propName.pop();
-  if (!isNullOrWhiteSpace(lastPropName))
+  const path = propertyName.split(/\.|\[|\]/g).filter(Boolean);
+  const lastPropName = path.length > 0 ? path[path.length - 1] : undefined;
+  if (isNullOrWhiteSpace(lastPropName))
     return resultData;
 
-  if (Array.isArray(propName) && propName.length > 0) {
-    let prop: object = resultData;
-    propName.forEach((item, index) => {
-      if (index < propName.length - 1 && item?.length > 0) {
-        const propName = item as keyof typeof prop;
-        const level = prop[propName];
-        if (!isDefined(level)) {
-          // create currnet level is missing depending on next index
-          prop[propName] = (Number.isNaN(Number(propName[index + 1])) ? {} : []) as never;
-          prop = prop[propName];
-        } else {
-          if (typeof level === 'object') {
-            if (makeCopy) {
-              const newCopy = Array.isArray(level) ? [...level] : { ...(level as object) };
-              prop[propName] = newCopy as never;
-            }
-            prop = level;
-          } else {
-            throw new Error(`Property ${propName} is not an object`);
-          }
-        }
+  let prop: object = resultData;
+  for (let i = 0; i < path.length - 1; i++) {
+    const propName = path[i] as keyof typeof prop;
+    const level = prop[propName];
+    if (typeof level !== 'object') {
+      // create currnet level is missing depending on next index
+      prop[propName] = (Number.isNaN(Number(path[i + 1])) ? {} : []) as never;
+      prop = prop[propName];
+    } else {
+      if (makeCopy) {
+        const newCopy = Array.isArray(level) ? [...level] : { ...(level as object) };
+        prop[propName] = newCopy as never;
       }
-    });
-    prop[lastPropName as keyof typeof prop] = value as never;
+      prop = level;
+    }
   }
+  prop[lastPropName as keyof typeof prop] = value as never;
   return resultData;
 };
 

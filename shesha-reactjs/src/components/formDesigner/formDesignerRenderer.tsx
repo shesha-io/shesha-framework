@@ -9,7 +9,7 @@ export const FormDesignerRenderer: FC = ({ }) => {
 
   return (
     <div className={classNames("sha-page", styles.designerPage)}>
-      <div className={styles.formDesigner} >
+      <div className={styles.formDesigner}>
         <FormDesignerToolbar />
         <DesignerMainArea />
       </div>

@@ -102,8 +102,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IRefListStatusProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-  ,
+    .add<IRefListStatusProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   linkToModelMetadata: (model, metadata): IRefListStatusProps => {

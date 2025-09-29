@@ -19,7 +19,7 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
     <>
       <div className={!value ? styles.flexWrapper : ''}>
         <SettingInput
-          label={`Label Align`}
+          label="Label Align"
           hideLabel
           propertyName="labelAlign"
           readOnly={readOnly}
@@ -31,7 +31,7 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
         />
         <SettingInput
           id={nanoid()}
-          label={`Show Label`}
+          label="Show Label"
           hideLabel={!value}
           hidden={!value}
           propertyName="hideLabel"
@@ -42,8 +42,8 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
         />
         <SettingInput
           id={nanoid()}
-          label={`Hide Label`}
-          tooltip={`Hide Label`}
+          label="Hide Label"
+          tooltip="Hide Label"
           hideLabel={!value}
           propertyName="hideLabel"
           readOnly={readOnly}

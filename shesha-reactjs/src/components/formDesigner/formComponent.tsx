@@ -72,10 +72,15 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   ), [actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
 
   if (!toolboxComponent)
-    return <ComponentError errors={{
-      hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type,
-    }} message={`Component '${actualModel.type}' not found`} type="error"
-    />;
+    return (
+<ComponentError
+  errors={{
+    hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type,
+  }}
+  message={`Component '${actualModel.type}' not found`}
+  type="error"
+/>
+    );
 
   if (shaForm.formMode === 'designer') {
     const validationResult: IModelValidation = { hasErrors: false, errors: [] };

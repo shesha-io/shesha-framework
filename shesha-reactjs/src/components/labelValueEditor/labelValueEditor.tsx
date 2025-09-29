@@ -117,8 +117,7 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
         initNewItem={(_items) => ({
           [labelName]: '',
           [valueName]: '',
-        })
-        }
+        })}
         readOnly={readOnly}
       >
         {({ item, itemOnChange, readOnly }) => {
@@ -130,7 +129,8 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
               <Col span={12}>
                 <InputPropertyEditor<ILabelValueItem> item={item} itemOnChange={itemOnChange} propertyName={valueName} readOnly={readOnly} placeholder={valueTitle} />
               </Col>
-            </Row>);
+            </Row>
+          );
         }}
       </ListEditor>
     </ConditionalWrap>

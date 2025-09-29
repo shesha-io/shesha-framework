@@ -43,7 +43,7 @@ export const getSettings = (data: any) => {
                   label: "Component Name",
                   size: "small",
                   validate: {
-                    "required": true,
+                    required: true,
                   },
                 })
                 .addSettingsInput({

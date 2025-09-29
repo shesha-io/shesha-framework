@@ -82,7 +82,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   }, [value?.type]);
 
   const canConfigure = Boolean(formComponent);
-  const selectStyle = { width: canConfigure ? 'calc(100% - 100px)' : '100%'};
+  const selectStyle = { width: canConfigure ? 'calc(100% - 100px)' : '100%' };
 
   const getComponentModel = (toolboxComponent: IToolboxComponent) => {
     if (!toolboxComponent) return null;

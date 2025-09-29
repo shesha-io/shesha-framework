@@ -103,7 +103,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
           if (prev.quickviewWidth == null || prev.quickviewWidth === '') return undefined;
           if (typeof prev.quickviewWidth === 'number') return `${prev.quickviewWidth}px`;
           if (/^\d+$/.test(prev.quickviewWidth)) return `${prev.quickviewWidth}px`; // digit-only string
-          if (/^\d+(px|%)$/.test(prev.quickviewWidth)) return prev.quickviewWidth;  // already valid
+          if (/^\d+(px|%)$/.test(prev.quickviewWidth)) return prev.quickviewWidth; // already valid
           return prev.quickviewWidth; // keep keywords like 'auto', 'fit-content', etc.
         })(),
       })),

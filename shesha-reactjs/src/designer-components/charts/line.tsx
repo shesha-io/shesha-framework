@@ -87,7 +87,8 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-              }}>
+              }}
+              >
                 {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType="line" evaluatedFilters={stateEvaluatedFilters} />}
               </div>
             </ChartDataProvider>

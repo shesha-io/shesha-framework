@@ -37,9 +37,9 @@ export const PermissionAutocomplete: FC<IPermissionAutocompleteProps> = (props) 
       popupRender={(_) => (
 
         <PermissionsTree
-          formComponentId={''}
-          formComponentName={''}
-          mode={'Select'}
+          formComponentId=""
+          formComponentName=""
+          mode="Select"
           hideSearch
           readOnly={readOnly}
 

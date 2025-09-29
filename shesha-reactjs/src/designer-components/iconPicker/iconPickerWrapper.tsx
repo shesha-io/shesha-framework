@@ -1,6 +1,6 @@
 import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
-import React, { CSSProperties, FC, ReactNode, useState , useRef, useEffect} from 'react';
-import { IApplicationContext} from '@/providers/form/utils';
+import React, { CSSProperties, FC, ReactNode, useState, useRef, useEffect } from 'react';
+import { IApplicationContext } from '@/providers/form/utils';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 import { Tooltip } from 'antd';
@@ -88,7 +88,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
               iconSize ?? fontSize
             }
             readOnly={readOnly}
-            style={{...style,   background: 'transparent'}}
+            style={{ ...style, background: 'transparent' }}
             color={props.color}
             twoToneColor={color}
           />
