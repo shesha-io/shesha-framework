@@ -60,7 +60,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { message } = App.useApp();
-    const pageContext = useDataContextManagerActions(false)?.getPageContext();
+    const pageContext = useDataContextManagerActions()?.getPageContext();
     const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
     const enabled = !model.readOnly;
