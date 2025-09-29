@@ -69,7 +69,7 @@ export const DEFAULT_OPTIONS = {
   sizes: [25, 50, 25],
   configTreePanelWidth: (val: number = 20) => (val / 100) * window.innerWidth,
   gutter: 4,
-  designerWidth : '1024px'
+  designerWidth: '1024px',
 };
 
 const valueToPercent = (value: number) => value / 100;

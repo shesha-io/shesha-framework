@@ -132,7 +132,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             )}
             style={isDesigner && canZoom ? {
               width: designerWidth,
-              zoom: `${zoom}%`
+              zoom: `${zoom}%`,
             } : {}}
           >
             {children}
