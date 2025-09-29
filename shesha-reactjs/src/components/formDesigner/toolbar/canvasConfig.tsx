@@ -18,17 +18,17 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
     <div className={styles.shaDesignerCanvasConfig}>
       <DeviceOptions />
       <Space direction="horizontal" size={0} style={{ flexWrap: "nowrap" }}>
-      <Tooltip title={`${zoom}%`}>
-  <Button
-    size="small"
-    type={autoZoom ? "link" : "text"}
-    icon={<ExpandOutlined size={14} />}
-    title="Auto"
-    onClick={() => {
-      setCanvasAutoZoom();
-    }}
-  />
-</Tooltip>
+        <Tooltip title={`${zoom}%`}>
+          <Button
+            size="small"
+            type={autoZoom ? "link" : "text"}
+            icon={<ExpandOutlined size={14} />}
+            title="Auto"
+            onClick={() => {
+              setCanvasAutoZoom();
+            }}
+          />
+        </Tooltip>
         <Tooltip title={`${zoom}%`}><Button size="small" disabled={autoZoom} type="text" icon={<MinusOutlined />} title="Zoom out" onClick={() => setCanvasZoom(zoom - (zoom > DEFAULT_OPTIONS.minZoom ? 2 : 0))} /></Tooltip>
         <Tooltip title={`${zoom}%`}><Button size="small" disabled={autoZoom} type="text" icon={<PlusOutlined />} title="Zoom in" onClick={() => setCanvasZoom(zoom + (zoom < DEFAULT_OPTIONS.maxZoom ? 2 : 0))} /></Tooltip>
       </Space>
