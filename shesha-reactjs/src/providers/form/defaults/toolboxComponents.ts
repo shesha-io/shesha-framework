@@ -115,6 +115,7 @@ import PolarAreaChartComponent from '@/designer-components/charts/polarArea';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
 import DividerComponent from '@/designer-components/_legacyComponents/divider';
 import EntityTypeAutocompleteComponent from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete';
+import CalendarComponent from '@/designer-components/calendar';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -164,6 +165,7 @@ export const getToolboxComponents = (
         StatusTag,
         ChevronComponent,
         KanbanComponent,
+        CalendarComponent,
       ],
     },
     {
