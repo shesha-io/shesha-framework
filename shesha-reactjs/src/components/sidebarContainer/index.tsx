@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, ReactNode, useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import React, { FC, PropsWithChildren, ReactNode, useEffect, useState, useMemo, useCallback } from 'react';
 import classNames from 'classnames';
 
 import { ISidebarProps, SidebarPanelPosition } from './models';
@@ -7,7 +7,7 @@ import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
 import { useCanvas, useShaFormInstance } from '@/index';
-import { calculateAutoZoom, DEFAULT_OPTIONS, usePinchZoom, debounce } from '@/providers/canvas/utils';
+import { calculateAutoZoom, DEFAULT_OPTIONS, usePinchZoom } from '@/providers/canvas/utils';
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;
   rightSidebarProps?: ISidebarProps;
@@ -33,11 +33,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const [isOpenRight, setIsOpenRight] = useState(false);
   const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom, configTreePanelSize } = useCanvas();
 
-  console.log("configTreePanelSize : ", configTreePanelSize);
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
   const handleDragSizesChange = useCallback((sizes: number[]) => {
-    /* debounce*/
     setCurrentSizes(sizes);
   }, []);
 
@@ -53,18 +51,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     autoZoom
   );
 
-  // Debounce zoom calculation to prevent excessive updates during resize
-  const debouncedZoomUpdate = useRef<((zoom: number) => void) | null>(null);
-  if (!debouncedZoomUpdate.current) {
-    debouncedZoomUpdate.current = debounce((newZoom: number) => {
-      setCanvasZoom(newZoom);
-    }, 100);
-  }
-
   useEffect(() => {
     if (canZoom) {
       setCanvasWidth(designerWidth ?? `1024px`, designerDevice);
-
       if (autoZoom) {
         const newZoom = calculateAutoZoom({
           currentZoom: zoom,
@@ -73,10 +62,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
           configTreePanelSize: configTreePanelSize,
         });
 
-        // Use debounced update for configTreePanelSize changes, immediate for others
-        if (debouncedZoomUpdate.current) {
-          debouncedZoomUpdate.current(newZoom);
-        }
+        setCanvasZoom(newZoom);
       }
     }
   }, [canZoom, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize]);
