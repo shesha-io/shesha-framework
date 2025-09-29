@@ -32,7 +32,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const { styles } = useStyles();
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
-  const { zoom, setCanvasZoom, setCanvasWidth, designerDevice, designerWidth, autoZoom, configTreePanelSize } = useCanvas();
+  const { zoom, setCanvasZoom, designerDevice, designerWidth, autoZoom, configTreePanelSize } = useCanvas();
 
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
