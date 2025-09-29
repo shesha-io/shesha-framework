@@ -16,7 +16,6 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   isInput: true,
   isOutput: true,
   Factory: ({ model }) => {
-
     if (model.hidden) return null;
 
     return (
@@ -26,11 +25,10 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
     );
   },
   settingsFormMarkup: configurableActionsConfiguratorSettingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
-  migrator: m => m
-    .add<IConfigurableActionConfiguratorComponentProps>(0, prev => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IConfigurableActionConfiguratorComponentProps>(1, (prev) => migrateVisibility(prev))
-  ,
+  validateSettings: (model) => validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
+  migrator: (m) => m
+    .add<IConfigurableActionConfiguratorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IConfigurableActionConfiguratorComponentProps>(1, (prev) => migrateVisibility(prev)),
 };
 
 export default ConfigurableActionConfiguratorComponent;

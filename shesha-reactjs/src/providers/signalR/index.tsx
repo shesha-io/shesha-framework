@@ -10,7 +10,7 @@ import {
   SignalRStateContext,
 } from './contexts';
 import { signalRReducer } from './reducer';
-//@ts-ignore
+// @ts-ignore
 import { usePrevious } from '@/hooks';
 import { setConnectionAction } from './actions';
 import { useSheshaApplication } from '../sheshaApplication';

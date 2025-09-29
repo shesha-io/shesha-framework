@@ -10,14 +10,14 @@ export interface IProviderSettings {
 }
 
 export interface ISettingsFormFactoryArgs<TModel = IProviderSettings> {
-    model: TModel;
-    onSave: (values: TModel) => void;
-    onCancel: () => void;
-    onValuesChange?: (changedValues: any, values: TModel) => void;
-    readOnly?: boolean;
-    availableConstants?: IObjectMetadata;
+  model: TModel;
+  onSave: (values: TModel) => void;
+  onCancel: () => void;
+  onValuesChange?: (changedValues: any, values: TModel) => void;
+  readOnly?: boolean;
+  availableConstants?: IObjectMetadata;
 }
 
 export type IProviderSettingsFormFactory<TModel = IProviderSettings> = (
-    props: ISettingsFormFactoryArgs<TModel>
+  props: ISettingsFormFactoryArgs<TModel>
 ) => ReactNode;

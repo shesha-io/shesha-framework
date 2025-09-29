@@ -18,26 +18,27 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
   icon: <SelectOutlined />,
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
-    return store 
+    return store
       ? <TableViewSelector {...model} />
-      : <Alert
-        className="sha-designer-warning"
-        message="Table view selector must be used within a Data Table Context"
-        type="warning"
-      />;
+      : (
+<Alert
+  className="sha-designer-warning"
+  message="Table view selector must be used within a Data Table Context"
+  type="warning"
+/>
+      );
   },
-  migrator: m => m.add<ITableViewSelectorComponentProps>(0, prev => {
+  migrator: (m) => m.add<ITableViewSelectorComponentProps>(0, (prev) => {
     return {
       ...prev,
       title: prev['title'] ?? 'Title',
       filters: prev['filters'] ?? [],
     };
   })
-    .add(1, prev => (
-      { ...prev, filters: prev.filters.map(filter => migrateFilterMustacheExpressions(filter)) }
+    .add(1, (prev) => (
+      { ...prev, filters: prev.filters.map((filter) => migrateFilterMustacheExpressions(filter)) }
     ))
-    .add(2, (prev) => migratePropertyName(prev))
-  ,
+    .add(2, (prev) => migratePropertyName(prev)),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };

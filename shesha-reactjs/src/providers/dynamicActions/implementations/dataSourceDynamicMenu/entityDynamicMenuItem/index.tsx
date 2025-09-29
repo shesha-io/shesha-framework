@@ -1,12 +1,11 @@
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { useEntityTemplates } from '../utils';
-import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
 import {
   DynamicActionsProvider,
   DynamicItemsEvaluationHook,
   FormMarkup,
-  useDataContextManagerActions,
+  useDataContextManagerActionsOrUndefined,
   useFormData,
   useGlobalState,
   useNestedPropertyMetadatAccessor,
@@ -25,7 +24,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   const { data: FormData } = useFormData();
   const { globalState } = useGlobalState();
   const [data, setData] = useState(null);
-  const pageContext = useDataContextManagerActions(false)?.getPageContext();
+  const pageContext = useDataContextManagerActionsOrUndefined()?.getPageContext();
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityTypeShortAlias);
   const evaluatedFilters = useFormEvaluatedFilter({
     filter,
@@ -47,8 +46,6 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
       fetchTemplateData();
     }
   }, [item, settings, evaluatedFilters, pageContext, FormData, globalState]);
-
-  const { configurationItemMode } = useAppConfigurator();
 
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
@@ -76,7 +73,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
     }));
 
     return result;
-  }, [settings, item, data, configurationItemMode]);
+  }, [settings, item, data]);
   return operations;
 };
 

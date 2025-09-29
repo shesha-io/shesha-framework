@@ -4,10 +4,10 @@ import { useStyles } from './styles/styles';
 import { ISidebarProps } from './models';
 
 export const SidebarPanel: FC<ISidebarProps> = (props) => {
-    const { styles } = useStyles();
-    const { title, content, className } = props;
+  const { styles } = useStyles();
+  const { title, content, className } = props;
 
-    return (
+  return (
         <div className={classNames(styles.propsPanelContent, className)}>
             <div className={styles.propsPanelHeader}>
                 <div className={styles.propsPanelTitle}>{title}</div>
@@ -18,5 +18,5 @@ export const SidebarPanel: FC<ISidebarProps> = (props) => {
                 </div>
             </div>
         </div>
-    );
+  );
 };

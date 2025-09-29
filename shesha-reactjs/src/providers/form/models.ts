@@ -397,19 +397,6 @@ export interface IPersistedFormProps {
   label?: string;
   description?: string;
   markup?: FormRawMarkup;
-  /**
-   * Version number
-   */
-  versionNo?: number;
-  /**
-   * Version status
-   */
-  versionStatus?: number;
-
-  /**
-   * If true, indicates that it's the last version of the form
-   */
-  isLastVersion?: boolean;
 }
 
 type AllKeys<T> = T extends unknown ? keyof T : never;
@@ -483,15 +470,11 @@ export interface FormDto {
    * Type
    */
   type?: string | null;
-
-  versionNo?: number;
-  versionStatus?: number;
-  isLastVersion?: boolean;
 }
 
 export interface IFormDto extends Omit<FormDto, 'markup'> {
-  markup: FormRawMarkup;
-  settings: IFormSettings;
+  markup: FormRawMarkup | null;
+  settings: IFormSettings | null;
 }
 
 export interface IFormValidationRulesOptions {
@@ -509,7 +492,12 @@ export const DEFAULT_FORM_SETTINGS: IFormSettings = {
 };
 
 export type ActionParametersJs = string;
-export type ActionParametersDictionary = [{ key: string; value: string }];
+// export type ActionParametersDictionary = [{ key: string; value: string }];
+export type ActionParametersDictionary = { [key: string]: any };
 export type ActionParameters = ActionParametersJs | ActionParametersDictionary;
 export type ActionArguments = { [key: string]: any };
 export type GenericDictionary = { [key: string]: any };
+
+export const STYLE_BOX_CSS_POPERTIES = ['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'] as const;
+export type StyleBoxCssProperties = typeof STYLE_BOX_CSS_POPERTIES[number];
+export type StyleBoxValue = Pick<CSSProperties, StyleBoxCssProperties>;

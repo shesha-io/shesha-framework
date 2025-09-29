@@ -44,17 +44,17 @@ const getSettingKey = (config: ISettingConfiguration, app?: IFrontEndApplication
 export const SettingsMenu: FC<ISettingsMenuProps> = () => {
   const [isDevmode, setDevMode] = useDevMode();
 
-  const [openedKeys, setOpenedKeys] = useLocalStorage('settings-editor.openedKeys', {});//['']);
+  const [openedKeys, setOpenedKeys] = useLocalStorage('settings-editor.openedKeys', {});// ['']);
   const [searchText, setSearchText] = useLocalStorage('settings-editor.search', '');
   const [menuState, setMenuState] = useState<SettingMenuState>({ groups: [], allSettings: {} });
 
-  const { 
+  const {
     selectedApplication,
     settingConfigurations,
     applicationsLoadingState,
     selectSetting,
     settingSelection,
-    configsLoadingState
+    configsLoadingState,
   } = useSettingsEditor();
 
   useEffect(() => {
@@ -63,20 +63,20 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
       const allSettings: SettingsDictionary = {};
 
       const addSetting = (groupName: string, config: ISettingConfiguration, app: IFrontEndApplication) => {
-        let group = groups.find(g => g.name === groupName);
+        let group = groups.find((g) => g.name === groupName);
         if (!group) {
           group = { name: groupName, settings: [] };
           groups.push(group);
         }
-        
+
         const key = getSettingKey(config, app);
         const item: ISettingItem = { config, app };
         allSettings[key] = item;
         group.settings.push(item);
       };
 
-      settingConfigurations.forEach(s => {
-        //const moduleName = s.configuration.module?.name ?? 'no module';
+      settingConfigurations.forEach((s) => {
+        // const moduleName = s.configuration.module?.name ?? 'no module';
         const category = s.category ?? '';
 
         if (s.isClientSpecific && selectedApplication) {
@@ -94,7 +94,7 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
   }, [applicationsLoadingState, configsLoadingState, selectedApplication]);
 
   const onCollapseChange = (key: string | string[]) => {
-    setOpenedKeys({...openedKeys, [selectedApplication?.appKey ?? 'general']: Array.isArray(key) ? key : [key]});
+    setOpenedKeys({ ...openedKeys, [selectedApplication?.appKey ?? 'general']: Array.isArray(key) ? key : [key] });
   };
 
   const filteredGroups = useMemo<ISettingGroup[]>(() => {
@@ -103,8 +103,8 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
 
     const result: ISettingGroup[] = [];
 
-    groups.forEach(setting => {
-      const filteredSettings = setting.settings.filter(c =>
+    groups.forEach((setting) => {
+      const filteredSettings = setting.settings.filter((c) =>
         c.config.name?.toLowerCase().includes(searchText?.toLowerCase())
       );
       if (filteredSettings.length > 0) result.push({ ...setting, settings: filteredSettings });
@@ -117,7 +117,7 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
     const selectedItem = info.key
       ? menuState.allSettings[info.key]
       : null;
-    
+
     if (selectedItem)
       selectSetting(selectedItem.config, selectedItem.app);
   };
@@ -129,13 +129,13 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
         {filteredGroups.length > 0 && (
           <Collapse activeKey={openedKeys[selectedApplication?.appKey ?? 'general']} onChange={onCollapseChange} accordion>
             {filteredGroups
-              //.filter(({ visible }) => visible)
+              // .filter(({ visible }) => visible)
               .map((group, groupIndex) => {
                 const visibleSettings = group.settings;
 
-                const menuItems = visibleSettings.map<MenuItem>(item => ({
+                const menuItems = visibleSettings.map<MenuItem>((item) => ({
                   key: getSettingKey(item.config, item.app),
-                  label: item.config.label
+                  label: item.config.label,
                 }));
 
                 return visibleSettings.length === 0 ? null : (

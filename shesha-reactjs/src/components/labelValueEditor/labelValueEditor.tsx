@@ -8,7 +8,7 @@ import {
   Input,
   Modal,
   Row,
-  Tabs
+  Tabs,
 } from 'antd';
 import { BorderlessTableOutlined } from '@ant-design/icons';
 import { CodeVariablesTables, ICodeExposedVariable } from '@/components/codeVariablesTable';
@@ -75,12 +75,12 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
 
-  const toggleModal = () => setShowModal(currentVisible => !currentVisible);
+  const toggleModal = () => setShowModal((currentVisible) => !currentVisible);
 
   return (
     <ConditionalWrap
       condition={mode === 'dialog'}
-      wrap={children => (
+      wrap={(children) => (
         <Fragment>
           <Button onClick={toggleModal} size="small" icon={<BorderlessTableOutlined />}>
             {readOnly ? 'Click to View Items' : 'Click to Add Items'}
@@ -117,8 +117,7 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
         initNewItem={(_items) => ({
           [labelName]: '',
           [valueName]: '',
-        })
-        }
+        })}
         readOnly={readOnly}
       >
         {({ item, itemOnChange, readOnly }) => {
@@ -130,7 +129,8 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
               <Col span={12}>
                 <InputPropertyEditor<ILabelValueItem> item={item} itemOnChange={itemOnChange} propertyName={valueName} readOnly={readOnly} placeholder={valueTitle} />
               </Col>
-            </Row>);
+            </Row>
+          );
         }}
       </ListEditor>
     </ConditionalWrap>

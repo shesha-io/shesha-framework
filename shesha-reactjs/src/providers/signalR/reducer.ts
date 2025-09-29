@@ -10,7 +10,7 @@ export function signalRReducer(
 
   switch (type) {
     case SignalRActionEnums.SetConnection:
-      /* NEW_ACTION_ENUM_GOES_HERE */
+    /* NEW_ACTION_ENUM_GOES_HERE */
 
       return {
         ...state,

@@ -38,7 +38,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     height,
     maxHeight,
     minHeight,
-    textAlign = 'center',
+    textAlign = 'left',
   } = style || {};
 
   const { layout, isDragger, hideFileName, listType } = model;
@@ -104,8 +104,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
       .ant-upload-list-picture-card {
         height: ${hideFileName
-        ? 'var(--thumbnail-height)'
-        : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
+          ? 'var(--thumbnail-height)'
+          : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
         padding-bottom: 1rem;
       }
 
@@ -183,7 +183,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       }
 
       .${prefixCls}-upload {
-        ${layout && !isDragger && 'width: var(--thumbnail-width) !important;'};
+
+        width: ${layout && !isDragger ? 'var(--thumbnail-width)' : '100%'} !important;
         ${layout && !isDragger && 'height: var(--thumbnail-height) !important'};
         border-radius: ${borderRadius} !important;
         align-items: center;
@@ -201,11 +202,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
       .ant-btn {
         color: ${primaryColor || token.colorPrimary} !important;
+        ${commonTextStyles}
         padding: 0;
         * {
-          font-size: ${fontSize} !important;
-          font-weight: ${fontWeight} !important;
-          font-family: ${fontFamily} !important;
+          ${commonTextStyles}
         }
         ${listType === 'thumbnail' && style}
         width: 100%;
@@ -328,6 +328,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     antUploadText,
     antUploadHint,
     styledFileControls,
-    thumbnailReadOnly
+    thumbnailReadOnly,
   };
 });

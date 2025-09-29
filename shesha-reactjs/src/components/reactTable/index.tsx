@@ -88,7 +88,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   onRowsRendering,
   onRowsReordered,
   showExpandedView,
-  
+
   rowBackgroundColor,
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
@@ -152,7 +152,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     if (useMultiSelect) {
       localColumns.unshift({
         id: 'selection',
-        //isVisible: true,
+        // isVisible: true,
         disableResizing: true,
         minWidth: 37,
         width: 37,
@@ -365,7 +365,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   const performOnRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick)
       return () => {
-        /*nop*/
+        /* nop*/
       };
 
     return (data,) => {
@@ -418,48 +418,48 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const renderExpandedContentView = (cellRef) => {
     const cellRect = cellRef?.current?.getBoundingClientRect();
-    
+
     const getSmartPosition = () => {
       if (!cellRect) return { top: 0, left: 0 };
-      
+
       const viewport = {
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
       };
-      
+
       const popup = {
         width: Math.max(cellRect.width, 80),
-        height: 60
+        height: 60,
       };
-      
+
       const offset = 20;
       const margin = 10;
       const bottomOffset = 5;
-      
+
       let top = cellRect.top + offset;
       let left = cellRect.left + offset;
-      
+
       if (left + popup.width + margin > viewport.width) {
         left = cellRect.right - popup.width - offset;
       }
-      
+
       if (left < margin) {
         left = margin;
       }
-      
+
       if (top + popup.height + margin > viewport.height) {
         top = cellRect.top - popup.height - bottomOffset;
       }
-      
+
       if (top < margin) {
         top = margin;
       }
-      
+
       return { top, left };
     };
 
     const position = getSmartPosition();
-    
+
     return (
       <div
         onMouseEnter={(event) => {
@@ -554,7 +554,7 @@ export const ReactTable: FC<IReactTableProps> = ({
       ? onRowsRendering({ rows: rows, defaultRender: renderRow })
       : rows.map((row, rowIndex) => renderRow(row, rowIndex));
   };
-  
+
   const fixedHeadersStyle: React.CSSProperties = freezeHeaders
     ? { position: 'sticky', top: 0, zIndex: 15, background: 'white', opacity: 1 }
     : null;
@@ -562,12 +562,12 @@ export const ReactTable: FC<IReactTableProps> = ({
   return (
     <Spin
       spinning={loading}
-      indicator={
+      indicator={(
         <span style={{ display: 'flex', alignItems: 'center' }}>
           <LoadingOutlined style={{ fontSize: 24 }} spin />
           <span style={{ marginLeft: 12, fontSize: 14, color: 'black' }}>loading...</span>
         </span>
-      }
+      )}
     >
       <div className={mainStyles.shaReactTable} style={containerStyleFinal}>
         <div {...getTableProps()} className={styles.shaTable} style={tableStyle}>
@@ -678,7 +678,7 @@ export const ReactTable: FC<IReactTableProps> = ({
               height: scrollBodyHorizontally ? height || 250 : 'unset',
               overflowY: scrollBodyHorizontally ? 'auto' : 'unset',
               overflowX: 'unset',
-              ...getBorderStyle(border, {})
+              ...getBorderStyle(border, {}),
             }}
             {...getTableBodyProps()}
           >

@@ -44,7 +44,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
     titleFont,
     axisLabelFont,
     legendFont,
-    tickFont
+    tickFont,
   } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
@@ -64,12 +64,12 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
     } else {
       // For entity mode, use different colors for each dataset in pivot mode
       const isPivotMode = simpleOrPivot === 'pivot';
-      
+
       data?.datasets?.map((dataset: any, index: number) => {
         dataset.tension = tension;
         dataset.borderWidth = typeof strokeWidth === 'number' ? strokeWidth : 0;
         dataset.pointRadius = isSmallScreen ? 3 : 5; // Smaller points on mobile
-        
+
         // Use different colors for each group in pivot mode
         if (isPivotMode) {
           // Generate a unique color for each dataset based on its label
@@ -80,7 +80,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
           // Use the stroke color for single dataset
           dataset.borderColor = strokeColor || 'black';
         }
-        
+
         return dataset;
       });
     }
@@ -97,8 +97,8 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         top: 10,
         bottom: 10,
         left: 10,
-        right: 10
-      }
+        right: 10,
+      },
     },
     transitions: {
       active: {
@@ -178,13 +178,13 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
           font: createFontConfig(tickFont, isSmallScreen ? 9 : 12, '400'),
           color: tickFont?.color || '#000000',
           padding: isSmallScreen ? 4 : 8,
-          callback: function(value) {
+          callback: function (value) {
             // Format large numbers on mobile
             if (isSmallScreen && value >= 1000) {
               return (value / 1000).toFixed(1) + 'k';
             }
             return value.toLocaleString();
-          }
+          },
         },
         grid: {
           display: !isSmallScreen, // Hide grid on mobile

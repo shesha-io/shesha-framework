@@ -7,8 +7,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
 import ReflistTag from './reflistTag';
 
-// tslint:disable-next-line:whitespace
-export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownProps<TValue>) => {
+export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListDropDownProps<TValue>) => {
   const {
     referenceListId,
     showArrow = true,
@@ -83,13 +82,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
   const options = useMemo<ISelectOption<TValue>[]>(() => {
     const fetchedData = (refList?.items || []).filter(filter);
 
-    const fetchedItems = fetchedData.map<ISelectOption<TValue>>((item) => {
-      const option = Boolean(getOptionFromFetchedItem)
-        ? (getOptionFromFetchedItem(item) as ISelectOption<TValue>)
-        : (item as ISelectOption<TValue>);
-
-      return option;
-    });
+    const fetchedItems = fetchedData.map<ISelectOption<TValue>>((item) => getOptionFromFetchedItem(item));
 
     const selectedItem = wrapValue(value, fetchedItems);
     // Remove items which are already exist in the fetched items.
@@ -157,33 +150,37 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
   };
 
   if (mode !== 'multiple' && mode !== 'tags' && displayStyle === 'tags') {
-    return <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
-      {...commonSelectProps}
-      popupMatchSelectWidth={false}
-      style={{ width: 'max-content', height: 'max-content' }}
-      placeholder={placeholder}
-      labelRender={(props) => {
-        const option = options.find((o) => o.value === props.value);
-        return <ReflistTag
-          key={option?.value}
-          value={option?.value}
-          description={option?.description}
-          color={option?.color}
-          icon={option?.icon}
-          showIcon={showIcon}
-          tagStyle={tagStyle}
-          solidColor={solidColor}
-          showItemName={showItemName}
-          label={option?.label}
-        />;
-      }}
-    >
+    return (
+<Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+  {...commonSelectProps}
+  popupMatchSelectWidth={false}
+  style={{ width: 'max-content', height: 'max-content' }}
+  placeholder={placeholder}
+  labelRender={(props) => {
+    const option = options.find((o) => o.value === props.value);
+    return (
+<ReflistTag
+  key={option?.value}
+  value={option?.value}
+  description={option?.description}
+  color={option?.color}
+  icon={option?.icon}
+  showIcon={showIcon}
+  tagStyle={tagStyle}
+  solidColor={solidColor}
+  showItemName={showItemName}
+  label={option?.label}
+/>
+    );
+  }}
+>
       {options?.map(({ value: localValue, label, data, disabled }) => (
         <Select.Option value={localValue} key={localValue} data={data} disabled={disabled}>
           {label}
         </Select.Option>
       ))}
-    </Select>;
+</Select>
+    );
   }
 
   return (
@@ -196,18 +193,20 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       {...(displayStyle === 'tags' ? {
         labelRender: (props) => {
           const option = options.find((o) => o.value === props.value);
-          return <ReflistTag
-            value={option?.value}
-            description={option?.description}
-            color={option?.color}
-            icon={option?.icon}
-            showIcon={showIcon}
-            tagStyle={tagStyle}
-            solidColor={solidColor}
-            showItemName={showItemName}
-            label={option?.label}
-          />;
-        }
+          return (
+<ReflistTag
+  value={option?.value}
+  description={option?.description}
+  color={option?.color}
+  icon={option?.icon}
+  showIcon={showIcon}
+  tagStyle={tagStyle}
+  solidColor={solidColor}
+  showItemName={showItemName}
+  label={option?.label}
+/>
+          );
+        },
       } : {})}
     >
       {options?.map(({ value: localValue, label, data, disabled }) => (

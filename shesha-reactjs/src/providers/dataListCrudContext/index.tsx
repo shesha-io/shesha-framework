@@ -302,7 +302,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
         onValuesChange={onValuesChangeInternal}
         {...props.formSettings}
       >
-        <ParentProvider model={{ componentName: 'ListItem', editMode: parentMode, readOnly: state.mode === "read" }} isScope >
+        <ParentProvider model={{ componentName: 'ListItem', editMode: parentMode, readOnly: state.mode === "read" }} isScope>
           {children}
         </ParentProvider>
       </Form>
@@ -327,7 +327,7 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
         formFlatMarkup: formFlatMarkup,
         formSettings: formSettings,
       });
-    }
+    },
   });
 
   return (
@@ -335,7 +335,7 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
       <ShaForm.MarkupProvider markup={formFlatMarkup}>
         <FormProvider
           form={form}
-          name={''}
+          name=""
           formSettings={formSettings}
           mode={mode === 'read' ? 'readonly' : 'edit'}
           isActionsOwner={false}

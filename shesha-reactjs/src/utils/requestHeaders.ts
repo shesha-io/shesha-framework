@@ -8,7 +8,7 @@ interface IOptions {
 /**
  * Retrieves the request headers for the application
  */
-export const requestHeaders = (tokenName?: string, options: IOptions = {}): { [key: string]: string } => {
+export const requestHeaders = (tokenName: string, options: IOptions = {}): { [key: string]: string } => {
   const headers: { [key: string]: string } = {};
 
   const tokenResult = getAccessToken(tokenName);
@@ -24,15 +24,15 @@ export const requestHeaders = (tokenName?: string, options: IOptions = {}): { [k
   const tenantId = getTenantId();
 
   if (tenantId) {
-    headers['Abp.TenantId'] = getTenantId().toString();
+    headers['Abp.TenantId'] = tenantId.toString();
   }
 
-  if (options?.addCustomHeaders) {
+  if (options.addCustomHeaders) {
     const additionalHeaders = getCustomHeaders();
 
     additionalHeaders.forEach(([key, value]) => {
       if (key && value) {
-        headers[key] = value?.toString();
+        headers[key] = value.toString();
       }
     });
   }

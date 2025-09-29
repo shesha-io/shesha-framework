@@ -30,7 +30,7 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
     return (
       <ConditionalWrap
         condition={Boolean(modelType)}
-        wrap={content => <MetadataProvider modelType={modelType}>{content}</MetadataProvider>}
+        wrap={(content) => <MetadataProvider modelType={modelType}>{content}</MetadataProvider>}
       >
         <ConfigurableFormItem model={model}>
           {(value, onChange) => {
@@ -53,7 +53,7 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IPropertyAutocompleteComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IPropertyAutocompleteComponentProps>(1, (prev) => migrateReadOnly(prev))
@@ -64,7 +64,6 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
       } else {
         return { ...prev };
       }
-    })
-  ,
+    }),
 };
 

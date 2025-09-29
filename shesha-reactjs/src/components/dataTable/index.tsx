@@ -268,7 +268,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const metadata = useMetadata(false)?.metadata;
 
 
-
   const handleRowClick = useMemo(() => {
     if (!onRowClick?.actionName) return undefined;
 
@@ -401,7 +400,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const result: RowDataInitializer = props.onNewRowInitialize
       ? () => {
         // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
-        //return onNewRowInitializeExecuter(formData, globalState);
+        // return onNewRowInitializeExecuter(formData, globalState);
         const result = onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData);
         return Promise.resolve(result);
       }
@@ -460,7 +459,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       inlineEditMode,
       formMode,
       canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
-      onNewRowInitialize
+      onNewRowInitialize,
     };
     return {
       ...result,
@@ -515,7 +514,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         return removeUndefinedProperties(column) as DataTableColumn<any>;
       });
     return localPreparedColumns;
-
   }, [
     columns,
     crudOptions.enabled,
@@ -544,7 +542,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
       return () => {
-        /*nop*/
+        /* nop*/
       };
 
     return (data, formApi, globalState, setGlobalState) => {
@@ -575,7 +573,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           : undefined;
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
-        setRowData(rowIndex, preparedData /*, response*/);
+        setRowData(rowIndex, preparedData /* , response*/);
         performOnRowSaveSuccess(preparedData, formApi, globalState, setGlobalState);
         return response;
       });
@@ -602,7 +600,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowDeleteSuccessAction)
       return () => {
-        /*nop*/
+        /* nop*/
       };
     return (data, formApi, globalState, setGlobalState) => {
       const evaluationContext = {
@@ -896,7 +894,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   return (
     <Fragment>
       <div className={styles.shaChildTableErrorContainer}>
-        {exportToExcelError && <ValidationErrors error={'Error occurred while exporting to excel'} />}
+        {exportToExcelError && <ValidationErrors error="Error occurred while exporting to excel" />}
       </div>
 
       {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps} />}

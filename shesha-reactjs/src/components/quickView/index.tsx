@@ -12,6 +12,7 @@ import React, { CSSProperties, FC, PropsWithChildren, useEffect, useMemo, useSta
 import { ShaIconTypes } from '../iconPicker';
 import { formItemLayout, getQuickViewInitialValues, loadingBox } from './utils';
 import { useStyles } from './styles/styles';
+import { IPropertyMetadata } from '@/interfaces/metadata';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -23,7 +24,7 @@ export interface IQuickViewProps extends PropsWithChildren {
   /** The property froom the data to use as the label and title for the popover */
   displayProperty: string;
   /** Metadata properties of value */
-  dataProperties?: { [key in string]: any }[];
+  dataProperties?: IPropertyMetadata[];
   /** The width of the quickview */
   width?: number | string;
 
@@ -189,7 +190,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
           : { width, minWidth: width, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }
       }
       content={formContent}
-      title={
+      title={(
         <div
           style={{
             width: typeof width === 'string' && /%$/.test(width as string) ? '100%' : (width as number | string),
@@ -200,7 +201,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
         >
           {title}
         </div>
-      }
+      )}
       {...popoverProps}
     >
       {render()}
@@ -229,7 +230,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
       {loadingBox(cx, styles)}
     </Button>
   ) : (
-    <Popover content={'Quickview not configured properly'} title="Quickview not configured properly"></Popover>
+    <Popover content="Quickview not configured properly" title="Quickview not configured properly"></Popover>
   );
 
   return formConfig ? <QuickView {...props} formIdentifier={formConfig} /> : buttonOrPopover;

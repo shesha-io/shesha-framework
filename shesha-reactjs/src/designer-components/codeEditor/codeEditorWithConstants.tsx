@@ -4,8 +4,8 @@ import { ICodeEditorProps } from './interfaces';
 import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 
 export const CodeEditorWithStandardConstants: FC<ICodeEditorProps> = (props) => {
-    const standardConstants = useAvailableStandardConstantsMetadata();
-    return (
-        <CodeEditor {...props} availableConstants={standardConstants}/>
-      );
+  const standardConstants = useAvailableStandardConstantsMetadata();
+  return (
+        <CodeEditor {...props} availableConstants={standardConstants} />
+  );
 };

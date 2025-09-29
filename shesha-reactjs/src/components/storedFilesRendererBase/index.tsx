@@ -124,9 +124,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       layout: listType === 'thumbnail' && !isDragger,
       hideFileName: rest.hideFileName && listType === 'thumbnail',
       isDragger,
-      isStub
+      isStub,
     },
-    primaryColor
+    primaryColor,
   });
 
   const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
@@ -204,7 +204,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       okType: 'danger',
       onOk: () => {
         deleteFile(file.uid);
-      }
+      },
     });
   };
 
@@ -273,41 +273,49 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const renderUploadContent = () => {
     return (
-      !disabled &&
+      !disabled && (
       <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
         {listType === 'text' && '(press to upload)'}
       </Button>
+      )
     );
   };
 
   return (
-    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal :
-      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical :
-        layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
+    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
+      : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
+        : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
+    >
       {isStub
         ? (isDragger
           ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
-          : <div
-            className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
-          >
+          : (
+<div
+  className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
+>
             {renderUploadContent()}
-            {listType !== 'text' && !rest.hideFileName &&
-              <span className='ant-upload-list-item-name ant-upload-list-item-name-stub'>
-                {'file name'}
-              </span>}
-          </div>)
+            {listType !== 'text' && !rest.hideFileName && (
+              <span className="ant-upload-list-item-name ant-upload-list-item-name-stub">
+                file name
+              </span>
+            )}
+</div>
+          ))
         : (props.disabled && fileList.length === 0
-          ? <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
+          ? (
+<div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
             {renderUploadContent()}
-          </div>
+</div>
+          )
           : props.disabled
             ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
-            : isDragger ?
-              <Dragger {...props}>
+            : isDragger
+              ? (
+<Dragger {...props}>
                 <DraggerStub styles={styles} />
-              </Dragger>
-              : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)
-      }
+</Dragger>
+              )
+              : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
       {previewImage && (
         <Image
           wrapperStyle={{ display: 'none' }}

@@ -19,18 +19,18 @@ interface IProps {
   menuId?: string;
 }
 
-const ShaMenuDrawer: FC<IProps> = ({ 
-  items = [], 
-  open, 
-  onClose, 
-  colors, 
-  fontStyles, 
+const ShaMenuDrawer: FC<IProps> = ({
+  items = [],
+  open,
+  onClose,
+  colors,
+  fontStyles,
   styleOnSubMenu,
-  menuId 
+  menuId,
 }) => (
   <ShaMenuDrawerStyledWrapper
     title=""
-    placement={"left"}
+    placement="left"
     closable={false}
     onClose={onClose}
     open={open}
@@ -47,7 +47,7 @@ const ShaMenuDrawer: FC<IProps> = ({
         fontWeight: fontStyles?.fontWeight,
         textAlign: fontStyles?.textAlign as any,
         borderBottom: 'none',
-      }
+      },
     }}
     style={{
       backgroundColor: colors?.itemBackground || 'transparent',
@@ -61,8 +61,8 @@ const ShaMenuDrawer: FC<IProps> = ({
         menuId={menuId}
       />
     )}
-    <Menu 
-      mode="inline" 
+    <Menu
+      mode="inline"
       items={items}
       style={{
         backgroundColor: colors?.itemBackground || 'transparent',

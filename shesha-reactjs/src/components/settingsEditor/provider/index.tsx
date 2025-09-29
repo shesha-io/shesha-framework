@@ -3,7 +3,6 @@ import useThunkReducer from '@/hooks/thunkReducer';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { useSheshaApplication, useTheme } from '@/providers';
 import React, { FC, PropsWithChildren, useContext, useEffect } from 'react';
-import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import * as RestfulShesha from '@/utils/fetchers';
 import { GENERIC_ENTITIES_ENDPOINT } from '@/shesha-constants';
 import {
@@ -33,6 +32,7 @@ import {
   SettingValue,
 } from './models';
 import { settingsEditorReducer } from './reducer';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface ISettingsEditorProviderProps {}
 
@@ -42,11 +42,9 @@ const getListFetcherQueryParams = (maxResultCount): IGenericGetAllPayload => {
     maxResultCount: maxResultCount ?? -1,
     entityType: 'Shesha.Domain.SettingConfiguration',
     properties:
-      'id category dataType editorFormModule editorFormName isClientSpecific name, module { id name }, label, description, versionNo',
+      'id category dataType editorFormModule editorFormName isClientSpecific name, module { id name }, label, description',
     quickSearch: null,
     sorting: 'module.name, name',
-    
-    filter: JSON.stringify({"and": [{"==": [{"var": "versionStatus"},ConfigurationItemVersionStatus.Live]}]}),
   };
 };
 interface SettingConfigurationDto {
@@ -59,7 +57,6 @@ interface SettingConfigurationDto {
   name: string;
   label?: string;
   description?: string;
-  versionNo?: number;
   module?: {
     id: string;
     name: string;
@@ -173,7 +170,9 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
       { base: backendUrl, headers: httpHeaders }
     )
       .then((response) => {
-        return response.result;
+        return isAjaxSuccessResponse(response)
+          ? response.result
+          : undefined;
       })
       .catch((error) => {
         console.error(error);

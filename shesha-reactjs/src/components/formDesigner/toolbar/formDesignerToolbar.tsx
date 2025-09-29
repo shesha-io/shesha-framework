@@ -13,8 +13,8 @@ import { CustomActions } from './customActions';
 export interface IProps { }
 
 export const FormDesignerToolbar: FC<IProps> = () => {
-  const readOnly = useFormDesignerStateSelector(x => x.readOnly);
-  const formSettings = useFormDesignerStateSelector(x => x.formSettings);
+  const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
+  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
   const { styles } = useStyles();
 
   const { anyOfPermissionsGranted } = useSheshaApplication();
@@ -23,7 +23,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
 
   return (
     <div className={styles.shaDesignerToolbar}>
-      {isGranted &&
+      {isGranted && (
         <>
           <div className={styles.shaDesignerToolbarLeft}>
             {!readOnly && (
@@ -31,7 +31,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
             )}
           </div>
           <div className={styles.shaDesignerToolbarCenter}>
-            <CanvasConfig/>
+            <CanvasConfig />
           </div>
           <div className={styles.shaDesignerToolbarRight}>
             <FormSettingsButton />
@@ -42,7 +42,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
             <CustomActions />
           </div>
         </>
-      }
+      )}
     </div>
   );
 };

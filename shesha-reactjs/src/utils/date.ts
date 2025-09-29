@@ -69,7 +69,7 @@ export const LongDob = (date: string) => {
 };
 
 export const tolocalIsoDate = (dateIsoString: string) => {
-  const tzoffset = new Date().getTimezoneOffset() * 60000; //offset in milliseconds
+  const tzoffset = new Date().getTimezoneOffset() * 60000; // offset in milliseconds
   return new Date(Date.parse(dateIsoString) - tzoffset).toISOString().slice(0, -1);
 };
 

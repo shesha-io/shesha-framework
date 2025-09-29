@@ -10,7 +10,7 @@ export const ConfigurableThemePage: FC<IConfigurableThemePageProps> = () => {
 
   return (
     <Page title="Customize theme">
-      <ConfigurableThemeContent value={theme} onChange={changeTheme}/>
+      <ConfigurableThemeContent value={theme} onChange={changeTheme} />
     </Page>
   );
 };

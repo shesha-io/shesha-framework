@@ -1,4 +1,4 @@
-import { castToExtensionType, findContainersWithPlaceholder } from "../viewGenerationUtils";
+import { castToExtensionType, findContainersWithPlaceholder, getDataTypePriority, getColumnWidthByDataType, humanizeModelType } from "../viewGenerationUtils";
 import { FormMetadataHelper } from "../formMetadataHelper";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { DesignerToolbarSettings, IEntityMetadata } from "@/interfaces";
@@ -22,8 +22,8 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
   }
 
   protected async addComponentsToMarkup(
-    markup: any, 
-    entity: IEntityMetadata, 
+    markup: any,
+    entity: IEntityMetadata,
     nonFrameworkProperties: PropertyMetadataDto[],
     _metadataHelper: FormMetadataHelper
   ): Promise<void> {
@@ -32,7 +32,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
       this.addHeader(entity, markup);
 
       this.addColumns(nonFrameworkProperties, markup);
-      
+
       // Using await with a Promise.resolve() to satisfy the require-await rule
       await Promise.resolve();
     } catch (error) {
@@ -52,7 +52,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
    * @param metadataHelper The metadata helper instance.
    */
   private addHeader(entity: IEntityMetadata, markup: any): void {
-    const title = `${entity.typeAccessor} Table`;
+    const title = entity.typeAccessor ? humanizeModelType(entity.typeAccessor) : "Table";
 
     const titleContainer = findContainersWithPlaceholder(markup, "//*TABLEFILTER*//");
 
@@ -69,7 +69,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
         name: title,
         sortOrder: 1,
         defaultSelected: true,
-      }
+      },
     ];
 
     // Add filters from IEntityMetadata specifications
@@ -80,13 +80,13 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
           name: spec.friendlyName,
           sortOrder: index + 2,
           expression: {
-            "and": [
+            and: [
               {
-                "is_satisfied": {
-                  "var": spec.name
-                }
-              }
-            ]
+                is_satisfied: {
+                  var: spec.name,
+                },
+              },
+            ],
           },
         });
       });
@@ -95,7 +95,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     builder.addTableViewSelector({
       id: nanoid(),
       hidden: false,
-      filters
+      filters,
     });
 
     if (titleContainer[0].components && Array.isArray(titleContainer[0].components)) {
@@ -105,11 +105,10 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
 
   /**
    * Adds columns to the table view based on the entity metadata and non-framework properties.
-   * This method is a placeholder for future implementation.
+   * Properties are sorted with required fields first, then by dataType priority.
    *
    * @param nonFrameworkProperties The list of non-framework properties for the entity.
    * @param markup The JSON markup object.
-   * @param metadataHelper The metadata helper instance.
    */
   private addColumns(nonFrameworkProperties: PropertyMetadataDto[], markup: any): void {
     const tableContainer = findContainersWithPlaceholder(markup, "//*TABLECOLUMNS*//");
@@ -118,13 +117,30 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
       throw new Error("No table container found in the markup.");
     }
 
+    // Sort the properties: required fields first, then by dataType priority
+    const sortedProperties = [...nonFrameworkProperties].sort((a, b) => {
+      // Sort by required status (required first)
+      if (a.required !== b.required) {
+        return a.required ? -1 : 1;
+      }
+
+      // Sort by dataType priority only
+      const priorityA = getDataTypePriority(a.dataType, a.dataFormat);
+      const priorityB = getDataTypePriority(b.dataType, b.dataFormat);
+
+      return priorityA - priorityB;
+    });
+
     // Implementation for adding columns to the markup
     const builder = new DesignerToolbarSettings({});
 
     builder.addDatatable({
       id: nanoid(),
       propertyName: `datatable ${nanoid()}`,
-      items: nonFrameworkProperties.map((prop, idx) => {
+      items: sortedProperties.map((prop, idx) => {
+        // Get column width based on data type
+        const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
+
         return {
           id: nanoid(),
           columnType: 'data',
@@ -133,9 +149,11 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
           isVisible: true,
           description: prop.description || '',
           sortOrder: idx,
-          itemType: 'item'
+          itemType: 'item',
+          minWidth: width.min,
+          maxWidth: width.max,
         };
-      })
+      }),
     });
 
     if (tableContainer[0].components && Array.isArray(tableContainer[0].components)) {

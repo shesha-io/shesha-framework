@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import ConfigurableComponent from '../appConfigurator/configurableComponent';
 import EditViewMsg from '../appConfigurator/editViewMsg';
-import React, { FC, MutableRefObject, useEffect } from 'react';
+import React, { MutableRefObject, ReactElement, useEffect } from 'react';
 import { IConfigurableFormProps, SheshaFormProps } from './models';
 import { Form, FormInstance } from 'antd';
 import { useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
@@ -15,16 +15,17 @@ import { IShaFormInstance } from '@/providers/form/store/interfaces';
 import ParentProvider from '@/providers/parentProvider';
 import { ShaSpin } from '..';
 
-export type ConfigurableFormProps<Values = any> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
+export type ConfigurableFormProps<Values extends object = object> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
   form?: FormInstance<any>;
   formRef?: MutableRefObject<Partial<ConfigurableFormInstance> | null>;
   // TODO: merge with formRef
-  shaFormRef?: MutableRefObject<IShaFormInstance>;
+  shaFormRef?: MutableRefObject<IShaFormInstance<Values>>;
   isSettingsForm?: boolean;
   externalShaForm?: IShaFormInstance<Values>;
 } & SheshaFormProps;
 
-export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
+// export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
+export const ConfigurableForm = <Values extends object = object>(props: ConfigurableFormProps<Values>): ReactElement => {
   const {
     formId,
     markup,
@@ -48,18 +49,18 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
     isActionsOwner,
     externalShaForm,
   } = props;
-  const { switchApplicationMode, configurationItemMode } = useAppConfigurator();
+  const { switchApplicationMode } = useAppConfigurator();
   const app = useSheshaApplication();
 
   const [form] = Form.useForm(props.form);
   const [shaForm] = useShaForm({
-    //form: undefined,
+    // form: undefined,
     form: externalShaForm,
     antdForm: form,
     init: (instance) => {
       instance.setFormMode(props.mode);
       instance.setParentFormValues(parentFormValues);
-    }
+    },
   });
   shaForm.setOnMarkupLoaded(onMarkupLoaded);
 
@@ -75,12 +76,11 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
     if (formId) {
       shaForm.initByFormId({
         formId: formId,
-        configurationItemMode: configurationItemMode,
         formArguments: formArguments,
         initialValues: initialValues,
       });
     }
-  }, [shaForm, formId, configurationItemMode, formArguments]);
+  }, [shaForm, formId, formArguments]);
   useEffect(() => {
     if (markup) {
       shaForm.initByRawMarkup({
@@ -128,7 +128,7 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
 
   return (
     <ShaSpin
-      spinning={showMarkupLoadingIndicator && markupLoadingState.status === 'loading' || showDataLoadingIndicator && dataLoadingState.status === 'loading'}
+      spinning={(showMarkupLoadingIndicator && markupLoadingState.status === 'loading') || (showDataLoadingIndicator && dataLoadingState.status === 'loading')}
       tip={dataLoadingState.hint}
       spinIconSize={40}
     >

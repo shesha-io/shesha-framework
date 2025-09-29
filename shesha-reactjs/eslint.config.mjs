@@ -8,15 +8,40 @@ import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
+import memoryTracePlugin from "./src/eslint-plugins/eslint-plugin-memory-monitor.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const isLightBuild = process.env.SHA_LIGHT_BUILD === "1" ? true : false;
+console.log(`Light build is: ${Boolean(isLightBuild) ? "🔛 ON" : "📴 OFF"}`);
+
+const strictFolders = isLightBuild
+    ? []
+    : [
+        "src/configuration-studio",
+        //"src/utils",
+
+        "src/providers/referenceListDispatcher",
+        "src/providers/metadataDispatcher",
+        "src/providers/metadata",
+        "src/providers/configurationItemsLoader",
+        "src/providers/formPersisterProvider",
+        "src/providers/formMarkupConverter",
+        "src/providers/formManager",
+        "src/providers/configurableActionsDispatcher",
+        "src/providers/auth",
+        "src/providers/appConfigurator",
+        "src/providers/dataContextManager",
+        "src/providers/dataContextProvider",
+    ];
+
 const stylisticOverrides = {
+    ...stylistic.configs.recommended.rules,
     "@stylistic/brace-style": ["error", "1tbs", { "allowSingleLine": false }],
     "@stylistic/jsx-indent-props": [
         'error',
-        4
+        2
         // - 'first' - align with first prop (VS Code-like)
         // - 2 - 2 space indentation (most common)
         // - 4 - 4 space indentation  
@@ -37,10 +62,8 @@ const stylisticOverrides = {
             requireLast: false,
         },
     }],
-    "@stylistic/indent": "off",
-    "@stylistic/indent-binary-ops": "off",
-    /* todo: review after development of a standard and integration with auto-formatter
-    "@stylistic/indent": ["error", 2],
+    //"@stylistic/indent-binary-ops": "off",
+    /*
     "@stylistic/indent-binary-ops": ["error", 2],
     */
     "@stylistic/jsx-quotes": ["error", "prefer-double"],
@@ -54,6 +77,13 @@ const stylisticOverrides = {
     "@stylistic/padded-blocks": ["error", "never"],
     "@stylistic/no-multiple-empty-lines": "error",
     "@stylistic/lines-between-class-members": ["error", "always"],
+    "indent": "off",
+    "@stylistic/indent": ["error", 2, {
+        "SwitchCase": 1,
+        "ignoredNodes": ["JSXElement", "JSXAttribute", "JSXSpreadAttribute", "JSXText", "JSXFragment"]
+    }],
+    "@stylistic/space-infix-ops": "error",
+    "@stylistic/multiline-ternary": "off"
 };
 
 const legacyTypescriptOverrides = {
@@ -136,7 +166,8 @@ const typescriptOverrides = {
     "@typescript-eslint/no-unsafe-assignment": "error",
     "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
     "@typescript-eslint/no-unnecessary-condition": "error",
-    "@typescript-eslint/strict-boolean-expressions": "error",
+    //todo: enable after first part of fixes 
+    // "@typescript-eslint/strict-boolean-expressions": "error",
 };
 
 const baseTsConfig = {
@@ -149,6 +180,7 @@ const baseTsConfig = {
         "**/__tests__/**/*",
     ],
     plugins: {
+        "memory-monitor": memoryTracePlugin,
         jsdoc,
         "react": reactPlugin,
         "react-hooks": hooksPlugin,
@@ -166,7 +198,8 @@ const baseTsConfig = {
         sourceType: "module",
 
         parserOptions: {
-            project: "tsconfig.json",
+            //project: ["tsconfig.json", ...strictFolders.map(f => `${f}/tsconfig.json`)],
+            projectService: true, // Enable project service
             tsconfigRootDir: __dirname,
         },
     },
@@ -222,6 +255,7 @@ const baseTsConfig = {
     },
 
     rules: {
+        "memory-monitor/track-memory": "off",
         ...hooksPlugin.configs.recommended.rules,
         ...reactPlugin.configs.recommended.rules,
         "react/prop-types": ["off"],
@@ -264,7 +298,7 @@ const baseTsConfig = {
         "guard-for-in": "error",
         "id-denylist": "off",
         "id-match": "off",
-        indent: "off",
+        "indent": "off",
         "jsdoc/check-alignment": "error",
         "jsdoc/check-indentation": "off",
 
@@ -325,11 +359,13 @@ const makeStrictConfig = (path) => {
         ...baseTsConfig,
         files: [
             `${path}/**/*.ts`,
+            `${path}/**/*.tsx`,
         ],
         languageOptions: {
             ...baseTsConfig.languageOptions,
             parserOptions: {
-                project: `${path}/tsconfig.json`,
+                //project: `${path}/tsconfig.json`,
+                projectService: true, // Enable project service
                 tsconfigRootDir: __dirname,
             },
         },
@@ -337,7 +373,6 @@ const makeStrictConfig = (path) => {
             ...baseTsConfig.rules,
             ...typescriptEslint.configs.recommended.rules,
             ...typescriptOverrides,
-            ...stylistic.configs.recommended.rules,
             ...stylisticOverrides,
 
             "react-hooks/exhaustive-deps": "error",
@@ -345,12 +380,6 @@ const makeStrictConfig = (path) => {
         },
     };
 }
-const csConfig = makeStrictConfig("src/configuration-studio");
-
-const strictFolders = [
-    "src/configuration-studio",
-    //"src/providers"
-];
 
 export default [
     {
@@ -363,29 +392,10 @@ export default [
         rules: {
             ...baseTsConfig.rules,
             ...legacyTypescriptOverrides,
+            ...stylisticOverrides,
         }
     },
     ...strictFolders.map(f => makeStrictConfig(f)),
-    // {
-    //     ...csConfig,
-    //     files: [
-    //         "src/configuration-studio/**/*.ts",
-    //     ],
-    //     rules: {
-    //         ...csConfig.rules,
-    //         //'@stylistic/indent': ['error', 2],
-    //     }
-    // },
-    // {
-    //     ...csConfig,
-    //     files: [
-    //         "src/configuration-studio/**/*.tsx",
-    //     ],
-    //     rules: {
-    //         ...csConfig.rules,
-    //         //'@stylistic/indent': ['error', 4],
-    //     }
-    // },
     {
         files: ['**/*.js', '**/*.mjs'],
         ...js.configs.recommended,

@@ -22,7 +22,7 @@ export function notesReducer(
     case NotesActionEnums.DeleteNotesRequest:
     case NotesActionEnums.DeleteNotesError:
     case NotesActionEnums.SetSettings:
-      /* NEW_ACTION_ENUM_GOES_HERE */
+    /* NEW_ACTION_ENUM_GOES_HERE */
 
       return {
         ...state,

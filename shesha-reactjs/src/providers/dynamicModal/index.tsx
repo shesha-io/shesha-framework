@@ -76,7 +76,6 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
       executer: (actionArgs, context) => {
-
         const modalId = nanoid();
 
         const { formMode, ...restArguments } = actionArgs;
@@ -86,7 +85,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
           ? executeScript(argumentsExpression, context)
           : Promise.resolve(undefined);
 
-        return argumentsPromise.then(dialogArguments => {
+        return argumentsPromise.then((dialogArguments) => {
           const parentFormValues = context?.data ?? {};
 
           const { modalWidth, customWidth, widthUnits, showCloseIcon = true } = actionArgs;
@@ -127,12 +126,12 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
         const evaluationContext: EvaluationContext = {
           contextData: evaluationData,
           path: '',
-          evaluationFilter: (context, _data) => context.path !== 'buttons'
+          evaluationFilter: (context, _data) => context.path !== 'buttons',
         };
         return recursiveEvaluator(argumentsConfiguration, evaluationContext);
       },
       useDynamicContextHook: () => {
-        const configurableActionsDispatcherProxy = useConfigurableActionDispatcherProxy(false);
+        const configurableActionsDispatcherProxy = useConfigurableActionDispatcherProxy();
         return { configurableActionsDispatcherProxy };
       },
       migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0),
@@ -189,8 +188,8 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
   return (
     <DynamicModalStateContext.Provider value={state}>
-      <DynamicModalActionsContext.Provider value={{ open, createModal, removeModal, modalExists }} >
-        <DynamicModalRenderer id='root'>
+      <DynamicModalActionsContext.Provider value={{ open, createModal, removeModal, modalExists }}>
+        <DynamicModalRenderer id="root">
           {children}
         </DynamicModalRenderer>
       </DynamicModalActionsContext.Provider>

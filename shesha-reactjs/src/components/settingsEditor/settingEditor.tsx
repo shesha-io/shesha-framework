@@ -22,25 +22,25 @@ export const SettingEditor: FC<ISettingEditorProps> = () => {
 
   useEffect(() => {
     if (settingSelection) {
-      setState(prev => ({ ...prev, isLoading: true }));
+      setState((prev) => ({ ...prev, isLoading: true }));
       fetchSettingValue({
         name: settingSelection.setting.name,
         module: settingSelection.setting.module,
-        appKey: settingSelection.app?.appKey
-      }).then(response => {
+        appKey: settingSelection.app?.appKey,
+      }).then((response) => {
         const editor = settingSelection.setting.editorForm
-          ? <CustomFormSettingEditor selection={settingSelection} value={response} key={settingSelection.setting.name}/>
-          : <GenericSettingEditor selection={settingSelection} value={response} key={settingSelection.setting.name}/>;
-        setState(prev => ({ ...prev, isLoading: false, value: response, initialValue: response, editor }));
+          ? <CustomFormSettingEditor selection={settingSelection} value={response} key={settingSelection.setting.name} />
+          : <GenericSettingEditor selection={settingSelection} value={response} key={settingSelection.setting.name} />;
+        setState((prev) => ({ ...prev, isLoading: false, value: response, initialValue: response, editor }));
       });
     } else {
-      setState(prev => ({ ...prev, isLoading: false, value: null, loadingError: null, editor: null }));
+      setState((prev) => ({ ...prev, isLoading: false, value: null, loadingError: null, editor: null }));
     }
   }, [settingSelection]);
 
   return state.editor
     ? state.editor
-    : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={'Please select a setting to begin editing'}/>;
+    : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Please select a setting to begin editing" />;
 };
 
 export default SettingEditor;

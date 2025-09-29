@@ -1,5 +1,5 @@
 import { IconType } from '@/components';
-import { IConfigurableFormComponent, IInputStyles, IStyleType } from '@/providers/form/models';;
+import { IConfigurableFormComponent, IInputStyles, IStyleType } from '@/providers/form/models'; ;
 
 export interface INumberFieldComponentProps extends IConfigurableFormComponent, IInputStyles, IStyleType {
   hideBorder?: boolean;

@@ -1,5 +1,5 @@
-//import columnSettingsJson from './columnSettings.json';
-//import { getSettings } from './columnSettings';
+// import columnSettingsJson from './columnSettings.json';
+// import { getSettings } from './columnSettings';
 import React, {
   FC,
   useEffect,
@@ -81,5 +81,4 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       className={sheshaStyles.verticalSettingsClass}
     />
   );
-
 };

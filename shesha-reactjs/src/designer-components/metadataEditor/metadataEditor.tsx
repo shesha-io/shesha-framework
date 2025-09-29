@@ -7,43 +7,43 @@ import { MetadataEditorModal } from './metadataEditorModal';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 
 export const MetadataEditor: FC<IMetadataEditorProps> = (props) => {
-    const { readOnly, value, onChange, label } = props;
+  const { readOnly, value, onChange, label } = props;
 
-    const [localValue, setLocalValue] = useState<IModelItem[]>(value);
-    useEffect(() => {
-        if (value !== localValue)
-            setLocalValue(value);
-    }, [value]);
+  const [localValue, setLocalValue] = useState<IModelItem[]>(value);
+  useEffect(() => {
+    if (value !== localValue)
+      setLocalValue(value);
+  }, [value]);
 
-    const hasValue = Boolean(value) && value.length > 0;
+  const hasValue = Boolean(value) && value.length > 0;
 
-    const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
-    const onModalCancel = () => {
-        setLocalValue(value);
-        setModalVisible(false);
-    };
-    const onModalOk = () => {
-        onChange(localValue);
-        setModalVisible(false);
-    };
+  const onModalCancel = () => {
+    setLocalValue(value);
+    setModalVisible(false);
+  };
+  const onModalOk = () => {
+    onChange(localValue);
+    setModalVisible(false);
+  };
 
-    return (
+  return (
         <>
             <Space>
                 <Button
-                    icon={<ApartmentOutlined />}
-                    onClick={() => setModalVisible(true)}
-                    size="small"
+                  icon={<ApartmentOutlined />}
+                  onClick={() => setModalVisible(true)}
+                  size="small"
                 >
                     {readOnly ? 'View Code' : hasValue ? 'Edit' : 'Create'}
                 </Button>
                 <Show when={hasValue && !readOnly}>
                     <Button
-                        type="primary"
-                        size="small"
-                        danger
-                        onClick={() => onChange?.(null)}
+                      type="primary"
+                      size="small"
+                      danger
+                      onClick={() => onChange?.(null)}
                     >
                         Clear
                     </Button>
@@ -51,16 +51,16 @@ export const MetadataEditor: FC<IMetadataEditorProps> = (props) => {
             </Space>
             {modalVisible && (
                 <Modal
-                    title={ label ?? "Metadata Editor" }
-                    open={modalVisible}
-                    onCancel={onModalCancel}
-                    onOk={onModalOk}
-                    width="50vw"
-                    styles={{ body: { height: '60vh' } }}
+                  title={label ?? "Metadata Editor"}
+                  open={modalVisible}
+                  onCancel={onModalCancel}
+                  onOk={onModalOk}
+                  width="50vw"
+                  styles={{ body: { height: '60vh' } }}
                 >
                     <MetadataEditorModal {...props} value={localValue} onChange={setLocalValue} />
                 </Modal>
             )}
         </>
-    );
+  );
 };

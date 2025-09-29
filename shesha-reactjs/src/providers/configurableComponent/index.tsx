@@ -48,13 +48,13 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
   const upgradeSettings = (value: TSettings): TSettings => {
     if (!isObject(value))
       return value;
-      
+
     if (!migrator) return value;
 
     const migratorInstance = new Migrator<TSettings, TSettings>();
     const fluent = migrator(migratorInstance);
-    const versionedValue = {...value} as IHasVersion;
-    if (versionedValue.version === undefined) 
+    const versionedValue = { ...value } as IHasVersion;
+    if (versionedValue.version === undefined)
       versionedValue.version = -1;
     const model = fluent.migrator.upgrade(versionedValue, {});
     return model;
@@ -79,7 +79,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
 
   const fetchInternal = (loader: PromisedValue<IComponentSettings>) => {
     dispatch(loadRequestAction({ name, isApplicationSpecific }));
-    
+
     loader.promise
       .then((component) => {
         const upToDateComponent = {
@@ -119,7 +119,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
     const settingsToSave = version
       ? { ...(settings as object), version }
       : settings;
-     
+
     const payload = {
       module: null,
       name: state.name,

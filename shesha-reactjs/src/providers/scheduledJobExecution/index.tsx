@@ -87,10 +87,10 @@ const ScheduledJobExecutionProvider: FC<PropsWithChildren<IScheduledJobExecution
           dispatch(addExecutionLogEventAction(event));
         });
         connection.on('JobStarted', () => {
-          //setJobStarted(true);
+          // setJobStarted(true);
         });
         connection.on('JobFinished', () => {
-          //setJobFinished(true);
+          // setJobFinished(true);
         });
 
         await connection.start().then(() => connection.invoke('JoinGroup', id));

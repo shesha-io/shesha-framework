@@ -24,10 +24,12 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   icon: <GroupOutlined />,
   Factory: ({ model, form }) => {
     const { styles } = useStyles();
-    return model.hidden ? null :
-      <ConfigurableFormItem model={{ ...model, hideLabel: true }} className={styles.shaHideEmpty}>
+    return model.hidden ? null
+      : (
+<ConfigurableFormItem model={{ ...model, hideLabel: true }} className={styles.shaHideEmpty}>
         <ButtonGroup {...model} styles={model.allStyles.fullStyle} form={form} />
-      </ConfigurableFormItem>;
+</ConfigurableFormItem>
+      );
   },
   actualModelPropertyFilter: (name, value) => name !== 'items' || isPropertySettings(value), // handle items later to use buttonGroup's readOnly setting
   migrator: (m) => m
@@ -39,7 +41,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     })
     .add<IButtonGroupComponentProps>(1, migrateV0toV1)
     .add<IButtonGroupComponentProps>(2, migrateV1toV2)
-    .add<IButtonGroupComponentProps>(3, (prev) => ({ ...prev, isInline: prev['isInline'] ?? true, })) /* default isInline to true if not specified */
+    .add<IButtonGroupComponentProps>(3, (prev) => ({ ...prev, isInline: prev['isInline'] ?? true })) /* default isInline to true if not specified */
     .add<IButtonGroupComponentProps>(4, (prev) => {
       const newModel = { ...prev };
       newModel.items = prev.items?.map((item) => migrateCustomFunctions(item as any));

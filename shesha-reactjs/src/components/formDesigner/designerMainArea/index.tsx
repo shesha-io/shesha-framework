@@ -22,57 +22,63 @@ const rightSidebarProps = {
 };
 
 export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
-    const isDebug = useFormDesignerStateSelector(state => state.isDebug);
-    const readOnly = useFormDesignerStateSelector(state => state.readOnly);
-    const formSettings = useFormDesignerStateSelector(state => state.formSettings);
-    const formMode = useFormDesignerStateSelector(state => state.formMode);
-    const { antdForm: form } = useShaFormInstance();
-    const { designerWidth, zoom } = useCanvas();
-    const shaForm = useShaFormInstance();
-    const { styles } = useStyles();
+  const isDebug = useFormDesignerStateSelector((state) => state.isDebug);
+  const readOnly = useFormDesignerStateSelector((state) => state.readOnly);
+  const formSettings = useFormDesignerStateSelector((state) => state.formSettings);
+  const formMode = useFormDesignerStateSelector((state) => state.formMode);
+  const { antdForm: form } = useShaFormInstance();
+  const { designerWidth, zoom } = useCanvas();
+  const shaForm = useShaFormInstance();
+  const { styles } = useStyles();
 
-    useEffect(()=>{
-        if(shaForm) {
-            shaForm.applyMarkupAsync({
-                formFlatMarkup: shaForm.flatStructure,
-                formSettings: formSettings,
-            });
-        }
-    },[formSettings, shaForm]);
+  useEffect(() => {
+    if (shaForm) {
+      shaForm.applyMarkupAsync({
+        formFlatMarkup: shaForm.flatStructure,
+        formSettings: formSettings,
+      });
+    }
+  }, [formSettings, shaForm]);
 
-    const leftSidebarProps = useMemo(() => 
-      readOnly ? null : { title: 'Builder Components', content: () => <Toolbox />, placeholder: 'Builder Components' }
-    , [readOnly]);
+  const leftSidebarProps = useMemo(() =>
+    readOnly ? null : { title: 'Builder Components', content: () => <Toolbox />, placeholder: 'Builder Components' },
+  [readOnly]);
 
-    return (
-        <div className={styles.mainArea} style={{
+  return (
+        <div
+          className={styles.mainArea}
+          style={{
             borderTop: '1px solid #d3d3d3',
             ...(formMode !== 'designer' && {
-                maxHeight: '85vh',
-                overflow: 'auto',
-            })
-        }}>
+              maxHeight: '85vh',
+              overflow: 'auto',
+            }),
+          }}
+        >
             <ConditionalWrap
-                condition={formMode === 'designer'}
-                wrap={(children) => (
+              condition={formMode === 'designer'}
+              wrap={(children) => (
                     <SidebarContainer
-                        leftSidebarProps={leftSidebarProps}
-                        rightSidebarProps={rightSidebarProps}
+                      leftSidebarProps={leftSidebarProps}
+                      rightSidebarProps={rightSidebarProps}
                     >
                         {children}
                     </SidebarContainer>
-                )}
+              )}
             >
                 <div style={{ width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
                     <ConditionalWrap
-                        condition={Boolean(formSettings?.modelType)}
-                        wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
+                      condition={Boolean(formSettings?.modelType)}
+                      wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
                     >
-                        <ParentProvider model={null} formMode='designer'>
-                            <DataContextProvider id={SheshaCommonContexts.FormContext} name={SheshaCommonContexts.FormContext} type={'form'} 
-                                description='Form designer'
+                        <ParentProvider model={null} formMode="designer">
+                            <DataContextProvider
+                              id={SheshaCommonContexts.FormContext}
+                              name={SheshaCommonContexts.FormContext}
+                              type="form"
+                              description="Form designer"
                             >
-                                <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
+                                <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
                                     {isDebug && (
                                         <DebugPanel />
                                     )}
@@ -84,5 +90,5 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                 </div>
             </ConditionalWrap>
         </div>
-    );
+  );
 };

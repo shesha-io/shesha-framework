@@ -20,12 +20,10 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
   name: 'Key Information Bar',
   icon: <BorderLeftOutlined />,
   Factory: ({ model }) => {
-
-
     return (
       <ParentProvider model={model}>
         <KeyInformationBar {...model} />
-      </ParentProvider >
+      </ParentProvider>
     );
   },
   migrator: (m) =>
@@ -37,7 +35,6 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
       .add<IKeyInformationBarProps>(1, (prev) => migrateVisibility(prev))
       .add<IKeyInformationBarProps>(2, (prev) => removeComponents(prev))
       .add<IKeyInformationBarProps>(3, (prev) => {
-
         const prevDividerStyles = {
           orientation: prev?.orientation,
           dividerWidth: prev?.dividerWidth,
@@ -50,7 +47,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
           ...prev,
           desktop: { ...prev.desktop, ...prevDividerStyles },
           mobile: { ...prev.mobile, ...prevDividerStyles },
-          tablet: { ...prev.tablet, ...prevDividerStyles }
+          tablet: { ...prev.tablet, ...prevDividerStyles },
         });
       })
       .add<IKeyInformationBarProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
@@ -66,8 +63,8 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
           flexDirection: 'column',
           components: [],
           padding: '0px',
-        }
-      ]
+        },
+      ],
     };
 
     return tabsModel;

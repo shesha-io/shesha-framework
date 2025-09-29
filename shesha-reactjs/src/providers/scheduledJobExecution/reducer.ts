@@ -16,7 +16,7 @@ export function scheduledJobExecutionReducer(
     case ScheduledJobExecutionActionEnums.GetExecutionLogRequest:
     case ScheduledJobExecutionActionEnums.GetExecutionLogSuccess:
     case ScheduledJobExecutionActionEnums.GetExecutionLogError:
-      /* NEW_ACTION_ENUM_GOES_HERE */
+    /* NEW_ACTION_ENUM_GOES_HERE */
 
       return {
         ...state,

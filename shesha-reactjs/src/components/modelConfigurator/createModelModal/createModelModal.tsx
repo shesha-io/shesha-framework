@@ -1,4 +1,4 @@
-import { ConfigurableForm,  FormMarkup, useModelConfigurator } from '@/index';
+import { ConfigurableForm, FormMarkup, useModelConfigurator } from '@/index';
 import { Modal, App } from 'antd';
 import React, { FC } from 'react';
 
@@ -9,7 +9,6 @@ export interface ICreateModelModalProps {
 }
 
 export const CreateModelModal: FC<ICreateModelModalProps> = () => {
-
   const { isCreateNew, save, cancel } = useModelConfigurator();
   const formRef = useShaFormRef();
   const { message } = App.useApp();
@@ -28,27 +27,27 @@ export const CreateModelModal: FC<ICreateModelModalProps> = () => {
       });
   };
 
-  return isCreateNew &&
+  return isCreateNew && (
     <>
       <Modal
         title="Create entity confifurations"
         open={isCreateNew}
         onOk={handleOk}
         onCancel={cancel}
-        width={'50%'}
+        width="50%"
       >
         <ConfigurableForm
           layout="horizontal"
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
-          mode='edit'
-          //className='sha-form-settings-editor'
+          mode="edit"
+          // className='sha-form-settings-editor'
           shaFormRef={formRef}
           onFinish={onSave}
           markup={markup as FormMarkup}
-          //initialValues={formSettings}
+          // initialValues={formSettings}
         />
       </Modal>
     </>
-  ;
+  );
 };

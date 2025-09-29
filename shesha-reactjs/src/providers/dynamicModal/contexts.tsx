@@ -34,7 +34,7 @@ export interface IDynamicModalInstanceContext {
 export const DYNAMIC_MODAL_INSTANCE_CONTEXT_INITIAL_STATE: IDynamicModalInstanceContext = {
   instance: null,
   close: () => {
-    /*nop*/
+    /* nop*/
   },
 };
 
@@ -54,10 +54,10 @@ export interface IDynamicModalRendererContext {
 
 export const DYNAMIC_MODAL_RENDERER_CONTEXT_INITIAL_STATE: IDynamicModalRendererContext = {
   registerChildren: () => {
-    /*nop*/
+    /* nop*/
   },
   unregisterChildren: () => {
-    /*nop*/
+    /* nop*/
   },
 };
 

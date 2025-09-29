@@ -64,7 +64,7 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
       if (!shaErrors.componentName) shaErrors.componentName = componentName;
       if (!shaErrors.componentType) shaErrors.componentType = componentType;
     }
-    return <ComponentError errors={shaErrors} message={error.message} type={error.cause?.type} resetErrorBoundary={resetErrorBoundary}/>;
+    return <ComponentError errors={shaErrors} message={error.message} type={error.cause?.type} resetErrorBoundary={resetErrorBoundary} />;
   }
 
   const shaError = {
@@ -76,7 +76,7 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
 
   const shaMessage = `An error has occurred when '${componentName}' (${componentType}) rendered`;
 
-  return <ComponentError errors={shaError} message={shaMessage} type='error' resetErrorBoundary={resetErrorBoundary}/>;
+  return <ComponentError errors={shaError} message={shaMessage} type="error" resetErrorBoundary={resetErrorBoundary} />;
 };
 
 export default CustomErrorBoundaryFallbackComponent;

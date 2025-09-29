@@ -4,7 +4,7 @@ import React, {
   Fragment,
   useEffect,
   useMemo,
-  useState
+  useState,
 } from 'react';
 import {
   Checkbox,
@@ -13,7 +13,7 @@ import {
   InputNumber,
   MenuProps,
   Select,
-  Spin
+  Spin,
 } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ColumnFilter, IndexColumnFilterOption } from '@/providers/dataTable/interfaces';
@@ -37,11 +37,11 @@ import {
 type MenuItem = MenuProps['items'][number];
 
 const allOptions: IDictionary<IndexColumnFilterOption[]> = {
-  date: ['equals', 'between', 'before', 'after'],
+  "date": ['equals', 'between', 'before', 'after'],
   'date-time': ['equals', 'between', 'before', 'after'],
-  time: ['equals', 'between', 'before', 'after'],
-  number: ['lessThan', 'greaterThan', 'equals', 'between'],
-  string: ['contains', 'startsWith', 'endsWith', 'equals'],
+  "time": ['equals', 'between', 'before', 'after'],
+  "number": ['lessThan', 'greaterThan', 'equals', 'between'],
+  "string": ['contains', 'startsWith', 'endsWith', 'equals'],
 };
 
 export const getFilterOptions = (dataType: string): IndexColumnFilterOption[] => {
@@ -374,7 +374,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     id,
     filter,
     filterOption,
-    onChangeFilter
+    onChangeFilter,
   };
 
   return (

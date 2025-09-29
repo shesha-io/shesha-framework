@@ -19,16 +19,15 @@ const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
   Factory: ({ model }) => {
     if (model.hidden) return null;
-    
+
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) =>
-          <ChildEntitiesTagGroupControl model={model} value={value} onChange={onChange} componentName={model.componentName} />
-        }
+          <ChildEntitiesTagGroupControl model={model} value={value} onChange={onChange} componentName={model.componentName} />}
       </ConfigurableFormItem>
     );
   },
-  settingsFormFactory: (props) => ( <ChildEntitiesTagGroupSettingsForm {...props}/>),
+  settingsFormFactory: (props) => (<ChildEntitiesTagGroupSettingsForm {...props} />),
   migrator: (m) => m
     .add<IChildEntitiesTagGroupProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IChildEntitiesTagGroupProps>(1, (prev) => migrateVisibility(prev))
@@ -36,8 +35,7 @@ const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
     .add<IChildEntitiesTagGroupProps>(3, (prev) => ({
       ...migrateFormApi.eventsAndProperties(prev),
       labelFormat: migrateFormApi.withoutFormData(prev?.defaultValue),
-    }))
-  ,
+    })),
 };
 
 export default ChildEntitiesTagGroup;

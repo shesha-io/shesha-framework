@@ -18,22 +18,21 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  //dataTypes: [DataTypes.string],
+  // dataTypes: [DataTypes.string],
   calculateModel: (model, allData) => ({
     modelType: model.modelType ? evaluateString(model.modelType, { data: allData.data }) : null,
   }),
   Factory: ({ model, calculatedModel }) => {
-    return model.hidden 
-      ? null 
+    return model.hidden
+      ? null
       : <QueryBuilder {...model} modelType={calculatedModel.modelType} readOnly={model.readOnly}></QueryBuilder>;
   },
   settingsFormMarkup: settingsForm,
   migrator: (m) => m
     .add<IQueryBuilderComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IQueryBuilderComponentProps>(1, (prev) => migrateVisibility(prev))
-    .add<IQueryBuilderComponentProps>(2, (prev) => migrateReadOnly(prev))
-  ,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+    .add<IQueryBuilderComponentProps>(2, (prev) => migrateReadOnly(prev)),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export default QueryBuilderComponent;

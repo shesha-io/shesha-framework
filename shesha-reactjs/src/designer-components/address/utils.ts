@@ -86,8 +86,8 @@ export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['sear
   let result = {} as PropTypes['searchOptions'];
 
   if (country?.length) {
-    const countryCodes = country.map(countryLabel => {
-      const foundCountry = COUNTRY_CODES.find(item => item.value === countryLabel);
+    const countryCodes = country.map((countryLabel) => {
+      const foundCountry = COUNTRY_CODES.find((item) => item.value === countryLabel);
       return foundCountry ? foundCountry.code : countryLabel;
     });
     result = { componentRestrictions: { country: countryCodes } };
@@ -97,7 +97,7 @@ export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['sear
     if (showPriorityBounds && lat && lng && radius) {
       result = { ...result, location: new google.maps.LatLng(lat, lng), radius };
     }
-  } catch {/* nop */ }
+  } catch { /* nop */ }
 
   return result;
 };
@@ -133,8 +133,8 @@ export const defaultStyles = (): IStyleType => {
       },
       radius: { all: 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
       borderType: 'all',
-      radiusType: 'all'
+      radiusType: 'all',
     },
-    dimensions: { width: '100%', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
+    dimensions: { width: '100%', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
   };
 };

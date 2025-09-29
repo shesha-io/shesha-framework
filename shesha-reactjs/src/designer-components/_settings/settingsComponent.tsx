@@ -22,7 +22,6 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
   name: 'Setting',
   icon: <SettingOutlined />,
   Factory: ({ model }) => {
-
     const actualSourceComponent = useActualContextData(ShaForm.useChildComponents(model.id)[0], model.readOnly);
 
     const component: IConfigurableFormComponent = useMemo(() => {
@@ -31,19 +30,19 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
         hideLabel: true,
         readOnly: model?.readOnly,
         editMode: model.editMode,
-        hidden: model.hidden
+        hidden: model.hidden,
       };
     }, [model.hidden, model?.readOnly, model?.id, actualSourceComponent]);
 
     if (model.hidden) return null;
 
     return (
-      <ConfigurableFormItem model={model} className='sha-js-label' labelCol={{ span: 24 }} wrapperCol={{ span: 24 }} >
+      <ConfigurableFormItem model={model} className="sha-js-label" labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
         {(value, onChange) => (
           <SettingsControl
             readOnly={model.readOnly}
             propertyName={model.propertyName}
-            mode={'value'}
+            mode="value"
             onChange={onChange}
             value={value}
           // exposedVariables={model.exposedVariables}
@@ -60,8 +59,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
   },
   settingsFormMarkup: getSettings(),
   migrator: (m) => m
-    .add<ISettingsComponentProps>(0, (prev) => migrateReadOnly(prev))
-  ,
+    .add<ISettingsComponentProps>(0, (prev) => migrateReadOnly(prev)),
 };
 
 export default SettingsComponent;

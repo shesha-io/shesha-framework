@@ -3,11 +3,6 @@ import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import * as RestfulShesha from '@/utils/fetchers';
 
 /**
- * Status of the Shesha.Domain.ConfigurationItem
- */
-export type ConfigurationItemVersionStatus = 1 | 2 | 3 | 4 | 5;
-
-/**
  * Indicate the source of the entity/property metadata
  */
 export type MetadataSourceType = 1 | 2;
@@ -38,13 +33,11 @@ export interface EntityConfigDto {
   notImplemented?: boolean;
   moduleId?: string | null;
   description?: string | null;
-  versionNo?: number;
-  versionStatus?: ConfigurationItemVersionStatus;
 }
 
 export interface FormIdFullNameDto {
-  name?: string | null;
-  module?: string | null;
+  name: string;
+  module: string;
 }
 
 export type FormIdFullNameDtoAjaxResponse = IAjaxResponse<FormIdFullNameDto>;

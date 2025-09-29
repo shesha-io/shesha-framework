@@ -7,11 +7,11 @@ import { useTheme } from 'antd-style';
 const { Text } = Typography;
 
 export interface IStatusCellProps {
-    row: PackageItemDto;
+  row: PackageItemDto;
 }
 
 const ItemCard = ({ row }: IStatusCellProps) => {
-    return (
+  return (
         <div>
             <div>
                 <Text type="secondary">Label: </Text>
@@ -24,16 +24,16 @@ const ItemCard = ({ row }: IStatusCellProps) => {
                 </div>
             )}
         </div>
-    );
+  );
 };
 
 export const DescriptionCell: FC<IStatusCellProps> = ({ row }) => {
-    const theme = useTheme();
-    return (
+  const theme = useTheme();
+  return (
         <div>
             <Popover content={<ItemCard row={row} />}>
                 <EyeOutlined style={{ color: theme.colorPrimary }} />
             </Popover>
         </div>
-    );
+  );
 };

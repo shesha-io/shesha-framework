@@ -1,9 +1,9 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }) => {
-    const primary = "primary";
-    const info = "info";
-    const typographyText = cx("typography-text", css`
+  const primary = "primary";
+  const info = "info";
+  const typographyText = cx("typography-text", css`
         &.ant-form-item-control-input {
           margin: 0px;
           padding: 0px;
@@ -17,9 +17,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
           color: ${token.colorInfo}
         }
     `);
-    return {
-        typographyText,
-        primary,
-        info,
-    };
+  return {
+    typographyText,
+    primary,
+    info,
+  };
 });

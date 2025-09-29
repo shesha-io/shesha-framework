@@ -4,7 +4,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef
+  useRef,
 } from 'react';
 import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumns, getTableFormColumns } from './utils';
 import { dataTableReducer } from './reducer';
@@ -165,7 +165,7 @@ export interface IHasEntityDataSourceConfig extends IUrlDataSourceConfig {
 const getFilter = (state: IDataTableStateContext): string => {
   const allFilters = state.predefinedFilters ?? [];
 
-  const filters = allFilters.filter(f => (state.selectedStoredFilterIds && state.selectedStoredFilterIds.indexOf(f.id) > -1));
+  const filters = allFilters.filter((f) => (state.selectedStoredFilterIds && state.selectedStoredFilterIds.indexOf(f.id) > -1));
   const { permanentFilter } = state;
 
   const filterExpression2Object = (filter: FilterExpression): object => {
@@ -200,18 +200,18 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
   const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
 
   if (dataColumns.length > 0 && groupingSupported && state.groupingColumns && state.groupingColumns.length > 0) {
-    state.groupingColumns.forEach(groupColumn => {
-      if (!dataColumns.find(column => column.propertyName === groupColumn.propertyName)) {
+    state.groupingColumns.forEach((groupColumn) => {
+      if (!dataColumns.find((column) => column.propertyName === groupColumn.propertyName)) {
         dataColumns.push(groupColumn);
       }
     });
   }
   const filter = getFilter(state);
 
-  if (state.sortMode === 'strict' && state.strictSortBy){
-    if (!dataColumns.find(column => column.propertyName === state.strictSortBy))
+  if (state.sortMode === 'strict' && state.strictSortBy) {
+    if (!dataColumns.find((column) => column.propertyName === state.strictSortBy))
       dataColumns.push({
-        propertyName: state.strictSortBy, 
+        propertyName: state.strictSortBy,
         propertiesToFetch: [state.strictSortBy],
         dataType: 'number',
         columnType: 'data',
@@ -219,11 +219,11 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
         header: '',
         isVisible: false,
         isFilterable: false,
-        isSortable: false
+        isSortable: false,
       });
   }
 
-  getTableFormColumns(state.columns).forEach(col => dataColumns.push(col));
+  getTableFormColumns(state.columns).forEach((col) => dataColumns.push(col));
 
   const payload: IGetListDataPayload = {
     columns: dataColumns,
@@ -242,12 +242,12 @@ const DataTableWithMetadataProvider: FC<PropsWithChildren<IDataTableProviderProp
   return props.sourceType === 'Entity' && modelType
     ? <MetadataProvider id={props.userConfigId} modelType={modelType}>{props.children}</MetadataProvider>
     // use metadata provider with empty model to reset metadata (clear property list for column editor)
-    : <MetadataProvider id={props.userConfigId} modelType={""}>{props.children}</MetadataProvider>;
+    : <MetadataProvider id={props.userConfigId} modelType="">{props.children}</MetadataProvider>;
 };
 
 const sortingItems2ColumnSorting = (items: ISortingItem[]): IColumnSorting[] => {
   return items
-    ? items.map<IColumnSorting>(item => ({ id: item.propertyName, desc: item.sorting === 'desc' }))
+    ? items.map<IColumnSorting>((item) => ({ id: item.propertyName, desc: item.sorting === 'desc' }))
     : [];
 };
 
@@ -272,7 +272,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     allowReordering = false,
     permanentFilter,
     customReorderEndpoint,
-    needToRegisterContext = true
+    needToRegisterContext = true,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -338,7 +338,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         allowSorting: true,
       }));
 
-      repository.prepareColumns(groupColumns).then(preparedColumns => {
+      repository.prepareColumns(groupColumns).then((preparedColumns) => {
         dispatch(fetchGroupingColumnsSuccessAction({ grouping: state.grouping, columns: preparedColumns }));
       });
     }
@@ -361,7 +361,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     if (modelType !== state.modelType) dispatch(setModelTypeAction(modelType));
   }, [modelType]);
 
-  const requireColumnRef = useRef<Boolean>(false);
+  const requireColumnRef = useRef<boolean>(false);
   const requireColumns = () => {
     requireColumnRef.current = true;
   };
@@ -467,7 +467,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   const fetchDataIfReady = () => {
     const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
     const groupingIsReady = !groupingSupported || (grouping ?? []).length === (state.groupingColumns ?? []).length;
-    const columnsAreReady = !(requireColumnRef.current) || Boolean(state.configurableColumns) && state.columns.length === state.configurableColumns.length;
+    const columnsAreReady = !(requireColumnRef.current) || (Boolean(state.configurableColumns) && state.columns.length === state.configurableColumns.length);
     const depsReady = isDataDependenciesReady();
 
     const readyToFetch = repository && groupingIsReady && columnsAreReady && depsReady;
@@ -505,8 +505,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     if (!userConfig)
       return;
 
-    widths.forEach(wc => {
-      const userColumn = userConfig.columns.find(c => c.id === wc.id);
+    widths.forEach((wc) => {
+      const userColumn = userConfig.columns.find((c) => c.id === wc.id);
       if (userColumn)
         userColumn.width = wc.width;
     });
@@ -670,7 +670,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         key: actionOwnerName,
         data: {
           ...partialState,
-          refreshTable
+          refreshTable,
         },
       });
     }
@@ -738,11 +738,11 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     typeDefinitionLoader: () => {
       return Promise.resolve({
         typeName: 'IDataTableContexApi',
-        files: [{ content: dataTableContextCode, fileName: 'apis/dataTableContextApi.ts' }]
+        files: [{ content: dataTableContextCode, fileName: 'apis/dataTableContextApi.ts' }],
       });
     },
     properties: [],
-    dataType: DataTypes.object
+    dataType: DataTypes.object,
   }), []);
 
   // TODO: pass row index
@@ -832,7 +832,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         id={'ctx_' + props.userConfigId}
         name={props.actionOwnerName}
         description={`Table context for ${props.actionOwnerName}`}
-        type='control'
+        type="control"
         data={state}
         api={actions}
         onChangeData={contextOnChangeData}

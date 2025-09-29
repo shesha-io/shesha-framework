@@ -15,6 +15,6 @@ export const useStyles = createStyles(({ css, cx }) => {
     }    
   `);
   return {
-    shaNotesRenderer
+    shaNotesRenderer,
   };
 });

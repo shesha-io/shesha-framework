@@ -1,9 +1,7 @@
-import * as RestfulShesha from '@/utils/fetchers';
 import {
   isFormFullName,
   isFormRawId,
 } from './utils';
-import { ConfigurationItemsViewMode } from '../appConfigurator/models';
 import { EntityAjaxResponse, IEntity } from '@/generic-pages/dynamic/interfaces';
 import {
   FormDto,
@@ -25,9 +23,6 @@ import {
   useEffect,
   useMemo,
 } from 'react';
-import {
-  useAppConfigurator,
-} from '@/providers';
 
 /**
  * Form configuration DTO
@@ -128,28 +123,7 @@ export const getMarkupFromResponse = (
   return markupJson ? (JSON.parse(markupJson) as FormMarkupWithSettings) : null;
 };
 
-/**
- * Load form markup from the back-end
- */
-export const getFormConfiguration = (formId: FormIdentifier, backendUrl: string, httpHeaders: HeadersInit) => {
-  const requestParams = isFormRawId(formId)
-    ? { url: '/api/services/Shesha/FormConfiguration/Get', queryParams: { id: formId } }
-    : isFormFullName(formId)
-      ? {
-        url: '/api/services/Shesha/FormConfiguration/GetByName',
-        queryParams: removeNullUndefined({ name: formId.name, module: formId.module, version: formId.version }),
-      }
-      : null;
-
-  return RestfulShesha.get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(
-    requestParams.url,
-    requestParams.queryParams,
-    { base: backendUrl, headers: httpHeaders }
-  );
-};
-
 export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarkupResponse => {
-  const { configurationItemMode } = useAppConfigurator();
   const { formId } = args;
   const requestParams = useMemo(() => {
     if (isFormRawId(formId))
@@ -161,11 +135,11 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
     if (isFormFullName(formId))
       return {
         url: '/api/services/Shesha/FormConfiguration/GetByName',
-        queryParams: removeNullUndefined({ name: formId.name, module: formId.module, version: formId.version }),
+        queryParams: removeNullUndefined({ name: formId.name, module: formId.module }),
       };
 
     return null;
-  }, [formId, configurationItemMode]);
+  }, [formId]);
 
   const canFetch = Boolean(requestParams && requestParams.url);
   const fetcher = useGet<
@@ -188,7 +162,7 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
 
   useEffect(() => {
     if (fetcher.data && canFetch) reFetcher();
-  }, [configurationItemMode]);
+  }, []);
 
   const formConfiguration = useMemo<IFormDto>(() => {
     if (fetcher?.data?.result) {
@@ -214,14 +188,13 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
 export interface UseFormWitgDataArgs {
   formId?: FormIdentifier;
   dataId?: string;
-  configurationItemMode?: ConfigurationItemsViewMode;
   onFormLoaded?: (form: IFormDto) => void;
   onDataLoaded?: (data: any) => void;
 }
 
 export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
 
-export interface FormInfo extends Pick<FormDto, 'id' | 'module' | 'name' | 'versionNo' | 'versionStatus'> {
+export interface FormInfo extends Pick<FormDto, 'id' | 'module' | 'name'> {
   flatStructure: IFlatComponentsStructure;
   settings: IFormSettings;
 }
@@ -263,10 +236,10 @@ export const filterDataByOutputComponents = (
     if (components.hasOwnProperty(key)) {
       var component = components[key];
       if (component.propertyName &&
-          component.type &&
-          data.hasOwnProperty(component.propertyName) &&
-          !toolboxComponents[component.type]?.isOutput) {
-         delete data[component.propertyName];
+        component.type &&
+        data.hasOwnProperty(component.propertyName) &&
+        !toolboxComponents[component.type]?.isOutput) {
+        delete data[component.propertyName];
       }
     }
   }
@@ -279,9 +252,9 @@ export const gqlFieldsToString = (fields: IFieldData[]): string => {
     let s = '';
     items.forEach((item) => {
       if (!(item.property ||
-          item.name === 'id' ||
-          item.name === '_className' ||
-          item.name === '_displayName'
+        item.name === 'id' ||
+        item.name === '_className' ||
+        item.name === '_displayName'
       )) return;
       s += s ? ',' + item.name : item.name;
       if (item.child.length > 0) {

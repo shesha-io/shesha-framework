@@ -34,7 +34,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
       backgroundStyles,
       shadowStyles,
       stylingBoxAsCSS,
-      jsStyle
+      jsStyle,
     } = model.allStyles;
 
     const wrapperStyles = removeUndefinedProps({
@@ -43,7 +43,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
       ...backgroundStyles,
       ...shadowStyles,
       ...stylingBoxAsCSS,
-      ...jsStyle
+      ...jsStyle,
     });
 
     if (model.hidden) return null;
@@ -86,9 +86,10 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
                 boxSizing: 'border-box',
                 display: 'flex',
                 flexDirection: 'column',
-                overflow: 'hidden'
-              }}>
-                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType='bar' evaluatedFilters={stateEvaluatedFilters} />}
+                overflow: 'hidden',
+              }}
+              >
+                {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl chartType="bar" evaluatedFilters={stateEvaluatedFilters} />}
               </div>
             </ChartDataProvider>
           );
@@ -99,7 +100,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   migrator: (m) => m
-    .add<IChartProps>(0, prev => ({
+    .add<IChartProps>(0, (prev) => ({
       chartType: 'bar',
       showTitle: false,
       showLegend: true,
@@ -107,18 +108,18 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
       hidden: false,
       ...prev,
     }))
-    .add<IChartProps>(1, prev => ({ ...prev, hideLabel: true }))
-    .add<IChartProps>(2, prev => ({ ...prev, showBorder: true }))
-    .add<IChartProps>(3, prev => ({ ...prev, isDoughnut: false }))
-    .add<IChartProps>(4, prev => ({ ...prev, showLegend: false, showTitle: true }))
-    .add<IChartProps>(5, prev => ({
+    .add<IChartProps>(1, (prev) => ({ ...prev, hideLabel: true }))
+    .add<IChartProps>(2, (prev) => ({ ...prev, showBorder: true }))
+    .add<IChartProps>(3, (prev) => ({ ...prev, isDoughnut: false }))
+    .add<IChartProps>(4, (prev) => ({ ...prev, showLegend: false, showTitle: true }))
+    .add<IChartProps>(5, (prev) => ({
       ...defaultConfigFiller,
       stacked: false,
       ...filterNonNull(prev),
       type: prev.type,
-      id: prev.id
+      id: prev.id,
     }))
-    .add<IChartProps>(6, prev => ({
+    .add<IChartProps>(6, (prev) => ({
       ...prev,
       isAxisTimeSeries: false,
       isGroupingTimeSeries: false,
@@ -133,18 +134,18 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
       maxResultCount: 10000,
       requestTimeout: 10000,
     }))
-    .add<IChartProps>(7, prev => ({
+    .add<IChartProps>(7, (prev) => ({
       ...prev,
       timeSeriesFormat: 'month-year',
       groupingTimeSeriesFormat: 'month-year',
-      ...migratePrevStyles(prev, defaultStyles())
+      ...migratePrevStyles(prev, defaultStyles()),
     }))
-    .add<IChartProps>(8, prev => ({
+    .add<IChartProps>(8, (prev) => ({
       ...prev,
       maxResultCount: 250,
       requestTimeout: 15000,
       orderDirection: 'asc',
-    }))
+    })),
 };
 
 export default BarChartComponent;

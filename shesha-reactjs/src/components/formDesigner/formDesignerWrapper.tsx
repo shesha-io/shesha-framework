@@ -3,7 +3,7 @@ import {
   Form,
   FormInstance,
   Result,
-  Skeleton
+  Skeleton,
 } from 'antd';
 import { FormDesignerProvider, useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { FormIdentifier } from '@/providers/form/models';
@@ -20,8 +20,8 @@ export interface IFormProviderWrapperProps extends PropsWithChildren {
 }
 
 const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = ({ form, children }) => {
-  const formSettings = useFormDesignerStateSelector(x => x.formSettings);
-  const formFlatMarkup = useFormDesignerStateSelector(x => x.formFlatMarkup);
+  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
+  const formFlatMarkup = useFormDesignerStateSelector((x) => x.formFlatMarkup);
 
   const [shaForm] = useShaForm({
     form: undefined,
@@ -33,7 +33,7 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
         formFlatMarkup,
         formArguments: undefined,
       });
-    }
+    },
   });
 
   return (
@@ -68,7 +68,7 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
   return (
     <FormPersisterProvider formId={formId} skipCache={true}>
       <FormPersisterStateConsumer>
-        {formStore => {
+        {(formStore) => {
           if (formStore.loading)
             return (<Skeleton loading active />);
 
@@ -78,9 +78,6 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
               <FormDesignerProvider
                 flatMarkup={flatStructure}
                 formSettings={settings}
-                /*TODO: V1 review
-                readOnly={formStore.formProps?.versionStatus !== ConfigurationItemVersionStatus.Draft}
-                */
                 readOnly={false}
               >
                 <FormProviderWrapperInner form={form}>
@@ -96,7 +93,8 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
                 status={formStore.loadError.code as ResultStatusType}
                 title={formStore.loadError.code}
                 subTitle={formStore.loadError.message}
-              />);
+              />
+            );
 
           return null;
         }}

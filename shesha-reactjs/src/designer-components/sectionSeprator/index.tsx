@@ -1,7 +1,7 @@
 import SectionSeparator from '@/components/sectionSeparator';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { IToolboxComponent } from '@/interfaces';
-import { useFormData } from '@/providers';
+import { StyleBoxValue, useFormData } from '@/providers';
 import { getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { LineOutlined } from '@ant-design/icons';
 import React, { useMemo } from 'react';
@@ -35,7 +35,7 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       ...getStyle(model?.titleStyle, formData),
     };
 
-    const containerstyling = jsonSafeParse(model.containerStylingBox || '{}');
+    const containerstyling = jsonSafeParse<StyleBoxValue>(model.containerStylingBox || '{}');
     const containerstylingBoxAsCSS = pickStyleFromModel(containerstyling);
 
     const containerAdditionalStyles = {
