@@ -26,7 +26,7 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
           onClick={() => {
             setCanvasAutoZoom();
           }}
-        />
+                                    />
         </Tooltip>
         <Tooltip title={`${zoom}%`}><Button size="small" disabled={autoZoom} type="text" icon={<MinusOutlined />} title="Zoom out" onClick={() => setCanvasZoom(zoom - (zoom > DEFAULT_OPTIONS.minZoom ? 2 : 0))} /></Tooltip>
         <Tooltip title={`${zoom}%`}><Button size="small" disabled={autoZoom} type="text" icon={<PlusOutlined />} title="Zoom in" onClick={() => setCanvasZoom(zoom + (zoom < DEFAULT_OPTIONS.maxZoom ? 2 : 0))} /></Tooltip>
