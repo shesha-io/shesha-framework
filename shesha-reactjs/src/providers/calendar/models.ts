@@ -1,0 +1,105 @@
+
+import { FormIdentifier, IConfigurableActionConfiguration, IConfigurableFormComponent } from '@/providers';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { View } from 'react-big-calendar';
+
+export type LayerGroupItemProps = ILayerFormModel | ILayerGroup;
+
+export interface ILayerGroupItemBase {
+  id: string;
+  name: string;
+  block?: boolean;
+  label?: string;
+  tooltip?: string;
+  sortOrder: number;
+  danger?: boolean;
+  hidden?: boolean;
+  disabled?: boolean;
+  isDynamic?: boolean;
+  icon?: string;
+  LayerType?: 'point' | 'polygon';
+  customVisibility?: string;
+  customEnabled?: string;
+  permissions?: string[];
+  style?: string;
+  size?: SizeType;
+  visible?: boolean;
+  allowChangeVisibility?: boolean;
+  useQuickView?: boolean;
+  quickViewForm?: FormIdentifier;
+  dataSource?: 'entity' | 'custom';
+  entityType?: string;
+}
+
+export interface ILayerFormModel extends ILayerGroupItemBase {
+  label?: string;
+  orderIndex?: number;
+  description?: string;
+  visible?: boolean;
+  allowChangeVisibility?: boolean;
+  useExpression?: boolean;
+  entityType?: string;
+  permissions?: any;
+  properties?: string[];
+  queryParamsExpression?: string;
+  readOnly?: boolean;
+  icon?: string;
+  iconColor?: {
+    hex: string;
+  };
+  customUrl?: string;
+}
+
+export interface ILayerGroup extends ILayerGroupItemBase {
+  childItems?: LayerGroupItemProps[];
+}
+
+
+export interface ICalendarProps extends IConfigurableFormComponent {
+  items?: ICalendarLayersProps[];
+  startDate?: string;
+  externalStartDate?: string;
+  endDate?: string;
+  externalEndDate?: string;
+  minDate?: string;
+  maxDate?: string;
+  width?: number;
+  height?: number;
+  displayPeriod?: View[];
+  onSlotClick?: IConfigurableActionConfiguration;
+  onViewChange?: IConfigurableActionConfiguration;
+}
+
+export interface ICalendarLayersProps {
+  id: string;
+  sortOrder: number;
+  name: string;
+  label: string;
+  description: string;
+  visible?: boolean;
+  allowChangeVisibility?: boolean;
+  dataSource: 'entity' | 'custom';
+  entityType?: string;
+  startTime?: string;
+  endTime?: string;
+  title?: string;
+  color?: {
+    hex: string;
+  };
+  showIcon?: boolean;
+  propertyList?: string[];
+  overfetch?: boolean;
+  customUrl?: string;
+  ownerId?: string;
+  filters: { [key in string]: any };
+  useQuickView?: boolean;
+  quickViewForm?: FormIdentifier;
+  markers?: any[];
+  onSelect?: IConfigurableActionConfiguration;
+  onDblClick?: IConfigurableActionConfiguration;
+  onSlotClick?: IConfigurableActionConfiguration;
+  onViewChange?: IConfigurableActionConfiguration;
+  showLegend?: boolean;
+  icon?: string;
+  iconColor?: string;
+}
