@@ -22,7 +22,6 @@ export const getSettings = () => {
   const pnlShadowStyleId = nanoid();
   const customStylePnlId = nanoid();
   const pnlFontStyleId = nanoid();
-  const containerId = nanoid();
 
   return {
     components: new DesignerToolbarSettings()
@@ -45,7 +44,7 @@ export const getSettings = () => {
                   id: nanoid(),
                   propertyName: 'propertyName',
                   label: 'Property Name',
-                  parentId: containerId,
+                  parentId: commonTabId,
                   description: "If left empty, the field will not be included in the submitted payload",
                   size: 'small',
                   styledLabel: true,

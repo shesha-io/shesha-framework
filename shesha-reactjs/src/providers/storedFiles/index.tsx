@@ -2,7 +2,7 @@ import axios from 'axios';
 import FileSaver from 'file-saver';
 import { IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useRef } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
 import { useGet, useMutate } from '@/hooks';
 import { IApiEndpoint } from '@/interfaces/metadata';
@@ -82,6 +82,14 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
   });
 
+  // Synced ref to avoid stale closures in upload/delete/download handlers
+  const fileListRef = useRef<IStoredFile[]>(state.fileList);
+
+  // Update ref whenever state.fileList changes to maintain freshness
+  useEffect(() => {
+    fileListRef.current = state.fileList;
+  }, [state.fileList]);
+
   const { message } = App.useApp();
   const { connection } = useSignalR(false) ?? {};
   const { httpHeaders: headers, backendUrl } = useSheshaApplication();
@@ -152,7 +160,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
 
       dispatch(onFileDeletedAction(patient?.id));
-      onChange?.(state.fileList?.filter((file) => file.id !== patient?.id) || []);
+      onChange?.(fileListRef.current?.filter((file) => file.id !== patient?.id) || []);
     });
   }, []);
   //#endregion
@@ -193,7 +201,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         const responseFile = response.result as IStoredFile;
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
-        onChange?.([...state.fileList, responseFile]);
+        const updated = fileListRef.current.map((f) =>
+          f.uid === newFile.uid ? { ...responseFile, uid: responseFile.id } : f
+        );
+        onChange?.(updated);
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
@@ -225,7 +236,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     deleteFileHttp({ id: fileIdToDelete })
       .then(() => {
         deleteFileSuccess(fileIdToDelete);
-        const updateList = removeFile(state.fileList ?? [], fileIdToDelete);
+        const updateList = removeFile(fileListRef.current ?? [], fileIdToDelete);
         onChange?.(updateList);
         if (typeof removeDelayedUpdate === 'function') {
           removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
@@ -248,7 +259,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           ownerName: ownerName,
         }
         : {
-          filesId: state.fileList?.map((x) => x.id).filter((x) => !!x),
+          filesId: fileListRef.current?.map((x) => x.id).filter((x) => !!x),
         };
     axios({
       url: `${baseUrl ?? backendUrl}/api/StoredFile/DownloadZip?${qs.stringify(query)}`,
@@ -260,7 +271,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         dispatch(downloadZipSuccessAction());
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
         dispatch(updateAllFilesDownloadedByCurrentUser());
-        const updatedList = updateAllFilesDownloaded(state.fileList ?? []);
+        const updatedList = updateAllFilesDownloaded(fileListRef.current ?? []);
         onDownload?.(updatedList);
       })
       .catch(() => {
@@ -281,7 +292,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
         dispatch(updateIsDownloadedByCurrentUser(payload.fileId));
-        const nextList = updateDownloadedAFile(state.fileList ?? [], payload.fileId);
+        const nextList = updateDownloadedAFile(fileListRef.current ?? [], payload.fileId);
         onDownload?.(nextList);
       })
       .catch((e) => {
