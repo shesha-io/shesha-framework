@@ -69,7 +69,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   };
 
   const columnDropdownItems: MenuProps['items'] = [
-    props.allowNewRecord && {
+    props.allowNewRecord || props.kanbanReadonly && {
       key: '1',
       label: 'Add',
       onClick: () => handleCreateClick(column.itemValue),
@@ -105,7 +105,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
           selectedRow: column,
           draggedTask,
         };
-
+        
         // Perform the action
         executeAction({
           actionConfiguration: targetColumn?.actionConfiguration,
@@ -165,7 +165,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
         >
           <Flex
             justify={
-              props.kanbanReadonly || props.readonly || !(props.allowNewRecord || props.collapsible)
+              props.readonly || !(props.allowNewRecord || props.collapsible)
                 ? 'center'
                 : 'space-between'
             }
@@ -173,7 +173,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
             className={styles.combinedHeaderStyle}
             style={props.headerStyles || {}}
           >
-            {props.showIcons && column.icon && <ShaIcon iconName={column.icon} readOnly style={iconStyles} />}
+            {props.showIcons && column.icon && <ShaIcon iconName={column.icon || 'StopOutlined' } readOnly style={iconStyles} />}
             <span
               style={{
                 textWrap: 'nowrap',
@@ -184,7 +184,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
               {column.item} ({columnTasks.length})
             </span>
 
-            {props.kanbanReadonly || props.readonly || !(props.allowNewRecord || props.collapsible) ? null : (
+            { props.readonly || !(props.allowNewRecord || props.collapsible) ? null : (
               <Dropdown trigger={['click']} menu={{ items: columnDropdownItems }} placement="bottomRight">
                 <Button type="text" icon={<SettingOutlined style={iconStyles} />} />
               </Dropdown>
