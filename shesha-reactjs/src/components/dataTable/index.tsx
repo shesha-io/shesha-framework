@@ -677,9 +677,19 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const newData = payload.getNew();
     const oldIdx = payload.oldIndex ?? -1;
     const newIdx = payload.newIndex ?? -1;
-    const movedRow = oldIdx >= 0 ? oldData[oldIdx] : null;
 
-    // Execute OnBeforeRowReorder event
+    if (oldIdx < 0 || oldIdx >= oldData.length || newIdx < 0 || newIdx >= oldData.length) {
+      console.warn(
+        `Invalid reorder indices: oldIndex=${oldIdx}, newIndex=${newIdx}, data length=${oldData.length}. Resetting to original order.`
+      );
+      payload.applyOrder(oldData);
+      throw new Error(
+        `Reordering cancelled: indices out of bounds (oldIndex=${oldIdx}, newIndex=${newIdx}, valid range=0-${oldData.length - 1})`
+      );
+    }
+
+    const movedRow = oldData[oldIdx];
+
     if (onBeforeRowReorder) {
       try {
         const beforeArgs: IBeforeRowReorderArguments = {
