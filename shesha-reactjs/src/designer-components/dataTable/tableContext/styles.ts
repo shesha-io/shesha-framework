@@ -152,6 +152,30 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         gap: 8px;
     `);
 
+  const tablePagerContainer = cx("sha-table-pager-container", css`
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    `);
+
+  const tablePagerMockup = cx("sha-table-pager-mockup", css`
+        display: flex;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid ${token.colorBorder};
+        border-radius: 6px;
+        background-color: ${token.colorBgContainer};
+        color: ${token.colorTextSecondary};
+        font-size: 14px;
+        gap: 8px;
+
+        span {
+            &:nth-child(2n) {
+                opacity: 0.6;
+            }
+        }
+    `);
+
   return {
     dataContextDesignerEmpty,
     dataContextRuntimeEmpty,
@@ -162,5 +186,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     quickSearchHintPopover,
     quickSearchPopoverArrowStyles,
     quickSearchContainer,
+    tablePagerContainer,
+    tablePagerMockup,
   };
 });
