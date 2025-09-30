@@ -134,9 +134,11 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     // Implementation for adding columns to the markup
     const builder = new DesignerToolbarSettings({});
 
+    const dataTableName = `datatable ${nanoid()}`;
     builder.addDatatable({
       id: nanoid(),
-      propertyName: `datatable ${nanoid()}`,
+      propertyName: dataTableName,
+      componentName: dataTableName,
       items: sortedProperties.map((prop, idx) => {
         // Get column width based on data type
         const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
@@ -152,6 +154,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
           itemType: 'item',
           minWidth: width.min,
           maxWidth: width.max,
+          allowSorting: true,
         };
       }),
     });
