@@ -156,9 +156,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     connection?.on('OnFileAdded', (eventData: IStoredFile | string) => {
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
 
-     dispatch(onFileAddedAction(patient));
-     const next = [...(fileListRef.current ?? []).filter(f => f.id !== patient?.id), fileReducer(patient)];
-     onChange?.(next);
+      dispatch(onFileAddedAction(patient));
+      const next = [...(fileListRef.current ?? []).filter((f) => f.id !== patient?.id), fileReducer(patient)];
+      onChange?.(next);
     });
 
     connection?.on('OnFileDeleted', (eventData: IStoredFile | string) => {
@@ -168,10 +168,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       onChange?.(fileListRef.current?.filter((file) => file.id !== patient?.id) || []);
     });
     return () => {
-        connection?.off('OnFileAdded');
-        connection?.off('OnFileDeleted');
-      };
-    }, []);
+      connection?.off('OnFileAdded');
+      connection?.off('OnFileDeleted');
+    };
+  }, []);
   //#endregion
 
   const uploadFile = (payload: IUploadFilePayload) => {
