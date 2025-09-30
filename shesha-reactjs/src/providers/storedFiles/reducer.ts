@@ -97,11 +97,11 @@ export function storedFilesReducer(
       };
     }
     case StoredFilesActionEnums.DeleteFileError: {
-      if (state.fileList?.find((x) => x.uid === payload.fileId)?.status === 'error')
+      if (state.fileList?.some((x) => x.uid === payload.fileId && x.status === 'error'))
         return {
           ...state,
           fileList: state.fileList.filter(
-            ({ id, uid }) => id !== payload.fileId && uid !== payload.fileId
+            (x) => !(x.uid === payload.fileId && x.status === 'error')
           ),
         };
 

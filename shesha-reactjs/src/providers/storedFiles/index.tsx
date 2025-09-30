@@ -124,16 +124,19 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     if ((ownerId || '') !== '' && (ownerType || '') !== '') {
       fetchFileListHttp()
         .then((resp) => {
-          const { result } = resp ?? {} as any;
-          const fileList = filesReducer(result as IStoredFile[]);
-          dispatch(fetchFileListSuccessAction(fileList));
-          onChange?.(fileList ?? []);
+          if (isAjaxSuccessResponse(resp)) {
+            const fileList = filesReducer((resp?.result ?? []) as IStoredFile[]);
+            dispatch(fetchFileListSuccessAction(fileList));
+            onChange?.(fileList);
+          } else {
+            dispatch(fetchFileListErrorAction());
+          }
         })
         .catch(() => {
           dispatch(fetchFileListErrorAction());
         });
     }
-  }, [ownerId, ownerType, filesCategory, propertyName]);
+  }, [ownerId, ownerType, ownerName, filesCategory, propertyName]);
 
   useEffect(() => {
     if (!isFetchingFileList) {
@@ -153,7 +156,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     connection?.on('OnFileAdded', (eventData: IStoredFile | string) => {
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
 
-      dispatch(onFileAddedAction(patient));
+     dispatch(onFileAddedAction(patient));
+     const next = [...(fileListRef.current ?? []).filter(f => f.id !== patient?.id), fileReducer(patient)];
+     onChange?.(next);
     });
 
     connection?.on('OnFileDeleted', (eventData: IStoredFile | string) => {
@@ -162,7 +167,11 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       dispatch(onFileDeletedAction(patient?.id));
       onChange?.(fileListRef.current?.filter((file) => file.id !== patient?.id) || []);
     });
-  }, []);
+    return () => {
+        connection?.off('OnFileAdded');
+        connection?.off('OnFileDeleted');
+      };
+    }, []);
   //#endregion
 
   const uploadFile = (payload: IUploadFilePayload) => {
@@ -178,8 +187,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       formData.append('filesCategory', `${filesCategory}`);
     formData.append('propertyName', '');
 
-    // @ts-ignore
-    const newFile: IStoredFile = { uid: '', ...file, status: 'uploading', name: file.name };
+    const tempUid = (file as any)?.uid ?? Math.random().toString(36).slice(2);
+    const newFile: IStoredFile = { uid: tempUid, ...(file as any), status: 'uploading', name: file.name };
 
     if (!Boolean(payload.ownerId || ownerId) && typeof addDelayedUpdate !== 'function') {
       console.error('File list component is not configured');
@@ -199,10 +208,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     uploadFileHttp(uploadFileEndpoint, formData)
       .then((response) => {
         const responseFile = response.result as IStoredFile;
-        responseFile.uid = newFile.uid;
-        dispatch(uploadFileSuccessAction({ ...responseFile }));
+        const finalFile = { ...responseFile, uid: responseFile.id };
+        dispatch(uploadFileSuccessAction(finalFile));
         const updated = fileListRef.current.map((f) =>
-          f.uid === newFile.uid ? { ...responseFile, uid: responseFile.id } : f
+          f.uid === newFile.uid ? finalFile : f
         );
         onChange?.(updated);
 
@@ -280,7 +289,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   };
 
   const downloadFile = (payload: IDownloadFilePayload) => {
-    const url = `${baseUrl}/api/StoredFile/Download?${qs.stringify({
+    const url = `${(baseUrl ?? backendUrl)}/api/StoredFile/Download?${qs.stringify({
       id: payload.fileId,
     })}`;
     axios({
