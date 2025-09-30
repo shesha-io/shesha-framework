@@ -238,7 +238,7 @@ export const getColumnSettings = (data?: any) => ({
               type: "settingsInputRow",
               propertyName: "allowSortingContainer",
               hidden: {
-                _code: "return getSettingValue(data?.columnType) !== 'data';",
+                _code: "return getSettingValue(data?.columnType) === 'form';",
                 _mode: "code",
                 _value: false,
               },
