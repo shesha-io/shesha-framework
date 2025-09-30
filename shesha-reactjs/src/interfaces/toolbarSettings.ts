@@ -44,6 +44,9 @@ import { IQuickSearchComponentProps } from '@/designer-components/dataTable/quic
 import { IPagerComponentProps } from '@/designer-components/dataTable/pager/pagerComponent';
 import { ITableViewSelectorComponentProps } from '@/designer-components/dataTable/tableViewSelector/models';
 import { nanoid } from '@/utils/uuid';
+import { IDateFieldProps } from '@/designer-components/dateField/interfaces';
+import { ITimePickerProps } from '@/designer-components/timeField/models';
+import { IFileUploadProps } from '@/designer-components/fileUpload';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'id' | 'hidden' | 'type'> {
   id?: string;
@@ -90,6 +93,12 @@ type FormAutocompleteType = ToolbarSettingsProp & Omit<IFormAutocompleteComponen
 type ReferenceListAutocompleteType = ToolbarSettingsProp & Omit<IReferenceListAutocompleteProps, 'hidden' | 'type'>;
 
 type CheckboxType = ToolbarSettingsProp & Omit<ICheckboxComponentProps, 'hidden' | 'type'>;
+
+type DateFieldType = ToolbarSettingsProp & Omit<IDateFieldProps, 'hidden' | 'type'>;
+
+type TimePickerType = ToolbarSettingsProp & Omit<ITimePickerProps, 'hidden' | 'type'>;
+
+type FileUploadType = ToolbarSettingsProp & Omit<IFileUploadProps, 'hidden' | 'type'>;
 
 type SwitchType = ToolbarSettingsProp & Omit<ISwitchComponentProps, 'hidden' | 'type'>;
 
@@ -168,6 +177,11 @@ export class DesignerToolbarSettings<T> {
   ) {
     const obj = typeof props !== 'function' ? props : props(this.data);
     obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
+    if (!obj.header)
+      obj.header = {
+        id: nanoid(),
+        components: [],
+      };
     return this.addProperty(obj, 'collapsiblePanel');
   }
 
@@ -277,6 +291,18 @@ export class DesignerToolbarSettings<T> {
 
   public addCheckbox(props: CheckboxType | ((data: T) => CheckboxType)) {
     return this.addProperty(props, 'checkbox');
+  }
+
+  public addDateField(props: DateFieldType | ((data: T) => DateFieldType)) {
+    return this.addProperty(props, 'dateField');
+  }
+
+  public addTimePicker(props: TimePickerType | ((data: T) => TimePickerType)) {
+    return this.addProperty(props, 'timePicker');
+  }
+
+  public addFileUpload(props: FileUploadType | ((data: T) => FileUploadType)) {
+    return this.addProperty(props, 'fileUpload');
   }
 
   public addSwitch(props: SwitchType | ((data: T) => SwitchType)) {
