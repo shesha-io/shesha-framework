@@ -8,7 +8,7 @@ import { LayerGroupActionEnums } from './actions';
 import { ILayerFormModel, ILayerGroup } from './models';
 import { handleActions } from 'redux-actions';
 import { getItemPositionById } from './utils';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 
 const LayerGroupReducer = handleActions<ILayerGroupConfiguratorStateContext, any>(
   {

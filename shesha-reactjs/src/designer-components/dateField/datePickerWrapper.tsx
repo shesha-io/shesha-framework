@@ -49,7 +49,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
   const { styles } = useStyles({ fullStyles: additionalStyles });
-  const finalStyles: CSSProperties = { ...additionalStyles, width: additionalStyles?.width || '100%' }
+  const finalStyles: CSSProperties = { ...additionalStyles, width: additionalStyles?.width || '100%' };
 
   const { formData } = useForm();
 
@@ -185,8 +185,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       ]
     );
   };
-
-
 
   if (range) {
     return (

@@ -339,7 +339,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             return <DatePickerWrapper {...props} />;
 
         case 'calendarSelectorSettingsModal':
-            return <CalendarSelectorSettingsModal readOnly {...props} />
+            return <CalendarSelectorSettingsModal readOnly {...props} />;
 
         default:
             return <Input
