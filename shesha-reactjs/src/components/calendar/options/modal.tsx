@@ -27,10 +27,9 @@ const LayersListInner: FC<Omit<IFiltersListProps, 'layers'>> = ({ showModal, rea
     <div className={styles.shaToolbarConfigurator}>
       <LayerItemsContainer items={items} index={[]} onConfigClick={onConfigClick} readOnly={readOnly} />
       {!readOnly && (
-          <Button onClick={addButton} size="small" type="primary" block={true}>
-            Add Layer
-          </Button>
-      
+        <Button onClick={addButton} size="small" type="primary" block={true}>
+          Add Layer
+        </Button>
       )}
     </div>
   );

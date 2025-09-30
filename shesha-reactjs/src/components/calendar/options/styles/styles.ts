@@ -16,7 +16,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     const shaToolbarItemName = "sha-toolbar-item-name";
     const shaHelpIcon = "sha-help-icon";
 
-   const  shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
+    const shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
     .${shaActionButtons} {
         margin: 8px 0;
         .ant-btn {
@@ -69,12 +69,14 @@ export const useStyles = createStyles(({ css, cx }) => {
                 margin-right: 5px;
             }
 
-            .${shaToolbarItemControls} {
+             .${shaToolbarItemControls} {
                 text-align: right;
                 position: absolute;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
                 right: 5px;
-                top: 5px;
-                display: block;
                 min-height: 20px;
                 z-index: 1000;
             }
@@ -113,7 +115,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     }
 `);
 
-   return {
+    return {
         shaToolbarConfigurator,
         shaActionButtons,
         sidebarContainerMainArea,
@@ -129,5 +131,5 @@ export const useStyles = createStyles(({ css, cx }) => {
         shaTooltipIcon,
         shaToolbarItemName,
         shaHelpIcon,
-   };
+    };
 });
