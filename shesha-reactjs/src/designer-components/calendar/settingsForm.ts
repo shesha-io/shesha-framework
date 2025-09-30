@@ -72,26 +72,28 @@ export const getSettings = (data: any) => {
                                     label: 'Calendar Selector Settings Modal',
                                     hideLabel: true,
                                 })
-                                .addSettingsInput(
-                                    {
-                                        inputType: 'date',
-                                        id: nanoid(),
-                                        parentId: dataTabId,
-                                        propertyName: 'minDate',
-                                        label: 'Min Date',
-                                        tooltip: 'Min Date',
-                                    }
-                                )
-                                .addSettingsInput(
-                                    {
-                                        inputType: 'date',
+                                .addSettingsInputRow({
+                                    id: nanoid(),
+                                    parentId: dataTabId,
+                                    inputs: [
+                                        {
+                                            type: 'date',
+                                            id: nanoid(),
+                                            parentId: dataTabId,
+                                            propertyName: 'minDate',
+                                            label: 'Min Date',
+                                            tooltip: 'Min Date',
+                                        },
+                                        {
+                                        type: 'date',
                                         id: nanoid(),
                                         parentId: dataTabId,
                                         propertyName: 'maxDate',
                                         label: 'Max Date',
                                         tooltip: 'Max Date',
                                     }
-                                )
+                                    ]
+                                })
                                 .addSettingsInputRow({
                                     id: nanoid(),
                                     parentId: dataTabId,
