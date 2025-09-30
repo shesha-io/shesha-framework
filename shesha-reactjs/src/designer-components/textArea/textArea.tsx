@@ -55,7 +55,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
     defaultValue: model.initialValue
       ? evaluateString(model?.initialValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState })
       : undefined,
-    eventHandlers: getAllEventHandlers(model, allData)
+    eventHandlers: getAllEventHandlers(model, allData),
   }),
   Factory: ({ model, calculatedModel }) => {
     const { styles } = useStyles({
@@ -96,7 +96,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
         ...getOverflowStyle(true, false),
         ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
           ? { marginBottom: model?.showCount ? '4px' : '0px' }
-          : {})
+          : {}),
       },
       spellCheck: model.spellCheck,
     };
@@ -120,8 +120,9 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
                 fontSize: '14px',
                 color: maxLength && currentLength > maxLength ? '#ff4d4f' : '#8c8c8c',
                 marginTop: '0px',
-                marginBottom: '0px'
-              }}>
+                marginBottom: '0px',
+              }}
+              >
                 {currentLength}
                 {maxLength ? `/${maxLength}` : ''}
               </div>
@@ -135,11 +136,11 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
             if (typeof onChange === 'function') onChange(...args);
           };
 
-          const finalStyle = !model.enableStyleOnReadonly && model.readOnly ?
-            {
+          const finalStyle = !model.enableStyleOnReadonly && model.readOnly
+            ? {
               ...model.allStyles.fontStyles,
               ...model.allStyles.dimensionsStyles,
-              ...getOverflowStyle(true, false)
+              ...getOverflowStyle(true, false),
             }
             : { ...model.allStyles.fullStyle, ...getOverflowStyle(true, false) };
 
@@ -150,8 +151,8 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
                   <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvents} />
                   {renderCharCounter()}
                 </>
-              ) : model.readOnly ? ( //no need to show counter in read only mode
-                <ReadOnlyDisplayFormItem value={value} style={{ padding: 8, ...finalStyle }} type='textArea' />
+              ) : model.readOnly ? ( // no need to show counter in read only mode
+                <ReadOnlyDisplayFormItem value={value} style={{ padding: 8, ...finalStyle }} type="textArea" />
               ) : (
                 <>
                   <Input.TextArea rows={2} {...textAreaProps} disabled={model.readOnly} {...customEvents} value={value} onChange={onChangeInternal} />
@@ -198,8 +199,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ITextAreaComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-  ,
+      .add<ITextAreaComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, _): ITextAreaComponentProps => {
     return {
       ...model,

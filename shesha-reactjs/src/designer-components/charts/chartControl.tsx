@@ -21,7 +21,7 @@ const chartInnerStyle = {
   justifyContent: 'center',
   padding: 0,
   margin: 0,
-  overflow: 'hidden'
+  overflow: 'hidden',
 };
 
 const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = React.memo(({ evaluatedFilters }) => {
@@ -50,7 +50,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsLoaded, setAxisPropertyLabel, setValuePropertyLabel } = useChartDataActionsContext();
-    // Optimize state initialization with lazy initial state
+  // Optimize state initialization with lazy initial state
   const [metadataProcessed, setMetadataProcessed] = useState(false);
   const isFetchingRef = useRef(false);
   const [faultyProperties, setFaultyProperties] = useState<string[]>([]);
@@ -68,7 +68,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
 
     return {
       hasMissingProperties: missingProperties.length > 0,
-      descriptionMessage: `Please make sure that you've configured the following properties correctly: ${[...new Set(missingProperties)].join(', ')}.`
+      descriptionMessage: `Please make sure that you've configured the following properties correctly: ${[...new Set(missingProperties)].join(', ')}.`,
     };
   }, [entityType, chartType, valueProperty, axisProperty]);
 
@@ -84,7 +84,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     padding: '16px',
     margin: 0,
     boxSizing: 'border-box' as const,
-    overflow: 'hidden'
+    overflow: 'hidden',
   }), [state]);
 
   const processAndUpdateData = (items: {}[], refListMap: Map<string, Map<number, string>>) => {
@@ -284,7 +284,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     setValuePropertyLabel,
     setMetadataProcessed,
     setError,
-    setFaultyProperties
+    setFaultyProperties,
   ]);
 
   useEffect(() => {
@@ -406,12 +406,12 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
         showIcon
         message={message}
         description={error}
-        type={"error"}
-        action={
+        type="error"
+        action={(
           <Button color="danger" size="small" onClick={retryFetch}>
             Retry
           </Button>
-        }
+        )}
       />
     );
   }, [error, retryFetch]);
@@ -420,19 +420,21 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
   const loaderComponent = useMemo(() => {
     return (
       <div className={cx(styles.loadingContainer)}>
-        <ChartLoader chartType={chartType} handleCancelClick={() => {
-          if (isFetchingRef.current && currentControllerRef.current) {
-            isFetchingRef.current = false;
-            setError('Request cancelled by user');
-            setIsLoaded(true);
-            setMetadataProcessed(false);
-            try {
-              currentControllerRef.current.abort('Request cancelled by user');
-            } catch {
-              // Ignore abort errors during user cancellation - this is expected behavior
+        <ChartLoader
+          chartType={chartType}
+          handleCancelClick={() => {
+            if (isFetchingRef.current && currentControllerRef.current) {
+              isFetchingRef.current = false;
+              setError('Request cancelled by user');
+              setIsLoaded(true);
+              setMetadataProcessed(false);
+              try {
+                currentControllerRef.current.abort('Request cancelled by user');
+              } catch {
+                // Ignore abort errors during user cancellation - this is expected behavior
+              }
             }
-          }
-        }}
+          }}
         />
         <div className={cx(styles.loadingText)}>Fetching data...</div>
       </div>

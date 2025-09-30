@@ -20,22 +20,28 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
     const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
     return extensionJson?.modelType || null;
   }
-  
+
   protected async addComponentsToMarkup(
-    markup: any, 
-    entity: IEntityMetadata, 
+    markup: any,
+    entity: IEntityMetadata,
     nonFrameworkProperties: PropertyMetadataDto[],
     metadataHelper: FormMetadataHelper,
     replacements: object
   ): Promise<void> {
     try {
       const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
-      
-      // Add header components
-      this.addHeader(entity, nonFrameworkProperties, markup, extensionJson, metadataHelper);
 
-      // Add details panel - using shared function
-      addDetailsPanel(nonFrameworkProperties, markup, metadataHelper);
+      // Add header components and get properties used in key information bar
+      const usedKeyInfoPropertyPaths = this.addHeader(entity, nonFrameworkProperties, markup, extensionJson, metadataHelper);
+
+      // Filter out properties shown in the key information bar
+      const propertiesForDetailsPanel = nonFrameworkProperties.filter((prop) => {
+        const propIdentifier = prop.path || prop.label || '';
+        return !usedKeyInfoPropertyPaths.includes(propIdentifier);
+      });
+
+      // Add details panel - using shared function with filtered properties
+      addDetailsPanel(propertiesForDetailsPanel, markup, metadataHelper);
 
       // Add child tables if configured
       if (extensionJson.addChildTables) {
@@ -69,8 +75,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
    * @param markup The JSON markup object.
    * @param extensionJson The extension configuration.
    * @param metadataHelper The metadata helper instance.
+   * @returns Array of property paths used in key information bar, empty array if none used
    */
-  private addHeader(entity: IEntityMetadata, metadata: PropertyMetadataDto[], markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): void {
+  private addHeader(entity: IEntityMetadata, metadata: PropertyMetadataDto[], markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): string[] {
     const title = `${entity.typeAccessor} Details`;
 
     const titleContainer = findContainersWithPlaceholder(markup, "//*TITLE*//");
@@ -81,23 +88,33 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
 
     titleContainer[0].content = title;
 
+    // Keep track of property paths used in key information bar
+    const usedKeyInfoPropertyPaths: string[] = [];
+
     // Add key information bar if configured
-    const builder = new DesignerToolbarSettings({});
-    if (extensionJson.showKeyInformationBar) {
+    if (extensionJson.showKeyInformationBar && extensionJson.keyInformationBarProperties?.length) {
       const keyInfoBarContainer = findContainersWithPlaceholder(markup, "//*KEYINFOBAR*//");
 
       if (keyInfoBarContainer.length === 0) {
         throw new Error("No key information bar container found in the markup.");
       }
-      const keyInfoProperties = metadata.filter(x =>
+
+      // Save paths of properties that will be used in the key info bar
+      extensionJson.keyInformationBarProperties.forEach((path) => {
+        usedKeyInfoPropertyPaths.push(path);
+      });
+
+      const keyInfoProperties = metadata.filter((x) =>
         extensionJson.keyInformationBarProperties?.includes(x.path || x.label || '')
       );
 
       if (keyInfoProperties.length === 0) {
         console.warn(`No key information properties found for the key information bar. Requested properties: ${extensionJson.keyInformationBarProperties?.join(', ')}`);
-        return;
+        return usedKeyInfoPropertyPaths;
       } else {
-        builder.addKeyInformationBar({
+        const keyInfoBarBuilder = new DesignerToolbarSettings({});
+
+        keyInfoBarBuilder.addKeyInformationBar({
           id: nanoid(),
           propertyName: "keyInformationBar",
           label: "Key Information Bar",
@@ -105,9 +122,8 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           hideLabel: true,
           hidden: false,
           componentName: "keyInformationBar",
-          columns: keyInfoProperties.map(prop => {
+          columns: keyInfoProperties.map((prop) => {
             const keyInfoBuilder = new DesignerToolbarSettings({});
-            const keyInfoBarContainer = new DesignerToolbarSettings({});
 
             keyInfoBuilder.addText({
               id: nanoid(),
@@ -122,42 +138,30 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               textType: "span",
               color: 'default',
               desktop: {
-                weight: 500
+                weight: 500,
               },
-              strong: true
+              strong: true,
             });
 
             metadataHelper.getConfigFields(prop, keyInfoBuilder, true);
 
-            keyInfoBarContainer.addContainer({
-              id: nanoid(),
-              propertyName: 'keyInfoContainer',
-              label: 'Key Information',
-              editMode: 'inherited' as EditMode,
-              hidden: false,
-              componentName: 'keyInfoContainer',
-              direction: 'vertical',
-              desktop: {
-                justifyContent: 'center',
-              },
-              components: keyInfoBuilder.toJson()
-            });
-
             return {
               id: nanoid(),
               width: 200,
-              flexDirection: 'row',
-              textAlign: 'start',
-              components: keyInfoBarContainer.toJson()
+              flexDirection: 'column',
+              textAlign: 'center',
+              components: keyInfoBuilder.toJson(),
             };
-          })
+          }),
         });
 
         if (keyInfoBarContainer[0].components && Array.isArray(keyInfoBarContainer[0].components)) {
-          keyInfoBarContainer[0].components.push(...builder.toJson());
+          keyInfoBarContainer[0].components.push(...keyInfoBarBuilder.toJson());
         }
       }
     }
+
+    return usedKeyInfoPropertyPaths;
   }
 
   /**
@@ -222,7 +226,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'right',
-            components: childTableAccessoriesBuilder.toJson()
+            components: childTableAccessoriesBuilder.toJson(),
           });
 
           // Sort the properties: required fields first, then by dataType priority
@@ -231,18 +235,18 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             if (a.required !== b.required) {
               return a.required ? -1 : 1;
             }
-            
+
             // Sort by dataType priority only
             const priorityA = getDataTypePriority(a.dataType, a.dataFormat);
             const priorityB = getDataTypePriority(b.dataType, b.dataFormat);
-            
+
             return priorityA - priorityB;
           });
 
           const columns: IConfigurableColumnsProps[] = sortedProperties.map((prop, idx) => {
             // Get column width based on data type
             const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
-            
+
             return {
               id: nanoid(),
               columnType: 'data',
@@ -253,7 +257,8 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               sortOrder: idx,
               itemType: 'item',
               minWidth: width.min,
-              maxWidth: width.max
+              maxWidth: width.max,
+              allowSorting: true,
             };
           });
 
@@ -270,14 +275,14 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
                 caption: '',
                 isVisible: true,
                 sortOrder: -1,
-                itemType: 'item'
+                itemType: 'item',
               },
-              ...columns
-            ]
+              ...columns,
+            ],
           });
-          
-          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find(p => p.entityType === extensionJson.modelType)?.path;
-          
+
+          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
+
           const childTableContextBuilder = new DesignerToolbarSettings({});
           childTableContextBuilder.addDatatableContext({
             id: nanoid(),
@@ -291,28 +296,28 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             defaultPageSize: ROW_COUNT,
             sortMode: "standard",
             permanentFilter: {
-              "and": [
+              and: [
                 {
                   "==": [
                     {
                       // Fallback to "parentId" if no matching property is found
-                      "var": filterProperty ? toCamelCase(filterProperty) : "parentId",
+                      var: filterProperty ? toCamelCase(filterProperty) : "parentId",
                     },
                     {
-                      "evaluate": [
+                      evaluate: [
                         {
-                          "expression": "{{data.id}}",
-                          "required": true,
-                          "type": "mustache"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
+                          expression: "{{data.id}}",
+                          required: true,
+                          type: "mustache",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
             },
             entityType: extensionJson.childTablesList[index] || '',
-            components: childTableBuilder.toJson()
+            components: childTableBuilder.toJson(),
           });
 
           return {
@@ -321,9 +326,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             key: String(index),
             label: humanizeModelType(childTable.typeAccessor || ''),
             closable: false,
-            components: childTableContextBuilder.toJson()
+            components: childTableContextBuilder.toJson(),
           };
-        }))
+        })),
       });
 
       if (childTableContainer[0].components && Array.isArray(childTableContainer[0].components)) {
@@ -331,5 +336,4 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
       }
     }
   }
-
 }

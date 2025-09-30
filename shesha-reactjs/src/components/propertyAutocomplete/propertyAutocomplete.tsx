@@ -39,7 +39,7 @@ const getFullPath = (path: string, prefix: string) => {
 };
 
 const properties2options = (properties: IPropertyMetadata[], prefix: string): IOption[] => {
-  return properties.map(p => {
+  return properties.map((p) => {
     const value = getFullPath(p.path, prefix);
     const icon = getIconByPropertyMetadata(p);
     const label = (
@@ -47,7 +47,7 @@ const properties2options = (properties: IPropertyMetadata[], prefix: string): IO
     );
     return {
       value: value,
-      label: label
+      label: label,
     };
   });
 };
@@ -87,7 +87,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   }, [multipleValue]);
 
   const getProperty = (path: string): IPropertyMetadata => {
-    return state.properties.find(p => getFullPath(p.path, containerPath ?? containerPathMultiple) === path);
+    return state.properties.find((p) => getFullPath(p.path, containerPath ?? containerPathMultiple) === path);
   };
 
   // TODO: move to metadata dispatcher
@@ -99,14 +99,14 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
         onPropertiesLoaded(properties, prefix);
       setState({
         properties: properties,
-        options: properties2options(properties, prefix)
+        options: properties2options(properties, prefix),
       });
     };
 
     if (!metadata) {
       setProperties([], '');
     } else {
-      getContainerProperties({ metadata, containerPath: containerPath ?? containerPathMultiple }).then(properties => {
+      getContainerProperties({ metadata, containerPath: containerPath ?? containerPathMultiple }).then((properties) => {
         setProperties(properties, containerPath ?? containerPathMultiple);
       }).catch(() => {
         setProperties([], '');
@@ -155,7 +155,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   const onSearchMultiple = (data: string) => {
     setMultipleValue(data);
     const filteredOptions: IOption[] = [];
-    state.properties.forEach(p => {
+    state.properties.forEach((p) => {
       const fullPath = getFullPath(p.path, containerPathMultiple);
 
       if (fullPath.toLowerCase()?.startsWith(data?.toLowerCase()))
@@ -170,7 +170,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     if (props.onChange) props.onChange(data);
 
     const filteredOptions: IOption[] = [];
-    state.properties.forEach(p => {
+    state.properties.forEach((p) => {
       const fullPath = getFullPath(p.path, containerPath);
 
       if (fullPath.toLowerCase()?.startsWith(data?.toLowerCase()))
@@ -202,29 +202,30 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
 
   if (mode === 'tags')
     return (
-      <Select allowClear onChange={props?.onChange} value={props.value} mode={mode} /*showSearch*/ size={props.size} disabled={readOnly}>
+      <Select allowClear onChange={props?.onChange} value={props.value} mode={mode} /* showSearch*/ size={props.size} disabled={readOnly}>
         {state.options.map((option, index) => (
           <Select.Option key={index} value={camelCase(option.value)}>
             {option.label}
           </Select.Option>
         ))}
-      </Select>);
+      </Select>
+    );
 
   const forMap = (tag: string) => {
     const tagElem = (
       <>
         <Tag
           closable
-          onClose={e => {
+          onClose={(e) => {
             e.preventDefault();
             if (Array.isArray(props.value))
-              if (props.onChange) props.onChange(props.value.filter(item => item !== tag));
+              if (props.onChange) props.onChange(props.value.filter((item) => item !== tag));
           }}
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
             setMultipleValue(tag);
             if (Array.isArray(props.value))
-              if (props.onChange) props.onChange(props.value.filter(item => item !== tag));
+              if (props.onChange) props.onChange(props.value.filter((item) => item !== tag));
           }}
         >
           {tag}
@@ -263,7 +264,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
           size={props.size}
         />
       </Space.Compact>
-      <div >
+      <div>
         {tagChild}
       </div>
     </>

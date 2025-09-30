@@ -1,5 +1,5 @@
 import { IFlatComponentsStructure, IFormActions, IFormSections, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
-import React, { FC } from 'react';
+import React, { ReactElement } from 'react';
 import { FormProvider } from '@/providers/form';
 import FormInfo from './formInfo';
 import { ConfigurableFormRenderer } from './configurableFormRenderer';
@@ -9,7 +9,7 @@ import { FormFlatMarkupProvider } from '@/providers/form/providers/formMarkupPro
 import { ConditionalMetadataProvider } from '@/providers';
 import { IShaFormInstance } from '@/index';
 
-export type IFormWithFlatMarkupProps = Omit<IConfigurableFormRuntimeProps, 'shaForm'> & {
+export type IFormWithFlatMarkupProps<TValues extends object = object> = Omit<IConfigurableFormRuntimeProps<TValues>, 'shaForm'> & {
   shaForm: IShaFormInstance<any>;
   formFlatMarkup: IFlatComponentsStructure;
   formSettings: IFormSettings;
@@ -19,7 +19,7 @@ export type IFormWithFlatMarkupProps = Omit<IConfigurableFormRuntimeProps, 'shaF
   sections?: IFormSections;
 };
 
-export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
+export const FormWithFlatMarkup = <TValues extends object = object>(props: IFormWithFlatMarkupProps<TValues>): ReactElement => {
   const {
     mode,
     formRef,
@@ -36,8 +36,8 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
   } = props;
 
   const { formInfoBlockVisible } = useAppConfigurator();
-  
-  if (!formFlatMarkup) 
+
+  if (!formFlatMarkup)
     return null;
 
   const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible;

@@ -8,7 +8,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
   isSimpleDesign,
   ghost,
   accentStyle,
-  overflow
+  overflow,
 }) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
@@ -52,12 +52,15 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     paddingTop,
     paddingBottom,
     paddingLeft,
-    paddingRight
+    paddingRight,
   } = bodyStyle;
 
   const {
     backgroundImage: headerBgImage,
     backgroundColor: headerBgColor,
+    backgroundSize: headerBackgroundSize,
+    backgroundPosition: headerBackgroundPosition,
+    backgroundRepeat: headerBackgroundRepeat,
     height: headerHeight,
     minHeight: headerMinHeight,
     maxHeight: headerMaxHeight,
@@ -158,14 +161,17 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
       background: ${headerBgImage || headerBgColor};
       width: ${width};
+      background-size: ${headerBackgroundSize};
+      background-repeat: ${headerBackgroundRepeat};
+      background-position: ${headerBackgroundPosition};
       min-width: ${minWidth};
       max-width: ${maxWidth};
       height: ${headerHeight};
       min-height: ${headerMinHeight};
       max-height: ${headerMaxHeight};
-      border-top: ${accentStyle ?
-      `3px` : headerBorderTopWidth || headerBorderWidth} ${headerBorderTopStyle || headerBorderStyle} ${accentStyle ?
-        'var(--primary-color)' : headerBorderTopColor || headerBorderColor};
+      border-top: ${accentStyle
+        ? `3px` : headerBorderTopWidth || headerBorderWidth} ${headerBorderTopStyle || headerBorderStyle} ${accentStyle
+        ? 'var(--primary-color)' : headerBorderTopColor || headerBorderColor};
       border-right: ${headerBorderRightWidth || headerBorderWidth} ${headerBorderRightStyle || headerBorderStyle} ${headerBorderRightColor || headerBorderColor};
       border-left: ${headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${headerBorderLeftColor || headerBorderColor};
       border-bottom: ${headerBorderBottomWidth || headerBorderWidth} ${headerBorderBottomStyle || headerBorderStyle} ${headerBorderBottomColor || headerBorderColor};
@@ -269,6 +275,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     shaCollapsiblePanel,
     noContentPadding,
     hideWhenEmpty,
-    shaSimpleDesign
+    shaSimpleDesign,
   };
 });

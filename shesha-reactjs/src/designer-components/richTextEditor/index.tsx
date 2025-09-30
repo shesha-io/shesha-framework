@@ -36,8 +36,8 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     const { allStyles } = model;
     const { width, height, minWidth, minHeight, maxWidth, maxHeight } = allStyles?.dimensionsStyles;
 
-        const { formMode } = useForm();
-    
+    const { formMode } = useForm();
+
 
     const config = useDeepCompareMemoKeepReference<PartialRichTextEditorConfig>(() => {
       const typedConfig: PartialRichTextEditorConfig = {

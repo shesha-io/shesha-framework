@@ -7,7 +7,7 @@ import {
   Divider,
   Input,
   InputNumber,
-  Select
+  Select,
 } from 'antd';
 import { IDataSourceComponentProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
@@ -23,28 +23,28 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
 
   const settings = (
     <>
-      <SettingsFormItem name="componentName" label='Component name' required>
+      <SettingsFormItem name="componentName" label="Component name" required>
         <Input />
       </SettingsFormItem>
-      <SettingsFormItem name="sourceType" label='Source Type'>
+      <SettingsFormItem name="sourceType" label="Source Type">
         <Select>
-          <Select.Option key='Form' value='Form'>Form</Select.Option>
-          <Select.Option key='Entity' value='Entity'>Entity</Select.Option>
-          <Select.Option key='Url' value='Url'>URL</Select.Option>
+          <Select.Option key="Form" value="Form">Form</Select.Option>
+          <Select.Option key="Entity" value="Entity">Entity</Select.Option>
+          <Select.Option key="Url" value="Url">URL</Select.Option>
         </Select>
       </SettingsFormItem>
-      {(state.sourceType === 'Entity') &&
-        <SettingsFormItem key='entityType' name="entityType" label='Entity Type' jsSetting>
-          <Autocomplete.Raw dataSourceType='url' dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete" />
+      {(state.sourceType === 'Entity') && (
+        <SettingsFormItem key="entityType" name="entityType" label="Entity Type" jsSetting>
+          <Autocomplete.Raw dataSourceType="url" dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete" />
         </SettingsFormItem>
-      }
-      {(state.sourceType === 'Entity' || state.sourceType === 'Url') &&
-        <SettingsFormItem key='endpoint' name="endpoint" label='Endpoint' jsSetting>
+      )}
+      {(state.sourceType === 'Entity' || state.sourceType === 'Url') && (
+        <SettingsFormItem key="endpoint" name="endpoint" label="Endpoint" jsSetting>
           <EndpointsAutocomplete />
         </SettingsFormItem>
-      }
-      <SettingsCollapsiblePanel header='Filters'>
-        <SettingsFormItem name="maxResultCount" label='Max result count' tooltip='Leave empty to get all records' jsSetting>
+      )}
+      <SettingsCollapsiblePanel header="Filters">
+        <SettingsFormItem name="maxResultCount" label="Max result count" tooltip="Leave empty to get all records" jsSetting>
           <InputNumber min={0} />
         </SettingsFormItem>
         <Divider />

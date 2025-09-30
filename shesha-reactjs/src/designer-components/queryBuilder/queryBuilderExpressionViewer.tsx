@@ -10,7 +10,7 @@ export const QueryBuilderExpressionViewer: FC<IQueryBuilderExpressionViewerProps
     <CodeEditor
       readOnly={true}
       value={props.value ? JSON.stringify(props.value, null, 2) : ''}
-      language='javascript'
+      language="javascript"
     />
   );
 };

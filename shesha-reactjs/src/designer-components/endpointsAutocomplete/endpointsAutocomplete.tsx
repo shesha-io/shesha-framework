@@ -33,17 +33,16 @@ const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteCo
               );
             }
           }
-        </ConfigurableFormItem >
-      );
+        </ConfigurableFormItem>
+    );
   },
   settingsFormMarkup: settingsForm,
   migrator: (m) => m
     .add<IEndpointsAutocompleteComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IEndpointsAutocompleteComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IEndpointsAutocompleteComponentProps>(2, (prev) => migrateReadOnly(prev))
-    .add<IEndpointsAutocompleteComponentProps>(3, (prev) => ({ ...prev, mode: 'url' }))
-  ,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+    .add<IEndpointsAutocompleteComponentProps>(3, (prev) => ({ ...prev, mode: 'url' })),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export default EndpointsAutocompleteComponent;

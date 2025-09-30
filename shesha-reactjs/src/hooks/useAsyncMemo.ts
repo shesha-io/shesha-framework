@@ -9,7 +9,7 @@ export function useAsyncMemo<T>(factory: () => Promise<T> | undefined | null, de
     const promise = factory();
     if (promise === undefined || promise === null)
       return () => {
-        /*nop*/
+        /* nop*/
       };
 
     promise.then((val) => {
@@ -34,7 +34,7 @@ export function useAsyncDeepCompareMemo<T>(factory: () => Promise<T> | undefined
     const promise = factory();
     if (promise === undefined || promise === null)
       return () => {
-        /*nop*/
+        /* nop*/
       };
 
     promise.then((val) => {

@@ -73,7 +73,7 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
           <AttributeDecorator attributes={attributes}>
             <div className={styles.shaFormCell} style={styleMinHeight}>
               <FormItemProvider labelCol={form.settings?.labelCol}>
-                <ParentProvider model={MODE_READONLY_TRUE} formMode='readonly' formFlatMarkup={form.flatStructure} isScope>
+                <ParentProvider model={MODE_READONLY_TRUE} formMode="readonly" formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                     <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
                   </ComponentsContainerProvider>
@@ -120,7 +120,7 @@ export const CreateFormCell = (props: ICreateFormCellProps) => {
           <AttributeDecorator attributes={attributes}>
             <div className={styles.shaFormCell} style={styleMinHeight} data-sha-form-name={`${(props.columnConfig.createFormId as ConfigurableItemFullName)?.module}/${(props.columnConfig.createFormId as ConfigurableItemFullName)?.name}`}>
               <FormItemProvider labelCol={form.settings?.labelCol}>
-                <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
+                <ParentProvider model={MODE_READONLY_FALSE} formMode="edit" formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                     <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
                   </ComponentsContainerProvider>
@@ -158,7 +158,7 @@ const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
           <AttributeDecorator attributes={attributes}>
             <div className={styles.shaFormCell} style={styleMinHeight}>
               <FormItemProvider labelCol={form.settings?.labelCol}>
-                <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
+                <ParentProvider model={MODE_READONLY_FALSE} formMode="edit" formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                     <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
                   </ComponentsContainerProvider>

@@ -39,8 +39,8 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
         top: 10,
         bottom: 10,
         left: 10,
-        right: 10
-      }
+        right: 10,
+      },
     },
     transitions: {
       active: {
@@ -78,7 +78,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
           font: createFontConfig(legendFont, 12, '400'),
           color: legendFont?.color || '#000000',
           usePointStyle: true, // Use point style for better visual consistency
-          generateLabels: function(chart) {
+          generateLabels: function (chart) {
             const data = chart.data;
             if (data.labels.length && data.datasets.length) {
               return data.labels.map((label, i) => {
@@ -90,12 +90,12 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
                   lineWidth: dataset.borderWidth,
                   pointStyle: 'circle',
                   hidden: false,
-                  index: i
+                  index: i,
                 };
               });
             }
             return [];
-          }
+          },
         },
       },
       title: {

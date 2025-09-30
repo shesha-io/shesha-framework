@@ -25,7 +25,7 @@ export const loadingBox = (cx: (className: string) => string, styles: { innerEnt
 
 export const innerEntityReferenceButtonBoxStyle = {
   backgroundColor: 'transparent',
-  whiteSpace:  'nowrap',
+  whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   width: '100%',
@@ -35,7 +35,7 @@ export const innerEntityReferenceButtonBoxStyle = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
-};  
+};
 
 export const compareValueToProperty = (key: string, value: string, properties: IPropertyMetadata[]) => {
   const dataType = getDataProperty(properties, key, 'dataType');

@@ -39,7 +39,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const { styles } = useStyles();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const isDragging = useFormDesignerStateSelector(x => x.isDragging) ?? false;
+  const isDragging = useFormDesignerStateSelector((x) => x.isDragging) ?? false;
 
   const onValuesChangeInternal = (_changedValues: any, values: any) => {
     shaForm.setFormData({ values: values, mergeValues: true });
@@ -55,7 +55,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       await shaForm.submitData();
     } catch (error) {
       onSubmittedFailed?.();
-      setValidationErrors(error instanceof Error 
+      setValidationErrors(error instanceof Error
         ? error.message
         : error?.data?.error || error);
       console.error('Submit failed: ', error);
@@ -81,18 +81,18 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
         style={{ height: '100vh - 55px' }}
         title="403"
         subTitle="Sorry, you are not authorized to access this page."
-        extra={
+        extra={(
           <Button type="primary">
-            <Link href={'/'}>
+            <Link href="/">
               Back Home
             </Link>
           </Button>
-        }
+        )}
       />
     );
   }
 
-  const { /*dataLoadingState,*/ dataSubmitState } = shaForm ?? {};
+  const { /* dataLoadingState,*/ dataSubmitState } = shaForm ?? {};
 
   return (
     <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>

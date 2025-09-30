@@ -25,7 +25,6 @@ export interface FormInfoProps {
 }
 
 export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, children }) => {
-  
   const { id, name, module } = formProps;
   const { toggleShowInfoBlock, formInfoBlockVisible, softInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
@@ -53,7 +52,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
     return <>{children}</>;
   }
 
-  if (auth?.state?.status !== 'ready'){
+  if (auth?.state?.status !== 'ready') {
     return <>{children}</>;
   }
 
@@ -70,9 +69,12 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
       className={classNames(styles.shaFormContainer, { [styles.shaEditMode]: displayEditMode })}
     >
 
-      <div className={`${styles.shaFormInfoCardParent}`} style={{
-        height: Boolean(displayEditMode) ? '40px' : '0px',
-      }}>
+      <div
+        className={`${styles.shaFormInfoCardParent}`}
+        style={{
+          height: Boolean(displayEditMode) ? '40px' : '0px',
+        }}
+      >
         <div
           className={`${styles.shaFormInfoCard}`}
           style={{
@@ -100,7 +102,8 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
             <p
               onClick={() => onModalOpen()}
               title={getFormFullName(module, name)}
-              className={styles.shaFormInfoCardTitle}>
+              className={styles.shaFormInfoCardTitle}
+            >
               {getFormFullName(module, name)}
             </p>
 

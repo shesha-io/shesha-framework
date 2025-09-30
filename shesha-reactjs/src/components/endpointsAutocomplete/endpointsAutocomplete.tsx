@@ -48,7 +48,7 @@ export interface VerbSelectorProps {
 }
 export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange, size }) => {
   const options: DefaultOptionType[] = useMemo(() => {
-    return (verbs ?? []).map<DefaultOptionType>(verb => ({
+    return (verbs ?? []).map<DefaultOptionType>((verb) => ({
       value: verb.value,
       label: verb.label,
     }));
@@ -81,7 +81,6 @@ const getVerbFromValue = (value?: EndpointsAutocompleteValue) => {
 };
 
 export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnly = false, mode = 'url', ...props }) => {
-
   const endpointsFetcher = useApiEndpoints({ lazy: true });
 
   const doFetchItems = (term: string, verb: string) => {
@@ -101,7 +100,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     debouncedFetchItems(url, currentVerb);
   }, [currentVerb]);
 
-  const loadedEndpoints = isAjaxSuccessResponse(endpointsFetcher.data) 
+  const loadedEndpoints = isAjaxSuccessResponse(endpointsFetcher.data)
     ? endpointsFetcher.data.result
     : undefined;
   const options = useMemo(() => {
@@ -147,7 +146,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       onChange={onChangeUrl}
       onSearch={handleSearch}
       notFoundContent={null}
-      size={props.size}
+      // size={props.size}
       styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       popupMatchSelectWidth={false}
     >

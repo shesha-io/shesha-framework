@@ -3,7 +3,7 @@ import { ConfigItemTreeNode, DocumentDefinition, IDocumentInstance, TreeNode } f
 import { CsSubscriptionType, ProcessingState } from "./configurationStudio";
 import { useConfigurationStudio, useConfigurationStudioIfAvailable } from "./contexts";
 import { TreeProps } from "antd";
-import { isDefined } from "../types";
+import { isDefined } from "../../utils/nullables";
 
 type ExpandedKeys = TreeProps['expandedKeys'];
 type SeletcedKeys = TreeProps['selectedKeys'];
@@ -70,7 +70,9 @@ export const useCsTreeDnd = (): UseCsTreeDndResponse => {
     }
     : {
       isDragging: false,
-      setIsDragging: () => {},
+      setIsDragging: () => {
+        //
+      },
     };
 };
 

@@ -22,7 +22,7 @@ const getTreeData = (prop: IPropertyMetadata, onAddItem: (prop: IPropertyMetadat
     selectable: false,
     meta: prop,
   };
-  node.children = isPropertiesArray(prop.properties) ? prop.properties.map<DataNodeWithMeta>(childProp => getTreeData(childProp, onAddItem)) : [];
+  node.children = isPropertiesArray(prop.properties) ? prop.properties.map<DataNodeWithMeta>((childProp) => getTreeData(childProp, onAddItem)) : [];
 
   onAddItem(prop);
 
@@ -44,8 +44,8 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
   const { startDraggingNewItem, endDraggingNewItem } = useFormDesignerActions();
   const treeData = useMemo<NodesWithExpanded>(() => {
     const expanded: string[] = [];
-    const nodes = items.map(item =>
-      getTreeData(item, currentItem => {
+    const nodes = items.map((item) =>
+      getTreeData(item, (currentItem) => {
         expanded.push(currentItem.path);
       })
     );
@@ -92,7 +92,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
       startDraggingNewItem();
     };
 
-    const onDragEnd = _evt => {
+    const onDragEnd = (_evt) => {
       endDraggingNewItem();
     };
 
@@ -100,7 +100,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
       <ReactSortable
         list={[sortableItem]}
         setList={() => {
-          /*nop*/
+          /* nop*/
         }}
         group={{
           name: 'shared',
@@ -113,7 +113,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
         onStart={onDragStart}
         onEnd={onDragEnd}
       >
-        <div className={styles.shaToolboxComponent} >
+        <div className={styles.shaToolboxComponent}>
           {icon}
           <div className={styles.shaComponentTitle}>{getTitle(node.meta)}</div>
         </div>
@@ -121,7 +121,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
     );
   };
 
-  const onExpand = expandedKeys => {
+  const onExpand = (expandedKeys) => {
     setManuallyExpanded(expandedKeys);
   };
 

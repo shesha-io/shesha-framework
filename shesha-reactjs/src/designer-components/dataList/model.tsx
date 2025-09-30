@@ -9,7 +9,7 @@ export interface IDataListComponentProps extends IDataListBaseProps, IDataListIn
 export interface IDataListWithDataSourceProps extends IDataListComponentProps {
   dataSourceInstance: DataTableFullInstance;
 }
-  
+
 export interface IDataListInlineEditableProps {
   canDeleteInline?: YesNoInherit;
   customDeleteUrl?: string;

@@ -22,8 +22,8 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
   }
 
   protected async addComponentsToMarkup(
-    markup: any, 
-    entity: IEntityMetadata, 
+    markup: any,
+    entity: IEntityMetadata,
     nonFrameworkProperties: PropertyMetadataDto[],
     _metadataHelper: FormMetadataHelper
   ): Promise<void> {
@@ -32,7 +32,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
       this.addHeader(entity, markup);
 
       this.addColumns(nonFrameworkProperties, markup);
-      
+
       // Using await with a Promise.resolve() to satisfy the require-await rule
       await Promise.resolve();
     } catch (error) {
@@ -69,7 +69,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
         name: title,
         sortOrder: 1,
         defaultSelected: true,
-      }
+      },
     ];
 
     // Add filters from IEntityMetadata specifications
@@ -80,13 +80,13 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
           name: spec.friendlyName,
           sortOrder: index + 2,
           expression: {
-            "and": [
+            and: [
               {
-                "is_satisfied": {
-                  "var": spec.name
-                }
-              }
-            ]
+                is_satisfied: {
+                  var: spec.name,
+                },
+              },
+            ],
           },
         });
       });
@@ -95,7 +95,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     builder.addTableViewSelector({
       id: nanoid(),
       hidden: false,
-      filters
+      filters,
     });
 
     if (titleContainer[0].components && Array.isArray(titleContainer[0].components)) {
@@ -123,24 +123,26 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
       if (a.required !== b.required) {
         return a.required ? -1 : 1;
       }
-      
+
       // Sort by dataType priority only
       const priorityA = getDataTypePriority(a.dataType, a.dataFormat);
       const priorityB = getDataTypePriority(b.dataType, b.dataFormat);
-      
+
       return priorityA - priorityB;
     });
 
     // Implementation for adding columns to the markup
     const builder = new DesignerToolbarSettings({});
 
+    const dataTableName = `datatable ${nanoid()}`;
     builder.addDatatable({
       id: nanoid(),
-      propertyName: `datatable ${nanoid()}`,
+      propertyName: dataTableName,
+      componentName: dataTableName,
       items: sortedProperties.map((prop, idx) => {
         // Get column width based on data type
         const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
-        
+
         return {
           id: nanoid(),
           columnType: 'data',
@@ -151,9 +153,10 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
           sortOrder: idx,
           itemType: 'item',
           minWidth: width.min,
-          maxWidth: width.max
+          maxWidth: width.max,
+          allowSorting: true,
         };
-      })
+      }),
     });
 
     if (tableContainer[0].components && Array.isArray(tableContainer[0].components)) {

@@ -9,7 +9,7 @@ import { useStyles } from './styles/styles';
  * @param {any} data - The data to be checked
  * @return {boolean} Indicates whether the data is an instance of IPropertySetting
  */
-export const isPropertySettings = <Value = any,>(data: any): data is IPropertySetting<Value> => {
+export const isPropertySettings = <Value = any>(data: any): data is IPropertySetting<Value> => {
   if (!data || typeof data !== 'object') return false;
 
   const typed = data as IPropertySetting;
@@ -29,7 +29,7 @@ export const getPropertySettingsFromData = (data: any, propName: string): IPrope
   else return { _mode: 'value', _code: undefined, _value: val };
 };
 
-export const updateSettingsFromValues = <T,>(model: T, values: T): T => {
+export const updateSettingsFromValues = <T = unknown>(model: T, values: T): T => {
   const copy = { ...model };
   Object.keys(values).forEach((k) => {
     if (isPropertySettings(copy[k]) && !isPropertySettings(values[k])) copy[k]._value = values[k];
@@ -43,7 +43,7 @@ export const getValueFromPropertySettings = (value: any): any => {
   else return value;
 };
 
-export const getValuesFromSettings = <T,>(model: T): T => {
+export const getValuesFromSettings = <T = unknown>(model: T): T => {
   const copy = { ...model };
   Object.keys(copy).forEach((k) => {
     copy[k] = getValueFromPropertySettings(copy[k]);
@@ -129,38 +129,37 @@ export const updateSettingsComponents = (
 };
 
 export const updateJsSettingsForComponents = (
-    toolboxComponents: IToolboxComponents,
-    components: IConfigurableFormComponent[]) => {
-
-    const processComponent = (component: IConfigurableFormComponent) => {
-        const componentRegistration = toolboxComponents[component.type];
-        const newComponent: IConfigurableFormComponent = { 
-          ...component,
-          jsSetting: componentRegistration?.canBeJsSetting && component.jsSetting !== false || component.jsSetting === true
-        };
-
-        // Check all child containers
-        // custom containers
-        const customContainerNames = componentRegistration?.customContainerNames || [];
-        customContainerNames.forEach(subContainer => {
-            if (Array.isArray(component[subContainer]?.components) && component[subContainer]?.components.length > 0)
-                newComponent[subContainer].components = component[subContainer]?.components.map(c => {
-                    return processComponent(c);
-                });
-        });
-
-        // default container
-        if (Array.isArray(component['components']) && component['components'].length > 0)
-            newComponent['components'] = component['components'].map(c => {
-                return processComponent(c);
-            });
-
-        return newComponent;
+  toolboxComponents: IToolboxComponents,
+  components: IConfigurableFormComponent[]) => {
+  const processComponent = (component: IConfigurableFormComponent) => {
+    const componentRegistration = toolboxComponents[component.type];
+    const newComponent: IConfigurableFormComponent = {
+      ...component,
+      jsSetting: (componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting === true,
     };
 
-    return components.map(c => {
-        return processComponent(c);
+    // Check all child containers
+    // custom containers
+    const customContainerNames = componentRegistration?.customContainerNames || [];
+    customContainerNames.forEach((subContainer) => {
+      if (Array.isArray(component[subContainer]?.components) && component[subContainer]?.components.length > 0)
+        newComponent[subContainer].components = component[subContainer]?.components.map((c) => {
+          return processComponent(c);
+        });
     });
+
+    // default container
+    if (Array.isArray(component['components']) && component['components'].length > 0)
+      newComponent['components'] = component['components'].map((c) => {
+        return processComponent(c);
+      });
+
+    return newComponent;
+  };
+
+  return components.map((c) => {
+    return processComponent(c);
+  });
 };
 
 export const updateSettingsComponentsDict = (

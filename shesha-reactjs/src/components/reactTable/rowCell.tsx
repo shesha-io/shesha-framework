@@ -55,43 +55,43 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
     cellStyle = { ...cellStyle, background: anchoredCellStyle?.backgroundColor };
   }
 
- const findOverflowElement = (root: HTMLElement | null): HTMLElement | null => {
-  if (!root) return null;
-  if (
-    root.childNodes.length === 1 &&
-    root.childNodes[0].nodeType === Node.TEXT_NODE
-  ) {
-    return root;
-  }
+  const findOverflowElement = (root: HTMLElement | null): HTMLElement | null => {
+    if (!root) return null;
+    if (
+      root.childNodes.length === 1 &&
+      root.childNodes[0].nodeType === Node.TEXT_NODE
+    ) {
+      return root;
+    }
 
-  const richText = root.querySelector<HTMLElement>('.acss-o0dn82');
-  if (richText) return richText;
+    const richText = root.querySelector<HTMLElement>('.acss-o0dn82');
+    if (richText) return richText;
 
-  let node: HTMLElement = root;
-  while (
-    node.children &&
-    node.children.length === 1 &&
-    node.children[0] instanceof HTMLElement
-  ) {
-    node = node.children[0] as HTMLElement;
-  }
-  return node || root;
-};
+    let node: HTMLElement = root;
+    while (
+      node.children &&
+      node.children.length === 1 &&
+      node.children[0] instanceof HTMLElement
+    ) {
+      node = node.children[0] as HTMLElement;
+    }
+    return node || root;
+  };
 
 
- const checkOverflow = useCallback((): boolean => {
+  const checkOverflow = useCallback((): boolean => {
     if (!cellRef.current) return false;
     const overflowEl = findOverflowElement(cellRef.current);
     if (!overflowEl) return false;
     return overflowEl.scrollWidth > overflowEl.clientWidth;
   }, []);
 
-  //antd's css-in-js classes force a css flex property, which prevents ellipsis from working.
-  //this overrides the flex and puts it back when we no longer need inline-block
-   useEffect(() => {
+  // antd's css-in-js classes force a css flex property, which prevents ellipsis from working.
+  // this overrides the flex and puts it back when we no longer need inline-block
+  useEffect(() => {
     const overflowEl = findOverflowElement(cellRef.current);
     if (!cellRef.current) return;
-      if(!showExpandedView){
+    if (!showExpandedView) {
       overflowEl.classList.remove("ellipsis");
       overflowEl.style.textOverflow = "initial";
       overflowEl.style.setProperty('display', 'flex', 'important');
@@ -125,17 +125,15 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
       })}
     >
       {preContent}
-      {
-          <div
-            ref={cellRef}
-            className={showExpandedView && (cell.column as unknown as { columnType: string }).columnType === 'data' && (typeof cell.value === 'string' || typeof cell.value === 'object')  ? styles.shaCellParent :  styles.shaCellParentFW}
-            onMouseOver={() => {
-              void (showExpandedView ? getCellRef(cellRef, checkOverflow()) : getCellRef(null, null));
-            }}
-          >
+      <div
+        ref={cellRef}
+        className={showExpandedView && (cell.column as unknown as { columnType: string }).columnType === 'data' && (typeof cell.value === 'string' || typeof cell.value === 'object') ? styles.shaCellParent : styles.shaCellParentFW}
+        onMouseOver={() => {
+          void (showExpandedView ? getCellRef(cellRef, checkOverflow()) : getCellRef(null, null));
+        }}
+      >
             {cell.render('Cell')}
-          </div>
-      }
+      </div>
 
     </div>
   );

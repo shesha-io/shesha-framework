@@ -17,7 +17,7 @@ export interface ICodeEditorMayHaveTemplateProps extends IMonacoEditorProps, Par
  * @return {JSX.Element} the rendered ConstrainedCodeEditor or Editor component
  */
 export const CodeEditorMayHaveTemplate: FC<ICodeEditorMayHaveTemplateProps> = ({ template, ...restProps }) => {
-    return template
-        ? <ConstrainedCodeEditor {...restProps} template={template} loading={<CodeEditorLoadingProgressor />}/>
-        : <Editor {...restProps} loading={<CodeEditorLoadingProgressor />}/>;
+  return template
+    ? <ConstrainedCodeEditor {...restProps} template={template} loading={<CodeEditorLoadingProgressor />} />
+    : <Editor {...restProps} loading={<CodeEditorLoadingProgressor />} />;
 };

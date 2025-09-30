@@ -1,4 +1,4 @@
-import { ConfigurableForm, DataTypes, pickStyleFromModel, useDataTableStore, useFormState, useMetadataDispatcher } from '@/index';
+import { ConfigurableForm, DataTypes, pickStyleFromModel, StyleBoxValue, useDataTableStore, useFormState, useMetadataDispatcher } from '@/index';
 import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
 import { App, Flex, Form, Modal } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -30,7 +30,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { storeSettings } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
 
-  const styling = jsonSafeParse(props.columnStyles.stylingBox || '{}');
+  const styling = jsonSafeParse<StyleBoxValue>(props.columnStyles.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   useEffect(() => {
@@ -156,14 +156,14 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     }));
   }, [columns, tasks, groupingProperty, settings]);
 
-  const overflowStyle = getOverflowStyle(true,false);
-  
+  const overflowStyle = getOverflowStyle(true, false);
+
   return (
     <>
       {!columns || columns.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
-        <Flex style={{...stylingBoxAsCSS, ...overflowStyle , overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
+        <Flex style={{ ...stylingBoxAsCSS, ...overflowStyle, overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
           {memoizedFilteredTasks?.map(({ column, tasks: columnTasks }) => (
             <KanbanColumn
               props={props}
@@ -188,8 +188,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
         title={selectedItem ? 'Edit Item' : 'New Item'}
         open={isModalVisible}
         onOk={() =>
-          selectedItem ? editForm.validateFields().then(handleEdit) : form.validateFields().then(handleCreate)
-        }
+          selectedItem ? editForm.validateFields().then(handleEdit) : form.validateFields().then(handleCreate)}
         onCancel={closeModal}
         width={1000}
       >
@@ -202,7 +201,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
             mode="edit"
           />
         ) : (
-          <ConfigurableForm key={'new-item'} form={form} formId={createFormId} mode="edit" />
+          <ConfigurableForm key="new-item" form={form} formId={createFormId} mode="edit" />
         )}
       </Modal>
     </>

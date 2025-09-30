@@ -50,7 +50,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     if ((typeof value === 'undefined' || value === null) && (type === 'dropdown' || type === 'dropdownMultiple')) {
       return '';
 
-      //eliminating null values
+      // eliminating null values
     } else if ((typeof value === 'undefined' || value === null) && type === 'string') {
       return '';
     }
@@ -64,34 +64,40 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         if (!Array.isArray(value)) {
           if (quickviewEnabled && quickviewFormPath) {
             return quickviewFormPath && quickviewGetEntityUrl
-              ? <QuickView
-                entityId={entityId}
-                formIdentifier={quickviewFormPath}
-                getEntityUrl={quickviewGetEntityUrl}
-                displayProperty={quickviewDisplayPropertyName}
-                width={quickviewWidth}
-              />
-              : <GenericQuickView
-                entityId={entityId}
-                className={className}
-                displayName={displayName}
-                displayProperty={quickviewDisplayPropertyName}
-                width={quickviewWidth}
-              />;
+              ? (
+<QuickView
+  entityId={entityId}
+  formIdentifier={quickviewFormPath}
+  getEntityUrl={quickviewGetEntityUrl}
+  displayProperty={quickviewDisplayPropertyName}
+  width={quickviewWidth}
+/>
+              )
+              : (
+<GenericQuickView
+  entityId={entityId}
+  className={className}
+  displayName={displayName}
+  displayProperty={quickviewDisplayPropertyName}
+  width={quickviewWidth}
+/>
+              );
           } else {
             return dropdownDisplayMode === 'tags'
-              ? <ReflistTag
-                value={value}
-                color={value?.color}
-                icon={value?.icon}
-                showIcon={showIcon}
-                tagStyle={tagStyle}
-                description={value?.description}
-                solidColor={solidColor}
-                showItemName={showItemName}
-                label={displayName}
-              /> :
-              <InputField style={style} value={displayName ?? (typeof value === 'object' ? null : value)} />;
+              ? (
+<ReflistTag
+  value={value}
+  color={value?.color}
+  icon={value?.icon}
+  showIcon={showIcon}
+  tagStyle={tagStyle}
+  description={value?.description}
+  solidColor={solidColor}
+  showItemName={showItemName}
+  label={displayName}
+/>
+              )
+              : <InputField style={style} value={displayName ?? (typeof value === 'object' ? null : value)} />;
           }
         }
         return null;
@@ -102,22 +108,26 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
 
           return dropdownDisplayMode === 'raw'
             ? <InputField style={style} value={values?.join(', ')} />
-            : <div style={{ padding: '0px 4px', ...style, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, justifyContent: style?.textAlign }}>
+            : (
+<div style={{ padding: '0px 4px', ...style, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, justifyContent: style?.textAlign }}>
               {value?.map(({ label, color, icon, value, description }) => {
-                return <ReflistTag
-                  key={value}
-                  value={value}
-                  color={color}
-                  icon={icon}
-                  description={description}
-                  showIcon={showIcon}
-                  tagStyle={tagStyle}
-                  solidColor={solidColor}
-                  showItemName={showItemName}
-                  label={label}
-                />;
+                return (
+<ReflistTag
+  key={value}
+  value={value}
+  color={color}
+  icon={icon}
+  description={description}
+  showIcon={showIcon}
+  tagStyle={tagStyle}
+  solidColor={solidColor}
+  showItemName={showItemName}
+  label={label}
+/>
+                );
               })}
-            </div>;
+</div>
+            );
         }
 
         throw new Error(
@@ -143,8 +153,12 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
       default:
         break;
     }
-    return <InputField style={style} value={Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value
-    } />;
+    return (
+<InputField
+  style={style}
+  value={Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
+/>
+    );
   }, [value,
     type,
     dateFormat,
@@ -157,7 +171,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     quickviewFormPath,
     quickviewDisplayPropertyName,
     quickviewGetEntityUrl,
-    quickviewWidth
+    quickviewWidth,
   ]);
 
   return (

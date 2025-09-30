@@ -103,10 +103,9 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const entityType = props.entityType ?? props.value?._className;
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
 
-  const {styles, cx} = useStyles();
+  const { styles, cx } = useStyles();
 
   useEffect(() => {
-
     const fetchFormId = async () => {
       if (
         props.formSelectionMode === 'dynamic' &&
@@ -130,7 +129,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       if (entityType) {
         try {
           const res = await getMetadata({ modelType: entityType, dataType: null });
-            setProperties(isPropertiesArray(res?.properties) ? res.properties : []);
+          setProperties(isPropertiesArray(res?.properties) ? res.properties : []);
         } catch (error) {
           console.error('Error fetching metadata:', error);
         }
@@ -192,7 +191,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         buttons: props.buttons,
         footerButtons: props?.footerButtons,
         additionalProperties:
-          Boolean(props.additionalProperties) && props.additionalProperties?.length > 0 && props.additionalProperties.some(p => p.key === 'id')
+          Boolean(props.additionalProperties) && props.additionalProperties?.length > 0 && props.additionalProperties.some((p) => p.key === 'id')
             ? props.additionalProperties
             : [{ key: 'id', value: '{{entityReference.id}}' }],
         modalWidth: addPx(props.modalWidth),
@@ -218,7 +217,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       argumentsEvaluationContext: evaluationContext,
     });
   };
- 
+
   const displayTextByType = useMemo(() => {
     const displayIfNotIcon = props.displayType === 'textTitle' ? props.textTitle : displayText;
 
@@ -286,7 +285,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   if (props.formSelectionMode === 'name' && !props.formIdentifier)
     return (
       <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
-        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={'Form identifier is not configured'}>Form identifier is not configured</span>
+        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title="Form identifier is not configured">Form identifier is not configured</span>
       </Button>
     );
 

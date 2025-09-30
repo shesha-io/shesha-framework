@@ -44,13 +44,13 @@ export const getSettings = (data: any) => {
                   },
                 })
                 .addSettingsInput({
-                    inputType: 'switch',
-                    id: 'hidden-s4gmBg31azZC0UjZjpfTm',
-                    propertyName: 'hidden',
-                    label: 'Hide',
-                    jsSetting: true,
-                    layout: 'horizontal',
-                  })
+                  inputType: 'switch',
+                  id: 'hidden-s4gmBg31azZC0UjZjpfTm',
+                  propertyName: 'hidden',
+                  label: 'Hide',
+                  jsSetting: true,
+                  layout: 'horizontal',
+                })
                 .toJson(),
             ],
           },

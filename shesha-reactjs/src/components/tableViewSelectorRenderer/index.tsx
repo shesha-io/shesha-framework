@@ -67,7 +67,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
           </div>
 
           <ul>
-            {unevaluatedExpressions?.map(item => (
+            {unevaluatedExpressions?.map((item) => (
               <li key={nanoid()}>{item}</li>
             ))}
           </ul>
@@ -88,7 +88,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
   );
 
   const menuItems = useMemo<MenuItem[]>(() => {
-    return filters?.map(filter => {
+    return filters?.map((filter) => {
       return {
         key: filter?.id,
         label: (
@@ -98,7 +98,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
               <TooltipIcon tooltip={filter?.tooltip}></TooltipIcon>
             </Show>
           </Space>
-        )
+        ),
       };
     });
   }, [filters]);

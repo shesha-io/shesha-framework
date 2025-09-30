@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, /* useRef,*/ useState } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useRef, /* useRef,*/ useState } from 'react';
 import { IReferenceList, IReferenceListItem } from '@/interfaces/referenceList';
 import { PromisedValue } from '@/utils/promises';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
@@ -9,7 +9,7 @@ import {
 } from './contexts';
 import { ILoadingState } from './models';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
-import { isDefined } from '@/configuration-studio/types';
+import { isDefined } from '@/utils/nullables';
 
 const ReferenceListDispatcherProvider: FC<PropsWithChildren> = ({
   children,
@@ -25,7 +25,10 @@ const ReferenceListDispatcherProvider: FC<PropsWithChildren> = ({
 
   const getReferenceListItem = (moduleName: string, name: string, itemValue?: number): Promise<IReferenceListItem> => {
     return getReferenceList({ refListId: { module: moduleName, name: name } }).promise.then((list) => {
-      return list.items.find((i) => i.itemValue === itemValue);
+      const item = list.items.find((i) => i.itemValue === itemValue);
+      if (!isDefined(item))
+        throw new Error(`Item with value ${itemValue} not found in reference list '${moduleName}.${name}'`);
+      return item;
     });
   };
 
@@ -58,9 +61,23 @@ const getRefListItemByValue = (list: IReferenceList, itemValue: number | null | 
     : list.items.find((i) => i.itemValue === itemValue);
 };
 
+const makeRefListIdNotSpecifiedPromise = (): PromisedValue<IReferenceList> => {
+  return {
+    isPending: true,
+    isResolved: false,
+    isRejected: false,
+    promise: Promise.reject<IReferenceList>("Reference List identifier must be specified"),
+    error: null,
+  };
+};
+
 const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IReferenceList> => {
   const { getReferenceList } = useReferenceListDispatcher();
-  const refListPromise = getReferenceList({ refListId: refListId });
+  const failedPromise = useRef<PromisedValue<IReferenceList>>();
+
+  const refListPromise = isDefined(refListId)
+    ? getReferenceList({ refListId: refListId })
+    : failedPromise.current ?? (failedPromise.current = makeRefListIdNotSpecifiedPromise());
 
   const [state, setState] = useState<ILoadingState<IReferenceList>>({
     data: refListPromise.value,

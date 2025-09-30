@@ -4,18 +4,18 @@ import { upgradeActionConfig } from '@/components/formDesigner/components/_commo
 import { IConfigurableActionColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
 
 export const migrateV1toV2 = (props: ITableComponentProps, context: SettingsMigrationContext): ITableComponentProps => {
-    const { items } = props;
+  const { items } = props;
 
-    const newItems = items?.map(item => {
-        if (item.itemType !== "item")
-            return item;
+  const newItems = items?.map((item) => {
+    if (item.itemType !== "item")
+      return item;
 
-        const column = item as IConfigurableActionColumnsProps;
-        if (column.columnType !== 'action')
-            return  item;
-            
-        return { ...column, actionConfiguration: upgradeActionConfig(column.actionConfiguration, context) };
-    });
+    const column = item as IConfigurableActionColumnsProps;
+    if (column.columnType !== 'action')
+      return item;
 
-    return { ...props, items: newItems ?? [] };
+    return { ...column, actionConfiguration: upgradeActionConfig(column.actionConfiguration, context) };
+  });
+
+  return { ...props, items: newItems ?? [] };
 };

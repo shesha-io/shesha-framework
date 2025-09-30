@@ -8,8 +8,8 @@ export interface IDebugButtonProps {
 }
 
 export const DebugButton: FC<IDebugButtonProps> = () => {
-  const isDebug = useFormDesignerStateSelector(x => x.isDebug);
-  const { setDebugMode } = useFormDesignerActions();  
+  const isDebug = useFormDesignerStateSelector((x) => x.isDebug);
+  const { setDebugMode } = useFormDesignerActions();
 
   return (
     <Button

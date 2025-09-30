@@ -40,7 +40,6 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
     eventHandlers: getAllEventHandlers(model, allData),
   }),
   Factory: ({ model, calculatedModel }) => {
-
     const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
       ...model.allStyles.fontStyles,
       ...model.allStyles.dimensionsStyles,
@@ -54,13 +53,15 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
             customEvents.onChange({ value, timeString });
             if (typeof onChange === 'function') onChange(value, timeString);
           };
-          return <TimePickerWrapper
-            {...model}
-            {...customEvents}
-            style={finalStyle}
-            value={value}
-            onChange={onChangeInternal}
-          />;
+          return (
+<TimePickerWrapper
+  {...model}
+  {...customEvents}
+  style={finalStyle}
+  value={value}
+  onChange={onChangeInternal}
+/>
+          );
         }}
       </ConfigurableFormItem>
     );
@@ -83,14 +84,13 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
       const styles: IInputStyles = {
         size: prev.size,
         hideBorder: prev.hideBorder,
-        style: prev.style
+        style: prev.style,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<IDateFieldProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, metadata): ITimePickerComponentProps => {
-
     return {
       ...model,
       format: metadata.dataFormat ? metadata.dataFormat : DATE_TIME_FORMAT,

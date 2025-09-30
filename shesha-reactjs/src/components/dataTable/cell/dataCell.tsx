@@ -71,21 +71,21 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   const component = toolboxComponents[customComponent.type];
   const injectables = getInjectables(props);
 
-  const model = useMemo(() =>  upgradeComponent(
+  const model = useMemo(() => upgradeComponent(
     customComponent.settings,
     component,
     DEFAULT_FORM_SETTINGS,
-    { allComponents: { 'component': customComponent.settings }, componentRelations: {} }
+    { allComponents: { component: customComponent.settings }, componentRelations: {} }
   ), [customComponent.settings]);
 
   const actualModel = useActualContextData(
     model, props.readOnly ? true : undefined,
-    { 
+    {
       tableRow: injectables.injectedTableRow,
     }
   );
 
-  const componentModel: IConfigurableFormComponent  = useDeepCompareMemo(() => {
+  const componentModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
     // migrate component
     let editorModel: IColumnEditorProps = {
       ...actualModel,
@@ -117,7 +117,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   return (
     <CustomErrorBoundary>
       {/* set namePrefix = '' to reset subForm prefix */}
-      <FormItemProvider namePrefix=''> 
+      <FormItemProvider namePrefix="">
         <div className={cx(styles.shaDataCell, styles.shaSpanCenterVertically)}>
           <FormComponentMemo componentModel={componentModel} />
         </div>

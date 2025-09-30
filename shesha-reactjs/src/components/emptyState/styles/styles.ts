@@ -3,7 +3,7 @@ import { createStyles } from 'antd-style';
 export const useStyles = createStyles(({ css, cx }) => {
   const shaGlobalEmptyState = cx(
     'sha-global-empty-state',
-    css `
+    css`
     display: flex;
     justify-content: center;
     flex-direction: column;

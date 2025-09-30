@@ -42,7 +42,6 @@ export const defaultExposedVariables: ICodeExposedVariable[] = [
 ];
 
 export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>) => {
-
   const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression });
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
@@ -111,16 +110,18 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
       <Button
         hidden={props.readOnly}
         className={`${styles.jsSwitch} inlineJS`}
-        type='text'
+        type="text"
         danger={mode === 'value' && !!code}
-        size='small'
+        size="small"
         icon={mode === 'code' && !!code ? <CodeFilled /> : !!code ? <CodeFilled /> : <CodeOutlined />}
         onClick={onSwitchMode}
       />
       {mode === 'code' && editor}
-      {mode === 'value' && <div className={styles.jsContent} style={{ marginLeft: 0 }}>
+      {mode === 'value' && (
+<div className={styles.jsContent} style={{ marginLeft: 0 }}>
         {props.children(setting?._value, valueOnChange, propertyName)}
-      </div>}
+</div>
+      )}
     </div>
   );
 };

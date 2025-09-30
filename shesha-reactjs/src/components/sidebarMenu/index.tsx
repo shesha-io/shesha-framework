@@ -22,7 +22,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest, router } = useShaRouting();
   const executionContext = useAvailableConstantsData();
-  
+
   const { styles } = useStyles();
 
   const currentUrl = normalizeUrl(router?.fullPath);
@@ -35,7 +35,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     setSelectedKey(itemId);
     executeAction({
       actionConfiguration: actionConfiguration,
-      argumentsEvaluationContext: executionContext
+      argumentsEvaluationContext: executionContext,
     });
   };
 
@@ -66,7 +66,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
         },
       })
     );
-  }, [items, {...executionContext}]); // use spread to get the values of the ObservableProxy fields
+  }, [items, { ...executionContext }]); // use spread to get the values of the ObservableProxy fields
 
   if (menuItems.length === 0) return null;
 

@@ -1,6 +1,6 @@
 import React, {
   FC,
-  useState
+  useState,
 } from 'react';
 import {
   Alert,
@@ -8,7 +8,7 @@ import {
   Button,
   Modal,
   Tabs,
-  Typography
+  Typography,
 } from 'antd';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
 import { CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
@@ -65,7 +65,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
           setInternalValue(null);
           setShowDialog(false);
           if (props.onChange) props.onChange(null);
-        }
+        },
       });
     }
   };
@@ -89,7 +89,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         onOk() {
           setInternalValue(value);
           setShowDialog(false);
-        }
+        },
       });
     } else {
       setInternalValue(value);
@@ -131,17 +131,17 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
           <div className={styles.codeEditorContainer}>
             {renderCodeEditor()}
           </div>
-        )
+        ),
       },
       {
         key: "variable",
         label: "Variables",
-        children: (<CodeVariablesTables data={exposedVariables} />)
-      }
+        children: (<CodeVariablesTables data={exposedVariables} />),
+      },
     ]
     : undefined;
 
-  const buttonValue = value?.replace('return', '').replace(/;+$/, "");;
+  const buttonValue = value?.replace('return', '').replace(/;+$/, ""); ;
 
   return readOnly && !hasValue
     ? (<Typography.Text disabled>No Code</Typography.Text>)
@@ -153,7 +153,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
           onClick={openEditorDialog}
           style={hasValue ? { fontFamily: 'monospace', fontSize: '12px', width: '100%' } : { width: '100%' }}
         >
-          {<><CodeOutlined /> {hasValue ? buttonValue : '...'}</>}
+          <><CodeOutlined /> {hasValue ? buttonValue : '...'}</>
         </Button>
         {showDialog && (
           <Modal
@@ -169,9 +169,11 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
             className={styles.codeEditorModal}
             width={null}
             footer={[
-              hasValue && <Button key="clear" danger onClick={onClear} disabled={readOnly}>
+              hasValue && (
+<Button key="clear" danger onClick={onClear} disabled={readOnly}>
                 Clear
-              </Button>,
+</Button>
+              ),
               <Button key="cancel" onClick={onDialogCancel}>
                 {readOnly ? 'Close' : 'Cancel'}
               </Button>,

@@ -13,7 +13,7 @@ export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isSubmitted?: boolean;
   onCancel?: () => void;
   onOk?: () => void;
-  showCloseIcon?: boolean; 
+  showCloseIcon?: boolean;
 }
 export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
   const { id, title, isVisible, width, isSubmitted, onCancel, onOk, content, footer, onClose, showCloseIcon } = props;
@@ -28,7 +28,6 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
     } else {
       removeModal(id);
     }
-
   };
 
   return (
@@ -70,7 +69,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     buttons = [],
     footerButtons = 'default',
     wrapper,
-    showCloseIcon, 
+    showCloseIcon,
   } = props;
 
   const [form] = Form.useForm();
@@ -125,7 +124,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     parentFormValues: parentFormValues,
     isActionsOwner: true,
     formName: id,
-    //logEnabled: true,
+    // logEnabled: true,
   };
 
   return (
@@ -139,8 +138,8 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
       onOk={onOk}
       onCancel={handleCancel}
       footer={showDefaultSubmitButtons ? undefined : null}
-      showCloseIcon={showCloseIcon} 
-      content={
+      showCloseIcon={showCloseIcon}
+      content={(
         <ConfigurableForm {...formProps}>
           <ConditionalWrap
             condition={Boolean(wrapper)}
@@ -148,12 +147,12 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
           >
             <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
+                <ButtonGroup items={buttons || []} id="" size="middle" isInline noStyles form={form} />
               </div>
             </Show>
           </ConditionalWrap>
         </ConfigurableForm>
-      }
+      )}
     />
   );
 };

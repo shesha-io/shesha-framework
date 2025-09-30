@@ -14,7 +14,7 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
 
   return (
     <div className={styles.shaDesignerCanvasConfig}>
-      <Radio.Group className="radio-group" value={designerDevice} buttonStyle="solid" size={'middle'}>
+      <Radio.Group className="radio-group" value={designerDevice} buttonStyle="solid" size="middle">
         <Radio.Button className="radio-button" value="desktop" onClick={() => setDesignerDevice('desktop')} title="Desktop">
           <DesktopOutlined />
         </Radio.Button>

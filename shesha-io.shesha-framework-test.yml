@@ -2,7 +2,7 @@
 # Agent Queue 'Azure Pipelines' was used with unrecognized Agent Specification, vmImage property must be specified to determine image - https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
 variables:
 - name: NODE_OPTIONS
-  value: --max_old_space_size=8192
+  value: --max_old_space_size=24576
 - name: BuildParameters.solution1
   value: Boxfusion.SheshaFunctionalTests.sln
 - name: BuildParameters.solution2
@@ -262,6 +262,7 @@ stages:
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
           write-host "The current version is: $(versionNo)"
+          write-host "NODE_OPTIONS is: $env:NODE_OPTIONS"
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: NodeTool@0
       displayName: 'Use Node 21.x'

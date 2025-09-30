@@ -28,7 +28,7 @@ export interface INotesProps extends IConfigurableFormComponent {
   allowDelete?: boolean;
   onCreated?: string;
   category?: string;
-  //new props
+  // new props
   showCharCount?: boolean;
   minLength?: number;
   maxLength?: number;
@@ -147,7 +147,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     return customModel;
   },
   settingsFormMarkup: (data) => getSettings(data),
-  linkToModelMetadata: (model, metadata) => ({...model, ownerId: '{data.id}', ownerType: metadata.containerType, category: metadata.path}),  
+  linkToModelMetadata: (model, metadata) => ({ ...model, ownerId: '{data.id}', ownerType: metadata.containerType, category: metadata.path }),
   migrator: (m) =>
     m
       .add<INotesProps>(

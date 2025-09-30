@@ -14,13 +14,13 @@ import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) => {
-    const { readOnly } = props;
-    const { Option } = Select;
-    const { values } = useSettingsForm<IKeyInformationBarProps>();
+  const { readOnly } = props;
+  const { Option } = Select;
+  const { values } = useSettingsForm<IKeyInformationBarProps>();
 
-    const tooltip = strings.tooltip;
+  const tooltip = strings.tooltip;
 
-    return (
+  return (
         <>
             <SettingsFormItem name="componentName" label="Component Name" required>
                 <Input readOnly={readOnly} />
@@ -31,13 +31,13 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
             </SettingsFormItem>
 
             <SettingsFormItem name="orientation" label="Orientation">
-                <Select >
+                <Select>
                     <Option value="horizontal">Horizontal</Option>
                     <Option value="vertical">Vertical</Option>
                 </Select>
             </SettingsFormItem>
 
-            <SettingsFormItem name="backgroundColor" label="Background Color" jsSetting >
+            <SettingsFormItem name="backgroundColor" label="Background Color" jsSetting>
                 <ColorPicker readOnly={readOnly} allowClear />
             </SettingsFormItem>
 
@@ -47,7 +47,7 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
 
             <Show when={values.orientation === "horizontal"}>
                 <SettingsFormItem name="alignItems" label="Align Items">
-                    <Select >
+                    <Select>
                         <Option value="flex-start">Flex Start</Option>
                         <Option value="flex-end">Flex End</Option>
                         <Option value="center">Center</Option>
@@ -77,18 +77,18 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 <Input readOnly={readOnly} />
             </SettingsFormItem>
 
-            <SettingsFormItem name="dividerColor" label="Divider Color" jsSetting >
+            <SettingsFormItem name="dividerColor" label="Divider Color" jsSetting>
                 <ColorPicker readOnly={readOnly} allowClear />
             </SettingsFormItem>
             <SectionSeparator title="Style" />
 
             <SettingsFormItem name="style" label="Style">
                 <CodeEditor
-                    propertyName="style"
-                    readOnly={readOnly}
-                    mode="dialog"
-                    label="Style"
-                    description="A script that returns the style of the element as an object. This should conform to CSSProperties"
+                  propertyName="style"
+                  readOnly={readOnly}
+                  mode="dialog"
+                  label="Style"
+                  description="A script that returns the style of the element as an object. This should conform to CSSProperties"
                 />
             </SettingsFormItem>
 
@@ -103,18 +103,18 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
 
             <SettingsCollapsiblePanel header="Security">
                 <SettingsFormItem
-                    jsSetting
-                    label="Permissions"
-                    name="permissions"
-                    initialValue={props.model.permissions}
-                    tooltip="Enter a list of permissions that should be associated with this component"
+                  jsSetting
+                  label="Permissions"
+                  name="permissions"
+                  initialValue={props.model.permissions}
+                  tooltip="Enter a list of permissions that should be associated with this component"
                 >
                     <PermissionAutocomplete readOnly={readOnly} />
                 </SettingsFormItem>
             </SettingsCollapsiblePanel>
         </>
-    );
+  );
 };
 
 export const KeyInformationBarSettingsForm: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) =>
-    SettingsForm<any>({ ...props, children: <KeyInformationBarSettings {...props} /> });
+  SettingsForm<any>({ ...props, children: <KeyInformationBarSettings {...props} /> });
