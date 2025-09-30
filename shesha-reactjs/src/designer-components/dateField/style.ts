@@ -3,13 +3,13 @@ import { CSSProperties } from 'react';
 
 export const useStyles = createStyles(({ css, cx }, { fullStyles }: { fullStyles: CSSProperties }) => {
 
-    const dateField = cx(
-        "sha-dropdown",
-        css`
-          --ant-color-text: ${fullStyles.color} !important;
-          --ant-font-size: ${fullStyles.fontSize} !important;
-          --ant-font-weight: ${fullStyles.fontWeight} !important;
-          --ant-text-align: ${fullStyles.textAlign} !important;
+  const dateField = cx(
+    "sha-dropdown",
+    css`
+          --ant-color-text: ${fullStyles?.color || '#000'} !important;
+          --ant-font-size: ${fullStyles?.fontSize || '14px'} !important;
+          --ant-font-weight: ${fullStyles?.fontWeight || '400'} !important;
+          --ant-text-align: ${fullStyles?.textAlign || 'left'} !important;
 
       
           .ant-picker-input input {
@@ -21,10 +21,10 @@ export const useStyles = createStyles(({ css, cx }, { fullStyles }: { fullStyles
             font-weight: var(--ant-font-weight) !important;
           }
         `
-    );
+  );
 
 
-    return {
-        dateField
-    };
+  return {
+    dateField
+  };
 });
