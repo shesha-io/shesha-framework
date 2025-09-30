@@ -75,7 +75,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   showBorder,
   cardSpacing,
   style,
-  showEditIcons,
+  showEditIcons = true,
   gap,
   onRowDeleteSuccessAction,
   ...props
