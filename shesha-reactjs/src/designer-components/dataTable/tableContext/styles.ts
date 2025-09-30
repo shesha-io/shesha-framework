@@ -135,6 +135,23 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
     `);
 
+  const quickSearchHintPopover = cx("sha-quick-search-hint-popover", css`
+        background-color: #D9DCDC !important;
+    `);
+
+  const quickSearchPopoverArrowStyles = `
+    .ant-popover .ant-popover-arrow::before,
+    .ant-popover .ant-popover-arrow::after {
+      background-color: #D9DCDC !important;
+    }
+  `;
+
+  const quickSearchContainer = cx("sha-quick-search-container", css`
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    `);
+
   return {
     dataContextDesignerEmpty,
     dataContextRuntimeEmpty,
@@ -142,5 +159,8 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     dataContextRuntime,
     dataContextComponentsContainer,
     dataContextComponentsContainerEmpty,
+    quickSearchHintPopover,
+    quickSearchPopoverArrowStyles,
+    quickSearchContainer,
   };
 });
