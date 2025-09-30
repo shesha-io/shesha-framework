@@ -32,7 +32,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const { styles } = useStyles();
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
-  const { zoom, setCanvasZoom, designerDevice, designerWidth, autoZoom, configTreePanelSize } = useCanvas();
+  const { zoom, setCanvasZoom, designerWidth, autoZoom, configTreePanelSize } = useCanvas();
 
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
 
@@ -43,7 +43,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const handleZoomChange = useCallback((newZoom: number) => {
     if (!canZoom) return;
     setCanvasZoom(newZoom);
-  }, [setCanvasZoom]);
+  }, [setCanvasZoom, canZoom]);
 
   const canvasRef = usePinchZoom(
     handleZoomChange,
@@ -65,7 +65,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         setCanvasZoom(newZoom);
       }
     }
-  }, [canZoom, autoZoom, designerDevice, designerWidth, currentSizes, configTreePanelSize, zoom]);
+  }, [canZoom, autoZoom, designerWidth, currentSizes, configTreePanelSize, zoom]);
 
   useEffect(() => {
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);

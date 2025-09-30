@@ -5,9 +5,9 @@ import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 import { widthRelativeToCanvas } from "@/providers/canvas/utils";
 
-const getDimension = (main: string | number, left: any, right: any, canvasWidth?) => {
-  const width = widthRelativeToCanvas(main, canvasWidth);
-  return `calc(${addPx(width)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
+const getDimension = (main: string | number, left: any, right: any, canvasWidth?: string) => {
+  const value = canvasWidth !== null ? widthRelativeToCanvas(main, canvasWidth) : main;
+  return `calc(${addPx(value)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
 };
 
 export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyles?: CSSProperties, canvasWidth?): CSSProperties => {
@@ -24,7 +24,7 @@ export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyle
       : undefined,
     minWidth: dimensions?.minWidth
       ? hasNumber(dimensions.minWidth)
-        ? getDimension(dimensions.minWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
+        ? getDimension(dimensions.minWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight, canvasWidth)
         : dimensions.minWidth
       : undefined,
     minHeight: dimensions?.minHeight
@@ -34,7 +34,7 @@ export const getDimensionsStyle = (dimensions: IDimensionsValue, additionalStyle
       : undefined,
     maxWidth: dimensions?.maxWidth
       ? hasNumber(dimensions.maxWidth)
-        ? getDimension(dimensions.maxWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight)
+        ? getDimension(dimensions.maxWidth, additionalStyles?.marginLeft, additionalStyles?.marginRight, canvasWidth)
         : dimensions.maxWidth
       : undefined,
     maxHeight: dimensions?.maxHeight

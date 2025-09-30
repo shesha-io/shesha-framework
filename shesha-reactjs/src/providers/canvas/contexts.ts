@@ -30,7 +30,7 @@ export const CANVAS_CONTEXT_INITIAL_STATE: ICanvasStateContext = {
   autoZoom: true,
   designerDevice: 'desktop',
   designerWidth: '1024px',
-  configTreePanelSize: (20 / 100) * window.innerWidth,
+  configTreePanelSize: typeof window !== 'undefined' ? (20 / 100) * window.innerWidth : 200,
 };
 
 export const CanvasStateContext = createNamedContext<ICanvasStateContext>(CANVAS_CONTEXT_INITIAL_STATE, "CanvasConfigStateContext");

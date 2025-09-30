@@ -67,7 +67,7 @@ export const DEFAULT_OPTIONS = {
   minZoom: 25,
   maxZoom: 200,
   sizes: [25, 50, 25],
-  configTreePanelWidth: (val: number = 20) => (val / 100) * window.innerWidth,
+  configTreePanelWidth: (val: number = 20) => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
   gutter: 4,
   designerWidth: '1024px',
 };
@@ -83,7 +83,8 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   }
 
   const guttersAndScrollersSize = 28;
-  const viewportWidth = Math.max(0, window.innerWidth - configTreePanelSize - guttersAndScrollersSize);
+  const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1024;
+  const viewportWidth = Math.max(0, windowWidth - configTreePanelSize - guttersAndScrollersSize);
   const availableWidth = valueToPercent(availableWidthPercent) * viewportWidth;
 
   let canvasWidth: number;
@@ -91,7 +92,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     canvasWidth = parseFloat(designerWidth.replace('px', ''));
   } else if (designerWidth.includes('vw')) {
     const vwValue = parseFloat(designerWidth.replace('vw', ''));
-    canvasWidth = (vwValue / 100) * window.innerWidth;
+    canvasWidth = (vwValue / 100) * windowWidth;
   } else {
     canvasWidth = parseFloat(designerWidth) || 1024;
   }
