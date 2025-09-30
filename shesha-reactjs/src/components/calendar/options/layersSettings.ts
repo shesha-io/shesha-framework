@@ -1,6 +1,6 @@
 
 import { DesignerToolbarSettings } from '@/index';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
   const searchableTabsId = nanoid();
