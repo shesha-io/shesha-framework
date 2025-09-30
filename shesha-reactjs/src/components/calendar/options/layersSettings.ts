@@ -325,6 +325,7 @@ export const getSettings = () => {
                       label: 'On Select',
                       description: 'Action to be executed when the event is selected',
                       jsSetting: false,
+                      hideLabel: true,
                     },
                     {
                       type: 'configurableActionConfigurator',
@@ -333,6 +334,7 @@ export const getSettings = () => {
                       label: 'On Double Click',
                       description: 'Action to be executed when the event is double clicked',
                       jsSetting: false,
+                      hideLabel: true,
                     }
                   ]
                 })
