@@ -762,8 +762,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         }
       }
     } catch (error) {
-      // Reset to original order on API error
-      payload.applyOrder(oldData);
       throw error;
     }
   };
