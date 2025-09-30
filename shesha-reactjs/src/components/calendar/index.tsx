@@ -7,16 +7,17 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useDeepCompareEffect } from 'react-use';
 import { EventComponent } from './eventComponent';
 import { useMetaMapMarker } from './hooks';
-import { addPx, getLayerMarkerOptions, getMarkerPoints } from './utils';
+import { getLayerMarkerOptions, getMarkerPoints } from './utils';
 import { evaluateString, executeScript, useAvailableConstantsData, useConfigurableActionDispatcher, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication, useTheme } from '@/index';
-import { ICalendarLayersProps, ICalendarProps } from '@/providers/calendar/models';
+import { ICalendarLayersProps } from '@/providers/calendar/models';
+import { ICalendarProps } from '@/designer-components/calendar/interfaces';
 
 moment.locale('en-za');
 const localizer = momentLocalizer(moment);
 
 export const CalendarControl: FC<ICalendarProps> = (props) => {
   const { executeAction } = useConfigurableActionDispatcher();
-  const { items, displayPeriod, width, height, minDate, maxDate, onSlotClick, onViewChange, externalStartDate, externalEndDate } = props;
+  const { items, displayPeriod, minDate, maxDate, onSlotClick, onViewChange, externalStartDate, externalEndDate, styles } = props;
   const [points, setPoints] = useState<any>([]);
   const [defaultView, setDefaultView] = useState<View>(displayPeriod?.[0]);
   const allData = useAvailableConstantsData();
@@ -253,10 +254,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
             defaultDate={new Date()}
             view={displayPeriod?.includes(defaultView) ? defaultView : displayPeriod?.[0]}
             events={updatedPoints.concat(dummyEvent)}
-            style={{
-              height: height ? addPx(height.toString()) : '100vh',
-              width: width ? addPx(width.toString()) : '100%',
-            }}
+            style={styles}
             onSelectEvent={handleCustomSelect}
             onDoubleClickEvent={handleCustomDoubleClick}
             onSelectSlot={handleSlotClick}

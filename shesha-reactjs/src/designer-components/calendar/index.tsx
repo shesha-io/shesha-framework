@@ -1,12 +1,14 @@
 import { FolderOpenOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import CalendarControl from '../../components/calendar';
 import { CalendarActionsAccessor } from '../../components/calendar/configurable-actions/calendar-actions-processor';
 import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { LayerGroupConfiguratorProvider } from '@/providers/calendar';
-import { ICalendarProps } from '@/providers/calendar/models';
+import { migratePrevStyles } from '@/index';
+import { defaultStyles } from './utils';
+import { ICalendarProps } from './interfaces';
 
 const CalendarComponent: IToolboxComponent<ICalendarProps> = {
   type: 'calendar',
@@ -14,15 +16,21 @@ const CalendarComponent: IToolboxComponent<ICalendarProps> = {
   name: 'Calendar',
   icon: <FolderOpenOutlined />,
   Factory: ({ model }) => {
-    const { description } = model;
+    const { description, allStyles } = model;
 
     if (model.hidden) return null;
+
+    const additionalStyles: CSSProperties = ({
+      ...allStyles.dimensionsStyles,
+      ...allStyles.stylingBoxAsCSS,
+    });
 
     return (
       <LayerGroupConfiguratorProvider>
         <CalendarActionsAccessor>
           <CalendarControl
             {...model}
+            styles={additionalStyles}
             description={description}
           />
         </CalendarActionsAccessor>
@@ -31,6 +39,10 @@ const CalendarComponent: IToolboxComponent<ICalendarProps> = {
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  migrator: (m) =>
+    m.add<any>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+      .add<ICalendarProps>(1, (prev) => ({ ...prev, displayPeriod: ['month', 'week', 'work_week', 'day', 'agenda'] }))
+
 };
 
 export default CalendarComponent;

@@ -72,26 +72,28 @@ export const getSettings = (data: any) => {
                                     label: 'Calendar Selector Settings Modal',
                                     hideLabel: true,
                                 })
-                                .addSettingsInput(
-                                    {
-                                        inputType: 'date',
-                                        id: nanoid(),
-                                        parentId: dataTabId,
-                                        propertyName: 'minDate',
-                                        label: 'Min Date',
-                                        tooltip: 'Min Date',
-                                    }
-                                )
-                                .addSettingsInput(
-                                    {
-                                        inputType: 'date',
-                                        id: nanoid(),
-                                        parentId: dataTabId,
-                                        propertyName: 'maxDate',
-                                        label: 'Max Date',
-                                        tooltip: 'Max Date',
-                                    }
-                                )
+                                .addSettingsInputRow({
+                                    id: nanoid(),
+                                    parentId: dataTabId,
+                                    inputs: [
+                                        {
+                                            type: 'date',
+                                            id: nanoid(),
+                                            parentId: dataTabId,
+                                            propertyName: 'minDate',
+                                            label: 'Min Date',
+                                            tooltip: 'Min Date',
+                                        },
+                                        {
+                                            type: 'date',
+                                            id: nanoid(),
+                                            parentId: dataTabId,
+                                            propertyName: 'maxDate',
+                                            label: 'Max Date',
+                                            tooltip: 'Max Date',
+                                        }
+                                    ]
+                                })
                                 .addSettingsInputRow({
                                     id: nanoid(),
                                     parentId: dataTabId,
@@ -268,6 +270,27 @@ export const getSettings = (data: any) => {
                                                     }
                                                 ]
                                             })
+                                            .addCollapsiblePanel({
+                                                id: nanoid(),
+                                                propertyName: 'stylingBox',
+                                                label: 'Margin & Padding',
+                                                labelAlign: 'right',
+                                                ghost: true,
+                                                collapsible: 'header',
+                                                content: {
+                                                    id: nanoid(),
+                                                    components: [
+                                                        ...new DesignerToolbarSettings()
+                                                            .addStyleBox({
+                                                                id: nanoid(),
+                                                                label: 'Margin Padding',
+                                                                hideLabel: true,
+                                                                propertyName: 'stylingBox',
+                                                            })
+                                                            .toJson(),
+                                                    ],
+                                                },
+                                            })
                                             .toJson()
                                     ]
                                 })
@@ -280,18 +303,6 @@ export const getSettings = (data: any) => {
                         id: securityTabId,
                         components: [
                             ...new DesignerToolbarSettings()
-                                .addSettingsInput({
-                                    id: nanoid(),
-                                    inputType: 'codeEditor',
-                                    propertyName: 'customVisibility',
-                                    label: 'Custom Visibility',
-                                    size: 'small',
-                                    parentId: securityTabId,
-                                    jsSetting: true,
-
-                                    tooltip:
-                                        'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
-                                })
                                 .addSettingsInput({
                                     id: nanoid(),
                                     inputType: 'permissions',
