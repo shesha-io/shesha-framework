@@ -35,7 +35,7 @@ export const WebStorageContextProvider: FC<PropsWithChildren> = ({ children }) =
         return;
     }
   };
-  const getItem = (key: string): string | null | undefined => {
+  const getItem = (key: string): unknown => {
     const [storage, path] = splitDotNotation(key);
     if (!path)
       return undefined;
@@ -50,7 +50,7 @@ export const WebStorageContextProvider: FC<PropsWithChildren> = ({ children }) =
     }
   };
   const setFieldValue = (name: string, value: unknown): void => setItem(name, value);
-  const getFieldValue = (name: string): string | null | undefined => getItem(name);
+  const getFieldValue = (name: string): unknown => getItem(name);
 
   const data = { local: localStorage.current, session: sessionStorage.current };
 
