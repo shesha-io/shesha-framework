@@ -1,5 +1,3 @@
-import { Switch } from 'antd';
-import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { ValueRenderer } from '@/components/valueRenderer/index';
 import React, { FC, useMemo } from 'react';
 import { getMoment } from '@/utils/date';
@@ -140,12 +138,6 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
       case 'datetime': {
         return <InputField style={style} value={getMoment(value, dateFormat)?.format(dateFormat) || ''} />;
       }
-      case 'checkbox': {
-        return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled style={style} />;
-      }
-      case 'switch': {
-        return <Switch checked={checked} defaultChecked={defaultChecked} style={{ pointerEvents: 'none', ...style }} size={props.size} />;
-      }
       case 'textArea': {
         return <div style={{ ...style, whiteSpace: 'pre-wrap', lineHeight: '1.2' }}>{value}</div>;
       }
@@ -175,7 +167,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
   ]);
 
   return (
-    <span className={styles.readOnlyDisplayFormItem}>
+    <span className={styles.readOnlyDisplayFormItem} style={style}>
       {renderValue}
     </span>
   );
