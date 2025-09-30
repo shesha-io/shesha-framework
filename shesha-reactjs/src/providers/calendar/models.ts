@@ -1,7 +1,6 @@
 
-import { FormIdentifier, IConfigurableActionConfiguration, IConfigurableFormComponent } from '@/providers';
+import { FormIdentifier, IConfigurableActionConfiguration } from '@/providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { View } from 'react-big-calendar';
 
 export type LayerGroupItemProps = ILayerFormModel | ILayerGroup;
 
@@ -54,21 +53,6 @@ export interface ILayerGroup extends ILayerGroupItemBase {
   childItems?: LayerGroupItemProps[];
 }
 
-
-export interface ICalendarProps extends IConfigurableFormComponent {
-  items?: ICalendarLayersProps[];
-  startDate?: string;
-  externalStartDate?: string;
-  endDate?: string;
-  externalEndDate?: string;
-  minDate?: string;
-  maxDate?: string;
-  width?: number;
-  height?: number;
-  displayPeriod?: View[];
-  onSlotClick?: IConfigurableActionConfiguration;
-  onViewChange?: IConfigurableActionConfiguration;
-}
 
 export interface ICalendarLayersProps {
   id: string;
