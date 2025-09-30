@@ -25,6 +25,8 @@ export interface OnRowsReorderedArgs {
   getOld: () => object[];
   getNew: () => object[];
   applyOrder: (orderedItems: object[]) => void;
+  oldIndex?: number;
+  newIndex?: number;
 }
 
 export interface ITableRowDragProps {

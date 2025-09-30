@@ -55,6 +55,7 @@ import { adjustWidth, getCruadActionConditions } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { getFormApi } from '@/providers/form/formApi';
+import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -142,6 +143,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     strictSortBy,
     setColumnWidths,
     customReorderEndpoint,
+    onBeforeRowReorder,
+    onAfterRowReorder,
   } = store;
 
   const onSelectRowLocal = (index: number, row: any) => {
@@ -669,6 +672,54 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (supported !== true)
       throw new Error(typeof supported === 'string' ? supported : 'Reordering is not supported');
 
+    // Get current data state
+    const oldData = payload.getOld();
+    const newData = payload.getNew();
+    const oldIdx = payload.oldIndex ?? -1;
+    const newIdx = payload.newIndex ?? -1;
+
+    if (oldIdx < 0 || oldIdx >= oldData.length || newIdx < 0 || newIdx >= oldData.length) {
+      console.warn(
+        `Invalid reorder indices: oldIndex=${oldIdx}, newIndex=${newIdx}, data length=${oldData.length}. Resetting to original order.`
+      );
+      payload.applyOrder(oldData);
+      throw new Error(
+        `Reordering cancelled: indices out of bounds (oldIndex=${oldIdx}, newIndex=${newIdx}, valid range=0-${oldData.length - 1})`
+      );
+    }
+
+    const movedRow = oldData[oldIdx];
+
+    if (onBeforeRowReorder) {
+      try {
+        const beforeArgs: IBeforeRowReorderArguments = {
+          oldIndex: oldIdx,
+          newIndex: newIdx,
+          rowData: movedRow,
+          allData: oldData,
+        };
+
+        const evaluationContext = {
+          data: beforeArgs,
+          formData,
+          globalState,
+          http: httpClient,
+          moment,
+        };
+
+        // Execute the before event action
+        await executeAction({
+          actionConfiguration: onBeforeRowReorder,
+          argumentsEvaluationContext: evaluationContext,
+        });
+
+      } catch (error) {
+        console.error('OnBeforeRowReorder event error:', error);
+        // Reset to original order on error
+        payload.applyOrder(oldData);
+        throw new Error('Reordering cancelled due to validation error: ' + error.message);
+      }
+    }
 
     const reorderPayload: RowsReorderPayload = {
       ...payload,
@@ -676,7 +727,43 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       customReorderEndpoint: customReorderEndpoint,
     };
 
-    await repository.reorder(reorderPayload);
+    try {
+      // Execute the actual reorder operation
+      const apiResponse = await repository.reorder(reorderPayload);
+
+      // Execute OnAfterRowReorder event
+      if (onAfterRowReorder) {
+        try {
+          const afterArgs: IAfterRowReorderArguments = {
+            oldIndex: oldIdx,
+            newIndex: newIdx,
+            rowData: movedRow,
+            allData: newData,
+            response: apiResponse,
+          };
+
+          const evaluationContext = {
+            data: afterArgs,
+            formData,
+            globalState,
+            setGlobalState,
+            http: httpClient,
+            moment,
+          };
+
+          // Execute the after event action
+          await executeAction({
+            actionConfiguration: onAfterRowReorder,
+            argumentsEvaluationContext: evaluationContext,
+          });
+        } catch (error) {
+          console.error('OnAfterRowReorder event error:', error);
+          // Note: We don't throw here as the reorder has already completed successfully
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
   };
 
   const onResizedChange = (columns: ColumnInstance[], _columnSizes: IColumnResizing) => {
