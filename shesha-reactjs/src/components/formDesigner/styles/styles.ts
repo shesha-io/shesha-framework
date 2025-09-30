@@ -237,7 +237,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .radio-group {
                     display: flex;
                     flex-direction: row;
-                    justifyContent: center;
+                    justify-content: center;
                     .radio-button {
                         display: flex;
                         justify-content: center;
