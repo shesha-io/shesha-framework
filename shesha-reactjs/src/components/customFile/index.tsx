@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { IUploadFilePayload, IStoredFile } from '@/providers/storedFiles/contexts';
+import { IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
 import { IInputStyles, IStyleType, useSheshaApplication, useStoredFilesStore } from '@/providers';
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
@@ -8,7 +8,6 @@ export interface ICustomFileProps extends IInputStyles {
   id?: string;
   ownerId?: string;
   uploadFile?: (payload: IUploadFilePayload) => void;
-  onFileListChanged?: (list: IStoredFile[]) => void;
   maxCount?: number;
   allowAdd?: boolean;
   allowReplace?: boolean;
@@ -60,7 +59,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         downloadZipFile={downloadZipFile}
         downloadZip={props.downloadZip}
         downloadFile={downloadFile}
-        onFileListChanged={props.onFileListChanged}
         isDownloadingFileListZip={downloadZip}
         isDownloadZipSucceeded={downloadZipSuccess}
         allowedFileTypes={props?.allowedFileTypes}
