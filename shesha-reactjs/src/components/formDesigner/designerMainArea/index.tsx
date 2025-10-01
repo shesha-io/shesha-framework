@@ -26,8 +26,8 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
   const readOnly = useFormDesignerStateSelector((state) => state.readOnly);
   const formSettings = useFormDesignerStateSelector((state) => state.formSettings);
   const formMode = useFormDesignerStateSelector((state) => state.formMode);
-  const { antdForm: form } = useShaFormInstance();
   const shaForm = useShaFormInstance();
+  const { antdForm: form } = shaForm;
   const { styles } = useStyles();
 
   useEffect(() => {
