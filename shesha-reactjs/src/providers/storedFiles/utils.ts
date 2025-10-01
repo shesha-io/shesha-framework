@@ -2,7 +2,7 @@ export const removeFile = (fileIdToDelete, fileList = []) => {
   return fileList.filter(({ id, uid }) => id !== fileIdToDelete && uid !== fileIdToDelete);
 };
 
-export const addFile = ( newFile, fileList = []) => fileList.map((file) => {
+export const addFile = (newFile, fileList = []) => fileList.map((file) => {
   if (file.uid === newFile.uid) {
     return {
       ...newFile,
@@ -11,7 +11,7 @@ export const addFile = ( newFile, fileList = []) => fileList.map((file) => {
   } else {
     return file;
   }
-})
+});
 
 export const updateDownloadedAFile = (fileList, fileId) => fileList?.map((file) =>
   file.id === fileId || file.uid === fileId
