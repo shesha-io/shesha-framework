@@ -167,7 +167,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
          width: 100%;
          display: flex;
          flex-direction: column;
-         overflow: hidden;
+         overflow: auto;
          height: calc(100vh - 100px);
 
           &::not(.no-padding) {
