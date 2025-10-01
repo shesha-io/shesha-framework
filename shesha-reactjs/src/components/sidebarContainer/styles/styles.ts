@@ -24,6 +24,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
       .${sidebarContainerMainAreaBody}{
         overflow: auto;
+        height: 100%;
+
       }
     
       .${sidebarContainerHeader} {
@@ -163,8 +165,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
         .${sidebarContainerMainArea} {
          width: 100%;
-         position: sticky;
-          overflow-x: auto;
+         display: flex;
+         flex-direction: column;
+         overflow: hidden;
+         height: calc(100vh - 100px);
 
           &::not(.no-padding) {
             padding: ${sheshaStyles.paddingLG}px;
@@ -175,13 +179,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           margin: 0 auto;
           height: 100%;
           transform-origin: top left;
-
-          > div {
-           height: 100%;
-           > div {
-            height: 100%;
-           }
-          }
         }
       }
     `);

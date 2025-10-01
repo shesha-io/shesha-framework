@@ -91,6 +91,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                     height: 100%;
                     >.ant-tabs-content{
                         height: 100%;
+                        overflow: hidden;
                     }
                 }
             }
