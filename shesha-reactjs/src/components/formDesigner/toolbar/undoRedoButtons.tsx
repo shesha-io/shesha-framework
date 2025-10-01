@@ -16,7 +16,6 @@ export const UndoRedoButtons: FC<IUndoRedoButtonsProps> = (props) => {
             <Button
               icon={<UndoOutlined />}
               key="undo"
-              shape="circle"
               onClick={undo}
               disabled={!canUndo}
               title="Undo"
@@ -25,7 +24,6 @@ export const UndoRedoButtons: FC<IUndoRedoButtonsProps> = (props) => {
             <Button
               icon={<RedoOutlined />}
               key="redo"
-              shape="circle"
               onClick={redo}
               disabled={!canRedo}
               title="Redo"

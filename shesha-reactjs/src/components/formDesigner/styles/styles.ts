@@ -1,3 +1,4 @@
+import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
 import { createStyles, sheshaStyles } from '@/styles';
 
 const designerClassNames = {
@@ -41,6 +42,7 @@ const designerClassNames = {
   formName: "form-name",
   formTitle: "form-title",
   formNameParent: "form-name-parent",
+  toolbarWrapper: "form-toolbar-wrapper",
 };
 const useStylesResponse = {
   styles: designerClassNames,
@@ -174,6 +176,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             background: white;
             padding: 8px 12px 0px 12px;
             display: flex;
+            align-items: center;
             justify-content: space-between;
 
             .${formName} {
@@ -234,6 +237,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .radio-group {
                     display: flex;
                     flex-direction: row;
+                    justify-content: center;
                     .radio-button {
                         display: flex;
                         justify-content: center;
@@ -368,6 +372,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
         .${designerWorkArea}{
             background-color: white;
+            height: 100%;
             .${shaComponentsContainer} {
                 border-radius: 2px;
             
@@ -376,10 +381,29 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     text-align: center;
                     color: darkgray;
                     padding: 10px;
+                    height: 55px;
                 }
             
                 .${shaComponent} {
                     min-height: 30px;
+                }
+            }
+
+            > div {
+             height: 100%;
+             .sha-drop-hint {
+                display: none;
+             }
+                > div:not(.sha-drop-hint) {
+                    min-height: 100vh;
+                    height: 100%;
+                }
+                    
+                > .sha-components-container-inner:not(:has(.sha-component)) {
+                    background: url("${getFormDesignerBackgroundSvg()}");
+                    background-size: 25vw;
+                    background-repeat: no-repeat;
+                    background-position: 50% 50%;
                 }
             }
         }
@@ -394,8 +418,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${shaComponent} {
             position: relative;
-            margin: 4px;
-            //margin-left: 10px;
         
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;

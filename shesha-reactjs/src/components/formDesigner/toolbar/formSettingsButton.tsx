@@ -3,12 +3,14 @@ import { Button } from 'antd';
 import { FormSettingsEditor } from '../formSettingsEditor';
 import { SettingOutlined } from '@ant-design/icons';
 import { useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { SizeType } from 'antd/es/config-provider/SizeContext';
 
 export interface IFormSettingsButtonProps {
   buttonText?: string;
+  size?: SizeType;
 }
 
-export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText }) => {
+export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText, size }) => {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
 
@@ -18,7 +20,7 @@ export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText })
 
   return (
         <>
-            <Button icon={<SettingOutlined />} type="link" onClick={onSettingsClick} title="Form Settings">
+            <Button icon={<SettingOutlined />} size={size} type="link" onClick={onSettingsClick} title="Form Settings">
                 { buttonText !== undefined ? buttonText : "Settings" }
             </Button>
             <FormSettingsEditor
