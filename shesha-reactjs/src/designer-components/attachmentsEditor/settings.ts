@@ -22,7 +22,6 @@ export const getSettings = () => {
   const pnlShadowStyleId = nanoid();
   const customStylePnlId = nanoid();
   const pnlFontStyleId = nanoid();
-  const containerId = nanoid();
 
   return {
     components: new DesignerToolbarSettings()
@@ -41,36 +40,18 @@ export const getSettings = () => {
             id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInput({
+                .addContextPropertyAutocomplete({
                   id: nanoid(),
-                  propertyName: 'removeFieldFromPayload',
-                  label: 'Exclude From Form Data',
-                  inputType: 'switch',
-                  tooltip: 'If checked, the field will not be included in the submitted payload',
-                  jsSetting: true,
-                })
-                .addContainer({
-                  id: containerId,
-                  propertyName: 'container',
-                  label: 'Container',
+                  propertyName: 'propertyName',
+                  label: 'Property Name',
                   parentId: commonTabId,
-                  hidden: { _code: 'return getSettingValue(data?.removeFieldFromPayload);', _mode: 'code', _value: false } as any,
-                  components: [
-                    ...new DesignerToolbarSettings()
-                      .addContextPropertyAutocomplete({
-                        id: nanoid(),
-                        propertyName: 'propertyName',
-                        label: 'Property Name',
-                        parentId: containerId,
-                        size: 'small',
-                        styledLabel: true,
-                        validate: {
-                          required: true,
-                        },
-                        jsSetting: true,
-                      })
-                      .toJson(),
-                  ],
+                  description: "If left empty, the field will not be included in the submitted payload",
+                  size: 'small',
+                  styledLabel: true,
+                  validate: {
+                    required: true,
+                  },
+                  jsSetting: true,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -285,7 +266,7 @@ export const getSettings = () => {
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'codeEditor',
-                propertyName: 'onFileChanged',
+                propertyName: 'onChangeCustom',
                 label: 'On File List Changed',
                 labelAlign: 'right',
                 parentId: eventsTabId,
@@ -298,6 +279,25 @@ export const getSettings = () => {
                   functionName: 'onFileListChanged',
                   useAsyncDeclaration: true,
                 },
+                availableConstantsExpression: " return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .addString(\"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
+              })
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'codeEditor',
+                propertyName: 'onDownload',
+                label: 'On Download',
+                labelAlign: 'right',
+                parentId: eventsTabId,
+                hidden: false,
+                description: 'Callback that is triggered when a file is downloaded.',
+                validate: {},
+                settingsValidationErrors: [],
+                wrapInTemplate: true,
+                templateSettings: {
+                  functionName: 'onDownload',
+                  useAsyncDeclaration: true,
+                },
+                availableConstantsExpression: " return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .addString(\"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
               })
               .toJson(),
             ],

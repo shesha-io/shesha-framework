@@ -1,5 +1,4 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
 const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",

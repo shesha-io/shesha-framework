@@ -1,6 +1,5 @@
 import React, { FC, PropsWithChildren, ReactNode, useEffect, useState, useMemo } from 'react';
 import classNames from 'classnames';
-import _ from 'lodash';
 
 import { ISidebarProps, SidebarPanelPosition } from './models';
 import { SidebarPanel } from './sidebarPanel';
@@ -34,7 +33,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   useEffect(() => {
     const newSizes = getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse);
     setCurrentSizes(newSizes.sizes);
-  }, [isOpenRight, isOpenLeft]);
+  }, [isOpenRight, isOpenLeft, leftSidebarProps, rightSidebarProps, allowFullCollapse]);
 
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
