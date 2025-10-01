@@ -41,13 +41,18 @@ export const getSettings = () => {
             id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInput({
+                .addContextPropertyAutocomplete({
                   id: nanoid(),
-                  propertyName: 'componentName',
-                  label: 'Component name',
-                  inputType: 'propertyAutocomplete',
-                  validate: { required: true },
-                  jsSetting: false,
+                  propertyName: 'propertyName',
+                  label: 'Property Name',
+                  parentId: commonTabId,
+                  description: "If left empty, the field will not be included in the submitted payload",
+                  size: 'small',
+                  styledLabel: true,
+                  validate: {
+                    required: true,
+                  },
+                  jsSetting: true,
                 })
                 .addLabelConfigurator({
                   id: nanoid(),
