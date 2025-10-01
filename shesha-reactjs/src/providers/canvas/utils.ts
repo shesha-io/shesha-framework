@@ -82,7 +82,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     return 100;
   }
 
-  const guttersAndScrollersSize = 28;
+  const guttersAndScrollersSize = 14;
   const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1024;
   const viewportWidth = Math.max(0, windowWidth - configTreePanelSize - guttersAndScrollersSize);
   const availableWidth = valueToPercent(availableWidthPercent) * viewportWidth;

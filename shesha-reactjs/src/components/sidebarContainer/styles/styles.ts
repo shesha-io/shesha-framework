@@ -24,6 +24,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
       .${sidebarContainerMainAreaBody}{
         overflow: auto;
+        position: absolute;
+        justify-self: anchor-center;
       }
     
       .${sidebarContainerHeader} {
