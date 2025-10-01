@@ -11,9 +11,6 @@ export enum StoredFilesActionEnums {
   DeleteFileRequest = 'DELETE_FILE_REQUEST',
   DeleteFileSuccess = 'DELETE_FILE_SUCCESS',
   DeleteFileError = 'DELETE_FILE_ERROR',
-  DowloadZipRequest = 'DOWLOAD_ZIP_REQUEST',
-  DowloadZipSuccess = 'DOWLOAD_ZIP_SUCCESS',
-  DowloadZipError = 'DOWLOAD_ZIP_ERROR',
   FetchFileListRequest = 'FETCH_FILE_LIST_REQUEST',
   FetchFileListSuccess = 'FETCH_FILE_LIST_SUCCESS',
   FetchFileListError = 'FETCH_FILE_LIST_ERROR',
@@ -69,19 +66,6 @@ export const deleteFileErrorAction = createAction<IStoredFilesStateContext, stri
   (fileIdToDelete) => ({ fileId: fileIdToDelete })
 );
 
-export const dowloadZipRequestAction = createAction<IStoredFilesStateContext>(
-  StoredFilesActionEnums.DowloadZipRequest,
-  () => ({})
-);
-export const dowloadZipSuccessAction = createAction<IStoredFilesStateContext>(
-  StoredFilesActionEnums.DowloadZipSuccess,
-  () => ({})
-);
-export const dowloadZipErrorAction = createAction<IStoredFilesStateContext>(
-  StoredFilesActionEnums.DowloadZipError,
-  () => ({})
-);
-
 export const fetchFileListRequestAction = createAction<IStoredFilesStateContext>(
   StoredFilesActionEnums.FetchFileListRequest,
   () => ({})
@@ -123,7 +107,7 @@ export const initializeFileListAction = createAction<IStoredFilesStateContext, I
   (fileList) => ({ fileList })
 );
 
-export const updateIsDownloadedByCurrentUser  = createAction<IStoredFilesStateContext, string>(
+export const updateIsDownloadedByCurrentUser = createAction<IStoredFilesStateContext, string>(
   StoredFilesActionEnums.UpdateIsDownloadedSuccess,
   (fileId) => ({ fileId })
 );
