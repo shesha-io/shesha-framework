@@ -41,7 +41,7 @@ import {
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
-import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
+import { addFile, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -83,7 +83,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   });
 
   // Synced ref to avoid stale closures in upload/delete/download handlers
-  const fileListRef = useRef<IStoredFile[]>(state.fileList);
+  const fileListRef = useRef<IStoredFile[]>(state.fileList ?? []);
 
   // Update ref whenever state.fileList changes to maintain freshness
   useEffect(() => {
@@ -208,12 +208,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     uploadFileHttp(uploadFileEndpoint, formData)
       .then((response) => {
         const responseFile = response.result as IStoredFile;
-        const finalFile = { ...responseFile, uid: responseFile.id };
-        dispatch(uploadFileSuccessAction(finalFile));
-        const updated = fileListRef.current.map((f) =>
-          f.uid === newFile.uid ? finalFile : f
-        );
-        onChange?.(updated);
+        responseFile.uid = newFile.uid;
+        dispatch(uploadFileSuccessAction({ ...responseFile }));
+        onChange?.(addFile(responseFile, fileListRef.current));
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
@@ -245,11 +242,11 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     deleteFileHttp({ id: fileIdToDelete })
       .then(() => {
         deleteFileSuccess(fileIdToDelete);
-        const updateList = removeFile(fileListRef.current ?? [], fileIdToDelete);
+        const updateList = removeFile(fileIdToDelete, fileListRef.current ?? []);
         onChange?.(updateList);
         if (typeof removeDelayedUpdate === 'function') {
           removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
-        };
+        }
       })
       .catch(() => deleteFileError(fileIdToDelete));
   };
