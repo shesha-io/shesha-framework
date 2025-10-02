@@ -136,15 +136,16 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     `);
 
   const quickSearchHintPopover = cx("sha-quick-search-hint-popover", css`
-        background-color: #D9DCDC !important;
+        background-color:rgb(214, 214, 214) !important;
     `);
 
-  const quickSearchPopoverArrowStyles = `
-    .ant-popover .ant-popover-arrow::before,
-    .ant-popover .ant-popover-arrow::after {
-      background-color: #D9DCDC !important;
-    }
-  `;
+  const quickSearchPopoverOverlay = cx("sha-quick-search-popover-overlay", css`
+        /* Scoped popover arrow styling applied directly to the popover */
+        .ant-popover-arrow::before,
+        .ant-popover-arrow::after {
+          background-color:rgb(214, 214, 214) !important;
+        }
+    `);
 
   const quickSearchContainer = cx("sha-quick-search-container", css`
         display: flex;
@@ -160,7 +161,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     dataContextComponentsContainer,
     dataContextComponentsContainerEmpty,
     quickSearchHintPopover,
-    quickSearchPopoverArrowStyles,
+    quickSearchPopoverOverlay,
     quickSearchContainer,
   };
 });
