@@ -31,7 +31,7 @@ export interface InputType {
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList'
     | 'sizableColumnsConfig' | 'labelValueEditor' | 'componentSelector' | 'itemListConfiguratorModal' | 'dataSortingEditor' | 'tooltip' | 'customLabelValueEditor'
     | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator' | 'RefListItemSelectorSettingsModal'
-    | 'keyInformationBarColumnsList' | 'Password' | 'date' | 'calendarSelectorSettingsModal';
+    | 'keyInformationBarColumnsList' | 'Password' | 'date' | 'layerSelectorSettingsModal';
 }
 
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelValueEditorProps, 'exposedVariables'>, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
@@ -111,7 +111,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelVa
     buttonTextReadOnly?: string;
     modalSettings?: IItemListConfiguratorModalProps<any>['modalSettings'];
     modalReadonlySettings?: IItemListConfiguratorModalProps<any>['modalSettings'];
-    settingsMarkupFactory?: FormMarkup;
+    settingsMarkupFactory?: () => { components: FormMarkup; formSettings?: any };
     _formFields?: string[];
     autoFillProps?: boolean;
     presets?: string[];
