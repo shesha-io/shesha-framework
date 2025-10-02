@@ -33,7 +33,7 @@ export interface InputType {
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList' |
     'sizableColumnsConfig' | 'labelValueEditor' | 'componentSelector' | 'itemListConfiguratorModal' | 'dataSortingEditor' | 'tooltip' | 'customLabelValueEditor' |
     'entityTypeAutocomplete' | 'fullIdFormAutocomplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator' | 'RefListItemSelectorSettingsModal' |
-    'keyInformationBarColumnsList' | 'Password' | 'settingsInput' | 'date' | 'calendarSelectorSettingsModal';
+    'keyInformationBarColumnsList' | 'Password' | 'settingsInput' | 'date' | 'layerSelectorSettingsModal';
 }
 
 export interface ISettingsInputProps extends IComponentLabelProps,
