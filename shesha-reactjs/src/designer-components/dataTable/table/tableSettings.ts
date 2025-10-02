@@ -161,6 +161,7 @@ export const getSettings = (data: ITableComponentProps) => {
                       label: data.readOnly ? 'View Columns' : 'Customize Columns',
                       type: 'columnsConfig',
                       parentId: commonTabId,
+                      jsSetting: true,
                     },
                     {
                       id: nanoid(),

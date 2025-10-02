@@ -1,6 +1,6 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useCallback } from 'react';
 import CanvasReducer from './reducer';
-import { setCanvasWidthAction, setCanvasZoomAction, setDesignerDeviceAction, setScreenWidthAction } from './actions';
+import { SetCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, SetConfigTreePanelSizeAction, setDesignerDeviceAction, setScreenWidthAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasStateContext, IDeviceTypes } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { DataTypes, IObjectMetadata } from '@/index';
@@ -37,40 +37,52 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
   });
 
   useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
     const handleResize = () => dispatch(setScreenWidthAction(window.innerWidth));
     window.addEventListener('resize', handleResize);
     dispatch(setScreenWidthAction(window.innerWidth));
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const setDesignerDevice = (deviceType: IDeviceTypes) => {
+  const setDesignerDevice = useCallback((deviceType: IDeviceTypes) => {
     dispatch(setDesignerDeviceAction(deviceType));
-  };
+  }, []);
 
-  const setCanvasWidth = (width: number, deviceType: string) => {
+  const setCanvasWidth = useCallback((width: number, deviceType: string) => {
     dispatch(setCanvasWidthAction({ width, deviceType }));
-  };
-  const setCanvasZoom = (zoom: number) => {
+  }, []);
+
+  const setCanvasZoom = useCallback((zoom: number) => {
     dispatch(setCanvasZoomAction(zoom));
-  };
+  }, []);
+
+  const setCanvasAutoZoom = useCallback(() => {
+    dispatch(SetCanvasAutoZoomAction());
+  }, []);
+
+  const setConfigTreePanelSize = useCallback((size: number) => {
+    dispatch(SetConfigTreePanelSizeAction(size));
+  }, []);
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const actions = {
+  const actions = useMemo(() => ({
     setDesignerDevice,
     setCanvasWidth,
     setCanvasZoom,
+    setCanvasAutoZoom,
+    setConfigTreePanelSize,
     /* NEW_ACTION_GOES_HERE */
-  };
+  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setCanvasAutoZoom, setConfigTreePanelSize]);
 
-  const contextOnChangeData = (_, changedData: ICanvasStateContext) => {
+  const contextOnChangeData = useCallback((_data: any, changedData: ICanvasStateContext) => {
     if (!changedData)
       return;
 
     if (changedData.designerDevice !== undefined && changedData.designerDevice !== state.designerDevice) {
       setDesignerDevice(changedData.designerDevice);
-      return;
     }
-  };
+  }, [state.designerDevice, setDesignerDevice]);
 
   return (
     <DataContextBinder

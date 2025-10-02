@@ -12,6 +12,7 @@ import {
   pickStyleFromModel,
   useAvailableConstantsContexts,
   useAvailableConstantsContextsNoRefresh,
+  useCanvas,
   useDeepCompareMemo,
   useSheshaApplication,
   wrapConstantsData,
@@ -179,6 +180,7 @@ export const useFormComponentStyles = <TModel>(
 ): IFormComponentStyles => {
   const app = useSheshaApplication();
   const jsStyle = useActualContextExecution(model.style, null, {}); // use default style if empty or error
+  const { designerWidth } = useCanvas();
 
   const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 
@@ -195,7 +197,7 @@ export const useFormComponentStyles = <TModel>(
 
   const styligBox = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
 
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, styligBox), [dimensions, stylingBox]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, styligBox, designerWidth), [dimensions, stylingBox, designerWidth]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);

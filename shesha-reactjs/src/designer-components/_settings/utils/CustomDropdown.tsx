@@ -15,6 +15,10 @@ interface CustomDropdownProps {
   onAddCustomOption?: (newOption: string) => void;
   onChange?: (value: string) => void;
   placeholder?: string;
+  optionFilterProp?: string;
+  style?: React.CSSProperties;
+  popupMatchSelectWidth?: boolean;
+  labelRender?: (props: any) => React.ReactNode;
 }
 
 const CustomDropdown: FC<CustomDropdownProps> = ({
@@ -24,9 +28,13 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
   label,
   placeholder,
   defaultValue,
+  optionFilterProp,
   customTooltip,
   onChange,
   size,
+  labelRender,
+  popupMatchSelectWidth = true,
+  style,
 }) => {
   const [customOption, setCustomOption] = useState('');
   const [customOptions, setCustomOptions] = useState(options);
@@ -87,6 +95,10 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
           onChange={onChange}
           defaultValue={defaultValue}
           placeholder={placeholder}
+          labelRender={labelRender}
+          style={style}
+          optionFilterProp={optionFilterProp}
+          popupMatchSelectWidth={popupMatchSelectWidth}
           popupRender={(menu) => (
                 <>
                     {menu}

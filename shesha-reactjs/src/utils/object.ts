@@ -3,6 +3,9 @@ import cleanDeep from "clean-deep";
 import { mergeWith } from "lodash";
 import moment from "moment";
 import { Path, PathValue } from "./dotnotation";
+import { TouchableArrayProperty, TouchableProperty } from "@/providers/form/touchableProperty";
+import { TouchableProxy } from "@/providers/form/touchableProxy";
+import { ShaArrayAccessProxy, ShaObjectAccessProxy } from "@/providers/dataContextProvider/contexts/shaDataAccessProxy";
 
 export const jsonSafeParse = <T = unknown>(value: string, defaultValue?: T): T | undefined => {
   try {
@@ -16,8 +19,29 @@ export const jsonSafeParse = <T = unknown>(value: string, defaultValue?: T): T |
   }
 };
 
+export const isProxy = (value: any) => {
+  return value && (
+    value instanceof TouchableProperty ||
+    value instanceof TouchableArrayProperty ||
+    value instanceof TouchableProxy ||
+    value instanceof ShaArrayAccessProxy ||
+    value instanceof ShaObjectAccessProxy
+  );
+};
+
 export const unproxyValue = (value: any) => {
-  return value && Boolean(value['getAccessorValue']) ? value.getAccessorValue() : value;
+  const result = value
+    ? value instanceof TouchableProperty ||
+    value instanceof TouchableArrayProperty ||
+    value instanceof TouchableProxy
+      ? value.getData()
+      : value instanceof ShaArrayAccessProxy ||
+        value instanceof ShaObjectAccessProxy
+        ? value.getAccessorValue()
+        : value
+    : value;
+
+  return isProxy(result) ? unproxyValue(result) : result;
 };
 
 export const deepMergeValues = (target: any, source: any) => {

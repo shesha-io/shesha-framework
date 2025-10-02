@@ -14,9 +14,10 @@ import { QuickInfoIcons } from './components/quick-info-icons';
 import { ItemToolbarHolder } from './components/item-toolbar-holder';
 import { DocumentDefinitionRegistration } from './document-definitions/documentDefinitionRegistration';
 import { SheshaDocumentDefinitions } from './document-definitions';
-
+import { useCanvas } from '@/providers';
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
+  const canvas = useCanvas();
 
   return (
     <ConfigurationStudioProvider>
@@ -45,7 +46,10 @@ const ConfigurationStudio: FC = () => {
           </div>
         </Layout.Header>
         <Layout.Content className={styles.csContent}>
-          <Splitter>
+          <Splitter onResizeEnd={(sizes) => {
+            canvas?.setConfigTreePanelSize(sizes[0] || 0);
+          }}
+          >
             <Splitter.Panel
               collapsible
               min="5%"

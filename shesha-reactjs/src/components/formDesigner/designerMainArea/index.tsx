@@ -1,6 +1,6 @@
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { DataContextProvider, MetadataProvider, useCanvas, useShaFormInstance } from '@/providers';
+import { DataContextProvider, MetadataProvider, useShaFormInstance } from '@/providers';
 import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import ParentProvider from '@/providers/parentProvider';
 import React, { FC, useMemo, useEffect } from 'react';
@@ -26,9 +26,8 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
   const readOnly = useFormDesignerStateSelector((state) => state.readOnly);
   const formSettings = useFormDesignerStateSelector((state) => state.formSettings);
   const formMode = useFormDesignerStateSelector((state) => state.formMode);
-  const { antdForm: form } = useShaFormInstance();
-  const { designerWidth, zoom } = useCanvas();
   const shaForm = useShaFormInstance();
+  const { antdForm: form } = shaForm;
   const { styles } = useStyles();
 
   useEffect(() => {
@@ -61,12 +60,12 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                     <SidebarContainer
                       leftSidebarProps={leftSidebarProps}
                       rightSidebarProps={rightSidebarProps}
+                      canZoom={true}
                     >
                         {children}
                     </SidebarContainer>
               )}
             >
-                <div style={{ width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
                     <ConditionalWrap
                       condition={Boolean(formSettings?.modelType)}
                       wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
@@ -83,11 +82,11 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                                         <DebugPanel />
                                     )}
                                 </ConfigurableFormRenderer>
+
                             </DataContextProvider>
                         </ParentProvider>
                     </ConditionalWrap>
 
-                </div>
             </ConditionalWrap>
         </div>
   );

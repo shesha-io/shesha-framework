@@ -6,6 +6,8 @@ export enum CanvasConfigActionEnums {
   SetCanvasZoom = 'SET_FORM_ZOOM',
   SetDesignerDevice = 'SET_DESIGNER_DEVICE',
   SetScreenWidth = 'SET_SCREEN_WIDTH',
+  SetCanvasAutoZoom = 'SET_AUTO_ZOOM',
+  SetConfigTreePanelSize = 'SET_CONFIG_TREE_PANEL_SIZE',
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
 
@@ -16,4 +18,8 @@ export const setCanvasWidthAction = createAction<ICanvasWidthProps, ICanvasWidth
 export const setScreenWidthAction = createAction<number, number>(CanvasConfigActionEnums.SetScreenWidth, (p) => p);
 
 export const setDesignerDeviceAction = createAction<IDeviceTypes, IDeviceTypes>(CanvasConfigActionEnums.SetDesignerDevice, (p) => p);
+
+export const SetCanvasAutoZoomAction = createAction(CanvasConfigActionEnums.SetCanvasAutoZoom);
+
+export const SetConfigTreePanelSizeAction = createAction(CanvasConfigActionEnums.SetConfigTreePanelSize);
 /* NEW_ACTION_GOES_HERE */
