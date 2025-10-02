@@ -1,7 +1,7 @@
 import { MoreOutlined } from '@ant-design/icons';
 import React, { FC } from 'react';
 import { useStyles } from './styles/styles';
-import { useLayerGroupConfigurator } from '@/providers/calendar';
+import { useLayerGroupConfigurator } from '@/providers/layersProvider';
 
 export interface IDragHandleProps {
   id: string;

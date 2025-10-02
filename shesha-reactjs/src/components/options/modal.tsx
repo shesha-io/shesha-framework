@@ -1,11 +1,12 @@
+import { FormMarkup } from '@/index';
 import { Button, Modal } from 'antd';
 import React, { FC, useState } from 'react';
 import { useDeepCompareEffect } from 'react-use';
+import { LayerGroupConfiguratorProvider, useLayerGroupConfigurator } from '@/providers/layersProvider';
+import { ILayerFormModel } from '@/providers/layersProvider/models';
 import LayerGroupConfigurator from './configurator';
 import LayerItemsContainer from './layersContainer';
 import { useStyles } from './styles/styles';
-import { LayerGroupConfiguratorProvider, useLayerGroupConfigurator } from '@/providers/calendar';
-import { ILayerFormModel } from '@/providers/calendar/models';
 
 interface IFiltersListProps {
   layers?: ILayerFormModel[];
@@ -41,12 +42,14 @@ export interface ITableViewSelectorSettingsModal {
   value?: object;
   onChange?: any;
   readOnly: boolean;
+  settings: FormMarkup;
 }
 
 export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsModal> = ({
   visible,
   onChange,
   hideModal,
+  settings,
 }) => {
   const { items, readOnly } = useLayerGroupConfigurator();
   useDeepCompareEffect(() => {
@@ -69,12 +72,12 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
       onOk={updateFilters}
       okButtonProps={{ hidden: readOnly }}
     >
-      <LayerGroupConfigurator />
+      <LayerGroupConfigurator settings={settings} />
     </Modal>
   );
 };
 
-export const CalendarSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal, 'visible' | 'hideModal'>> = (
+export const LayerSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal, 'visible' | 'hideModal'>> = (
   props,
 ) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -89,9 +92,9 @@ export const CalendarSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsMo
     <LayerGroupConfiguratorProvider items={items} readOnly={props.readOnly}>
       <LayersListInner showModal={showModal} readOnly={props.readOnly} />
 
-      <TableViewSelectorSettingsModalInner {...props} visible={modalVisible} hideModal={hideModal} />
+      <TableViewSelectorSettingsModalInner {...props} visible={modalVisible} hideModal={hideModal} settings={props.settings} />
     </LayerGroupConfiguratorProvider>
   );
 };
 
-export default CalendarSelectorSettingsModal;
+export default LayerSelectorSettingsModal;

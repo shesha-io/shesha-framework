@@ -1,14 +1,15 @@
+import { getComponentModel } from '@/providers/layersProvider/utils';
+import { useLayerGroupConfigurator } from '@/providers/layersProvider';
 import { ConfigurableForm, ConfigurableFormInstance, FormMarkup, MetadataProvider } from '@/index';
 import { Empty, Form } from 'antd';
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { getSettings } from './layersSettings';
-import { useLayerGroupConfigurator } from '@/providers/calendar';
-import { getComponentModel } from '@/providers/calendar/utils';
 
-export interface ILayerPropertiesProps { }
+export interface ILayerPropertiesProps {
+  settings: FormMarkup;
+}
 
-export const LayerProperties: FC<ILayerPropertiesProps> = () => {
+export const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
   const { selectedItemId, getItem, updateItem, readOnly } = useLayerGroupConfigurator();
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);
@@ -39,8 +40,6 @@ export const LayerProperties: FC<ILayerPropertiesProps> = () => {
 
     const componentModel = getComponentModel(getItem(selectedItemId));
 
-    const markup = getSettings() as FormMarkup;
-
     return (
 
       <MetadataProvider modelType={componentModel?.entityType}>
@@ -49,7 +48,7 @@ export const LayerProperties: FC<ILayerPropertiesProps> = () => {
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}
           mode={readOnly ? 'readonly' : 'edit'}
-          markup={markup}
+          markup={settings}
           form={form}
           initialValues={{ ...componentModel, dataSource: componentModel.dataSource || 'entity' }}
           onValuesChange={debouncedSave}
