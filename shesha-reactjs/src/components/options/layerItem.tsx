@@ -4,9 +4,9 @@ import React, { FC } from 'react';
 import DragHandle from './dragHandle';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
-import { useLayerGroupConfigurator } from '@/providers/calendar';
+import { useLayerGroupConfigurator } from '@/providers/layersProvider';
 import { IconType, ShaIcon } from '@/index';
-import { ILayerFormModel } from '@/providers/calendar/models';
+import { ILayerFormModel } from '@/providers/layersProvider/models';
 
 export interface ILayerGroupItemProps extends ILayerFormModel {
   index: number[];

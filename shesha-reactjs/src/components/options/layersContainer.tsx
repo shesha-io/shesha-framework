@@ -2,8 +2,8 @@ import React, { FC } from 'react';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import LayerItem from './layerItem';
 import { useStyles } from './styles/styles';
-import { useLayerGroupConfigurator } from '@/providers/calendar';
-import { LayerGroupItemProps } from '@/providers/calendar/models';
+import { useLayerGroupConfigurator } from '@/providers/layersProvider';
+import { LayerGroupItemProps } from '@/providers/layersProvider/models';
 
 export interface ILayerItemsContainerProps {
   index?: number[];
