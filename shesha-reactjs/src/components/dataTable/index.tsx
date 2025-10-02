@@ -691,7 +691,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const movedRow = oldData[oldIdx];
 
     if (onBeforeRowReorder) {
-      try {
+      await new Promise<void>((resolve, reject) => {
         const beforeArgs: IBeforeRowReorderArguments = {
           oldIndex: oldIdx,
           newIndex: newIdx,
@@ -707,18 +707,22 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           moment,
         };
 
-        // Execute the before event action
-        await executeAction({
-          actionConfiguration: onBeforeRowReorder,
+        executeAction({
+          actionConfiguration: {
+            ...onBeforeRowReorder,
+          },
           argumentsEvaluationContext: evaluationContext,
+          success: () => {
+            resolve();
+          },
+          fail: (error) => {
+            console.error('OnBeforeRowReorder event error:', error);
+            payload.applyOrder(oldData);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            reject(new Error(errorMessage));
+          },
         });
-
-      } catch (error) {
-        console.error('OnBeforeRowReorder event error:', error);
-        // Reset to original order on error
-        payload.applyOrder(oldData);
-        throw new Error('Reordering cancelled due to validation error: ' + error.message);
-      }
+      });
     }
 
     const reorderPayload: RowsReorderPayload = {

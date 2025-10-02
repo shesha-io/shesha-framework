@@ -297,15 +297,25 @@ export const ReactTable: FC<IReactTableProps> = ({
         const oldRows = rows.map(row => row.original);
         const newRows = newState.map(row => row.original);
 
+        // Find which item was actually dragged by identifying the item that moved
+        // Strategy: Find an item that is in a different position in newRows vs oldRows
+        // and verify it's the dragged item (not just a shifted item)
         let oldIndex = -1;
         let newIndex = -1;
 
-        for (let i = 0; i < oldRows.length; i++) {
-          if (oldRows[i] !== newRows[i]) {
-            if (oldIndex === -1) {
-              const movedItem = newRows[i];
-              oldIndex = oldRows.findIndex(item => item === movedItem);
-              newIndex = i;
+        // Build a map of items to their indices in both arrays
+        const oldPositions = new Map(oldRows.map((item, idx) => [item, idx]));
+        const newPositions = new Map(newRows.map((item, idx) => [item, idx]));
+
+        // Find the dragged item: it should be at a different index in both arrays
+        // and its old position should now contain a different item
+        for (const [item, newPos] of newPositions) {
+          const oldPos = oldPositions.get(item);
+          if (oldPos !== newPos) {
+            // This item moved - verify it's the dragged item by checking if its old position changed
+            if (oldRows[oldPos] === item && newRows[oldPos] !== item) {
+              oldIndex = oldPos;
+              newIndex = newPos;
               break;
             }
           }
