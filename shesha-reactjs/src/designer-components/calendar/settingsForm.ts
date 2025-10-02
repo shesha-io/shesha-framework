@@ -1,6 +1,7 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/es/form/Form';
+import { getSettings as getCalendarLayersSettings } from './calendarLayersSettings';
 
 export const getSettings = (data: any) => {
     const searchableTabsId = nanoid();
@@ -65,12 +66,13 @@ export const getSettings = (data: any) => {
                         components: [
                             ...new DesignerToolbarSettings()
                                 .addSettingsInput({
-                                    inputType: 'calendarSelectorSettingsModal',
+                                    inputType: 'layerSelectorSettingsModal',
                                     id: nanoid(),
                                     parentId: dataTabId,
                                     propertyName: 'items',
-                                    label: 'Calendar Selector Settings Modal',
+                                    label: 'Layer Selector Settings Modal',
                                     hideLabel: true,
+                                    settingsMarkupFactory: getCalendarLayersSettings,
                                 })
                                 .addSettingsInputRow({
                                     id: nanoid(),
