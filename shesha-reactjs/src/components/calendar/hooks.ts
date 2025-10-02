@@ -5,9 +5,9 @@ import { evaluateFilters, getCalendarRefetchParams, getLayerMarkers, getResponse
 import { useGet, useMutate } from '@/hooks';
 
 import { DataTypes } from '@/interfaces';
-import { useLayerGroupConfigurator } from '@/providers/calendar';
+import { useLayerGroupConfigurator } from '@/providers/layersProvider';
 import { evaluateString, useFormData, useGlobalState, useMetadataDispatcher, useNestedPropertyMetadatAccessor } from '@/index';
-import { ICalendarLayersProps } from '@/providers/calendar/models';
+import { ICalendarLayersProps } from '@/providers/layersProvider/models';
 
 interface IGetData {
   fetchData: () => void;

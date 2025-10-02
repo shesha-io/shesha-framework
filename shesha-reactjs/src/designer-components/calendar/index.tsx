@@ -5,7 +5,7 @@ import { CalendarActionsAccessor } from '../../components/calendar/configurable-
 import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
-import { LayerGroupConfiguratorProvider } from '@/providers/calendar';
+import { LayerGroupConfiguratorProvider } from '@/providers/layersProvider';
 import { migratePrevStyles } from '@/index';
 import { defaultStyles } from './utils';
 import { ICalendarProps } from './interfaces';

@@ -1,5 +1,5 @@
 import { IConfigurableActionConfiguration, IConfigurableFormComponent } from "@/index";
-import { ICalendarLayersProps } from "@/providers/calendar/models";
+import { ICalendarLayersProps } from "@/providers/layersProvider/models";
 import { View } from 'react-big-calendar';
 
 export interface ICalendarProps extends IConfigurableFormComponent {
