@@ -51,7 +51,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
   const selectedFilterId =
-        selectedStoredFilterIds && selectedStoredFilterIds.length > 0 ? selectedStoredFilterIds[0] : null;
+    selectedStoredFilterIds && selectedStoredFilterIds.length > 0 ? selectedStoredFilterIds[0] : null;
 
   const dataFetchDep = useDataFetchDependency(id);
 
@@ -76,13 +76,13 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     const match = [
       { match: 'data', data: formData },
       { match: 'globalState', data: globalState },
-      { match: 'pageContext', data: {...pageContext?.getFull()} },
+      { match: 'pageContext', data: { ...pageContext?.getFull() } },
     ];
 
     if (dataContextManager)
       match.push({ match: 'contexts', data: dataContextManager.getDataContextsData(dataContext?.id) });
 
-    const permissionedFilters = filters.filter((f) => !f.permissions || f.permissions && application.anyOfPermissionsGranted(f.permissions));
+    const permissionedFilters = filters.filter((f) => !f.permissions || (f.permissions && application.anyOfPermissionsGranted(f.permissions)));
 
     evaluateDynamicFilters(
       permissionedFilters,
@@ -115,40 +115,44 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     if (isDesignerMode) {
       // WYSIWYG fallback when no filters are configured
       return (
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                }}>
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '4px 8px',
-                      border: '1px solid #d9d9d9',
-                      borderRadius: '6px',
-                      backgroundColor: '#fafafa',
-                      color: '#8c8c8c',
-                      fontSize: '14px',
-                      fontWeight: 600,
-                    }}>
-                        View: Default
-                    </div>
-                    <Popover
-                      placement="right"
-                      title="Hint:"
-                      overlayClassName="sha-table-view-selector-hint-popover"
-                      overlayInnerStyle={{
-                        backgroundColor: '#D9DCDC',
-                      }}
-                      content={(<p>The Table View Selector needs at least<br />one filter configured to be functional.<br />Add filters in the component settings.
-                            <br />
-                            <br />
-                            <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
-                        </p>)}
-                    >
-                        <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
-                    </Popover>
-                </div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}
+        >
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '4px 8px',
+            border: '1px solid #d9d9d9',
+            borderRadius: '6px',
+            backgroundColor: '#fafafa',
+            color: '#8c8c8c',
+            fontSize: '14px',
+            fontWeight: 600,
+          }}
+          >
+            View: Default
+          </div>
+          <Popover
+            placement="right"
+            title="Hint:"
+            overlayClassName="sha-table-view-selector-hint-popover"
+            overlayInnerStyle={{
+              backgroundColor: '#D9DCDC',
+            }}
+            content={(
+<p>The Table View Selector needs at least<br />one filter configured to be functional.<br />Add filters in the component settings.
+              <br />
+              <br />
+              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
+</p>
+            )}
+          >
+            <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
+          </Popover>
+        </div>
       );
     }
 
@@ -156,12 +160,12 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
   }
 
   return (
-        <TableViewSelectorRenderer
-          hidden={hidden && !isDesignerMode}
-          filters={predefinedFilters || []}
-          onSelectFilter={changeSelectedFilter}
-          selectedFilterId={selectedFilterId}
-          showIcon={showIcon}
-        />
+    <TableViewSelectorRenderer
+      hidden={hidden && !isDesignerMode}
+      filters={predefinedFilters || []}
+      onSelectFilter={changeSelectedFilter}
+      selectedFilterId={selectedFilterId}
+      showIcon={showIcon}
+    />
   );
 };

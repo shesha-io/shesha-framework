@@ -25,11 +25,13 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
       <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
         {store
           ? <TableViewSelector {...model} />
-          : <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}>
+          : (
+<div style={{
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+}}
+>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -40,7 +42,8 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
               color: '#8c8c8c',
               fontSize: '14px',
               fontWeight: 600,
-            }}>
+            }}
+            >
               View: Default
             </div>
             <Popover
@@ -49,15 +52,18 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
               overlayInnerStyle={{
                 backgroundColor: '#D9DCDC',
               }}
-              content={(<p>The Table View Selector component must be<br /> placed inside of a Data Context<br /> component to be fully functional.
+              content={(
+<p>The Table View Selector component must be<br /> placed inside of a Data Context<br /> component to be fully functional.
                 <br />
                 <br />
                 <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
-              </p>)}
+</p>
+              )}
             >
               <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
             </Popover>
-          </div>}
+</div>
+          )}
       </ConfigurableFormItem>
     );
   },
@@ -95,8 +101,7 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
     .add(1, (prev) => (
       { ...prev, filters: prev.filters.map((filter) => migrateFilterMustacheExpressions(filter)) }
     ))
-    .add(2, (prev) => migratePropertyName(prev))
-  ,
+    .add(2, (prev) => migratePropertyName(prev)),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
