@@ -9,7 +9,7 @@ import { EventComponent } from './eventComponent';
 import { useMetaMapMarker } from './hooks';
 import { getLayerMarkerOptions, getMarkerPoints } from './utils';
 import { evaluateString, executeScript, useAvailableConstantsData, useConfigurableActionDispatcher, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication, useTheme } from '@/index';
-import { ICalendarLayersProps } from '@/providers/calendar/models';
+import { ICalendarLayersProps } from '@/providers/layersProvider/models';
 import { ICalendarProps } from '@/designer-components/calendar/interfaces';
 
 moment.locale('en-za');

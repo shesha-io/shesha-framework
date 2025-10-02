@@ -1,6 +1,6 @@
 import { evaluateDynamicFilters, IMatchData } from "@/index";
 import { IAnyObject } from "@/interfaces";
-import { ICalendarLayersProps } from "@/providers/calendar/models";
+import { ICalendarLayersProps } from "@/providers/layersProvider/models";
 import { UseEvaluatedFilterArgs } from "@/providers/dataTable/filters/evaluateFilter";
 import { IStoredFilter } from "@/providers/dataTable/interfaces";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";

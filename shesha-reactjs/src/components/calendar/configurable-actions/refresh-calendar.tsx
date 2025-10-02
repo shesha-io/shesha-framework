@@ -1,4 +1,4 @@
-import { useLayerGroupConfigurator } from "@/providers/calendar";
+import { useLayerGroupConfigurator } from "@/providers/layersProvider";
 import { useConfigurableAction } from "../../../providers";
 import { CALENDAR_ACTIONS_OWNER, CALENDAR_CONFIGURABLE_ACTIONS } from "./model";
 
