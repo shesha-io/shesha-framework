@@ -46,7 +46,7 @@ export const useStyles = createStyles(({ css, cx }) => {
                 margin-left: 10px;
                 margin-right: 10px;
             }
-    
+
             .${shaHelpIcon} {
                 cursor: help;
                 font-size: 14px;
