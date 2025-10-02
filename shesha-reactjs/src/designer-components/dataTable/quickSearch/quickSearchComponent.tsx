@@ -53,7 +53,11 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
           />
         )
         : (
-          <div className={styles.quickSearchContainer} style={finalStyle}>
+          <>
+            <style>
+              {styles.quickSearchPopoverArrowStyles}
+            </style>
+            <div className={styles.quickSearchContainer} style={finalStyle}>
               <Search
                 size={size}
                 disabled
@@ -61,7 +65,7 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
               <Popover
                 placement="right"
                 title="Hint:"
-                overlayClassName={styles.quickSearchPopoverOverlay}
+                rootClassName={styles.quickSearchHintPopover}
                 classNames={{
                   body: styles.quickSearchHintPopover,
                 }}
@@ -75,7 +79,8 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
               >
                 <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
               </Popover>
-          </div>
+            </div>
+          </>
         );
   },
   initModel: (model: IQuickSearchComponentProps) => {

@@ -137,15 +137,33 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
   const quickSearchHintPopover = cx("sha-quick-search-hint-popover", css`
         background-color:rgb(214, 214, 214) !important;
+        border-radius: 8px !important;
     `);
 
-  const quickSearchPopoverOverlay = cx("sha-quick-search-popover-overlay", css`
-        /* Scoped popover arrow styling applied directly to the popover */
-        .ant-popover-arrow::before,
-        .ant-popover-arrow::after {
-          background-color:rgb(214, 214, 214) !important;
-        }
+  const tableViewSelectorHintPopover = cx("sha-table-view-selector-hint-popover", css`
+        background-color:rgb(214, 214, 214) !important;
+        border-radius: 8px !important;
     `);
+
+  const tablePagerHintPopover = cx("sha-table-pager-hint-popover", css`
+        background-color:rgb(214, 214, 214) !important;
+        border-radius: 8px !important;
+    `);
+
+  const quickSearchPopoverArrowStyles = `
+    .ant-popover.sha-quick-search-hint-popover .ant-popover-arrow::before,
+    .ant-popover.sha-quick-search-hint-popover .ant-popover-arrow::after {
+      background-color: rgb(214, 214, 214) !important;
+    }
+    .ant-popover.sha-table-view-selector-hint-popover .ant-popover-arrow::before,
+    .ant-popover.sha-table-view-selector-hint-popover .ant-popover-arrow::after {
+      background-color: rgb(214, 214, 214) !important;
+    }
+    .ant-popover.sha-table-pager-hint-popover .ant-popover-arrow::before,
+    .ant-popover.sha-table-pager-hint-popover .ant-popover-arrow::after {
+      background-color: rgb(214, 214, 214) !important;
+    }
+  `;
 
   const quickSearchContainer = cx("sha-quick-search-container", css`
         display: flex;
@@ -185,7 +203,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     dataContextComponentsContainer,
     dataContextComponentsContainerEmpty,
     quickSearchHintPopover,
-    quickSearchPopoverOverlay,
+    tableViewSelectorHintPopover,
+    tablePagerHintPopover,
+    quickSearchPopoverArrowStyles,
     quickSearchContainer,
     tablePagerContainer,
     tablePagerMockup,

@@ -55,8 +55,9 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
           <Popover
             placement="right"
             title="Hint:"
+            rootClassName={styles.tablePagerHintPopover}
             classNames={{
-              body: styles.quickSearchHintPopover,
+              body: styles.tablePagerHintPopover,
             }}
             content={(
               <p>The Table Pager component must be<br />placed inside of a Data Context<br />component to be fully functional.
@@ -106,8 +107,9 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
           <Popover
             placement="right"
             title="Hint:"
+            rootClassName={styles.tablePagerHintPopover}
             classNames={{
-              body: styles.quickSearchHintPopover,
+              body: styles.tablePagerHintPopover,
             }}
             content={(
               <p>The Table Pager is within a Data Context<br />but no sibling Data Table or Data List<br />component has been configured with<br />columns or items.
