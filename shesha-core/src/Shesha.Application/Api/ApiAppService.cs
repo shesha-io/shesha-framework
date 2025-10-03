@@ -77,7 +77,6 @@ namespace Shesha.Api
         }
 
         [HttpGet]
-        [AbpAuthorize("System Administrator")]
         public async Task<string> ShutdownAsync()
         {
             _applicationLifetime. StopApplication();
