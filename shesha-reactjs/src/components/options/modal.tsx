@@ -43,7 +43,6 @@ export interface ITableViewSelectorSettingsModal {
   onChange?: any;
   readOnly: boolean;
   settings?: FormMarkup;
-  settingsMarkupFactory?: () => { components: FormMarkup };
 }
 
 export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsModal> = ({
@@ -51,7 +50,6 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
   onChange,
   hideModal,
   settings,
-  settingsMarkupFactory,
 }) => {
   const { items, readOnly } = useLayerGroupConfigurator();
   useDeepCompareEffect(() => {
@@ -62,8 +60,6 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
     if (typeof onChange === 'function') onChange(items);
     hideModal();
   };
-
-  const resolvedSettings = settingsMarkupFactory ? settingsMarkupFactory().components : settings;
 
   return (
     <Modal
@@ -76,7 +72,7 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
       onOk={updateFilters}
       okButtonProps={{ hidden: readOnly }}
     >
-      <LayerGroupConfigurator settings={resolvedSettings} />
+      <LayerGroupConfigurator settings={settings} />
     </Modal>
   );
 };

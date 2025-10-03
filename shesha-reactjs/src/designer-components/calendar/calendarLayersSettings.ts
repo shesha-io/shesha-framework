@@ -1,6 +1,7 @@
 
 import { DesignerToolbarSettings } from '@/index';
 import { nanoid } from '@/utils/uuid';
+import { FormLayout } from 'antd/es/form/Form';
 
 export const getSettings = () => {
   const searchableTabsId = nanoid();
@@ -346,7 +347,7 @@ export const getSettings = () => {
       }).toJson(),
     formSettings: {
       colon: false,
-      layout: 'vertical',
+      layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
       wrapperCol: { span: 24 }
     }
