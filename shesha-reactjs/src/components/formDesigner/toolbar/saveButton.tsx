@@ -58,8 +58,6 @@ export const SaveButton: FC<ISaveButtonProps> = (props) => {
           type={props.type}
           size={props.size}
           disabled={!isModified}
-        >
-            Save
-        </Button>
+        />
   );
 };

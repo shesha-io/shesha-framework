@@ -11,9 +11,6 @@ export enum StoredFilesActionEnums {
   DeleteFileRequest = 'DELETE_FILE_REQUEST',
   DeleteFileSuccess = 'DELETE_FILE_SUCCESS',
   DeleteFileError = 'DELETE_FILE_ERROR',
-  DowloadZipRequest = 'DOWLOAD_ZIP_REQUEST',
-  DowloadZipSuccess = 'DOWLOAD_ZIP_SUCCESS',
-  DowloadZipError = 'DOWLOAD_ZIP_ERROR',
   FetchFileListRequest = 'FETCH_FILE_LIST_REQUEST',
   FetchFileListSuccess = 'FETCH_FILE_LIST_SUCCESS',
   FetchFileListError = 'FETCH_FILE_LIST_ERROR',
@@ -23,6 +20,8 @@ export enum StoredFilesActionEnums {
   OnFileAdded = 'ON_FILE_ADDED',
   OnFileDeleted = 'ON_FILE_REMOVED',
   InitializeFileList = 'INITIALIZE_FILE_LIST',
+  UpdateIsDownloadedSuccess = 'UPDATE_IS_DOWNLOADED_SUCCESS',
+  UpdateAllFilesDownloadedSuccess = 'UPDATE_ALL_FILES_DOWNLOADED_SUCCESS',
 
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
@@ -55,29 +54,16 @@ export const uploadFileErrorAction = createAction<IStoredFilesStateContext, ISto
 
 export const deleteFileRequestAction = createAction<IStoredFilesStateContext, string>(
   StoredFilesActionEnums.DeleteFileRequest,
-  (fileIdToDelete) => ({ fileIdToDelete })
+  (fileIdToDelete) => ({ fileId: fileIdToDelete })
 );
 
 export const deleteFileSuccessAction = createAction<IStoredFilesStateContext, string>(
   StoredFilesActionEnums.DeleteFileSuccess,
-  (fileIdToDelete) => ({ fileIdToDelete })
+  (fileIdToDelete) => ({ fileId: fileIdToDelete })
 );
 export const deleteFileErrorAction = createAction<IStoredFilesStateContext, string>(
   StoredFilesActionEnums.DeleteFileError,
-  (fileIdToDelete) => ({ fileIdToDelete })
-);
-
-export const dowloadZipRequestAction = createAction<IStoredFilesStateContext>(
-  StoredFilesActionEnums.DowloadZipRequest,
-  () => ({})
-);
-export const dowloadZipSuccessAction = createAction<IStoredFilesStateContext>(
-  StoredFilesActionEnums.DowloadZipSuccess,
-  () => ({})
-);
-export const dowloadZipErrorAction = createAction<IStoredFilesStateContext>(
-  StoredFilesActionEnums.DowloadZipError,
-  () => ({})
+  (fileIdToDelete) => ({ fileId: fileIdToDelete })
 );
 
 export const fetchFileListRequestAction = createAction<IStoredFilesStateContext>(
@@ -113,12 +99,22 @@ export const onFileAddedAction = createAction<IStoredFilesStateContext, IStoredF
 
 export const onFileDeletedAction = createAction<IStoredFilesStateContext, string>(
   StoredFilesActionEnums.OnFileDeleted,
-  (fileIdToDelete) => ({ fileIdToDelete })
+  (fileIdToDelete) => ({ fileId: fileIdToDelete })
 );
 
 export const initializeFileListAction = createAction<IStoredFilesStateContext, IStoredFile[]>(
   StoredFilesActionEnums.InitializeFileList,
   (fileList) => ({ fileList })
+);
+
+export const updateIsDownloadedByCurrentUser = createAction<IStoredFilesStateContext, string>(
+  StoredFilesActionEnums.UpdateIsDownloadedSuccess,
+  (fileId) => ({ fileId })
+);
+
+export const updateAllFilesDownloadedByCurrentUser = createAction<IStoredFilesStateContext>(
+  StoredFilesActionEnums.UpdateAllFilesDownloadedSuccess,
+  () => ({})
 );
 
 /* NEW_ACTION_GOES_HERE */

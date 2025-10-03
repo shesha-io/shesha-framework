@@ -321,33 +321,36 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   return (
     <ShaFormProvider shaForm={shaForm}>
       <ShaForm.MarkupProvider markup={flatMarkup}>
-        <FormProvider
-          key={state.mode} /* important for re-rendering of the provider after mode change */
-          form={form}
-          name=""
-          formSettings={formSettings}
-          mode={state.mode === 'read' ? 'readonly' : 'edit'}
-          isActionsOwner={false}
-          formRef={formRef}
-          shaForm={shaForm}
-        >
-        <FormWrapper
-          form={form}
-          initialValues={contextValue.initialValues}
-          onValuesChange={onValuesChange}
-          formSettings={formSettings}
-          delayedUpdate={delayedUpdate}
-        >
-          <InternalCrudProvider
-            {...props}
-            context={contextValue}
-            delayedUpdate={delayedUpdate}
-            onValuesChange={onValuesChange}
-            setInitialValues={setInitialValues}
-            setInitialValuesLoading={setInitialValuesLoading}
-          />
-        </FormWrapper>
-        </FormProvider>
+        {/* Use ParentProvider to provide correct formApi */}
+        <ParentProvider formApi={shaForm.getPublicFormApi()} formFlatMarkup={flatMarkup} model={undefined}>
+          <FormProvider
+            key={state.mode} /* important for re-rendering of the provider after mode change */
+            form={form}
+            name=""
+            formSettings={formSettings}
+            mode={state.mode === 'read' ? 'readonly' : 'edit'}
+            isActionsOwner={false}
+            formRef={formRef}
+            shaForm={shaForm}
+          >
+            <FormWrapper
+              form={form}
+              initialValues={contextValue.initialValues}
+              onValuesChange={onValuesChange}
+              formSettings={formSettings}
+              delayedUpdate={delayedUpdate}
+            >
+              <InternalCrudProvider
+                {...props}
+                context={contextValue}
+                delayedUpdate={delayedUpdate}
+                onValuesChange={onValuesChange}
+                setInitialValues={setInitialValues}
+                setInitialValuesLoading={setInitialValuesLoading}
+              />
+            </FormWrapper>
+          </FormProvider>
+        </ParentProvider>
       </ShaForm.MarkupProvider>
     </ShaFormProvider>
   );

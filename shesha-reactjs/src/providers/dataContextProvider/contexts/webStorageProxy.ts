@@ -14,14 +14,17 @@ export class WebStorageProxy {
   private _prefix: string;
 
   private serialize(value: unknown): string {
-    // TODO: Alex, please review. I repeated old logic but there should be type checks and most probably JSON serialization
-    return isDefined(value) ? value.toString() : "";
+    return JSON.stringify(value); // undefined ans null will be serialized as 'undefined' and 'null'
   }
 
-  private deserialize(value: string | null): string | null {
-    // TODO: Alex, please review. I added this method as a pair for serialize. If the storage allows to store non-string values,
-    // please add type checks and implement JSON deserialization. Otherwise restrict support to strings only
-    return value;
+  private deserialize(value: string | null | undefined): unknown {
+    return isDefined(value)
+      ? value === 'undefined'
+        ? undefined
+        : value === 'null'
+          ? null
+          : JSON.parse(value)
+      : value;
   }
 
   setItem(key: string, value: unknown): void {
@@ -42,7 +45,7 @@ export class WebStorageProxy {
       this._onChangeHandler();
   }
 
-  getItem(key: string): string | null {
+  getItem(key: string): unknown {
     const value = window[this._storage].getItem(`${this._prefix}${key}`);
     return this.deserialize(value);
   }

@@ -402,8 +402,9 @@ const getSettingValue = (
         : unproxiedValue._mode === 'value'
           ? unproxiedValue._value
           : undefined;
-      processedObjects.push(v);
-      return v;
+      const upv = unproxyValue(v);
+      processedObjects.push(upv);
+      return upv;
     }
 
     // update nested objects
