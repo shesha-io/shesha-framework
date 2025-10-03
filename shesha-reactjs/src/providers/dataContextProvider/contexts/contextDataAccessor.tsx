@@ -22,13 +22,17 @@ export const GetShaContextDataAccessor = <TData extends object = object>(onChang
   };
 
   const setData = (inputData: TData): void => {
-    data = inputData;
-    onChange();
+    if (data !== inputData) {
+      data = inputData;
+      onChange();
+    }
     saveWebStorage(data);
   };
 
   return CreateDataAccessor(() => data, setData, setFieldValue);
 };
+
+const emptyData = {};
 
 export const useShaDataContextAccessor = <TData extends object = object>(
   onChangeContextData: () => void,
@@ -55,7 +59,7 @@ export const useShaDataContextAccessor = <TData extends object = object>(
     // reset context data on unmount
     return () => {
       if (type === 'page' || type === 'form')
-        storage.current?.setData({} as TData);
+        storage.current?.setData(emptyData as TData);
     };
   });
 
