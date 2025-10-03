@@ -106,7 +106,7 @@ export const DataTypes = {
       case 'number':
           return ['numberField', 'slider', 'text', 'textField'];
       case 'date':
-      case 'dateTime':
+      case 'date-time':
         return ['dateField', 'text', 'textField'];
       case 'time':
         return ['timePicker', 'text', 'textField'];

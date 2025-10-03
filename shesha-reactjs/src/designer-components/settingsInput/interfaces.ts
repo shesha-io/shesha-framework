@@ -10,6 +10,7 @@ import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { GetResultTypeFunc } from '../codeEditor/interfaces';
 import { IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { ILabelValueEditorProps } from '@/components/labelValueEditor/labelValueEditor';
+import { ISetFormDataPayload } from '@/providers/form/contexts';
 
 export interface IRadioOption {
   value: string | number;
@@ -44,6 +45,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelVa
   dropdownOptions?: IDropdownOption[] | string;
   readOnly?: boolean;
   onChange?: (value: any) => void;
+  onChangeSetting?: (value: any, data?: any, setFormData?: (data: ISetFormDataPayload) => void) => void;
   editorConfig?: IConfigurableActionConfiguratorComponentProps;
   level?: number;
   allowedActions?: string[];

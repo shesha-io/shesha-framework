@@ -61,10 +61,6 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
               })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textField', propertyName: 'label', label: 'Label', validate: { required: true } })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textArea', propertyName: 'description', label: 'Description' })
-              .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'formatting.defaultEditor', label: 'Default Editor', mode: 'single',
-                defaultValue: { _value: '', _mode: 'code', _code: defaultEditorCode } as any,
-                dropdownOptions: { _value: '', _mode: 'code', _code: editorsCode } as any,
-              })
               .toJson(),
             ],
           },
@@ -126,6 +122,10 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
                         { label: 'List of files', value: 'attachmentsEditor' },
                         { label: 'Notes', value: 'notes' },
                       ],
+                      onChangeSetting: (_value, _data, setFormData) => {
+                        const newData = { formatting: { defaultEditor: null } };
+                        setFormData({ values: newData, mergeValues: true });
+                      },
                     })
                     .toJson(),
                   ],
@@ -171,8 +171,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
                           { label: 'Nested object', value: 'object' },
                           { label: 'Part of entity', value: 'interface' },
                         ],
-                      },
-                    ],
+                      }],
                     hidden: { _code: 'return data?.dataFormat !== \'object\';', _mode: 'code', _value: false },
                     })
                     .addSettingsInputRow({ parentId: listFormatId, inputs: [
@@ -190,7 +189,6 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
                     hidden: { _code: 'return data?.dataFormat !== \'multivalue-reference-list\';', _mode: 'code', _value: false },
                     })
 
-
                   // simple
 
                     .addContainer({ id: listFormatId, parentId: dataTabId, hidden: { _code: 'return data?.dataFormat !== \'simple\';', _mode: 'code', _value: false },
@@ -201,7 +199,15 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
                   ],
                 })
 
+              // Default editor
+
+                .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'formatting.defaultEditor', label: 'Default Editor', mode: 'single',
+                  defaultValue: { _value: '', _mode: 'code', _code: defaultEditorCode } as any,
+                  dropdownOptions: { _value: '', _mode: 'code', _code: editorsCode } as any,
+                })
+
               // Validation message
+
                 .addSettingsInput({ parentId: dataTabId, inputType: 'textField', propertyName: 'validationMessage', label: 'Validation Message' })
 
                 .toJson(),
