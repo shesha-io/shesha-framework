@@ -248,18 +248,21 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                         : null );
 
             // Class Attributes
-            // Set Table
-            SetAttribute(
-                typeBuilder, 
-                typeof(TableAttribute), 
-                [entityConfig.TableName.NotNull()], 
-                new Dictionary<string, object?> {{ "Schema", entityConfig.SchemaName}}
-            );
-            // Set Discriminator
-            SetAttribute(typeBuilder, typeof(DiscriminatorAttribute), []);
-            SetAttribute(typeBuilder, typeof(DiscriminatorValueAttribute), [entityConfig.DiscriminatorValue.NotNull()]);
-            // Set name convention
-            SetAttribute(typeBuilder, typeof(SnakeCaseNamingAttribute), []);
+            if (entityConfig.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
+            {
+                // Set Table
+                SetAttribute(
+                    typeBuilder,
+                    typeof(TableAttribute),
+                    [entityConfig.TableName.NotNull()],
+                    new Dictionary<string, object?> { { "Schema", entityConfig.SchemaName } }
+                );
+                // Set Discriminator
+                SetAttribute(typeBuilder, typeof(DiscriminatorAttribute), []);
+                SetAttribute(typeBuilder, typeof(DiscriminatorValueAttribute), [entityConfig.DiscriminatorValue.NotNull()]);
+                // Set name convention
+                SetAttribute(typeBuilder, typeof(SnakeCaseNamingAttribute), []);
+            }
 
             var typeBuilderType = new EntityTypeBuilderType()
             {
