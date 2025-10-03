@@ -55,8 +55,7 @@ namespace Shesha.ReferenceLists
             dto.Items = await _refListHelper.GetItemsAsync(refList.Id);
 
             var json = JsonConvert.SerializeObject(dto);
-            dto.CacheMd5 = GetMd5(dto);
-            await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, input.Module, input.Name, dto.CacheMd5);
+            //await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, input.Module, input.Name, dto.CacheMd5);
 
             return dto;
         }

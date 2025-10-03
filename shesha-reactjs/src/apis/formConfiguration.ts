@@ -3,11 +3,6 @@ import * as RestfulShesha from '@/utils/fetchers';
 import { FormIdFullNameDto } from './entityConfig';
 
 /**
- * Status of the Shesha.Domain.ConfigurationItem
- */
-export type ConfigurationItemVersionStatus = 1 | 2 | 3 | 4 | 5;
-
-/**
  * Form configuration DTO
  */
 export interface FormConfigurationDto {

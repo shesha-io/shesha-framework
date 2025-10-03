@@ -59,7 +59,20 @@ namespace Shesha.ConfigurationItems
         /// <returns></returns>
         Task<ConfigurationItem> ExposeAsync(ConfigurationItem item, Module module);
 
+        /// <summary>
+        /// Get configuration item by pair: module and name
+        /// </summary>
+        /// <param name="module">Module name</param>
+        /// <param name="name">Item name</param>
+        /// <returns></returns>
         Task<ConfigurationItem> GetItemAsync(string module, string name);
+
+        /// <summary>
+        /// Get configuration item by id
+        /// </summary>
+        /// <param name="id">Item id</param>
+        /// <returns></returns>
+        Task<ConfigurationItem> GetAsync(Guid id);
 
         Task<ConfigurationItem> CreateItemAsync(CreateItemInput input);
 

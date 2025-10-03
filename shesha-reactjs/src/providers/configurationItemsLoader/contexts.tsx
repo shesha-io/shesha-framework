@@ -1,9 +1,9 @@
-import { IReferenceList } from '@/interfaces/referenceList';
 import { PromisedValue } from '@/utils/promises';
 import { IComponentSettings } from '../appConfigurator/models';
 import { FormFullName, FormIdentifier, IFormDto } from '../form/models';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { createNamedContext } from '@/utils/react';
+import { ReferenceListDto } from './models';
 
 export interface IConfigurationItemsLoaderStateContext {
   activeProvider?: string;
@@ -36,13 +36,12 @@ export interface IClearFormCachePayload {
 }
 
 export interface IConfigurationItemsLoaderActionsContext {
-  getCachedForm: (payload: IGetFormPayload) => Promise<IFormDto> | null;
   getForm: (payload: IGetFormPayload) => Promise<IFormDto>;
-  getRefList: (payload: IGetRefListPayload) => PromisedValue<IReferenceList>;
+  clearFormCache: (payload: IClearFormCachePayload) => void;
+
+  getRefList: (payload: IGetRefListPayload) => PromisedValue<ReferenceListDto>;
   getComponent: (payload: IGetComponentPayload) => PromisedValue<IComponentSettings>;
   updateComponent: (payload: IUpdateComponentPayload) => Promise<void>;
-
-  clearFormCache: (payload: IClearFormCachePayload) => void;
   getEntityFormId: (className: string, formType: string) => Promise<FormFullName>;
 }
 

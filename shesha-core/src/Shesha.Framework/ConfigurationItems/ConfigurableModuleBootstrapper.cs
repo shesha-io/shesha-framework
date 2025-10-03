@@ -217,13 +217,15 @@ namespace Shesha.ConfigurationItems
 
             var level = 0;
             var baseModulesOld = _moduleHierarchyProvider.GetBaseModules(module.Name)
-                .Select(m => new { BaseModule = m, Level = level++ })
+                .Select(m => new BaseModuleWithLevel(m, level++))
                 .ToList();
 
-            level = 0;
+            level = 1;
             var baseModules = _moduleHierarchyProvider.GetFullHierarchy(module.Name)
-                .Select(m => new { BaseModule = m, Level = level++ })
+                .Select(m => new BaseModuleWithLevel(m, level++))
                 .ToList();
+            // add module to it's hierarchy to simplify hierarchical queries
+            baseModules.Insert(0, new BaseModuleWithLevel(module.Name, 0));
 
             foreach (var baseModule in baseModules)
             {
@@ -257,6 +259,21 @@ namespace Shesha.ConfigurationItems
             foreach (var toDelete in dbRelations) 
             {
                 await _moduleRelationRepo.DeleteAsync(toDelete);
+            }
+        }
+
+        private class BaseModuleWithLevel
+        {
+            public string BaseModule { get; set; }
+            public int Level { get; set; }
+            public BaseModuleWithLevel(string baseModule, int level) 
+            { 
+                BaseModule = baseModule;
+                Level = level;
+            }
+            public override string ToString()
+            {
+                return $"{Level} - {BaseModule}";
             }
         }
 
