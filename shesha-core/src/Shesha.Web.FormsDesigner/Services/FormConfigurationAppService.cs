@@ -200,13 +200,11 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var dto = await MapToEntityDtoAsync(form);
 
-            dto.CacheMd5 = GetMd5(dto);
-            await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, dto.CacheMd5);
+            //await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, dto.CacheMd5);
 
             if (!await CheckFormPermissionsAsync(form.Module?.Name, form.Name))
             {
                 dto.Markup = null;
-                dto.CacheMd5 = "";
             }
 
             return dto;
@@ -225,15 +223,13 @@ namespace Shesha.Web.FormsDesigner.Services
             var form = await Repository.GetAsync(input.Id);
 
             var dto = await MapToEntityDtoAsync(form);
-            dto.CacheMd5 = GetMd5(dto);
 
             // add MD5 to request
-            await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, input.Id, dto.CacheMd5);
+            //await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, input.Id, dto.CacheMd5);
 
             if (!await CheckFormPermissionsAsync(form.Module?.Name, form.Name))
             {
                 dto.Markup = null;
-                dto.CacheMd5 = "";
             }
 
             return dto;

@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, /* useRef,*/ useState } from 'react';
 import { IReferenceList, IReferenceListItem } from '@/interfaces/referenceList';
-import { PromisedValue } from '@/utils/promises';
+import { PromisedValue, StatefulPromise } from '@/utils/promises';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
   IGetReferenceListPayload,
@@ -15,6 +15,7 @@ const ReferenceListDispatcherProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
   const loader = useConfigurationItemsLoader();
+
 
   const getReferenceList = (payload: IGetReferenceListPayload): PromisedValue<IReferenceList> => {
     return loader.getRefList({
@@ -62,13 +63,7 @@ const getRefListItemByValue = (list: IReferenceList, itemValue: number | null | 
 };
 
 const makeRefListIdNotSpecifiedPromise = (): PromisedValue<IReferenceList> => {
-  return {
-    isPending: true,
-    isResolved: false,
-    isRejected: false,
-    promise: Promise.reject<IReferenceList>("Reference List identifier must be specified"),
-    error: null,
-  };
+  return new StatefulPromise(Promise.reject<IReferenceList>("Reference List identifier must be specified"));
 };
 
 const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IReferenceList> => {

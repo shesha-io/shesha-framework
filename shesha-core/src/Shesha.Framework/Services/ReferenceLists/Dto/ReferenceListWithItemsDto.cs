@@ -9,10 +9,5 @@ namespace Shesha.Services.ReferenceLists.Dto
     {
 
         public List<ReferenceListItemDto> Items { get; set; } = new List<ReferenceListItemDto>();
-
-        /// <summary>
-        /// Cache MD5, is used for client-side caching
-        /// </summary>
-        public string CacheMd5 { get; set; }
     }
 }

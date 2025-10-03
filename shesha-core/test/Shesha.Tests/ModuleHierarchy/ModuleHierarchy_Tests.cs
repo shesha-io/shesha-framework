@@ -199,6 +199,59 @@ namespace Shesha.Tests.ModuleHierarchy
             });
         }
 
+        [Fact]
+        public async Task When_ExposedOnTopLevel_SHould_ReturnTopLevel()
+        {
+            /*
+             * case: 
+             *  modules hierarchy: TestModule > ModuleA > ModuleB > Shesha
+             *  forms:
+             *      Shesha/form-top-level declared
+             *      TestModule/form-top-level exposed from Shesha
+             *  current module: TestModule
+             * expectations:
+             *  request Shesha/form-top-level should return TestModule/form-top-level
+             *  request TestModule/form-top-level should return TestModule/form-top-level
+             */
+
+            var formManager = Resolve<FormManager>();
+            var moduleManager = Resolve<IModuleManager>();
+
+            var formName = "form-top-level";
+
+            await DeleteFormFromAllModulesAsync(formName);
+
+            var uowManager = Resolve<IUnitOfWorkManager>();
+
+            await WithUnitOfWorkAsync(async () => {
+
+                var sheshaModule = await moduleManager.GetModuleAsync(SheshaFrameworkModule.ModuleName);
+
+                // 1. Create Shesha form
+                var sheshaForm1 = await formManager.CreateItemAsync(new Shesha.ConfigurationItems.Models.CreateItemInput
+                {
+                    Module = sheshaModule,
+                    Name = formName,
+                });
+
+                Assert.NotNull(sheshaForm1);
+
+                // 2. Expose form1 to ModuleA
+                var testModule = await moduleManager.GetModuleAsync(SheshaTestModule.ModuleName);
+                var exposedInTestModule = await formManager.ExposeAsync(sheshaForm1, testModule);
+
+                await uowManager.Current.SaveChangesAsync();
+
+                // 3. Resolve Shesha form (expect TestModule form)
+                var resolvedSheshaForm = await formManager.GetItemAsync(SheshaFrameworkModule.ModuleName, formName);
+                resolvedSheshaForm.ShouldBe(exposedInTestModule, $"Manager must resolve form `{SheshaFrameworkModule.ModuleName}/{formName}` as `{SheshaTestModule.ModuleName}/{formName}`");
+
+                // 5. Resolve TestModule form (expect TestModule form)
+                var resolvedTestModuleForm = await formManager.GetItemAsync(SheshaTestModule.ModuleName, formName);
+                resolvedTestModuleForm.ShouldBe(exposedInTestModule, $"Manager must resolve form `{SheshaTestModule.ModuleName}/{formName}` as `{SheshaTestModule.ModuleName}/{formName}`");
+            });
+        }
+
         /*
         TODO: test exceptions when item not found in different operations (expose, get etc.)
         TODO: test exception when item is already exposed

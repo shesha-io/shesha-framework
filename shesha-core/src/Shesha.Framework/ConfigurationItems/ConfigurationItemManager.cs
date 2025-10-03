@@ -129,8 +129,6 @@ namespace Shesha.ConfigurationItems
             var dto = new ConfigurationItemDto
             {
                 Id = item.Id,
-                ModuleId = item.Module?.Id,
-                OriginId = item.Origin?.Id,
                 Module = item.Module?.Name,
                 Name = item.Name,
                 Label = item.Label,
@@ -197,7 +195,7 @@ namespace Shesha.ConfigurationItems
             if (actualItem == null)
                 throw new ConfigurationItemNotFoundException(Discriminator, module, name, null);
 
-            return await Repository.GetAsync(actualItem.ItemId);
+            return await GetAsync(actualItem.ItemId);
         }
 
         public virtual async Task<TItem> CreateItemAsync(CreateItemInput input) 
@@ -308,6 +306,11 @@ namespace Shesha.ConfigurationItems
             var json = JsonConvert.SerializeObject(dto);
             var md5 = json.ToMd5Fingerprint();
             return Task.FromResult(md5);
+        }
+
+        public async Task<ConfigurationItem> GetAsync(Guid id)
+        {
+            return await Repository.GetAsync(id);
         }
     }
 }

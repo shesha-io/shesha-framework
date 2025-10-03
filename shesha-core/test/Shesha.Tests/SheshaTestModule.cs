@@ -45,7 +45,8 @@ namespace Shesha.Tests
     )]
     public class SheshaTestModule : SheshaModule
     {
-        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo("Shesha.Tests")
+        public const string ModuleName = "Shesha.Tests";
+        public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
         {
             FriendlyName = "Shesha Tests",
             Publisher = "Boxfusion",

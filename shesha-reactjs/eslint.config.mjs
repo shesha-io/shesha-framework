@@ -255,6 +255,13 @@ const baseTsConfig = {
     },
 
     rules: {
+        "no-restricted-globals": [
+            "error",
+            {
+                "name": "module",
+                "message": "Avoid using module global, use ES6 modules instead"
+            }
+        ],
         "memory-monitor/track-memory": "off",
         ...hooksPlugin.configs.recommended.rules,
         ...reactPlugin.configs.recommended.rules,
