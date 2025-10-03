@@ -300,13 +300,20 @@ export const ReactTable: FC<IReactTableProps> = ({
         let oldIndex = -1;
         let newIndex = -1;
 
-        for (let i = 0; i < oldRows.length; i++) {
-          if (oldRows[i] !== newRows[i]) {
-            if (oldIndex === -1) {
-              const movedItem = newRows[i];
-              oldIndex = oldRows.findIndex(item => item === movedItem);
-              newIndex = i;
-              break;
+        const oldPositions = new Map(oldRows.map((item, idx) => [item, idx]));
+        const newPositions = new Map(newRows.map((item, idx) => [item, idx]));
+
+        let maxDistance = -1;
+        for (const [item, newPos] of newPositions) {
+          const oldPos = oldPositions.get(item);
+          if (oldPos !== undefined && oldPos !== newPos) {
+            if (oldRows[oldPos] === item && newRows[oldPos] !== item) {
+              const distance = Math.abs(oldPos - newPos);
+              if (distance > maxDistance) {
+                maxDistance = distance;
+                oldIndex = oldPos;
+                newIndex = newPos;
+              }
             }
           }
         }
