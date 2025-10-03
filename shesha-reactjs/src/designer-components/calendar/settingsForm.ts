@@ -72,7 +72,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'items',
                                     label: 'Layer Selector Settings Modal',
                                     hideLabel: true,
-                                    settingsMarkupFactory: getCalendarLayersSettings,
+                                    settings: getCalendarLayersSettings(),
                                 })
                                 .addSettingsInputRow({
                                     id: nanoid(),
