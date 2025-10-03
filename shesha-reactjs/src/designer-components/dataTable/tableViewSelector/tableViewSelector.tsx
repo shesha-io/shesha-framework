@@ -1,12 +1,13 @@
 import _ from 'lodash';
 import React, { FC, useEffect } from 'react';
 import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
-import { Alert } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Popover } from 'antd';
 import { evaluateDynamicFilters } from '@/utils';
 import { ITableViewSelectorComponentProps } from './models';
-import { useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
-import { useDataContextManagerOrUndefined } from '@/providers/dataContextManager';
+import { useTheme } from '@/providers/theme';
 import {
+  useDataContextManagerOrUndefined,
   useDataFetchDependency,
   useDataTableStore,
   useGlobalState,
@@ -15,6 +16,7 @@ import {
 } from '@/providers';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
 
 interface ITableViewSelectorProps extends ITableViewSelectorComponentProps {
 }
@@ -24,6 +26,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
   filters,
   hidden,
   persistSelectedFilters,
+  showIcon,
 }) => {
   const {
     changeSelectedStoredFilterIds,
@@ -33,6 +36,8 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     changePersistedFiltersToggle,
     modelType,
   } = useDataTableStore();
+
+  const { theme } = useTheme();
 
   // ToDo: AS - need to optimize
   useShaFormDataUpdate();
@@ -46,9 +51,25 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
   const selectedFilterId =
-        selectedStoredFilterIds && selectedStoredFilterIds.length > 0 ? selectedStoredFilterIds[0] : null;
+    selectedStoredFilterIds && selectedStoredFilterIds.length > 0 ? selectedStoredFilterIds[0] : null;
 
   const dataFetchDep = useDataFetchDependency(id);
+
+  // Inject CSS for hint popover arrow styling
+  useEffect(() => {
+    const styleId = 'sha-table-view-selector-hint-popover-styles';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.innerHTML = `
+        .sha-table-view-selector-hint-popover .ant-popover-arrow:before,
+        .sha-table-view-selector-hint-popover .ant-popover-arrow:after {
+          background: #D9DCDC !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }, []);
 
   //#region Filters
   const debounceEvaluateDynamicFiltersHelper = () => {
@@ -92,18 +113,59 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
 
   if (!defaultTitle) {
     if (isDesignerMode) {
-      return <Alert message="Please make sure that you have at least 1 filter" type="warning" showIcon />;
+      // WYSIWYG fallback when no filters are configured
+      return (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}
+        >
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '4px 8px',
+            border: '1px solid #d9d9d9',
+            borderRadius: '6px',
+            backgroundColor: '#fafafa',
+            color: '#8c8c8c',
+            fontSize: '14px',
+            fontWeight: 600,
+          }}
+          >
+            View: Default
+          </div>
+          <Popover
+            placement="right"
+            title="Hint:"
+            overlayClassName="sha-table-view-selector-hint-popover"
+            overlayInnerStyle={{
+              backgroundColor: '#D9DCDC',
+            }}
+            content={(
+<p>The Table View Selector needs at least<br />one filter configured to be functional.<br />Add filters in the component settings.
+              <br />
+              <br />
+              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
+</p>
+            )}
+          >
+            <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
+          </Popover>
+        </div>
+      );
     }
 
     return null;
   }
 
   return (
-        <TableViewSelectorRenderer
-          hidden={hidden && !isDesignerMode}
-          filters={predefinedFilters || []}
-          onSelectFilter={changeSelectedFilter}
-          selectedFilterId={selectedFilterId}
-        />
+    <TableViewSelectorRenderer
+      hidden={hidden && !isDesignerMode}
+      filters={predefinedFilters || []}
+      onSelectFilter={changeSelectedFilter}
+      selectedFilterId={selectedFilterId}
+      showIcon={showIcon}
+    />
   );
 };

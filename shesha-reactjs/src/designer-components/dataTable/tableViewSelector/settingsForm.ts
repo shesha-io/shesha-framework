@@ -51,6 +51,15 @@ export const getSettings = (data: any) => {
                   jsSetting: true,
                   layout: 'horizontal',
                 })
+                .addSettingsInput({
+                  inputType: 'switch',
+                  id: 'showIcon-s4gmBg31azZC0UjZjpfTm',
+                  propertyName: 'showIcon',
+                  label: 'Show Icon',
+                  description: 'Display the layout icon next to the View label',
+                  defaultValue: true,
+                  layout: 'horizontal',
+                })
                 .toJson(),
             ],
           },
