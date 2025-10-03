@@ -4,12 +4,12 @@ export interface IWebStorageProxy {
   updateOnChangeHandler: (func: () => void) => void;
 };
 
-export type webStorageType = 'localStorage' | 'sessionStorage';
+export type WebStorageType = 'localStorage' | 'sessionStorage';
 
 export class WebStorageProxy {
   private _onChangeHandler?: () => void;
 
-  private _storage: webStorageType;
+  private _storage: WebStorageType;
 
   private _prefix: string;
 
@@ -58,7 +58,7 @@ export class WebStorageProxy {
     this._onChangeHandler = func;
   }
 
-  constructor(storage: webStorageType = 'localStorage', prefix: string = '') {
+  constructor(storage: WebStorageType = 'localStorage', prefix: string = '') {
     this._storage = storage;
     this._prefix = prefix;
     return new Proxy(this, {

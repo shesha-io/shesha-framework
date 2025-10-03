@@ -6,11 +6,11 @@ import { DataContextType, ContextOnChangeData, ContextSetFieldValue } from "./co
 import DataContextBinder from "./dataContextBinder";
 import { setValueByPropertyName } from "@/utils/object";
 import { IApplicationContext, useAvailableConstantsDataNoRefresh } from "../form/utils";
-import { GetShaContextDataAccessor, IShaDataWrapper } from "./contexts/shaDataAccessProxy";
+import { IShaDataWrapper } from "./contexts/shaDataAccessProxy";
 import { IAnyObject } from "@/interfaces";
 import { isDefined } from "@/utils/nullables";
 import { Path } from "@/utils/dotnotation";
-import { useRefInitialized } from '@/hooks';
+import { GetShaDataContextAccessor, useShaDataContextAccessor } from "./contexts/contextDataAccessor";
 
 export interface IDataContextProviderProps<TData extends object> {
   id: string;
@@ -22,6 +22,7 @@ export interface IDataContextProviderProps<TData extends object> {
   onChangeData?: ContextOnChangeData | undefined;
   onChangeAction?: IConfigurableActionConfiguration | undefined;
   onInitAction?: IConfigurableActionConfiguration | undefined;
+  getShaDataContextAccessor?: GetShaDataContextAccessor<TData>;
 }
 
 export const DataContextProvider = <TData extends object = object>(props: PropsWithChildren<IDataContextProviderProps<TData>>): React.ReactElement => {
@@ -33,6 +34,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
     type,
     initialData,
     metadata,
+    getShaDataContextAccessor,
   } = props;
 
   const { onChangeContextData } = useDataContextManagerActions();
@@ -40,7 +42,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
   const allData = useRef<IApplicationContext>(undefined);
   allData.current = useAvailableConstantsDataNoRefresh({ topContextId: id });
 
-  const storage = useRefInitialized<IShaDataWrapper<TData>>(() => GetShaContextDataAccessor<TData>(onChangeContextData) as IShaDataWrapper<TData>);
+  const storage = useShaDataContextAccessor<TData>(onChangeContextData, type, getShaDataContextAccessor);
 
   const initialDataRef = useRef<IAnyObject>(undefined);
 
@@ -50,11 +52,11 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
   }
 
   const getFieldValue = (name: string): unknown => {
-    return storage.current.getFieldValue(name as Path<TData>);
+    return storage.getFieldValue(name as Path<TData>);
   };
 
   const getData = (): IShaDataWrapper<TData> => {
-    return storage.current as IShaDataWrapper<TData>;
+    return storage as IShaDataWrapper<TData>;
   };
 
   const onChangeAction = (changedData: Partial<TData>): void => {
@@ -73,13 +75,13 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
   };
 
   const setFieldValue: ContextSetFieldValue<TData> = (name, value): void => {
-    storage.current.setFieldValue(name, value);
+    storage.setFieldValue(name, value);
     const partial = setValueByPropertyName({} as TData, name.toString(), value, false) as Partial<TData>;
     onChangeAction(partial);
   };
 
   const setDataInternal = (changedData: TData): void => {
-    storage.current.setData(changedData);
+    storage.setData(changedData);
 
     if (onChangeData.current)
       onChangeData.current(changedData, changedData);
@@ -109,7 +111,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
       name={name}
       description={description}
       type={type}
-      data={storage.current}
+      data={storage}
       metadata={metadata}
       setFieldValue={setFieldValue}
       getFieldValue={getFieldValue}

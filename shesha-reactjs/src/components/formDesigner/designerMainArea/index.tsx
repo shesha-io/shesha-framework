@@ -11,7 +11,6 @@ import { useStyles } from '../styles/styles';
 import Toolbox from '../toolbox';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 
-
 export interface IDesignerMainAreaProps {
 }
 
@@ -71,18 +70,21 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                       wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
                     >
                         <ParentProvider model={null} formMode="designer">
-                            <DataContextProvider
-                              id={SheshaCommonContexts.FormContext}
-                              name={SheshaCommonContexts.FormContext}
-                              type="form"
-                              description="Form designer"
-                            >
-                                <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
-                                    {isDebug && (
-                                        <DebugPanel />
-                                    )}
-                                </ConfigurableFormRenderer>
+                            {/* pageContext has added only to customize the designed form. It is not used as a data context.*/}
+                            <DataContextProvider id="pageContext" name="pageContext" type="page">
+                                <DataContextProvider
+                                  id={SheshaCommonContexts.FormContext}
+                                  name={SheshaCommonContexts.FormContext}
+                                  type="form"
+                                  description="Form designer"
+                                >
+                                    <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
+                                        {isDebug && (
+                                            <DebugPanel />
+                                        )}
+                                    </ConfigurableFormRenderer>
 
+                                </DataContextProvider>
                             </DataContextProvider>
                         </ParentProvider>
                     </ConditionalWrap>

@@ -1,6 +1,6 @@
 import { GHOST_PAYLOAD_KEY } from "@/utils/form";
 import { IFormApi } from "../../form/formApi";
-import { getValueByPropertyName, hasProperty, safeGetProperty, setValueByPropertyName } from "@/utils/object";
+import { getValueByPropertyName, hasProperty, safeGetProperty } from "@/utils/object";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { FieldValueGetter, FieldValueSetter, Path } from '@/utils/dotnotation';
 
@@ -179,19 +179,4 @@ export class ShaDataAccessor<TData extends object = object> implements IShaDataA
 
 export const GetShaFormDataAccessor = <TValues extends object = object>(shaInstance: IFormApi<TValues>): IShaDataAccessor<TValues> => {
   return CreateDataAccessor(() => shaInstance.getFormData(), shaInstance.setFieldsValue, shaInstance.setFieldValue) as IShaDataAccessor<TValues>;
-};
-
-
-export const GetShaContextDataAccessor = <TData extends object = object>(onChange: () => void): IShaDataAccessor<TData> => {
-  let data: TData = {} as TData;
-  const setFieldValue: FieldValueSetter<TData> = (propertyName, value): void => {
-    setValueByPropertyName(data, propertyName.toString(), value);
-    onChange();
-  };
-  const setData = (inputData: TData): void => {
-    data = inputData;
-    onChange();
-  };
-
-  return CreateDataAccessor(() => data, setData, setFieldValue);
 };
