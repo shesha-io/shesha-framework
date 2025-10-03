@@ -678,7 +678,7 @@ export const ReactTable: FC<IReactTableProps> = ({
               height: scrollBodyHorizontally ? height || 250 : 'unset',
               overflowY: scrollBodyHorizontally ? 'auto' : 'unset',
               overflowX: 'unset',
-              ...getBorderStyle(border, {}),
+              ...(rows?.length <= 3 && data?.length <= 3 ? {} : getBorderStyle(border, {})),
             }}
             {...getTableBodyProps()}
           >
@@ -708,7 +708,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                   handle=".row-handle"
                   scroll={true}
                   bubbleScroll={true}
-                  style={getBorderStyle(border, {})}
+                  style={rows?.length <= 3 && data?.length <= 3 ? {} : getBorderStyle(border, {})}
                   className={styles.shaSortable}
                 >
                   {children}
