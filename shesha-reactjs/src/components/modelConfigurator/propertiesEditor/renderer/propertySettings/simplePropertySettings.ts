@@ -39,6 +39,10 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
       editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
       mode: 'single', dropdownOptions: type === 'full' ? typesFullList : typesArrayList,
       allowClear: true, tooltip: 'Select the data type for this property.',
+      onChangeSetting: (_value, _data, setFormData) => {
+        const newData = { formatting: { defaultEditor: null } };
+        setFormData({ values: newData, mergeValues: true });
+      },
     })
 
     // Date & Time format

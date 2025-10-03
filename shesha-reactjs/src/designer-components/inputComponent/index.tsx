@@ -48,10 +48,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   );
 
   const metadataBuilderFactory = useMetadataBuilderFactory();
-  const { formData } = useShaFormInstance();
+  const { formData, setFormData } = useShaFormInstance();
   const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
 
-    propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
+    propertyName, tooltip: description, onChangeSetting, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
     allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true } = props;
 
   const allData = useAvailableConstantsData();
@@ -99,13 +99,18 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
   const verb = props.httpVerb ? evaluateValue(props.httpVerb, { data: formData }) : props.httpVerb;
 
+  const internalOnChange = (v: any) => {
+    onChangeSetting?.(v, formData, setFormData);
+    onChange?.(v);
+  };
+
   switch (type) {
     case 'tooltip':
       return <Icon icon={icon} hint={tooltip} styles={styles} />;
     case 'dataSortingEditor':
-      return <SortingEditor value={value} onChange={onChange} readOnly={readOnly} maxItemsCount={props.maxItemsCount} />;
+      return <SortingEditor value={value} onChange={internalOnChange} readOnly={readOnly} maxItemsCount={props.maxItemsCount} />;
     case 'colorPicker':
-      return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} showText={props.showText} />;
+      return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={internalOnChange} showText={props.showText} />;
     case 'dropdown': {
       const options = dropdownOptions as IDropdownOption[];
       return (
@@ -120,7 +125,8 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   value={!value ? defaultValue : value}
   defaultValue={defaultValue}
   style={{ width: props.width ?? "100%" }}
-  onChange={onChange}
+  onChange={internalOnChange}
+  onSelect={internalOnChange}
   placeholder={placeholder}
   options={[...(options || [])].map((option) => ({ ...option, label: <Icon icon={option.label} size={option.value} styles={styles} hint={tooltip} /> }))}
 />
@@ -128,7 +134,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     }
     case 'radio':
       return (
-<Radio.Group buttonStyle="solid" defaultValue={defaultValue} value={value || defaultValue} onChange={onChange} size={size} disabled={readOnly}>
+<Radio.Group buttonStyle="solid" defaultValue={defaultValue} value={value || defaultValue} onChange={internalOnChange} size={size} disabled={readOnly}>
                 {
                   buttonGroupOptions.map(({ value, icon, title }) => {
                     return <Radio.Button key={value} value={value}>{icon ? <Icon icon={icon || title} hint={title} styles={styles} /> : title}</Radio.Button>;
@@ -143,7 +149,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   disabled={readOnly}
   size="small"
   defaultChecked={defaultChecked ?? defaultValue}
-  onChange={onChange}
+  onChange={internalOnChange}
   value={value}
 />
       );
@@ -159,7 +165,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   value={value}
   style={{ width: "100%" }}
   min={props.min}
-  onChange={onChange}
+  onChange={internalOnChange}
   addonAfter={icon ? <Icon icon={icon} hint={tooltip || label} styles={styles} /> : null}
 />
       );
@@ -173,7 +179,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   defaultValue={defaultValue}
   options={options.map((option) => ({ ...option, label: <Icon icon={option.label} hint={tooltip} styles={styles} /> }))}
   readOnly={readOnly}
-  onChange={onChange}
+  onChange={internalOnChange}
   size={size}
   customTooltip={props.customTooltip}
 />
@@ -191,20 +197,20 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   defaultValue={defaultValue}
   readOnly={readOnly}
   size={size}
-  onChange={onChange}
+  onChange={internalOnChange}
   style={{ top: '4px' }}
 />
       );
     case 'codeEditor':
       return getEditor(availableConstantsExpression, codeEditorProps, constantsAccessor);
     case 'iconPicker':
-      return <IconPickerWrapper iconSize={iconSize ?? 20} selectBtnSize={size} defaultValue={value} value={value || defaultValue} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
+      return <IconPickerWrapper iconSize={iconSize ?? 20} selectBtnSize={size} defaultValue={value} value={value || defaultValue} readOnly={readOnly} onChange={internalOnChange} applicationContext={allData} />;
     case 'imageUploader':
       return (
 <ImagePicker
   value={value || defaultValue}
   readOnly={readOnly}
-  onChange={onChange}
+  onChange={internalOnChange}
 />
       );
     case 'button':
@@ -222,11 +228,11 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     case 'filtersList':
       return <FiltersList readOnly={readOnly} {...props} />;
     case 'buttonGroupConfigurator':
-      return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
+      return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={internalOnChange} />;
     case 'editModeSelector':
-      return <EditModeSelector readOnly={readOnly} value={value} onChange={onChange} size={size} />;
+      return <EditModeSelector readOnly={readOnly} value={value} onChange={internalOnChange} size={size} />;
     case 'dynamicItemsConfigurator':
-      return <DynamicActionsConfigurator editorConfig={{ ...props } as IDynamicActionsConfiguratorComponentProps} readOnly={readOnly} value={value} onChange={onChange} size={size} />;
+      return <DynamicActionsConfigurator editorConfig={{ ...props } as IDynamicActionsConfiguratorComponentProps} readOnly={readOnly} value={value} onChange={internalOnChange} size={size} />;
     case 'autocomplete':
       return (
 <Autocomplete
@@ -242,26 +248,26 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 />
       );
     case 'endpointsAutocomplete':
-      return <EndpointsAutocomplete {...props} size={size} httpVerb={verb} value={value} onChange={onChange} />;
+      return <EndpointsAutocomplete {...props} size={size} httpVerb={verb} value={value} onChange={internalOnChange} />;
     case 'referenceListAutocomplete':
-      return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
+      return <ReferenceListAutocomplete value={value} onChange={internalOnChange} readOnly={readOnly} size={size} />;
     case 'queryBuilder':
       return <QueryBuilder {...props as IQueryBuilderComponentProps} hideLabel={true} defaultValue={defaultValue} readOnly={props.readOnly} />;
     case 'columnsConfig':
       return <ColumnsConfig size={size} {...props} />;
     case 'columnsList':
-      return <ColumnsList {...props} readOnly={readOnly} value={value} onChange={onChange} />;
+      return <ColumnsList {...props} readOnly={readOnly} value={value} onChange={internalOnChange} />;
     case 'keyInformationBarColumnsList':
-      return <KeyInformationBarColumnsList {...props} size={size} readOnly={readOnly} value={value} onChange={onChange} />;
+      return <KeyInformationBarColumnsList {...props} size={size} readOnly={readOnly} value={value} onChange={internalOnChange} />;
     case 'sizableColumnsConfig':
       return <SizableColumnsList {...props} readOnly={readOnly} />;
     case 'editableTagGroupProps':
-      return <EditableTagGroup value={value} defaultValue={defaultValue} onChange={onChange} readOnly={props.readOnly} />;
+      return <EditableTagGroup value={value} defaultValue={defaultValue} onChange={internalOnChange} readOnly={props.readOnly} />;
     case 'propertyAutocomplete':
       return (
 <PropertyAutocomplete
   value={value}
-  onChange={onChange}
+  onChange={internalOnChange}
   id={props.id}
   size={size}
   mode={props.mode}
@@ -274,7 +280,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       return (
 <ContextPropertyAutocomplete
   {...{ ...props }}
-  onValuesChange={onChange}
+  onValuesChange={internalOnChange}
   style={{}}
   readOnly={readOnly}
   defaultModelType="defaultType"
@@ -290,22 +296,22 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   readOnly={readOnly}
   size={props.size ?? 'small'}
   value={value}
-  onChange={onChange}
+  onChange={internalOnChange}
 />
       );
     case 'labelValueEditor':
       return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
     case 'permissions':
-      return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
+      return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={internalOnChange} size={size} />;
     case 'multiColorPicker':
-      return <MultiColorInput value={value} onChange={onChange} readOnly={readOnly} propertyName={propertyName} />;
+      return <MultiColorInput value={value} onChange={internalOnChange} readOnly={readOnly} propertyName={propertyName} />;
     case 'itemListConfiguratorModal':
       return (
 <ItemListConfiguratorModal
   readOnly={readOnly}
   initNewItem={onAddNewItem}
   value={value}
-  onChange={onChange}
+  onChange={internalOnChange}
   size={size}
   settingsMarkupFactory={() => {
     return {
@@ -339,7 +345,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   options={formTypesOptions}
   size={size ?? 'small'}
   value={value}
-  onChange={onChange}
+  onChange={internalOnChange}
   onSearch={(t) =>
     setFormTypesOptions(
       (t
@@ -354,7 +360,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 />
       );
     case 'configurableActionConfigurator':
-      return <ConfigurableActionConfigurator value={value} onChange={onChange} editorConfig={null} level={0} label={label} allowedActions={props.allowedActions} hideLabel={props.hideLabel} />;
+      return <ConfigurableActionConfigurator value={value} onChange={internalOnChange} editorConfig={null} level={0} label={label} allowedActions={props.allowedActions} hideLabel={props.hideLabel} />;
     case 'typeAutoComplete':
       return (
 <Autocomplete
@@ -363,7 +369,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   readOnly={readOnly}
   size={size}
   value={value}
-  onChange={onChange}
+  onChange={internalOnChange}
 />
       );
     case 'componentSelector':
@@ -376,7 +382,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   readOnly={readOnly}
   size={size}
   value={value}
-  onChange={onChange}
+  onChange={internalOnChange}
   propertyMeta={propertyMeta}
 />
       );
@@ -387,7 +393,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       return (
 <Password
   value={value || defaultValue}
-  onChange={onChange}
+  onChange={internalOnChange}
   size={size}
   readOnly={readOnly}
   variant={variant}
