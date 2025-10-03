@@ -111,7 +111,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelVa
     buttonTextReadOnly?: string;
     modalSettings?: IItemListConfiguratorModalProps<any>['modalSettings'];
     modalReadonlySettings?: IItemListConfiguratorModalProps<any>['modalSettings'];
-    settingsMarkupFactory?: () => { components: FormMarkup; formSettings?: any };
+    settings?: FormMarkup;
     _formFields?: string[];
     autoFillProps?: boolean;
     presets?: string[];
