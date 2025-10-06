@@ -6,6 +6,8 @@ type JavaScriptWidgetType = BaseWidget & TextFieldSettings;
 const JavaScriptWidget: JavaScriptWidgetType = {
   ...BasicConfig.widgets.text,
   type: 'javascript',
+  jsType: 'string',
+  valueSrc: 'value',
   factory: (props) => {
     const { value, setValue } = props;
 

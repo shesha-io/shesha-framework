@@ -203,6 +203,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       return;
     }
 
+    // Dispatch and notify optimistically with the uploading item
     dispatch(uploadFileRequestAction(newFile));
 
     uploadFileHttp(uploadFileEndpoint, formData)
@@ -248,7 +249,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
         }
       })
-      .catch(() => deleteFileError(fileIdToDelete));
+      .catch(() => {
+        deleteFileError(fileIdToDelete);
+      });
   };
 
   //#endregion

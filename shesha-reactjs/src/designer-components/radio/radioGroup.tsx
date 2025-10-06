@@ -2,7 +2,6 @@ import { Radio, Space } from 'antd';
 import React, { FC, useEffect, useMemo } from 'react';
 import { useGet } from '@/hooks';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getDataSourceList, IRadioProps } from './utils';
 
 const RadioGroup: FC<IRadioProps> = (model) => {
@@ -62,10 +61,6 @@ const RadioGroup: FC<IRadioProps> = (model) => {
       </Space>
     </Radio.Group>
   );
-
-  if (model.readOnly) {
-    return <ReadOnlyDisplayFormItem type="radiogroup" disabled={model.readOnly} render={renderCheckGroup} style={model.style} />;
-  }
 
   return renderCheckGroup();
 };

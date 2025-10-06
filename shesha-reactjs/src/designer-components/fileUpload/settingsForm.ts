@@ -1,7 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { FormLayout } from 'antd/es/form/Form';
 import { nanoid } from '@/utils/uuid';
@@ -318,7 +317,7 @@ export const getSettings = () => {
                                     hideLabel: true,
                                     width: 60,
                                     hidden: {
-                                      _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
+                                      _code: 'return  getSettingValue(data.listType) === "thumbnail";',
                                       _mode: 'code',
                                       _value: false,
                                     } as any,

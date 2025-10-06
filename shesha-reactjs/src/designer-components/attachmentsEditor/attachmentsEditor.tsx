@@ -162,7 +162,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
     .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
-    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged }))
+    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? ''}))
     .add<IAttachmentsEditorProps>(9, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '', onChangeCustom: prev?.onFileChanged })),
 };
 
