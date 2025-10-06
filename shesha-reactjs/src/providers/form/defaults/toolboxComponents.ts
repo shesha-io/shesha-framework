@@ -92,6 +92,7 @@ import { SortingEditorComponent } from '@/designer-components/sortingEditor/inde
 import TextAreaComponent from '@/designer-components/textArea/textArea';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
+import PhoneNumberInputComponent from '@/designer-components/phoneNumberInput/phoneNumberInput';
 import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
 import PermissionAutocompleteComponent from '@/designer-components/permissions/permissionAutocomplete';
 import EditModeToggler from '@/designer-components/editModeToggler';
@@ -132,6 +133,7 @@ export const getToolboxComponents = (
         NumberFieldComponent,
         TextFieldComponent,
         TextAreaComponent,
+        PhoneNumberInputComponent,
         Checkbox,
         CheckboxGroup,
         Radio,
