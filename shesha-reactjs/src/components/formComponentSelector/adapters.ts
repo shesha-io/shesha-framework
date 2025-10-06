@@ -8,7 +8,7 @@ import NumberComponent from '@/designer-components/numberField/numberField';
 import RefListStatusComponent from '@/designer-components/refListStatus/index';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
-import PhoneNumberInputComponent from '@/designer-components/phoneNumberInput/phoneNumberInput';
+import PhoneNumberInputComponent from '@/designer-components/phoneNumber/phoneNumber';
 import { IDictionary, IEditorAdapter, PropertyInclusionPredicate } from '@/interfaces';
 import AutocompleteComponent from '@/designer-components/autocomplete/autocomplete';
 

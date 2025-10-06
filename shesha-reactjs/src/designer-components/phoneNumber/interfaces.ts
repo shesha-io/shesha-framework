@@ -10,9 +10,11 @@ export interface IPhoneNumberValue {
 
 export interface IPhoneNumberInputComponentProps extends IConfigurableFormComponent, IInputStyles {
   placeholder?: string;
-  initialValue?: string;
   valueFormat?: ValueFormat;
   allowedDialCodes?: string[];
+  defaultCountry?: string;
+  allowClear?: boolean;
+  enforceAllowedDialCodes?: boolean;
   desktop?: IInputStyles;
   mobile?: IInputStyles;
   tablet?: IInputStyles;
