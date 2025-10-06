@@ -75,6 +75,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   showBorder,
   cardSpacing,
   style,
+  showEditIcons = true,
   gap,
   onRowDeleteSuccessAction,
   ...props
@@ -266,7 +267,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       updateRows();
       updateContent();
     }
-  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
+  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, showEditIcons, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;
@@ -322,7 +323,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             listName="Data List"
             itemIndex={index}
             itemId={item['id']}
-            allowEdit={canEditInline}
+            allowEdit={showEditIcons && canEditInline}
             allowDelete={canDeleteInline}
             updater={(rowData) => updateAction(index, rowData)}
             deleter={() => deleteAction(index, item)}
