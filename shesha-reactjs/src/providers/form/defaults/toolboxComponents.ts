@@ -87,7 +87,6 @@ import HtmlRender from '@/designer-components/htmlRender';
 import { LabelValueEditorComponent } from '@/designer-components/labelValueEditor/labelValueEditorComponent';
 import { MetadataEditorComponent } from '@/designer-components/metadataEditor';
 import NumberFieldComponent from '@/designer-components/numberField/numberField';
-import PhoneNumberInputComponent from '@/designer-components/phoneNumber/phoneNumber';
 import QueryBuilderComponent from '@/designer-components/queryBuilder/queryBuilderComponent';
 import RefListStatusComponent from '@/designer-components/refListStatus';
 import { SortingEditorComponent } from '@/designer-components/sortingEditor/index';
@@ -123,7 +122,6 @@ export const getToolboxComponents = (
         ButtonGroup,
         Dropdown,
         NumberFieldComponent,
-        PhoneNumberInputComponent,
         TextFieldComponent,
         TextAreaComponent,
         Checkbox,
