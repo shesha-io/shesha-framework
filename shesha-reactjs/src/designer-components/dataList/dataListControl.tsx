@@ -146,7 +146,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       const evaluationContext = {
         selectedItems,
         selectedIndices,
-        selectedIds: selectedItems.map((item) => item?.id).filter(Boolean),
+        selectedIds: selectedItems
+          .map((item) => item?.id)
+          .filter((id) => id !== undefined && id !== null),
         formData: allData.data,
         globalState: allData.globalState,
         contexts: allData.contexts,
