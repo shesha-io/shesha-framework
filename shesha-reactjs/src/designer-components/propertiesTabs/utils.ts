@@ -1,7 +1,8 @@
-import { IComponentsContainer, IConfigurableFormComponent, isComponentsContainer, IStyleType } from "@/providers";
+import { IComponentsContainer, IConfigurableFormComponent, IStyleType } from "@/providers";
 import { ICollapsiblePanelComponentProps, isCollapsiblePanel } from "../collapsiblePanel/interfaces";
 import { ISettingsInputRowProps, isSettingsInputRow } from "../settingsInputRow";
 import { isPropertyRouterComponent } from "../propertyRouter";
+import { isDefined } from "@/utils/nullables";
 
 export const getHeaderStyles = (): IStyleType => (
   {
@@ -61,6 +62,9 @@ export const getBodyStyles = (): IStyleType => ({
     },
   },
 });
+
+const isComponent = (component: unknown): component is IConfigurableFormComponent => isDefined(component) && "id" in component && "type" in component;
+const isComponentsContainer = (component: IConfigurableFormComponent): component is IConfigurableFormComponent & IComponentsContainer => isComponent(component) && "components" in component && Array.isArray(component.components);
 
 export const filterDynamicComponents = (components: IConfigurableFormComponent[], query: string): IConfigurableFormComponent[] => {
   if (!components || !Array.isArray(components)) return [];

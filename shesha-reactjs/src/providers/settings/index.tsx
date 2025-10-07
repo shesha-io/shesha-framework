@@ -1,4 +1,4 @@
-import { useSheshaApplication } from '@/providers';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import { settingsGetValue } from '@/apis/settings';
 import useThunkReducer from '@/hooks/thunkReducer';
