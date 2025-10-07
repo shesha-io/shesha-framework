@@ -56,7 +56,7 @@ function useSettingsOrUndefined(): ISettingsActionsContext | undefined {
 
 function useSettings(): ISettingsActionsContext {
   const context = useSettingsOrUndefined();
-  if (context === undefined && require) {
+  if (context === undefined) {
     throw new Error('useSettings must be used within a SettingsProvider');
   }
 

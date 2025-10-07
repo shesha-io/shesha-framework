@@ -6,6 +6,7 @@ import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { useReferenceListItem } from '@/providers/referenceListDispatcher';
 import { useStyles } from './styles/styles';
 import { extractErrorMessage } from '@/providers/referenceListDispatcher/models';
+import * as antdIcons from '@ant-design/icons';
 
 export interface IRefListStatusProps {
   referenceListId: IReferenceListIdentifier;
@@ -17,7 +18,7 @@ export interface IRefListStatusProps {
 }
 
 const Icon = ({ type, ...rest }): JSX.Element => {
-  const icons = require(`@ant-design/icons`);
+  const icons = antdIcons;
   const Component = icons[type];
   return <Component {...rest} />;
 };

@@ -4,6 +4,7 @@ import ShaIcon, { IconType } from '../shaIcon';
 import SectionSeparator from '../sectionSeparator';
 import { customIcons } from './icons';
 import { startCase } from 'lodash';
+import * as antdIcons from '@ant-design/icons';
 
 export const Icon = ({
   icon,
@@ -20,7 +21,7 @@ export const Icon = ({
   styles?: any;
   propertyName?: string;
 }): ReactNode => {
-  const icons = require('@ant-design/icons');
+  const icons = antdIcons;
 
   if (typeof icon !== 'string') {
     return icon;

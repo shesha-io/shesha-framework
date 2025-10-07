@@ -1,5 +1,4 @@
-// tslint:disable-next-line:no-var-requires
-const signalR = require('@microsoft/signalr');
+import * as signalR from '@microsoft/signalr';
 
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { getFlagSetters } from '../utils/flagsSetters';
@@ -12,7 +11,6 @@ import {
   SignalRStateContext,
 } from './contexts';
 import { signalRReducer } from './reducer';
-// @ts-ignore
 import { usePrevious } from '@/hooks';
 import { setConnectionAction } from './actions';
 import { useSheshaApplication } from '../sheshaApplication';
