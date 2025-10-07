@@ -27,9 +27,9 @@ const StackedNavigationModal: FC<IStackedNavigationModalProps> = ({
     }
   }, [isMaxWidth]);
 
-  const toggleMaxWidth = () => setMaxWidth((prev) => !prev);
+  const toggleMaxWidth = (): void => setMaxWidth((prev) => !prev);
 
-  const closeDialog = (e: any) => {
+  const closeDialog = (e: any): void => {
     onCancel(e);
   };
 

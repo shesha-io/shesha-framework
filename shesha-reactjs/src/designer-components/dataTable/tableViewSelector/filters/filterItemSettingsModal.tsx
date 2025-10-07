@@ -13,22 +13,22 @@ export interface IFilterItemSettingsModalProps {
 export const FilterItemSettingsModal: FC<IFilterItemSettingsModalProps> = ({ value, onSave, onCancel, readOnly }) => {
   const [localValue, setLocalValue] = useState({ ...value });
 
-  const onOk = () => {
+  const onOk = (): void => {
     onSave(localValue);
   };
 
   return (
-        <Modal
-          width="75%"
-          open={true}
-          title={readOnly ? 'View Filter' : 'Configure Filter'}
-          onCancel={onCancel}
-          cancelText={readOnly ? 'Close' : undefined}
-          okText="Save"
-          onOk={onOk}
-          okButtonProps={{ hidden: readOnly }}
-        >
-            <FilterItemSettingsEditor value={localValue} onChange={setLocalValue} readOnly={readOnly} />
-        </Modal>
+    <Modal
+      width="75%"
+      open={true}
+      title={readOnly ? 'View Filter' : 'Configure Filter'}
+      onCancel={onCancel}
+      cancelText={readOnly ? 'Close' : undefined}
+      okText="Save"
+      onOk={onOk}
+      okButtonProps={{ hidden: readOnly }}
+    >
+      <FilterItemSettingsEditor value={localValue} onChange={setLocalValue} readOnly={readOnly} />
+    </Modal>
   );
 };

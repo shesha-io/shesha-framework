@@ -18,7 +18,7 @@ export interface IProps<TItem> {
 }
 
 interface DataNodeWithObject<TItem> {
-  title: JSX.Element;
+  title: ReactNode;
   key: string;
   isLeaf?: boolean;
   children?: DataNodeWithObject<TItem>[];
@@ -28,16 +28,16 @@ interface DataNodeWithObject<TItem> {
   object: TItem;
 }
 
-export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>) => {
+export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>): JSX.Element => {
   const [manuallyExpanded, setManuallyExpanded] = useState<string[]>([]);
   const [scrollId, setScrollId] = useState<string>(null);
   // const [nodes, setNodes] = useState<DataNode[]>([]);
   const [nodes, setNodes] = useState<DataNodeWithObject<TItem>[]>([]);
 
-  const getName = (item: TItem) => {
+  const getName = (item: TItem): string => {
     return Boolean(props.nameFieldName) ? item[props.nameFieldName] : item['name'] ?? item['className'] ?? item;
   };
-  const getId = (item: TItem) => {
+  const getId = (item: TItem): string => {
     return Boolean(props.idFieldName) ? item[props.idFieldName] : item['id'] ?? item['key'] ?? item;
   };
 
@@ -71,7 +71,7 @@ export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>) => {
     )]);
   }, [props.items, props.defaultExpandAll]);
 
-  const getTitle = (item: TItem) => {
+  const getTitle = (item: TItem): ReactNode => {
     const name = getName(item);
     const index = name.toLowerCase().indexOf(props.searchText.toLowerCase());
     if (index === -1)
@@ -81,11 +81,11 @@ export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>) => {
     const str = name.substring(index, index + props.searchText.length);
     const afterStr = name.substring(index + props.searchText.length, name.length);
     return (
-            <span>
-                {beforeStr}
-                <span className="site-tree-search-value">{str}</span>
-                {afterStr}
-            </span>
+      <span>
+        {beforeStr}
+        <span className="site-tree-search-value">{str}</span>
+        {afterStr}
+      </span>
     );
   };
 
@@ -116,34 +116,34 @@ export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>) => {
   const renderTitle = (node: DataNodeWithObject<TItem>): React.ReactNode => {
     const icon = Boolean(props.getIcon) ? props.getIcon(node.object) : <ShaIcon iconName="BookOutlined" />;
     const markup = (
-            <div className="sha-toolbox-component" key={node.key} ref={refs[node.key.toString()]}>
-                {props.onRenterItem
-                  ? props.onRenterItem(node.object)
-                  : <>{icon}<span className="sha-component-title"> {getTitle(node.object)}</span></>}
-            </div>
+      <div className="sha-toolbox-component" key={node.key} ref={refs[node.key.toString()]}>
+        {props.onRenterItem
+          ? props.onRenterItem(node.object)
+          : <>{icon}<span className="sha-component-title"> {getTitle(node.object)}</span></>}
+      </div>
     );
     return markup;
   };
 
-  const onExpand = (expandedKeys) => {
+  const onExpand = (expandedKeys): void => {
     setManuallyExpanded(expandedKeys);
   };
 
   return (
 
-        <Tree
-          className="sha-datasource-tree"
-          showIcon
-          treeData={nodes}
-          expandedKeys={manuallyExpanded}
-          onExpand={onExpand}
-          draggable={false}
-          selectable={true}
-          titleRender={renderTitle}
-          onClick={(_, node) => {
-            props.onChange(node['object']);
-          }}
-          selectedKeys={props.defaultSelected !== '' ? [props.defaultSelected?.toLowerCase()] : null}
-        />
+    <Tree
+      className="sha-datasource-tree"
+      showIcon
+      treeData={nodes}
+      expandedKeys={manuallyExpanded}
+      onExpand={onExpand}
+      draggable={false}
+      selectable={true}
+      titleRender={renderTitle}
+      onClick={(_, node) => {
+        props.onChange(node['object']);
+      }}
+      selectedKeys={props.defaultSelected !== '' ? [props.defaultSelected?.toLowerCase()] : null}
+    />
   );
 };

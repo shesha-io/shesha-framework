@@ -24,8 +24,8 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
   const stylingBoxJSON = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
   const stylingBoxCSS = pickStyleFromModel(stylingBoxJSON);
 
-  const renderButton = (props: IChevronButton, uuid: string, form?: FormInstance<any>) => {
-    function getColor(source: string) {
+  const renderButton = (props: IChevronButton, uuid: string, form?: FormInstance<any>): JSX.Element => {
+    function getColor(source: string): string {
       switch (source) {
         case 'primary':
           return theme.application.primaryColor;
@@ -51,24 +51,24 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
     };
 
     return !props.hidden && (
-            <div className={styles.chevronButton}>
-                <ConfigurableButton
-                  key={uuid}
-                  {...props}
-                  icon={showIcons ? props.icon : null}
-                  style={{ ...newStyles, ...stylingBoxCSS, alignContent: fontStyles.textAlign, justifyContent: fontStyles.textAlign }}
-                  readOnly={props.readOnly}
-                  buttonType="text"
-                  form={form}
-                  label={props.item}
-                />
-            </div>
+      <div className={styles.chevronButton}>
+        <ConfigurableButton
+          key={uuid}
+          {...props}
+          icon={showIcons ? props.icon : null}
+          style={{ ...newStyles, ...stylingBoxCSS, alignContent: fontStyles.textAlign, justifyContent: fontStyles.textAlign }}
+          readOnly={props.readOnly}
+          buttonType="text"
+          form={form}
+          label={props.item}
+        />
+      </div>
     );
   };
 
   useEffect(() => {
     const container = containerRef.current;
-    const handleScroll = () => {
+    const handleScroll = (): void => {
       setShowLeftArrow(container.scrollLeft > 0);
       setShowRightArrow(
         container.scrollLeft < container.scrollWidth - container.clientWidth
@@ -81,30 +81,30 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scroll = (e, scrollOffset: number) => {
+  const scroll = (e, scrollOffset: number): void => {
     e.preventDefault();
     containerRef.current.scrollLeft += scrollOffset;
   };
 
 
   return (
-        <div className={styles.pipelineContainer}>
-            {showLeftArrow && (
-                <Button onClick={(e) => scroll(e, -100)} className={classNames(styles.arrowButton, styles.leftArrow)}>
-                    &#8249;
-                </Button>
-            )}
-            <div ref={containerRef} className={styles.pipelineStages}>
-                {items?.map((item) => {
-                  return renderButton(item, item.id, form);
-                })}
-            </div>
-            {showRightArrow && (
-                <Button onClick={(e) => scroll(e, 100)} className={classNames(styles.arrowButton, styles.rightArrow)}>
-                    &#8250;
-                </Button>
-            )}
-        </div>
+    <div className={styles.pipelineContainer}>
+      {showLeftArrow && (
+        <Button onClick={(e) => scroll(e, -100)} className={classNames(styles.arrowButton, styles.leftArrow)}>
+          &#8249;
+        </Button>
+      )}
+      <div ref={containerRef} className={styles.pipelineStages}>
+        {items?.map((item) => {
+          return renderButton(item, item.id, form);
+        })}
+      </div>
+      {showRightArrow && (
+        <Button onClick={(e) => scroll(e, 100)} className={classNames(styles.arrowButton, styles.rightArrow)}>
+          &#8250;
+        </Button>
+      )}
+    </div>
   );
 };
 

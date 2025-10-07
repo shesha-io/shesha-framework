@@ -40,9 +40,9 @@ const ReferenceListDispatcherProvider: FC<PropsWithChildren> = ({
   };
 
   return (
-      <ReferenceListDispatcherActionsContext.Provider value={referenceListActions}>
-        {children}
-      </ReferenceListDispatcherActionsContext.Provider>
+    <ReferenceListDispatcherActionsContext.Provider value={referenceListActions}>
+      {children}
+    </ReferenceListDispatcherActionsContext.Provider>
   );
 };
 

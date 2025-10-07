@@ -105,12 +105,12 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
 
   // useEffect(() => {fetcher.refetch();}, [showSuppress])
 
-  const refresh = (id: string) => {
+  const refresh = (id: string): void => {
     fetcher.refetch();
     setRefreshId(id);
   };
 
-  const update = (item: EntityConfigDto) => {
+  const update = (item: EntityConfigDto): void => {
     setResponse((prev) => {
       return {
         ...prev,
@@ -128,7 +128,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
     };
   }
 
-  const onChangeHandler = (item: EntityConfigDto) => {
+  const onChangeHandler = (item: EntityConfigDto): void => {
     setObjectId(item.id);
     if (Boolean(props.onChange)) props.onChange(item);
   };
@@ -251,18 +251,18 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
           }}
           onRenterItem={(item) => {
             return (
-<div className={styles.shaComponentParent}>
-              {item.suppress
-                ? <EyeInvisibleOutlined />
-                : item.source === MetadataSourceType.UserDefined
-                  ? <UserAddOutlined />
-                  : item.notImplemented
-                    ? <QuestionCircleOutlined />
-                    : item.entityConfigType === EntityConfigType.Interface
-                      ? <InterfaceOutlined />
-                      : <ClassOutlined />}<span style={{ paddingRight: '5px' }}> </span>
-              <span className={styles.shaComponentTitle}> {item.className} </span>
-</div>
+              <div className={styles.shaComponentParent}>
+                {item.suppress
+                  ? <EyeInvisibleOutlined />
+                  : item.source === MetadataSourceType.UserDefined
+                    ? <UserAddOutlined />
+                    : item.notImplemented
+                      ? <QuestionCircleOutlined />
+                      : item.entityConfigType === EntityConfigType.Interface
+                        ? <InterfaceOutlined />
+                        : <ClassOutlined />}<span style={{ paddingRight: '5px' }}> </span>
+                <span className={styles.shaComponentTitle}> {item.className} </span>
+              </div>
             );
           }}
         />

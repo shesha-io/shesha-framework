@@ -115,7 +115,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     }
   }, [open]);
 
-  const onDropdownVisibleChange = (isOpen: boolean) => {
+  const onDropdownVisibleChange = (isOpen: boolean): void => {
     setOpen(isOpen);
     props.disableRefresh(false);
   };
@@ -128,7 +128,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       lastSearchText.current = searchText;
     }, 200);
 
-  const handleSearch = (searchText: string) => {
+  const handleSearch = (searchText: string): void => {
     if (props.allowFreeText)
       setAutocompleteText(searchText);
     debouncedSearch(searchText);
@@ -136,11 +136,11 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       props.onSearch(searchText);
   };
 
-  const handleSelect = () => {
+  const handleSelect = (): void => {
     selectRef.current.blur();
   };
 
-  const handleChange = (_value, option: any) => {
+  const handleChange = (_value, option: any): void => {
     selected.current = Boolean(option)
       ? Array.isArray(option)
         ? (option as ISelectOption[]).map((o) => o.data)
@@ -167,7 +167,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       props.onChange(selectedValue);
   };
 
-  const renderOption = (row, index) => {
+  const renderOption = (row, index): JSX.Element => {
     const value = outcomeValueFunc(row, allData);
     const key = keyValueFunc(value, allData);
     const label = displayValueFunc(row, allData);
@@ -178,7 +178,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   };
 
-  const renderGroupTitle = (value: any, propertyName: string) => {
+  const renderGroupTitle = (value: any, propertyName: string): JSX.Element => {
     if (value === null || value === undefined)
       return <Typography.Text type="secondary">(empty)</Typography.Text>;
     const column = source?.groupingColumns.find((c) => isDataColumn(c) && c.propertyName === propertyName);
@@ -207,26 +207,26 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       const groupProp = props.grouping.propertyName;
       const groups = uniqWith(source?.tableData.map((row) => unsafeGetValueByPropertyName(row, groupProp)), (a, b) => isEqual(a, b));
       const res = (
-<>
-        {groups.map((group, gindex) => {
-          const groupTitle = renderGroupTitle(group, groupProp) ?? 'empty';
-          return (
-<Select.OptGroup key={gindex} label={groupTitle} title={groupTitle}>
-            {list.filter((x) => isEqual(unsafeGetValueByPropertyName(x, groupProp), group)).map((row, index) => renderOption(row, gindex * 1000000 + index))}
-</Select.OptGroup>
-          );
-        })}
-</>
+        <>
+          {groups.map((group, gindex) => {
+            const groupTitle = renderGroupTitle(group, groupProp) ?? 'empty';
+            return (
+              <Select.OptGroup key={gindex} label={groupTitle} title={groupTitle}>
+                {list.filter((x) => isEqual(unsafeGetValueByPropertyName(x, groupProp), group)).map((row, index) => renderOption(row, gindex * 1000000 + index))}
+              </Select.OptGroup>
+            );
+          })}
+        </>
       );
       return res;
     }
 
     return (
-<>
-      {list.map((row, index) => renderOption(row, index))}
-      {props.dataSourceType === 'entitiesList' && source?.totalRows > 7 &&
-        <Select.Option value="total" key="total" disabled={true}>{`Total found: ${source?.totalRows} ...`}</Select.Option>}
-</>
+      <>
+        {list.map((row, index) => renderOption(row, index))}
+        {props.dataSourceType === 'entitiesList' && source?.totalRows > 7 &&
+          <Select.Option value="total" key="total" disabled={true}>{`Total found: ${source?.totalRows} ...`}</Select.Option>}
+      </>
     );
   }, [selected.current, source?.tableData, props.grouping]);
 
@@ -368,7 +368,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
       : null;
   }, [props.dataSourceUrl, queryParamsObj]);
 
-  const handleSearch = (searchText: string) => {
+  const handleSearch = (searchText: string): void => {
     setSearchText(searchText);
   };
 
@@ -405,7 +405,7 @@ const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
 /**
  * @deprecated The method should not be used
  */
-export const EntityDtoAutocomplete = (props: IAutocompleteProps) => {
+export const EntityDtoAutocomplete = (props: IAutocompleteProps): JSX.Element => {
   return (
     <Autocomplete {...props} />
   );
@@ -414,7 +414,7 @@ export const EntityDtoAutocomplete = (props: IAutocompleteProps) => {
 /**
  * @deprecated The method should not be used
  */
-export const RawAutocomplete = (props: IAutocompleteProps) => {
+export const RawAutocomplete = (props: IAutocompleteProps): JSX.Element => {
   return (
     <Autocomplete
       {...props}

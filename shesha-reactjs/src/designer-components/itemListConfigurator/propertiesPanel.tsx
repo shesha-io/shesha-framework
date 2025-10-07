@@ -13,7 +13,7 @@ export interface IPropertiesPanelProps<TItem extends ListItemWithId> extends Ite
   settingsMarkupFactory: ItemSettingsMarkupFactory<TItem>;
 }
 
-export const PropertiesPanel = <TItem extends ListItemWithId>(props: IPropertiesPanelProps<TItem>) => {
+export const PropertiesPanel = <TItem extends ListItemWithId>(props: IPropertiesPanelProps<TItem>): JSX.Element => {
   const { item, onChange, readOnly, settingsMarkupFactory } = props;
 
   const [form] = Form.useForm();
@@ -34,29 +34,29 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
 
     const markup = settingsMarkupFactory(item) ?? [];
     return (
-            <SourceFilesFolderProvider folder={`item-${item.id}`}>
-                <ConfigurableForm
-                  // key={selectedItemId} // rerender for each item to initialize all controls
-                  formRef={formRef}
-                  labelCol={{ span: 24 }}
-                  wrapperCol={{ span: 24 }}
-                  mode={readOnly ? 'readonly' : 'edit'}
-                  markup={markup}
-                  form={form}
-                  initialValues={item}
-                  onValuesChange={debouncedSave}
-                  className={sheshaStyles.verticalSettingsClass}
-                  isSettingsForm={true}
-                />
-            </SourceFilesFolderProvider>
+      <SourceFilesFolderProvider folder={`item-${item.id}`}>
+        <ConfigurableForm
+          // key={selectedItemId} // rerender for each item to initialize all controls
+          formRef={formRef}
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          mode={readOnly ? 'readonly' : 'edit'}
+          markup={markup}
+          form={form}
+          initialValues={item}
+          onValuesChange={debouncedSave}
+          className={sheshaStyles.verticalSettingsClass}
+          isSettingsForm={true}
+        />
+      </SourceFilesFolderProvider>
     );
   }, [item]);
 
   return Boolean(item)
     ? (<>{editor}</>)
     : (
-<div>
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
-</div>
+      <div>
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
+      </div>
     );
 };

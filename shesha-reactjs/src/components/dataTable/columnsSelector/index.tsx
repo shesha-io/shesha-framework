@@ -16,7 +16,7 @@ export const DatatableColumnsSelector: FC<IDatatableColumnsSelectorProps> = () =
 
   const [columnFilter, setColumnFilter] = useState('');
 
-  const onColumnSearch = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  const onColumnSearch = ({ target: { value } }: ChangeEvent<HTMLInputElement>): void => {
     setColumnFilter(value ? value?.toLowerCase() : '');
   };
 

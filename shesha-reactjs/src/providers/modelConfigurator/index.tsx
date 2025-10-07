@@ -23,6 +23,8 @@ import {
   saveSuccessAction,
 } from './actions';
 import {
+  IModelConfiguratorActionsContext,
+  IModelConfiguratorStateContext,
   MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
   ModelConfiguratorActionsContext,
   ModelConfiguratorStateContext,
@@ -50,7 +52,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     form: props.form,
   });
 
-  const load = () => {
+  const load = (): void => {
     if (state.id) {
       dispatch(loadRequestAction());
 
@@ -75,15 +77,15 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const changeModelId = (id: string) => {
+  const changeModelId = (id: string): void => {
     dispatch(changeModelIdAction(id));
   };
 
-  const createNew = (model: ModelConfigurationDto) => {
+  const createNew = (model: ModelConfigurationDto): void => {
     dispatch(createNewAction(model));
   };
 
-  const submit = () => {
+  const submit = (): void => {
     state.form.submit();
   };
 
@@ -118,11 +120,11 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         });
     });
 
-  const cancel = () => {
+  const cancel = (): void => {
     dispatch(cancelAction());
   };
 
-  const getModelSettings = () => prepareValues(state.form.getFieldsValue());
+  const getModelSettings = (): ModelConfigurationDto => prepareValues(state.form.getFieldsValue());
 
   const saveForm: () => Promise<ModelConfigurationDto> = () =>
     new Promise<ModelConfigurationDto>((resolve, reject) => {
@@ -174,7 +176,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
   );
 };
 
-function useModelConfiguratorState() {
+function useModelConfiguratorState(): IModelConfiguratorStateContext {
   const context = useContext(ModelConfiguratorStateContext);
 
   if (context === undefined) {
@@ -184,7 +186,7 @@ function useModelConfiguratorState() {
   return context;
 }
 
-function useModelConfiguratorActions() {
+function useModelConfiguratorActions(): IModelConfiguratorActionsContext {
   const context = useContext(ModelConfiguratorActionsContext);
 
   if (context === undefined) {
@@ -194,7 +196,7 @@ function useModelConfiguratorActions() {
   return context;
 }
 
-function useModelConfigurator() {
+function useModelConfigurator(): IModelConfiguratorStateContext & IModelConfiguratorActionsContext {
   return { ...useModelConfiguratorState(), ...useModelConfiguratorActions() };
 }
 

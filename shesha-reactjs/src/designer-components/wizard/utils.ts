@@ -1,6 +1,5 @@
 import { findLastIndex } from 'lodash';
 import { nanoid } from '@/utils/uuid';
-import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IWizardSequence, IWizardStepProps } from './models';
 import { IStyleType } from '@/index';
 
@@ -83,7 +82,7 @@ export const getWizardButtonStyle =
   };
 
 
-export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 'back' | 'next' | 'reset') => {
+export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 'back' | 'next' | 'reset'): number => {
   switch (type) {
     case 'reset':
       return 0;
@@ -99,18 +98,7 @@ export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 
   }
 };
 
-export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
-  if (!args)
-    return true;
-
-  const fields = Object.getOwnPropertyNames(args)
-    .filter((key) => !['handleSuccess', 'handleFail'].includes(key));
-  return fields?.length > 0
-    ? fields.some((key) => !args[key])
-    : true;
-};
-
-export const onAddNewItem = (items: IWizardStepProps[]) => {
+export const onAddNewItem = (items: IWizardStepProps[]): IWizardStepProps => {
   const count = (items ?? []).length;
   const id = nanoid();
   const buttonProps: IWizardStepProps = {

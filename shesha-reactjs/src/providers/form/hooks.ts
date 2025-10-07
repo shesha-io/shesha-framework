@@ -5,7 +5,7 @@ import { getToolboxComponents } from './defaults/toolboxComponents';
 import { useFormPersisterIfAvailable } from '../formPersisterProvider';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
 
-export const useFormDesignerComponentGroups = () => {
+export const useFormDesignerComponentGroups = (): IToolboxComponentGroup[] => {
   const app = useSheshaApplication(false);
   const isDevMode = useIsDevMode();
   const formPersister = useFormPersisterIfAvailable();
@@ -54,7 +54,7 @@ export const useFormDesignerComponentGetter = (): FormDesignerComponentGetter =>
   return getter;
 };
 
-const getDesignerUrl = (designerUrl: string, fId: FormIdentifier) => {
+const getDesignerUrl = (designerUrl: string, fId: FormIdentifier): string | null => {
   return typeof fId === 'string'
     ? `${designerUrl}?id=${fId}`
     : Boolean(fId?.name)
@@ -62,7 +62,7 @@ const getDesignerUrl = (designerUrl: string, fId: FormIdentifier) => {
       : null;
 };
 
-export const useFormDesignerUrl = (formId: FormIdentifier) => {
+export const useFormDesignerUrl = (formId: FormIdentifier): string => {
   const app = useSheshaApplication();
   return getDesignerUrl(app.routes.formsDesigner, formId);
 };

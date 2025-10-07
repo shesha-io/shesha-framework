@@ -23,13 +23,13 @@ const BindingProvider: FC<PropsWithChildren<IBindingProviderProps>> = ({ valuePr
   }, [value, onChange]);
 
   return (
-        <BindingProviderStateContext.Provider value={state}>
-            {children}
-        </BindingProviderStateContext.Provider>
+    <BindingProviderStateContext.Provider value={state}>
+      {children}
+    </BindingProviderStateContext.Provider>
   );
 };
 
-function useBinding(require: boolean = true) {
+function useBinding(require: boolean = true): IBindingProviderStateContext | undefined {
   const stateContext = useContext(BindingProviderStateContext);
 
   if ((stateContext === undefined) && require)

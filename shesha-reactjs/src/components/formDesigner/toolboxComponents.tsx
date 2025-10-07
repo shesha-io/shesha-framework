@@ -35,15 +35,15 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
     return result;
   }, [toolboxComponentGroups, searchText]);
 
-  const onCollapseChange = (key: string | string[]) => {
+  const onCollapseChange = (key: string | string[]): void => {
     setOpenedKeys(Array.isArray(key) ? key : [key]);
   };
 
-  const onDragStart = () => {
+  const onDragStart = (): void => {
     startDraggingNewItem();
   };
 
-  const onDragEnd = (_evt) => {
+  const onDragEnd = (_evt): void => {
     endDraggingNewItem();
   };
 

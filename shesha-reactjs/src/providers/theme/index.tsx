@@ -1,7 +1,7 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
 import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
 import { setThemeAction } from './actions';
-import { IConfigurableTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
+import { IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
 import { uiReducer } from './reducer';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
@@ -102,7 +102,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   );
 };
 
-function useThemeState() {
+function useThemeState(): IThemeStateContext | undefined {
   const context = useContext(UiStateContext);
 
   if (context === undefined) {
@@ -111,7 +111,7 @@ function useThemeState() {
   return context;
 }
 
-function useThemeActions() {
+function useThemeActions(): IThemeActionsContext | undefined {
   const context = useContext(UiActionsContext);
 
   if (context === undefined) {
@@ -121,7 +121,7 @@ function useThemeActions() {
   return context;
 }
 
-function useTheme() {
+function useTheme(): IThemeStateContext & IThemeActionsContext | undefined {
   return { ...useThemeState(), ...useThemeActions() };
 }
 

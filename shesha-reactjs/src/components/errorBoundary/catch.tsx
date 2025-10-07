@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
 type ErrorHandler = (error: Error, info: React.ErrorInfo) => void;
 type ErrorHandlingComponent<Props> = (props: Props, error?: Error) => React.ReactNode;
@@ -11,7 +11,7 @@ export default function Catch<Props extends {}>(
 ): React.ComponentType<Props> {
   // eslint-disable-next-line react/display-name
   return class extends React.Component<Props, ErrorState> {
-    public static getDerivedStateFromError(error: Error) {
+    public static getDerivedStateFromError(error: Error): ErrorState {
       return { error };
     }
 
@@ -19,13 +19,13 @@ export default function Catch<Props extends {}>(
       error: undefined,
     };
 
-    public componentDidCatch(error: Error, info: React.ErrorInfo) {
+    public componentDidCatch(error: Error, info: React.ErrorInfo): void {
       if (errorHandler) {
         errorHandler(error, info);
       }
     }
 
-    public render() {
+    public render(): ReactNode {
       return component(this.props, this.state.error);
     }
   };

@@ -63,7 +63,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
 
   const isReadOnly = readOnly;
 
-  const onResize = () => {
+  const onResize = (): void => {
     setPageSize({
       width: parseIntOrDefault(imageFrameRef?.current?.offsetWidth),
       height: parseIntOrDefault(imageFrameRef?.current?.offsetHeight),
@@ -96,7 +96,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
 
   const url: string = getString(model?.url, formData, globalState) || formData?.[model.propertyName];
 
-  const setIsRequired = (required: boolean) => {
+  const setIsRequired = (required: boolean): void => {
     model.validate.required = required;
 
     model.validate.message = `Enter a minimum of ${minPoints || 1} points`;
@@ -109,7 +109,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     imageElement?.click();
   };
 
-  const onSelect = () => {
+  const onSelect = (): void => {
     /* nop*/
   };
 
@@ -125,7 +125,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
       });
   }
 
-  const onChange = (data: IAnnotation[]) => {
+  const onChange = (data: IAnnotation[]): void => {
     if (!isReadOnly) {
       if (!!maxPoints && maxPoints < data.length) return;
       const recordedData = data?.filter(({ comment }) => !!comment);

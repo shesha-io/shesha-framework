@@ -36,7 +36,7 @@ const CreateModal: FC<ICreateModalProps> = ({
   };
 
 
-  const onOk = async () => {
+  const onOk = async (): Promise<void> => {
     try {
       setLoading(true);
       await performCreate();
@@ -48,7 +48,7 @@ const CreateModal: FC<ICreateModalProps> = ({
     }
   };
 
-  const onCancel = () => {
+  const onCancel = (): void => {
     onToggle(false);
   };
 

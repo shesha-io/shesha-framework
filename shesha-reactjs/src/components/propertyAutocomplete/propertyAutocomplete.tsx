@@ -34,7 +34,7 @@ interface IAutocompleteState {
   properties: IPropertyMetadata[];
 }
 
-const getFullPath = (path: string, prefix: string) => {
+const getFullPath = (path: string, prefix: string): string => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
 };
 
@@ -94,7 +94,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   // TODO: add `loadProperties` method with callback:
   //    modelType, properties[] (dot notation props list)
   useEffect(() => {
-    const setProperties = (properties: IPropertyMetadata[], prefix: string) => {
+    const setProperties = (properties: IPropertyMetadata[], prefix: string): void => {
       if (onPropertiesLoaded)
         onPropertiesLoaded(properties, prefix);
       setState({
@@ -114,7 +114,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     }
   }, [metadata, metadata?.properties, containerPath, containerPathMultiple, getContainerProperties, onPropertiesLoaded]);
 
-  const onSelect = (data: string) => {
+  const onSelect = (data: string): void => {
     if (props.onChange) props.onChange(data);
     const property = getProperty(data);
     if (props.onSelect) {
@@ -125,7 +125,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     }
   };
 
-  const selectMultipleVlaue = (data: string) => {
+  const selectMultipleVlaue = (data: string): void => {
     var list = props.value
       ? Array.isArray(props.value) ? props.value : []
       : [];
@@ -140,11 +140,11 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     }
   };
 
-  const onAddMultipleClick = () => {
+  const onAddMultipleClick = (): void => {
     selectMultipleVlaue(multipleValue);
   };
 
-  const onSelectMultiple = (data: string) => {
+  const onSelectMultiple = (data: string): void => {
     if (data !== multipleValue) {
       setMultipleValue(data);
     } else {
@@ -152,7 +152,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     }
   };
 
-  const onSearchMultiple = (data: string) => {
+  const onSearchMultiple = (data: string): void => {
     setMultipleValue(data);
     const filteredOptions: IOption[] = [];
     state.properties.forEach((p) => {
@@ -166,7 +166,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   };
 
 
-  const onSearch = (data: string) => {
+  const onSearch = (data: string): void => {
     if (props.onChange) props.onChange(data);
 
     const filteredOptions: IOption[] = [];
@@ -211,7 +211,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       </Select>
     );
 
-  const forMap = (tag: string) => {
+  const forMap = (tag: string): JSX.Element => {
     const tagElem = (
       <>
         <Tag

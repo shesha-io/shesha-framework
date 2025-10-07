@@ -1,11 +1,11 @@
 import { nanoid } from '@/utils/uuid';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IExpressionExecuterArguments, executeScriptSync } from '@/providers/form/utils';
-import { IStyleType } from "@/index";
+import { IConfigurableFormComponent, IStyleType } from "@/index";
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
 
-export const generateNewKey = (json: object) => {
+export const generateNewKey = (json: IConfigurableFormComponent[]): IConfigurableFormComponent[] => {
   try {
     let stringify = JSON.stringify(json);
 

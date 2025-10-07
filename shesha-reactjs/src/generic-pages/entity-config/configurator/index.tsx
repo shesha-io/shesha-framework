@@ -42,7 +42,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
   const [mergeError, setMergeError] = useState(null);
   const { message } = App.useApp();
 
-  const onChange = (item: EntityConfigDto) => {
+  const onChange = (item: EntityConfigDto): void => {
     if (item) {
       setEntityConfigId(item.id);
       setEntityConfig(item);
@@ -62,7 +62,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
     }
   }, [configurator.modelConfiguration?.id]);
 
-  const handleOk = () => {
+  const handleOk = (): void => {
     const del =
       isDeleteAfterMerge &&
       (!(entityConfig?.source === MetadataSourceType.ApplicationCode) || entityConfig?.notImplemented);

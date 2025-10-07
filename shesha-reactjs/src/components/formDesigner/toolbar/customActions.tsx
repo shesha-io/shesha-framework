@@ -52,8 +52,8 @@ export const CustomActions: FC<ICustomActionsProps> = () => {
     },
   ];
   return (
-        <Dropdown menu={{ items }} placement="bottomRight" arrow>
-            <Button icon={<MenuOutlined />}></Button>
-        </Dropdown>
+    <Dropdown menu={{ items }} placement="bottomRight" arrow>
+      <Button icon={<MenuOutlined />}></Button>
+    </Dropdown>
   );
 };

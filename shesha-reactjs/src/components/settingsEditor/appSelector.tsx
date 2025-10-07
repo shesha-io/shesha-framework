@@ -6,7 +6,7 @@ import { useSettingsEditor } from './provider';
 export const AppSelector: FC = () => {
   const { selectApplication, applications } = useSettingsEditor();
 
-  const onSelect = (value) => {
+  const onSelect = (value): void => {
     const app = applications.find((a) => a.appKey === value);
     selectApplication(app);
   };

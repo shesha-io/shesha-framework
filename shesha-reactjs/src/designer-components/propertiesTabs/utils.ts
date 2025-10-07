@@ -1,4 +1,7 @@
-import { IStyleType } from "@/providers";
+import { IComponentsContainer, IConfigurableFormComponent, isComponentsContainer, IStyleType } from "@/providers";
+import { ICollapsiblePanelComponentProps, isCollapsiblePanel } from "../collapsiblePanel/interfaces";
+import { ISettingsInputRowProps, isSettingsInputRow } from "../settingsInputRow";
+import { isPropertyRouterComponent } from "../propertyRouter";
 
 export const getHeaderStyles = (): IStyleType => (
   {
@@ -59,25 +62,25 @@ export const getBodyStyles = (): IStyleType => ({
   },
 });
 
-export const filterDynamicComponents = (components, query) => {
+export const filterDynamicComponents = (components: IConfigurableFormComponent[], query: string): IConfigurableFormComponent[] => {
   if (!components || !Array.isArray(components)) return [];
 
 
   const lowerCaseQuery = query.toLowerCase();
 
   // Helper function to evaluate hidden property
-  const evaluateHidden = (hidden, directMatch, hasVisibleChildren) => {
+  const evaluateHidden = (hidden: boolean, directMatch: boolean, hasVisibleChildren: boolean): boolean => {
     return hidden || (!directMatch && !hasVisibleChildren);
   };
 
   // Helper function to check if text
   // matches query
 
-  const matchesQuery = (text) => {
+  const matchesQuery = (text): boolean => {
     return text?.toLowerCase().includes(lowerCaseQuery);
   };
 
-  const filterResult = components.map((component) => {
+  const filterResult = components.map<IConfigurableFormComponent>((component) => {
     // Deep clone the component to avoid mutations
     const c = { ...component };
 
@@ -89,7 +92,7 @@ export const filterDynamicComponents = (components, query) => {
     );
 
     // Handle propertyRouter
-    if (c.componentName === 'propertyRouter') {
+    if (isPropertyRouterComponent(c)) {
       const filteredComponents = filterDynamicComponents(c.components, query);
 
       return {
@@ -100,7 +103,7 @@ export const filterDynamicComponents = (components, query) => {
     }
 
     // Handle collapsiblePanel
-    if (c.type === 'collapsiblePanel') {
+    if (isCollapsiblePanel(c)) {
       const contentComponents = filterDynamicComponents(c.content?.components || [], query);
       const hasVisibleChildren = contentComponents.length > 0;
 
@@ -114,15 +117,16 @@ export const filterDynamicComponents = (components, query) => {
         ghost: false,
         collapsedByDefault: false,
         headerStyles: getHeaderStyles(),
-        allStyles: getBodyStyles(),
+        // TODO: review and convert styles. I relized that types are incompatible after conversion to typed version
+        // allStyles: getBodyStyles(),
         border: getBodyStyles().border,
         stylingBox: "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"0\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
         hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren),
-      };
+      } satisfies ICollapsiblePanelComponentProps;
     }
 
     // Handle settingsInputRow
-    if (c.type === 'settingsInputRow') {
+    if (isSettingsInputRow(c)) {
       const filteredInputs = c.inputs?.filter((input) =>
         matchesQuery(input.label) ||
         matchesQuery(input.propertyName) ||
@@ -133,11 +137,11 @@ export const filterDynamicComponents = (components, query) => {
         ...c,
         inputs: filteredInputs,
         hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0),
-      };
+      } satisfies ISettingsInputRowProps;
     }
 
     // Handle components with nested components
-    if (c.components) {
+    if (isComponentsContainer(c)) {
       const filteredComponents = filterDynamicComponents(c.components, query);
       const hasVisibleChildren = filteredComponents.length > 0;
 
@@ -145,14 +149,14 @@ export const filterDynamicComponents = (components, query) => {
         ...c,
         components: filteredComponents,
         hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren),
-      };
+      } satisfies IConfigurableFormComponent & IComponentsContainer;
     }
 
     // Handle basic component
     return {
       ...c,
       hidden: evaluateHidden(c.hidden, directMatch, false),
-    };
+    } satisfies IConfigurableFormComponent;
   });
 
   // Filter out null components and handle visibility
@@ -161,9 +165,9 @@ export const filterDynamicComponents = (components, query) => {
 
     // Evaluate final hidden state
     const hasVisibleChildren = (
-      (c.components && c.components.length > 0) ||
-      (c.content?.components && c.content.components.length > 0) ||
-      (c.inputs && c.inputs.length > 0)
+      (isComponentsContainer(c) && c.components.length > 0) ||
+      (isCollapsiblePanel(c) && c.content.components.length > 0) ||
+      (isSettingsInputRow(c) && c.inputs.length > 0)
     );
 
     return !c.hidden || hasVisibleChildren;

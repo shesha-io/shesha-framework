@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import { IChartData, IChartsProps, TAggregationMethod, TDataMode, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
 import LineChart from "./components/line";
 import BarChart from "./components/bar";
@@ -6,6 +6,7 @@ import PieChart from "./components/pie";
 import PolarAreaChart from "./components/polarArea";
 import { Result } from "antd";
 import { IPropertyMetadata, IStyleType } from "@/interfaces";
+import { FetcherOptions } from "@/utils/fetchers";
 
 export const MAX_TITLE_LINE_LENGTH = 12;
 
@@ -36,7 +37,7 @@ export const defaultStyles = (): IStyleType => {
  * @param valueProperty - The property to use for the value
  * @returns An array of faulty properties by name e.g. ['axisProperty', 'groupingProperty', 'valueProperty']
  */
-export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProperty: string | null, valueProperty: string | null, groupingProperty: string | null) => {
+export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProperty: string | null, valueProperty: string | null, groupingProperty: string | null): string[] => {
   const faultyProperties: string[] = [];
 
   if (!metaData.some((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.split('.')[0]?.toLowerCase())) {
@@ -52,7 +53,7 @@ export const validateEntityProperties = (metaData: IPropertyMetadata[], axisProp
 };
 
 // Optimized data processing function
-export const processItems = (items: any[], refListMap: Map<string, Map<any, string>>) => {
+export const processItems = (items: any[], refListMap: Map<string, Map<any, string>>): any[] => {
   const processedItems = new Array(items.length);
 
   for (let i = 0; i < items.length; i++) {
@@ -84,7 +85,7 @@ export const processItems = (items: any[], refListMap: Map<string, Map<any, stri
 };
 
 // Optimized sorting function
-export const sortItems = (items: any[], isTimeSeries: boolean, property: string) => {
+export const sortItems = (items: any[], isTimeSeries: boolean, property: string): any[] => {
   const itemsCopy = [...items];
   if (isTimeSeries) {
     return itemsCopy.sort((a, b) => {
@@ -189,7 +190,7 @@ export const splitTitleIntoLines = (title: string, lineWordLength: number = MAX_
  * @param props.width the width of the chart
  * @returns the responsive style
  */
-export const getResponsiveStyle = (props: IChartsProps) => {
+export const getResponsiveStyle = (props: IChartsProps): CSSProperties => {
   // Check if we're on a small screen (iPhone SE width is 375px)
   const isSmallScreen = typeof window !== 'undefined' && window.innerWidth <= 480;
 
@@ -223,7 +224,7 @@ export function filterNonNull<T extends object>(obj: T): Partial<T> {
   ) as Partial<T>;
 }
 
-export const renderChart = (chartType: string, data: IChartData) => {
+export const renderChart = (chartType: string, data: IChartData): JSX.Element => {
   switch (chartType) {
     case 'line':
       return <LineChart data={data} />;
@@ -261,7 +262,7 @@ export const defaultConfigFiller: {
  * @param data array of objects to stringify values
  * @returns array of objects with stringified values
  */
-export const stringifyValues = (data: object[]) => {
+export const stringifyValues = (data: object[]): object[] => {
   return data?.map((item) => {
     const processValue = (value: any): any => {
       if (value === null || value === undefined) {
@@ -295,7 +296,7 @@ export const stringifyValues = (data: object[]) => {
  * @param str the enjoined properties string to remove duplicates from
  * @returns the string without duplicates
  */
-function removePropertyDuplicates(str) {
+function removePropertyDuplicates(str: string): string {
   // Split the string into an array by commas
   const arr = str.split(',');
 
@@ -312,7 +313,7 @@ function removePropertyDuplicates(str) {
  * @param array array of nested properties
  * @returns the array in object format
  */
-function convertNestedPropertiesToObjectFormat(array?: string[]) {
+function convertNestedPropertiesToObjectFormat(array?: string[]): string {
   if (!array) return '';
 
   return array?.filter((path) => path && path?.trim() !== '')?.map((path) => {
@@ -348,7 +349,7 @@ function convertNestedPropertiesToObjectFormat(array?: string[]) {
  * @param axisProperty axis property to use for the chart
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string, orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number) => {
+export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string, orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number): FetcherOptions => {
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
@@ -364,7 +365,7 @@ export const getChartDataRefetchParams = (entityType: string, dataProperty: stri
 };
 
 
-export const getURLChartDataRefetchParams = (url: string) => {
+export const getURLChartDataRefetchParams = (url: string): FetcherOptions => {
   return {
     path: url ? `${url}` : '',
   };
@@ -376,7 +377,7 @@ export const getURLChartDataRefetchParams = (url: string) => {
  * @param path the path to the property
  * @returns the value of the property
  */
-export function getPropertyValue(obj: { [key: string]: string | number | object }, path: string) {
+export function getPropertyValue(obj: { [key: string]: string | number | object }, path: string): string | number | object | undefined {
   if (obj === null) return null;
   if (obj === undefined) return undefined;
   if (!path || typeof obj !== 'object') return undefined;
@@ -393,7 +394,7 @@ export function getPropertyValue(obj: { [key: string]: string | number | object 
  * @param property the property to get the last part of
  * @returns the last part of the property
  */
-export function getLastPartOfProperty(property: string) {
+export function getLastPartOfProperty(property: string): string {
   // if there is no dot in the string, return the string
   if (property.indexOf('.') === -1) return property;
   return property.split('.').pop();
@@ -408,7 +409,7 @@ export function getLastPartOfProperty(property: string) {
  * @param value the value to check
  * @returns true if the value is an ISO string, false otherwise
  */
-function isIsoString(value) {
+function isIsoString(value): boolean {
   // Check if value is a string and matches the ISO 8601 format (with optional milliseconds)
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?/.test(value);
 }
@@ -420,7 +421,7 @@ function isIsoString(value) {
  * @param properties the properties to format
  * @returns the formatted data
  */
-export function formatDate(data, timeUnit: TTimeSeriesFormat, properties: string[]) {
+export function formatDate(data: object[], timeUnit: TTimeSeriesFormat, properties: string[]): object[] {
   const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
 
@@ -471,7 +472,7 @@ export function formatDate(data, timeUnit: TTimeSeriesFormat, properties: string
  * @param aggregationMethod - The aggregation method to use (sum, average, count, min, max)
  * @returns Aggregated data
  * */
-export const aggregateData = (data: object[], xProperty: string, yProperty: string, aggregationMethod: string) => {
+export const aggregateData = (data: object[], xProperty: string, yProperty: string, aggregationMethod: string): object => {
   const groupedData = data.reduce((acc: object, item: { [key: string]: string | number | object }) => {
     const xValue = getPropertyValue(item, xProperty); // Use getPropertyValue to support nested properties
     let yValue = getPropertyValue(item, yProperty) ?? 0; // Use getPropertyValue for y-axis value
@@ -780,6 +781,8 @@ export function aggregateValues(items: object[], aggregationMethod: TAggregation
   }
 }
 
+type FontConfig = { family: string; size: number; weight: string | number };
+
 /**
  * Helper function to create font configuration for Chart.js
  * @param fontConfig - The font configuration object
@@ -791,7 +794,7 @@ export function createFontConfig(
   fontConfig?: { family?: string; size?: number; weight?: string; color?: string },
   defaultSize: number = 12,
   defaultWeight: string | number = '400'
-) {
+): FontConfig {
   return {
     family: fontConfig?.family || 'Segoe UI',
     size: fontConfig?.size || defaultSize,

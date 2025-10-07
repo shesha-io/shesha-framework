@@ -17,11 +17,11 @@ export interface IFormComponentProps {
 // nested components will be handled by their own FormComponent
 // action configuration details will be handled by their own FormComponent
 const propertiesToSkip = ['id', 'componentName', 'type', 'jsSetting', 'isDynamic', 'components', 'actionConfiguration'];
-export const standartActualModelPropertyFilter = (name: string) => {
+export const standartActualModelPropertyFilter = (name: string): boolean => {
   return propertiesToSkip.indexOf(name) === -1;
 };
 
-export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: any) => {
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: any): boolean => {
   return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true) &&
     propertiesToSkip.indexOf(name) === -1;
 };
@@ -73,13 +73,13 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
 
   if (!toolboxComponent)
     return (
-<ComponentError
-  errors={{
-    hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type,
-  }}
-  message={`Component '${actualModel.type}' not found`}
-  type="error"
-/>
+      <ComponentError
+        errors={{
+          hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type,
+        }}
+        message={`Component '${actualModel.type}' not found`}
+        type="error"
+      />
     );
 
   if (shaForm.formMode === 'designer') {

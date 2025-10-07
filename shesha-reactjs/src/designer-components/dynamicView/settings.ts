@@ -1,8 +1,9 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { DynamicViewComponentProps } from '.';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: DynamicViewComponentProps) => {
+export const getSettings = (data: DynamicViewComponentProps): FormMarkupWithSettings => {
   return {
 
     components: new DesignerToolbarSettings(data)

@@ -12,17 +12,17 @@ export interface IFiltersListProps {
 }
 
 export const FiltersList: FC<IFiltersListProps> = ({ value, onChange, readOnly }) => {
-  const makeNewFilter = (items: ITableViewProps[]) => {
+  const makeNewFilter = (items: ITableViewProps[]): ITableViewProps => {
     const itemsCount = (items ?? []).length;
     const itemNo = itemsCount + 1;
     return {
       id: nanoid(),
       sortOrder: itemsCount,
       name: `Filter ${itemNo}`,
-    };
+    } satisfies ITableViewProps;
   };
 
-  const localOnChange = (newValue: ITableViewProps[]) => {
+  const localOnChange = (newValue: ITableViewProps[]): void => {
     // Prevent removing the last filter - always ensure at least one filter exists
     if (newValue.length === 0) {
       const defaultFilter = {
@@ -39,13 +39,13 @@ export const FiltersList: FC<IFiltersListProps> = ({ value, onChange, readOnly }
   };
 
   return (
-        <ListEditor<ITableViewProps & ListItem>
-          value={value}
-          onChange={localOnChange}
-          initNewItem={makeNewFilter}
-          readOnly={readOnly}
-        >
-            {({ item, itemOnChange, readOnly }) => (<FilterItem value={item} onChange={itemOnChange} readOnly={readOnly} />)}
-        </ListEditor>
+    <ListEditor<ITableViewProps & ListItem>
+      value={value}
+      onChange={localOnChange}
+      initNewItem={makeNewFilter}
+      readOnly={readOnly}
+    >
+      {({ item, itemOnChange, readOnly }) => (<FilterItem value={item} onChange={itemOnChange} readOnly={readOnly} />)}
+    </ListEditor>
   );
 };

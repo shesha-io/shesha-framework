@@ -105,7 +105,7 @@ export class GqlLoader implements IFormDataLoader {
     }
   };
 
-  #getFieldsFromCustomEvents = (code: string) => {
+  #getFieldsFromCustomEvents = (code: string): string[] => {
     if (!code) return [];
     const reg = new RegExp('(?<![_a-zA-Z0-9.])data.[_a-zA-Z0-9.]+', 'g');
     const matchAll = code.matchAll(reg);

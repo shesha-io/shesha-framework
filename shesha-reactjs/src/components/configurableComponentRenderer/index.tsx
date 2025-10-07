@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useState } from 'react';
+import React, { FC, PropsWithChildren, ReactElement, useState } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { ISettingsEditor } from '@/components/configurableComponent';
@@ -50,7 +50,7 @@ export const ConfigurableComponentRenderer = <TSettings extends object>({
   onStartEdit,
   contextAccessor,
   settingsEditor,
-}: IConfigurableComponentRendererProps<TSettings>) => {
+}: IConfigurableComponentRendererProps<TSettings>): ReactElement => {
   const [editorIsVisible, setEditorIsVisible] = useState(false);
   const { mode } = useAppConfigurator();
   const { save, settings } = contextAccessor();
@@ -76,16 +76,17 @@ export const ConfigurableComponentRenderer = <TSettings extends object>({
     settings,
   };
 
-  const onOverlayClick = () => {
+
+  const onOverlayClick = (): void => {
     if (onStartEdit) onStartEdit();
     else setEditorIsVisible(true);
   };
 
-  const onCancel = () => {
+  const onCancel = (): void => {
     setEditorIsVisible(false);
   };
 
-  const onSave = (model: TSettings) => {
+  const onSave = (model: TSettings): void => {
     save(model)
       .then(() => {
         setEditorIsVisible(false);
@@ -100,7 +101,7 @@ export const ConfigurableComponentRenderer = <TSettings extends object>({
       {children(componentState, ({ children: overlayChildren }) => (
         <BlockOverlay visible={formInfoBlockVisible === true} onClick={onOverlayClick}>
           <div className={styles.shaSidebarEditModeContainer}>
-          {overlayChildren}
+            {overlayChildren}
           </div>
         </BlockOverlay>
       ))}

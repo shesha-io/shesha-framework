@@ -33,7 +33,7 @@ export const getMenuItem = (
 export const getAccountMenuItems = (
   accountDropdownListItems: IHeaderAction[],
   logoutUser: IAuthenticator['logoutUser']
-) => {
+): MenuItem[] => {
   const result = (accountDropdownListItems ?? []).map<MenuItem>(({ icon, text, url: link, onClick }, index) => ({
     key: index,
     onClick: onClick,

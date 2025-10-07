@@ -7,7 +7,7 @@ import React from 'react';
 import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IConfigurableItemAutocompleteComponentProps } from './interfaces';
 import { useAsyncDeepCompareMemo } from '@/hooks/useAsyncMemo';
-import { evaluateDynamicFilters } from '@/utils';
+import { evaluateDynamicFilters } from '@/utils/datatable';
 import { useNestedPropertyMetadatAccessor } from '@/providers';
 import { ConfigItemAutocomplete } from '@/components/configurableItemAutocomplete';
 

@@ -7,12 +7,12 @@ export default function CommonLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}): JSX.Element {
   const { LayoutComponent } = useLayoutSelection('defaultLayout');
 
   return (
-        <LayoutComponent noPadding>
-            {children}
-        </LayoutComponent>
+    <LayoutComponent noPadding>
+      {children}
+    </LayoutComponent>
   );
 };

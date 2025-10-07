@@ -27,7 +27,7 @@ import {
 } from './interfaces';
 
 // Filters should read properties as camelCase ?:(
-export const hasDynamicFilter = (filters: IStoredFilter[]) => {
+export const hasDynamicFilter = (filters: IStoredFilter[]): boolean => {
   if (filters?.length === 0) return false;
 
   const found = filters?.find(({ expression }) => {
@@ -162,22 +162,6 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
     .filter((f) => Boolean(f));
 
   return filterItems;
-};
-
-export const getIncomingSelectedStoredFilterIds = (filters: IStoredFilter[], id: string) => {
-  const fallback = filters?.length ? [filters[0]?.id] : [];
-
-  try {
-    if (id && localStorage.getItem(id)) {
-      const filter = (JSON.parse(localStorage.getItem(id)) as IDataTableUserConfig)?.selectedFilterIds;
-
-      return filter?.length ? filter : fallback;
-    }
-
-    return fallback;
-  } catch {
-    return fallback;
-  }
 };
 
 export const prepareColumn = (

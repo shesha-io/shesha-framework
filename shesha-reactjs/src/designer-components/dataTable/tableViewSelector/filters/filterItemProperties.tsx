@@ -26,14 +26,14 @@ export const FilterItemProperties: FC<IFilterItemPropertiesProps> = ({ value, on
 
   const editor = useMemo(() => {
     return (
-<ConfigurableForm
-  labelCol={{ span: 24 }}
-  wrapperCol={{ span: 24 }}
-  mode={readOnly ? 'readonly' : 'edit'}
-  markup={filtersSettingsForm}
-  initialValues={value}
-  onValuesChange={debouncedSave}
-/>
+      <ConfigurableForm
+        labelCol={{ span: 24 }}
+        wrapperCol={{ span: 24 }}
+        mode={readOnly ? 'readonly' : 'edit'}
+        markup={filtersSettingsForm}
+        initialValues={value}
+        onValuesChange={debouncedSave}
+      />
     );
   }, []);
 

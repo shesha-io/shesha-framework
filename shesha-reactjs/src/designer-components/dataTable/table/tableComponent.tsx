@@ -33,11 +33,11 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
       <TableWrapper {...model} />
     )
       : (
-<Alert
-  className="sha-designer-warning"
-  message="Data Table must be used within a Data Table Context"
-  type="warning"
-/>
+        <Alert
+          className="sha-designer-warning"
+          message="Data Table must be used within a Data Table Context"
+          type="warning"
+        />
       );
   },
   initModel: (model: ITableComponentProps) => {

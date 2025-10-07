@@ -6,7 +6,7 @@ export interface IMultivalueReferenceListCellProps<D extends object = {}, V = an
 
 const MultivalueReferenceListCellInternal = <D extends object = {}, V = any>(
   props: IMultivalueReferenceListCellProps<D, V>
-) => {
+): JSX.Element => {
   const { value } = props;
   const { referenceListName, referenceListModule } = props.columnConfig;
 
@@ -25,7 +25,7 @@ const MultivalueReferenceListCellInternal = <D extends object = {}, V = any>(
 
 export const MultivalueReferenceListCell = <D extends object = {}, V = any>(
   props: IMultivalueReferenceListCellProps<D, V>
-) => {
+): JSX.Element => {
   const { value } = props;
   if (!value || !props.columnConfig) return null;
 

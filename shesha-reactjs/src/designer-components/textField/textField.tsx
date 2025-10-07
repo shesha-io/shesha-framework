@@ -68,7 +68,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]) => {
+          const onChangeInternal = (...args: any[]): void => {
             customEvents.onChange({ value: args[0].currentTarget.value }, args[0]);
             if (typeof onChange === 'function') onChange(...args);
           };

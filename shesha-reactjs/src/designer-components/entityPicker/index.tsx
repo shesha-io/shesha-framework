@@ -111,7 +111,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
         {(value, onChange) => {
           const customEvent = customOnChangeValueEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]) => {
+          const onChangeInternal = (...args: any[]): void => {
             customEvent.onChange(args[0]);
             if (typeof onChange === 'function')
               onChange(...args);

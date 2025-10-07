@@ -41,7 +41,7 @@ export const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "message", description: "message framework", type: "object" },
 ];
 
-export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>) => {
+export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>): ReactElement => {
   const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression });
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
@@ -50,7 +50,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
 
   const { styles } = useStyles();
 
-  const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode) => {
+  const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode): void => {
     const newSetting = { ...value, _mode: (m ?? mode) };
     const newValue = !!newSetting._code || newSetting._mode === 'code' ? newSetting : value._value;
     if (props.onChange)
@@ -61,17 +61,17 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     onInternalChange({ ...setting, _mode: mode }, mode);
   }, [mode]);
 
-  const codeOnChange = (val: any) => {
+  const codeOnChange = (val: any): void => {
     const newValue = { ...setting, _code: val };
     onInternalChange(newValue);
   };
 
-  const valueOnChange = (val: any) => {
+  const valueOnChange = (val: any): void => {
     const newValue = { ...setting, _value: val };
     onInternalChange(newValue);
   };
 
-  const onSwitchMode = () => {
+  const onSwitchMode = (): void => {
     const newMode = mode === 'code' ? 'value' : 'code';
     onInternalChange(setting, newMode);
   };
@@ -118,9 +118,9 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
       />
       {mode === 'code' && editor}
       {mode === 'value' && (
-<div className={styles.jsContent} style={{ marginLeft: 0 }}>
-        {props.children(setting?._value, valueOnChange, propertyName)}
-</div>
+        <div className={styles.jsContent} style={{ marginLeft: 0 }}>
+          {props.children(setting?._value, valueOnChange, propertyName)}
+        </div>
       )}
     </div>
   );

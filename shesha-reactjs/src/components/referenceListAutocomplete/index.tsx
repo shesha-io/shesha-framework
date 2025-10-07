@@ -36,7 +36,7 @@ const baseListFilter = {
   ],
 };
 
-const getFilter = (term: string) => {
+const getFilter = (term: string): string => {
   const termFilter = term
     ? {
       or: [
@@ -114,18 +114,18 @@ const RefListLabel: FC<IConfigurationItemProps> = ({ name, description, label })
     ? label
     : null;
   return (
-        <div>
-            <HelpTextPopover content={description}>
-                <span>{name}</span>
-            </HelpTextPopover>
-            {displayLabel && (
-                <><br /><Typography.Text type="secondary" ellipsis={true}>{displayLabel}</Typography.Text></>
-            )}
-        </div>
+    <div>
+      <HelpTextPopover content={description}>
+        <span>{name}</span>
+      </HelpTextPopover>
+      {displayLabel && (
+        <><br /><Typography.Text type="secondary" ellipsis={true}>{displayLabel}</Typography.Text></>
+      )}
+    </div>
   );
 };
 
-const getDisplayText = (item: IResponseItem) => {
+const getDisplayText = (item: IResponseItem): string => {
   if (!item)
     return null;
   const fullName = item.name;
@@ -194,11 +194,11 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
 
         const opt: IOption = {
           label: (
-                        <RefListLabel
-                          name={item.name}
-                          label={item.label}
-                          description={item.description}
-                        />
+            <RefListLabel
+              name={item.name}
+              label={item.label}
+              description={item.description}
+            />
           ),
           value: getDisplayText(item),
           data: {
@@ -232,11 +232,11 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
   );
 
 
-  const onSearch = (term) => {
+  const onSearch = (term): void => {
     debouncedFetchItems(term);
   };
 
-  const onSelect = (_value, option) => {
+  const onSelect = (_value, option): void => {
     const listId = (option as IOption)?.data;
     selectedValue.current = listId;
     if (props.onChange) {
@@ -244,7 +244,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
     }
   };
 
-  const onClear = () => {
+  const onClear = (): void => {
     selectedValue.current = null;
     if (props.onChange) {
       props.onChange(null);
@@ -254,22 +254,22 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
   const loading = listFetcher.loading;
 
   return (
-        <AutoComplete
-          allowClear
-          notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
-          style={{ width: '100%' }}
-          options={options}
-          onSearch={onSearch}
-          onSelect={onSelect}
-          onClear={onClear}
-          placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
-          disabled={valueFetcher.loading || props.readOnly}
-          size={props?.size}
+    <AutoComplete
+      allowClear
+      notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
+      style={{ width: '100%' }}
+      options={options}
+      onSearch={onSearch}
+      onSelect={onSelect}
+      onClear={onClear}
+      placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
+      disabled={valueFetcher.loading || props.readOnly}
+      size={props?.size}
 
-          value={autocompleteText}
-          onChange={setAutocompleteText}
-        >
-        </AutoComplete>
+      value={autocompleteText}
+      onChange={setAutocompleteText}
+    >
+    </AutoComplete>
   );
 };
 

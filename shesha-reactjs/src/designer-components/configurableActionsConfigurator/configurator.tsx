@@ -67,7 +67,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
     return false;
   };
 
-  const onValuesChange = (changedValues, values) => {
+  const onValuesChange = (changedValues, values): void => {
     const actionChanged = hasChangedAction(changedValues);
     if (actionChanged) {
       form.setFieldValue(FORM_ARGUMENTS_FIELD, undefined);

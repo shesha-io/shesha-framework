@@ -102,7 +102,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     registerConfigurableColumns(id, permissibleColumns);
   }, [items, isDesignMode]);
 
-  const renderSidebarContent = () => {
+  const renderSidebarContent = (): JSX.Element => {
     if (isFiltering) {
       return <DatatableAdvancedFilter />;
     }
@@ -116,69 +116,69 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
   if (isDesignMode && !repository) return <NotConfiguredWarning />;
 
-  const toggleFieldPropertiesSidebar = () => {
+  const toggleFieldPropertiesSidebar = (): void => {
     if (!isSelectingColumns && !isFiltering) setIsInProgressFlag({ isFiltering: true });
     else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
   };
 
 
   return (
-        <SidebarContainer
-          rightSidebarProps={{
-            onOpen: toggleFieldPropertiesSidebar,
-            open: Boolean(isSelectingColumns || isFiltering),
-            onClose: toggleFieldPropertiesSidebar,
-            title: 'Table Columns',
-            content: renderSidebarContent,
-          }}
-          allowFullCollapse
-        >
-            <GlobalTableStyles />
-            {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
-            <div className={styles.dataTable} style={finalStyle}>
-                <DataTable
-                  onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
-                  onMultiRowSelect={setMultiSelectedRow}
-                  selectedRowIndex={selectedRow?.index}
-                  useMultiselect={useMultiselect}
-                  freezeHeaders={props.stickyHeader || props.freezeHeaders}
-                  allowReordering={allowReordering}
-                  tableStyle={getStyle(tableStyle, formData, globalState)}
-                  containerStyle={getStyle(containerStyle, formData, globalState)}
-                  canAddInline={props.canAddInline}
-                  canAddInlineExpression={props.canAddInlineExpression}
-                  customCreateUrl={props.customCreateUrl}
-                  newRowCapturePosition={props.newRowCapturePosition}
-                  onNewRowInitialize={props.onNewRowInitialize}
-                  canEditInline={props.canEditInline}
-                  canEditInlineExpression={props.canEditInlineExpression}
-                  customUpdateUrl={props.customUpdateUrl}
-                  canDeleteInline={props.canDeleteInline}
-                  canDeleteInlineExpression={props.canDeleteInlineExpression}
-                  customDeleteUrl={props.customDeleteUrl}
-                  onRowSave={props.onRowSave}
-                  onRowSaveSuccessAction={props.onRowSaveSuccessAction}
-                  onDblClick={props.dblClickActionConfiguration}
-                  inlineSaveMode={props.inlineSaveMode}
-                  inlineEditMode={props.inlineEditMode}
-                  minHeight={props.minHeight}
-                  maxHeight={props.maxHeight}
-                  noDataText={props.noDataText}
-                  noDataSecondaryText={props.noDataSecondaryText}
-                  noDataIcon={props.noDataIcon}
-                  showExpandedView={props.showExpandedView}
-                  onRowClick={props.onRowClick}
-                  onRowDoubleClick={props.onRowDoubleClick}
-                  onRowHover={props.onRowHover}
-                  onRowSelect={props.onRowSelect}
-                  onSelectionChange={props.onSelectionChange}
-                  rowBackgroundColor={props.rowBackgroundColor}
-                  rowAlternateBackgroundColor={props.rowAlternateBackgroundColor}
-                  rowHoverBackgroundColor={props.rowHoverBackgroundColor}
-                  rowSelectedBackgroundColor={props.rowSelectedBackgroundColor}
-                  border={props.border}
-                />
-            </div>
-        </SidebarContainer>
+    <SidebarContainer
+      rightSidebarProps={{
+        onOpen: toggleFieldPropertiesSidebar,
+        open: Boolean(isSelectingColumns || isFiltering),
+        onClose: toggleFieldPropertiesSidebar,
+        title: 'Table Columns',
+        content: renderSidebarContent,
+      }}
+      allowFullCollapse
+    >
+      <GlobalTableStyles />
+      {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
+      <div className={styles.dataTable} style={finalStyle}>
+        <DataTable
+          onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
+          onMultiRowSelect={setMultiSelectedRow}
+          selectedRowIndex={selectedRow?.index}
+          useMultiselect={useMultiselect}
+          freezeHeaders={props.stickyHeader || props.freezeHeaders}
+          allowReordering={allowReordering}
+          tableStyle={getStyle(tableStyle, formData, globalState)}
+          containerStyle={getStyle(containerStyle, formData, globalState)}
+          canAddInline={props.canAddInline}
+          canAddInlineExpression={props.canAddInlineExpression}
+          customCreateUrl={props.customCreateUrl}
+          newRowCapturePosition={props.newRowCapturePosition}
+          onNewRowInitialize={props.onNewRowInitialize}
+          canEditInline={props.canEditInline}
+          canEditInlineExpression={props.canEditInlineExpression}
+          customUpdateUrl={props.customUpdateUrl}
+          canDeleteInline={props.canDeleteInline}
+          canDeleteInlineExpression={props.canDeleteInlineExpression}
+          customDeleteUrl={props.customDeleteUrl}
+          onRowSave={props.onRowSave}
+          onRowSaveSuccessAction={props.onRowSaveSuccessAction}
+          onDblClick={props.dblClickActionConfiguration}
+          inlineSaveMode={props.inlineSaveMode}
+          inlineEditMode={props.inlineEditMode}
+          minHeight={props.minHeight}
+          maxHeight={props.maxHeight}
+          noDataText={props.noDataText}
+          noDataSecondaryText={props.noDataSecondaryText}
+          noDataIcon={props.noDataIcon}
+          showExpandedView={props.showExpandedView}
+          onRowClick={props.onRowClick}
+          onRowDoubleClick={props.onRowDoubleClick}
+          onRowHover={props.onRowHover}
+          onRowSelect={props.onRowSelect}
+          onSelectionChange={props.onSelectionChange}
+          rowBackgroundColor={props.rowBackgroundColor}
+          rowAlternateBackgroundColor={props.rowAlternateBackgroundColor}
+          rowHoverBackgroundColor={props.rowHoverBackgroundColor}
+          rowSelectedBackgroundColor={props.rowSelectedBackgroundColor}
+          border={props.border}
+        />
+      </div>
+    </SidebarContainer>
   );
 };

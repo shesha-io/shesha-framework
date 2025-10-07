@@ -7,6 +7,8 @@ import {
   PropertiesEditorActionsContext,
   PropertiesEditorStateContext,
   PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
+  IPropertiesEditorStateContext,
+  IPropertiesEditorActionsContext,
 } from './contexts';
 import {
   addItemAction,
@@ -36,18 +38,8 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
     onChange: props.onChange,
     selectedItemRef: selRef,
   });
-  /*
-  const dispatchDeferred = (action: Action<any>) => {
-    return new Promise<void>((resolve) => {
-      dispatch((dispatch, _getState) => {
-        dispatch(action);
-        resolve();
-      });
-    });
-  }
-  */
 
-  const dispatchAndFire = (action: Action<any>) => {
+  const dispatchAndFire = (action: Action<any>): void => {
     dispatch((dispatchThunk, getState) => {
       dispatchThunk(action);
       if (props.onChange) {
@@ -57,7 +49,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
     });
   };
 
-  const addItem = (parentId?: string) => {
+  const addItem = (parentId?: string): Promise<IModelItem> => {
     // return dispatchDeferred
     return new Promise<IModelItem>((resolve) => {
       const item: IModelItem = {
@@ -69,17 +61,17 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
     });
   };
 
-  const deleteItem = (uid: string) => {
+  const deleteItem = (uid: string): void => {
     dispatchAndFire(deleteItemAction(uid));
   };
 
-  const selectItem = (uid: string) => {
+  const selectItem = (uid: string): void => {
     if (state.selectedItemId !== uid) {
       dispatch(selectItemAction(uid));
     }
   };
 
-  const updateChildItems = (payload: IUpdateChildItemsPayload) => {
+  const updateChildItems = (payload: IUpdateChildItemsPayload): void => {
     dispatchAndFire(updateChildItemsAction(payload));
   };
 
@@ -87,7 +79,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
     return getItemById(state.items, uid);
   };
 
-  const updateItem = (payload: IUpdateItemSettingsPayload) => {
+  const updateItem = (payload: IUpdateItemSettingsPayload): void => {
     dispatchAndFire(updateItemAction(payload));
   };
 
@@ -112,7 +104,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
   );
 };
 
-function usePropertiesEditorState() {
+function usePropertiesEditorState(): IPropertiesEditorStateContext {
   const context = useContext(PropertiesEditorStateContext);
 
   if (context === undefined) {
@@ -122,7 +114,7 @@ function usePropertiesEditorState() {
   return context;
 }
 
-function usePropertiesEditorActions() {
+function usePropertiesEditorActions(): IPropertiesEditorActionsContext {
   const context = useContext(PropertiesEditorActionsContext);
 
   if (context === undefined) {
@@ -132,7 +124,7 @@ function usePropertiesEditorActions() {
   return context;
 }
 
-function usePropertiesEditor() {
+function usePropertiesEditor(): IPropertiesEditorStateContext & IPropertiesEditorActionsContext {
   return { ...usePropertiesEditorState(), ...usePropertiesEditorActions() };
 }
 

@@ -3,8 +3,9 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { positionOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/index';
 
-export const getSettings = (data) => {
+export const getSettings = (data): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const validationTabId = nanoid();

@@ -60,7 +60,6 @@ export { default as NodeOrFuncRenderer, type ReactNodeOrFunc } from './nodeOrFun
 export { default as NotAuthorized, type INotAuthorizedProps } from './notAuthorized';
 export { default as NotesRenderer, type INotesRendererProps } from './notesRenderer';
 export { default as NotesRendererBase, type INotesRendererBaseProps } from './notesRendererBase';
-export { default as OverlayLoader, type IOverlayLoaderProps } from './overlayLoader';
 export { default as ProtectedContent, type IProtectedContentProps } from './protectedContent';
 export { default as RefListRadioButtons, type IRefListRadioButtonsProps } from './refListRadioButtons';
 export { default as SectionSeparator, type ISectionSeparatorProps } from './sectionSeparator';

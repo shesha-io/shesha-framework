@@ -18,7 +18,7 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
   const scrollbarRightArrow = useRef(null);
   const { styles } = useStyles();
 
-  const manageArrows = () => {
+  const manageArrows = (): void => {
     if (!filtersRef.current) return;
 
     const maxScrollDistance = filtersRef.current.scrollWidth - filtersRef.current.clientWidth - 30;
@@ -40,14 +40,14 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
     }
   };
 
-  const scrollRight = () => {
+  const scrollRight = (): void => {
     if (filtersRef.current) {
       filtersRef.current.scrollLeft += 100;
       manageArrows();
     }
   };
 
-  const scrollLeft = () => {
+  const scrollLeft = (): void => {
     if (filtersRef.current) {
       manageArrows();
       filtersRef.current.scrollLeft -= filtersRef.current.scrollLeft === 0 ? 200 : 100;
@@ -57,7 +57,7 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
   useEffect(() => {
     manageArrows();
 
-    const handleScroll = () => {
+    const handleScroll = (): void => {
       manageArrows();
     };
 
@@ -74,48 +74,48 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
   }, [filtersRef.current]);
 
   return (
-        <div className={styles.wrapper}>
-            <div className={styles.resultCount}>
-                {`Filters (${rows} results):`}
-            </div>
+    <div className={styles.wrapper}>
+      <div className={styles.resultCount}>
+        {`Filters (${rows} results):`}
+      </div>
 
-            <div className={styles.scrollableTagsContainer}>
-                <LeftOutlined
-                  ref={scrollbarLeftArrow}
-                  className={styles.arrowLeft}
-                  onClick={scrollLeft}
-                />
-                <div className={styles.filters} ref={filtersRef}>
-                    {filters?.map(({ columnId }) => {
-                      return (
-                            <Tag
-                              bordered={false}
-                              closable
-                              key={columnId}
-                              onClose={() => removeColumnFilter(columnId)}
-                              className={styles.tag}
-                            >
-                                {columnId}
-                            </Tag>
-                      );
-                    })}
-                </div>
-                <RightOutlined
-                  ref={scrollbarRightArrow}
-                  className={styles.arrowRight}
-                  onClick={scrollRight}
-                />
-            </div>
-
-            {filters.length > 1 && (
-                <Button
-                  onClick={clearFilters}
-                  type="link"
-                  className={styles.clearAllButton}
-                >
-                    clear all
-                </Button>
-            )}
+      <div className={styles.scrollableTagsContainer}>
+        <LeftOutlined
+          ref={scrollbarLeftArrow}
+          className={styles.arrowLeft}
+          onClick={scrollLeft}
+        />
+        <div className={styles.filters} ref={filtersRef}>
+          {filters?.map(({ columnId }) => {
+            return (
+              <Tag
+                bordered={false}
+                closable
+                key={columnId}
+                onClose={() => removeColumnFilter(columnId)}
+                className={styles.tag}
+              >
+                {columnId}
+              </Tag>
+            );
+          })}
         </div>
+        <RightOutlined
+          ref={scrollbarRightArrow}
+          className={styles.arrowRight}
+          onClick={scrollRight}
+        />
+      </div>
+
+      {filters.length > 1 && (
+        <Button
+          onClick={clearFilters}
+          type="link"
+          className={styles.clearAllButton}
+        >
+          clear all
+        </Button>
+      )}
+    </div>
   );
 };

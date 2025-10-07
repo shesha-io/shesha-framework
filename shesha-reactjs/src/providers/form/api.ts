@@ -148,11 +148,11 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
     IGetFormByIdPayload | IGetFormByNamePayload
   >(requestParams?.url ?? '', { queryParams: requestParams?.queryParams, lazy: args.lazy || !canFetch });
 
-  const reFetch = () => {
+  const reFetch = (): Promise<IAbpWrappedGetEntityResponse<FormConfigurationDto>> => {
     return fetcher.refetch({ path: requestParams.url, queryParams: requestParams.queryParams });
   };
 
-  const reFetcher = () => {
+  const reFetcher = (): Promise<FormMarkupWithSettings> => {
     return canFetch
       ? reFetch().then((response) => {
         return getMarkupFromResponse(response);
@@ -230,7 +230,7 @@ export const filterDataByOutputComponents = (
   data: any,
   components: IComponentsDictionary,
   toolboxComponents: IToolboxComponents,
-) => {
+): any => {
   const newData = { ...data };
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
@@ -248,7 +248,7 @@ export const filterDataByOutputComponents = (
 };
 
 export const gqlFieldsToString = (fields: IFieldData[]): string => {
-  const resf = (items: IFieldData[]) => {
+  const resf = (items: IFieldData[]): string => {
     let s = '';
     items.forEach((item) => {
       if (!(item.property ||

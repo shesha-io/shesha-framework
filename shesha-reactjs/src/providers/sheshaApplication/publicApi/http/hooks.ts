@@ -52,7 +52,7 @@ export class AxiosHttpClient implements HttpClientApi {
     return axios.patch(url, data, this.#getRequestConfig(config));
   }
 
-  setConfig(axiosConfig: AxiosRequestConfig) {
+  setConfig(axiosConfig: AxiosRequestConfig): void {
     this.#axiosConfig = axiosConfig;
   }
 

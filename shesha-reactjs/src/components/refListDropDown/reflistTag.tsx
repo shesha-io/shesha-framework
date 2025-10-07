@@ -16,7 +16,7 @@ interface IReflistTagProps {
   label?: string | React.ReactNode;
   placement?: TooltipProps['placement'];
 }
-function ReflistTag({ value, description, color, icon, showIcon, tagStyle, solidColor, showItemName, label, placement = 'right' }: IReflistTagProps) {
+function ReflistTag({ value, description, color, icon, showIcon, tagStyle, solidColor, showItemName, label, placement = 'right' }: IReflistTagProps): JSX.Element {
   const memoizedColor = !solidColor
     ? color?.toLowerCase()
     : convertCssColorNameToHex(color ?? '');
@@ -24,15 +24,15 @@ function ReflistTag({ value, description, color, icon, showIcon, tagStyle, solid
   const labelToRender = typeof label === 'string' ? label.toUpperCase() : label;
 
   return (
-        <Tooltip trigger={['hover']} title={showItemName ? description : <>{label}<br />{description}</>} placement={placement as TooltipProps['placement']} style={{ cursor: 'pointer', zIndex: 2 }}>
-            <Tag
-              key={value}
-              color={memoizedColor}
-              icon={(icon && showIcon) && <Icon type={icon} />}
-              style={getTagStyle(tagStyle, !!color)}
-            >{showItemName && labelToRender}
-            </Tag>
-        </Tooltip>
+    <Tooltip trigger={['hover']} title={showItemName ? description : <>{label}<br />{description}</>} placement={placement as TooltipProps['placement']} style={{ cursor: 'pointer', zIndex: 2 }}>
+      <Tag
+        key={value}
+        color={memoizedColor}
+        icon={(icon && showIcon) && <Icon type={icon} />}
+        style={getTagStyle(tagStyle, !!color)}
+      >{showItemName && labelToRender}
+      </Tag>
+    </Tooltip>
   );
 };
 

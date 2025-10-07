@@ -1,4 +1,4 @@
-import React, { FC, Fragment } from 'react';
+import React, { FC, Fragment, ReactNode } from 'react';
 import FormItem from 'antd/lib/form/FormItem';
 import { InputNumber, Input, Checkbox, Tooltip } from 'antd';
 import { DatePicker } from '@/components/antd';
@@ -64,19 +64,19 @@ export const EditableDisplayFormItem: FC<IEditableDisplayLabelProps> = ({
   labelIconPlacement = 'default',
 }) => {
   const { styles } = useStyles();
-  const handleDateChange = (_: any, dateString: string) => {
+  const handleDateChange = (_: any, dateString: string): void => {
     onChange(dateString);
   };
 
-  const handleCheckboxChange = (event: CheckboxChangeEvent) => {
+  const handleCheckboxChange = (event: CheckboxChangeEvent): void => {
     onChange(event.target.checked);
   };
 
-  const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     onChange(event.target.value);
   };
 
-  const renderInput = () => {
+  const renderInput = (): JSX.Element => {
     if (dataType === 'string') {
       return <Input value={value as string} onChange={handleTextChange} />;
     } else if (dataType === 'date') {
@@ -89,7 +89,7 @@ export const EditableDisplayFormItem: FC<IEditableDisplayLabelProps> = ({
     return <Checkbox checked={!!value} {...checkboxProps} onChange={handleCheckboxChange} />;
   };
 
-  const renderDisplay = () => {
+  const renderDisplay = (): ReactNode => {
     if (dataType === 'string' || dataType === 'number') {
       return <Fragment>{value || NA}</Fragment>;
     } else if (dataType === 'date') {
@@ -99,14 +99,14 @@ export const EditableDisplayFormItem: FC<IEditableDisplayLabelProps> = ({
     return <>{Boolean(value) ? 'Yes' : 'No'}</>;
   };
 
-  const renderFormItemProperComponent = () => {
+  const renderFormItemProperComponent = (): JSX.Element => {
     if (isEditing) {
       return renderInput();
     }
 
     const iconClass = `sha-label-icon ${labelIconPlacement}`;
 
-    const displayIcon = () =>
+    const displayIcon = (): JSX.Element =>
       readOnly ? (
         <LockOutlined className={iconClass} />
       ) : (

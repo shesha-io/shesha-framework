@@ -1,6 +1,6 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import DataTableProvider from '@/providers/dataTable';
-import React, { FC, useMemo } from 'react';
+import React, { FC, ReactElement, useMemo } from 'react';
 import { ConfigurableFormItem } from '@/components';
 import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
@@ -48,57 +48,57 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   if (sourceType === 'Form' && !propertyName)
     throw SheshaError.throwPropertyError('propertyName');
 
-  const provider = (getFieldValue = undefined, onChange = undefined) => {
+  const provider = (getFieldValue = undefined, onChange = undefined): ReactElement => {
     // Determine the appropriate style class based on designer mode and child components
-    const getStyleClass = () => {
+    const getStyleClass = (): string => {
       if (!isDesignerMode && hasChildComponents) return styles.dataContextRuntime;
       if (!isDesignerMode && !hasChildComponents) return styles.dataContextRuntimeEmpty;
       return hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty;
     };
 
     return (
-          <div className={cx(getStyleClass())}>
-              {isDesignerMode && (
-                  <div className="data-context-label">
-                      <DatabaseOutlined />
-                      Data Context {hasChildComponents && `(${childComponentIds.length} child components)`}
-                  </div>
-              )}
-              <DataTableProvider
-                userConfigId={props.id}
-                entityType={entityType}
-                getDataPath={getDataPath}
-                propertyName={propertyName}
-                actionOwnerId={id}
-                actionOwnerName={componentName}
-                sourceType={props.sourceType}
-                initialPageSize={props.defaultPageSize ?? 10}
-                dataFetchingMode={props.dataFetchingMode ?? 'paging'}
-                getFieldValue={getFieldValue}
-                onChange={onChange}
-                grouping={props.grouping}
-                sortMode={props.sortMode}
-                strictSortBy={props.strictSortBy}
-                strictSortOrder={props.strictSortOrder}
-                standardSorting={props.standardSorting}
-                allowReordering={evaluateYesNo(allowReordering, formMode)}
-                permanentFilter={permanentFilter}
-                disableRefresh={disableRefresh}
-                customReorderEndpoint={customReorderEndpoint}
-              >
-                  {!isDesignerMode && !hasChildComponents && (
-                      <div className="data-context-label">
-                          <DatabaseOutlined />
-                          Data Context (No child components found)
-                      </div>
-                  )}
-                  <ComponentsContainer
-                    containerId={id}
-                    className={isDesignerMode ? `${styles.dataContextComponentsContainer} ${!hasChildComponents ? styles.dataContextComponentsContainerEmpty : ''}` : undefined}
-                    itemsLimit={-1}
-                  />
-              </DataTableProvider>
+      <div className={cx(getStyleClass())}>
+        {isDesignerMode && (
+          <div className="data-context-label">
+            <DatabaseOutlined />
+            Data Context {hasChildComponents && `(${childComponentIds.length} child components)`}
           </div>
+        )}
+        <DataTableProvider
+          userConfigId={props.id}
+          entityType={entityType}
+          getDataPath={getDataPath}
+          propertyName={propertyName}
+          actionOwnerId={id}
+          actionOwnerName={componentName}
+          sourceType={props.sourceType}
+          initialPageSize={props.defaultPageSize ?? 10}
+          dataFetchingMode={props.dataFetchingMode ?? 'paging'}
+          getFieldValue={getFieldValue}
+          onChange={onChange}
+          grouping={props.grouping}
+          sortMode={props.sortMode}
+          strictSortBy={props.strictSortBy}
+          strictSortOrder={props.strictSortOrder}
+          standardSorting={props.standardSorting}
+          allowReordering={evaluateYesNo(allowReordering, formMode)}
+          permanentFilter={permanentFilter}
+          disableRefresh={disableRefresh}
+          customReorderEndpoint={customReorderEndpoint}
+        >
+          {!isDesignerMode && !hasChildComponents && (
+            <div className="data-context-label">
+              <DatabaseOutlined />
+              Data Context (No child components found)
+            </div>
+          )}
+          <ComponentsContainer
+            containerId={id}
+            className={isDesignerMode ? `${styles.dataContextComponentsContainer} ${!hasChildComponents ? styles.dataContextComponentsContainerEmpty : ''}` : undefined}
+            itemsLimit={-1}
+          />
+        </DataTableProvider>
+      </div>
     );
   };
   if (props?.hidden) {
@@ -106,9 +106,9 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   }
   return sourceType === 'Form'
     ? (
-<ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
-            {(value, onChange) => provider(() => value, onChange)}
-</ConfigurableFormItem>
+      <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
+        {(value, onChange) => provider(() => value, onChange)}
+      </ConfigurableFormItem>
     )
     : provider();
 };

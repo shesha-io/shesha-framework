@@ -71,7 +71,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
         >
           {(value, _) => {
             const customEvent = customOnClickEventHandler(model, allData);
-            const onClickInternal = (_: any) => {
+            const onClickInternal = (_: any): void => {
               customEvent.onClick(value);
             };
             return (
@@ -118,7 +118,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
       >
         {(value) => {
           const customEvent = customOnClickEventHandler(model, allData);
-          const onClickInternal = (_: any) => {
+          const onClickInternal = (_: any): void => {
             customEvent.onClick(value);
           };
           return (

@@ -27,7 +27,7 @@ export const ItemsContainer: FC<IItemsContainerProps> = (props) => {
   const { updateChildItems } = usePropertiesEditor();
   const { styles } = useStyles();
 
-  const onSetList = (newState: ItemInterface[]) => {
+  const onSetList = (newState: ItemInterface[]): void => {
     // temporary commented out, the behavoiur of the sortablejs differs sometimes
     const listChanged = true; // !newState.some(item => item.chosen !== null && item.chosen !== undefined);
 

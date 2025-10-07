@@ -1,4 +1,7 @@
-export const getWidth = (type: string, width: any) => {
+import { CSSProperties } from 'react';
+
+type WidthCssProp = CSSProperties['width'];
+export const getWidth = (type: string, width: WidthCssProp): WidthCssProp => {
   switch (type) {
     case 'numberField': return width || 100;
     case 'button': return width || 24;

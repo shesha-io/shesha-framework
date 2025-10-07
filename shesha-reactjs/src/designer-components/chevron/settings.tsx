@@ -86,7 +86,7 @@ export const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () =
         </Show>
 
         <SettingsFormItem name="fontColor" label="Font Color" jsSetting>
-            <ColorPicker readOnly={values.readOnly} allowClear />
+          <ColorPicker readOnly={values.readOnly} allowClear />
         </SettingsFormItem>
 
         <SettingsFormItem name="showIcons" label="Show Icons?" valuePropName="checked" jsSetting>

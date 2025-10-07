@@ -25,7 +25,7 @@ export const ComplexProperty: FC<IProps> = (props) => {
 
   const icon = getIconTypeByDataType(props.data.dataType);
 
-  const onAddChildClick = () => {
+  const onAddChildClick = (): void => {
     addItem(props.data.id);
   };
 

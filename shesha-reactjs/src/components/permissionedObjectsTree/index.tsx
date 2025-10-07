@@ -127,7 +127,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
     }
   );
 
-  const onChangeAction = (selectedRow: PermissionedObjectDto) => {
+  const onChangeAction = (selectedRow: PermissionedObjectDto): void => {
     if (props.onSelectAction?.actionName) {
       executeAction({
         actionConfiguration: props.onSelectAction,
@@ -136,7 +136,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
     }
   };
 
-  const onChangeHandler = (item: PermissionedObjectDto) => {
+  const onChangeHandler = (item: PermissionedObjectDto): void => {
     setObjectId(item.id);
     onChangeAction(item);
     if (Boolean(props.onChange))
@@ -170,8 +170,8 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
           {item.description && <Tooltip title={item.description}>{name}</Tooltip>}
           {!item.description && name}
         </span>
-          {access === 4 && <span style={{ color: 'green' }}> (permissioned)</span>}
-          {access === 5 && <span style={{ color: 'red' }}> (unsecured)</span>}
+        {access === 4 && <span style={{ color: 'green' }}> (permissioned)</span>}
+        {access === 5 && <span style={{ color: 'red' }}> (unsecured)</span>}
 
       </>
     );

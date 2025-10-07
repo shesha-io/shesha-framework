@@ -31,7 +31,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
     buttonDisabled: props?.readOnly || (loading && isModal),
   };
 
-  const onButtonClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const onButtonClick = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
     event.preventDefault();
 
     // Prevent action if button is disabled

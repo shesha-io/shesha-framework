@@ -7,7 +7,7 @@ interface UseRenderTimeArgs {
   onLog: OnMeasurementLog;
 }
 
-export const useRenderTime = ({ onLog }: UseRenderTimeArgs) => {
+export const useRenderTime = ({ onLog }: UseRenderTimeArgs): void => {
   const id = useRef<string>(nanoid());
   const isFirstRender = useRef<boolean>(true);
 

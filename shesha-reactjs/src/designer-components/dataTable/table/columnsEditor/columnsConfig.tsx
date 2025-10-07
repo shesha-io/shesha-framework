@@ -15,20 +15,20 @@ export interface IColumnsConfigProps {
 export const ColumnsConfig: FC<IColumnsConfigProps> = ({ value, onChange, readOnly = false, size, parentComponentType }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const toggleModalVisibility = () => setModalVisible((prev) => !prev);
+  const toggleModalVisibility = (): void => setModalVisible((prev) => !prev);
 
   return (
-        <Fragment>
-            <Button size={size} onClick={toggleModalVisibility}>{readOnly ? "View Columns" : "Configure Columns"}</Button>
+    <Fragment>
+      <Button size={size} onClick={toggleModalVisibility}>{readOnly ? "View Columns" : "Configure Columns"}</Button>
 
-            <ColumnsEditorModal
-              visible={modalVisible}
-              hideModal={toggleModalVisibility}
-              value={value}
-              onChange={onChange}
-              readOnly={readOnly}
-              parentComponentType={parentComponentType}
-            />
-        </Fragment>
+      <ColumnsEditorModal
+        visible={modalVisible}
+        hideModal={toggleModalVisibility}
+        value={value}
+        onChange={onChange}
+        readOnly={readOnly}
+        parentComponentType={parentComponentType}
+      />
+    </Fragment>
   );
 };

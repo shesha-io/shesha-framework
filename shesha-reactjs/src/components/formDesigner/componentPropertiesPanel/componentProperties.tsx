@@ -35,17 +35,17 @@ export const ComponentProperties: FC<IComponentPropertiesEditrorProps> = (props)
   const sourcesFolder = getSourceFolderForComponent(componentModel, formProps);
 
   return (
-        <SourceFilesFolderProvider folder={sourcesFolder}>
-            <ParentProvider model={{ readOnly: readOnly }}>
-                <ComponentPropertiesEditor
-                  key={id}
-                  componentModel={componentModel}
-                  readOnly={readOnly}
-                  onSave={onSave}
-                  autoSave={true}
-                  toolboxComponent={toolboxComponent}
-                />
-            </ParentProvider>
-        </SourceFilesFolderProvider>
+    <SourceFilesFolderProvider folder={sourcesFolder}>
+      <ParentProvider model={{ readOnly: readOnly }}>
+        <ComponentPropertiesEditor
+          key={id}
+          componentModel={componentModel}
+          readOnly={readOnly}
+          onSave={onSave}
+          autoSave={true}
+          toolboxComponent={toolboxComponent}
+        />
+      </ParentProvider>
+    </SourceFilesFolderProvider>
   );
 };

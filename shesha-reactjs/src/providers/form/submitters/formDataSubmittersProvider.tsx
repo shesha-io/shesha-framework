@@ -26,14 +26,14 @@ export const FormDataSubmittersProvider: FC<PropsWithChildren> = ({ children }) 
   };
 
   return (
-        <FormDataSubmittersContext.Provider
-          value={{ getFormDataSubmitter }}
-        >
-            {children}
-        </FormDataSubmittersContext.Provider>
+    <FormDataSubmittersContext.Provider
+      value={{ getFormDataSubmitter }}
+    >
+      {children}
+    </FormDataSubmittersContext.Provider>
   );
 };
 
-export const useFormDataSubmitters = () => {
+export const useFormDataSubmitters = (): IFormDataSubmittersContext => {
   return React.useContext(FormDataSubmittersContext);
 };

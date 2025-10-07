@@ -66,7 +66,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     borderBottom: inline ? `${lineThickness || 2}px ${lineType} ${lineColor || styles.primaryColor}` : 'none',
   };
 
-  const getLineStyles = (isLeft: boolean) => {
+  const getLineStyles = (isLeft: boolean): CSSProperties => {
     if ((isLeft && labelAlign === 'left') || (!isLeft && labelAlign === 'right')) {
       return { width: `calc(${titleMargin || 0}% - ${titleWidth / 2}px)` };
     }
@@ -74,7 +74,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     return { flex: 1 };
   };
 
-  const renderTitle = () => {
+  const renderTitle = (): ReactNode => {
     if (!title) return null;
 
     let titleMarginStyle: CSSProperties = { margin: '0 8px', display: 'flex', alignItems: 'center' };

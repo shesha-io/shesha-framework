@@ -1,6 +1,7 @@
 import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { IConfigurableComponentProps } from './models';
 import { createNamedContext } from '@/utils/react';
+import { Context } from 'react';
 
 export type IFlagProgressFlags = 'load' | 'save';
 export type IFlagSucceededFlags = 'load' | 'save';
@@ -66,7 +67,7 @@ export const getContextInitialState = <TSettings extends any>(
 
 export const getConfigurableComponentStateContext = <TSettings extends any>(
   initialState: IConfigurableComponentStateContext<TSettings>
-) => createNamedContext<IConfigurableComponentStateContext<TSettings>>(initialState, "ConfigurableComponentStateContext");
+): Context<IConfigurableComponentStateContext<TSettings>> => createNamedContext<IConfigurableComponentStateContext<TSettings>>(initialState, "ConfigurableComponentStateContext");
 
-export const getConfigurableComponentActionsContext = <TSettings extends any>() =>
+export const getConfigurableComponentActionsContext = <TSettings extends any>(): Context<IConfigurableComponentActionsContext<TSettings>> =>
   createNamedContext<IConfigurableComponentActionsContext<TSettings>>(undefined, "ConfigurableComponentActionsContext");

@@ -1,6 +1,8 @@
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { setCurrentNavigatorAction } from './actions';
 import {
+  IStackedNavigationActionsContext,
+  IStackedNavigationStateContext,
   STACKED_NAVIGATION_CONTEXT_INITIAL_STATE,
   StackedNavigationActionsContext,
   StackedNavigationStateContext,
@@ -10,7 +12,7 @@ import { stakedNavigationReducer } from './reducer';
 const StackedNavigationProvider: FC<PropsWithChildren<any>> = ({ children }) => {
   const [state, dispatch] = useReducer(stakedNavigationReducer, STACKED_NAVIGATION_CONTEXT_INITIAL_STATE);
 
-  const setCurrentNavigator = (navigator: string) => {
+  const setCurrentNavigator = (navigator: string): void => {
     dispatch(setCurrentNavigatorAction(navigator));
   };
 
@@ -23,7 +25,7 @@ const StackedNavigationProvider: FC<PropsWithChildren<any>> = ({ children }) => 
   );
 };
 
-function useStackedNavigationState() {
+function useStackedNavigationState(): IStackedNavigationStateContext {
   const context = useContext(StackedNavigationStateContext);
 
   if (context === undefined) {
@@ -33,7 +35,7 @@ function useStackedNavigationState() {
   return context;
 }
 
-function useStackedNavigationActions() {
+function useStackedNavigationActions(): IStackedNavigationActionsContext {
   const context = useContext(StackedNavigationActionsContext);
 
   if (context === undefined) {
@@ -43,7 +45,7 @@ function useStackedNavigationActions() {
   return context;
 }
 
-function useStackedNavigation() {
+function useStackedNavigation(): IStackedNavigationStateContext & IStackedNavigationActionsContext {
   return { ...useStackedNavigationState(), ...useStackedNavigationActions() };
 }
 

@@ -23,7 +23,7 @@ const DataContextSelector: FC<IDataContextSelectorProps> = (props) => {
   const dataContext = useDataContextOrUndefined();
   const dataContexts = getDataContexts(dataContext?.id);
 
-  const onChange = (value: any) => {
+  const onChange = (value: any): void => {
     props?.onChange(value);
   };
 

@@ -375,13 +375,13 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
   }
 
   return (
-      <DataContextManagerActionsContext.Provider value={dataContextsManagerActions}>
-        <DataContextManagerStateContext.Provider value={state}>
-          <DataManagerAccessor>
-            {children}
-          </DataManagerAccessor>
-        </DataContextManagerStateContext.Provider>
-      </DataContextManagerActionsContext.Provider>
+    <DataContextManagerActionsContext.Provider value={dataContextsManagerActions}>
+      <DataContextManagerStateContext.Provider value={state}>
+        <DataManagerAccessor>
+          {children}
+        </DataManagerAccessor>
+      </DataContextManagerStateContext.Provider>
+    </DataContextManagerActionsContext.Provider>
   );
 };
 

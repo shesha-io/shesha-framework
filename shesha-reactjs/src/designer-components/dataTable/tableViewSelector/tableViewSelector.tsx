@@ -3,7 +3,7 @@ import React, { FC, useEffect } from 'react';
 import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Popover } from 'antd';
-import { evaluateDynamicFilters } from '@/utils';
+import { evaluateDynamicFilters } from '@/utils/datatable';
 import { ITableViewSelectorComponentProps } from './models';
 import { useTheme } from '@/providers/theme';
 import {
@@ -72,7 +72,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
   }, []);
 
   //#region Filters
-  const debounceEvaluateDynamicFiltersHelper = () => {
+  const debounceEvaluateDynamicFiltersHelper = (): void => {
     const match = [
       { match: 'data', data: formData },
       { match: 'globalState', data: globalState },
@@ -103,7 +103,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
   }, [persistSelectedFilters]);
   //#endregion
 
-  const changeSelectedFilter = (id: string) => {
+  const changeSelectedFilter = (id: string): void => {
     changeSelectedStoredFilterIds(id ? [id] : []);
   };
 
@@ -143,11 +143,11 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
               backgroundColor: '#D9DCDC',
             }}
             content={(
-<p>The Table View Selector needs at least<br />one filter configured to be functional.<br />Add filters in the component settings.
-              <br />
-              <br />
-              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
-</p>
+              <p>The Table View Selector needs at least<br />one filter configured to be functional.<br />Add filters in the component settings.
+                <br />
+                <br />
+                <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
+              </p>
             )}
           >
             <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />

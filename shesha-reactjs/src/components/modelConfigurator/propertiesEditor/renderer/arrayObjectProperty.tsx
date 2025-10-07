@@ -22,7 +22,7 @@ export const ArrayObjectProperty: FC<IProps> = (props) => {
   const { addItem } = usePropertiesEditor();
   const { styles } = useStyles();
 
-  const onAddChildClick = () => {
+  const onAddChildClick = (): void => {
     if (props.data.properties[0])
       addItem(props.data.properties[0].id);
   };

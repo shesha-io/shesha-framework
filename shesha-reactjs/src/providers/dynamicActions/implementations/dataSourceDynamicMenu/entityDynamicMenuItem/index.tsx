@@ -31,7 +31,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
     metadataAccessor: propertyMetadataAccessor,
   });
 
-  const fetchTemplateData = async () => {
+  const fetchTemplateData = async (): Promise<void> => {
     const response = await refetch(getEntityTemplateState(evaluatedFilters));
     const result = Array.isArray(response.result) ? response.result : response.result.items;
     setData(result);

@@ -30,7 +30,7 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps, IColor
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (colorValue) => {
+          const onChangeInternal = (colorValue): void => {
             customEvents.onChange({ value: colorValue }, null);
             if (typeof onChange === 'function') onChange(colorValue);
           };

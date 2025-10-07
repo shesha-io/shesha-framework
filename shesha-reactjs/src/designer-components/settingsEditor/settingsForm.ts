@@ -1,8 +1,9 @@
+import { FormMarkupWithSettings } from '@/index';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (data) => {
+export const getSettings = (data): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
 
@@ -88,12 +89,6 @@ export const getSettings = (data) => {
       layout: 'horizontal' as FormLayout,
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
-      displayName: 'DEFAULT_FORM_SETTINGS',
-      __docgenInfo: {
-        description: 'Default form settings',
-        displayName: 'DEFAULT_FORM_SETTINGS',
-        props: {},
-      },
     },
   };
 };

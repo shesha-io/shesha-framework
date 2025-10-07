@@ -3,17 +3,17 @@ import { CreateDataCell } from '@/components/dataTable/cell/dataCell';
 import { DataTableColumn } from '@/components/dataTable/interfaces';
 import { FormIdentifier, useMetadata } from '@/providers';
 import React, { FC } from 'react';
-import { Cell, ColumnInstance, HeaderPropGetter, TableCellProps, TableHeaderProps } from 'react-table';
+import { Cell, ColumnInstance, HeaderPropGetter } from 'react-table';
 import { toCamelCase } from '@/utils/string';
 import { asPropertiesArray } from '@/interfaces/metadata';
-import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils';
+import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils/datatable';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
 import { CreateFormCell, ICreateFormCellProps } from '../dataTable/cell/formCell/formCell';
 import { isFormFullName } from '@/index';
 
-const getStyles = (props: Partial<TableHeaderProps | TableCellProps>) => [
+const cellProps: HeaderPropGetter<object> = (props) => [
   props,
   {
     style: {
@@ -22,8 +22,6 @@ const getStyles = (props: Partial<TableHeaderProps | TableCellProps>) => [
     },
   },
 ];
-
-const cellProps: HeaderPropGetter<object> = (props) => getStyles(props);
 
 export interface INewRowCellProps {
   column: ColumnInstance;

@@ -41,7 +41,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     sequence,
   } = (model as IWizardComponentProps) || {};
 
-  const getDefaultStepIndex = (i) => {
+  const getDefaultStepIndex = (i): number => {
     if (i) {
       const t = tabs[i] ??
         tabs?.find((item) => item?.id === i); // for backward compatibility
@@ -115,7 +115,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
   }, [current]);
 
-  const onAfterCallback = (callback: () => void, after?: (step: IWizardStepProps) => void) => {
+  const onAfterCallback = (callback: () => void, after?: (step: IWizardStepProps) => void): void => {
     try {
       callback();
     } finally {
@@ -123,7 +123,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
   };
 
-  const successCallback = (type: 'back' | 'next' | 'reset') => {
+  const successCallback = (type: 'back' | 'next' | 'reset'): void => {
     setTimeout(() => {
       const step = getWizardStep(visibleSteps, current, type);
 
@@ -138,7 +138,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     beforeAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
     afterAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
     success?: (actionResponse: any) => void,
-  ) => {
+  ): void => {
     if (!formMode || formMode === 'designer') {
       if (success) success(null);
       return;
@@ -146,7 +146,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
     const beforeAction = beforeAccessor(currentStep);
 
-    const successFunc = (response: any) => {
+    const successFunc = (response: any): void => {
       onAfterCallback(
         () => {
           if (success) success(response);
@@ -174,7 +174,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     });
   };
 
-  const next = () => {
+  const next = (): void => {
     try {
       if (current < tabs.length - 1) {
         executeActionIfConfigured(
@@ -188,7 +188,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
   };
 
-  const back = () => {
+  const back = (): void => {
     if (current > 0)
       executeActionIfConfigured(
         (tab) => tab.beforeBackActionConfiguration,
@@ -197,13 +197,13 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       );
   };
 
-  const cancel = () =>
+  const cancel = (): void =>
     executeActionIfConfigured(
       (tab) => tab.beforeCancelActionConfiguration,
       (tab) => tab.afterCancelActionConfiguration
     );
 
-  const done = () => {
+  const done = (): void => {
     try {
       executeActionIfConfigured(
         (tab) => tab.beforeDoneActionConfiguration,
@@ -214,7 +214,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
   };
 
-  const setStep = (stepIndex) => {
+  const setStep = (stepIndex): void => {
     if (stepIndex < 0 || stepIndex >= visibleSteps.length)
       throw `Step with index ${stepIndex} is not available`;
     setCurrent(stepIndex);

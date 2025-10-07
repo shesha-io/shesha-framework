@@ -13,7 +13,7 @@ export interface IPackageContentProps {
 }
 
 export const PackageContent: FC<IPackageContentProps> = ({ packageState, onChangeSelection }) => {
-  const getFieldValue = (propertyName: string) => {
+  const getFieldValue = (propertyName: string): any => {
     return packageState[propertyName];
   };
 
@@ -31,21 +31,21 @@ export const PackageContent: FC<IPackageContentProps> = ({ packageState, onChang
   }, [metadataBuilderFactory]);
 
   return (
-        <div>
-            <DataTableProvider
-              sourceType="Form"
-              dataFetchingMode="paging"
+    <div>
+      <DataTableProvider
+        sourceType="Form"
+        dataFetchingMode="paging"
 
-              getFieldValue={getFieldValue}
-              propertyName="items"
-              metadata={metadata}
-            >
-                <GlobalTableFilter block style={{ margin: '8px 0' }} searchProps={{ size: 'middle', autoFocus: true }} />
-                <div style={{ display: 'flex', justifyContent: 'right', alignItems: 'center', padding: '8px 0' }}>
-                    <TablePager />
-                </div>
-                <PackageItemsTable onChangeSelection={onChangeSelection} />
-            </DataTableProvider>
+        getFieldValue={getFieldValue}
+        propertyName="items"
+        metadata={metadata}
+      >
+        <GlobalTableFilter block style={{ margin: '8px 0' }} searchProps={{ size: 'middle', autoFocus: true }} />
+        <div style={{ display: 'flex', justifyContent: 'right', alignItems: 'center', padding: '8px 0' }}>
+          <TablePager />
         </div>
+        <PackageItemsTable onChangeSelection={onChangeSelection} />
+      </DataTableProvider>
+    </div>
   );
 };

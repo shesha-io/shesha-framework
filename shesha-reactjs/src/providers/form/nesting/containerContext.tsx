@@ -11,13 +11,13 @@ export interface IComponentsContainerProviderProps {
 }
 export const ComponentsContainerProvider: FC<PropsWithChildren<IComponentsContainerProviderProps>> = ({ ContainerComponent, children }) => {
   return (
-        <ComponentsContainerContext.Provider value={ContainerComponent}>
-            {children}
-        </ComponentsContainerContext.Provider>
+    <ComponentsContainerContext.Provider value={ContainerComponent}>
+      {children}
+    </ComponentsContainerContext.Provider>
   );
 };
 
-export function useComponentContainer() {
+export function useComponentContainer(): ContainerType {
   const context = useContext(ComponentsContainerContext);
 
   if (!context)

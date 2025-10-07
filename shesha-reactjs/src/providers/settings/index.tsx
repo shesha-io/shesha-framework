@@ -3,7 +3,7 @@ import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState }
 import { settingsGetValue } from '@/apis/settings';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { ISettingsContext, SETTINGS_CONTEXT_INITIAL_STATE, SettingsContext } from './contexts';
+import { ISettingsActionsContext, ISettingsContext, SETTINGS_CONTEXT_INITIAL_STATE, SettingsContext } from './contexts';
 import { ISettingIdentifier, ISettingsDictionary } from './models';
 import reducer from './reducer';
 
@@ -49,9 +49,13 @@ const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ child
   return <SettingsContext.Provider value={contextValue}>{children}</SettingsContext.Provider>;
 };
 
-function useSettings(require: boolean = true) {
-  const context = useContext(SettingsContext);
 
+function useSettingsOrUndefined(): ISettingsActionsContext | undefined {
+  return useContext(SettingsContext);
+}
+
+function useSettings(): ISettingsActionsContext {
+  const context = useSettingsOrUndefined();
   if (context === undefined && require) {
     throw new Error('useSettings must be used within a SettingsProvider');
   }
@@ -80,4 +84,4 @@ const useSettingValue = <TValue = any>(settingId: ISettingIdentifier): SettingVa
   return state;
 };
 
-export { SettingsProvider, useSettingValue, useSettings };
+export { SettingsProvider, useSettingValue, useSettings, useSettingsOrUndefined };

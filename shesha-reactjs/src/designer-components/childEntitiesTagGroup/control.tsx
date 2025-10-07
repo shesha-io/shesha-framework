@@ -53,7 +53,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     }
   }, [formId]);
 
-  const calculateLabel = (value: any, func: string, showError: boolean = false) => {
+  const calculateLabel = (value: any, func: string, showError: boolean = false): string => {
     try {
       return executeScriptSync(func, { ...allData, item: value });
     } catch {
@@ -78,7 +78,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     return [];
   }, [value]);
 
-  const onModalChange = (value: any) => {
+  const onModalChange = (value: any): void => {
     const data = !!value ? getValueByPropertyName(value, propertyName) : undefined;
     const opt = activeValue.current
       ? options.map((item) => item.value === activeValue.current.value ? data : item.data)
@@ -108,7 +108,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     });
   };
 
-  const onOpenModal = () => {
+  const onOpenModal = (): void => {
     if (formConfiguration) {
       setOpen(true);
     } else {
@@ -116,19 +116,19 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     }
   };
 
-  const onCloseModal = () => {
+  const onCloseModal = (): void => {
     activeValue.current = null;
     setOpen(false);
   };
 
   const isEditable = !model?.readOnly;
 
-  const tagRender = ({ label, value }) => {
+  const tagRender = ({ label, value }): JSX.Element => {
     const val = options.find((x) => x.value === value);
     return (
-<Tag closable={isEditable} onClick={onClickTag(val)} onClose={onCloseTag(value)}>
-      {label}
-</Tag>
+      <Tag closable={isEditable} onClick={onClickTag(val)} onClose={onCloseTag(value)}>
+        {label}
+      </Tag>
     );
   };
 

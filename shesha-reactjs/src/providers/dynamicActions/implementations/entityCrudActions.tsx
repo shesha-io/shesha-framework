@@ -95,13 +95,13 @@ const entityActionsHoc: DynamicRenderingHoc = (WrappedComponent) => {
 
 export const EntityCrudActions: FC<PropsWithChildren<IEntityCrudActionsProps>> = ({ children }) => {
   return (
-        <DynamicActionsProvider
-          id="entity-crud"
-          name="CRUD Actions"
-          renderingHoc={entityActionsHoc}
-          useEvaluator={useEntityCrudActions}
-        >
-            {children}
-        </DynamicActionsProvider>
+    <DynamicActionsProvider
+      id="entity-crud"
+      name="CRUD Actions"
+      renderingHoc={entityActionsHoc}
+      useEvaluator={useEntityCrudActions}
+    >
+      {children}
+    </DynamicActionsProvider>
   );
 };

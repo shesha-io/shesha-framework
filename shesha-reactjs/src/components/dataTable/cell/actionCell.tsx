@@ -16,7 +16,7 @@ import { TypedProxy, useAvailableConstantsData } from '@/index';
 
 export interface IActionCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableActionColumn, D, V> { }
 
-export const ActionCell = <D extends object = {}, V = any>(props: IActionCellProps<D, V>) => {
+export const ActionCell = <D extends object = {}, V = any>(props: IActionCellProps<D, V>): JSX.Element => {
   const { columnConfig } = props;
   const { changeActionedRow } = useDataTable();
   const { executeAction, prepareArguments, useActionDynamicContext } = useConfigurableActionDispatcher();
@@ -27,7 +27,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   const evaluationContext = useAvailableConstantsData({}, dynamicContext);
   (evaluationContext as TypedProxy<any>).addAccessor('selectedRow', () => props?.cell?.row?.original);
 
-  const clickHandler = (event, data) => {
+  const clickHandler = (event, data): void => {
     event.preventDefault();
 
     if (actionConfiguration) {
@@ -58,22 +58,22 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     <>
       {navigationUrl === ""
         ? (
-<a className="sha-link" onClick={(e) => clickHandler(e, props)}>
-          {icon && (
-            <Tooltip title={description}>
-              <ShaIcon iconName={icon as IconType} />
-            </Tooltip>
-          )}
-</a>
+          <a className="sha-link" onClick={(e) => clickHandler(e, props)}>
+            {icon && (
+              <Tooltip title={description}>
+                <ShaIcon iconName={icon as IconType} />
+              </Tooltip>
+            )}
+          </a>
         )
         : (
-<Link className="sha-link" href={navigationUrl} onClick={(e) => clickHandler(e, props)}>
-          {icon && (
-            <Tooltip title={description}>
-              <ShaIcon iconName={icon as IconType} />
-            </Tooltip>
-          )}
-</Link>
+          <Link className="sha-link" href={navigationUrl} onClick={(e) => clickHandler(e, props)}>
+            {icon && (
+              <Tooltip title={description}>
+                <ShaIcon iconName={icon as IconType} />
+              </Tooltip>
+            )}
+          </Link>
         )}
     </>
   );

@@ -1,6 +1,6 @@
 import { IConfigurableFormComponent } from "@/providers";
 
-type IBorderType = "dashed" | "dotted" | "none" | "solid";
+export type IBorderType = "dashed" | "dotted" | "none" | "solid";
 export interface IBorderValue {
   radius?: {
     all?: string | number;

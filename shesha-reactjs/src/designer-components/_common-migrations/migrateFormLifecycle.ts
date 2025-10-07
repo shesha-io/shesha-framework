@@ -55,7 +55,7 @@ const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): st
   return result;
 };
 
-export const migrateDefaults = (settings: IFormSettings, context: IFormMigrationContext) => {
+export const migrateDefaults = (settings: IFormSettings, context: IFormMigrationContext): IFormSettings => {
   const initialData: IKeyValue[] = [];
   const flatStructure = convertFormMarkupToFlatStructure(context.form.markup, settings, context.designerComponents);
   for (const id in flatStructure.allComponents) {

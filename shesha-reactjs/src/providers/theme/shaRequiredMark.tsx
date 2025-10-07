@@ -8,8 +8,8 @@ import React, { ReactNode } from "react";
  * @returns
  */
 export const defaultRequiredMark: RequiredMark = (label: ReactNode, { required }: { required: boolean }) => (
-    <>
-        {label}
-        {required && <span className="sha-required-mark">*</span>}
-    </>
+  <>
+    {label}
+    {required && <span className="sha-required-mark">*</span>}
+  </>
 );

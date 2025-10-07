@@ -6,7 +6,7 @@ import ConfigurationStudio from '@/configuration-studio';
 
 const Page: PageWithLayout<{}> = () => {
   return (
-        <ConfigurationStudio />
+    <ConfigurationStudio />
   );
 };
 

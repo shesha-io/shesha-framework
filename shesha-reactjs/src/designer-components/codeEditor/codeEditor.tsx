@@ -37,7 +37,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const src = useSourcesFolder(false);
   const { styles } = useStyles();
 
-  const onChange = (_value) => {
+  const onChange = (_value): void => {
     switch (mode) {
       case 'inline': {
         if (props.onChange) props.onChange(_value);
@@ -52,7 +52,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 
   const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
 
-  const onClear = () => {
+  const onClear = (): void => {
     if (hasValue) {
       modal.confirm({
         title: 'Clear code editor?',
@@ -70,14 +70,14 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     }
   };
 
-  const onDialogSave = () => {
+  const onDialogSave = (): void => {
     if (props.onChange) props.onChange(internalValue);
     setShowDialog(false);
   };
 
-  const openEditorDialog = () => setShowDialog(true);
+  const openEditorDialog = (): void => setShowDialog(true);
 
-  const onDialogCancel = () => {
+  const onDialogCancel = (): void => {
     if (!readOnly && (value ?? "").trim() !== (internalValue ?? "").trim()) {
       modal.confirm({
         title: 'Close code editor?',
@@ -99,7 +99,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 
   const effectiveValue = mode === 'inline' ? value : internalValue;
 
-  const renderCodeEditor = () => (
+  const renderCodeEditor = (): JSX.Element => (
     <BaseCodeEditor
       value={effectiveValue}
       onChange={onChange}
@@ -170,9 +170,9 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
             width={null}
             footer={[
               hasValue && (
-<Button key="clear" danger onClick={onClear} disabled={readOnly}>
-                Clear
-</Button>
+                <Button key="clear" danger onClick={onClear} disabled={readOnly}>
+                  Clear
+                </Button>
               ),
               <Button key="cancel" onClick={onDialogCancel}>
                 {readOnly ? 'Close' : 'Cancel'}

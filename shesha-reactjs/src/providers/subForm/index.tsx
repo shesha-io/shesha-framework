@@ -21,9 +21,9 @@ import { EntityAjaxResponse } from '@/generic-pages/dynamic/interfaces';
 import { GetDataError, useActualContextExecution, useDeepCompareMemo, useMutate } from '@/hooks';
 import { ISubFormProviderProps } from './interfaces';
 import { StandardEntityActions } from '@/interfaces/metadata';
-import { SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
+import { ISubFormActionsContext, ISubFormStateContext, SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
 import { subFormReducer } from './reducer';
-import { MetadataProvider, useDataContextManagerActionsOrUndefined, useSheshaApplication } from '@/providers';
+import { IConfigurableFormComponent, MetadataProvider, useDataContextManagerActionsOrUndefined, useSheshaApplication } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useDebouncedCallback } from 'use-debounce';
@@ -48,7 +48,7 @@ import { deepMergeValues, setValueByPropertyName } from '@/utils/object';
 import { AxiosResponse } from 'axios';
 import { ConfigurableItemIdentifierToString } from '@/interfaces/configurableItems';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { extractAjaxResponse, IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -102,7 +102,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   var parentFormApi = parent?.formApi ?? form.shaForm.getPublicFormApi();
 
-  const onChangeInternal = (newValue: any) => {
+  const onChangeInternal = (newValue: any): void => {
     if (onChange)
       onChange(newValue);
     else
@@ -110,7 +110,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       parentFormApi.setFieldsValue(newValue);
   };
 
-  const onClearInternal = () => {
+  const onClearInternal = (): void => {
     if (onChange)
       onChange({});
     else
@@ -145,7 +145,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     if (formConfig?.formId !== formId) setFormConfig({ formId, lazy: true });
   }, [formId]);
 
-  const setMarkup = (payload: IPersistedFormPropsWithComponents) => {
+  const setMarkup = (payload: IPersistedFormPropsWithComponents): void => {
     const flatStructure = componentsTreeToFlatStructure(designerComponents, payload.components);
     upgradeComponents(designerComponents, payload.formSettings, flatStructure);
     const tree = componentsFlatStructureToTree(designerComponents, flatStructure);
@@ -201,19 +201,19 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   }, [value]);
 
   const { mutate: postHttpInternal, loading: isPosting, error: postError } = useMutate();
-  const postHttp = (data) => {
+  const postHttp = (data): Promise<IAjaxResponse<unknown>> => {
     return postHttpInternal({ url: actualPostUrl, httpVerb: 'POST' }, data);
   };
 
   const { mutate: putHttpInternal, loading: isUpdating, error: updateError } = useMutate();
-  const putHttp = (data) => {
+  const putHttp = (data): Promise<IAjaxResponse<unknown>> => {
     return putHttpInternal({ url: actualPutUrl, httpVerb: 'PUT' }, data);
   };
 
   /**
    * Get final query params taking into account all settings
    */
-  const getFinalQueryParams = () => {
+  const getFinalQueryParams = (): EntitiesGetQueryParams => {
     if (form.formMode === 'designer' || dataSource !== 'api') return {};
 
     let params: EntitiesGetQueryParams = { entityType: internalEntityType };
@@ -241,7 +241,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   // abort controller, is used to cancel out of date data requests
   const dataRequestAbortController = useRef<AbortController>(null);
 
-  const fetchData = (forceFetchData: boolean = false) => {
+  const fetchData = (forceFetchData: boolean = false): void => {
     if (dataSource !== 'api') {
       return;
     }
@@ -323,14 +323,15 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       });
     } else {
       postHttp(value).then((submittedValue) => {
-        onChangeInternal(submittedValue?.result);
+        const result = extractAjaxResponse(submittedValue);
+        onChangeInternal(result);
         if (onCreated) {
-          const evaluateOnCreated = () => {
+          const evaluateOnCreated = (): void => {
             // tslint:disable-next-line:function-constructor
             return new Function('data, globalState, submittedValue, message, application', onCreated)(
               value,
               globalState,
-              submittedValue?.result,
+              result,
               message,
               appContextData,
             );
@@ -351,14 +352,15 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       });
     } else {
       putHttp(value).then((submittedValue) => {
-        onChangeInternal(submittedValue?.result);
+        const result = extractAjaxResponse(submittedValue);
+        onChangeInternal(result);
         if (onUpdated) {
-          const evaluateOnUpdated = () => {
+          const evaluateOnUpdated = (): void => {
             // tslint:disable-next-line:function-constructor
             return new Function('data, globalState, response, message', onUpdated)(
               value,
               globalState,
-              submittedValue?.result,
+              result,
               message,
             );
           };
@@ -407,7 +409,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   }, [formConfig.formId, markup]);
   //#endregion
 
-  const getChildComponents = (componentId: string) => {
+  const getChildComponents = (componentId: string): IConfigurableFormComponent[] => {
     const childIds = state.componentRelations[componentId];
 
     if (!childIds) return [];
@@ -564,7 +566,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   );
 };
 
-function useSubFormState(require: boolean) {
+function useSubFormState(require: boolean): ISubFormStateContext | undefined {
   const context = useContext(SubFormContext);
 
   if (context === undefined && require) {
@@ -574,7 +576,7 @@ function useSubFormState(require: boolean) {
   return context;
 }
 
-function useSubFormActions(require: boolean) {
+function useSubFormActions(require: boolean): ISubFormActionsContext | undefined {
   const context = useContext(SubFormActionsContext);
 
   if (context === undefined && require) {
@@ -584,7 +586,7 @@ function useSubFormActions(require: boolean) {
   return context;
 }
 
-function useSubForm(require: boolean = true) {
+function useSubForm(require: boolean = true): ISubFormStateContext & ISubFormActionsContext | undefined {
   const actionsContext = useSubFormActions(require);
   const stateContext = useSubFormState(require);
 

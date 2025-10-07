@@ -74,38 +74,38 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
       setIsPackLoading(false);
     }
   };
-  const onChangeSelection = (checkedIds: string[]) => {
+  const onChangeSelection = (checkedIds: string[]): void => {
     setCheckedIds(checkedIds);
   };
 
-  const onDeleteClick = () => {
+  const onDeleteClick = (): void => {
     setUploadFile(null);
     setPackageContent(null);
   };
 
-  const fileRender = (_originNode, file, _currFileList) => {
+  const fileRender = (_originNode, file, _currFileList): JSX.Element => {
     return (
-            <div className={styles.shaPackageUploadFile}>
-                <span className={styles.shaPackageUploadFileThumbnail}>
-                    {isPackLoading
-                      ? (<LoadingOutlined style={{ fontSize: '26px' }} className="sha-upload-uploading" />)
-                      : (<FileZipTwoTone style={{ fontSize: '26px' }} />)}
-                </span>
-                <span className={`${prefixCls}-upload-list-item-name`} title={file.name}>
-                    {file.name}
-                </span>
-                <span className={`${prefixCls}-upload-list-item-card-actions picture`}>
-                    {!isPackLoading && (
-                        <a className="sha-upload-remove-control" onClick={onDeleteClick}>
-                            <DeleteOutlined title="Remove" />
-                        </a>
-                    )}
-                </span>
-            </div>
+      <div className={styles.shaPackageUploadFile}>
+        <span className={styles.shaPackageUploadFileThumbnail}>
+          {isPackLoading
+            ? (<LoadingOutlined style={{ fontSize: '26px' }} className="sha-upload-uploading" />)
+            : (<FileZipTwoTone style={{ fontSize: '26px' }} />)}
+        </span>
+        <span className={`${prefixCls}-upload-list-item-name`} title={file.name}>
+          {file.name}
+        </span>
+        <span className={`${prefixCls}-upload-list-item-card-actions picture`}>
+          {!isPackLoading && (
+            <a className="sha-upload-remove-control" onClick={onDeleteClick}>
+              <DeleteOutlined title="Remove" />
+            </a>
+          )}
+        </span>
+      </div>
     );
   };
 
-  const importExecuter = () => {
+  const importExecuter = (): Promise<void> => {
     if (!uploadFile?.originFileObj)
       return Promise.reject('Please upload a file for import');
     if (checkedIds.length === 0)
@@ -133,27 +133,27 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
     };
 
   return (
-        <Spin spinning={isImporting} tip="Importing...">
-            <Form>
-                <Dragger
-                  accept=".shaconfig"
-                  customRequest={onUploadRequest}
-                  listType="text"
-                  maxCount={1}
-                  itemRender={fileRender}
-                  className={styles.shaPackageUploadDrag}
-                  style={{ display: Boolean(uploadFile) ? "none" : undefined }}
-                  fileList={uploadFile ? [uploadFile] : []}
-                >
-                    <p className={`${prefixCls}-upload-drag-icon`}>
-                        <InboxOutlined />
-                    </p>
-                    <p className={`${prefixCls}-upload-text`}>Click or drag <strong>.shaconfig</strong> file to this area to upload</p>
-                </Dragger>
-                {packageContent && (
-                    <PackageContent packageState={packageContent} onChangeSelection={onChangeSelection} />
-                )}
-            </Form>
-        </Spin>
+    <Spin spinning={isImporting} tip="Importing...">
+      <Form>
+        <Dragger
+          accept=".shaconfig"
+          customRequest={onUploadRequest}
+          listType="text"
+          maxCount={1}
+          itemRender={fileRender}
+          className={styles.shaPackageUploadDrag}
+          style={{ display: Boolean(uploadFile) ? "none" : undefined }}
+          fileList={uploadFile ? [uploadFile] : []}
+        >
+          <p className={`${prefixCls}-upload-drag-icon`}>
+            <InboxOutlined />
+          </p>
+          <p className={`${prefixCls}-upload-text`}>Click or drag <strong>.shaconfig</strong> file to this area to upload</p>
+        </Dragger>
+        {packageContent && (
+          <PackageContent packageState={packageContent} onChangeSelection={onChangeSelection} />
+        )}
+      </Form>
+    </Spin>
   );
 };

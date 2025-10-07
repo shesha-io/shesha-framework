@@ -31,7 +31,7 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
 
   const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
-  const onSetList = (newState: ItemInterface[], _sortable, _store) => {
+  const onSetList = (newState: ItemInterface[], _sortable, _store): void => {
     if (!hasDragged) return;
 
     if (newState?.length === 2) {
@@ -56,53 +56,53 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
     }));
   }, [childIds]);
 
-  const onDragStart = () => {
+  const onDragStart = (): void => {
     startDragging();
   };
 
-  const onDragEnd = (_evt) => {
+  const onDragEnd = (_evt): void => {
     endDragging();
   };
 
   const style = getAlignmentStyle(props);
 
   return (
-        <ConditionalWrap
-          condition={!noDefaultStyling}
-          wrap={(content) => (
-                <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle}>
-                    {content}
-                </div>
-          )}
+    <ConditionalWrap
+      condition={!noDefaultStyling}
+      wrap={(content) => (
+        <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle}>
+          {content}
+        </div>
+      )}
+    >
+      <>
+        {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
+        <ReactSortable
+          disabled={readOnly}
+          onStart={onDragStart}
+          onEnd={onDragEnd}
+          list={componentsMapped}
+          setList={onSetList}
+          fallbackOnBody={true}
+          swapThreshold={0.5}
+          group={{
+            name: 'shared',
+          }}
+          sort={true}
+          draggable={`.${styles.shaComponent}`}
+          animation={75}
+          ghostClass={styles.shaComponentGhost}
+          emptyInsertThreshold={20}
+          handle={`.${styles.componentDragHandle}`}
+          scroll={true}
+          bubbleScroll={true}
+          direction={direction}
+          className={noDefaultStyling ? '' : styles.shaComponentsContainerInner}
+          style={{ ...style, ...incomingStyle }}
         >
-            <>
-              {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
-                <ReactSortable
-                  disabled={readOnly}
-                  onStart={onDragStart}
-                  onEnd={onDragEnd}
-                  list={componentsMapped}
-                  setList={onSetList}
-                  fallbackOnBody={true}
-                  swapThreshold={0.5}
-                  group={{
-                    name: 'shared',
-                  }}
-                  sort={true}
-                  draggable={`.${styles.shaComponent}`}
-                  animation={75}
-                  ghostClass={styles.shaComponentGhost}
-                  emptyInsertThreshold={20}
-                  handle={`.${styles.componentDragHandle}`}
-                  scroll={true}
-                  bubbleScroll={true}
-                  direction={direction}
-                  className={noDefaultStyling ? '' : styles.shaComponentsContainerInner}
-                  style={{ ...style, ...incomingStyle }}
-                >
-                  {component?.id && <ConfigurableFormComponentDesigner componentModel={component} />}
-                </ReactSortable>
-            </>
-        </ConditionalWrap>
+          {component?.id && <ConfigurableFormComponentDesigner componentModel={component} />}
+        </ReactSortable>
+      </>
+    </ConditionalWrap>
   );
 };

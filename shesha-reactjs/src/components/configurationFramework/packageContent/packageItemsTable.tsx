@@ -15,10 +15,10 @@ export const PackageItemsTable: FC<IPackageItemsTableProps> = ({ onChangeSelecti
   });
 
   return (
-        <DataTable
-          useMultiselect
-          onSelectedIdsChanged={onChangeSelection}
-          containerStyle={{ margin: 0 }}
-        />
+    <DataTable
+      useMultiselect
+      onSelectedIdsChanged={onChangeSelection}
+      containerStyle={{ margin: 0 }}
+    />
   );
 };

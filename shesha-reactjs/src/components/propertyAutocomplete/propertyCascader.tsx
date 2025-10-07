@@ -4,7 +4,7 @@ import { useMetadata } from "@/providers";
 import { getIconByPropertyMetadata } from "@/utils/metadata";
 import { Cascader, CascaderProps, GetProp } from "antd";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
-import React, { CSSProperties, FC, useEffect, useMemo } from "react";
+import React, { CSSProperties, FC, ReactNode, useEffect, useMemo } from "react";
 import { useState } from "react";
 
 type DefaultOptionType = GetProp<CascaderProps, "options">[number];
@@ -48,7 +48,7 @@ interface Option extends DefaultOptionType {
   childrenLoader?: () => Promise<boolean>;
 }
 
-const filter = (inputValue: string, path: Option[]) =>
+const filter = (inputValue: string, path: Option[]): boolean =>
   path.some(
     (option) =>
       option.labelText.toLowerCase().indexOf(inputValue.toLowerCase()) >
@@ -58,17 +58,17 @@ const filter = (inputValue: string, path: Option[]) =>
 const renderDotNotation = (
   labels: string[],
   selectedOptions: Option[]
-) => {
+): ReactNode => {
   return labels.map((label, index) => {
     const option = selectedOptions && index <= selectedOptions.length - 1
       ? selectedOptions[index]
       : undefined;
     const value = option ? option.value : label;
     return (
-            <span key={value}>
-                {value}
-                {index < labels.length - 1 && "."}
-            </span>
+      <span key={value}>
+        {value}
+        {index < labels.length - 1 && "."}
+      </span>
     );
   });
 };
@@ -131,21 +131,21 @@ export const PropertyCascader: React.FC<IPropertyCascaderProps> = (props) => {
     setOptions(options);
   }, [meta]);
 
-  const onSingleChange = (value: string[], _selectedOptions: Option[]) => {
+  const onSingleChange = (value: string[], _selectedOptions: Option[]): void => {
     if (isMultiple(props))
       return;
 
     props.onChange(value);
   };
 
-  const onMultipleChange = (value: string[], _selectedOptions: Option[]) => {
+  const onMultipleChange = (value: string[], _selectedOptions: Option[]): void => {
     if (!isMultiple(props))
       return;
 
     props.onChange(value);
   };
 
-  const loadData = (selectedOptions: Option[]) => {
+  const loadData = (selectedOptions: Option[]): void => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
     if (targetOption.childrenLoader)
       targetOption.childrenLoader().then((loaded) => {
@@ -154,24 +154,24 @@ export const PropertyCascader: React.FC<IPropertyCascaderProps> = (props) => {
       });
   };
   return (
-        <>
-            <Cascader<Option>
-              style={style}
-              // value={value}
-              options={options}
-              onChange={(value, selectedOptions) => {
-                if (multiple)
-                  onMultipleChange(value, selectedOptions);
-                else
-                  onSingleChange(value, selectedOptions);
-              }}
-              placeholder="Please select"
-              showSearch={{ filter }}
-              displayRender={renderDotNotation}
-              loadData={loadData}
-              multiple={multiple}
-            />
-        </>
+    <>
+      <Cascader<Option>
+        style={style}
+        // value={value}
+        options={options}
+        onChange={(value, selectedOptions) => {
+          if (multiple)
+            onMultipleChange(value, selectedOptions);
+          else
+            onSingleChange(value, selectedOptions);
+        }}
+        placeholder="Please select"
+        showSearch={{ filter }}
+        displayRender={renderDotNotation}
+        loadData={loadData}
+        multiple={multiple}
+      />
+    </>
   );
 };
 
@@ -189,17 +189,17 @@ export const PropertyCascaderDotNotation: FC<IPropertyCascaderDotNotationProps> 
     return value ? value.split(dotNotationDelimiter) : [];
   }, [value]);
 
-  const cascaderChange = (newValue: string[]) => {
+  const cascaderChange = (newValue: string[]): void => {
     onChange(newValue?.join(dotNotationDelimiter));
   };
 
   return (
-        <PropertyCascader
-          {...restProps}
-          value={cascaderValue}
-          onChange={cascaderChange}
-          multiple={false}
-          meta={metadata}
-        />
+    <PropertyCascader
+      {...restProps}
+      value={cascaderValue}
+      onChange={cascaderChange}
+      multiple={false}
+      meta={metadata}
+    />
   );
 };

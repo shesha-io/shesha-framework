@@ -55,23 +55,23 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
       <ConfigurableFormItem model={model} {...initialValue}>
         {(value, onChange) => {
           const customEvent = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]) => {
+          const onChangeInternal = (...args: any[]): void => {
             customEvent.onChange(args[0], args[1]);
             if (typeof onChange === 'function')
               onChange(...args);
           };
 
           return (
-<Dropdown
-  {...model}
-  style={finalStyle}
-  {...customEvent}
-  defaultValue={calculatedModel.defaultValue}
-  value={value}
-  size={model?.size}
-  tagStyle={{ ...tagStyle, alignContent: 'center', justifyContent: tagStyle.textAlign }}
-  onChange={onChangeInternal}
-/>
+            <Dropdown
+              {...model}
+              style={finalStyle}
+              {...customEvent}
+              defaultValue={calculatedModel.defaultValue}
+              value={value}
+              size={model?.size}
+              tagStyle={{ ...tagStyle, alignContent: 'center', justifyContent: tagStyle.textAlign }}
+              onChange={onChangeInternal}
+            />
           );
         }}
       </ConfigurableFormItem>

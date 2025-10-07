@@ -2,14 +2,14 @@ import React, { useMemo } from "react";
 import { Tooltip, Select } from "antd";
 import { BUILT_IN_PLACEMENTS, SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
 const { Option, OptGroup } = Select;
-import { FactoryWithContext, FieldProps } from '@react-awesome-query-builder/antd';
+import { FactoryWithContext, FieldItem, FieldProps } from '@react-awesome-query-builder/antd';
 
 export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
-  const onChange = (key) => {
+  const onChange = (key): void => {
     props.setField(key);
   };
 
-  const filterOption = (input, option) => {
+  const filterOption = (input, option): boolean => {
     const dataForFilter = option;
     const keysForFilter = ["title", "value", "grouplabel", "label"];
     const valueForFilter = keysForFilter
@@ -24,7 +24,7 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
   } = props;
   const { showSearch } = customProps || {};
 
-  const items = useMemo(() => {
+  const items = useMemo<FieldItem[]>(() => {
     // workaround to filter out evaluation from the LHS
     const evaluates = allItems.filter((item) => item.key && item.key.startsWith('EVALUATE_'));
 
@@ -43,7 +43,7 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
   if (tooltipText === selectedLabel)
     tooltipText = null;
 
-  const renderSelectItems = (fields, level = 0) => {
+  const renderSelectItems = (fields, level = 0): JSX.Element[] => {
     return fields.map((field) => {
       const { items, key, path, label, altLabel, tooltip, grouplabel, disabled } = field;
       const groupPrefix = level > 0 ? "\u00A0\u00A0".repeat(level) : "";

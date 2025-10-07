@@ -19,7 +19,7 @@ export const PropertyWrapper: FC<PropsWithChildren<IProps>> = (props) => {
   const { deleteItem, selectedItemId, selectedItemRef } = usePropertiesEditor();
   const { styles } = useStyles();
 
-  const onDeleteClick = () => {
+  const onDeleteClick = (): void => {
     deleteItem(props.id);
   };
 

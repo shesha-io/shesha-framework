@@ -3,8 +3,8 @@ import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models'
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { evaluateValue, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React from 'react';
+import { evaluateValueAsString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import React, { ReactElement } from 'react';
 import {
   migrateCustomFunctions,
   migratePropertyName,
@@ -66,7 +66,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   isInput: true,
   isOutput: true,
   calculateModel: (model, allData) => ({
-    ownerId: evaluateValue(model.ownerId, allData),
+    ownerId: evaluateValueAsString(model.ownerId, allData),
     dataId: (allData.data as { Id: string })?.Id, // TODO: review and remove
     formModelType: allData.form.formSettings?.modelType,
   }),
@@ -102,7 +102,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               ? uploadedFileUrl
               : model.url || value;
 
-          const fileProvider = (child) => {
+          const fileProvider = (child): ReactElement => {
             return (
               <StoredFileProvider
                 value={val}

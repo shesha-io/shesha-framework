@@ -17,7 +17,7 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
 
   const { setEditor, saveSettingValue, editorMode } = useSettingsEditor();
 
-  const startSave = () => {
+  const startSave = (): Promise<SettingValue> => {
     return formRef.current?.validateFields().then((values) => {
       const settingId: ISettingIdentifier = {
         name: selection.setting.name,
@@ -29,7 +29,7 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
     });
   };
 
-  const cancel = () => {
+  const cancel = (): void => {
     formRef.current?.resetFields();
   };
 
@@ -84,11 +84,11 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
   }, [configuration]);
 
   return (
-        <ConfigurableForm<FormType>
-          mode={editorMode}
-          shaFormRef={formRef}
-          markup={formMarkup}
-          initialValues={model}
-        />
+    <ConfigurableForm<FormType>
+      mode={editorMode}
+      shaFormRef={formRef}
+      markup={formMarkup}
+      initialValues={model}
+    />
   );
 };

@@ -1,6 +1,6 @@
 import { IDeviceTypes } from "./contexts";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
-import { useCallback, useEffect, useRef } from 'react';
+import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
 
 export const getDeviceTypeByWidth = (width: number): IDeviceTypes => {
   return width > 724
@@ -72,7 +72,7 @@ export const DEFAULT_OPTIONS = {
   designerWidth: '1024px',
 };
 
-const valueToPercent = (value: number) => value / 100;
+const valueToPercent = (value: number): number => value / 100;
 
 export function calculateAutoZoom(params: IAutoZoomParams): number {
   const { designerWidth = DEFAULT_OPTIONS.designerWidth, sizes = DEFAULT_OPTIONS.sizes, configTreePanelSize = DEFAULT_OPTIONS.configTreePanelWidth() } = params;
@@ -107,7 +107,7 @@ export const usePinchZoom = (
   minZoom: number = DEFAULT_OPTIONS.minZoom,
   maxZoom: number = DEFAULT_OPTIONS.maxZoom,
   isAutoWidth: boolean = false
-) => {
+): MutableRefObject<HTMLDivElement> => {
   const elementRef = useRef<HTMLDivElement>(null);
   const lastDistance = useRef<number>(0);
   const initialZoom = useRef<number>(currentZoom);

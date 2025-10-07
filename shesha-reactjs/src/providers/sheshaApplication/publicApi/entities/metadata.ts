@@ -71,7 +71,7 @@ export const fetchEntitiesApiAsMetadataProperties = (httpClient: HttpClientApi):
 
 const BASE_ENTITY_MODULE = "entities/interfaces.ts";
 
-const createEntityBaseModels = (context: ITypeDefinitionLoadingContext) => {
+const createEntityBaseModels = (context: ITypeDefinitionLoadingContext): void => {
   const content = [
     "/*",
     " * Entity with typed id",

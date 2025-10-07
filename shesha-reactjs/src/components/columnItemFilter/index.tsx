@@ -99,14 +99,14 @@ const NumberRangeFilter: FC<INumberRangeFilterProps> = (props) => {
   const [minNumber, setMinNumber] = useState<number>(0);
   const [maxNumber, setMaxNumber] = useState<number>(0);
 
-  const handleMinNumberChange = (value: number | string | undefined) => {
+  const handleMinNumberChange = (value: number | string | undefined): void => {
     if (typeof value === 'number') {
       setMinNumber(value);
       props.onChange([value, maxNumber]);
     }
   };
 
-  const handleMaxNumberChange = (value: number | string | undefined) => {
+  const handleMaxNumberChange = (value: number | string | undefined): void => {
     if (typeof value === 'number') {
       setMaxNumber(value);
       props.onChange([minNumber, value]);
@@ -219,7 +219,7 @@ interface DateTimeFilterProps extends BaseFilterProps {
   showTime: boolean;
 }
 const DateTimeFilter: FC<DateTimeFilterProps> = ({ id, filter, filterOption, onChangeFilter, format, showTime }) => {
-  const onChange = (_dateEvent: any, dateString: string | string[]) => {
+  const onChange = (_dateEvent: any, dateString: string | string[]): void => {
     onChangeFilter(id, dateString);
   };
 
@@ -254,7 +254,7 @@ interface TimeFilterProps extends BaseFilterProps {
   format: string;
 }
 const TimeFilter: FC<TimeFilterProps> = ({ id, filter, filterOption, onChangeFilter, format }) => {
-  const onChange = (_dateEvent: any, dateString: string | string[]) => {
+  const onChange = (_dateEvent: any, dateString: string | string[]): void => {
     onChangeFilter(id, dateString);
   };
 
@@ -324,7 +324,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
 
   const [showDeleteIcon, setShowIconVisibility] = useState<boolean>(true);
 
-  const toggleShowIconVisibility = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const toggleShowIconVisibility = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
     event.stopPropagation();
     setShowIconVisibility(!showDeleteIcon);
   };
@@ -340,25 +340,25 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     }
   }, []);
 
-  const handleStringFilter = (changeValue: ChangeEvent<HTMLInputElement>) => {
+  const handleStringFilter = (changeValue: ChangeEvent<HTMLInputElement>): void => {
     const value = (changeValue as ChangeEvent<HTMLInputElement>).target.value;
     onChangeFilter(id, value);
   };
 
-  const handleRawFilter = (changeValue: ColumnFilter) => {
+  const handleRawFilter = (changeValue: ColumnFilter): void => {
     onChangeFilter(id, changeValue);
   };
 
-  const handlePressEnter = () => {
+  const handlePressEnter = (): void => {
     if (applyFilters) applyFilters();
   };
 
-  const handleDeleteFilter = () => {
+  const handleDeleteFilter = (): void => {
     onRemoveFilter(id);
   };
 
-  const renderBooleanInput = () => {
-    const onChange = (e: CheckboxChangeEvent) => {
+  const renderBooleanInput = (): JSX.Element => {
+    const onChange = (e: CheckboxChangeEvent): void => {
       onChangeFilter(id, e.target.checked);
     };
     return (
@@ -368,7 +368,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     );
   };
 
-  const hideFilterOptions = () => ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType);
+  const hideFilterOptions = (): boolean => ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType);
 
   const baseProps: BaseFilterProps = {
     id,

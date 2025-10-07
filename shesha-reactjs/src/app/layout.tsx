@@ -8,21 +8,21 @@ export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}): JSX.Element {
   noStore();
   const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:21021';
 
   return (
-        <html lang="en">
-            <body>
-                <AntdRegistry>
-                    <Suspense>
-                        <AppProvider backendUrl={backendUrl}>
-                            {children}
-                        </AppProvider>
-                    </Suspense>
-                </AntdRegistry>
-            </body>
-        </html>
+    <html lang="en">
+      <body>
+        <AntdRegistry>
+          <Suspense>
+            <AppProvider backendUrl={backendUrl}>
+              {children}
+            </AppProvider>
+          </Suspense>
+        </AntdRegistry>
+      </body>
+    </html>
   );
 };

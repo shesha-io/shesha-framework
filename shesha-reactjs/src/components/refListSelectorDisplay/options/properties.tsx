@@ -1,5 +1,5 @@
 import { Form } from 'antd';
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import React, { FC, ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { getSettings } from './refListItemsSettingsForm';
 import { useRefListItemGroupConfigurator } from '../provider';
@@ -35,7 +35,7 @@ export const RefListItemProperties: FC<IRefListItemPropertiesProps> = () => {
     }
   }, [selectedItemId]);
 
-  const getEditor = () => {
+  const getEditor = (): ReactElement => {
     if (!selectedItemId) return null;
 
     const componentModel = getComponentModel(getItem(selectedItemId));

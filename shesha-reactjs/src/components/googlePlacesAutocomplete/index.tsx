@@ -79,7 +79,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   if (typeof window === 'undefined' || !(typeof window.google === 'object' && typeof window.google.maps === 'object'))
     return null;
 
-  const handleChange = (localAddress: string) => {
+  const handleChange = (localAddress: string): void => {
     try {
       if (onChange) {
         if (localAddress) {
@@ -93,7 +93,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
     }
   };
 
-  const handleSelect = (localAddress: string) => {
+  const handleSelect = (localAddress: string): void => {
     try {
       if (onChange) {
         onChange(localAddress);
@@ -134,7 +134,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   const displayValue = selectedValue || value;
   const inputPrefix = externalLoader ? <LoadingOutlined /> : <SearchOutlined />;
 
-  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
     if (!suggestionRef.current || suggestionRef?.current?.length === 0) return;
 
     const suggestions = suggestionRef.current;
@@ -187,9 +187,9 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
     }
   };
 
-  const onBlur = () => setShowSuggestionsDropdownContainer(false);
+  const onBlur = (): void => setShowSuggestionsDropdownContainer(false);
 
-  const handleFocus = (event) => onFocus(event);
+  const handleFocus = (event): void => onFocus(event);
   return (
     // @ts-ignore
     <PlacesAutocomplete

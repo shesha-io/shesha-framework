@@ -16,11 +16,11 @@ export interface IMetadataEditorModalProps extends IMetadataEditorProps {
 export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onChange, readOnly }) => {
   const [selectedItem, setSelectedItem] = useState<ItemType>();
 
-  const onSelectionChange = (item: ItemType) => {
+  const onSelectionChange = (item: ItemType): void => {
     setSelectedItem(item);
   };
 
-  const onItemUpdate = (newValues: ItemType) => {
+  const onItemUpdate = (newValues: ItemType): void => {
     if (!selectedItem || selectedItem.id !== newValues.id) return;
 
     Object.assign(selectedItem, newValues);
@@ -37,42 +37,42 @@ export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onCh
   };
 
   return (
-        <ListEditorRenderer
-          sidebarProps={{
-            title: 'Properties',
-            content: <ModelItemProperties item={selectedItem} onChange={onItemUpdate} />,
-          }}
-        >
-            <ListEditor<ItemType & ListItem>
-              value={value}
-              onChange={onChange}
-              initNewItem={makeNewItem}
-              readOnly={readOnly}
-              selectionType="single"
-              onSelectionChange={onSelectionChange}
-            >
-                {({ item, index, itemOnChange, nestedRenderer }) => {
-                  return (
-                        <Item
-                          itemProps={item}
-                          index={[index]}
-                          key={item?.id}
-                          onChange={(newValue) => {
-                            itemOnChange({ ...newValue }, undefined);
-                          }}
-                          containerRendering={(args) => {
-                            return nestedRenderer({
-                              ...args,
-                              onChange: (newValue: IModelItem[], changeDetails) => {
-                                args.onChange(newValue, changeDetails);
-                              },
-                              initNewItem: makeNewItem,
-                            });
-                          }}
-                        />
-                  );
-                }}
-            </ListEditor>
-        </ListEditorRenderer>
+    <ListEditorRenderer
+      sidebarProps={{
+        title: 'Properties',
+        content: <ModelItemProperties item={selectedItem} onChange={onItemUpdate} />,
+      }}
+    >
+      <ListEditor<ItemType & ListItem>
+        value={value}
+        onChange={onChange}
+        initNewItem={makeNewItem}
+        readOnly={readOnly}
+        selectionType="single"
+        onSelectionChange={onSelectionChange}
+      >
+        {({ item, index, itemOnChange, nestedRenderer }) => {
+          return (
+            <Item
+              itemProps={item}
+              index={[index]}
+              key={item?.id}
+              onChange={(newValue) => {
+                itemOnChange({ ...newValue }, undefined);
+              }}
+              containerRendering={(args) => {
+                return nestedRenderer({
+                  ...args,
+                  onChange: (newValue: IModelItem[], changeDetails) => {
+                    args.onChange(newValue, changeDetails);
+                  },
+                  initNewItem: makeNewItem,
+                });
+              }}
+            />
+          );
+        }}
+      </ListEditor>
+    </ListEditorRenderer>
   );
 };

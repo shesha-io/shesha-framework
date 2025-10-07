@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo } from 'react';
+import React, { ReactElement, ReactNode, useMemo } from 'react';
 import { createConfigurableComponent } from '@/providers';
 import { ConfigurableComponentRenderer } from '@/components/configurableComponentRenderer';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
@@ -68,7 +68,7 @@ export const ConfigurableApplicationComponent = <TSettings extends object>({
   name,
   isApplicationSpecific,
   migrator,
-}: IConfigurableApplicationComponentProps<TSettings>) => {
+}: IConfigurableApplicationComponentProps<TSettings>): ReactElement => {
   const component = useMemo(() => {
     return createConfigurableComponent<TSettings>(defaultSettings, migrator);
   }, [defaultSettings]);

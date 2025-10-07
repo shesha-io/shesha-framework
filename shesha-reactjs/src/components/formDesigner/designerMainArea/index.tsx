@@ -43,53 +43,53 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
   [readOnly]);
 
   return (
-        <div
-          className={styles.mainArea}
-          style={{
-            borderTop: '1px solid #d3d3d3',
-            ...(formMode !== 'designer' && {
-              maxHeight: '85vh',
-              overflow: 'auto',
-            }),
-          }}
+    <div
+      className={styles.mainArea}
+      style={{
+        borderTop: '1px solid #d3d3d3',
+        ...(formMode !== 'designer' && {
+          maxHeight: '85vh',
+          overflow: 'auto',
+        }),
+      }}
+    >
+      <ConditionalWrap
+        condition={formMode === 'designer'}
+        wrap={(children) => (
+          <SidebarContainer
+            leftSidebarProps={leftSidebarProps}
+            rightSidebarProps={rightSidebarProps}
+            canZoom={true}
+          >
+            {children}
+          </SidebarContainer>
+        )}
+      >
+        <ConditionalWrap
+          condition={Boolean(formSettings?.modelType)}
+          wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
         >
-            <ConditionalWrap
-              condition={formMode === 'designer'}
-              wrap={(children) => (
-                    <SidebarContainer
-                      leftSidebarProps={leftSidebarProps}
-                      rightSidebarProps={rightSidebarProps}
-                      canZoom={true}
-                    >
-                        {children}
-                    </SidebarContainer>
-              )}
-            >
-                    <ConditionalWrap
-                      condition={Boolean(formSettings?.modelType)}
-                      wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
-                    >
-                        <ParentProvider model={null} formMode="designer">
-                            {/* pageContext has added only to customize the designed form. It is not used as a data context.*/}
-                            <DataContextProvider id="pageContext" name="pageContext" type="page">
-                                <DataContextProvider
-                                  id={SheshaCommonContexts.FormContext}
-                                  name={SheshaCommonContexts.FormContext}
-                                  type="form"
-                                  description="Form designer"
-                                >
-                                    <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
-                                        {isDebug && (
-                                            <DebugPanel />
-                                        )}
-                                    </ConfigurableFormRenderer>
+          <ParentProvider model={null} formMode="designer">
+            {/* pageContext has added only to customize the designed form. It is not used as a data context.*/}
+            <DataContextProvider id="pageContext" name="pageContext" type="page">
+              <DataContextProvider
+                id={SheshaCommonContexts.FormContext}
+                name={SheshaCommonContexts.FormContext}
+                type="form"
+                description="Form designer"
+              >
+                <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
+                  {isDebug && (
+                    <DebugPanel />
+                  )}
+                </ConfigurableFormRenderer>
 
-                                </DataContextProvider>
-                            </DataContextProvider>
-                        </ParentProvider>
-                    </ConditionalWrap>
+              </DataContextProvider>
+            </DataContextProvider>
+          </ParentProvider>
+        </ConditionalWrap>
 
-            </ConditionalWrap>
-        </div>
+      </ConditionalWrap>
+    </div>
   );
 };

@@ -20,7 +20,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
     onChange(data);
   };
 
-  const createClonedElement = (value, onChange) => cloneElement(
+  const createClonedElement = (value, onChange): ReactElement => cloneElement(
     childElement,
     {
       ...childElement?.props,
@@ -33,40 +33,40 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
   );
 
   return (
-        <ConfigurableFormItem
-          model={{
-            hideLabel: props.hideLabel,
-            propertyName: name,
-            label: <div className={styles.label} style={{ top: '8px', fontSize: '12px' }}>{label}</div>,
-            type: '',
-            id: '',
-            description: tooltip,
-            validate: { required },
-            hidden,
-            layout,
-            size: 'small',
+    <ConfigurableFormItem
+      model={{
+        hideLabel: props.hideLabel,
+        propertyName: name,
+        label: <div className={styles.label} style={{ top: '8px', fontSize: '12px' }}>{label}</div>,
+        type: '',
+        id: '',
+        description: tooltip,
+        validate: { required },
+        hidden,
+        layout,
+        size: 'small',
 
-          }}
+      }}
 
-          className="sha-js-label"
-        >
-            {(value, onChange) =>
-              !jsSetting ? (
-                createClonedElement(value, onChange)
-              ) : (
-                    <SettingsControl
-                      propertyName={name}
-                      mode="value"
-                      onChange={onChange}
-                      value={value}
-                      setHasCode={setHasCode}
-                      hasCode={hasCode}
-                      readOnly={readOnly}
-                    >
-                        {(value, onChange) => createClonedElement(value, onChange,)}
-                    </SettingsControl>
-              )}
-        </ConfigurableFormItem>
+      className="sha-js-label"
+    >
+      {(value, onChange) =>
+        !jsSetting ? (
+          createClonedElement(value, onChange)
+        ) : (
+          <SettingsControl
+            propertyName={name}
+            mode="value"
+            onChange={onChange}
+            value={value}
+            setHasCode={setHasCode}
+            hasCode={hasCode}
+            readOnly={readOnly}
+          >
+            {(value, onChange) => createClonedElement(value, onChange,)}
+          </SettingsControl>
+        )}
+    </ConfigurableFormItem>
   );
 };
 

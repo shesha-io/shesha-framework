@@ -3,7 +3,7 @@ import useStyles from '../../styles';
 import { TChartType } from '../../model';
 import { Button } from 'antd';
 
-const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; handleCancelClick?: () => void }) => {
+const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; handleCancelClick?: () => void }): JSX.Element => {
   const { styles, cx } = useStyles();
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 1024,
@@ -12,7 +12,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
 
   // Listen for window resize events
   useEffect(() => {
-    const handleResize = () => {
+    const handleResize = (): void => {
       setWindowSize({
         width: window.innerWidth,
         height: window.innerHeight,
@@ -70,7 +70,7 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
     }
   }, [windowSize.width]);
 
-  const renderLoader = () => {
+  const renderLoader = (): JSX.Element => {
     switch (chartType) {
       case 'pie':
         return (
@@ -149,20 +149,20 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
 
       default:
         return (
-            <div className={cx(styles.loaderCard)}>
-              <div className={cx(styles.barChartContainer)}>
-                {responsiveDimensions.barHeights.map((height, index) => (
-                  <div
-                    key={index}
-                    className={cx(styles.bar)}
-                    style={{
-                      height: `${height}px`,
-                      backgroundColor: colors[index],
-                    }}
-                  />
-                ))}
-              </div>
+          <div className={cx(styles.loaderCard)}>
+            <div className={cx(styles.barChartContainer)}>
+              {responsiveDimensions.barHeights.map((height, index) => (
+                <div
+                  key={index}
+                  className={cx(styles.bar)}
+                  style={{
+                    height: `${height}px`,
+                    backgroundColor: colors[index],
+                  }}
+                />
+              ))}
             </div>
+          </div>
         );
     }
   };
@@ -171,13 +171,13 @@ const ChartLoader = ({ chartType, handleCancelClick }: { chartType: TChartType; 
     <div className={cx(styles.chartLoaderWrapper)}>
       {renderLoader()}
       {handleCancelClick && (
-      <Button
-        color="danger"
-        size="small"
-        onClick={handleCancelClick}
-      >
+        <Button
+          color="danger"
+          size="small"
+          onClick={handleCancelClick}
+        >
           Cancel
-      </Button>
+        </Button>
       )}
     </div>
   );

@@ -9,11 +9,11 @@ export const ItemGroupHeader: FC<ListEditorSectionRenderingArgs<ISidebarMenuItem
   const { addItem, readOnly } = contextAccessor();
   const { styles } = useStyles();
 
-  const onAddItemClick = () => {
+  const onAddItemClick = (): void => {
     addItem();
   };
 
-  const onAddGroupClick = () => {
+  const onAddGroupClick = (): void => {
     addItem((items) => {
       const itemsCount = (items ?? []).length;
       const itemNo = itemsCount + 1;
@@ -35,18 +35,18 @@ export const ItemGroupHeader: FC<ListEditorSectionRenderingArgs<ISidebarMenuItem
   return !readOnly
     ? level === 1
       ? (
-                <div className={styles.customActionButtons}>
-                    <Button onClick={onAddGroupClick} type="primary">Add Group</Button>
-                    <Button onClick={onAddItemClick} type="primary">Add New Item</Button>
-                </div>
+        <div className={styles.customActionButtons}>
+          <Button onClick={onAddGroupClick} type="primary">Add Group</Button>
+          <Button onClick={onAddItemClick} type="primary">Add New Item</Button>
+        </div>
       )
       : !(parent.childItems?.length)
         ? (
-                    <Divider style={{ marginTop: 0, marginBottom: 0 }}>
-                        <Button shape="round" size="small" type="link" onClick={onAddItemClick}>Add item</Button>
-                        <Divider type="vertical" />
-                        <Button shape="round" size="small" type="link" onClick={onAddGroupClick}>Add group</Button>
-                    </Divider>
+          <Divider style={{ marginTop: 0, marginBottom: 0 }}>
+            <Button shape="round" size="small" type="link" onClick={onAddItemClick}>Add item</Button>
+            <Divider type="vertical" />
+            <Button shape="round" size="small" type="link" onClick={onAddGroupClick}>Add group</Button>
+          </Divider>
         )
         : null
     : null;

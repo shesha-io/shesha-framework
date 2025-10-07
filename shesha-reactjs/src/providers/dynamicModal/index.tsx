@@ -14,6 +14,9 @@ import {
   DynamicModalActionsContext,
   DynamicModalInstanceContext,
   DynamicModalStateContext,
+  IDynamicModalActionsContext,
+  IDynamicModalInstanceContext,
+  IDynamicModalStateContext,
 } from './contexts';
 import { IModalInstance, IModalProps } from './models';
 import DynamicModalReducer from './reducer';
@@ -61,11 +64,11 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     actionDependencies
   );
 
-  const removeModal = (id: string) => {
+  const removeModal = (id: string): void => {
     dispatch(removeModalAction(id));
   };
 
-  const createModal = (modalProps: IModalProps) => {
+  const createModal = (modalProps: IModalProps): void => {
     dispatch(createModalAction({ modalProps: { ...modalProps, width: modalProps.width ?? '60%' } }));
   };
 
@@ -139,7 +142,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     actionDependencies
   );
 
-  const getLatestVisibleInstance = () => {
+  const getLatestVisibleInstance = (): IModalInstance | null => {
     const { instances = {} } = state;
     const keys = Object.keys(instances);
     let highestInstance: IModalInstance = null;
@@ -178,11 +181,11 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   );
   //#endregion
 
-  const open = (modalProps: IModalProps) => {
+  const open = (modalProps: IModalProps): void => {
     dispatch(openAction(modalProps));
   };
 
-  const modalExists = (id: string) => {
+  const modalExists = (id: string): boolean => {
     return Boolean(state.instances[id]);
   };
 
@@ -197,7 +200,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   );
 };
 
-function useDynamicModalState() {
+function useDynamicModalState(): IDynamicModalStateContext {
   const context = useContext(DynamicModalStateContext);
 
   if (context === undefined) {
@@ -207,7 +210,7 @@ function useDynamicModalState() {
   return context;
 }
 
-function useDynamicModalActions() {
+function useDynamicModalActions(): IDynamicModalActionsContext {
   const context = useContext(DynamicModalActionsContext);
 
   if (context === undefined) {
@@ -217,16 +220,20 @@ function useDynamicModalActions() {
   return context;
 }
 
-function useDynamicModals() {
+function useDynamicModals(): IDynamicModalStateContext & IDynamicModalActionsContext {
   return { ...useDynamicModalState(), ...useDynamicModalActions() };
 }
 
-function useModal(modalProps: IModalProps) {
+interface SimpleModal {
+  open: () => void;
+  close: () => void;
+}
+function useModal(modalProps: IModalProps): SimpleModal {
   const context = useDynamicModals();
 
   if (!modalProps) return null;
 
-  const instance = {
+  const instance: SimpleModal = {
     open: () => {
       if (!context.modalExists(modalProps.id)) context.createModal({ ...modalProps, isVisible: true });
     },
@@ -238,7 +245,7 @@ function useModal(modalProps: IModalProps) {
   return instance;
 }
 
-function useClosestModal() {
+function useClosestModal(): IDynamicModalInstanceContext {
   const context = useContext(DynamicModalInstanceContext);
   return context;
 }

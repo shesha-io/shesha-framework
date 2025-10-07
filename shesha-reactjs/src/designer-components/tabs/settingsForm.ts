@@ -6,8 +6,9 @@ import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } fr
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = () => {
+export const getSettings = (): FormMarkupWithSettings => {
   const prefix = 'getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tabPosition) === ';
 
   const hideConditions = {

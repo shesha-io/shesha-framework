@@ -7,7 +7,7 @@ import { useShaRouting } from '@/providers';
 import ComponentError from '../componentErrors';
 import { IModelValidation, SheshaError } from '@/utils/errors';
 
-const errorBoundaryErrorHandler = ({ error }: Omit<FallbackProps, 'resetErrorBoundary'>) => {
+const errorBoundaryErrorHandler = ({ error }: Omit<FallbackProps, 'resetErrorBoundary'>): void => {
   // Do something with the error
   // E.g. log to an error logging client here
   console.error('CustomErrorBoundary error :', error);

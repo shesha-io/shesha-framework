@@ -1,5 +1,5 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import React, { FC } from 'react';
+import React, { FC, ReactElement } from 'react';
 import SettingsForm from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import SizableColumnsList from './sizableColumnList';
@@ -11,7 +11,7 @@ import { ISizableColumnComponentProps } from './interfaces';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
-const SizableColumnsSettings = (props: ISettingsFormFactoryArgs<ISizableColumnComponentProps>) => {
+const SizableColumnsSettings = (props: ISettingsFormFactoryArgs<ISizableColumnComponentProps>): ReactElement => {
   const { readOnly } = props;
 
   return (

@@ -14,13 +14,13 @@ export const DesignerTitle: FC<IDesignerTitleProps> = ({ }) => {
   const title = formProps?.label ? `${formProps.label} (${fullName})` : fullName;
 
   return (
-        <Space>
-            {title && (
-                <p style={{ margin: 'unset' }}>
-                    {title}
-                </p>
-            )}
-            <HelpTextPopover content={formProps.description}></HelpTextPopover>
-        </Space>
+    <Space>
+      {title && (
+        <p style={{ margin: 'unset' }}>
+          {title}
+        </p>
+      )}
+      <HelpTextPopover content={formProps.description}></HelpTextPopover>
+    </Space>
   );
 };

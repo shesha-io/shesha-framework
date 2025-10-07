@@ -1,12 +1,13 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { requestHeaders } from './requestHeaders';
 import { buildUrl } from './url';
 import { HttpResponse } from '@/publicJsApis/httpClient';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { Key } from 'react';
 
-export function constructUrl<TQueryParams extends object = object>(base: string | undefined, path: string, queryParams?: TQueryParams) {
+export function constructUrl<TQueryParams extends object = object>(base: string | undefined, path: string, queryParams?: TQueryParams): string {
   let normalizedBase = !isNullOrWhiteSpace(base) ? base : '';
   normalizedBase = normalizedBase.endsWith('/') ? normalizedBase : `${normalizedBase}/`;
 
@@ -150,7 +151,7 @@ export const getFileNameFromResponse = (fileResponse: HttpResponse<any>): string
   return getFileNameFromContentDisposition(fileResponse.headers['content-disposition']);
 };
 
-export const unwrapAbpResponse = <TResponse extends any, TData extends any>(response: TResponse): TData | TResponse => {
+export const unwrapAbpResponse = <TData extends any, TResponse extends TData | IAjaxResponse<TData>>(response: TResponse): TData | TResponse => {
   if (!response) return response;
 
   const ajaxResponse = response as IAjaxResponse<TData>;
@@ -159,8 +160,17 @@ export const unwrapAbpResponse = <TResponse extends any, TData extends any>(resp
   return result;
 };
 
-export const axiosHttp = (baseURL: string, tokenName?: string) =>
+export const axiosHttp = (baseURL: string, tokenName?: string): AxiosInstance =>
   axios.create({
     baseURL,
     headers: requestHeaders(tokenName || DEFAULT_ACCESS_TOKEN_NAME, { addCustomHeaders: true }),
   });
+
+
+export interface IQueryParams {
+  [name: string]: Key;
+}
+export type FetcherOptions = {
+  path: string;
+  queryParams?: IQueryParams;
+};

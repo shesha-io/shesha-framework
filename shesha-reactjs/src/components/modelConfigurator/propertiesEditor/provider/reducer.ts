@@ -28,7 +28,7 @@ const findItemById = (items: IModelItem[], id: string): IModelItem => {
   return null;
 };
 
-function removeIdDeep(list: IModelItem[], idToRemove: string) {
+function removeIdDeep(list: IModelItem[], idToRemove: string): IModelItem[] {
   const filtered = list.filter((entry) => entry.id !== idToRemove);
   return filtered.map((entry) => {
     if (!entry.properties) return entry;

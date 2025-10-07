@@ -62,7 +62,7 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
   if (model.hidden) return null;
 
   return (
-        <DynamicContainer components={dynamicComponents} />
+    <DynamicContainer components={dynamicComponents} />
   );
 };
 

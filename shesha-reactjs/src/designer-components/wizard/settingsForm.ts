@@ -6,8 +6,9 @@ import { getItemSettings } from './itemSettings';
 import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = () => {
+export const getSettings = (): FormMarkupWithSettings => {
   // Generate unique IDs for major components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();

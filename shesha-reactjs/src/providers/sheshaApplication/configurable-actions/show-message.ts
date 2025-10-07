@@ -35,7 +35,7 @@ export const showMessageArgumentsForm = new DesignerToolbarSettings()
   })
   .toJson();
 
-export const useShowMessageAction = () => {
+export const useShowMessageAction = (): void => {
   const { message: messageApi } = App.useApp();
 
   useConfigurableAction<IShowMessageArguments, boolean>({

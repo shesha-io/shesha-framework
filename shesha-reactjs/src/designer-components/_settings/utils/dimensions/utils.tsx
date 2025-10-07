@@ -5,7 +5,7 @@ import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 import { widthRelativeToCanvas } from "@/providers/canvas/utils";
 
-const getDimension = (main: string | number, left: any, right: any, canvasWidth?: string) => {
+const getDimension = (main: string | number, left: any, right: any, canvasWidth?: string): string => {
   const value = canvasWidth !== null ? widthRelativeToCanvas(main, canvasWidth) : main;
   return `calc(${addPx(value)} - ${addPx(left || '0')} - ${addPx(right || '0')})`;
 };

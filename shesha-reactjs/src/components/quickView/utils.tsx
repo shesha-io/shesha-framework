@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Spin } from 'antd';
 import { getDataProperty, getFormatContent } from '@/utils/metadata';
 import { IPropertyMetadata } from '@/interfaces/metadata';
@@ -16,7 +16,7 @@ export const formItemLayout = {
   },
 };
 
-export const loadingBox = (cx: (className: string) => string, styles: { innerEntityReferenceSpanBoxStyle: string; spin: string; inlineBlock: string }) => (
+export const loadingBox = (cx: (className: string) => string, styles: { innerEntityReferenceSpanBoxStyle: string; spin: string; inlineBlock: string }): ReactNode => (
   <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>
     <Spin size="small" className={cx(styles.spin)} />
     <span className={cx(styles.inlineBlock)}>Loading...</span>
@@ -37,7 +37,7 @@ export const innerEntityReferenceButtonBoxStyle = {
   justifyContent: 'flex-start',
 };
 
-export const compareValueToProperty = (key: string, value: string, properties: IPropertyMetadata[]) => {
+export const compareValueToProperty = (key: string, value: string, properties: IPropertyMetadata[]): [key: string, value: string] => {
   const dataType = getDataProperty(properties, key, 'dataType');
   const dataFormat = getDataProperty(properties, key, 'dataFormat');
 
@@ -47,7 +47,7 @@ export const compareValueToProperty = (key: string, value: string, properties: I
 export const getQuickViewInitialValues = (
   data: { [key in string]: any },
   properties: IPropertyMetadata[]
-) =>
+): { [key in string]: ReactNode } =>
   Object.entries(data || {})
     .map(([key, value]) => compareValueToProperty(key, value, properties))
     .reduce((acc, [key, value]) => ({ ...acc, ...{ [key]: value } }), {});

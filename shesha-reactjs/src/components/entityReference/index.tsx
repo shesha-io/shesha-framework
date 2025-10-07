@@ -106,7 +106,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { styles, cx } = useStyles();
 
   useEffect(() => {
-    const fetchFormId = async () => {
+    const fetchFormId = async (): Promise<void> => {
       if (
         props.formSelectionMode === 'dynamic' &&
         Boolean(entityType) &&
@@ -125,7 +125,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   }, [entityType, formType, props.formSelectionMode, props.entityReferenceType]);
 
   useEffect(() => {
-    const fetchMetadata = async () => {
+    const fetchMetadata = async (): Promise<void> => {
       if (entityType) {
         try {
           const res = await getMetadata({ modelType: entityType, dataType: null });
@@ -174,7 +174,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   }, [props.formIdentifier]);
 
   /* Dialog */
-  const dialogExecute = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const dialogExecute = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
     event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
 
     const actionConfiguration: IConfigurableActionConfiguration = {

@@ -10,8 +10,9 @@ import {
   sizeOptions,
 } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: INumberFieldComponentProps) => {
+export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const validationTabId = nanoid();

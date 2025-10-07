@@ -53,7 +53,7 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
   }, [searchText, dataSources]);
 
 
-  const onCollapseChange = (key: string | string[]) => {
+  const onCollapseChange = (key: string | string[]): void => {
     setOpenedKeys(Array.isArray(key) ? key : [key]);
   };
   return (

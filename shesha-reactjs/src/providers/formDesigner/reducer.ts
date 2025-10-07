@@ -291,7 +291,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
             nestedRelations[clone.id] = [];
             const relations = nestedRelations[clone.id];
 
-            const cloneChild = (c) => {
+            const cloneChild = (c): IConfigurableFormComponent => {
               // child may be component or any object with id
               const childClone = cloneComponent(c, nestedComponents, nestedRelations);
               if (childClone.hasOwnProperty('parentId')) childClone.parentId = clone.id;

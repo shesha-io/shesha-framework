@@ -1,7 +1,7 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
 import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
-import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties } from 'react';
+import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties, ReactElement } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
 import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
@@ -119,7 +119,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const [createModalOpen, setCreateModalOpen] = useState<boolean>(false);
 
-  const onSelectRowLocal = (index: number, row: any) => {
+  const onSelectRowLocal = (index: number, row: any): void => {
     if (selectionMode === 'none') return;
 
     if (selectionMode === 'multiple') {
@@ -137,7 +137,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     }
   };
 
-  const onSelectAllRowsLocal = (val: Boolean) => {
+  const onSelectAllRowsLocal = (val: Boolean): void => {
     changeSelectedIds(
       val
         ? records?.map((item: any) => {
@@ -182,7 +182,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const fcContainerStyles = useFormComponentStyles({ ...props.container ?? {} });
 
-  const isReady = (forms: EntityForm[]) => {
+  const isReady = (forms: EntityForm[]): void => {
     if (!(!forms || forms.length === 0 || forms.find((x) => !x.formConfiguration))) {
       updateRows();
       updateContent();
@@ -268,7 +268,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     }
   }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
-  const renderSubForm = (item: any, index: number) => {
+  const renderSubForm = (item: any, index: number): JSX.Element => {
     let className = null;
     let fType = null;
     if (formSelectionMode === 'name') {
@@ -284,7 +284,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     if (!entityForm?.formConfiguration?.markup)
       return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
 
-    const dblClick = () => {
+    const dblClick = (): boolean => {
       if (props.dblClickActionConfiguration) {
         // TODO: implement generic context collector
         const evaluationContext = {
@@ -348,7 +348,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         propertyPath: g.propertyName.split('.'),
       }));
 
-      const getValue = (container: object, path: string[]) => {
+      const getValue = (container: object, path: string[]): any => {
         return path.reduce((prev, part) => prev ? prev[part] : undefined, container);
       };
 
@@ -378,7 +378,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     return null;
   }, [records, grouping, groupingMetadata]);
 
-  const renderGroupTitle = (value: any, propertyName: string, style: React.CSSProperties) => {
+  const renderGroupTitle = (value: any, propertyName: string, style: React.CSSProperties): ReactElement => {
     if (!Boolean(value) && value !== false) {
       if (!!style)
         return <Typography.Text style={style}>(empty)</Typography.Text>;
@@ -412,10 +412,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
 
-  const renderRow = (item: any, index: number, isLastItem: Boolean) => {
+  const renderRow = (item: any, index: number, isLastItem: Boolean): ReactElement => {
     const stylesAsCSS = style as CSSProperties;
 
-    const hasBorder = () => {
+    const hasBorder = (): boolean => {
       const borderProps = ['border', 'borderWidth', 'borderTop', 'borderBottom', 'borderLeft', 'borderRight'];
       return borderProps.some((prop) => {
         const value = stylesAsCSS?.[prop];
@@ -478,7 +478,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     );
   };
 
-  const onCreateClick = () => {
+  const onCreateClick = (): void => {
     if (canAddInline)
       setCreateModalOpen(true);
   };
@@ -499,11 +499,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     );
   }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
 
-  const updateRows = () => {
+  const updateRows = (): void => {
     rows.current = records?.map((item: any, index) => renderSubForm(item, index));
   };
 
-  const updateContent = () => {
+  const updateContent = (): void => {
     setContent(groups
       ? groups?.map((item: RowsGroup, index) => renderGroup(item, index))
       : records?.map((item: any, index) => renderRow(item, index, records?.length - 1 === index))
@@ -517,9 +517,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       ...fcContainerStyles.jsStyle,
       ...fcContainerStyles.stylingBoxAsCSS,
       ...fcContainerStyles.dimensionsStyles,
-
     };
-
 
     const rawItemWidth =
       (style as CSSProperties)?.width ?? props.container?.dimensions?.width;

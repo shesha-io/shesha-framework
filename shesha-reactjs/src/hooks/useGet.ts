@@ -123,7 +123,7 @@ export function useGet<TData = any, TError = any, TQueryParams = IQueryParams, T
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams>;
 
 // eslint-disable-next-line no-redeclare
-export function useGet<TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>() {
+export function useGet<TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>(): UseGetReturn<TData, TError, TQueryParams, TPathParams> {
   const props: UseGetProps<TData, TQueryParams, TPathParams> =
     typeof arguments[0] === 'object' ? arguments[0] : { ...arguments[1], path: arguments[0] };
   const { path } = props;

@@ -40,41 +40,41 @@ const Comment: React.FC<CommentProps> = ({
 }) => {
   const { getPrefixCls, direction } = React.useContext(ConfigContext) ?? {};
 
-  const renderNested = (prefixCls: string, nestedChildren: any) => (
-        <div className={classNames(`${prefixCls}-nested`)}>{nestedChildren}</div>
+  const renderNested = (prefixCls: string, nestedChildren: any): React.ReactNode => (
+    <div className={classNames(`${prefixCls}-nested`)}>{nestedChildren}</div>
   );
 
   const prefixCls = getPrefixCls('comment', customizePrefixCls);
   const [wrapSSR, hashId] = useStyle(prefixCls);
 
   const avatarDom = avatar ? (
-        <div className={`${prefixCls}-avatar`}>
-            {typeof avatar === 'string' ? <img src={avatar} alt="comment-avatar" /> : avatar}
-        </div>
+    <div className={`${prefixCls}-avatar`}>
+      {typeof avatar === 'string' ? <img src={avatar} alt="comment-avatar" /> : avatar}
+    </div>
   ) : null;
 
   const actionDom =
         actions && actions.length ? (
-            <ul className={`${prefixCls}-actions`}>
-                {actions.map((action, index) => (
-                    <li key={`action-${index}`}>{action}</li>
-                ))}
-            </ul>
+          <ul className={`${prefixCls}-actions`}>
+            {actions.map((action, index) => (
+              <li key={`action-${index}`}>{action}</li>
+            ))}
+          </ul>
         ) : null;
 
   const authorContent = (author || datetime) && (
-        <div className={`${prefixCls}-content-author`}>
-            {author && <span className={`${prefixCls}-content-author-name`}>{author}</span>}
-            {datetime && <span className={`${prefixCls}-content-author-time`}>{datetime}</span>}
-        </div>
+    <div className={`${prefixCls}-content-author`}>
+      {author && <span className={`${prefixCls}-content-author-name`}>{author}</span>}
+      {datetime && <span className={`${prefixCls}-content-author-time`}>{datetime}</span>}
+    </div>
   );
 
   const contentDom = (
-        <div className={`${prefixCls}-content`}>
-            {authorContent}
-            <div className={`${prefixCls}-content-detail`}>{content}</div>
-            {actionDom}
-        </div>
+    <div className={`${prefixCls}-content`}>
+      {authorContent}
+      <div className={`${prefixCls}-content-detail`}>{content}</div>
+      {actionDom}
+    </div>
   );
 
   const cls = classNames(
@@ -87,13 +87,13 @@ const Comment: React.FC<CommentProps> = ({
   );
 
   return wrapSSR(
-        <div {...otherProps} className={cls}>
-            <div className={`${prefixCls}-inner`}>
-                {avatarDom}
-                {contentDom}
-            </div>
-            {children ? renderNested(prefixCls, children) : null}
-        </div>,
+    <div {...otherProps} className={cls}>
+      <div className={`${prefixCls}-inner`}>
+        {avatarDom}
+        {contentDom}
+      </div>
+      {children ? renderNested(prefixCls, children) : null}
+    </div>,
   );
 };
 

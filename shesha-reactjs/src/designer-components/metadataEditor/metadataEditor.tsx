@@ -19,48 +19,48 @@ export const MetadataEditor: FC<IMetadataEditorProps> = (props) => {
 
   const [modalVisible, setModalVisible] = useState(false);
 
-  const onModalCancel = () => {
+  const onModalCancel = (): void => {
     setLocalValue(value);
     setModalVisible(false);
   };
-  const onModalOk = () => {
+  const onModalOk = (): void => {
     onChange(localValue);
     setModalVisible(false);
   };
 
   return (
-        <>
-            <Space>
-                <Button
-                  icon={<ApartmentOutlined />}
-                  onClick={() => setModalVisible(true)}
-                  size="small"
-                >
-                    {readOnly ? 'View Code' : hasValue ? 'Edit' : 'Create'}
-                </Button>
-                <Show when={hasValue && !readOnly}>
-                    <Button
-                      type="primary"
-                      size="small"
-                      danger
-                      onClick={() => onChange?.(null)}
-                    >
-                        Clear
-                    </Button>
-                </Show>
-            </Space>
-            {modalVisible && (
-                <Modal
-                  title={label ?? "Metadata Editor"}
-                  open={modalVisible}
-                  onCancel={onModalCancel}
-                  onOk={onModalOk}
-                  width="50vw"
-                  styles={{ body: { height: '60vh' } }}
-                >
-                    <MetadataEditorModal {...props} value={localValue} onChange={setLocalValue} />
-                </Modal>
-            )}
-        </>
+    <>
+      <Space>
+        <Button
+          icon={<ApartmentOutlined />}
+          onClick={() => setModalVisible(true)}
+          size="small"
+        >
+          {readOnly ? 'View Code' : hasValue ? 'Edit' : 'Create'}
+        </Button>
+        <Show when={hasValue && !readOnly}>
+          <Button
+            type="primary"
+            size="small"
+            danger
+            onClick={() => onChange?.(null)}
+          >
+            Clear
+          </Button>
+        </Show>
+      </Space>
+      {modalVisible && (
+        <Modal
+          title={label ?? "Metadata Editor"}
+          open={modalVisible}
+          onCancel={onModalCancel}
+          onOk={onModalOk}
+          width="50vw"
+          styles={{ body: { height: '60vh' } }}
+        >
+          <MetadataEditorModal {...props} value={localValue} onChange={setLocalValue} />
+        </Modal>
+      )}
+    </>
   );
 };

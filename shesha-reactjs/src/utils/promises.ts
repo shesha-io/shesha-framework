@@ -45,7 +45,7 @@ class StatefulPromise<T> implements PromisedValue<T> {
     } else {
       // Create new promise with executor
       this._promise = new Promise<T>((resolve, reject) => {
-        const resolveWrapper = (value: T | PromiseLike<T>) => {
+        const resolveWrapper = (value: T | PromiseLike<T>): void => {
           if (this._state.isPending) {
             // Handle thenable objects
             if (value && typeof (value as PromiseLike<T>).then === 'function') {
@@ -81,7 +81,7 @@ class StatefulPromise<T> implements PromisedValue<T> {
           }
         };
 
-        const rejectWrapper = (reason?: unknown) => {
+        const rejectWrapper = (reason?: unknown): void => {
           if (this._state.isPending) {
             this._updateState({
               isPending: false,

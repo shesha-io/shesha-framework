@@ -102,31 +102,31 @@ class PublicFormApiWrapper implements IFormApi {
     return delayedUpdateData;
   };
 
-  setFieldValue = (name: string, value: any) => {
+  setFieldValue = (name: string, value: any): void => {
     this.#form?.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });
   };
 
-  setFieldsValue = (values: any) => {
+  setFieldsValue = (values: any): void => {
     this.#form?.setFormData({ values, mergeValues: true });
   };
 
-  clearFieldsValue = () => {
+  clearFieldsValue = (): void => {
     this.#form?.setFormData({ values: {}, mergeValues: false });
   };
 
-  submit = () => {
+  submit = (): void => {
     this.#form?.form?.submit();
   };
 
-  setFormData = (payload: ISetFormDataPayload) => {
+  setFormData = (payload: ISetFormDataPayload): void => {
     this.#form?.setFormData(payload);
   };
 
-  getFormData = () => {
+  getFormData = (): any => {
     return this.#form?.formData;
   };
 
-  setValidationErrors = (payload: IFormValidationErrors) => {
+  setValidationErrors = (payload: IFormValidationErrors): void => {
     this.#form?.shaForm?.setValidationErrors(payload);
   };
 

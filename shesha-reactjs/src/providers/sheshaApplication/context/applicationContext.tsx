@@ -81,7 +81,7 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
 
   const contextMetadata = useApplicationContextMetadata({ plugins }); // inject meta from plugins
 
-  const getPlugin = (name: string) => {
+  const getPlugin = (name: string): ApplicationPluginRegistration => {
     return plugins.find((p) => p.name === name);
   };
 
@@ -113,7 +113,7 @@ export const useApplicationActions = (): IApplicationActionsContext => {
   return context;
 };
 
-export const useApplicationPlugin = (plugin: ApplicationPluginRegistration) => {
+export const useApplicationPlugin = (plugin: ApplicationPluginRegistration): void => {
   const { registerPlugin, unregisterPlugin } = useApplicationActions();
   useEffect(() => {
     registerPlugin(plugin);

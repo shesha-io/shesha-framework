@@ -8,11 +8,11 @@ interface IDeleteState {
   mutate?: any;
 }
 
-export const useDelete = () => {
+export const useDelete = (): IDeleteState => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const [state, setState] = useState<IDeleteState>();
 
-  const mutate = (url: string, config?: AxiosRequestConfig) => {
+  const mutate = (url: string, config?: AxiosRequestConfig): Promise<any> => {
     setState((prev) => ({ ...prev, loading: true }));
 
     return new Promise((resolve, reject) => {

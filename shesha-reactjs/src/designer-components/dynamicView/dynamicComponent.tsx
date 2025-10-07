@@ -64,13 +64,13 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
 
   if (!toolboxComponent)
     return (
-<ComponentError
-  errors={{
-    hasErrors: true, componentId: componentModel.id, componentName: componentModel.componentName, componentType: componentModel.type,
-  }}
-  message={`Component '${componentModel.type}' not found`}
-  type="error"
-/>
+      <ComponentError
+        errors={{
+          hasErrors: true, componentId: componentModel.id, componentName: componentModel.componentName, componentType: componentModel.type,
+        }}
+        message={`Component '${componentModel.type}' not found`}
+        type="error"
+      />
     );
 
   if (shaForm.formMode === 'designer') {

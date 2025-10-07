@@ -52,7 +52,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
     setIsCollapsed(collapse);
   }, [collapse]);
   // Update user settings and persist to backend
-  const toggleFold = async () => {
+  const toggleFold = async (): Promise<void> => {
     try {
       const newCollapseState = !isCollapsed;
       setIsCollapsed(newCollapseState);
@@ -123,7 +123,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
     [allData, executeAction]
   );
 
-  const handleUpdate = async (evt: any) => {
+  const handleUpdate = async (evt: any): Promise<void> => {
     const taskId = evt.item.dataset.id;
     const newColumnValue = evt.to.firstChild.dataset.value;
     const draggedTask = tasks.find((task) => task.id === taskId);

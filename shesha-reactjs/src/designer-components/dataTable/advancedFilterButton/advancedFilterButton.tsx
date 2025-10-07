@@ -30,16 +30,16 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
     ...props.styles,
   };
 
-  const startFilteringColumns = () => setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
+  const startFilteringColumns = (): void => setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
 
-  const splitByCapitalLetters = (str: string) => {
+  const splitByCapitalLetters = (str: string): string[] => {
     return str
       ?.replace(/([a-z])([A-Z])/g, '$1 $2')
       .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2')
       .split(' ');
   };
 
-  const customIcon = () => {
+  const customIcon = (): FC | null => {
     if (props.icon) {
       const splitIconName = splitByCapitalLetters(props.icon as string);
       splitIconName.pop();

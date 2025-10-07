@@ -75,7 +75,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
     resetToApplicationTheme();
   }, [state.applications, state.settingSelection]);
 
-  const fetchConfigurations = () => {
+  const fetchConfigurations = (): void => {
     dispatch(fetchConfigurationsAction());
 
     // fetch configurations
@@ -135,17 +135,17 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
     fetchConfigurations();
   }, []);
 
-  const selectSetting = (setting: ISettingConfiguration, app: IFrontEndApplication) => {
+  const selectSetting = (setting: ISettingConfiguration, app: IFrontEndApplication): void => {
     state.editorBridge?.cancel();
     dispatch(selectSettingAction({ setting, app }));
     dispatch(setEditorModeAction('edit'));
   };
 
-  const selectApplication = (app: IFrontEndApplication) => {
+  const selectApplication = (app: IFrontEndApplication): void => {
     dispatch(selectApplicationAction({ app }));
   };
 
-  const saveSetting = () => {
+  const saveSetting = (): Promise<void> => {
     if (!state.editorBridge) return Promise.reject('Setting editor not available');
 
     dispatch(setSaveStatusAction('saving'));
@@ -155,16 +155,16 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
       dispatch(setSaveStatusAction('error'));
     });
   };
-  const startEditSetting = () => {
+  const startEditSetting = (): void => {
     dispatch(setSaveStatusAction('none'));
     dispatch(setEditorModeAction('edit'));
   };
-  const cancelEditSetting = () => {
+  const cancelEditSetting = (): void => {
     state.editorBridge.cancel();
     dispatch(setSaveStatusAction('canceled'));
   };
 
-  const fetchSettingValue = (settingId: ISettingIdentifier) => {
+  const fetchSettingValue = (settingId: ISettingIdentifier): Promise<SettingValue> => {
     return settingsGetValue(
       { name: settingId.name, module: settingId.module, appKey: settingId.appKey },
       { base: backendUrl, headers: httpHeaders }
@@ -179,7 +179,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
       });
   };
 
-  const saveSettingValue = (settingId: ISettingIdentifier, value: SettingValue) => {
+  const saveSettingValue = (settingId: ISettingIdentifier, value: SettingValue): Promise<void> => {
     dispatch(setSaveStatusAction('saving'));
     return settingsUpdateValue(
       {
@@ -200,7 +200,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
       });
   };
 
-  const setEditor = (editorBridge: IEditorBridge) => {
+  const setEditor = (editorBridge: IEditorBridge): void => {
     dispatch(setEditorBridgeAction(editorBridge));
   };
 
@@ -220,7 +220,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
   return <SettingsEditorContext.Provider value={contextValue}>{children}</SettingsEditorContext.Provider>;
 };
 
-function useSettingsEditor(require: boolean = true) {
+function useSettingsEditor(require: boolean = true): ISettingsEditorContext | undefined {
   const context = useContext(SettingsEditorContext);
 
   if (require && context === undefined) {

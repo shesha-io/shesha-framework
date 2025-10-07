@@ -27,10 +27,10 @@ export const FormDocumentDefinition: DocumentDefinition = {
   },
   Toolbar: (_props: ItemEditorProps): ReactNode => {
     return (
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center' }}>
-            <CanvasConfig />
-      <FormToolbar />
-            </div>
+      <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center' }}>
+        <CanvasConfig />
+        <FormToolbar />
+      </div>
     );
   },
   documentInstanceFactory: (args) => {

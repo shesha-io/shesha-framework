@@ -12,23 +12,23 @@ export const UndoRedoButtons: FC<IUndoRedoButtonsProps> = (props) => {
   const { undo, redo } = useFormDesignerActions();
 
   return (
-        <>
-            <Button
-              icon={<UndoOutlined />}
-              key="undo"
-              onClick={undo}
-              disabled={!canUndo}
-              title="Undo"
-              size={props.size}
-            />
-            <Button
-              icon={<RedoOutlined />}
-              key="redo"
-              onClick={redo}
-              disabled={!canRedo}
-              title="Redo"
-              size={props.size}
-            />
-        </>
+    <>
+      <Button
+        icon={<UndoOutlined />}
+        key="undo"
+        onClick={undo}
+        disabled={!canUndo}
+        title="Undo"
+        size={props.size}
+      />
+      <Button
+        icon={<RedoOutlined />}
+        key="redo"
+        onClick={redo}
+        disabled={!canRedo}
+        title="Redo"
+        size={props.size}
+      />
+    </>
   );
 };

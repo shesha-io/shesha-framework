@@ -6,8 +6,9 @@ import { IDropdownComponentProps } from './model';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
 import { presetColors } from './utils';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: IDropdownComponentProps) => {
+export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();

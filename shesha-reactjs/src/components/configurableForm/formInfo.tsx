@@ -35,8 +35,8 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
   const [panelShowing, setPanelShowing] = useState<boolean>(formInfoBlockVisible);
   const displayEditMode = formInfoBlockVisible && formProps?.id;
 
-  const onModalOpen = () => setOpen(true);
-  const onUpdated = () => {
+  const onModalOpen = (): void => setOpen(true);
+  const onUpdated = (): void => {
     if (onMarkupUpdated) {
       onMarkupUpdated();
     }

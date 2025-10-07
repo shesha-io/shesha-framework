@@ -122,7 +122,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     setReadOnly(readOnly);
   }, [readOnly]);
 
-  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
+  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]): void => {
     dispatch(updateToolboxComponentGroupsAction(payload));
   };
 
@@ -326,11 +326,11 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   );
 };
 
-function useFormDesignerStateSelector(selector: (state: IFormDesignerStateContext) => any) {
+function useFormDesignerStateSelector<Selected>(selector: (state: IFormDesignerStateContext) => Selected): Selected {
   return useContextSelector(FormDesignerStateContext, selector);
 }
 
-function useFormDesignerState(require: boolean = true) {
+function useFormDesignerState(require: boolean = true): IFormDesignerStateContext | undefined {
   const context = useContextSelector(FormDesignerStateContext, (state) => state);
 
   if (require && context === undefined) {
@@ -340,7 +340,7 @@ function useFormDesignerState(require: boolean = true) {
   return context;
 }
 
-function useFormDesignerActions(require: boolean = true) {
+function useFormDesignerActions(require: boolean = true): IFormDesignerActionsContext | undefined {
   const context = useContext(FormDesignerActionsContext);
 
   if (require && context === undefined) {
@@ -350,7 +350,11 @@ function useFormDesignerActions(require: boolean = true) {
   return context;
 }
 
-function useFormDesignerUndoableState(require: boolean = true) {
+interface UndoableState {
+  canUndo: boolean;
+  canRedo: boolean;
+}
+function useFormDesignerUndoableState(require: boolean = true): UndoableState | undefined {
   const context = useContext(UndoableFormDesignerStateContext);
 
   if (require && context === undefined) {

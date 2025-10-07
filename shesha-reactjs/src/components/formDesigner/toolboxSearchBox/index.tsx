@@ -13,22 +13,22 @@ export interface ISearchBoxProps {
 
 export const SearchBox: FC<ISearchBoxProps> = (props) => {
   const { styles } = useStyles();
-  const handleSearchChange = (e: React.FormEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: React.FormEvent<HTMLInputElement>): void => {
     props.onChange(e.currentTarget.value);
   };
 
   return (
-        <Input
-          size={props.size || 'small'}
-          className={styles.shaComponentSearch}
-          placeholder={props.placeholder}
-          allowClear={true}
-          value={props.value}
-          onChange={handleSearchChange}
-          suffix={
-                <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-          }
-        />
+    <Input
+      size={props.size || 'small'}
+      className={styles.shaComponentSearch}
+      placeholder={props.placeholder}
+      allowClear={true}
+      value={props.value}
+      onChange={handleSearchChange}
+      suffix={
+        <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+      }
+    />
   );
 };
 

@@ -55,7 +55,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
   const isTop = position === 'top';
   const isBottom = position === 'bottom';
 
-  const getBorder = (side) => {
+  const getBorder = (side): string => {
     const width = `${side}Width`;
     const style = `${side}Style`;
     const color = `${side}Color`;

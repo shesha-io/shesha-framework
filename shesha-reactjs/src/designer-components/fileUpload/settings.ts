@@ -1,7 +1,8 @@
+import { FormRawMarkup } from '@/interfaces';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 
-export const getSettings = () =>
+export const getSettings = (): FormRawMarkup =>
   new DesignerToolbarSettings()
     .addCollapsiblePanel({
       id: '11114bf6-f76d-4139-a850-c99bf06c8b69',

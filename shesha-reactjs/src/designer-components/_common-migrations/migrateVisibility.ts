@@ -1,6 +1,6 @@
 import { IConfigurableFormComponent } from "@/interfaces/formDesigner";
 
-export const migrateVisibility = <T extends IConfigurableFormComponent>(prev: T) => {
+export const migrateVisibility = <T extends IConfigurableFormComponent>(prev: T): T => {
   const visibilityName = 'visibility';
 
   if (!Object.hasOwn(prev, visibilityName))

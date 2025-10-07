@@ -55,7 +55,7 @@ interface IAutocompleteState {
   prefix: string;
 }
 
-const getFullPath = (path: string, prefix: string) => {
+const getFullPath = (path: string, prefix: string): string => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
 };
 
@@ -141,7 +141,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
 
   const [state, setState] = useState<IAutocompleteState>({ options: propertyItems2options(initialProperties, null, isPropertySelectable), propertyItems: initialProperties, prefix: null });
 
-  const setProperties = (properties: IPropertyItem[], prefix: string) => {
+  const setProperties = (properties: IPropertyItem[], prefix: string): void => {
     const filteredProperties = isPropertyVisible
       ? properties.filter((p) => isPropertyVisible(p))
       : properties;
@@ -153,7 +153,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
     });
   };
 
-  const getPrefixFromString = (value: string) => {
+  const getPrefixFromString = (value: string): string | null => {
     if (!value)
       return null;
 
@@ -199,7 +199,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
     return state.propertyItems.find((p) => getPropertyItemIdentifier(p, containerPath) === path);
   };
 
-  const onSelect = (data: string) => {
+  const onSelect = (data: string): void => {
     if (props.onChange) props.onChange(data);
     if (props.onSelect) {
       const property = getPropertyItem(data);
@@ -207,7 +207,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
     }
   };
 
-  const onSearch = (data: string) => {
+  const onSearch = (data: string): void => {
     const filteredOptions: IOption[] = [];
     state.propertyItems.forEach((p) => {
       const fullPath = p.itemType === 'property'
@@ -226,7 +226,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
       props.onChange(data);
   };
 
-  const onClear = () => {
+  const onClear = (): void => {
     props.onChange?.(null);
   };
 

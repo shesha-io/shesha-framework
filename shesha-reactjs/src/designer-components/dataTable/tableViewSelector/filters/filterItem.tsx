@@ -20,36 +20,36 @@ export const FilterItem: FC<IFilterItemProps> = ({ value, onChange, readOnly }) 
   const { name, tooltip } = value;
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
 
-  const onEditBtnClick = () => {
+  const onEditBtnClick = (): void => {
     setSettingsVisible(true);
   };
 
-  const onSaveSettings = (newValue: ITableViewProps) => {
+  const onSaveSettings = (newValue: ITableViewProps): void => {
     onChange(newValue, undefined);
     setSettingsVisible(false);
   };
 
-  const onCancelSettings = () => {
+  const onCancelSettings = (): void => {
     setSettingsVisible(false);
   };
 
   return (
-        <>
-            <div className={itemStyles.filterItem}>
-                <Space>
-                    {name}
+    <>
+      <div className={itemStyles.filterItem}>
+        <Space>
+          {name}
 
-                    {tooltip && (
-                        <Tooltip title={tooltip} className={styles.helpIcon}>
-                            <QuestionCircleOutlined />
-                        </Tooltip>
-                    )}
-                </Space>
-                <div className={itemStyles.controls}>
-                    <Button type="link" icon={<SettingOutlined />} onClick={onEditBtnClick} size="small" />
-                </div>
-            </div>
-            {settingsVisible && <FilterItemSettingsModal value={value} onSave={onSaveSettings} onCancel={onCancelSettings} readOnly={readOnly} />}
-        </>
+          {tooltip && (
+            <Tooltip title={tooltip} className={styles.helpIcon}>
+              <QuestionCircleOutlined />
+            </Tooltip>
+          )}
+        </Space>
+        <div className={itemStyles.controls}>
+          <Button type="link" icon={<SettingOutlined />} onClick={onEditBtnClick} size="small" />
+        </div>
+      </div>
+      {settingsVisible && <FilterItemSettingsModal value={value} onSave={onSaveSettings} onCancel={onCancelSettings} readOnly={readOnly} />}
+    </>
   );
 };

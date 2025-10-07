@@ -17,9 +17,9 @@ export interface IPropertiesEditorProps extends IPropertiesEditorComponentProps 
 
 export const PropertiesEditor: FC<IPropertiesEditorProps> = (props) => {
   return (
-        <PropertiesEditorProvider items={props.value} onChange={props.onChange}>
-            <PropertiesEditorRenderer allowAdd={props.allowAdd} />
-        </PropertiesEditorProvider>
+    <PropertiesEditorProvider items={props.value} onChange={props.onChange}>
+      <PropertiesEditorRenderer allowAdd={props.allowAdd} />
+    </PropertiesEditorProvider>
   );
 };
 
@@ -27,13 +27,13 @@ export const PropertiesEditorComponent: FC<IPropertiesEditorComponentProps> = ()
   const modelConfigurator = useModelConfigurator();
 
   return (
-        <Form.Item
-          className="shaPropertiesEditorForm"
-          name="properties"
-          labelCol={{ span: 0 }}
-          wrapperCol={{ span: 24 }}
-        >
-            <PropertiesEditor allowAdd={modelConfigurator.modelConfiguration?.source === MetadataSourceTypeUseDefined} />
-        </Form.Item>
+    <Form.Item
+      className="shaPropertiesEditorForm"
+      name="properties"
+      labelCol={{ span: 0 }}
+      wrapperCol={{ span: 24 }}
+    >
+      <PropertiesEditor allowAdd={modelConfigurator.modelConfiguration?.source === MetadataSourceTypeUseDefined} />
+    </Form.Item>
   );
 };

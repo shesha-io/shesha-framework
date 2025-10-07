@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
@@ -64,7 +64,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCal
       }
     }
 
-    const renderContent = (content: string | React.ReactNode) => {
+    const renderContent = (content: string | React.ReactNode): ReactNode => {
       if (React.isValidElement(content)) {
         return React.cloneElement(content as React.ReactElement, {
           style: {

@@ -26,7 +26,7 @@ export interface IItemListConfiguratorModalProps<TItem extends ListItemWithId> {
   itemRenderer: ListEditorChildrenFn<TItem> | DefaultItemRenderer<TItem>;
 }
 
-export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: IItemListConfiguratorModalProps<TItem>) => {
+export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: IItemListConfiguratorModalProps<TItem>): JSX.Element => {
   const {
     value,
     onChange,
@@ -46,42 +46,42 @@ export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: I
 
   const [localValue, setLocalValue] = useState<TItem[]>(deepCopyViaJson(value));
 
-  const openModal = () => {
+  const openModal = (): void => {
     setLocalValue(deepCopyViaJson(value));
     setShowModal(true);
   };
 
-  const onOkClick = () => {
+  const onOkClick = (): void => {
     onChange?.(localValue);
     setShowModal(false);
   };
 
-  const onCancelClick = () => {
+  const onCancelClick = (): void => {
     setShowModal(false);
   };
 
   return (
-        <>
-            <Button onClick={openModal} size={size}>{buttonText ?? (readOnly ? 'View Configuration' : 'Edit Configuration')}</Button>
-            <Modal
-              width={isSmall ? '90%' : '60%'}
-              styles={{ body: { height: '80vh' } }}
-              open={showModal}
-              title={title ?? "Configuration"}
-              onCancel={onCancelClick}
-              onOk={onOkClick}
-              destroyOnHidden={true}
-            >
-                <ItemListConfigurator
-                  readOnly={readOnly}
-                  value={localValue}
-                  onChange={setLocalValue}
-                  initNewItem={initNewItem}
-                  settingsMarkupFactory={settingsMarkupFactory}
-                  itemRenderer={itemRenderer}
-                  header={header}
-                />
-            </Modal>
-        </>
+    <>
+      <Button onClick={openModal} size={size}>{buttonText ?? (readOnly ? 'View Configuration' : 'Edit Configuration')}</Button>
+      <Modal
+        width={isSmall ? '90%' : '60%'}
+        styles={{ body: { height: '80vh' } }}
+        open={showModal}
+        title={title ?? "Configuration"}
+        onCancel={onCancelClick}
+        onOk={onOkClick}
+        destroyOnHidden={true}
+      >
+        <ItemListConfigurator
+          readOnly={readOnly}
+          value={localValue}
+          onChange={setLocalValue}
+          initNewItem={initNewItem}
+          settingsMarkupFactory={settingsMarkupFactory}
+          itemRenderer={itemRenderer}
+          header={header}
+        />
+      </Modal>
+    </>
   );
 };

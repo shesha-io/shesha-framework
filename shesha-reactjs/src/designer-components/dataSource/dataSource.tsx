@@ -2,7 +2,7 @@ import DataTableProvider from '@/providers/dataTable';
 import FormItem from 'antd/lib/form/FormItem';
 import React, { FC, useEffect, useMemo } from 'react';
 import { Alert } from 'antd';
-import { evaluateDynamicFilters } from '@/utils';
+import { evaluateDynamicFilters } from '@/utils/datatable';
 import { IDataSourceComponentProps } from './models';
 import {
   MetadataProvider,
@@ -16,7 +16,7 @@ import { useDataSource } from '@/providers/dataSourcesProvider';
 import { useDeepCompareEffect } from 'react-use';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
-const getPageSize = (value?: number) => {
+const getPageSize = (value?: number): number => {
   return Boolean(value) ? value : 1147489646;
 };
 
@@ -45,7 +45,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
-  const debounceEvaluateDynamicFiltersHelper = () => {
+  const debounceEvaluateDynamicFiltersHelper = (): void => {
     evaluateDynamicFilters(
       filters,
       [
@@ -99,9 +99,9 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = (props) => {
   const providerWrapper = useMemo(() => {
     return sourceType === 'Form'
       ? (
-<FormItem name={props.propertyName}>
-        {provider}
-</FormItem>
+        <FormItem name={props.propertyName}>
+          {provider}
+        </FormItem>
       )
       : provider;
   }, [sourceType]);

@@ -47,10 +47,10 @@ export const SourceFilesFolderProvider: FC<PropsWithChildren<ISourceFilesFolderP
   }, [folder, fullPath]);
 
   return (
-        <SourcesFolderContext.Provider
-          value={value}
-        >
-            {children}
-        </SourcesFolderContext.Provider>
+    <SourcesFolderContext.Provider
+      value={value}
+    >
+      {children}
+    </SourcesFolderContext.Provider>
   );
 };

@@ -21,7 +21,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
   const { removeModal } = useDynamicModals();
   const isSmall = useMedia('(max-width: 480px)');
 
-  const hideForm = () => {
+  const hideForm = (): void => {
     if (onClose) onClose();
     if (Boolean(onCancel)) {
       onCancel();
@@ -79,11 +79,11 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   // `showModalFooter` for now is for backward compatibility
   const showDefaultSubmitButtons = showModalFooter || footerButtons === 'default';
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     removeModal(id);
   };
 
-  const onSubmitted = (_values: any, response: any) => {
+  const onSubmitted = (_values: any, response: any): void => {
     if (props.onSubmitted) {
       props.onSubmitted(response);
     }
@@ -93,14 +93,14 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     form.resetFields();
   };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     closeModal();
     if (onCancel) {
       onCancel();
     }
   };
 
-  const onOk = () => {
+  const onOk = (): void => {
     if (showDefaultSubmitButtons) {
       form?.submit();
       form?.validateFields().then(() => {

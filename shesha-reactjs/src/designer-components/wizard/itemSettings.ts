@@ -1,9 +1,9 @@
-import { DesignerToolbarSettings } from '@/interfaces';
+import { DesignerToolbarSettings, FormRawMarkup } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontWeightsOptions, fontTypes } from '../_settings/utils/font/utils';
-export const getItemSettings = () => {
+export const getItemSettings = (): FormRawMarkup => {
   // Generate unique IDs for major components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();

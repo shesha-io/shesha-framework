@@ -47,13 +47,13 @@ export const ArraySimpleProperty: FC<IProps> = (props) => {
 
   return (
     <PropertyWrapper {...props}>
-        {icon}<span> </span>{listIcon}
-        <span className={styles.shaToolbarItemName}>{props.name} {props.label && <>({props.label})</>}: <i>List of {`<${listType}>`}</i></span>
-        {props.description && (
-          <Tooltip title={props.description}>
-            <QuestionCircleOutlined className={styles.shaHelpIcon} />
-          </Tooltip>
-        )}
+      {icon}<span> </span>{listIcon}
+      <span className={styles.shaToolbarItemName}>{props.name} {props.label && <>({props.label})</>}: <i>List of {`<${listType}>`}</i></span>
+      {props.description && (
+        <Tooltip title={props.description}>
+          <QuestionCircleOutlined className={styles.shaHelpIcon} />
+        </Tooltip>
+      )}
     </PropertyWrapper>
   );
 };

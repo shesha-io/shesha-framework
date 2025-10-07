@@ -8,7 +8,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { IStyleType, useDataContextManagerActions, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
-  evaluateValue,
+  evaluateValueAsString,
   executeScriptSync,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
@@ -61,11 +61,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { message } = App.useApp();
     const pageContext = useDataContextManagerActions()?.getPageContext();
-    const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
-
+    const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState });
     const enabled = !model.readOnly;
 
-    const executeScript = (script, value) => {
+    const executeScript = (script, value): void => {
       executeScriptSync(script, {
         value,
         data,
@@ -84,12 +83,12 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       // File list uses propertyName only for support Required feature
       <ConfigurableFormItem model={{ ...model, propertyName: model.propertyName || `${GHOST_PAYLOAD_KEY}_${model.id}` }}>
         {(value, onChange) => {
-          const onFileListChanged = (fileList) => {
+          const onFileListChanged = (fileList): void => {
             onChange(fileList);
             if (model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
           };
 
-          const onDownload = (fileList) => {
+          const onDownload = (fileList): void => {
             onChange(fileList);
             if (model.onDownload) executeScript(model.onDownload, fileList);
           };

@@ -16,9 +16,9 @@ const LabelConfigurator: IToolboxComponent<ILabelComponentProps> = {
   icon: <ColumnWidthOutlined />,
   Factory: ({ model }) => {
     return (
-            <ConfigurableFormItem model={model}>
-                <LabelConfiguratorComponent labelAlignOptions={model.labelAlignOptions} readOnly={model.readOnly} label={model.label} />
-            </ConfigurableFormItem>
+      <ConfigurableFormItem model={model}>
+        <LabelConfiguratorComponent labelAlignOptions={model.labelAlignOptions} readOnly={model.readOnly} label={model.label} />
+      </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: getSettings(),

@@ -15,7 +15,7 @@ const TableTemplateComponent: IToolboxComponent = {
     return <>test</>;
   },
   build: (designerComponents) => {
-    const components: IConfigurableFormComponent[] = generateNewKey(templateJson) as IConfigurableFormComponent[];
+    const components: IConfigurableFormComponent[] = generateNewKey(templateJson as IConfigurableFormComponent[]) as IConfigurableFormComponent[];
 
     const flatStructure = componentsTreeToFlatStructure(designerComponents, components);
     upgradeComponents(designerComponents, DEFAULT_FORM_SETTINGS, flatStructure, true);

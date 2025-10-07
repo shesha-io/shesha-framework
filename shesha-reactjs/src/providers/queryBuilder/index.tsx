@@ -1,6 +1,6 @@
 import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
 import QueryBuilderReducer from './reducer';
-import { QueryBuilderActionsContext, QueryBuilderStateContext, QUERY_BUILDER_CONTEXT_INITIAL_STATE } from './contexts';
+import { QueryBuilderActionsContext, QueryBuilderStateContext, QUERY_BUILDER_CONTEXT_INITIAL_STATE, IQueryBuilderStateContext, IQueryBuilderActionsContext } from './contexts';
 import {
   setFieldsAction,
   /* NEW_ACTION_IMPORT_GOES_HERE */
@@ -26,7 +26,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
   });
 
   const { getContainerMetadata } = useMetadataDispatcher();
-  const setFields = (newFields: IProperty[]) => {
+  const setFields = (newFields: IProperty[]): void => {
     dispatch(setFieldsAction(newFields));
   };
 
@@ -82,7 +82,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
     return properties;
   };
 
-  const fetchFields = (fieldNames: string[]) => {
+  const fetchFields = (fieldNames: string[]): void => {
     if (!metadata?.properties)
       return;
 
@@ -159,7 +159,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
   );
 };
 
-function useQueryBuilderState(requireBuilder: boolean = true) {
+function useQueryBuilderState(requireBuilder: boolean = true): IQueryBuilderStateContext | undefined {
   const context = useContext(QueryBuilderStateContext);
 
   if (context === undefined && requireBuilder) {
@@ -169,7 +169,7 @@ function useQueryBuilderState(requireBuilder: boolean = true) {
   return context;
 }
 
-function useQueryBuilderActions(requireBuilder: boolean = true) {
+function useQueryBuilderActions(requireBuilder: boolean = true): IQueryBuilderActionsContext | undefined {
   const context = useContext(QueryBuilderActionsContext);
 
   if (context === undefined && requireBuilder) {
@@ -179,7 +179,7 @@ function useQueryBuilderActions(requireBuilder: boolean = true) {
   return context;
 }
 
-function useQueryBuilder(requireBuilder: boolean = true) {
+function useQueryBuilder(requireBuilder: boolean = true): IQueryBuilderStateContext & IQueryBuilderActionsContext | undefined {
   const actionsContext = useQueryBuilderActions(requireBuilder);
   const stateContext = useQueryBuilderState(requireBuilder);
 

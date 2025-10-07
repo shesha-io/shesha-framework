@@ -81,7 +81,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   overflowStyle,
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
-  const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
+  const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
 
   const { styles } = useStyles({ bodyStyle, headerStyle, ghost, isSimpleDesign, noContentPadding, hideWhenEmpty, hideCollapseContent, accentStyle, overflow: overflowStyle });
   const shaCollapsiblePanelStyle = isSimpleDesign ? styles.shaSimpleDesign : styles.shaCollapsiblePanel;

@@ -10,7 +10,7 @@ export interface IPropertyTouched {
   getData: () => any;
 }
 
-export const CreateTouchableProperty = (data: any, parent: IPropertyTouched, name: string) => {
+export const CreateTouchableProperty = (data: any, parent: IPropertyTouched, name: string): IPropertyTouched => {
   const prop = (Array.isArray(data))
     ? new TouchableArrayProperty(data, parent, name)
     : new TouchableProperty(data, parent, name);
@@ -51,9 +51,9 @@ export const CreateTouchableProperty = (data: any, parent: IPropertyTouched, nam
 export class TouchableProperty implements IPropertyTouched {
   readonly accessor: PropertyTouchAccessor;
 
-  getData = () => this.accessor.getData();
+  getData = (): any => this.accessor.getData();
 
-  touched(propName: string, fullPropName: string, value: any) {
+  touched(propName: string, fullPropName: string, value: any): void {
     this.accessor.touched(propName, fullPropName, value);
   }
 
@@ -65,9 +65,9 @@ export class TouchableProperty implements IPropertyTouched {
 export class TouchableArrayProperty extends Array implements IPropertyTouched {
   readonly accessor: PropertyTouchAccessor;
 
-  getData = () => this.accessor.getData();
+  getData = (): any => this.accessor.getData();
 
-  touched(propName: string, fullPropName: string, value: any) {
+  touched(propName: string, fullPropName: string, value: any): void {
     this.accessor.touched(propName, fullPropName, value);
   }
 
@@ -118,7 +118,7 @@ class PropertyTouchAccessor implements IPropertyTouched {
     return this._touchedProps;
   };
 
-  getData = () => this._data;
+  getData = (): any => this._data;
 
   getChildAccessor(accessor: string): IPropertyTouched {
     if (this._children.has(accessor))
@@ -129,18 +129,18 @@ class PropertyTouchAccessor implements IPropertyTouched {
     return children;
   };
 
-  addTouchedProp = (propName: string, value?: any) => {
+  addTouchedProp = (propName: string, value?: any): void => {
     if (!this._touchedProps.find((p) => p.propertyName === propName))
       this._touchedProps.push({ propertyName: propName, value });
   };
 
-  touched = (propName: string, fullPropName: string, value: any) => {
+  touched = (propName: string, fullPropName: string, value: any): void => {
     this.addTouchedProp(propName);
     if (this._parent && this._parent.touched)
       this._parent.touched(this._accessor, this._accessor + '.' + fullPropName, value);
   };
 
-  createChild = (accessor: string) => {
+  createChild = (accessor: string): any => {
     const child = this._data[accessor];
     const unproxiedValue = unproxyValue(child);
 

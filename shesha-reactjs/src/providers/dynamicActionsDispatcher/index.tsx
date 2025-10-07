@@ -24,7 +24,7 @@ const DynamicActionsDispatcherProvider: FC<PropsWithChildren<IDynamicActionsDisp
 
   const [state/* , dispatch*/] = useThunkReducer(metadataReducer, initial);
 
-  const registerProvider = (payload: IRegisterProviderPayload) => {
+  const registerProvider = (payload: IRegisterProviderPayload): void => {
     const existingProvider = providers.current[payload.id];
     if (!existingProvider) {
       providers.current[payload.id] = {
@@ -59,7 +59,7 @@ const DynamicActionsDispatcherProvider: FC<PropsWithChildren<IDynamicActionsDisp
   );
 };
 
-function useDynamicActionsDispatcherState(require: boolean) {
+function useDynamicActionsDispatcherState(require: boolean): IDynamicActionsDispatcherStateContext | undefined {
   const context = useContext(DynamicActionsDispatcherStateContext);
 
   if (context === undefined && require) {
@@ -69,7 +69,7 @@ function useDynamicActionsDispatcherState(require: boolean) {
   return context;
 }
 
-function useDynamicActionsDispatcherActions(require: boolean) {
+function useDynamicActionsDispatcherActions(require: boolean): IDynamicActionsDispatcherActionsContext | undefined {
   const context = useContext(DynamicActionsDispatcherActionsContext);
 
   if (context === undefined && require) {
@@ -79,7 +79,7 @@ function useDynamicActionsDispatcherActions(require: boolean) {
   return context;
 }
 
-function useDynamicActionsDispatcher(require: boolean = true): IDynamicActionsDispatcherFullInstance {
+function useDynamicActionsDispatcher(require: boolean = true): IDynamicActionsDispatcherFullInstance | undefined {
   const actionsContext = useDynamicActionsDispatcherActions(require);
   const stateContext = useDynamicActionsDispatcherState(require);
 

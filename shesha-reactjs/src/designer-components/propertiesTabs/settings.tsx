@@ -19,7 +19,7 @@ const tabSettingsMarkup = itemSettings as FormMarkup;
 const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
   const { readOnly } = props;
 
-  const onAddNewItem = (items) => {
+  const onAddNewItem = (items): ITabPaneProps => {
     const count = (items ?? []).length;
     const id = nanoid();
     const buttonProps: ITabPaneProps = {

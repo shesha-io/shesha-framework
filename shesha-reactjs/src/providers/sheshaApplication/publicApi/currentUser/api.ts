@@ -45,27 +45,27 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
   #grantedPermissions: GrantedPermissionDto[];
 
   //#region profile data
-  get isLoggedIn() {
+  get isLoggedIn(): boolean {
     return Boolean(this.#profileInfo);
   }
 
-  get id() {
+  get id(): string | undefined {
     return this.#profileInfo?.id;
   }
 
-  get userName() {
+  get userName(): string | undefined {
     return this.#profileInfo?.userName;
   }
 
-  get firstName() {
+  get firstName(): string | undefined {
     return this.#profileInfo?.firstName;
   }
 
-  get lastName() {
+  get lastName(): string | undefined {
     return this.#profileInfo?.lastName;
   }
 
-  get personId() {
+  get personId(): string | undefined {
     return this.#profileInfo?.personId;
   }
   //#endregion
@@ -74,7 +74,7 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
     this.#httpClient = httpClient;
   }
 
-  setProfileInfo(profileInfo: IUserProfileInfo) {
+  setProfileInfo(profileInfo: IUserProfileInfo): void {
     this.#profileInfo = profileInfo;
   }
 

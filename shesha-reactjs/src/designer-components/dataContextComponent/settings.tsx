@@ -50,7 +50,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
   const [open, setOpen] = useState<boolean>(false);
   const [properties, setProperties] = useState<IPropertyMetadata[]>([]);
 
-  const openModal = () => {
+  const openModal = (): void => {
     if (Array.isArray(values.items))
       setProperties([...values.items]);
     setOpen(true);

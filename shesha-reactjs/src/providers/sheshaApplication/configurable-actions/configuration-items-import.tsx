@@ -26,7 +26,7 @@ export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterP
   const { hideModal, importerRef: exporterRef } = props;
   const { message, notification } = App.useApp();
 
-  const onImport = () => {
+  const onImport = (): void => {
     setInProgress(true);
 
     exporterRef.current.importExecuter().then(() => {
@@ -50,7 +50,7 @@ export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterP
   );
 };
 
-export const useConfigurationItemsImportAction = () => {
+export const useConfigurationItemsImportAction = (): void => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
   const exporterRef = useRef<IImportInterface>();
@@ -64,12 +64,12 @@ export const useConfigurationItemsImportAction = () => {
       const modalId = nanoid();
 
       return new Promise((resolve, reject) => {
-        const hideModal = () => {
+        const hideModal = (): void => {
           reject();
           removeModal(modalId);
         };
 
-        const onImported = () => {
+        const onImported = (): void => {
           removeModal(modalId);
           resolve(true);
         };

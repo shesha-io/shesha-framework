@@ -14,7 +14,7 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
   const { styles } = useStyles();
   const [rightWidth, setRightWidth] = useState<number | undefined>(undefined);
 
-  const onAddClick = () => {
+  const onAddClick = (): void => {
     addItem().then((_item) => {
       const element = selectedItemRef?.current;
       if (element) {
@@ -32,7 +32,7 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
     });
   };
 
-  const onDragEnd = (sizes: number[]) => {
+  const onDragEnd = (sizes: number[]): void => {
     setRightWidth(sizes[1]);
   };
 

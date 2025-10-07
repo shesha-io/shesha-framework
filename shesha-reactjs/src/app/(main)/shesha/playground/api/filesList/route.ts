@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-function recFindByExt(base: string, ext: string, files: string[] = null, result: string[] = null) {
+function recFindByExt(base: string, ext: string, files: string[] = null, result: string[] = null): string[] {
   files = files || fs.readdirSync(base);
   result = result || [];
 
@@ -27,7 +27,7 @@ export interface ComponentSettingsFile {
 
 const settingsRegex = /\\designer-components\\(?<name>[^\n]+)\\[^\\]+\.json/gm;
 
-export const GET = (_request: Request) => {
+export const GET = (_request: Request): Response => {
   const rootDir = path.resolve('./src');
   const jsonFiles = recFindByExt(rootDir, 'json');
 

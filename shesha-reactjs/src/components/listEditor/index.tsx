@@ -60,7 +60,7 @@ export const createListEditorComponent = <TItem extends object>(): CreateListEdi
   const StateContext = getListEditorStateContext<TItem>(undefined);
   const ActionContext = getListEditorActionsContext<TItem>();
 
-  const useListEditorComponent = () => {
+  const useListEditorComponent = (): IListEditorContext<TItem> => {
     const stateContext = useContext(StateContext);
     const actionsContext = useContext(ActionContext);
 
@@ -73,7 +73,7 @@ export const createListEditorComponent = <TItem extends object>(): CreateListEdi
 
   const ListEditorProvider = <T extends PropsWithChildren<IGenericListEditorProps<TItem>>>(
     props: T
-  ) => {
+  ): JSX.Element => {
     const { value, onChange, onSelectionChange, initNewItem, readOnly } = props;
     const initialState = useMemo(() => {
       return getListEditorContextInitialState<TItem>(value);
@@ -107,7 +107,7 @@ export const ListEditor = <TItem extends ListItem>({
   initNewItem,
   readOnly = false,
   maxItemsCount,
-}: IListEditorProps<TItem>) => {
+}: IListEditorProps<TItem>): JSX.Element => {
   const component = useMemo(() => {
     return createListEditorComponent<TItem>();
   }, []);

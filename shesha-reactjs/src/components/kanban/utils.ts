@@ -1,9 +1,17 @@
 import { useMutate } from '@/hooks';
 
-export const useKanbanActions = () => {
+export type KanbanActions = {
+  updateKanban: (payload: any, url: string) => Promise<any>;
+  deleteKanban: (payload: any, url: string) => Promise<any>;
+  createKanbanItem: (payload: any, url: string) => Promise<any>;
+  fetchColumnState: (descriminator: string) => Promise<any>;
+  updateUserSettings: (updatedSettings: any, descriminator: string) => Promise<any>;
+};
+
+export const useKanbanActions = (): KanbanActions => {
   const { mutate } = useMutate<any>();
 
-  const updateUserSettings = async (updatedSettings: any, descriminator: string) => {
+  const updateUserSettings = async (updatedSettings: any, descriminator: string): Promise<any> => {
     try {
       const response = await mutate(
         {
@@ -25,7 +33,7 @@ export const useKanbanActions = () => {
       console.error('Error updating user settings:', error);
     }
   };
-  const fetchColumnState = async (descriminator: string) => {
+  const fetchColumnState = async (descriminator: string): Promise<any> => {
     try {
       const response = await mutate(
         {
@@ -45,7 +53,7 @@ export const useKanbanActions = () => {
       console.error('Error fetching column state:', error);
     }
   };
-  const updateKanban = (payload: any, url: string) => {
+  const updateKanban = (payload: any, url: string): Promise<any> => {
     return mutate(
       {
         url: url,
@@ -55,7 +63,7 @@ export const useKanbanActions = () => {
     );
   };
 
-  const createKanbanItem = (payload: any, url: string) => {
+  const createKanbanItem = (payload: any, url: string): Promise<any> => {
     return mutate(
       {
         url: url,
@@ -65,8 +73,8 @@ export const useKanbanActions = () => {
     );
   };
 
-  const deleteKanban = (payload: any, url: string) => {
-    mutate({
+  const deleteKanban = (payload: any, url: string): Promise<any> => {
+    return mutate({
       url: `${url}?id=${payload}`,
       httpVerb: 'DELETE',
     })
@@ -78,8 +86,6 @@ export const useKanbanActions = () => {
       .catch((error: any) => {
         console.error(error);
       });
-
-    return Promise;
   };
   return { updateKanban, deleteKanban, createKanbanItem, fetchColumnState, updateUserSettings };
 };

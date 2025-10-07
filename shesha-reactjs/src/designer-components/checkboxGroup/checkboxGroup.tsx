@@ -44,7 +44,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICh
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (e: any) => {
+          const onChangeInternal = (e: any): void => {
             if (e.target)
               customEvents.onChange({ value: e.target.value }, e);
             else

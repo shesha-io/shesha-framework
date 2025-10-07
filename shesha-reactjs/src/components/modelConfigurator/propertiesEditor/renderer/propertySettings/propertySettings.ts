@@ -3,9 +3,9 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { ModelPropertyDto } from '@/apis/modelConfigurations';
 import { SimplePropertySettings } from './simplePropertySettings';
-import { DataTypes, IToolboxComponents } from '@/index';
+import { DataTypes, FormMarkupWithSettings, IToolboxComponents } from '@/index';
 
-export const getSettings = (data: ModelPropertyDto, components: IToolboxComponents) => {
+export const getSettings = (data: ModelPropertyDto, components: IToolboxComponents): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();

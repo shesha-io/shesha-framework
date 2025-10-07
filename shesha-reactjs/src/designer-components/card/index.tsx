@@ -44,7 +44,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
     useEffect(() => {
-      const fetchStyles = async () => {
+      const fetchStyles = async (): Promise<void> => {
         const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
           ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
             { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })

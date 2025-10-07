@@ -69,47 +69,47 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
     return property;
   };
 
-  add(dataType: string, path: string, label: string) {
+  add(dataType: string, path: string, label: string): this {
     this._createProperty(dataType, path, label);
     return this;
   }
 
-  addString(path: string, label: string) {
+  addString(path: string, label: string): this {
     return this.add(DataTypes.string, path, label);
   }
 
-  addNumber(path: string, label: string) {
+  addNumber(path: string, label: string): this {
     return this.add(DataTypes.number, path, label);
   }
 
-  addDate(path: string, label: string) {
+  addDate(path: string, label: string): this {
     return this.add(DataTypes.date, path, label);
   }
 
-  addDateTime(path: string, label: string) {
+  addDateTime(path: string, label: string): this {
     return this.add(DataTypes.dateTime, path, label);
   }
 
-  addBoolean(path: string, label: string) {
+  addBoolean(path: string, label: string): this {
     return this.add(DataTypes.boolean, path, label);
   }
 
-  addArray(path: string, label: string) {
+  addArray(path: string, label: string): this {
     this._createProperty(DataTypes.array, path, label);
     return this;
   }
 
-  addAny(path: string, label: string) {
+  addAny(path: string, label: string): this {
     return this.add(DataTypes.any, path, label);
   }
 
-  addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader) {
+  addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader): this {
     const nestedObject = this._createProperty(DataTypes.object, path, label);
     nestedObject.typeDefinitionLoader = typeDefinitionLoader;
     return this;
   }
 
-  addFunction(path: string, label: string) {
+  addFunction(path: string, label: string): this {
     const nestedObject = this._createProperty(DataTypes.function, path, label);
     nestedObject.typeDefinitionLoader = (_ctx) => {
       return Promise.resolve({ typeName: '(...arguments: any) => any;', files: [] });
@@ -117,7 +117,7 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
     return this;
   }
 
-  addObject(path: string, label: string, propertiesBuilder: PropertiesBuilder<this>) {
+  addObject(path: string, label: string, propertiesBuilder: PropertiesBuilder<this>): this {
     const nestedObject = this._createProperty(DataTypes.object, path, label);
 
     if (propertiesBuilder) {
@@ -174,14 +174,14 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
     return this;
   }
 
-  addRefList(path: string, refListId: IReferenceListIdentifier, label: string) {
+  addRefList(path: string, refListId: IReferenceListIdentifier, label: string): this {
     const property = this._createProperty(DataTypes.referenceListItem, path, label);
     property.referenceListModule = refListId.module;
     property.referenceListName = refListId.name;
     return this;
   }
 
-  setPropertiesLoader(loader: PropertiesLoader) {
+  setPropertiesLoader(loader: PropertiesLoader): this {
     if (this.metadata.properties)
       throw new Error("Properties loader can be set only once");
 
@@ -189,26 +189,28 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
     return this;
   }
 
-  setProperties(properties: IPropertyMetadata[]) {
+  setProperties(properties: IPropertyMetadata[]): this {
     if (this.metadata.properties)
       throw new Error("Properties can be set only once");
 
     this.metadata.properties = [...properties];
+    return this;
   }
 
-  setMethods(methods: IMethodMetadata[]) {
+  setMethods(methods: IMethodMetadata[]): this {
     if (this.metadata.methods)
       throw new Error("Methods can be set only once");
 
     this.metadata.methods = [...methods];
+    return this;
   }
 
-  setTypeDefinition(typeDefinitionLoader: TypeDefinitionLoader) {
+  setTypeDefinition(typeDefinitionLoader: TypeDefinitionLoader): this {
     this.metadata.typeDefinitionLoader = typeDefinitionLoader;
     return this;
   }
 
-  addMetadataBuilder() {
+  addMetadataBuilder(): this {
     registerMetadataBuilderAction(this, 'metadataBuilder');
     return this;
   }
@@ -278,8 +280,9 @@ export class MetadataBuilder implements IMetadataBuilderInternal {
     return arrayMetadata;
   };
 
-  registerStandardProperty(key: string, buildAction: MetadataBuilderAction, includeByDefault = true) {
+  registerStandardProperty(key: string, buildAction: MetadataBuilderAction, includeByDefault = true): this {
     this.standardProperties.set(key, { buildAction, includeByDefault });
+    return this;
   }
 
   isEntityAsync(entityType: string): Promise<boolean> {

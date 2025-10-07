@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { FormItemProps, FormProps } from 'antd';
+import { FormItemProps, FormProps, InputProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules } from '@/formDesignerUtils';
 import { getStyle } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
@@ -60,7 +60,7 @@ export const getFormItemProps = (
   style: model?.hidden ? { display: 'none' } : {},
 });
 
-export const getInputProps = (model: IPasswordComponentProps, formData: any) => ({
+export const getInputProps = (model: IPasswordComponentProps, formData: any): InputProps => ({
   bordered: !model?.hideBorder,
   size: model?.size,
   readOnly: model.readOnly,
@@ -87,7 +87,7 @@ export const incrementLastChar = (value: string): string => {
   }
 };
 
-export const getDefaultModel = (m: IPasswordComponentProps) => {
+export const getDefaultModel = (m: IPasswordComponentProps): IPasswordComponentProps => {
   try {
     const model = { ...m };
 

@@ -20,22 +20,22 @@ export const QuickEditDialog: FC<IQuickEditDialogProps> = (props) => {
   return !open
     ? null
     : (
-            <Modal
-              open={open}
-              onCancel={onCancel}
-              width="calc(100vw)"
-              footer={null}
-              className={styles.quickEditModal}
-            >
-                <FormDesigner.NonVisual formId={formId}>
-                    <div className={styles.formDesigner}>
-                        <QuickEditToolbar
-                          renderSource="modal"
-                          onUpdated={onUpdated}
-                        />
-                        <DesignerMainArea />
-                    </div>
-                </FormDesigner.NonVisual>
-            </Modal>
+      <Modal
+        open={open}
+        onCancel={onCancel}
+        width="calc(100vw)"
+        footer={null}
+        className={styles.quickEditModal}
+      >
+        <FormDesigner.NonVisual formId={formId}>
+          <div className={styles.formDesigner}>
+            <QuickEditToolbar
+              renderSource="modal"
+              onUpdated={onUpdated}
+            />
+            <DesignerMainArea />
+          </div>
+        </FormDesigner.NonVisual>
+      </Modal>
     );
 };

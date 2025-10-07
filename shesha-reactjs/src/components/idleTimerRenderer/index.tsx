@@ -43,19 +43,19 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const timeout = getTimeFormat(timeoutSeconds);
   const visible = isIdle && isTimeoutSet;
 
-  const onAction = (_event: Event) => {
+  const onAction = (_event: Event): void => {
     /* nop*/
   };
 
-  const onActive = (_event: Event) => {
+  const onActive = (_event: Event): void => {
     /* nop*/
   };
 
-  const onIdle = (_event: Event) => setState((s) => ({ ...s, isIdle: true }));
+  const onIdle = (_event: Event): void => setState((s) => ({ ...s, isIdle: true }));
 
-  const logout = () => logoutUser().then(() => setState(INIT_STATE));
+  const logout = (): Promise<void> => logoutUser().then(() => setState(INIT_STATE));
 
-  const doCountdown = () => {
+  const doCountdown = (): void => {
     if (!rt) {
       logout();
     } else {
@@ -69,9 +69,11 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     }
   }, ONE_SECOND);
 
-  const onOk = () => logout();
+  const onOk = (): void => {
+    logout();
+  };
 
-  const onCancel = () => setState((s) => ({ ...s, isIdle: false, remainingTime: SIXTY }));
+  const onCancel = (): void => setState((s) => ({ ...s, isIdle: false, remainingTime: SIXTY }));
 
   if (!isTimeoutSet) {
     return <>{children}</>;

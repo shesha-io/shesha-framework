@@ -1,6 +1,6 @@
 import { ColProps } from 'antd';
 import React, { FC, PropsWithChildren, useContext } from 'react';
-import { FormItemActionsContext, FormItemStateContext } from './contexts';
+import { FormItemActionsContext, FormItemStateContext, IFormItemStateContext } from './contexts';
 
 export interface FormItemProviderProps {
   labelCol?: ColProps;
@@ -27,7 +27,7 @@ const FormItemProvider: FC<PropsWithChildren<FormItemProviderProps>> = ({
   );
 };
 
-function useFormItem() {
+function useFormItem(): IFormItemStateContext {
   return useContext(FormItemStateContext);
 }
 

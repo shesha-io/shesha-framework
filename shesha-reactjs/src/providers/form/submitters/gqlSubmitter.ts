@@ -1,7 +1,7 @@
 import { HttpClientApi, useHttpClient } from "@/providers/sheshaApplication/publicApi";
 import { FormDataSubmitPayload, GqlSubmitterSettings, IFormDataSubmitter, isGqlSubmitterSettings, SubmitCaller } from "./interfaces";
 import { useState } from "react";
-import { IApiEndpoint, IFormSettings, IToolboxComponents } from "@/interfaces";
+import { IAjaxResponse, IApiEndpoint, IFormSettings, IToolboxComponents } from "@/interfaces";
 import { StandardEntityActions } from "@/interfaces/metadata";
 import { IEntityEndpointsEvaluator, useModelApiHelper } from "@/components/configurableForm/useActionEndpoint";
 import { getQueryParams, getUrlWithoutQueryParams } from "@/utils/url";
@@ -69,8 +69,10 @@ export class GqlSubmitter implements IFormDataSubmitter {
   #getHttpCaller = (endpoint: IApiEndpoint): SubmitCaller => {
     const normalizedVerb = endpoint.httpVerb?.trim()?.toLowerCase();
 
-    const unwrapHttpCall = <Response = any>(promise: Promise<HttpResponse<Response>>) => {
-      return unwrapAxiosCall(promise).then(unwrapAbpResponse);
+    // TResponse extends any, TData extends any
+    const unwrapHttpCall = <TData extends any, TResponse extends TData | IAjaxResponse<TData>>(promise: Promise<HttpResponse<TResponse>>): Promise<TData | TResponse> => {
+      const axiosUnwrapped = unwrapAxiosCall(promise);
+      return axiosUnwrapped.then((response) => unwrapAbpResponse<TData, TResponse>(response));
     };
 
     switch (normalizedVerb) {

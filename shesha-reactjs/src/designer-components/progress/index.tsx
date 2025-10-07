@@ -6,7 +6,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { LineOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { ProgressProps } from 'antd';
-import { ProgressType } from 'antd/lib/progress/progress';
+import { ProgressType, SuccessProps } from 'antd/lib/progress/progress';
 import { ProgressWrapper } from './progressWrapper';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -68,12 +68,12 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
     const finalStyle = allStyles?.fullStyle || styles;
 
 
-    const getEvaluatedSuccessColor = () => {
+    const getEvaluatedSuccessColor = (): SuccessProps => {
       // tslint:disable-next-line:function-constructor
       return new Function(success)();
     };
 
-    const getEvaluatedStrokeValue = () => {
+    const getEvaluatedStrokeValue = (): string => {
       let color: string = strokeColor;
       let isLineOrCircle = false;
 
@@ -95,7 +95,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       }
     };
 
-    const getEvaluatedFormat = (incomingPercent?: number, incomingSuccessPercent?: number) => {
+    const getEvaluatedFormat = (incomingPercent?: number, incomingSuccessPercent?: number): React.ReactNode => {
       // tslint:disable-next-line:function-constructor
       return new Function('percent, successPercent', format)(incomingPercent, incomingSuccessPercent);
     };

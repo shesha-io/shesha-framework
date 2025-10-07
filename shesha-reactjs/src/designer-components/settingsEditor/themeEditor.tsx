@@ -62,7 +62,7 @@ const ThemeEditorComponent: IToolboxComponent<any> = {
       }
     }, [form.formData]);
 
-    const onChangeInternal = (changedValue: IConfigurableTheme) => {
+    const onChangeInternal = (changedValue: IConfigurableTheme): void => {
       form.setFormData({ values: changedValue, mergeValues: true });
     };
 

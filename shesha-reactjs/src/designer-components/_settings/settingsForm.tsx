@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useContext, useState } from 'react';
+import React, { PropsWithChildren, ReactElement, useContext, useState } from 'react';
 import { Form } from "antd";
 import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from "@/interfaces";
 import { getValuesFromSettings, updateSettingsFromValues } from './utils';
@@ -29,7 +29,7 @@ export const SettingsFormActionsContext = createNamedContext<ISettingsFormAction
 export interface SettingsFormProps<TModel> extends ISettingsFormFactoryArgs<TModel> {
 }
 
-const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormProps<TModel>>) => {
+const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormProps<TModel>>): ReactElement => {
   const {
     onSave,
     model,
@@ -48,7 +48,7 @@ const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormPro
       reset: () => form.resetFields(),
     };
 
-  const valuesChange = (changedValues) => {
+  const valuesChange = (changedValues): void => {
     const model = form.getFieldValue([]);
     const incomingState = updateSettingsFromValues(model, changedValues);
     setState({ model: incomingState, values: getValuesFromSettings(incomingState) });
@@ -56,14 +56,14 @@ const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormPro
     form.setFieldsValue(incomingState);
   };
 
-  const settingsChange = (changedValues) => {
+  const settingsChange = (changedValues): void => {
     const incomingState = deepMergeValues(state.model, changedValues);
     setState({ model: incomingState, values: getValuesFromSettings(incomingState) });
     onValuesChange(changedValues, incomingState);
     form.setFieldsValue(incomingState);
   };
 
-  const onSaveInternal = () => {
+  const onSaveInternal = (): void => {
     onSave(state.model);
   };
 
@@ -72,7 +72,7 @@ const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormPro
     onValuesChange: valuesChange,
   };
 
-  const linkToModelMetadata = (metadata: IPropertyMetadata) => {
+  const linkToModelMetadata = (metadata: IPropertyMetadata): void => {
     const currentModel = form.getFieldValue([]) as TModel;
 
     const wrapper = props.toolboxComponent.linkToModelMetadata
@@ -108,7 +108,7 @@ const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormPro
   );
 };
 
-export function useSettingsForm<TModel>(require: boolean = true) {
+export function useSettingsForm<TModel>(require: boolean = true): SettingsFormState<TModel> & ISettingsFormActions {
   const actionsContext = useContext(SettingsFormActionsContext);
   const stateContext = useContext<SettingsFormState<TModel>>(SettingsFormStateContext);
 

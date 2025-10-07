@@ -51,7 +51,7 @@ import {
   return "";
 };
 
-const getResultTypeName = (typeName: string, isAsync: boolean) => {
+const getResultTypeName = (typeName: string, isAsync: boolean): string => {
   return isAsync
     ? `Promise<${typeName ?? 'void'}>`
     : Boolean(typeName)
@@ -68,7 +68,7 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
   const isFileExists = (fileName: string): boolean => {
     return response.sourceFiles.some((f) => f.filePath === fileName);
   };
-  const registerFile = (fileName: string, content: string) => {
+  const registerFile = (fileName: string, content: string): void => {
     response.sourceFiles.push({ filePath: fileName, content });
   };
 
@@ -140,7 +140,7 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
     if (!isEmptyString(header))
       header += "\r\n";
 
-    const result = (code) => makeCodeTemplate`${header}const ${functionName} = ${useAsyncDeclaration ? "async " : ""}()${resultTypeClause} => {
+    const result = (code): TextTemplate => makeCodeTemplate`${header}const ${functionName} = ${useAsyncDeclaration ? "async " : ""}()${resultTypeClause} => {
 ${(c) => c.editable(code)}
 };`;
     response.template = result;

@@ -67,15 +67,15 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
         ? getDefaultFactory(action, readOnly)
         : null;
 
-    const onCancel = () => {
+    const onCancel = (): void => {
       //
     };
 
-    const onSave = (values) => {
+    const onSave = (values): void => {
       if (onChange) onChange(values);
     };
 
-    const onValuesChange = (_changedValues, values) => {
+    const onValuesChange = (_changedValues, values): void => {
       if (onChange) onChange(values);
     };
 

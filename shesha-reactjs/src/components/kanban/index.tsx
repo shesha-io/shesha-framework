@@ -56,7 +56,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   }, [items]);
 
   useEffect(() => {
-    const initializeSettings = async () => {
+    const initializeSettings = async (): Promise<void> => {
       try {
         const resp = await fetchColumnState(componentName);
         if (!resp?.result) return;
@@ -86,7 +86,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     }
   }, [selectedItem, editForm]);
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     setIsModalVisible(false);
     form.resetFields();
     editForm.resetFields();
@@ -94,12 +94,12 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     setSelectedColumn(null);
   };
 
-  const handleEditClick = (item: any) => {
+  const handleEditClick = (item: any): void => {
     setSelectedItem(item);
     setIsModalVisible(true);
   };
 
-  const handleEdit = async () => {
+  const handleEdit = async (): Promise<void> => {
     const updatedItem = editForm.getFieldsValue();
     updatedItem.id = selectedItem.id;
 
@@ -117,13 +117,13 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       });
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: string): void => {
     const updatedTasks = tasks.filter((task) => task.id !== id);
     setTasks(updatedTasks);
     deleteKanban(id, urls.deleteUrl);
   };
 
-  const handleCreate = () => {
+  const handleCreate = (): void => {
     const newValues = form.getFieldsValue();
     newValues[groupingProperty] = selectedColumn;
     createKanbanItem(newValues, urls.postUrl)
@@ -141,7 +141,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       });
   };
 
-  const handleCreateClick = (columnValue) => {
+  const handleCreateClick = (columnValue): void => {
     setSelectedColumn(columnValue);
     setSelectedItem(null);
     form.resetFields();

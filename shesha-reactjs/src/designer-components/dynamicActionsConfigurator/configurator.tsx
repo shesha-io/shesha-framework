@@ -21,7 +21,7 @@ export const DynamicActionsConfigurator: FC<IDynamicActionsConfiguratorProps> = 
 
   const { getProvider } = useDynamicActionsDispatcher();
 
-  const onValuesChange = (_value, values: IDynamicActionsConfiguration) => {
+  const onValuesChange = (_value, values: IDynamicActionsConfiguration): void => {
     if (onChange) {
       onChange(values);
     }
@@ -35,27 +35,27 @@ export const DynamicActionsConfigurator: FC<IDynamicActionsConfiguratorProps> = 
   }, [providerUid, getProvider]);
 
   return (
-        <Form<IDynamicActionsConfiguration>
-          component={false}
-          form={form}
-          labelCol={{ span: 24 }}
-          wrapperCol={{ span: 24 }}
-          colon={formSettings.colon}
-          onValuesChange={onValuesChange}
-          initialValues={value}
-          size={size}
-        >
-            <Form.Item name="providerUid" label="">
-                <ProviderSelector readOnly={readOnly} />
-            </Form.Item>
-            {selectedProvider && selectedProvider.hasArguments && (
-                <Form.Item name="settings" label={null}>
-                    <ProviderSettingsEditor
-                      provider={selectedProvider}
-                      readOnly={readOnly}
-                    />
-                </Form.Item>
-            )}
-        </Form>
+    <Form<IDynamicActionsConfiguration>
+      component={false}
+      form={form}
+      labelCol={{ span: 24 }}
+      wrapperCol={{ span: 24 }}
+      colon={formSettings.colon}
+      onValuesChange={onValuesChange}
+      initialValues={value}
+      size={size}
+    >
+      <Form.Item name="providerUid" label="">
+        <ProviderSelector readOnly={readOnly} />
+      </Form.Item>
+      {selectedProvider && selectedProvider.hasArguments && (
+        <Form.Item name="settings" label={null}>
+          <ProviderSettingsEditor
+            provider={selectedProvider}
+            readOnly={readOnly}
+          />
+        </Form.Item>
+      )}
+    </Form>
   );
 };

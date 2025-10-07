@@ -32,13 +32,13 @@ export const ConstrainedCodeEditor: FC<IConstrainedCodeEditorProps> = (props) =>
   const unwrappedCode = useRef<string>(value);
   const restrictions = useRef([]);
 
-  const onDidChangeContentInEditableRange = (currentlyChangedContent: ValueInEditableRanges) => {
+  const onDidChangeContentInEditableRange = (currentlyChangedContent: ValueInEditableRanges): void => {
     const newCode = currentlyChangedContent[WRAPPED_CODE_RANGE];
     unwrappedCode.current = newCode;
     onChange(newCode);
   };
 
-  const updateRestrictions = (constrainedInstance: ConstrainedInstance, model: editor.ITextModel, ranges: TextRange[]) => {
+  const updateRestrictions = (constrainedInstance: ConstrainedInstance, model: editor.ITextModel, ranges: TextRange[]): void => {
     constrainedInstance.removeRestrictionsIn(model);
     restrictions.current = ranges
       ? ranges.map((range) => ({
@@ -51,7 +51,7 @@ export const ConstrainedCodeEditor: FC<IConstrainedCodeEditorProps> = (props) =>
       constrainedInstance.addRestrictionsTo(model, restrictions.current);
   };
 
-  const initWrapper = (value: string) => {
+  const initWrapper = (value: string): void => {
     const editor = editorRef.current;
 
     const templateResponse = template(value);
@@ -70,7 +70,7 @@ export const ConstrainedCodeEditor: FC<IConstrainedCodeEditorProps> = (props) =>
     }
   }, [value]);
 
-  const onMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
+  const onMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco): void => {
     editorRef.current = editor;
     monacoRef.current = monaco;
 
@@ -86,9 +86,9 @@ export const ConstrainedCodeEditor: FC<IConstrainedCodeEditorProps> = (props) =>
   };
 
   return (
-        <Editor
-          onMount={onMount}
-          {...restEditorProps}
-        />
+    <Editor
+      onMount={onMount}
+      {...restEditorProps}
+    />
   );
 };

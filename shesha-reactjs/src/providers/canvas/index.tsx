@@ -1,7 +1,7 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useCallback } from 'react';
 import CanvasReducer from './reducer';
 import { SetCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, SetConfigTreePanelSizeAction, setDesignerDeviceAction, setScreenWidthAction } from './actions';
-import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasStateContext, IDeviceTypes } from './contexts';
+import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, IDeviceTypes } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { DataTypes, IObjectMetadata } from '@/index';
 import { canvasContextCode } from '@/publicJsApis';
@@ -39,7 +39,7 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
 
-    const handleResize = () => dispatch(setScreenWidthAction(window.innerWidth));
+    const handleResize = (): void => dispatch(setScreenWidthAction(window.innerWidth));
     window.addEventListener('resize', handleResize);
     dispatch(setScreenWidthAction(window.innerWidth));
     return () => window.removeEventListener('resize', handleResize);
@@ -104,7 +104,7 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
   );
 };
 
-function useCanvasState(require: boolean) {
+function useCanvasState(require: boolean): ICanvasStateContext | undefined {
   const context = useContext(CanvasStateContext);
 
   if (context === undefined && require) {
@@ -114,7 +114,7 @@ function useCanvasState(require: boolean) {
   return context;
 }
 
-function useCanvasActions(require: boolean) {
+function useCanvasActions(require: boolean): ICanvasActionsContext | undefined {
   const context = useContext(CanvasActionsContext);
 
   if (context === undefined && require) {
@@ -124,7 +124,7 @@ function useCanvasActions(require: boolean) {
   return context;
 }
 
-function useCanvas(require: boolean = true) {
+function useCanvas(require: boolean = true): ICanvasStateContext & ICanvasActionsContext | undefined {
   const actionsContext = useCanvasActions(require);
   const stateContext = useCanvasState(require);
 

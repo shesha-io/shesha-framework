@@ -15,7 +15,7 @@ export const useHorizontalMenuDropdownStyles = ({
   colors,
   fontStyles,
   styleOnSubMenu,
-}: UseHorizontalMenuDropdownStylesProps) => {
+}: UseHorizontalMenuDropdownStylesProps): void => {
   useLayoutEffect(() => {
     const styleId = `horizontal-menu-dropdown-styles-${menuId}`;
 

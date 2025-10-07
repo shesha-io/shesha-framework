@@ -20,11 +20,11 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
   const { addItem, readOnly } = contextAccessor();
   const { styles } = useStyles();
 
-  const onAddItemClick = () => {
+  const onAddItemClick = (): void => {
     addItem();
   };
 
-  const onAddGroupClick = () => {
+  const onAddGroupClick = (): void => {
     addItem((items) => {
       const itemsCount = (items ?? []).length;
       const itemNo = itemsCount + 1;

@@ -38,19 +38,19 @@ export class EntityTypeAccessor<TId = string, TEntity extends IEntity<TId> = IEn
     return this._manager.getApiEndpointsAsync(this._entityTypeId);
   };
 
-  createAsync = (value: TEntity) => {
+  createAsync = (value: TEntity): Promise<TEntity> => {
     return this._manager.createEntityAsync<TId, TEntity>(this._entityTypeId, value);
   };
 
-  getAsync = (id: TId) => {
+  getAsync = (id: TId): Promise<TEntity> => {
     return this._manager.getEntityAsync<TId, TEntity>(this._entityTypeId, id);
   };
 
-  updateAsync = (value: TEntity) => {
+  updateAsync = (value: TEntity): Promise<TEntity> => {
     return this._manager.updateEntityAsync<TId, TEntity>(this._entityTypeId, value);
   };
 
-  deleteAsync = (id: TId) => {
+  deleteAsync = (id: TId): Promise<void> => {
     return this._manager.deleteEntityAsync<TId>(this._entityTypeId, id);
   };
 }
