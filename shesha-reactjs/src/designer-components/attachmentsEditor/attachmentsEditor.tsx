@@ -60,7 +60,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { message } = App.useApp();
-    const pageContext = useDataContextManagerActions()?.getPageContext();
+    const pageContext = useDataContextManagerActions(false)?.getPageContext();
     const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
     const enabled = !model.readOnly;
@@ -76,7 +76,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         message,
         moment,
         setGlobalState,
-        pageContext
+        pageContext,
       });
     };
     
@@ -85,15 +85,14 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       // File list uses propertyName only for support Required feature
       <ConfigurableFormItem model={{ ...model, propertyName: model.propertyName || `${GHOST_PAYLOAD_KEY}_${model.id}` }}>
         {(value, onChange) => {
-
           const onFileListChanged = (fileList) => {
             onChange(fileList);
-            if(model.onFileChanged) executeScript(model.onFileChanged, fileList);
+            if (model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
           };
 
           const onDownload = (fileList) => {
             onChange(fileList);
-            if(model.onDownload) executeScript(model.onDownload, fileList);
+            if (model.onDownload) executeScript(model.onDownload, fileList);
           };
 
           return (
@@ -150,7 +149,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         listType: 'text',
         filesLayout: 'horizontal',
         hideFileName: true,
-        editMode: 'inherited'
+        editMode: 'inherited',
       };
     })
     .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -163,7 +162,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
     .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
-    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '' })),
+    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? ''}))
+    .add<IAttachmentsEditorProps>(9, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '', onChangeCustom: prev?.onFileChanged })),
 };
 
 export default AttachmentsEditor;
