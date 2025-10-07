@@ -50,20 +50,26 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
           const { eventHandlers } = calculatedModel;
 
           const onChangeInternal = (phoneValue: any) => {
-            if (!phoneValue) {
+            if (!phoneValue || !phoneValue?.areaCode) {
               eventHandlers?.onChange?.({ value: '' }, null);
               onChange?.('');
               return;
             }
 
-            const fullNumber = phoneValue?.areaCode
-              ? `+${phoneValue.countryCode}${phoneValue.areaCode}${phoneValue.phoneNumber}`
-              : '';
+            // Validate phone number format using the library's built-in validation
+            const isValidFormat = phoneValue.valid ? phoneValue.valid() : true;
+            if (!isValidFormat) {
+              // Don't save invalid phone numbers, but still fire the event
+              eventHandlers?.onChange?.({ value: '' }, phoneValue);
+              return;
+            }
+
+            const fullNumber = `+${phoneValue.countryCode}${phoneValue.areaCode}${phoneValue.phoneNumber}`;
 
             const outputValue: string | IPhoneNumberValue = model.valueFormat === 'object' ? {
               number: fullNumber,
               dialCode: phoneValue?.countryCode ? `+${phoneValue.countryCode}` : '',
-              countryCode: phoneValue?.short || '',
+              countryCode: phoneValue?.isoCode || '',
             } : fullNumber;
 
             // Validate dial code if enforcement is enabled
