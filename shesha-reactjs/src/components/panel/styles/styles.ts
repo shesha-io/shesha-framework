@@ -179,7 +179,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       padding-right: ${headerPaddingRight} !important;
       padding-bottom: ${headerPaddingBottom} !important;
       padding-left: ${headerPaddingLeft} !important;
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius};
+      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} !important;
 
       .ant-collapse-header-text {
         color: ${headerColor};
