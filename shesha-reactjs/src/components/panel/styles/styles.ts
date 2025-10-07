@@ -147,11 +147,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       }
     }
 
-    > .ant-collapse-item > .ant-collapse-header[aria-expanded="false"] {
+    > .ant-collapse-item > .ant-collapse-header {
       border-radius: ${isSimpleDesign || ghost ? 0 : borderTopLeftRadius} ${isSimpleDesign || ghost ? 0 : borderTopRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomLeftRadius} !important;
     }
     
-    > .ant-collapse-item > .ant-collapse-header[aria-expanded="true"] {
+    > .ant-collapse-item.ant-collapse-item-active > .ant-collapse-header {
       border-radius : ${isSimpleDesign || ghost ? '0px' : borderTopLeftRadius ?? '0px'} ${isSimpleDesign || ghost ? '0px' : borderTopRightRadius ?? '0px'} 0px 0px !important;
     }
 
@@ -179,7 +179,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       padding-right: ${headerPaddingRight} !important;
       padding-bottom: ${headerPaddingBottom} !important;
       padding-left: ${headerPaddingLeft} !important;
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius};
+      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} !important;
 
       .ant-collapse-header-text {
         color: ${headerColor};
