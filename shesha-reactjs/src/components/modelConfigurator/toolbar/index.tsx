@@ -10,7 +10,7 @@ export const ModelConfiguratorToolbar: FC<IProps> = () => {
   const { styles } = useStyles();
   const configurator = useModelConfigurator();
 
-  const onSaveClick = () => {
+  const onSaveClick = (): void => {
     configurator.saveForm()
       .catch((_error) => {
       // ToDo: AS - handle error

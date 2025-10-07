@@ -77,7 +77,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       <ConfigurableFormItem {...{ model }}>
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]) => {
+          const onChangeInternal = (...args: any[]): void => {
             customEvent.onChange(args[0], args[1]);
             if (typeof onChange === 'function')
               onChange(...args);
@@ -85,19 +85,19 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
 
           return (
-<Autocomplete
-  {...model}
-  grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
-  keyValueFunc={keyValueFunc}
-  outcomeValueFunc={outcomeValueFunc}
-  displayValueFunc={displayValueFunc}
-  filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
-  style={finalStyle}
-  size={model?.size ?? 'middle'}
-  value={value}
-  onChange={onChangeInternal}
-  allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}
-/>
+            <Autocomplete
+              {...model}
+              grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
+              keyValueFunc={keyValueFunc}
+              outcomeValueFunc={outcomeValueFunc}
+              displayValueFunc={displayValueFunc}
+              filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
+              style={finalStyle}
+              size={model?.size ?? 'middle'}
+              value={value}
+              onChange={onChangeInternal}
+              allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}
+            />
           );
         }}
       </ConfigurableFormItem>

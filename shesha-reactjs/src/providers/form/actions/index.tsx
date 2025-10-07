@@ -10,9 +10,9 @@ export const ConfigurableFormActionsContext = createNamedContext<IFormActions>(u
 
 export const ConfigurableFormActionsProvider: FC<PropsWithChildren<ConfigurableFormActionsProviderProps>> = ({ actions, children }) => {
   return (
-        <ConfigurableFormActionsContext.Provider value={actions}>
-            {children}
-        </ConfigurableFormActionsContext.Provider>
+    <ConfigurableFormActionsContext.Provider value={actions}>
+      {children}
+    </ConfigurableFormActionsContext.Provider>
   );
 };
 

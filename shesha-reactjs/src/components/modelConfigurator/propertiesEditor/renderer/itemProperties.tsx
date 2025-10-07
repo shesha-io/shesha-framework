@@ -45,7 +45,7 @@ export const ToolbarItemProperties: FC<IProps> = () => {
       formRef?.current?.setFieldsValue(currentItem);
   }, [currentItem]);
 
-  const getEditor = () => {
+  const getEditor = (): ReactNode => {
     const emptyEditor = null;
     if (!selectedItemId) return emptyEditor;
 

@@ -1,4 +1,5 @@
-import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, evaluateDynamicFilters, useDataContextManagerActionsOrUndefined, useDataTable, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
+import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, useDataContextManagerActionsOrUndefined, useDataTable, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
+import { evaluateDynamicFilters } from '@/utils/datatable';
 import React, { useEffect, useState } from 'react';
 import { useStyles } from './styles/styles';
 import { useMedia } from 'react-use';
@@ -17,7 +18,7 @@ export interface IEntityPickerModalProps extends IEntityPickerProps {
   onCloseModal: () => void;
 };
 
-const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
+const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element => {
   const {
     entityType,
     filters,
@@ -38,7 +39,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
   const { styles } = useStyles({});
   const [modalId] = useState(nanoid()); // use generated value because formId was changed. to be reviewed
   const [state, setState] = useState<IEntityPickerState>({ showModal: true });
-  const hidePickerDialog = () => {
+  const hidePickerDialog = (): void => {
     setState((prev) => ({ ...prev, showModal: false }));
     onCloseModal();
   };
@@ -69,7 +70,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
 
   const isMultiple = mode === 'multiple';
 
-  const onDblClick = (row: IAnyObject) => {
+  const onDblClick = (row: IAnyObject): void => {
     if (!row) return;
     if (onSelect) {
       onSelect(row);
@@ -114,7 +115,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
   const hasGlobalState = !isEmpty(formData);
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
 
-  const evaluateDynamicFiltersHelper = () => {
+  const evaluateDynamicFiltersHelper = (): void => {
     evaluateDynamicFilters(
       filters,
       [
@@ -164,31 +165,31 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
     throw SheshaError.throwPropertyError('entityType');
   }
 
-  const onAddNew = () => {
+  const onAddNew = (): void => {
     if (addNewRecordsProps.modalFormId) {
       hidePickerDialog();
       dynamicModal.open();
     } else console.warn('Modal Form is not specified');
   };
 
-  const handleOnChange = (row: IAnyObject) => {
+  const handleOnChange = (row: IAnyObject): void => {
     if (onChange && !isEmpty(row)) {
       onChange(row && (row.id || row.Id), row);
     }
   };
 
-  const onSelectRow = (_index: number, row: IAnyObject) => {
+  const onSelectRow = (_index: number, row: IAnyObject): void => {
     handleOnChange(row);
   };
 
-  const onModalOk = () => {
+  const onModalOk = (): void => {
     if (onSelect && state?.selectedRow) {
       onSelect(state?.selectedRow);
     }
     hidePickerDialog();
   };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     hidePickerDialog();
   };
 
@@ -235,7 +236,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
   );
 };
 
-export const EntityPickerModal = (props: IEntityPickerModalProps) => {
+export const EntityPickerModal = (props: IEntityPickerModalProps): JSX.Element => {
   return (
     <DataTableProvider
       userConfigId={'table_' + props.name}

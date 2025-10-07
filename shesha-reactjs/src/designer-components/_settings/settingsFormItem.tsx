@@ -49,41 +49,6 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     const children = props.children as SettingsControlChildrenType;
     if (!props.jsSetting) {
       return (
-<ConfigurableFormItem
-  model={{
-    propertyName: props.name,
-    label: props.label,
-    type: '',
-    id: '',
-    description: props.tooltip,
-    validate: { required: props.required },
-    hidden: props.hidden,
-  }}
-  className="sha-js-label"
->
-                {children}
-</ConfigurableFormItem>
-      );
-    }
-
-    return (
-            <Form.Item {...formProps} label={props.label}>
-                <SettingsControl propertyName={props.name} mode={mode}>
-                    {(value, onChange, propertyName) => children(value, onChange, propertyName)}
-                </SettingsControl>
-            </Form.Item>
-    );
-  }
-
-  if (!props.jsSetting) {
-    return <Form.Item {...formProps}>{props.children}</Form.Item>;
-  }
-
-  const valuePropName = props.valuePropName ?? 'value';
-  const children = props.children as ReactElement;
-  const readOnly = props.readOnly || children.props.readOnly || children.props.disabled;
-
-  return (
         <ConfigurableFormItem
           model={{
             propertyName: props.name,
@@ -96,36 +61,71 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
           }}
           className="sha-js-label"
         >
-            {(value, onChange) => {
-              return (
-                    <SettingsControl
-                      propertyName={props.name}
-                      mode="value"
-                      onChange={onChange}
-                      value={value}
-                      readOnly={readOnly}
-                    >
-                        {(value, onChange) => {
-                          return cloneElement(
-                            children,
-                            {
-                              ...children?.props,
-                              readOnly: readOnly,
-                              disabled: readOnly,
-                              onChange: (...args: any[]) => {
-                                const event = args[0];
-                                const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
-                                  ? (event.target as HTMLInputElement)[valuePropName]
-                                  : event;
-                                onChange(data);
-                              },
-                              [valuePropName]: value,
-                            });
-                        }}
-                    </SettingsControl>
-              );
-            }}
+          {children}
         </ConfigurableFormItem>
+      );
+    }
+
+    return (
+      <Form.Item {...formProps} label={props.label}>
+        <SettingsControl propertyName={props.name} mode={mode}>
+          {(value, onChange, propertyName) => children(value, onChange, propertyName)}
+        </SettingsControl>
+      </Form.Item>
+    );
+  }
+
+  if (!props.jsSetting) {
+    return <Form.Item {...formProps}>{props.children}</Form.Item>;
+  }
+
+  const valuePropName = props.valuePropName ?? 'value';
+  const children = props.children as ReactElement;
+  const readOnly = props.readOnly || children.props.readOnly || children.props.disabled;
+
+  return (
+    <ConfigurableFormItem
+      model={{
+        propertyName: props.name,
+        label: props.label,
+        type: '',
+        id: '',
+        description: props.tooltip,
+        validate: { required: props.required },
+        hidden: props.hidden,
+      }}
+      className="sha-js-label"
+    >
+      {(value, onChange) => {
+        return (
+          <SettingsControl
+            propertyName={props.name}
+            mode="value"
+            onChange={onChange}
+            value={value}
+            readOnly={readOnly}
+          >
+            {(value, onChange) => {
+              return cloneElement(
+                children,
+                {
+                  ...children?.props,
+                  readOnly: readOnly,
+                  disabled: readOnly,
+                  onChange: (...args: any[]) => {
+                    const event = args[0];
+                    const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
+                      ? (event.target as HTMLInputElement)[valuePropName]
+                      : event;
+                    onChange(data);
+                  },
+                  [valuePropName]: value,
+                });
+            }}
+          </SettingsControl>
+        );
+      }}
+    </ConfigurableFormItem>
   );
 };
 

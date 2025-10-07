@@ -5,8 +5,9 @@ import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/util
 import { IRefListStatusProps } from './models';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/index';
 
-export const getSettings = (data: IRefListStatusProps) => {
+export const getSettings = (data: IRefListStatusProps): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();

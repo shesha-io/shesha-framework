@@ -2,7 +2,7 @@ import Icon, { CustomIconComponentProps } from '@ant-design/icons/lib/components
 import React from 'react';
 
 
-const InterfaceOutlinedSvg = () => (
+const InterfaceOutlinedSvg = (): JSX.Element => (
   <svg width="1em" height="1em" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
     <path
       strokeWidth={0.5}
@@ -13,6 +13,6 @@ const InterfaceOutlinedSvg = () => (
 );
 
 
-export const InterfaceOutlined = (props: Partial<CustomIconComponentProps>) => (
+export const InterfaceOutlined = (props: Partial<CustomIconComponentProps>): JSX.Element => (
   <Icon component={InterfaceOutlinedSvg} {...props} />
 );

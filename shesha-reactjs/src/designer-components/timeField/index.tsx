@@ -49,18 +49,18 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, IT
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (value: any | null, timeString: string | [string, string]) => {
+          const onChangeInternal = (value: any | null, timeString: string | [string, string]): void => {
             customEvents.onChange({ value, timeString });
             if (typeof onChange === 'function') onChange(value, timeString);
           };
           return (
-<TimePickerWrapper
-  {...model}
-  {...customEvents}
-  style={finalStyle}
-  value={value}
-  onChange={onChangeInternal}
-/>
+            <TimePickerWrapper
+              {...model}
+              {...customEvents}
+              style={finalStyle}
+              value={value}
+              onChange={onChangeInternal}
+            />
           );
         }}
       </ConfigurableFormItem>

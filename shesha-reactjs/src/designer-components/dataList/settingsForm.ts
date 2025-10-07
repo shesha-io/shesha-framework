@@ -1,10 +1,10 @@
-import { DesignerToolbarSettings } from "@/index";
+import { DesignerToolbarSettings, FormMarkupWithSettings } from "@/index";
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from "antd/es/form/Form";
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from "../_settings/utils/background/utils";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: any): FormMarkupWithSettings => {
   const commonTabId = nanoid();
   const dataTabId = nanoid();
   const appearanceTabId = nanoid();

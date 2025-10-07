@@ -7,7 +7,7 @@ import ActionButton, { IActionButtonProps } from '@/components/actionButton/inde
 
 export interface ICrudOperationsCellProps extends IHasColumnConfig<ITableCrudOperationsColumn> {}
 
-export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
+export const CrudOperationsCell = (_props: ICrudOperationsCellProps): JSX.Element => {
   const {
     mode,
     switchMode,
@@ -26,11 +26,11 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
     deletingError,
   } = useCrud();
 
-  const onEditClick = () => {
+  const onEditClick = (): void => {
     switchMode('update');
   };
 
-  const onSaveUpdateClick = async () => {
+  const onSaveUpdateClick = async (): Promise<void> => {
     try {
       await performUpdate();
       switchMode('read');
@@ -39,7 +39,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
     }
   };
 
-  const onSaveCreateClick = async () => {
+  const onSaveCreateClick = async (): Promise<void> => {
     try {
       await performCreate();
       await reset();
@@ -48,12 +48,12 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
     }
   };
 
-  const onCancelEditClick = async () => {
+  const onCancelEditClick = async (): Promise<void> => {
     await reset();
     switchMode('read');
   };
 
-  const onDeleteClick = () => {
+  const onDeleteClick = (): void => {
     performDelete();
   };
 

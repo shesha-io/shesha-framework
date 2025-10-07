@@ -2,7 +2,7 @@ import Icon, { CustomIconComponentProps } from '@ant-design/icons/lib/components
 import React, { FC } from 'react';
 
 /* eslint-disable max-len */
-const JsonOutlinedSvg = () => (
+const JsonOutlinedSvg = (): JSX.Element => (
   <svg width="1em" height="1em" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
     <path
       strokeWidth={0.5}

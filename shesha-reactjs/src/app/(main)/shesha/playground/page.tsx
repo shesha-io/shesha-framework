@@ -38,7 +38,7 @@ interface CreateFormPayload {
 }
 
 const Page: PageWithLayout<{}> = () => {
-  const fetcher = (url) => fetch(url).then((res) => res.json());
+  const fetcher = (url): Promise<ComponentSettingsFile[]> => fetch(url).then((res) => res.json());
 
   const { data } = useSWR<ComponentSettingsFile[]>('/shesha/playground/api/filesList', fetcher);
 
@@ -50,7 +50,7 @@ const Page: PageWithLayout<{}> = () => {
     return response.data;
   };
 
-  const importFormAsync = async (formId: string, markup: string) => {
+  const importFormAsync = async (formId: string, markup: string): Promise<void> => {
     const payload = new FormData();
     payload.append('itemId', formId);
     payload.append('file', new Blob([markup], { type: 'application/json' }), "markup.json");
@@ -62,7 +62,7 @@ const Page: PageWithLayout<{}> = () => {
     return response.data.result.id;
   };
 
-  const onCreateFormsClick = async () => {
+  const onCreateFormsClick = async (): Promise<void> => {
     if (!data)
       return;
     const payload = {
@@ -118,22 +118,22 @@ const Page: PageWithLayout<{}> = () => {
   const [permission, setPermission] = useState<string[]>();
 
   return (
-        <div>
-            <PermissionAutocomplete value={permission} onChange={setPermission} readOnly={false} />
-            <h2>Components with JSON settings: </h2>
-            {!data && "Loading..."}
+    <div>
+      <PermissionAutocomplete value={permission} onChange={setPermission} readOnly={false} />
+      <h2>Components with JSON settings: </h2>
+      {!data && "Loading..."}
 
-            {data && (
-                <>
-                    <Button onClick={onCreateFormsClick}>Create forms</Button>
-                    <ul>
-                        {data.map((file) => (
-                            <li key={file.componentName}>{file.componentName}</li>
-                        ))}
-                    </ul>
-                </>
-            )}
-        </div>
+      {data && (
+        <>
+          <Button onClick={onCreateFormsClick}>Create forms</Button>
+          <ul>
+            {data.map((file) => (
+              <li key={file.componentName}>{file.componentName}</li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
   );
 };
 

@@ -59,7 +59,7 @@ export class ApplicationApi implements IApplicationApi {
     this.navigator = new NavigatorApi(shaRouter);
   }
 
-  addPlugin(plugin: IApplicationPlugin) {
+  addPlugin(plugin: IApplicationPlugin): void {
     if (this.#plugins.has(plugin.name)) throw new Error(`Plugin with name '${plugin.name}' already registered`);
     this.#plugins.set(plugin.name, plugin);
 
@@ -70,7 +70,7 @@ export class ApplicationApi implements IApplicationApi {
     });
   }
 
-  removePlugin(pluginName: string) {
+  removePlugin(pluginName: string): void {
     if (!this.#plugins.has(pluginName)) throw new Error(`Plugin with name '${pluginName}' is not registered`);
 
     this.#plugins.delete(pluginName);

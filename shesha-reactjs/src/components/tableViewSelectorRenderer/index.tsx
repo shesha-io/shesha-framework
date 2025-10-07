@@ -38,7 +38,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
 }) => {
   const { styles } = useStyles();
   const { formMode } = useShaFormInstance();
-  const getSelectedFilter = () => {
+  const getSelectedFilter = (): IStoredFilter | null => {
     if (filters?.length === 0) {
       return null;
     }
@@ -61,7 +61,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
 
   const { unevaluatedExpressions } = selectedFilter || {};
 
-  const getPopoverHintContent = () => {
+  const getPopoverHintContent = (): JSX.Element => {
     if (unevaluatedExpressions) {
       return (
         <div style={{ width: 450 }}>
@@ -107,7 +107,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
     });
   }, [filters]);
 
-  const renderTitle = () => {
+  const renderTitle = (): JSX.Element => {
     const hasFilters = (filters?.length || 0) > 1;
     const isActiveFilter = selectedFilter?.expression !== null && selectedFilter?.expression !== undefined;
 

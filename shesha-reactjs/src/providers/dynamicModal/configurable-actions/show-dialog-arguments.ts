@@ -8,8 +8,9 @@ import {
   nanoid,
 } from '@/utils/uuid';
 import { filterDynamicComponents } from '@/designer-components/propertiesTabs/utils';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = () => {
+export const getSettings = (): FormMarkupWithSettings => {
   return {
     components: new DesignerToolbarSettings()
       .addSettingsInputRow({

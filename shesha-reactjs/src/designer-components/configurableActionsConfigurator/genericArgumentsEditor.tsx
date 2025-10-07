@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
 import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
@@ -21,7 +21,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
   onValuesChange,
   readOnly = false,
   cacheKey,
-}: IProps<TModel>) {
+}: IProps<TModel>): ReactElement {
   const formRef = useShaFormRef();
 
   return (

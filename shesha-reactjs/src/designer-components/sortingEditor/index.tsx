@@ -28,14 +28,14 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
   calculateModel: (model, allData) => ({ modelType: model.modelType ? evaluateString(model.modelType, { data: allData.data }) : null }),
   Factory: ({ model, calculatedModel }) => {
     return (
-            <ConditionalWrap
-              condition={Boolean(calculatedModel.modelType)}
-              wrap={(content) => <MetadataProvider modelType={calculatedModel.modelType}>{content}</MetadataProvider>}
-            >
-                <ConfigurableFormItem model={model}>
-                    {(value, onChange) => <SortingEditor value={value} onChange={onChange} readOnly={model.readOnly} maxItemsCount={model.maxItemsCount} />}
-                </ConfigurableFormItem>
-            </ConditionalWrap>
+      <ConditionalWrap
+        condition={Boolean(calculatedModel.modelType)}
+        wrap={(content) => <MetadataProvider modelType={calculatedModel.modelType}>{content}</MetadataProvider>}
+      >
+        <ConfigurableFormItem model={model}>
+          {(value, onChange) => <SortingEditor value={value} onChange={onChange} readOnly={model.readOnly} maxItemsCount={model.maxItemsCount} />}
+        </ConfigurableFormItem>
+      </ConditionalWrap>
     );
   },
   settingsFormMarkup: settingsForm,

@@ -9,9 +9,9 @@ const ROLE_ENTITY_TYPE = 'Shesha.Domain.ShaRole';
 
 export const RoleAutocomplete: FC<IRoleAutocompleteRuntimeProps> = (props) => {
   return (
-        <GenericConfigItemAutocomplete
-          {...props}
-          entityType={ROLE_ENTITY_TYPE}
-        />
+    <GenericConfigItemAutocomplete
+      {...props}
+      entityType={ROLE_ENTITY_TYPE}
+    />
   );
 };

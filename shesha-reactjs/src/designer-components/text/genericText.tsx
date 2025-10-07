@@ -17,7 +17,7 @@ interface IGenericTextProps
   style?: CSSProperties;
 }
 
-const getColorByContentType = (contentType: ContentType, style: CSSProperties, theme: IConfigurableTheme) => {
+const getColorByContentType = (contentType: ContentType, style: CSSProperties, theme: IConfigurableTheme): string | undefined => {
   switch (contentType) {
     case 'custom':
       return style?.color;

@@ -1,10 +1,12 @@
 // tslint:disable-next-line:no-var-requires
 const signalR = require('@microsoft/signalr');
 
-import React, { PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
+  ISignalRActionsContext,
   ISignalRConnection,
+  ISignalRStateContext,
   SIGNAL_R_CONTEXT_INITIAL_STATE,
   SignalRActionsContext,
   SignalRStateContext,
@@ -22,19 +24,19 @@ export interface ISignalRProvider {
   onDisconnected?: () => void;
 }
 
-function SignalRProvider({
+const SignalRProvider: FC<PropsWithChildren<ISignalRProvider>> = ({
   children,
   baseUrl,
   hubUrl,
   onConnected,
   onDisconnected,
-}: PropsWithChildren<ISignalRProvider>) {
+}) => {
   const [state, dispatch] = useReducer(signalRReducer, { ...SIGNAL_R_CONTEXT_INITIAL_STATE });
   const { backendUrl } = useSheshaApplication();
 
   const previousBaseUrl = usePrevious(baseUrl);
 
-  const setConnection = (connection?: ISignalRConnection) => {
+  const setConnection = (connection?: ISignalRConnection): void => {
     dispatch(setConnectionAction(connection));
   };
 
@@ -83,9 +85,9 @@ function SignalRProvider({
       </SignalRActionsContext.Provider>
     </SignalRStateContext.Provider>
   );
-}
+};
 
-function useSignalRState(require: boolean) {
+function useSignalRState(require: boolean): ISignalRStateContext | undefined {
   const context = useContext(SignalRStateContext);
 
   if (context === undefined && require) {
@@ -95,7 +97,7 @@ function useSignalRState(require: boolean) {
   return context;
 }
 
-function useSignalRActions(require: boolean) {
+function useSignalRActions(require: boolean): ISignalRActionsContext | undefined {
   const context = useContext(SignalRActionsContext);
 
   if (context === undefined && require) {
@@ -105,7 +107,7 @@ function useSignalRActions(require: boolean) {
   return context;
 }
 
-function useSignalR(require: boolean = true) {
+function useSignalR(require: boolean = true): ISignalRStateContext & ISignalRActionsContext | undefined {
   const actionsContext = useSignalRActions(require);
   const stateContext = useSignalRState(require);
 

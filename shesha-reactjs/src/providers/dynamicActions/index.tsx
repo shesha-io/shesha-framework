@@ -1,4 +1,4 @@
-import React, { useContext, PropsWithChildren } from 'react';
+import React, { useContext, PropsWithChildren, ReactElement } from 'react';
 import metadataReducer from './reducer';
 import {
   DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
@@ -30,7 +30,7 @@ export interface IHasActions {
   items: ButtonGroupItemProps[]; // TODO: make a generic interface with minimal number of properties, ButtonGroupItemProps will implement/extend this interface
 }
 
-const DynamicActionsProvider = <TSettings = unknown>({ id, name, useEvaluator, children, hasArguments = false, settingsFormFactory, settingsFormMarkup }: PropsWithChildren<IDynamicActionsProps<TSettings>>) => {
+const DynamicActionsProvider = <TSettings = unknown>({ id, name, useEvaluator, children, hasArguments = false, settingsFormFactory, settingsFormMarkup }: PropsWithChildren<IDynamicActionsProps<TSettings>>): ReactElement => {
   const initial: IDynamicActionsStateContext<TSettings> = {
     ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
     id,
@@ -56,7 +56,7 @@ const DynamicActionsProvider = <TSettings = unknown>({ id, name, useEvaluator, c
   return <DynamicActionsContext.Provider value={contextValue}>{children}</DynamicActionsContext.Provider>;
 };
 
-function useDynamicActions(require: boolean) {
+function useDynamicActions(require: boolean): IDynamicActionsContext | undefined {
   const context = useContext(DynamicActionsContext);
 
   if (context === undefined && require) {

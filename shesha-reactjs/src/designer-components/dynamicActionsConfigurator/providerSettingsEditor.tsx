@@ -21,7 +21,7 @@ const getDefaultFactory = (
   markup: FormMarkup | FormMarkupFactory,
   readOnly: boolean
 ): IConfigurableActionArgumentsFormFactory => {
-  const component = ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }) => {
+  const component = ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }): JSX.Element => {
     const markupFactory = typeof markup === 'function' ? (markup as FormMarkupFactory) : () => markup as FormMarkup;
 
     const formMarkup = markupFactory({ exposedVariables, availableConstants });
@@ -56,15 +56,15 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
           ? getDefaultFactory(provider.settingsFormMarkup, readOnly)
           : null;
 
-      const onCancel = () => {
+      const onCancel = (): void => {
         //
       };
 
-      const onSave = (values) => {
+      const onSave = (values): void => {
         if (onChange) onChange(values);
       };
 
-      const onValuesChange = (_changedValues, values) => {
+      const onValuesChange = (_changedValues, values): void => {
         if (onChange) onChange(values);
       };
 

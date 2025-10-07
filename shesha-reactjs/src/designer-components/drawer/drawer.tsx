@@ -84,14 +84,14 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     ...rest
   } = style;
 
-  const openDrawer = () => setState((prev) => ({ ...prev, open: true }));
+  const openDrawer = (): void => setState((prev) => ({ ...prev, open: true }));
 
-  const closeDrawer = () => setState((prev) => ({ ...prev, open: false }));
+  const closeDrawer = (): void => setState((prev) => ({ ...prev, open: false }));
 
   const actionOwnerName = `Drawer (${name})`;
 
   /// NAVIGATION
-  const executeActionIfConfigured = (actionConfiguration: IConfigurableActionConfiguration) => {
+  const executeActionIfConfigured = (actionConfiguration: IConfigurableActionConfiguration): void => {
     if (!actionConfiguration) {
       console.warn(`Action not configured '${actionConfiguration.toString()}'`);
       return;
@@ -103,11 +103,11 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     });
   };
 
-  const onOkHandler = () => {
+  const onOkHandler = (): void => {
     executeActionIfConfigured(onOkAction);
   };
 
-  const onCancelHandler = () => {
+  const onCancelHandler = (): void => {
     executeActionIfConfigured(onCancelAction);
   };
 

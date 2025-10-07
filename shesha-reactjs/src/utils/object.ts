@@ -19,7 +19,7 @@ export const jsonSafeParse = <T = unknown>(value: string, defaultValue?: T): T |
   }
 };
 
-export const isProxy = (value: any) => {
+export const isProxy = (value: any): boolean => {
   return value && (
     value instanceof TouchableProperty ||
     value instanceof TouchableArrayProperty ||
@@ -29,7 +29,7 @@ export const isProxy = (value: any) => {
   );
 };
 
-export const unproxyValue = (value: any) => {
+export const unproxyValue = <TValue extends object = object>(value: unknown | TValue): TValue => {
   const result = value
     ? value instanceof TouchableProperty ||
     value instanceof TouchableArrayProperty ||
@@ -44,7 +44,7 @@ export const unproxyValue = (value: any) => {
   return isProxy(result) ? unproxyValue(result) : result;
 };
 
-export const deepMergeValues = (target: any, source: any) => {
+export const deepMergeValues = <TObject, TSource>(target: TObject, source: TSource): TObject & TSource => {
   return mergeWith({ ...target }, source, (objValue, srcValue, key, obj) => {
     // handle null
     if (srcValue === null) {

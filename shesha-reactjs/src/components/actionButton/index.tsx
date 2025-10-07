@@ -59,7 +59,7 @@ const ActionButton: FC<IActionButtonProps> = ({
       {withConfirmation}
     </Popover>
   ) : (
-      <>{withConfirmation}</>
+    <>{withConfirmation}</>
   );
 };
 

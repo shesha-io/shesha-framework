@@ -14,17 +14,17 @@ export interface ISidebarItemCommonProps {
 export const SidebarListItemCommon: FC<ISidebarItemCommonProps> = ({ item, onChange, nestedRenderer, initNewItem }) => {
   if (isSidebarGroup(item))
     return (
-            <SidebarListGroup
-              onChange={onChange}
-              key={item.id}
-              item={item}
-              containerRendering={(args) => {
-                return nestedRenderer({
-                  ...args,
-                  initNewItem: initNewItem,
-                });
-              }}
-            />
+      <SidebarListGroup
+        onChange={onChange}
+        key={item.id}
+        item={item}
+        containerRendering={(args) => {
+          return nestedRenderer({
+            ...args,
+            initNewItem: initNewItem,
+          });
+        }}
+      />
     );
 
   return <SidebarListItem key={item.id} item={item} />;

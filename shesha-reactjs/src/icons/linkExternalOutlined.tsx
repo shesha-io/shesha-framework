@@ -2,7 +2,7 @@ import Icon, { CustomIconComponentProps } from '@ant-design/icons/lib/components
 import React, { FC } from 'react';
 
 /* eslint-disable max-len */
-const LinkExternalOutlinedSvg = () => (
+const LinkExternalOutlinedSvg = (): JSX.Element => (
   <svg
     fill="currentColor"
     width="1em"

@@ -42,13 +42,13 @@ const standardApisHoc: DynamicRenderingHoc = (WrappedComponent) => {
 
 export const StandardApis: FC<PropsWithChildren<IStandardApisProps>> = ({ children }) => {
   return (
-        <DynamicActionsProvider
-          id="shesha-apis"
-          name="Shesha APIs"
-          renderingHoc={standardApisHoc}
-          useEvaluator={useStandardApis}
-        >
-            {children}
-        </DynamicActionsProvider>
+    <DynamicActionsProvider
+      id="shesha-apis"
+      name="Shesha APIs"
+      renderingHoc={standardApisHoc}
+      useEvaluator={useStandardApis}
+    >
+      {children}
+    </DynamicActionsProvider>
   );
 };

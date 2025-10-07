@@ -13,9 +13,9 @@ export const MetadataDispatcherProvider: FC<PropsWithChildren> = ({ children }) 
   const [dispatcher] = useState(() => new MetadataDispatcher(entityMetaFetcher, httpClient));
 
   return (
-        <MetadataDispatcherContext.Provider value={dispatcher}>
-            {children}
-        </MetadataDispatcherContext.Provider>
+    <MetadataDispatcherContext.Provider value={dispatcher}>
+      {children}
+    </MetadataDispatcherContext.Provider>
   );
 };
 

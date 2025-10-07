@@ -31,7 +31,7 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
     return this._touchedProps;
   };
 
-  refreshAccessors = (accessors: ProxyPropertiesAccessors<T>) => {
+  refreshAccessors = (accessors: ProxyPropertiesAccessors<T>): void => {
     this._propAccessors.clear();
     Object.entries(accessors).forEach(([key, value]) => {
       if (typeof (value) === 'function') {
@@ -40,13 +40,13 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
     });
   };
 
-  addAccessor = (key: string, accessor: ValueAccessor) => {
+  addAccessor = (key: string, accessor: ValueAccessor): void => {
     if (typeof (accessor) === 'function') {
       this._propAccessors.set(key, accessor);
     }
   };
 
-  setAdditionalData = (data: any) => {
+  setAdditionalData = (data: any): void => {
     for (let key in data)
       if (Object.hasOwn(data, key))
         this.addAccessor(key, () => data[key]);

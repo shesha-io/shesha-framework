@@ -13,9 +13,9 @@ export const EntityMetadataFetcherProvider: FC<PropsWithChildren> = ({ children 
   const [fetcher] = useState(() => new EntityMetadataFetcher(httpClient, cacheProvider));
 
   return (
-        <EntityMetadataFetcherContext.Provider value={fetcher}>
-            {children}
-        </EntityMetadataFetcherContext.Provider>
+    <EntityMetadataFetcherContext.Provider value={fetcher}>
+      {children}
+    </EntityMetadataFetcherContext.Provider>
   );
 };
 

@@ -1,7 +1,8 @@
+import { FormMarkupWithSettings } from '@/interfaces';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 
-export const getSettings = () => {
+export const getSettings = (): FormMarkupWithSettings => {
   return {
     components: new DesignerToolbarSettings()
       .addSettingsInputRow({

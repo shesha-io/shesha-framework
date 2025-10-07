@@ -36,7 +36,7 @@ scrollbar-width: thin;
   verticalSettingsClass: 'vertical-settings',
 };
 
-export const getTextHoverEffects = (token: FullToken) => {
+export const getTextHoverEffects = (token: FullToken): string => {
   return `
         transition: ${sheshaStyles.transition};
         &:hover {
@@ -47,7 +47,7 @@ export const getTextHoverEffects = (token: FullToken) => {
     `;
 };
 
-export const getWarningHoverEffects = (token: FullToken) => {
+export const getWarningHoverEffects = (token: FullToken): string => {
   return `
         transition: ${sheshaStyles.transition};
         &:hover {

@@ -23,21 +23,21 @@ export interface ThemeParametersProps {
 const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly }) => {
   // const { theme, changeTheme } = useTheme();
 
-  const changeThemeInternal = (theme: IConfigurableTheme) => {
+  const changeThemeInternal = (theme: IConfigurableTheme): void => {
     if (onChange) onChange(theme);
   };
 
   const mergeThemeSection = (
     section: keyof IConfigurableTheme,
     update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
-  ) => {
+  ): IConfigurableTheme => {
     return { ...(theme[section] as unknown as Record<string, unknown>), ...(update as Record<string, unknown>) };
   };
 
   const updateTheme = (
     section: keyof IConfigurableTheme,
     update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
-  ) => {
+  ): void => {
     changeThemeInternal({
       ...theme,
       [section]: mergeThemeSection(section, update),

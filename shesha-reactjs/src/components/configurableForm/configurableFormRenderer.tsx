@@ -41,7 +41,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const isDragging = useFormDesignerStateSelector((x) => x.isDragging) ?? false;
 
-  const onValuesChangeInternal = (_changedValues: any, values: any) => {
+  const onValuesChangeInternal = (_changedValues: any, values: any): void => {
     shaForm.setFormData({ values: values, mergeValues: true });
   };
 
@@ -62,7 +62,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     }
   };
 
-  const onFinishFailedInternal = (errorInfo: ValidateErrorEntity) => {
+  const onFinishFailedInternal = (errorInfo: ValidateErrorEntity): void => {
     setValidationErrors(null);
     onFinishFailed?.(errorInfo);
   };

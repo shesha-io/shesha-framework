@@ -21,7 +21,7 @@ export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
 
   const { setEditor, saveSettingValue, editorMode } = useSettingsEditor();
 
-  const startSave = () => {
+  const startSave = (): Promise<void> => {
     return formRef.current.validateFields().then(() => {
       const settingId: ISettingIdentifier = {
         name: selection.setting.name,
@@ -46,7 +46,7 @@ export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
     });
   };
 
-  const cancel = () => {
+  const cancel = (): void => {
     formRef?.current.setFormData({ values: initialValue, mergeValues: false });
   };
 
@@ -68,11 +68,11 @@ export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
   }, [initialValue]);
 
   return (
-        <ConfigurableForm
-          mode={editorMode}
-          shaFormRef={formRef}
-          initialValues={initialValues}
-          formId={editorForm}
-        />
+    <ConfigurableForm
+      mode={editorMode}
+      shaFormRef={formRef}
+      initialValues={initialValues}
+      formId={editorForm}
+    />
   );
 };

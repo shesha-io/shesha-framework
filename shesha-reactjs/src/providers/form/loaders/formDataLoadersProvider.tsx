@@ -26,14 +26,14 @@ export const FormDataLoadersProvider: FC<PropsWithChildren> = ({ children }) => 
   };
 
   return (
-        <FormDataLoadersContext.Provider
-          value={{ getFormDataLoader }}
-        >
-            {children}
-        </FormDataLoadersContext.Provider>
+    <FormDataLoadersContext.Provider
+      value={{ getFormDataLoader }}
+    >
+      {children}
+    </FormDataLoadersContext.Provider>
   );
 };
 
-export const useFormDataLoaders = () => {
+export const useFormDataLoaders = (): IFormDataLoadersContext => {
   return React.useContext(FormDataLoadersContext);
 };

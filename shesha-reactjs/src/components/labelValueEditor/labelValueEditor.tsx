@@ -1,5 +1,5 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
-import React, { FC, Fragment, useState } from 'react';
+import React, { FC, Fragment, ReactElement, useState } from 'react';
 import Show from '@/components/show';
 import {
   Alert,
@@ -47,7 +47,7 @@ interface InputPropertyEditorProps<TItem> {
   placeholder?: string;
   propertyName: string;
 }
-export const InputPropertyEditor = <TItem extends object>(props: InputPropertyEditorProps<TItem>) => {
+export const InputPropertyEditor = <TItem extends object>(props: InputPropertyEditorProps<TItem>): ReactElement => {
   const { item, propertyName, itemOnChange, placeholder } = props;
   return (
     <Input
@@ -75,7 +75,7 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
 
-  const toggleModal = () => setShowModal((currentVisible) => !currentVisible);
+  const toggleModal = (): void => setShowModal((currentVisible) => !currentVisible);
 
   return (
     <ConditionalWrap

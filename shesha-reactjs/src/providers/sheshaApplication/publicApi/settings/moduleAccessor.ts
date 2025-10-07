@@ -10,7 +10,7 @@ export interface ISettingsModuleAccessor {
  * Settings: module accessor
  */
 export class SettingsModuleAccessor extends BaseAccessor<SettingsCategoryAccessor, SettingsManager> implements ISettingsModuleAccessor {
-  createChild = (accessor: string) => {
+  createChild = (accessor: string): SettingsCategoryAccessor => {
     return new SettingsCategoryAccessor(this._manager, this._accessor, accessor);
   };
 }

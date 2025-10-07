@@ -13,13 +13,13 @@ export const JavaScriptEditor: FC<JavaScriptEditorProps> = ({ value, onChange })
   });
 
   return (
-        <CodeEditor
-          value={value}
-          onChange={onChange}
-          mode="dialog"
-          propertyName="specificationCondition"
-          label="JavaScript Expression"
-          description="Enter an JavaScript expression that returns true or false."
-        />
+    <CodeEditor
+      value={value}
+      onChange={onChange}
+      mode="dialog"
+      propertyName="specificationCondition"
+      label="JavaScript Expression"
+      description="Enter an JavaScript expression that returns true or false."
+    />
   );
 };

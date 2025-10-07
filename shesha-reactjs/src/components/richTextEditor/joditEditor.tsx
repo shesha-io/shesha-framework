@@ -21,7 +21,7 @@ export interface IJoditEditorProps {
 export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
   const { config, value, onChange } = props;
 
-  const getPlaceholder = (text: string) => {
+  const getPlaceholder = (text: string): string | undefined => {
     return !text ? config?.placeholder : "";
   };
 
@@ -34,7 +34,7 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
     return result;
   });
 
-  const updateConfig = (newConfig: any) => {
+  const updateConfig = (newConfig: any): void => {
     setFullConfig({ ...defaultOptions, ...newConfig, placeholder: fullConfig.placeholder });
   };
 
@@ -42,11 +42,11 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
     updateConfig(config);
   }, [config]);
 
-  const handleBlur = (newValue: string) => {
+  const handleBlur = (newValue: string): void => {
     onChange?.(newValue);
   };
 
-  const handleChange = (newValue: string) => {
+  const handleChange = (newValue: string): void => {
     // Apply value to restore placeholder
     if (!newValue && !fullConfig.placeholder && config.placeholder)
       onChange?.(newValue);
@@ -55,16 +55,16 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
   const isSSR = typeof window === 'undefined';
 
   return isSSR ? (
-        <Skeleton loading={true} />
+    <Skeleton loading={true} />
   ) : (
-        <React.Suspense fallback={<div>Loading editor...</div>}>
-            <JoditEditor
-              value={value}
-              config={fullConfig}
-              onBlur={handleBlur} // preferred to use only this option to update the content for performance reasons
-              onChange={handleChange}
-            />
-        </React.Suspense>
+    <React.Suspense fallback={<div>Loading editor...</div>}>
+      <JoditEditor
+        value={value}
+        config={fullConfig}
+        onBlur={handleBlur} // preferred to use only this option to update the content for performance reasons
+        onChange={handleChange}
+      />
+    </React.Suspense>
   );
 };
 

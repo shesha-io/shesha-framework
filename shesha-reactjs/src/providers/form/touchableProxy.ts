@@ -9,11 +9,11 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
 
   private _changed: boolean;
 
-  touched(_propName: string, fullPropName: string, value: any) {
+  touched(_propName: string, fullPropName: string, value: any): void {
     this._touchedProps.set(fullPropName, value);
   };
 
-  getData() {
+  getData(): any {
     return {};
   };
 
@@ -48,14 +48,15 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     return this._changed;
   };
 
-  addAccessor(propName: string, accessor: ValueAccessor<any>) {
+  addAccessor(propName: string, accessor: ValueAccessor<any>): void {
     this._propAccessors.set(propName, accessor);
   };
 
-  checkChanged() {
+  checkChanged(): boolean {
     let changed = false;
 
     this._touchedProps.forEach((value, key) => {
+      // TODO: Alex, please review this loop, it uses different returns and as a result may have side effects
       if (changed)
         return;
       const props = key.split('.');
@@ -89,7 +90,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     return changed;
   };
 
-  refreshAccessors = (accessors: ProxyPropertiesAccessors<T>) => {
+  refreshAccessors = (accessors: ProxyPropertiesAccessors<T>): void => {
     this._propAccessors.clear();
     Object.entries(accessors).forEach(([key, value]) => {
       if (typeof (value) === 'function') {
@@ -98,7 +99,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     });
   };
 
-  setAdditionalData = (data: any) => {
+  setAdditionalData = (data: any): void => {
     for (let key in data)
       if (Object.hasOwn(data, key))
         this.addAccessor(key, () => data[key]);

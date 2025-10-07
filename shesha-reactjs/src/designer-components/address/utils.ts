@@ -67,7 +67,7 @@ export const EXPOSED_VARIABLES = [
   },
 ];
 
-export const getAddressValue = (value: string | IEntityReferenceDto) => {
+export const getAddressValue = (value: string | IEntityReferenceDto): string => {
   if (!value) return '';
 
   if (typeof value !== 'string' && value?.id) return value?._displayName;
@@ -102,7 +102,7 @@ export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['sear
   return result;
 };
 
-export const loadGooglePlaces = (googleMapsApiKey: string, callback: Function) => {
+export const loadGooglePlaces = (googleMapsApiKey: string, callback: Function): void => {
   const existingScript = document.getElementById("googlePlacesScript");
   if (!existingScript) {
     const script = document.createElement("script");

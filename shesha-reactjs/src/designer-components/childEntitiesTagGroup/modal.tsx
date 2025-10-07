@@ -33,12 +33,12 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
   const { formInfoBlockVisible } = useAppConfigurator();
   const context = useDataContextManagerActions().getDataContext(contextId);
 
-  const onOk = () => {
+  const onOk = (): void => {
     onChange(context.getData());
     onToggle(false);
   };
 
-  const onCancel = () => {
+  const onCancel = (): void => {
     onToggle(false);
   };
 

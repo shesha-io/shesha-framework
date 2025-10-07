@@ -26,17 +26,17 @@ const Home: PageWithLayout<{}> = () => {
 
   return (
     <LayoutComponent>
-    <CollapsiblePanel header="Plugins">
-      <StyledAlert message="This is a list of plugins the boilerplate uses" type="info" />
+      <CollapsiblePanel header="Plugins">
+        <StyledAlert message="This is a list of plugins the boilerplate uses" type="info" />
 
-      <Row style={{ flex: 1 }}>
-        {(data?.plugins ?? []).map((plugin) => (
-          <Col md={6} key={plugin.name} data-testid="container">
-            <Card title={plugin.name}>{plugin.description}</Card>
-          </Col>
-        ))}
-      </Row>
-    </CollapsiblePanel>
+        <Row style={{ flex: 1 }}>
+          {(data?.plugins ?? []).map((plugin) => (
+            <Col md={6} key={plugin.name} data-testid="container">
+              <Card title={plugin.name}>{plugin.description}</Card>
+            </Col>
+          ))}
+        </Row>
+      </CollapsiblePanel>
     </LayoutComponent>
   );
 };

@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useRef } from 'react';
 import { setItemsAction, setLoadedMenuAction } from './actions';
-import { IConfigurableMainMenu, MAIN_MENU_CONTEXT_INITIAL_STATE, MainMenuActionsContext, MainMenuStateContext } from './contexts';
+import { IConfigurableMainMenu, IMainMenuActionsContext, IMainMenuStateContext, MAIN_MENU_CONTEXT_INITIAL_STATE, MainMenuActionsContext, MainMenuStateContext } from './contexts';
 import { uiReducer } from './reducer';
 import { FormFullName, isNavigationActionConfiguration, useSettingValue, useSheshaApplication, useAuthOrUndefined } from '..';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
@@ -28,7 +28,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
 
   const formPermissionedItems = useRef<ISidebarMenuItem[]>([]);
 
-  const getActualItemsModel = (items: ISidebarMenuItem[]) => {
+  const getActualItemsModel = (items: ISidebarMenuItem[]): ISidebarMenuItem[] => {
     const actualItems = items.map((item) => {
       var actualItem = getActualModel(item, allData);
       if (isSidebarGroup(actualItem) && actualItem.childItems && actualItem.childItems.length > 0) {
@@ -45,7 +45,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
     return actualItems;
   };
 
-  const updatetFormNamigationVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
+  const updatetFormNamigationVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]): void => {
     if (
       item.actionConfiguration?.actionOwner === 'shesha.common' &&
       item.actionConfiguration?.actionName === 'Navigate' &&
@@ -62,8 +62,8 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
     }
   };
 
-  const getItemsWithFormNavigation = (items: ISidebarMenuItem[]) => {
-    const itemsToCheck = [];
+  const getItemsWithFormNavigation = (items: ISidebarMenuItem[]): ISidebarMenuItem[] => {
+    const itemsToCheck: ISidebarMenuItem[] = [];
     items?.forEach((item) => {
       if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0) {
         itemsToCheck.concat(getItemsWithFormNavigation(item.childItems));
@@ -83,7 +83,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
     return itemsToCheck;
   };
 
-  const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
+  const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]): void => {
     if (itemsToCheck.length > 0) {
       const request = itemsToCheck.map((x) => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto);
       formConfigurationCheckPermissions(request, { base: backendUrl, headers: httpHeaders })
@@ -101,7 +101,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
     }
   };
 
-  const updateMainMenu = (value: IConfigurableMainMenu) => {
+  const updateMainMenu = (value: IConfigurableMainMenu): void => {
     const migratorInstance = new Migrator<IConfigurableMainMenu, IConfigurableMainMenu>();
     const fluent = mainMenuMigration(migratorInstance);
     const versionedValue = { ...value } as IHasVersion;
@@ -129,11 +129,11 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
     }
   }, [loadingState, auth?.isLoggedIn]);
 
-  const changeMainMenu = (value: IConfigurableMainMenu) => {
+  const changeMainMenu = (value: IConfigurableMainMenu): void => {
     updateMainMenu(value);
   };
 
-  const saveMainMenu = (value: IConfigurableMainMenu) => {
+  const saveMainMenu = (value: IConfigurableMainMenu): Promise<void> => {
     return settingsUpdateValue(
       {
         name: 'Shesha.MainMenuSettings',
@@ -165,7 +165,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
   );
 };
 
-function useMainMenuState() {
+function useMainMenuState(): IMainMenuStateContext {
   const context = useContext(MainMenuStateContext);
 
   if (context === undefined) {
@@ -174,7 +174,7 @@ function useMainMenuState() {
   return context;
 }
 
-function useMainMenuActions() {
+function useMainMenuActions(): IMainMenuActionsContext {
   const context = useContext(MainMenuActionsContext);
 
   if (context === undefined) {
@@ -184,7 +184,7 @@ function useMainMenuActions() {
   return context;
 }
 
-function useMainMenu() {
+function useMainMenu(): IMainMenuStateContext & IMainMenuActionsContext {
   return { ...useMainMenuState(), ...useMainMenuActions() };
 }
 

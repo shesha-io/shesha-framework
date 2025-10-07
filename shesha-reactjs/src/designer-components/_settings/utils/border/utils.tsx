@@ -13,7 +13,7 @@ import { nanoid } from "@/utils/uuid";
 import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 import { IRadioOption } from "@/designer-components/settingsInput/interfaces";
 import { humanizeString } from "@/utils/string";
-import { IConfigurableTheme } from "@/providers";
+import { FormRawMarkup, IConfigurableTheme } from "@/providers";
 import { readThemeColor } from "@/components/colorPicker";
 
 export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties, theme?: IConfigurableTheme): React.CSSProperties => {
@@ -23,7 +23,7 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
   const border = input.border || {};
   const { all = {}, top = {}, right = {}, bottom = {}, left = {} } = border;
 
-  const handleBorderPart = (part, prefix: string, theme?: IConfigurableTheme) => {
+  const handleBorderPart = (part, prefix: string, theme?: IConfigurableTheme): void => {
     const hideBorder = !part?.color || !part?.width || input?.border?.[input.borderType]?.style === 'none';
     if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part?.width || all?.width);
     if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = hideBorder ? 'none' : part?.style || all?.style;
@@ -128,12 +128,12 @@ export const borderCorners = [
   { value: "bottomRight", icon: "RadiusBottomrightOutlined", title: "Bottom Right" },
 ];
 
-const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, path: string) => {
+const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, path: string): string => {
   const devicePath = isResponsive ? 'data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' : 'data';
   return `return getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.${type}) !== "${isCustom ? "custom" : "all"}";`;
 };
 
-export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMiddle: boolean = false) => {
+export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMiddle: boolean = false): FormRawMarkup => {
   const borderProp = path ? `${path}.border.border` : 'border.border';
 
   return [...new DesignerToolbarSettings()
@@ -248,7 +248,7 @@ interface IHideCornerConditions {
   bottomRight?: string;
 }
 
-export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCornerConditions: IHideCornerConditions = {}) => {
+export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCornerConditions: IHideCornerConditions = {}): FormRawMarkup => {
   return [...new DesignerToolbarSettings()
     .addSettingsInput({
       id: nanoid(),

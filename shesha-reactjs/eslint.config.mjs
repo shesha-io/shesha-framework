@@ -80,21 +80,19 @@ const stylisticOverrides = {
     "indent": "off",
     "@stylistic/indent": ["error", 2, {
         "SwitchCase": 1,
-        "ignoredNodes": ["JSXElement", "JSXAttribute", "JSXSpreadAttribute", "JSXText", "JSXFragment"]
     }],
     "@stylistic/space-infix-ops": "error",
-    "@stylistic/multiline-ternary": "off"
+    "@stylistic/multiline-ternary": "off",
 };
 
 const legacyTypescriptOverrides = {
     "@typescript-eslint/dot-notation": "off",
 
-    "@typescript-eslint/explicit-function-return-type": ["off", {
-        allowExpressions: false,
-        allowTypedFunctionExpressions: false,
-        allowHigherOrderFunctions: false,
-        allowDirectConstAssertionInArrowFunctions: true,
-        allowConciseArrowFunctionExpressionsStartingWithVoid: true,
+
+    "@typescript-eslint/explicit-function-return-type": ["error", {
+        "allowExpressions": true,
+        "allowHigherOrderFunctions": true,
+        "allowDirectConstAssertionInArrowFunctions": true
     }],
 
     "@typescript-eslint/explicit-module-boundary-types": ["off", {

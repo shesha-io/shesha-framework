@@ -1,7 +1,7 @@
 import { DesignerToolbarSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 
-export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array', propName: string = '') => {
+export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array', propName: string = ''): DesignerToolbarSettings => {
   const codePropName = propName.replaceAll('.', '?.');
 
   const stringFormatId = nanoid();

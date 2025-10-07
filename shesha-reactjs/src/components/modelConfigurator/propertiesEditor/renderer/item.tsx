@@ -23,14 +23,14 @@ export const Item: FC<IItemProps> = ({ itemProps, index, key, parent, containerR
 
   if (itemProps.dataType === DataTypes.array && itemProps.dataFormat === ArrayFormats.childObjects && itemsType?.dataFormat === ObjectFormats.object) {
     return (
-<ArrayObjectProperty
-  index={index}
-  data={itemProps}
-  parent={parent}
-  key={key}
-  onChange={onChange}
-  containerRendering={containerRendering}
-/>
+      <ArrayObjectProperty
+        index={index}
+        data={itemProps}
+        parent={parent}
+        key={key}
+        onChange={onChange}
+        containerRendering={containerRendering}
+      />
     );
   } else if (itemProps.dataType === DataTypes.array && (
     itemProps.dataFormat === ArrayFormats.entityReference ||
@@ -38,45 +38,45 @@ export const Item: FC<IItemProps> = ({ itemProps, index, key, parent, containerR
     (itemProps.dataFormat === ArrayFormats.childObjects && itemsType?.dataFormat === ObjectFormats.interface)
   )) {
     return (
-<ArrayEntityProperty
-  id={index}
-  index={index}
-  {...itemProps}
-  parent={parent}
-  key={key}
-/>
+      <ArrayEntityProperty
+        id={index}
+        index={index}
+        {...itemProps}
+        parent={parent}
+        key={key}
+      />
     );
   } else if (itemProps.dataType === DataTypes.array && itemProps.dataFormat) {
     return (
-<ArraySimpleProperty
-  id={index}
-  index={index}
-  {...itemProps}
-  parent={parent}
-  key={key}
-/>
+      <ArraySimpleProperty
+        id={index}
+        index={index}
+        {...itemProps}
+        parent={parent}
+        key={key}
+      />
     );
   } else if (itemProps.dataType === DataTypes.object && itemProps.dataFormat === ObjectFormats.object) {
     return (
-<ComplexProperty
-  index={index}
-  data={itemProps}
-  {...itemProps}
-  parent={parent}
-  key={key}
-  onChange={onChange}
-  containerRendering={containerRendering}
-/>
+      <ComplexProperty
+        index={index}
+        data={itemProps}
+        {...itemProps}
+        parent={parent}
+        key={key}
+        onChange={onChange}
+        containerRendering={containerRendering}
+      />
     );
   } else {
     return (
-<SimpleProperty
-  id={index}
-  index={index}
-  {...itemProps}
-  parent={parent}
-  key={key}
-/>
+      <SimpleProperty
+        id={index}
+        index={index}
+        {...itemProps}
+        parent={parent}
+        key={key}
+      />
     );
   }
 };

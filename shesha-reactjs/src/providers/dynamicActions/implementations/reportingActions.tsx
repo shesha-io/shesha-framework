@@ -42,13 +42,13 @@ const reportingActionsHoc: DynamicRenderingHoc = (WrappedComponent) => {
 
 export const ReportingActions: FC<PropsWithChildren<IReportingActionsProps>> = ({ children }) => {
   return (
-        <DynamicActionsProvider
-          id="reports"
-          name="Reports"
-          renderingHoc={reportingActionsHoc}
-          useEvaluator={useReportingActions}
-        >
-            {children}
-        </DynamicActionsProvider>
+    <DynamicActionsProvider
+      id="reports"
+      name="Reports"
+      renderingHoc={reportingActionsHoc}
+      useEvaluator={useReportingActions}
+    >
+      {children}
+    </DynamicActionsProvider>
   );
 };

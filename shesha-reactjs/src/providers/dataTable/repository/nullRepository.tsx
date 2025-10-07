@@ -36,7 +36,7 @@ const createRepository = (_args: IWithNullRepositoryArgs): IRepository => {
     return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
   };
 
-  const reorder = (_payload: RowsReorderPayload) => {
+  const reorder = (_payload: RowsReorderPayload): Promise<void> => {
     return Promise.reject(HAS_NO_IMPLEMENTATION_MESSAGE);
   };
 

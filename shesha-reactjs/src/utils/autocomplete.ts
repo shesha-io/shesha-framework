@@ -85,7 +85,7 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
     }
   );
 
-  const search = (term: string) => {
+  const search = (term: string): void => {
     const queryParams = getListFetcherQueryParams(term);
     if (isEqual(queryParams, previousQueryParams.current))
       return;

@@ -3,13 +3,13 @@ import { useEffect, useState, useMemo } from 'react';
 import { IChartData } from '../model';
 import { aggregateValues, getPredictableColor, getPredictableColorPolarArea, getPropertyValue, stringifyValues } from '../utils';
 
-export const useIsSmallScreen = () => {
+export const useIsSmallScreen = (): boolean => {
   const [isSmallScreen, setIsSmallScreen] = useState(
     typeof window !== 'undefined' && window.innerWidth <= 480
   );
 
   useEffect(() => {
-    const handleResize = () => {
+    const handleResize = (): void => {
       setIsSmallScreen(window.innerWidth <= 480);
     };
 
@@ -174,7 +174,7 @@ export const useProcessedChartData = (): IChartData => {
  * Prepare chart data from URL
  * @returns prepared chart data from URL
  */
-export const useChartURLData = () => {
+export const useChartURLData = (): IChartData => {
   const { urlTypeData, strokeColor, strokeWidth, tension } = useChartDataStateContext();
 
   return {

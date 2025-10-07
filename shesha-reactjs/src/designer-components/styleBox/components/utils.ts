@@ -7,7 +7,7 @@ export const getStyleChangeValue = (
   direction: keyof IInputDirection,
   value: string,
   prevVal: string
-) => {
+): string => {
   const v = jsonSafeParse<object>(prevVal || '{}');
 
   return JSON.stringify({
@@ -16,7 +16,7 @@ export const getStyleChangeValue = (
   });
 };
 
-export const getStyleValue = (type: keyof IValue, direction: keyof IInputDirection, value: string) => {
+export const getStyleValue = (type: keyof IValue, direction: keyof IInputDirection, value: string): number => {
   const v = jsonSafeParse(value || '{}') as IValue;
   return (v || {})[`${type}${capitalizeFirstLetter(direction)}`] || 0;
 };

@@ -19,7 +19,7 @@ export function GenericSettingsEditor<TModel extends IProviderSettings>({
   markup,
   onValuesChange,
   readOnly = false,
-}: IProps<TModel>) {
+}: IProps<TModel>): JSX.Element {
   const formRef = useShaFormRef();
 
   return (

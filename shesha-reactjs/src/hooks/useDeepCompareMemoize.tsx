@@ -8,7 +8,7 @@ import { ShaArrayAccessProxy, ShaObjectAccessProxy } from '@/providers/dataConte
 /**
  * Custom version of isEqual to handle function comparison
  */
-function isEqual(x: any, y: any) {
+function isEqual(x: any, y: any): boolean {
   return isEqualWith(x, y, (a, b) => {
     // Deal with the function comparison case
     if (typeof a === 'function' && typeof b === 'function') {
@@ -19,7 +19,7 @@ function isEqual(x: any, y: any) {
   });
 }
 
-export function useDeepCompareMemoize(value: Readonly<any>) {
+export function useDeepCompareMemoize(value: Readonly<any>): any {
   const ref = useRef<any>();
 
   const unproxiedValue = Array.isArray(value)

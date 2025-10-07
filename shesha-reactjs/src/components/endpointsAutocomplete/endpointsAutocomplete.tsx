@@ -66,7 +66,7 @@ export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange, si
   );
 };
 
-const getUrlFromValue = (value?: EndpointsAutocompleteValue) => {
+const getUrlFromValue = (value?: EndpointsAutocompleteValue): string | null => {
   if (!value)
     return null;
 
@@ -74,7 +74,7 @@ const getUrlFromValue = (value?: EndpointsAutocompleteValue) => {
     ? value.url
     : value;
 };
-const getVerbFromValue = (value?: EndpointsAutocompleteValue) => {
+const getVerbFromValue = (value?: EndpointsAutocompleteValue): string | null => {
   return !value || !isApiEndpoint(value)
     ? null
     : value.httpVerb;
@@ -83,7 +83,7 @@ const getVerbFromValue = (value?: EndpointsAutocompleteValue) => {
 export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnly = false, mode = 'url', ...props }) => {
   const endpointsFetcher = useApiEndpoints({ lazy: true });
 
-  const doFetchItems = (term: string, verb: string) => {
+  const doFetchItems = (term: string, verb: string): void => {
     endpointsFetcher.refetch({ queryParams: { term, verb: verb } });
   };
   const debouncedFetchItems = useDebouncedCallback<(value: string, verb: string) => void>(
@@ -111,7 +111,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     }));
   }, [loadedEndpoints]);
 
-  const onChangeUrl = (newUrl: string) => {
+  const onChangeUrl = (newUrl: string): void => {
     const newValue: EndpointsAutocompleteValue = mode === 'url'
       ? newUrl
       : { httpVerb: getVerbFromValue(props.value), url: newUrl };
@@ -119,7 +119,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     props.onChange?.(newValue);
   };
 
-  const onVerbChange = (newVerb: string) => {
+  const onVerbChange = (newVerb: string): void => {
     if (mode === 'url')
       return;
 
@@ -127,7 +127,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     props.onChange?.(newValue);
   };
 
-  const handleSearch = (localValue: string) => {
+  const handleSearch = (localValue: string): void => {
     onChangeUrl(localValue);
 
     if (localValue) {

@@ -7,7 +7,7 @@ export const migrateFunctionToProp = <T extends IConfigurableFormComponent>(
   funcPropname: string,
   replaceFunction: (source: string) => string = null,
   invert: Boolean = false,
-) => {
+): T => {
   const model = { ...prev };
 
   const propSettings = getPropertySettingsFromValue(prev[propName]);
@@ -31,19 +31,19 @@ export const migrateFunctionToProp = <T extends IConfigurableFormComponent>(
   return model;
 };
 
-export const migrateHidden = <T extends IConfigurableFormComponent>(prev: T) => {
+export const migrateHidden = <T extends IConfigurableFormComponent>(prev: T): T => {
   return migrateFunctionToProp(prev, 'hidden', 'customVisibility', null, true);
 };
 
-export const migrateDisabled = <T extends IConfigurableFormComponent>(prev: T) => {
+export const migrateDisabled = <T extends IConfigurableFormComponent>(prev: T): T => {
   return migrateFunctionToProp(prev, 'disabled', 'customEnabled', null, true);
 };
 
-export const migrateCustomFunctions = <T extends IConfigurableFormComponent>(prev: T) => {
+export const migrateCustomFunctions = <T extends IConfigurableFormComponent>(prev: T): T => {
   return migrateDisabled(migrateHidden(prev));
 };
 
-export const migratePropertyName = <T extends IConfigurableFormComponent>(prev: T) => {
+export const migratePropertyName = <T extends IConfigurableFormComponent>(prev: T): T => {
   const name = prev['name'];
   if (!!name && !prev.propertyName)
     return { ...prev, componentName: name, propertyName: name } as T;
@@ -51,7 +51,7 @@ export const migratePropertyName = <T extends IConfigurableFormComponent>(prev: 
     return { ...prev } as T;
 };
 
-export const migrateReadOnly = <T>(prev: T, defaultValue?: EditMode) => {
+export const migrateReadOnly = <T>(prev: T, defaultValue?: EditMode): T => {
   const disabled = prev['disabled'];
   const readOnly = prev['readOnly'];
   const model = {

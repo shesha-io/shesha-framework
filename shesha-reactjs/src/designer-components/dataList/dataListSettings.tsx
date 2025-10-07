@@ -326,25 +326,25 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </Show>
 
         <Show when={model?.orientation === 'wrap'}>
-            <SettingsFormItem name="cardMinWidth" label="Card Minimum Width" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly} />
-            </SettingsFormItem>
+          <SettingsFormItem name="cardMinWidth" label="Card Minimum Width" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
 
-            <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly} />
-            </SettingsFormItem>
+          <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
 
-            <SettingsFormItem name="cardHeight" label="Card Height" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly} />
-            </SettingsFormItem>
+          <SettingsFormItem name="cardHeight" label="Card Height" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
 
-            <SettingsFormItem name="cardSpacing" label="Card Spacing" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly} />
-            </SettingsFormItem>
+          <SettingsFormItem name="cardSpacing" label="Card Spacing" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
 
-            <SettingsFormItem name="showBorder" label="Show Border" valuePropName="checked" jsSetting>
-              <Checkbox disabled={readOnly} />
-            </SettingsFormItem>
+          <SettingsFormItem name="showBorder" label="Show Border" valuePropName="checked" jsSetting>
+            <Checkbox disabled={readOnly} />
+          </SettingsFormItem>
         </Show>
 
 
@@ -487,30 +487,30 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
 
       <Show when={model.orientation === "vertical" || model.orientation === "horizontal"}>
         <SettingsCollapsiblePanel header="Grouping">
-        <SettingsFormItem name="collapsible" label="Collapsible" valuePropName="checked" jsSetting>
-          <Checkbox disabled={readOnly} />
-        </SettingsFormItem>
+          <SettingsFormItem name="collapsible" label="Collapsible" valuePropName="checked" jsSetting>
+            <Checkbox disabled={readOnly} />
+          </SettingsFormItem>
 
-        <SettingsFormItem name="collapseByDefault" label="Collapse by default" valuePropName="checked" jsSetting>
-          <Checkbox disabled={readOnly} />
-        </SettingsFormItem>
+          <SettingsFormItem name="collapseByDefault" label="Collapse by default" valuePropName="checked" jsSetting>
+            <Checkbox disabled={readOnly} />
+          </SettingsFormItem>
 
-        <SettingsFormItem name="groupStyle" label="Style of group headers">
-          <CodeEditor
-            readOnly={readOnly}
-            mode="dialog"
-            propertyName="groupStyle"
-            label="Style of group headers"
-            exposedVariables={[
-              { name: "data", description: "Selected form values", type: "object" },
-            ]}
-            wrapInTemplate={true}
-            templateSettings={{
-              functionName: 'getGroupHeadersStyle',
-            }}
-            availableConstants={getGroupStyleConstants}
-          />
-        </SettingsFormItem>
+          <SettingsFormItem name="groupStyle" label="Style of group headers">
+            <CodeEditor
+              readOnly={readOnly}
+              mode="dialog"
+              propertyName="groupStyle"
+              label="Style of group headers"
+              exposedVariables={[
+                { name: "data", description: "Selected form values", type: "object" },
+              ]}
+              wrapInTemplate={true}
+              templateSettings={{
+                functionName: 'getGroupHeadersStyle',
+              }}
+              availableConstants={getGroupStyleConstants}
+            />
+          </SettingsFormItem>
         </SettingsCollapsiblePanel>
       </Show>
 

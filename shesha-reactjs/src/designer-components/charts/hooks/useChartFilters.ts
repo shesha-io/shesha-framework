@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
-import { evaluateDynamicFiltersSync } from '@/utils';
+import { evaluateDynamicFiltersSync } from '@/utils/datatable';
 import { useAvailableConstantsData, useDataContextManager, useMetadataDispatcher, IModelMetadata } from '@/index';
 import { IChartProps } from '../model';
 import { FilterExpression, IStoredFilter } from '@/providers/dataTable/interfaces';

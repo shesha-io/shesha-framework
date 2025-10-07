@@ -1,7 +1,7 @@
 import { AutocompleteDataSourceType } from '@/components/autocomplete';
 import { CodeLanguages } from '../codeEditor/types';
 import { CodeTemplateSettings, ResultType } from '@/components/codeEditor/models';
-import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata } from '@/index';
+import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting } from '@/index';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
 import { ComponentType } from '@/components/formComponentSelector';
@@ -32,10 +32,13 @@ export interface InputType {
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList' |
     'sizableColumnsConfig' | 'labelValueEditor' | 'componentSelector' | 'itemListConfiguratorModal' | 'dataSortingEditor' | 'tooltip' | 'customLabelValueEditor' |
     'typeAutoComplete' | 'fullIdFormAutocomplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator' | 'RefListItemSelectorSettingsModal' |
-    'keyInformationBarColumnsList' | 'Password';
+    'keyInformationBarColumnsList' | 'Password' | 'settingsInput';
 }
 
-export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelValueEditorProps, 'exposedVariables'>, Omit<IConfigurableFormComponent, 'id' | 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
+export interface ISettingsInputProps extends IComponentLabelProps,
+  Omit<ILabelValueEditorProps, 'exposedVariables'>,
+  Omit<IConfigurableFormComponent, 'id' | 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName' | 'hidden'>
+{
   id?: string;
   type: InputType['type'];
   label: string;
@@ -130,4 +133,5 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelVa
   title?: string;
   showSearch?: boolean;
   defaultChecked?: boolean;
+  hidden?: boolean | IPropertySetting;
 };

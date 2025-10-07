@@ -7,7 +7,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
 import ReflistTag from './reflistTag';
 
-export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListDropDownProps<TValue>) => {
+export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListDropDownProps<TValue>): JSX.Element => {
   const {
     referenceListId,
     showArrow = true,
@@ -37,7 +37,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
   } = props;
   const { data: refList, loading: refListLoading, error: refListError } = useReferenceList(referenceListId);
 
-  const filter = ({ itemValue }: ReferenceListItemDto) => {
+  const filter = ({ itemValue }: ReferenceListItemDto): boolean => {
     if (!filters?.length) {
       return true;
     }
@@ -61,7 +61,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     } else return getLabeledValue(localValue as TValue, allOptions);
   };
 
-  const parseDisabledValues = (input) => {
+  const parseDisabledValues = (input): number[] => {
     if (!input) return []; // Handle empty input
     if (Array.isArray(input)) return input.map(Number); // Ensure it's an array of numbers
     return String(input)
@@ -70,12 +70,12 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
       .filter((num) => !isNaN(num)); // Remove invalid values
   };
 
-  const disableValue = (item) => {
+  const disableValue = (item: ISelectOption<TValue>): ISelectOption<TValue> => {
     const parsedDisabledValues = parseDisabledValues(disabledValues);
 
     return {
       ...item,
-      disabled: parsedDisabledValues.includes(item.value),
+      disabled: parsedDisabledValues.includes(Number(item.value)),
     };
   };
 
@@ -98,7 +98,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     return disabledValues ? result.map(disableValue) : result;
   }, [refList, getLabeledValue, getOptionFromFetchedItem, incomeValueFunc, outcomeValueFunc, disabledValues]);
 
-  const handleChange = (_: CustomLabeledValue<TValue>, option: any) => {
+  const handleChange = (_: CustomLabeledValue<TValue>, option: any): void => {
     if (!Boolean(onChange)) return;
     const selectedValue =
       option !== undefined
@@ -151,35 +151,35 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
 
   if (mode !== 'multiple' && mode !== 'tags' && displayStyle === 'tags') {
     return (
-<Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
-  {...commonSelectProps}
-  popupMatchSelectWidth={false}
-  style={{ width: 'max-content', height: 'max-content' }}
-  placeholder={placeholder}
-  labelRender={(props) => {
-    const option = options.find((o) => o.value === props.value);
-    return (
-<ReflistTag
-  key={option?.value}
-  value={option?.value}
-  description={option?.description}
-  color={option?.color}
-  icon={option?.icon}
-  showIcon={showIcon}
-  tagStyle={tagStyle}
-  solidColor={solidColor}
-  showItemName={showItemName}
-  label={option?.label}
-/>
-    );
-  }}
->
-      {options?.map(({ value: localValue, label, data, disabled }) => (
-        <Select.Option value={localValue} key={localValue} data={data} disabled={disabled}>
-          {label}
-        </Select.Option>
-      ))}
-</Select>
+      <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+        {...commonSelectProps}
+        popupMatchSelectWidth={false}
+        style={{ width: 'max-content', height: 'max-content' }}
+        placeholder={placeholder}
+        labelRender={(props) => {
+          const option = options.find((o) => o.value === props.value);
+          return (
+            <ReflistTag
+              key={option?.value}
+              value={option?.value}
+              description={option?.description}
+              color={option?.color}
+              icon={option?.icon}
+              showIcon={showIcon}
+              tagStyle={tagStyle}
+              solidColor={solidColor}
+              showItemName={showItemName}
+              label={option?.label}
+            />
+          );
+        }}
+      >
+        {options?.map(({ value: localValue, label, data, disabled }) => (
+          <Select.Option value={localValue} key={localValue} data={data} disabled={disabled}>
+            {label}
+          </Select.Option>
+        ))}
+      </Select>
     );
   }
 
@@ -194,17 +194,17 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
         labelRender: (props) => {
           const option = options.find((o) => o.value === props.value);
           return (
-<ReflistTag
-  value={option?.value}
-  description={option?.description}
-  color={option?.color}
-  icon={option?.icon}
-  showIcon={showIcon}
-  tagStyle={tagStyle}
-  solidColor={solidColor}
-  showItemName={showItemName}
-  label={option?.label}
-/>
+            <ReflistTag
+              value={option?.value}
+              description={option?.description}
+              color={option?.color}
+              icon={option?.icon}
+              showIcon={showIcon}
+              tagStyle={tagStyle}
+              solidColor={solidColor}
+              showItemName={showItemName}
+              label={option?.label}
+            />
           );
         },
       } : {})}

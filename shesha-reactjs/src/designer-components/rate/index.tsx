@@ -45,31 +45,31 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     return model.hidden
       ? null
       : (
-<ConfigurableFormItem model={model}>
-        {(value, onChange) => {
-          const customEvent = calculatedModel.eventHandlers;
-          const onChangeInternal = (value: number) => {
-            customEvent.onChange({ value });
-            if (typeof onChange === 'function') onChange(value);
-          };
+        <ConfigurableFormItem model={model}>
+          {(value, onChange) => {
+            const customEvent = calculatedModel.eventHandlers;
+            const onChangeInternal = (value: number): void => {
+              customEvent.onChange({ value });
+              if (typeof onChange === 'function') onChange(value);
+            };
 
-          return (
-<Rate
-  allowClear={allowClear}
-  // allowHalf={allowHalf}
-  character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
-  disabled={readOnly}
-  count={localCount ?? 5}
-  tooltips={tooltips}
-  className={classNames(className, 'sha-rate')}
-  style={model.allStyles.fullStyle}
-  {...customEvent}
-  value={value}
-  onChange={onChangeInternal}
-/>
-          );
-        }}
-</ConfigurableFormItem>
+            return (
+              <Rate
+                allowClear={allowClear}
+                // allowHalf={allowHalf}
+                character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
+                disabled={readOnly}
+                count={localCount ?? 5}
+                tooltips={tooltips}
+                className={classNames(className, 'sha-rate')}
+                style={model.allStyles.fullStyle}
+                {...customEvent}
+                value={value}
+                onChange={onChangeInternal}
+              />
+            );
+          }}
+        </ConfigurableFormItem>
       )
     ;
   },

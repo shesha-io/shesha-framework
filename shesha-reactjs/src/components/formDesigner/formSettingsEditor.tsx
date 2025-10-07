@@ -22,7 +22,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
   const { formProps } = useFormPersister();
   const formRef = useShaFormRef();
 
-  const onSave = (values) => {
+  const onSave = (values): void => {
     if (!readOnly) {
       updateFormSettings(values);
       close();

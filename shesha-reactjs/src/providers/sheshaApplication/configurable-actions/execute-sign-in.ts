@@ -5,7 +5,7 @@ import { ILoginForm } from '@/interfaces/loginForm';
 
 export interface IExcuteSignInArguments {}
 
-export const useExecuteSignIn = () => {
+export const useExecuteSignIn = (): void => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
   const auth = useAuthOrUndefined();

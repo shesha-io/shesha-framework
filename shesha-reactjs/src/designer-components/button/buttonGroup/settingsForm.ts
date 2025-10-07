@@ -4,8 +4,9 @@ import { IButtonGroupComponentProps } from './models';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '@/designer-components/_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: IButtonGroupComponentProps) => {
+export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSettings => {
   // Generate unique IDs for main sections
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();

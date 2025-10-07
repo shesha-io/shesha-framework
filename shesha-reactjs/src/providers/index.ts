@@ -18,7 +18,6 @@ export { useFormDesignerComponents } from './form/hooks';
 export * from './formContext';
 export * from './formItem';
 export * from './globalState';
-export * from './listItem';
 export * from './mainMenu';
 export * from './metadata';
 export * from './metadataDispatcher';

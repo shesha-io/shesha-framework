@@ -8,11 +8,11 @@ const CodeEditorNoSsr = lazy(() => import('./client-side/codeEditorClientSide'))
 const CodeEditorInternal: FC<ICodeEditorProps> = (props) => {
   const isSSR = typeof window === 'undefined';
   return isSSR ? (
-        <CodeEditorLoadingProgressor />
+    <CodeEditorLoadingProgressor />
   ) : (
-        <React.Suspense fallback={<CodeEditorLoadingProgressor />}>
-            <CodeEditorNoSsr {...props} />
-        </React.Suspense>
+    <React.Suspense fallback={<CodeEditorLoadingProgressor />}>
+      <CodeEditorNoSsr {...props} />
+    </React.Suspense>
   );
 };
 

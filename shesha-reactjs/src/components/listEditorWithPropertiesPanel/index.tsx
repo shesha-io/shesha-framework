@@ -57,17 +57,17 @@ const findAndUpdateItemRecursively = <TItem extends ListItemWithId>(
   return { updated: false, newItems };
 };
 
-export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({ value, onChange, readOnly, header, groupHeader, initNewItem, children, itemProperties, noSelectionProperties, addItemText }: IListEditorWithPropertiesPanelProps<TItem>) => {
+export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({ value, onChange, readOnly, header, groupHeader, initNewItem, children, itemProperties, noSelectionProperties, addItemText }: IListEditorWithPropertiesPanelProps<TItem>): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<TItem>();
   const [isPending, startTransition] = useTransition();
 
-  const onSelectionChange = (item: TItem) => {
+  const onSelectionChange = (item: TItem): void => {
     startTransition(() => {
       setSelectedItem(item);
     });
   };
 
-  const onItemUpdate = (newValues: TItem) => {
+  const onItemUpdate = (newValues: TItem): void => {
     if (!selectedItem || selectedItem.id !== newValues.id) return;
 
     const result = findAndUpdateItemRecursively(value, newValues.id, newValues);
@@ -79,30 +79,30 @@ export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({ va
   };
 
   return (
-        <ListEditorRenderer
-          sidebarProps={{
-            title: 'Properties',
-            content: isPending
-              ? <Skeleton loading />
-              : selectedItem
-                ? itemProperties({ item: selectedItem, onChange: onItemUpdate, readOnly: readOnly })
-                : !noSelectionProperties || typeof (noSelectionProperties) === 'string'
-                  ? <NoSelection message="noSelectionProperties" readOnly={readOnly} />
-                  : noSelectionProperties,
-          }}
-        >
-            {header}
-            <ListEditor<TItem>
-              value={value}
-              onChange={onChange}
-              initNewItem={initNewItem}
-              readOnly={readOnly}
-              selectionType="single"
-              onSelectionChange={onSelectionChange}
-              header={groupHeader ?? (groupHeader === undefined ? (headerProps) => (<DefaultGroupHeader {...headerProps} addItemText={addItemText} />) : null)}
-            >
-                {children}
-            </ListEditor>
-        </ListEditorRenderer>
+    <ListEditorRenderer
+      sidebarProps={{
+        title: 'Properties',
+        content: isPending
+          ? <Skeleton loading />
+          : selectedItem
+            ? itemProperties({ item: selectedItem, onChange: onItemUpdate, readOnly: readOnly })
+            : !noSelectionProperties || typeof (noSelectionProperties) === 'string'
+              ? <NoSelection message="noSelectionProperties" readOnly={readOnly} />
+              : noSelectionProperties,
+      }}
+    >
+      {header}
+      <ListEditor<TItem>
+        value={value}
+        onChange={onChange}
+        initNewItem={initNewItem}
+        readOnly={readOnly}
+        selectionType="single"
+        onSelectionChange={onSelectionChange}
+        header={groupHeader ?? (groupHeader === undefined ? (headerProps) => (<DefaultGroupHeader {...headerProps} addItemText={addItemText} />) : null)}
+      >
+        {children}
+      </ListEditor>
+    </ListEditorRenderer>
   );
 };

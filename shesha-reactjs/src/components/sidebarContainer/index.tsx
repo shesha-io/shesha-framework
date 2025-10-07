@@ -77,7 +77,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
   const isDesigner = formMode === 'designer';
 
-  const renderSidebar = (side: SidebarPanelPosition) => {
+  const renderSidebar = (side: SidebarPanelPosition): JSX.Element => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
     const hideFullCollapse = allowFullCollapse && !sidebarProps?.open;
 

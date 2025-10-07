@@ -1,8 +1,9 @@
+import { FormMarkupWithSettings } from '@/interfaces';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = () => {
+export const getSettings = (): FormMarkupWithSettings => {
   return {
     components: new DesignerToolbarSettings()
       .addSearchableTabs({

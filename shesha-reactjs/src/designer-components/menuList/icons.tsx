@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import Icon from "@ant-design/icons";
 import type { CustomIconComponentProps } from "@ant-design/icons/lib/components/Icon";
 
-const RebaseEditOutlinedSvg = () => (
+const RebaseEditOutlinedSvg = (): JSX.Element => (
   <svg
     width="20"
     height="22"

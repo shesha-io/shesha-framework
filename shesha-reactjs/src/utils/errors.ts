@@ -37,22 +37,22 @@ export class SheshaError extends Error {
   }
 
   /** Throw a SheshaError with model property error */
-  static throwPropertyError(propertyName: string, error: string = null) {
+  static throwPropertyError(propertyName: string, error: string = null): void {
     throw new SheshaError('', { hasErrors: true, errors: [{ propertyName, error: error || `Please make sure the '${propertyName}' property is configured properly.` }] }, 'warning');
   }
 
   /** Throw a SheshaError with model errors */
-  static throwModelErrors(errors: IModelValidation) {
+  static throwModelErrors(errors: IModelValidation): void {
     throw new SheshaError('', errors, 'warning');
   }
 
   /** Throw a SheshaError with message */
-  static throwError(message: string) {
+  static throwError(message: string): void {
     throw new SheshaError(message, null, 'error');
   }
 
   /** Add model error, used in model validation function */
-  static addModelError(errors: IModelValidation, propertyName: string, error: string) {
+  static addModelError(errors: IModelValidation, propertyName: string, error: string): void {
     errors.errors.push({ propertyName, error });
   }
 }

@@ -65,12 +65,12 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
     300
   );
 
-  const onValuesChange = (_changedValues, values) => {
+  const onValuesChange = (_changedValues, values): void => {
     if (autoSave && !readOnly)
       debouncedSave(values);
   };
 
-  const onCancel = () => {
+  const onCancel = (): void => {
     // not used
   };
 

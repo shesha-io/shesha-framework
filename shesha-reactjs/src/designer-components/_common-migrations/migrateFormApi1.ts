@@ -23,7 +23,7 @@ const events = <T extends IConfigurableFormComponent>(model: T): T => ({
 });
 
 const properties = <T>(model: T): T => {
-  const migrateProp = (prop: any) => {
+  const migrateProp = (prop: any): any => {
     if (!prop)
       return prop;
 

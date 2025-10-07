@@ -5,7 +5,7 @@ import { AiFillFileText } from "react-icons/ai";
 import { AntdTreeNodeAttribute } from 'antd/lib/tree';
 import { getLastSection } from '@/utils/string';
 
-export const getNodeIcon = (nodeProps: AntdTreeNodeAttribute) => {
+export const getNodeIcon = (nodeProps: AntdTreeNodeAttribute): JSX.Element => {
   if (!nodeProps.isLeaf)
     return nodeProps.expanded ? <FcOpenedFolder /> : <FcFolder />;
 

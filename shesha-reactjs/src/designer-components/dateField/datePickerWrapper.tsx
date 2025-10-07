@@ -1,5 +1,5 @@
 import { DatePicker } from '@/components/antd';
-import moment, { isMoment } from 'moment';
+import moment, { isMoment, Moment } from 'moment';
 import React, { FC, useMemo, useRef } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useForm, useGlobalState, useMetadata } from '@/providers';
@@ -51,7 +51,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     ...allStyles.dimensionsStyles,
   } : allStyles.fullStyle;
 
-  const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
+  const dateFormat = props?.dateFormat || getDataProperty(properties, name, 'dataFormat') || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
   const fullStyles = { ...allStyles?.fullStyle || {} };
   const { styles } = useStyles({ fullStyles });
@@ -60,7 +60,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const pickerFormat = getFormat(props, properties);
 
-  const convertValue = (localValue: any) => {
+  const convertValue = (localValue: any): string => {
     const newValue = isMoment(localValue) ? localValue : getMoment(localValue, pickerFormat);
     const val =
       picker === 'week'
@@ -79,7 +79,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     return resolveToUTC ? finalMoment.toISOString() : finalMoment.format('YYYY-MM-DDTHH:mm:ss.SSS');
   };
 
-  const handleDatePickerChange = (localValue: any | null, dateString: string) => {
+  const handleDatePickerChange = (localValue: any | null, dateString: string): void => {
     if (!dateString?.trim()) {
       (onChange as TimePickerChangeEvent)(null, '');
       return;
@@ -89,7 +89,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     (onChange as TimePickerChangeEvent)(newValue, dateString);
   };
 
-  const handleRangePicker = (values: any[], formatString: [string, string]) => {
+  const handleRangePicker = (values: any[], formatString: [string, string]): void => {
     if (formatString?.includes('')) {
       (onChange as RangePickerChangeEvent)(null, null);
       return;
@@ -102,10 +102,10 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const prevDatePartRef = useRef(null);
 
 
-  const handleCalendarDatePickerChange = (dates) => {
-    if (!dates) return;
+  const handleCalendarDatePickerChange = (dates: Moment | Moment[]): void => {
+    if (!dates || Array.isArray(dates)) return;
 
-    const getDatePart = (date) => date.format('YYYY-MM-DD');
+    const getDatePart = (date: Moment): string => date.format('YYYY-MM-DD');
 
     const newDatePart = getDatePart(dates);
     const prevDatePart = prevDatePartRef.current;
@@ -138,12 +138,12 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const prevStartDatePartRef = useRef(null);
   const prevEndDatePartRef = useRef(null);
 
-  const handleCalendarRangeChange = (dates) => {
+  const handleCalendarRangeChange = (dates: Moment[]): void => {
     if (!dates) return;
 
     const [start, end] = dates;
 
-    const getDatePart = (date) => date?.format('YYYY-MM-DD');
+    const getDatePart = (date: Moment | undefined): string => date?.format('YYYY-MM-DD');
 
     const startDatePart = getDatePart(start);
     const endDatePart = getDatePart(end);

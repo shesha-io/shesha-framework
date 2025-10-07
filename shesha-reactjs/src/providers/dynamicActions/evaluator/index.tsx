@@ -32,14 +32,14 @@ export const DynamicActionsEvaluator: FC<IDynamicActionsEvaluatorProps> = ({ ite
   }, [evaluation.items, numResolved]);
 
 
-  const onDynamicItemEvaluated = () => {
+  const onDynamicItemEvaluated = (): void => {
     setNumResolved((prev) => prev + 1);
   };
 
   return (
-        <>
-            {evaluation.dynamicItems.map((item) => (<SingleDynamicItemEvaluator item={item} onEvaluated={onDynamicItemEvaluated} key={getDynamicItemKey(item)} />))}
-            {children(finalItems)}
-        </>
+    <>
+      {evaluation.dynamicItems.map((item) => (<SingleDynamicItemEvaluator item={item} onEvaluated={onDynamicItemEvaluated} key={getDynamicItemKey(item)} />))}
+      {children(finalItems)}
+    </>
   );
 };

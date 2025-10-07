@@ -67,7 +67,7 @@ export interface IStoredFileActionsContext
   deleteFile: () => void;
   fetchFileInfo: () => void;
   fetchFileInfoError: () => void;
-  getStoredFile: (payload: StoredFileGetQueryParams) => Promise<string | unknown>;
+  getStoredFile: (payload: StoredFileGetQueryParams) => Promise<string>;
 
   // fetchFileInfoError: () => void;
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */

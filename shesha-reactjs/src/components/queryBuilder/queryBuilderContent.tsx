@@ -16,7 +16,7 @@ interface IQueryBuilderContentProps extends IQueryBuilderProps {
   qbConfig: Config;
 }
 
-const loadJsonLogic = (jlValue: object, config: Config) => {
+const loadJsonLogic = (jlValue: object, config: Config): ImmutableTree | undefined => {
   try {
     return QbUtils.loadFromJsonLogic(jlValue, config);
   } catch (error) {
@@ -55,17 +55,17 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
     return checkedTree;
   }, [value]);
 
-  const renderBuilder = (props: BuilderProps) => {
+  const renderBuilder = (props: BuilderProps): JSX.Element => {
     return (
-            <div className="query-builder-container">
-                <div className={classNames('query-builder', { 'qb-lite': showActionBtnOnHover })}>
-                    <Builder {...props} />
-                </div>
-            </div>
+      <div className="query-builder-container">
+        <div className={classNames('query-builder', { 'qb-lite': showActionBtnOnHover })}>
+          <Builder {...props} />
+        </div>
+      </div>
     );
   };
 
-  const handleChange = (_tree: ImmutableTree, _config: Config) => {
+  const handleChange = (_tree: ImmutableTree, _config: Config): void => {
     if (onChange) {
       const jsonLogicResult = QbUtils.jsonLogicFormat(_tree, _config);
 
@@ -75,8 +75,8 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   };
 
   return (
-        <div className={styles.shaQueryBuilder}>
-            {tree && qbConfig && <Query {...qbConfig} value={tree} onChange={handleChange} renderBuilder={renderBuilder} />}
-        </div>
+    <div className={styles.shaQueryBuilder}>
+      {tree && qbConfig && <Query {...qbConfig} value={tree} onChange={handleChange} renderBuilder={renderBuilder} />}
+    </div>
   );
 };

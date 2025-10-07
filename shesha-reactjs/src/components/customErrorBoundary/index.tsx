@@ -14,13 +14,13 @@ export const CustomErrorBoundary: FC<PropsWithChildren<ICustomErrorBoundaryProps
     resetErrorBoundary,
   }) => {
     return (
-<CustomErrorBoundaryFallbackComponent
-  error={error}
-  resetErrorBoundary={resetErrorBoundary}
-  componentName={componentName}
-  componentType={componentType}
-  componentId={componentId}
-/>
+      <CustomErrorBoundaryFallbackComponent
+        error={error}
+        resetErrorBoundary={resetErrorBoundary}
+        componentName={componentName}
+        componentType={componentType}
+        componentId={componentId}
+      />
     );
   };
 

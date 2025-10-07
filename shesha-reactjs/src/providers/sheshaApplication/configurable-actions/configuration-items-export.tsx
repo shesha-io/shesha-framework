@@ -28,7 +28,7 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
   const { notification } = App.useApp();
   const { hideModal, exporterRef } = props;
 
-  const onExport = () => {
+  const onExport = (): void => {
     setInProgress(true);
 
     if (!isDefined(exporterRef.current))
@@ -54,7 +54,7 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
   );
 };
 
-export const useConfigurationItemsExportAction = () => {
+export const useConfigurationItemsExportAction = (): void => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
   const exporterRef = useRef<IExportInterface>();
@@ -68,12 +68,12 @@ export const useConfigurationItemsExportAction = () => {
       const modalId = nanoid();
 
       return new Promise((resolve, reject) => {
-        const hideModal = () => {
+        const hideModal = (): void => {
           reject();
           removeModal(modalId);
         };
 
-        const onExported = () => {
+        const onExported = (): void => {
           removeModal(modalId);
           resolve(true);
         };

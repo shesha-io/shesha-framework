@@ -34,7 +34,7 @@ export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext =
     this.migrator = owner;
   }
 
-  add = <TNext = IHasVersion>(version: number, migration: Migration<TModel, TNext, TContext>) => {
+  add = <TNext = IHasVersion>(version: number, migration: Migration<TModel, TNext, TContext>): MigratorFluent<TNext, TDst, TContext> => {
     this.migrator.addMigration<TModel, TNext>({ version, migration });
 
     const fluent = new MigratorFluent<TNext, TDst, TContext>(this.migrator);
@@ -50,7 +50,7 @@ implements IMigrationRegistrationsOwner<TDst> {
     this.migrations = [];
   }
 
-  addMigration = <TSrc, TNext>(payload: IAddMigrationPayload<TSrc, TNext>) => {
+  addMigration = <TSrc, TNext>(payload: IAddMigrationPayload<TSrc, TNext>): void => {
     const registration: MigrationRegistration<TSrc, TNext> = {
       version: payload.version,
       up: payload.migration,
@@ -61,7 +61,7 @@ implements IMigrationRegistrationsOwner<TDst> {
     this.migrations.push(registration as unknown as MigrationRegistration);
   };
 
-  add = <TNext = IHasVersion>(version: number, migration: Migration<TSrc, TNext>) => {
+  add = <TNext = IHasVersion>(version: number, migration: Migration<TSrc, TNext>): MigratorFluent<TNext, TDst, TContext> => {
     this.addMigration<TSrc, TNext>({ version, migration });
 
     return new MigratorFluent<TNext, TDst, TContext>(this);

@@ -5,7 +5,7 @@ import {
   IDataSourcesProviderActionsContext,
   IDataSourcesProviderStateContext,
 } from './contexts';
-import { IDataSourceDictionary, IGetDataSourcePayload, IRegisterDataSourcePayload } from './models';
+import { IDataSourceDescriptor, IDataSourceDictionary, IGetDataSourcePayload, IRegisterDataSourcePayload } from './models';
 
 export interface IDataSourcesProviderProps {}
 
@@ -14,7 +14,7 @@ const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({
 
   const dataSources = useRef<IDataSourceDictionary>({});
 
-  const registerDataSource = (payload: IRegisterDataSourcePayload) => {
+  const registerDataSource = (payload: IRegisterDataSourcePayload): void => {
     dataSources.current = {
       ...dataSources.current,
       [`${payload.id}_${payload.name}`]: {
@@ -25,15 +25,15 @@ const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({
     };
   };
 
-  const unregisterDataSource = (payload: IRegisterDataSourcePayload) => {
+  const unregisterDataSource = (payload: IRegisterDataSourcePayload): void => {
     delete dataSources.current[`${payload.id}_${payload.name}`];
   };
 
-  const getDataSources = () => {
+  const getDataSources = (): IDataSourceDictionary => {
     return dataSources.current;
   };
 
-  const getDataSource = (payload: IGetDataSourcePayload | string) => {
+  const getDataSource = (payload: IGetDataSourcePayload | string): IDataSourceDescriptor | undefined => {
     return (typeof (payload) === 'string')
       ? dataSources.current[payload]
       : dataSources.current[`${payload.id}_${payload.name}`];
@@ -55,7 +55,7 @@ const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({
   );
 };
 
-function useDataSources(require: boolean = true) {
+function useDataSources(require: boolean = true): IDataSourcesProviderActionsContext & IDataSourcesProviderStateContext | undefined {
   const actionsContext = useContext(DataSourcesProviderActionsContext);
   const stateContext = useContext(DataSourcesProviderStateContext);
 

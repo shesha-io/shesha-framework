@@ -27,7 +27,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   const { styles } = useStyles();
   if (!error) return null;
 
-  const renderValidationErrors = (props: AlertProps) => {
+  const renderValidationErrors = (props: AlertProps): JSX.Element => {
     const widthStyle = props.style?.width && props.style?.marginLeft && props.style?.marginRight
       ? {
         width: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,

@@ -37,13 +37,13 @@ export const StatusCell: FC<IStatusCellProps> = ({ row }) => {
 
   return Icon
     ? (
-            <div>
-                <Popover content={description}>
-                    <Icon
-                      style={{ color: row.status === PackageItemStatus.Error ? theme.colorError : theme.colorPrimary }}
-                    />
-                </Popover>
-            </div>
+      <div>
+        <Popover content={description}>
+          <Icon
+            style={{ color: row.status === PackageItemStatus.Error ? theme.colorError : theme.colorPrimary }}
+          />
+        </Popover>
+      </div>
     )
     : undefined;
 };

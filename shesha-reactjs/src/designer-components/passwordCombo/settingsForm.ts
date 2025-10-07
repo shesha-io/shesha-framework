@@ -5,8 +5,9 @@ import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/util
 import { IPasswordComponentProps } from './utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: IPasswordComponentProps) => {
+export const getSettings = (data: IPasswordComponentProps): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const validationTabId = nanoid();

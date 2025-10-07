@@ -37,7 +37,7 @@ interface SettingMenuState {
   allSettings: SettingsDictionary;
 }
 
-const getSettingKey = (config: ISettingConfiguration, app?: IFrontEndApplication) => {
+const getSettingKey = (config: ISettingConfiguration, app?: IFrontEndApplication): string => {
   return `${config.module}|${config.name}|${app?.appKey}`;
 };
 
@@ -62,7 +62,7 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
       const groups: ISettingGroup[] = [];
       const allSettings: SettingsDictionary = {};
 
-      const addSetting = (groupName: string, config: ISettingConfiguration, app: IFrontEndApplication) => {
+      const addSetting = (groupName: string, config: ISettingConfiguration, app: IFrontEndApplication): void => {
         let group = groups.find((g) => g.name === groupName);
         if (!group) {
           group = { name: groupName, settings: [] };
@@ -93,7 +93,7 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
     }
   }, [applicationsLoadingState, configsLoadingState, selectedApplication]);
 
-  const onCollapseChange = (key: string | string[]) => {
+  const onCollapseChange = (key: string | string[]): void => {
     setOpenedKeys({ ...openedKeys, [selectedApplication?.appKey ?? 'general']: Array.isArray(key) ? key : [key] });
   };
 

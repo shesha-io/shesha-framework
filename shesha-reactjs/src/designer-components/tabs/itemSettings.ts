@@ -1,7 +1,8 @@
+import { FormRawMarkup } from '@/index';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 
-export const getItemSettings = () => {
+export const getItemSettings = (): FormRawMarkup => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const securityTabId = nanoid();

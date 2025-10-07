@@ -198,7 +198,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
   };
 
   // Return the visibility state of a button. A button is visible is it's not hidden and the user is permitted to view it
-  const getIsVisible = (item: ButtonGroupItemProps) => {
+  const getIsVisible = (item: ButtonGroupItemProps): boolean => {
     if (isDesignMode)
       return true; // show visibility indicator
 

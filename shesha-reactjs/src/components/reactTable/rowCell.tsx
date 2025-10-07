@@ -1,24 +1,22 @@
 import React, { FC, ReactNode, useRef, useCallback, useEffect } from 'react';
-import { Cell, CellPropGetter, TableCellProps, TableHeaderProps } from 'react-table';
+import { Cell, CellPropGetter } from 'react-table';
 import { useStyles } from './styles/styles';
 import { isStyledColumn } from '../dataTable/interfaces';
 import classNames from 'classnames';
-import { getColumnAnchored } from '@/utils';
+import { getColumnAnchored } from '@/utils/datatable';
 import { getAnchoredCellStyleAccessor } from '../dataTable/utils';
 import { useActualContextExecutionExecutor } from '@/hooks';
 
-const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
+const cellProps: CellPropGetter<object> = (props, { cell }) => [
   props,
   {
     style: {
-      justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
+      justifyContent: cell.column.align === 'right' ? 'flex-end' : 'flex-start',
       alignItems: 'center',
       display: 'flex',
     },
   },
 ];
-
-const cellProps: CellPropGetter<object> = (props, { cell }) => getStyles(props, cell.column.align);
 
 export interface IRowCellProps {
   cell: Cell<any, any>;
@@ -132,7 +130,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
           void (showExpandedView ? getCellRef(cellRef, checkOverflow()) : getCellRef(null, null));
         }}
       >
-            {cell.render('Cell')}
+        {cell.render('Cell')}
       </div>
 
     </div>

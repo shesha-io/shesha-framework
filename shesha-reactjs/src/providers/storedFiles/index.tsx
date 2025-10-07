@@ -33,6 +33,8 @@ import {
   IDownloadFilePayload,
   IDownloadZipPayload,
   IStoredFile,
+  IStoredFilesActionsContext,
+  IStoredFilesStateContext,
   IUploadFilePayload,
   STORED_FILES_CONTEXT_INITIAL_STATE,
   StoredFilesActionsContext,
@@ -174,7 +176,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   }, []);
   //#endregion
 
-  const uploadFile = (payload: IUploadFilePayload) => {
+  const uploadFile = (payload: IUploadFilePayload): void => {
     const formData = new FormData();
 
     const { file } = payload;
@@ -228,15 +230,15 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   //#region delete file
 
-  const deleteFileSuccess = (fileIdToDelete: string) => {
+  const deleteFileSuccess = (fileIdToDelete: string): void => {
     dispatch(deleteFileSuccessAction(fileIdToDelete));
   };
 
-  const deleteFileError = (fileIdToDelete: string) => {
+  const deleteFileError = (fileIdToDelete: string): void => {
     dispatch(deleteFileErrorAction(fileIdToDelete));
   };
 
-  const deleteFile = (fileIdToDelete: string) => {
+  const deleteFile = (fileIdToDelete: string): void => {
     dispatch(deleteFileRequestAction(fileIdToDelete));
 
     deleteFileHttp({ id: fileIdToDelete })
@@ -253,7 +255,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   //#endregion
 
-  const downloadZipFile = (payload: IDownloadZipPayload = null) => {
+  const downloadZipFile = (payload: IDownloadZipPayload = null): void => {
     dispatch(downloadZipRequestAction());
     const query = !!payload
       ? payload
@@ -285,7 +287,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       });
   };
 
-  const downloadFile = (payload: IDownloadFilePayload) => {
+  const downloadFile = (payload: IDownloadFilePayload): void => {
     const url = `${(baseUrl ?? backendUrl)}/api/StoredFile/Download?${qs.stringify({
       id: payload.fileId,
     })}`;
@@ -325,7 +327,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   );
 };
 
-function useStoredFilesState() {
+function useStoredFilesState(): IStoredFilesStateContext | undefined {
   const context = useContext(StoredFilesStateContext);
 
   if (context === undefined) {
@@ -335,7 +337,7 @@ function useStoredFilesState() {
   return context;
 }
 
-function useStoredFilesActions() {
+function useStoredFilesActions(): IStoredFilesActionsContext | undefined {
   const context = useContext(StoredFilesActionsContext);
 
   if (context === undefined) {
@@ -345,7 +347,7 @@ function useStoredFilesActions() {
   return context;
 }
 
-function useStoredFilesStore() {
+function useStoredFilesStore(): IStoredFilesStateContext & IStoredFilesActionsContext {
   return { ...useStoredFilesState(), ...useStoredFilesActions() };
 }
 

@@ -33,7 +33,7 @@ export const SaveButton: FC<ISaveButtonProps> = (props) => {
     return saveForm(payload);
   };
 
-  const onSaveClick = () => {
+  const onSaveClick = (): void => {
     message.loading('Saving..', 0);
     saveFormInternal()
       .then(() => {
@@ -52,12 +52,12 @@ export const SaveButton: FC<ISaveButtonProps> = (props) => {
   };
 
   return (
-        <Button
-          icon={<SaveOutlined />}
-          onClick={onSaveClick}
-          type={props.type}
-          size={props.size}
-          disabled={!isModified}
-        />
+    <Button
+      icon={<SaveOutlined />}
+      onClick={onSaveClick}
+      type={props.type}
+      size={props.size}
+      disabled={!isModified}
+    />
   );
 };

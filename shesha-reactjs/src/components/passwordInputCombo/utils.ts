@@ -37,13 +37,13 @@ export const getPasswordValidations = (password: string, passwordLength: number 
   };
 };
 
-export const isStrongPassword = (password: string, length: number) => {
+export const isStrongPassword = (password: string, length: number): boolean => {
   const passwordRegex = new RegExp(`^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{${length},})`);
 
   return passwordRegex.test(password);
 };
 
-export const isSamePassword = (initialPassword: string, confirmPassword: string, passwordLength: number = 4) => {
+export const isSamePassword = (initialPassword: string, confirmPassword: string, passwordLength: number = 4): boolean => {
   if (initialPassword) {
     if (isStrongPassword(initialPassword, passwordLength)) {
       return initialPassword === confirmPassword;

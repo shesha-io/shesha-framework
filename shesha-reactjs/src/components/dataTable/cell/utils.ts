@@ -9,7 +9,7 @@ interface ICrudOptions {
   inlineEditMode?: 'all-at-once' | 'one-by-one';
 }
 
-export const adjustWidth = (crudOptions: ICrudOptions) => {
+export const adjustWidth = (crudOptions: ICrudOptions): { maxWidth: number; minWidth: number } => {
   const { canEdit, canAdd, canDelete, inlineEditMode } = crudOptions;
 
   const isEditEnabled = canEdit === "yes";
@@ -43,7 +43,7 @@ export const adjustWidth = (crudOptions: ICrudOptions) => {
   return { minWidth: 0, maxWidth: 0 };
 };
 
-export const getInjectables = ({ defaultRow, defaultValue }: IComponentWrapperProps) => {
+export const getInjectables = ({ defaultRow, defaultValue }: IComponentWrapperProps): IComponentMetadata => {
   let result: IComponentMetadata = {};
 
   /** Adds injectedTableRow to result if applicable **/

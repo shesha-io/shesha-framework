@@ -84,7 +84,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   const canConfigure = Boolean(formComponent);
   const selectStyle = { width: canConfigure ? 'calc(100% - 100px)' : '100%' };
 
-  const getComponentModel = (toolboxComponent: IToolboxComponent) => {
+  const getComponentModel = (toolboxComponent: IToolboxComponent): IConfigurableFormComponent | null => {
     if (!toolboxComponent) return null;
 
     let componentModel: IConfigurableFormComponent = {
@@ -108,7 +108,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
     return componentModel;
   };
 
-  const onSelectChange = (selectedValue: string) => {
+  const onSelectChange = (selectedValue: string): void => {
     if (onChange) {
       const component = selectedValue ? allComponents[selectedValue] : null;
       const settings = getComponentModel(component);
@@ -116,17 +116,17 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
       onChange(selectedValue ? { type: selectedValue, settings } : null);
     }
   };
-  const onClear = () => {
+  const onClear = (): void => {
     if (onChange) onChange(null);
   };
 
-  const onConfigureClick = () => {
+  const onConfigureClick = (): void => {
     setIsSettingsVisible(true);
   };
-  const onCancelConfigureClick = () => {
+  const onCancelConfigureClick = (): void => {
     setIsSettingsVisible(false);
   };
-  const onSettingsSaveClick = (data) => {
+  const onSettingsSaveClick = (data): Promise<void> => {
     if (onChange) {
       const newValue: ComponentSelectorValue = { ...value, settings: data };
       onChange(newValue);

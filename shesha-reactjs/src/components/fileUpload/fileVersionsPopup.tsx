@@ -25,13 +25,13 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
 
   if (fileId == null) return null;
 
-  const handleVisibleChange = (open: boolean) => {
+  const handleVisibleChange = (open: boolean): void => {
     if (open && !serverData) fetchHistory();
   };
 
   const uploads = isAjaxSuccessResponse(serverData) ? serverData.result : undefined;
 
-  const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto) => {
+  const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto): void => {
     downloadFile({ fileId, versionNo: fileVersion.versionNo, fileName: fileVersion.fileName });
   };
 

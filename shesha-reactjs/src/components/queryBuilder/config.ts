@@ -17,7 +17,7 @@ import { FieldWidget } from './widgets/field';
 interface TypeModifier extends Partial<Type> {
   operators?: string[];
 };
-const modifyType = (types: CoreTypes, typeName: string, modifier: TypeModifier) => {
+const modifyType = (types: CoreTypes, typeName: string, modifier: TypeModifier): void => {
   const type: Type = types[typeName];
   if (type) {
     types[typeName] = { ...type, ...modifier };

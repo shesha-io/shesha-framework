@@ -13,10 +13,10 @@ const baseFormFilter = {
 
 export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
   return (
-        <GenericConfigItemAutocomplete
-          {...props}
-          entityType={FORM_CONFIG_ENTITY_TYPE}
-          filter={baseFormFilter}
-        />
+    <GenericConfigItemAutocomplete
+      {...props}
+      entityType={FORM_CONFIG_ENTITY_TYPE}
+      filter={baseFormFilter}
+    />
   );
 };

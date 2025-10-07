@@ -43,19 +43,19 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
           entityReferenceTypeShortAlias,
         }) => {
           if (isFilterable) {
-            const onRemoveFilter = (idOfFilter: string) => {
+            const onRemoveFilter = (idOfFilter: string): void => {
               const newIds = currentFilter.filter((f) => f.columnId !== idOfFilter).map((f) => f.columnId);
 
               toggleColumnFilter(newIds);
             };
 
-            const onChangeFilterOption = (filterId: string, fOption: IndexColumnFilterOption) => {
+            const onChangeFilterOption = (filterId: string, fOption: IndexColumnFilterOption): void => {
               if (changeFilterOption) {
                 changeFilterOption(filterId, fOption);
               }
             };
 
-            const onChangeFilter = (filterId: string, fltr: ColumnFilter) => {
+            const onChangeFilter = (filterId: string, fltr: ColumnFilter): void => {
               if (changeFilter) {
                 changeFilter(filterId, fltr);
               }

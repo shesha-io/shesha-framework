@@ -29,7 +29,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
   const [state, setState] = useState<IListSettingsState>(model);
   const [form] = Form.useForm();
 
-  const handleValuesChange = (changedValues: IListItemsProps, values: IListItemsProps) => {
+  const handleValuesChange = (changedValues: IListItemsProps, values: IListItemsProps): void => {
     if (readOnly) return;
     const incomingState = { ...values };
 

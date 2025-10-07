@@ -7,8 +7,8 @@ export interface ICodeEditorLoadingProgressorProps {
 
 export const CodeEditorLoadingProgressor: FC<ICodeEditorLoadingProgressorProps> = ({ message }) => {
   return (
-        <Spin tip={message || "Load editor..."}>
-            <div style={{ width: "100%", height: "100%", minHeight: "200px", minWidth: "200px" }} />
-        </Spin>
+    <Spin tip={message || "Load editor..."}>
+      <div style={{ width: "100%", height: "100%", minHeight: "200px", minWidth: "200px" }} />
+    </Spin>
   );
 };

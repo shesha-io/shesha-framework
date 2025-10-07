@@ -9,16 +9,16 @@ export const SelectColumnsButton: FC = ({ }) => {
     setIsInProgressFlag,
   } = useDataTableStore();
 
-  const startTogglingColumnVisibility = () => setIsInProgressFlag({ isSelectingColumns: true, isFiltering: false });
+  const startTogglingColumnVisibility = (): void => setIsInProgressFlag({ isSelectingColumns: true, isFiltering: false });
 
   return (
-        <Button
-          type="link"
-          className="extra-btn column-visibility"
-          icon={<SlidersOutlined rotate={90} />}
-          disabled={!!isSelectingColumns}
-          onClick={startTogglingColumnVisibility}
-          size="small"
-        />
+    <Button
+      type="link"
+      className="extra-btn column-visibility"
+      icon={<SlidersOutlined rotate={90} />}
+      disabled={!!isSelectingColumns}
+      onClick={startTogglingColumnVisibility}
+      size="small"
+    />
   );
 };

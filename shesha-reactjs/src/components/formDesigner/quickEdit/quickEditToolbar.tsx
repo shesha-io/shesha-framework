@@ -18,7 +18,7 @@ export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, render
   const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
   const { message } = App.useApp();
 
-  const onSaved = () => {
+  const onSaved = (): void => {
     message.success('Form saved successfully');
 
     if (onUpdated)
@@ -26,21 +26,21 @@ export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, render
   };
 
   return (
-        <div className="sha-designer-toolbar">
-            <div className="sha-designer-toolbar-left">
-                {!readOnly && (
-                    <SaveMenu onSaved={onSaved} />
-                )}
-            </div>
-            <CanvasConfig />
-            <div className="sha-designer-toolbar-right" style={{ marginRight: renderSource === "modal" ? "30px" : "auto" }}>
-                <FormSettingsButton />
-                <OpenOnNewPageButton />
-                <PreviewButton />
-                <DebugButton />
+    <div className="sha-designer-toolbar">
+      <div className="sha-designer-toolbar-left">
+        {!readOnly && (
+          <SaveMenu onSaved={onSaved} />
+        )}
+      </div>
+      <CanvasConfig />
+      <div className="sha-designer-toolbar-right" style={{ marginRight: renderSource === "modal" ? "30px" : "auto" }}>
+        <FormSettingsButton />
+        <OpenOnNewPageButton />
+        <PreviewButton />
+        <DebugButton />
 
-                {!readOnly && (<UndoRedoButtons />)}
-            </div>
-        </div>
+        {!readOnly && (<UndoRedoButtons />)}
+      </div>
+    </div>
   );
 };

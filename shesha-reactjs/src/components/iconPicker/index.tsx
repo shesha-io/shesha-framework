@@ -85,19 +85,19 @@ const IconPicker: FC<IIconPickerProps> = ({
     onIconChange(<ShaIcon iconName={defaultValue} style={{ fontSize: 30 }} {...props} />, defaultValue);
   }, [defaultValue, value]);
 
-  const toggleModalVisibility = () => {
+  const toggleModalVisibility = (): void => {
     if (!readOnly) setShowModal((visible) => !visible);
   };
 
-  const changeIconModes = (e: RadioChangeEvent) => {
+  const changeIconModes = (e: RadioChangeEvent): void => {
     const mode = e.target.value as IconModes;
 
     setSearchOption({ mode, group: ICON_MODE_GROUPS[mode] });
   };
 
-  const onSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(event?.target?.value);
+  const onSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => setSearchQuery(event?.target?.value);
 
-  const handleIconSelection = (selected: ShaIconTypes) => {
+  const handleIconSelection = (selected: ShaIconTypes): void => {
     if (readOnly) return;
     setLocalSelectedIcon(selected);
     toggleModalVisibility();
@@ -107,7 +107,7 @@ const IconPicker: FC<IIconPickerProps> = ({
     }
   };
 
-  const onClear = () => {
+  const onClear = (): void => {
     if (readOnly) return;
     setLocalSelectedIcon(null);
     toggleModalVisibility();

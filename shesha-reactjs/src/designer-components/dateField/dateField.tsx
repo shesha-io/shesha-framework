@@ -35,7 +35,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
         <ConfigurableFormItem model={model}>
           {(value, onChange) => {
             const customEvent = customDateEventHandler(model, allData);
-            const onChangeInternal = (...args: any[]) => {
+            const onChangeInternal = (...args: any[]): void => {
               customEvent.onChange(args[0], args[1]);
               if (typeof onChange === 'function')
                 onChange(...args);

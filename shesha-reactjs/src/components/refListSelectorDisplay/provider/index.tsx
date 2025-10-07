@@ -5,6 +5,8 @@ import {
   RefListItemGroupConfiguratorStateContext,
   REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
   IUpdateChildItemsPayload,
+  IRefListItemGroupConfiguratorStateContext,
+  IRefListItemGroupConfiguratorActionsContext,
 } from '@/components/refListSelectorDisplay/provider/contexts';
 import {
   selectItemAction,
@@ -49,11 +51,11 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
     });
   }, [props?.referenceList]);
 
-  const selectItem = (uid: string) => {
+  const selectItem = (uid: string): void => {
     dispatch(selectItemAction(uid));
   };
 
-  const updateItem = (payload: IUpdateItemSettingsPayload) => {
+  const updateItem = (payload: IUpdateItemSettingsPayload): void => {
     if (!state.readOnly) dispatch(updateItemAction(payload));
   };
 
@@ -61,7 +63,7 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
     return getItemById(state.items, uid);
   };
 
-  const updateChildItems = (payload: IUpdateChildItemsPayload) => {
+  const updateChildItems = (payload: IUpdateChildItemsPayload): void => {
     if (!state.readOnly) dispatch(updateChildItemsAction(payload));
   };
 
@@ -87,7 +89,7 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
   );
 };
 
-function useRefListItemGroupConfiguratorState() {
+function useRefListItemGroupConfiguratorState(): IRefListItemGroupConfiguratorStateContext {
   const context = useContext(RefListItemGroupConfiguratorStateContext);
 
   if (context === undefined) {
@@ -97,7 +99,7 @@ function useRefListItemGroupConfiguratorState() {
   return context;
 }
 
-function useRefListItemGroupConfiguratorActions() {
+function useRefListItemGroupConfiguratorActions(): IRefListItemGroupConfiguratorActionsContext {
   const context = useContext(RefListItemGroupConfiguratorActionsContext);
 
   if (context === undefined) {
@@ -109,7 +111,7 @@ function useRefListItemGroupConfiguratorActions() {
   return context;
 }
 
-function useRefListItemGroupConfigurator() {
+function useRefListItemGroupConfigurator(): IRefListItemGroupConfiguratorActionsContext & IRefListItemGroupConfiguratorStateContext {
   return { ...useRefListItemGroupConfiguratorState(), ...useRefListItemGroupConfiguratorActions() };
 }
 

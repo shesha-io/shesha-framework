@@ -27,16 +27,16 @@ const DebugPanelDataContent: FC = () => {
 
   const contexts = useMemo(() => contextManager.getDataContexts('full'), [contextManager.lastUpdate]);
 
-  const onChangeContext = (contextId: string, propName: string, val: any) => {
+  const onChangeContext = (contextId: string, propName: string, val: any): void => {
     const ctx = contextManager.getDataContext(contextId);
     ctx.setFieldValue(propName as "", val as never); // TODO: review and change types
   };
 
-  const onChangeGloablState = (propName: string, val: any) => {
+  const onChangeGloablState = (propName: string, val: any): void => {
     globalState.setState({ key: propName, data: val });
   };
 
-  const onChangeFormData = (propName: string, val: any) => {
+  const onChangeFormData = (propName: string, val: any): void => {
     const pName = getFieldNameFromExpression(propName);
 
     const changedData = {};
@@ -58,36 +58,36 @@ const DebugPanelDataContent: FC = () => {
   };
 
   return (
-      <>
-        {true && globalState && (
+    <>
+      {true && globalState && (
+        <DebugDataTree
+          data={globalState}
+          onChange={(propName, val) => onChangeGloablState(propName, val)}
+          name="GlobalState (obsolete)"
+        />
+      )}
+      {pageInstance && (
+        <DebugDataTree
+          data={pageInstance?.formData}
+          metadata={formMetadata}
+          editAll
+          onChange={(propName, val) => onChangeFormData(propName, val)}
+          name="Form data"
+        />
+      )}
+      {contexts.map((item) => {
+        const ctxData = item.getFull();
+        return (
           <DebugDataTree
-            data={globalState}
-            onChange={(propName, val) => onChangeGloablState(propName, val)}
-            name="GlobalState (obsolete)"
+            key={item.id}
+            data={ctxData}
+            lastUpdated={contextManager.lastUpdate}
+            onChange={(propName, val) => onChangeContext(item.id, propName, val)}
+            name={item.name}
           />
-        )}
-        {pageInstance && (
-          <DebugDataTree
-            data={pageInstance?.formData}
-            metadata={formMetadata}
-            editAll
-            onChange={(propName, val) => onChangeFormData(propName, val)}
-            name="Form data"
-          />
-        )}
-        {contexts.map((item) => {
-          const ctxData = item.getFull();
-          return (
-<DebugDataTree
-  key={item.id}
-  data={ctxData}
-  lastUpdated={contextManager.lastUpdate}
-  onChange={(propName, val) => onChangeContext(item.id, propName, val)}
-  name={item.name}
-/>
-          );
-        })}
-      </>
+        );
+      })}
+    </>
   );
 };
 

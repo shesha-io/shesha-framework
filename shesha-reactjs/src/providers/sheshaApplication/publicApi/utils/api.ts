@@ -15,7 +15,7 @@ export class UtilsApi implements IUtilsApi {
     this._httpClient = httpClient;
   }
 
-  evaluateString = (template: string, data: any) => {
+  evaluateString = (template: string, data: any): string => {
     return evaluateString(template, data);
   };
 }

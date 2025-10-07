@@ -211,7 +211,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     });
   };
 
-  const canAction = (val: YesNoInherit) => {
+  const canAction = (val: YesNoInherit): boolean => {
     switch (val) {
       case 'yes':
         return true;

@@ -11,18 +11,18 @@ export class StringBuilder {
   /**
    * Increment the current indentation level.
    */
-  incIndent() {
+  incIndent(): void {
     this._indent++;
   }
 
   /**
    * Decreases the current indentation level.
    */
-  decIndent() {
+  decIndent(): void {
     this._indent--;
   }
 
-  #formatLine(line: string) {
+  #formatLine(line: string): string {
     return `${' '.repeat(this._indent * 4)}${line}`;
   }
 
@@ -32,7 +32,7 @@ export class StringBuilder {
    * @param {string} line - the line to be appended
    * @return {void}
    */
-  append(line: string) {
+  append(line: string): void {
     this.content.push(this.#formatLine(line));
   }
 
@@ -42,7 +42,7 @@ export class StringBuilder {
    * @param {string[]} lines - array of lines to be appended
    * @return {void}
    */
-  appendLines(lines: string[]) {
+  appendLines(lines: string[]): void {
     lines.forEach((line) => this.append(line));
   };
 
@@ -51,7 +51,7 @@ export class StringBuilder {
    *
    * @return {string} the joined content
    */
-  build() {
+  build(): string {
     return this.content.join(EOL);
   }
 }

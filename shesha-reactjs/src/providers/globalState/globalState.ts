@@ -15,14 +15,14 @@ export class GlobalState implements IGlobalState {
     return this.#state;
   };
 
-  setState = (payload: ISetStatePayload) => {
+  setState = (payload: ISetStatePayload): void => {
     const { key, data } = payload;
 
     this.#state[key] = data;
     this.#forceUpdate();
   };
 
-  clearState = (stateKey: string) => {
+  clearState = (stateKey: string): void => {
     delete this.#state[stateKey];
     this.#forceUpdate();
   };

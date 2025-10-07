@@ -124,14 +124,14 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   // do autoexpand only for new object
   useEffect(() => {
     const exp = openedKeys ?? [];
-    const expand = (key: string) => {
+    const expand = (key: string): void => {
       if (!exp.find((e) => e === key)) {
         exp.push(key);
       }
     };
     if (allItems) {
       if (value) {
-        const f = (list: PermissionDto[]) => {
+        const f = (list: PermissionDto[]): void => {
           list.forEach((item) => {
             if (item.child?.length > 0 && item.child.find((c) => value.find((v) => v === c.id))) {
               if (exp.find((e) => e === item.id))
@@ -175,7 +175,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     }
   }, [isFetchingData, fetchingDataError, fetchingDataResponse]);
 
-  const onCheck = (keys: any, _info: ICheckInfo) => {
+  const onCheck = (keys: any, _info: ICheckInfo): void => {
     if (rest.readOnly) return;
     setChecked(keys?.checked);
     if (Boolean(onChange))
@@ -186,7 +186,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       );
   };
 
-  const onExpand = (keys: Key[]) => {
+  const onExpand = (keys: Key[]): void => {
     setExpanded(keys);
     setOpenedKeys(keys.map((item) => item.toString()));
   };
@@ -204,7 +204,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     return res;
   };
 
-  const onChangeAction = (selectedRow: PermissionDto) => {
+  const onChangeAction = (selectedRow: PermissionDto): void => {
     if (onSelectAction?.actionName) {
       executeAction({
         actionConfiguration: onSelectAction,
@@ -213,7 +213,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     }
   };
 
-  const onSelect = (keys: Key[]) => {
+  const onSelect = (keys: Key[]): void => {
     if (!keys || keys.length === 0) {
       setSelected(null);
 
@@ -245,7 +245,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     }
   }, [doSelect]);
 
-  const addPermission = (parent: PermissionDto, list: PermissionDto[]) => {
+  const addPermission = (parent: PermissionDto, list: PermissionDto[]): PermissionDto => {
     const o: PermissionDto = {
       id: emptyId,
       name: 'NewPermission',
@@ -260,7 +260,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     return o;
   };
 
-  const deletePermission = () => {
+  const deletePermission = (): void => {
     const s = findItem(allItems, selected[0]);
     if (Boolean(s.parentName)) {
       setDoSelect(s.parentName);
@@ -278,12 +278,12 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     setAllItems([...allItems]);
   };
 
-  const expandNode = (key: string) => {
+  const expandNode = (key: string): void => {
     if (expanded.length === 0 || !expanded.find((x) => x === key))
       setExpanded((prev) => [...prev, key]);
   };
 
-  const expandParent = (items: PermissionDto[], item: PermissionDto) => {
+  const expandParent = (items: PermissionDto[], item: PermissionDto): void => {
     const parent = item.parentName ? findItem(items, item.parentName) : null;
     const exp = parent ? parent.id : item.module?._displayName ?? withoutModule;
     expandNode(exp);
@@ -350,11 +350,11 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     }
   }, [isParentUpdating, updateParentDataError]);
 
-  const onDragStart = (info) => {
+  const onDragStart = (info): void => {
     setSelected([info.node.key]);
   };
 
-  const onDrop = (info) => {
+  const onDrop = (info): void => {
     const dropItem = findItem(allItems, info.node.key);
     const dragItem = findItem(allItems, info.dragNode.key);
     if (!dragItem) return;
@@ -425,7 +425,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     return result;
   };
 
-  const mapItem = (item: IPermissionModule | PermissionDto) => {
+  const mapItem = (item: IPermissionModule | PermissionDto): IDataNode => {
     const p = item as PermissionDto;
     if (!p.id) {
       const m = item as IPermissionModule;
@@ -455,14 +455,14 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       children: p.child?.map(mapItem),
       checkable: rest.mode === 'Select',
       selectable: true,
-    } as IDataNode;
+    } satisfies IDataNode;
   };
 
-  const updateTree = () => {
+  const updateTree = (): void => {
     const visible = getVisible(allItems, rest.hideSearch ? rest.searchText : searchText);
     if (searchText || rest.searchText) {
       const nodes = [];
-      const f = (item: PermissionDto) => {
+      const f = (item: PermissionDto): void => {
         if (item.child.length > 0) {
           item.child.forEach(f);
           // nodes.push(...item.child.map(f));
@@ -591,7 +591,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     }
   );
 
-  const getLoadingHint = () => {
+  const getLoadingHint = (): string => {
     switch (true) {
       case isFetchingData:
         return 'Fetching data...';

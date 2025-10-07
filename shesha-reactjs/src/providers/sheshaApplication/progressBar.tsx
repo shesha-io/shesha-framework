@@ -5,13 +5,13 @@ import React, { FC, PropsWithChildren } from 'react';
 export const ProgressBar: FC<PropsWithChildren> = ({ children }) => {
   const theme = useTheme();
   return (
-        <AppProgressProvider
-          key="AppProgressProvider"
-          height="4px"
-          color={theme.colorPrimary}
-          shallowRouting
-        >
-            {children}
-        </AppProgressProvider>
+    <AppProgressProvider
+      key="AppProgressProvider"
+      height="4px"
+      color={theme.colorPrimary}
+      shallowRouting
+    >
+      {children}
+    </AppProgressProvider>
   );
 };

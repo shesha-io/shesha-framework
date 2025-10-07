@@ -31,7 +31,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
 
   const initialSelection = useRef<string>(undefined);
 
-  const onButtonClick = (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => {
+  const onButtonClick = (itemId: string, actionConfiguration: IConfigurableActionConfiguration): void => {
     setSelectedKey(itemId);
     executeAction({
       actionConfiguration: actionConfiguration,
@@ -70,7 +70,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
 
   if (menuItems.length === 0) return null;
 
-  const onOpenChange = (openKeys: React.Key[]) => {
+  const onOpenChange = (openKeys: React.Key[]): void => {
     setOpenedKeys(openKeys);
   };
 

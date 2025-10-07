@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useContext, useState, Fragment } from 'react';
+import React, { FC, useEffect, useRef, useContext, useState, Fragment, ReactElement, CSSProperties } from 'react';
 import {
   DragDropContext,
   DropResult,
@@ -27,13 +27,13 @@ export interface IProps {
 const EditableContext = React.createContext(null);
 const DragHandleContext = React.createContext(null);
 
-const tooltip = () => (
+const tooltip = (): ReactElement => (
   <Tooltip title={strings.tooltip}>
     <QuestionCircleOutlined className="tooltip-question-icon" size={14} color="gray" />
   </Tooltip>
 );
 
-const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, isDropdown, ...restProps }) => {
+const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, isDropdown, ...restProps }): ReactElement => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
   const form = useContext(EditableContext);
@@ -43,14 +43,14 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
     }
   }, [editing]);
 
-  const toggleEdit = () => {
+  const toggleEdit = (): void => {
     setEditing(!editing);
     form.setFieldsValue({
       [dataIndex]: record[dataIndex],
     });
   };
 
-  const save = async () => {
+  const save = async (): Promise<void> => {
     try {
       const values = await form.validateFields();
       toggleEdit();
@@ -68,16 +68,16 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   const textAlignValues = ['start', 'end', 'center', 'inherit'];
   const flexDirectionValues = ['row', 'column', 'row-reverse', 'column-reverse'];
 
-  const Dropdown = (ref, values) =>
+  const Dropdown = (ref, values): ReactElement =>
     (
-<Select ref={ref} onSelect={save} onBlur={save}>
-    {values.map((value, i) => (
-<Option key={i} value={value}>{value.split('-').map((word) => {
-  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-}).join(' ')}
-</Option>
-    ))}
-</Select>
+      <Select ref={ref} onSelect={save} onBlur={save}>
+        {values.map((value, i) => (
+          <Option key={i} value={value}>{value.split('-').map((word) => {
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+          }).join(' ')}
+          </Option>
+        ))}
+      </Select>
     );
 
   if (editable) {
@@ -122,7 +122,7 @@ const getItemStyle = (draggableStyle: any, isDragging: boolean): {} => ({
   ...draggableStyle,
 });
 
-const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
+const DraggableBodyRowInner = ({ columns, className, style, ...restProps }): ReactElement => {
   const [form] = Form.useForm();
 
   // function findIndex base on Table rowKey props and should always be a right array index
@@ -149,7 +149,7 @@ const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
   );
 };
 
-const DragHandle = () => {
+const DragHandle = (): ReactElement => {
   const dragHandleProps = useContext(DragHandleContext);
 
   return <MenuOutlined style={{ color: '#999' }} {...dragHandleProps} />;
@@ -159,12 +159,12 @@ const DragHandle = () => {
 export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => {
   const columns = value as KeyInfomationBarItemProps[];
 
-  const handleDeleteTab = (key: string) => {
+  const handleDeleteTab = (key: string): void => {
     const newColumns = columns.filter((column) => column.id !== key);
     onChange(newColumns);
   };
 
-  const handleAddColumn = () => {
+  const handleAddColumn = (): void => {
     const newColumn: KeyInfomationBarItemProps = {
       id: nanoid(),
       width: 200,
@@ -177,7 +177,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => 
     onChange(newColumns);
   };
 
-  const handleSaveCell = (row) => {
+  const handleSaveCell = (row): void => {
     const newData = [...columns];
     const index = newData.findIndex((item) => row.id === item.id);
     const currentItem = newData[index];
@@ -254,12 +254,12 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => 
     };
   });
 
-  const getListStyle = (_isDraggingOver: boolean) => ({
+  const getListStyle = (_isDraggingOver: boolean): Pick<CSSProperties, 'background' | 'overflow'> => ({
     background: _isDraggingOver ? "lightgrey" : "inherit",
     overflow: "scroll" as "scroll",
   });
 
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = (result: DropResult): void => {
     const { source, destination } = result;
 
     if (!destination) {
@@ -285,7 +285,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => 
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const toggleModal = () => setShowDialog((prevVisible) => !prevVisible);
+  const toggleModal = (): void => setShowDialog((prevVisible) => !prevVisible);
 
   return (
     <Fragment>

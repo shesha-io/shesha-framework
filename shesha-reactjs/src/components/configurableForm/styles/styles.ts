@@ -16,7 +16,7 @@ const hookResponse = {
   styles: formClassNames,
 };
 
-export const useStyles = () => {
+export const useStyles = (): typeof hookResponse => {
   return hookResponse;
 };
 

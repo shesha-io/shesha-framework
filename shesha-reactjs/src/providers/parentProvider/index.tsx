@@ -39,7 +39,7 @@ export const ParentProviderStateContext = createNamedContext<IParentProviderStat
   },
   "ParentProviderStateContext");
 
-export function useParent(require: boolean = true) {
+export function useParent(require: boolean = true): IParentProviderStateContext | undefined {
   const stateContext = useContext(ParentProviderStateContext);
 
   if (stateContext === undefined && require) {
@@ -81,7 +81,7 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
     return null;
   };
 
-  const registerChild = (input: IParentProviderStateContext) => {
+  const registerChild = (input: IParentProviderStateContext): void => {
     const exists = childParentProvider.current.find((item) => item.id === input.id);
     if (!exists)
       childParentProvider.current = [...childParentProvider.current, input];
@@ -91,7 +91,7 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
       });
   };
 
-  const unRegisterChild = (input: IParentProviderStateContext) => {
+  const unRegisterChild = (input: IParentProviderStateContext): void => {
     const existsPos = childParentProvider.current.findIndex((item) => item.id === input.id);
     if (existsPos > -1)
       childParentProvider.current.splice(existsPos, 1);

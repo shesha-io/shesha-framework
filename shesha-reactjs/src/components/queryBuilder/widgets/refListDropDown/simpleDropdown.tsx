@@ -43,18 +43,18 @@ export const RefListSimpleDropdown: FC<IRefListSimpleDropdownProps> = (props) =>
   }, [outcomeValueFunc, incomeValueFunc]);
 
   return (
-        <GenericRefListDropDown<any>
-          value={value}
-          onChange={onChange}
-          referenceListId={referenceListId}
-          style={style}
-          size={size}
-          readOnly={readOnly}
+    <GenericRefListDropDown<any>
+      value={value}
+      onChange={onChange}
+      referenceListId={referenceListId}
+      style={style}
+      size={size}
+      readOnly={readOnly}
 
-          getLabeledValue={getLabeledValue}
-          getOptionFromFetchedItem={getOptionFromFetchedItem}
-          incomeValueFunc={incomeValueFunc}
-          outcomeValueFunc={outcomeValueFunc}
-        />
+      getLabeledValue={getLabeledValue}
+      getOptionFromFetchedItem={getOptionFromFetchedItem}
+      incomeValueFunc={incomeValueFunc}
+      outcomeValueFunc={outcomeValueFunc}
+    />
   );
 };

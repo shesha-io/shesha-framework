@@ -42,7 +42,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
   useEffect(() => {
-    const fetchStyles = async () => {
+    const fetchStyles = async (): Promise<void> => {
       try {
         const storedImageUrl =
           background?.storedFile?.id && background?.type === 'storedFile'
@@ -104,7 +104,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
   const computedStyle = { ...getStyle(style, data), ...pickStyleFromModel(stylingBoxJSON) };
   const barStyle = !vertical ? { justifyContent: alignItems } : { alignItems: alignItems };
 
-  const containerStyle = (item) => ({
+  const containerStyle = (item): CSSProperties => ({
     textAlign: item.textAlign,
     display: 'flex',
     flexDirection: item.flexDirection ? item.flexDirection : 'column',

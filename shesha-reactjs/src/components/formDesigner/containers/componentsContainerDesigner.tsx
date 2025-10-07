@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { ConfigurableFormComponent } from '../configurableFormComponent';
-import React, { FC, PropsWithChildren, useMemo } from 'react';
+import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
 import { getAlignmentStyle } from './util';
 import { IComponentsContainerProps } from './componentsContainer';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
@@ -40,7 +40,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     }));
   }, [childIds]);
 
-  const onSetList = (newState: ItemInterface[], _sortable, _store) => {
+  const onSetList = (newState: ItemInterface[], _sortable, _store): void => {
     if (!hasDragged) return;
 
     if (!isNaN(itemsLimit) && itemsLimit && newState?.length === Math.round(itemsLimit) + 1) {
@@ -92,17 +92,17 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     }
   };
 
-  const onDragStart = () => {
+  const onDragStart = (): void => {
     startDragging();
   };
 
-  const onDragEnd = (_evt) => {
+  const onDragEnd = (_evt): void => {
     endDragging();
   };
 
-  const renderComponents = () => {
+  const renderComponents = (): ReactNode => {
     const renderedComponents = childIds.map((id) => (
-            <ConfigurableFormComponent id={id} key={id} />
+      <ConfigurableFormComponent id={id} key={id} />
     ));
 
     return typeof render === 'function' ? render(renderedComponents) : renderedComponents;
@@ -111,44 +111,44 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
   const style = getAlignmentStyle(props);
 
   return (
-        <ConditionalWrap
-          condition={!noDefaultStyling}
-          wrap={(content) => (
-                <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle}>
-                    {content}
-                </div>
-          )}
+    <ConditionalWrap
+      condition={!noDefaultStyling}
+      wrap={(content) => (
+        <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle}>
+          {content}
+        </div>
+      )}
+    >
+      <>
+        {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
+        <ReactSortable
+          disabled={readOnly}
+          onStart={onDragStart}
+          onEnd={onDragEnd}
+          list={componentsMapped}
+          setList={onSetList}
+          fallbackOnBody={true}
+          swapThreshold={0.5}
+          group={{
+            name: 'shared',
+          }}
+          sort={true}
+          draggable={`.${styles.shaComponent}`}
+          animation={75}
+          ghostClass={styles.shaComponentGhost}
+          emptyInsertThreshold={20}
+          handle={`.${styles.componentDragHandle}`}
+          scroll={true}
+          bubbleScroll={true}
+          direction={direction}
+          className={noDefaultStyling ? '' : styles.shaComponentsContainerInner}
+          style={{ ...style, ...incomingStyle }}
         >
-            <>
-                {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
-                <ReactSortable
-                  disabled={readOnly}
-                  onStart={onDragStart}
-                  onEnd={onDragEnd}
-                  list={componentsMapped}
-                  setList={onSetList}
-                  fallbackOnBody={true}
-                  swapThreshold={0.5}
-                  group={{
-                    name: 'shared',
-                  }}
-                  sort={true}
-                  draggable={`.${styles.shaComponent}`}
-                  animation={75}
-                  ghostClass={styles.shaComponentGhost}
-                  emptyInsertThreshold={20}
-                  handle={`.${styles.componentDragHandle}`}
-                  scroll={true}
-                  bubbleScroll={true}
-                  direction={direction}
-                  className={noDefaultStyling ? '' : styles.shaComponentsContainerInner}
-                  style={{ ...style, ...incomingStyle }}
-                >
-                    {renderComponents()}
-                </ReactSortable>
-            </>
+          {renderComponents()}
+        </ReactSortable>
+      </>
 
-            {children}
-        </ConditionalWrap>
+      {children}
+    </ConditionalWrap>
   );
 };

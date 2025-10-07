@@ -142,14 +142,14 @@ const ItemLabel: FC<IConfigurationItemProps> = ({ name, description, label }) =>
     ? label
     : null;
   return (
-        <div>
-            <HelpTextPopover content={description}>
-                <span>{name}</span>
-            </HelpTextPopover>
-            {displayLabel && (
-                <><br /><Typography.Text type="secondary" ellipsis={true}>{displayLabel}</Typography.Text></>
-            )}
-        </div>
+    <div>
+      <HelpTextPopover content={description}>
+        <span>{name}</span>
+      </HelpTextPopover>
+      {displayLabel && (
+        <><br /><Typography.Text type="secondary" ellipsis={true}>{displayLabel}</Typography.Text></>
+      )}
+    </div>
   );
 };
 
@@ -161,13 +161,13 @@ const identifierToString = <TValue extends ConfigurableItemFullName = Configurab
     : undefined;
 };
 
-const getItemValue = (item: IResponseItem) => {
+const getItemValue = (item: IResponseItem): string => {
   return item.module
     ? `${item.module.name}:${item.name}`
     : item.name;
 };
 
-const getDisplayText = (item: IResponseItem) => {
+const getDisplayText = (item: IResponseItem): string | null => {
   return item
     ? item.module
       ? `${item.module.name}: ${item.name}`
@@ -175,7 +175,7 @@ const getDisplayText = (item: IResponseItem) => {
     : null;
 };
 
-export const GenericConfigurableItemAutocompleteInternal = <TValue extends ConfigurableItemFullName = ConfigurableItemFullName>(props: ConfigurableItemAutocompleteRuntimeProps<TValue>) => {
+export const GenericConfigurableItemAutocompleteInternal = <TValue extends ConfigurableItemFullName = ConfigurableItemFullName>(props: ConfigurableItemAutocompleteRuntimeProps<TValue>): JSX.Element => {
   const selectedValue = useRef<ConfigurableItemFullName>(null);
   const [autocompleteText, setAutocompleteText] = useState<string>(null);
   const {
@@ -290,17 +290,17 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
   );
 
 
-  const onSearch = (term) => {
+  const onSearch = (term): void => {
     debouncedFetchItems(term);
   };
-  const onFocus = () => {
+  const onFocus = (): void => {
     if (!listFetcher.loading && !listFetcher.data) {
       debouncedFetchItems(autocompleteText);
     }
   };
 
 
-  const onSelect = (_value, option) => {
+  const onSelect = (_value, option): void => {
     setAutocompleteText(null);
 
     if (!Boolean(onChange)) return;
@@ -319,7 +319,7 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
     }
   };
 
-  const onClear = () => {
+  const onClear = (): void => {
     selectedValue.current = null;
     if (props.onChange) {
       props.onChange(null);
@@ -335,45 +335,45 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
   }, [value]);
 
   return (
-        <Select<string | string[]>
-          allowClear
-          notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
-          style={{ width: '100%' }}
-          options={options}
-          showSearch={true}
-          onFocus={onFocus}
-          onSearch={onSearch}
-          onChange={onSelect}
-          onClear={onClear}
-          placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
-          disabled={valueFetcher.loading || props.readOnly}
-          value={selectValue}
-          size={size}
-          mode={mode === 'multiple' ? 'multiple' : undefined}
+    <Select<string | string[]>
+      allowClear
+      notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
+      style={{ width: '100%' }}
+      options={options}
+      showSearch={true}
+      onFocus={onFocus}
+      onSearch={onSearch}
+      onChange={onSelect}
+      onClear={onClear}
+      placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
+      disabled={valueFetcher.loading || props.readOnly}
+      value={selectValue}
+      size={size}
+      mode={mode === 'multiple' ? 'multiple' : undefined}
 
-          optionRender={(option) => {
-            const { data, value } = option;
-            const optionData = (data as IOption)?.optionData;
-            return optionData
-              ? (
-                        <ItemLabel
-                          name={optionData.name}
-                          label={optionData.label}
-                          description={optionData.description}
-                        />
-              )
-              : <>{value}</>;
-          }}
-        />
+      optionRender={(option) => {
+        const { data, value } = option;
+        const optionData = (data as IOption)?.optionData;
+        return optionData
+          ? (
+            <ItemLabel
+              name={optionData.name}
+              label={optionData.label}
+              description={optionData.description}
+            />
+          )
+          : <>{value}</>;
+      }}
+    />
   );
 };
 
 export const GenericConfigItemAutocomplete: FC<ConfigurableItemAutocompleteRuntimeProps> = (props) => {
   return (
-        <MetadataProvider
-          modelType={props.entityType}
-        >
-            <GenericConfigurableItemAutocompleteInternal {...props} />
-        </MetadataProvider>
+    <MetadataProvider
+      modelType={props.entityType}
+    >
+      <GenericConfigurableItemAutocompleteInternal {...props} />
+    </MetadataProvider>
   );
 };

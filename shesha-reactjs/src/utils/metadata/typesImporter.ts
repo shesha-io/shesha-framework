@@ -8,7 +8,7 @@ export const DTS_EXTENSION = '.d.ts';
 export class TypesImporter {
   readonly #imports: Map<string, Set<string>> = new Map<string, Set<string>>();
 
-  import(type: TypeAndLocation) {
+  import(type: TypeAndLocation): void {
     if (!type.filePath)
       return;
 
@@ -20,12 +20,12 @@ export class TypesImporter {
       fileImport.add(type.typeName);
   }
 
-  importAll(types?: TypeImport[]) {
+  importAll(types?: TypeImport[]): void {
     if (types)
       types.forEach((type) => this.import(type));
   }
 
-  static cleanupFileNameForImport = (path: string) => {
+  static cleanupFileNameForImport = (path: string): string => {
     return path.endsWith(DTS_EXTENSION)
       ? path.startsWith('.')
         ? path
@@ -33,7 +33,7 @@ export class TypesImporter {
       : trimSuffix(path, ".ts");
   };
 
-  generateImports() {
+  generateImports(): string {
     return Array.from(this.#imports.entries())
       .map(([filePath, types]) => `import { ${Array.from(types).join(', ')} } from '${TypesImporter.cleanupFileNameForImport(filePath)}';`)
       .join(EOL);

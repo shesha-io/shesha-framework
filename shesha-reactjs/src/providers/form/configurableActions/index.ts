@@ -11,11 +11,10 @@ export type UseShaFormActionsArgs = {
   isActionsOwner: boolean;
   shaForm: IShaFormInstance;
 };
-export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormActionsArgs) => {
+export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormActionsArgs): void => {
   const actionsOwnerUid = isActionsOwner ? SheshaActionOwners.Form : null;
   const actionDependencies = [actionsOwnerUid];
   const prevFormData = useRef(null);
-
 
   useConfigurableAction(
     {

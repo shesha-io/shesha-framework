@@ -14,22 +14,22 @@ export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText, s
   const [settingsVisible, setSettingsVisible] = useState(false);
   const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
 
-  const onSettingsClick = () => {
+  const onSettingsClick = (): void => {
     setSettingsVisible(true);
   };
 
   return (
-        <>
-            <Button icon={<SettingOutlined />} size={size} type="link" onClick={onSettingsClick} title="Form Settings">
-                { buttonText !== undefined ? buttonText : "Settings" }
-            </Button>
-            <FormSettingsEditor
-              readOnly={readOnly}
-              isVisible={settingsVisible}
-              close={() => {
-                setSettingsVisible(false);
-              }}
-            />
-        </>
+    <>
+      <Button icon={<SettingOutlined />} size={size} type="link" onClick={onSettingsClick} title="Form Settings">
+        { buttonText !== undefined ? buttonText : "Settings" }
+      </Button>
+      <FormSettingsEditor
+        readOnly={readOnly}
+        isVisible={settingsVisible}
+        close={() => {
+          setSettingsVisible(false);
+        }}
+      />
+    </>
   );
 };

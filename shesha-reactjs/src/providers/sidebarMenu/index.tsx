@@ -11,6 +11,9 @@ import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { setItemsAction, toggleSidebarAction } from './actions';
 import { FormFullName, isNavigationActionConfiguration, useSheshaApplication } from '@/providers';
 import {
+  ISidebarMenuActionsContext,
+  ISidebarMenuDefaultsContext,
+  ISidebarMenuStateContext,
   SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
   SidebarMenuActionsContext,
   SidebarMenuDefaultsContext,
@@ -72,7 +75,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     return { ...item, hidden: !availableByPermissions };
   };
 
-  const updatetItemVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
+  const updatetItemVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]): void => {
     if (
       item.actionConfiguration?.actionOwner === 'shesha.common' &&
       item.actionConfiguration?.actionName === 'Navigate' &&
@@ -89,7 +92,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     }
   };
 
-  const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
+  const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]): void => {
     if (itemsToCheck.length > 0) {
       formConfigurationCheckPermissions(
         itemsToCheck.map((x) => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto),
@@ -121,11 +124,11 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
       }
   }, [actualItems]);
 
-  const collapse = () => {
+  const collapse = (): void => {
     dispatch(toggleSidebarAction(false));
   };
 
-  const expand = () => {
+  const expand = (): void => {
     dispatch(toggleSidebarAction(true));
   };
 
@@ -147,7 +150,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   );
 };
 
-function useSidebarMenuState(require: boolean) {
+function useSidebarMenuState(require: boolean): ISidebarMenuStateContext & ISidebarMenuActionsContext | undefined {
   const context = useContext(SidebarMenuStateContext);
   const actions = useContext(SidebarMenuActionsContext);
 
@@ -158,7 +161,7 @@ function useSidebarMenuState(require: boolean) {
   return { ...context, ...actions };
 }
 
-function useSidebarMenuActions(require: boolean) {
+function useSidebarMenuActions(require: boolean): ISidebarMenuActionsContext | undefined {
   const context = useContext(SidebarMenuActionsContext);
 
   if (context === undefined && require) {
@@ -168,7 +171,7 @@ function useSidebarMenuActions(require: boolean) {
   return context;
 }
 
-function useSidebarMenu(require: boolean = true) {
+function useSidebarMenu(require: boolean = true): ISidebarMenuStateContext | undefined {
   const actionsContext = useSidebarMenuActions(require);
   const stateContext = useSidebarMenuState(require);
 
@@ -196,7 +199,7 @@ const SidebarMenuDefaultsProvider: FC<PropsWithChildren<ISidebarMenuDefaultsProv
   );
 };
 
-function useSidebarMenuDefaults() {
+function useSidebarMenuDefaults(): ISidebarMenuDefaultsContext {
   const context = useContext(SidebarMenuDefaultsContext);
 
   return context;

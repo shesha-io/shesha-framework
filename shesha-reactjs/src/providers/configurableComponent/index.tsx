@@ -1,4 +1,4 @@
-import React, { Context, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
+import React, { Context, PropsWithChildren, ReactElement, useContext, useEffect, useMemo, useReducer } from 'react';
 import { PromisedValue } from '@/utils/promises';
 import { IComponentSettings } from '../appConfigurator/models';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
@@ -40,7 +40,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
   name,
   isApplicationSpecific,
   migrator,
-}: PropsWithChildren<IGenericConfigurableComponentProviderProps<TSettings>>) => {
+}: PropsWithChildren<IGenericConfigurableComponentProviderProps<TSettings>>): ReactElement => {
   const reducer = useMemo(() => reducerFactory(initialState), []);
 
   const { getComponent, updateComponent } = useConfigurationItemsLoader();
@@ -77,7 +77,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
     settings: initialSettings,
   });
 
-  const fetchInternal = (loader: PromisedValue<IComponentSettings>) => {
+  const fetchInternal = (loader: PromisedValue<IComponentSettings>): void => {
     dispatch(loadRequestAction({ name, isApplicationSpecific }));
 
     loader.promise
@@ -101,7 +101,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const loadComponent = () => {
+  const loadComponent = (): void => {
     var loader = getComponent({ name, isApplicationSpecific, skipCache: true });
     fetchInternal(loader);
   };
@@ -154,12 +154,17 @@ export interface IConfigurableComponentProviderProps {
   isApplicationSpecific: boolean;
 }
 
-export const createConfigurableComponent = <TSettings extends any>(defaultSettings: TSettings, migrator?: ComponentSettingsMigrator<TSettings>) => {
+type CreateConfigurableComponentResponse<TSettings extends any> = {
+  ConfigurableComponentProvider: <T extends PropsWithChildren<IConfigurableComponentProviderProps>>(props: T) => ReactElement;
+  useConfigurableComponent: () => IConfigurableComponentStateContext<TSettings> & IConfigurableComponentActionsContext<TSettings>;
+};
+
+export const createConfigurableComponent = <TSettings extends any>(defaultSettings: TSettings, migrator?: ComponentSettingsMigrator<TSettings>): CreateConfigurableComponentResponse<TSettings> => {
   const initialState = getContextInitialState<TSettings>(defaultSettings);
   const StateContext = getConfigurableComponentStateContext<TSettings>(initialState);
   const ActionContext = getConfigurableComponentActionsContext<TSettings>();
 
-  const useConfigurableComponent = () => {
+  const useConfigurableComponent = (): IConfigurableComponentStateContext<TSettings> & IConfigurableComponentActionsContext<TSettings> => {
     const stateContext = useContext(StateContext);
     const actionsContext = useContext(ActionContext);
 
@@ -172,7 +177,7 @@ export const createConfigurableComponent = <TSettings extends any>(defaultSettin
 
   const ConfigurableComponentProvider = <T extends PropsWithChildren<IConfigurableComponentProviderProps>>(
     props: T
-  ) => {
+  ): ReactElement => {
     return (
       <GenericConfigurableComponentProvider<TSettings>
         initialState={initialState}

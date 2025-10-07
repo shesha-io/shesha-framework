@@ -3,7 +3,7 @@ import { TreeSelect } from 'antd';
 import { IConfigurableActionGroupDictionary } from '@/providers/configurableActionsDispatcher/models';
 import HelpTextPopover from '@/components/helpTextPopover';
 
-const getConfigurableActionFullName = (owner: string, name: string) => {
+const getConfigurableActionFullName = (owner: string, name: string): string => {
   return owner
     ? `${owner}:${name}`
     : name;
@@ -47,11 +47,11 @@ export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions,
 
         ownerNodes.push({
           title: (
-                        <div>
-                            <HelpTextPopover content={action.description}>
-                                {displayName}
-                            </HelpTextPopover>
-                        </div>
+            <div>
+              <HelpTextPopover content={action.description}>
+                {displayName}
+              </HelpTextPopover>
+            </div>
           ),
           displayText: `${ownerActions.ownerName}: ${displayName}`,
           value: getConfigurableActionFullName(owner, action.name),
@@ -72,22 +72,22 @@ export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions,
   }, [actions]);
 
   return (
-        <TreeSelect
-          disabled={readOnly}
-          showSearch
-          style={{
-            width: '100%',
-          }}
-          value={value}
-          styles={treeStyles}
-          size="small"
-          placeholder="Please select"
-          allowClear
-          // treeDefaultExpandAll
-          onChange={onChange}
-          treeNodeLabelProp="displayText"
-          treeData={treeData}
-        >
-        </TreeSelect>
+    <TreeSelect
+      disabled={readOnly}
+      showSearch
+      style={{
+        width: '100%',
+      }}
+      value={value}
+      styles={treeStyles}
+      size="small"
+      placeholder="Please select"
+      allowClear
+      // treeDefaultExpandAll
+      onChange={onChange}
+      treeNodeLabelProp="displayText"
+      treeData={treeData}
+    >
+    </TreeSelect>
   );
 };

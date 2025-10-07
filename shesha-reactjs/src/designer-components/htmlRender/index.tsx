@@ -26,11 +26,11 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalula
   }),
   Factory: ({ model, calculatedModel }) => {
     return (
-<div style={model.allStyles.fullStyle}>
-      <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
-        {(value) => parse(calculatedModel.getContent(value))}
-      </ConfigurableFormItem>
-</div>
+      <div style={model.allStyles.fullStyle}>
+        <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
+          {(value) => parse(calculatedModel.getContent(value))}
+        </ConfigurableFormItem>
+      </div>
     );
   },
   settingsFormMarkup: (data) => getSettings(data),

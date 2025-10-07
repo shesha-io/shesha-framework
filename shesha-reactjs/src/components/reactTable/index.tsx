@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState, useRef, ChangeEvent, CSSProperties } from 'react';
+import React, { FC, useEffect, useMemo, useState, useRef, ChangeEvent, CSSProperties, ReactElement } from 'react';
 import classNames from 'classnames';
 import {
   useResizeColumns,
@@ -19,7 +19,8 @@ import { useDeepCompareEffect, usePrevious } from 'react-use';
 import { RowDragHandle, SortableRow, TableRow } from './tableRow';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { IndeterminateCheckbox } from './indeterminateCheckbox';
-import { getColumnAnchored, getPlainValue } from '@/utils';
+import { getPlainValue } from '@/utils';
+import { getColumnAnchored } from '@/utils/datatable';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstance } from '@/providers/index';
@@ -202,7 +203,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     });
   }, [allColumns, allowReordering, useMultiSelect]);
 
-  const getColumnAccessor = (cid) => {
+  const getColumnAccessor = (cid): string => {
     const column = columns.find((c) => c.id === cid);
     return column ? column.accessor.toString() : '';
   };
@@ -302,7 +303,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   }, [selectedRowIds]);
 
-  const onSetList = (newState: ItemInterface[], _sortable, _store) => {
+  const onSetList = (newState: ItemInterface[], _sortable, _store): void => {
     if (!onRowsReordered) {
       console.error('Datatable: re-ordering logic is not specified');
       return;
@@ -346,9 +347,9 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   }, [onFetchData, pageIndex, pageSize, sortBy]);
 
-  const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
+  const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
 
-  const handleSelectRow = (row: Row<object>) => {
+  const handleSelectRow = (row: Row<object>): void => {
     if (!omitClick && !(canEditInline || canDeleteInline)) {
       onSelectRow(row?.index, row?.original);
     }
@@ -382,7 +383,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     };
   }, [onRowDoubleClick, allData]);
 
-  const handleDoubleClickRow = (row, index) => {
+  const handleDoubleClickRow = (row, index): void => {
     if (typeof onRowDoubleClick === 'object') {
       performOnRowDoubleClick(row);
     } else if (typeof onRowDoubleClick === 'function') {
@@ -392,7 +393,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const Row = useMemo(() => (allowReordering ? SortableRow : TableRow), [allowReordering]);
 
-  const renderNewRowEditor = () => (
+  const renderNewRowEditor = (): JSX.Element => (
     <NewTableRowEditor
       columns={tableColumns}
       creater={createAction}
@@ -416,10 +417,10 @@ export const ReactTable: FC<IReactTableProps> = ({
     return result;
   }, [containerStyle, minHeight, maxHeight]);
 
-  const renderExpandedContentView = (cellRef) => {
+  const renderExpandedContentView = (cellRef): JSX.Element => {
     const cellRect = cellRef?.current?.getBoundingClientRect();
 
-    const getSmartPosition = () => {
+    const getSmartPosition = (): { top: number; left: number } => {
       if (!cellRect) return { top: 0, left: 0 };
 
       const viewport = {
@@ -489,28 +490,28 @@ export const ReactTable: FC<IReactTableProps> = ({
           pointerEvents: activeCell !== null && allowExpandedView ? 'auto' : 'none',
         }}
       >
-          <div
-            style={{
-              maxHeight: 300,
-              overflowY: "auto",
-              backgroundColor: "white",
-              padding: 8,
-              border: "1px solid rgba(0,0,0,0.15)",
-              borderRadius: 4,
-              boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
-              display: "inline-block",
-              whiteSpace: "pre-wrap",
-              maxWidth: "80vw",
-              wordBreak: "break-word",
-            }}
-          >
-            {cellRef?.current?.innerText}
-          </div>
+        <div
+          style={{
+            maxHeight: 300,
+            overflowY: "auto",
+            backgroundColor: "white",
+            padding: 8,
+            border: "1px solid rgba(0,0,0,0.15)",
+            borderRadius: 4,
+            boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
+            display: "inline-block",
+            whiteSpace: "pre-wrap",
+            maxWidth: "80vw",
+            wordBreak: "break-word",
+          }}
+        >
+          {cellRef?.current?.innerText}
+        </div>
       </div>
     );
   };
 
-  const renderRow = (row: Row<any>, rowIndex: number) => {
+  const renderRow = (row: Row<any>, rowIndex: number): JSX.Element => {
     const id = row.original?.id;
     return (
       <Row
@@ -549,7 +550,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     );
   };
 
-  const renderRows = () => {
+  const renderRows = (): ReactElement | ReactElement[] => {
     return onRowsRendering
       ? onRowsRendering({ rows: rows, defaultRender: renderRow })
       : rows.map((row, rowIndex) => renderRow(row, rowIndex));

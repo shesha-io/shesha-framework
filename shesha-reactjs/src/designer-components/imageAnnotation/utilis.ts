@@ -1,6 +1,6 @@
 import { IAnnotation } from './model';
 
-function canSubmit(data: IAnnotation[], minPoints: number) {
+function canSubmit(data: IAnnotation[], minPoints: number): boolean {
   const numberOfPoints = data?.filter(({ comment }) => !!comment)?.length;
 
   if (numberOfPoints < minPoints) {
@@ -14,7 +14,7 @@ function parseIntOrDefault(input: any, defaultValue: number = 0): number {
   return isNaN(parsed) ? defaultValue : parsed;
 }
 
-function getImageBits(imageUrl: string) {
+function getImageBits(imageUrl: string): Promise<string | ArrayBuffer> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', imageUrl, true);
@@ -38,7 +38,7 @@ function getImageBits(imageUrl: string) {
   });
 }
 
-function sortAnnotationData(data: IAnnotation[]) {
+function sortAnnotationData(data: IAnnotation[]): IAnnotation[] {
   let annotationLength = data?.length;
   const arrangedComments = data
     ?.filter((mark) => !!mark?.comment)
@@ -62,7 +62,7 @@ function sortAnnotationData(data: IAnnotation[]) {
 
   return arrangedComments;
 }
-function getViewData(data: IAnnotation[], allowAddingNotes = false) {
+function getViewData(data: IAnnotation[], allowAddingNotes = false): IAnnotation[] {
   let viewData = data?.map((mrk, index) => {
     return {
       ...mrk,
@@ -73,7 +73,7 @@ function getViewData(data: IAnnotation[], allowAddingNotes = false) {
   return viewData;
 }
 
-function getCustomEnabled(customVisibility: string, name: string, data = {}, globalState = {}, formMode) {
+function getCustomEnabled(customVisibility: string, name: string, data = {}, globalState = {}, formMode): boolean {
   if (customVisibility) {
     const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
 

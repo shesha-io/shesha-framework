@@ -15,11 +15,11 @@ export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
 
   const componentLabel = formFlatMarkup?.allComponents?.[selectedComponentId]?.label ?? 'Properties';
 
-  const onDeleteClick = () => {
+  const onDeleteClick = (): void => {
     if (!readOnly)
       deleteComponent({ componentId: selectedComponentId });
   };
-  const onDuplicateClick = () => {
+  const onDuplicateClick = (): void => {
     if (!readOnly)
       duplicateComponent({ componentId: selectedComponentId });
   };

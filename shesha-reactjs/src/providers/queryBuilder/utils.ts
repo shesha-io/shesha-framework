@@ -33,11 +33,11 @@ export const propertyMetadata2QbProperty = (property: IPropertyMetadata): IPrope
     } as IPropertyWithCustomQBSettings;
 };
 
-export const getPropertyFullPath = (path: string, prefix: string) => {
+export const getPropertyFullPath = (path: string, prefix: string): string => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
 };
 
-export const useMetadataFields = () => {
+export const useMetadataFields = (): IProperty[] | null => {
   const metadata = useMetadata(false);
 
   const fields = useMemo<IProperty[]>(() => {

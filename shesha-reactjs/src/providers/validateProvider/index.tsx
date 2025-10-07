@@ -20,14 +20,20 @@ export interface IValidateProviderProps {
 export const ValidateProviderStateContext = createNamedContext<IValidateProviderStateContext>(
   {
     id: '',
-    registerChild: () => undefined,
-    unRegisterChild: () => undefined,
-    registerValidator: () => undefined,
-    validate: (): Promise<void> => undefined,
+    registerChild: () => {
+      // nop
+    },
+    unRegisterChild: () => {
+      // nop
+    },
+    registerValidator: () => {
+      // nop
+    },
+    validate: (): Promise<void> => Promise.resolve(),
   },
   "ValidateProviderStateContext");
 
-export function useValidator(require: boolean = true) {
+export function useValidator(require: boolean = true): IValidateProviderStateContext | undefined {
   const stateContext = useContext(ValidateProviderStateContext);
 
   if (stateContext === undefined && require) {
@@ -43,7 +49,7 @@ const ValidateProvider: FC<PropsWithChildren<IValidateProviderProps>> = ({ child
   const childValidateProvider = useRef<IValidateProviderStateContext[]>([]);
   const validators = useRef<IValidator[]>([]);
 
-  const registerChild = (input: IValidateProviderStateContext) => {
+  const registerChild = (input: IValidateProviderStateContext): void => {
     const exists = childValidateProvider.current.find((item) => item.id === input.id);
     if (!exists)
       childValidateProvider.current = [...childValidateProvider.current, input];
@@ -53,13 +59,13 @@ const ValidateProvider: FC<PropsWithChildren<IValidateProviderProps>> = ({ child
       });
   };
 
-  const unRegisterChild = (input: IValidateProviderStateContext) => {
+  const unRegisterChild = (input: IValidateProviderStateContext): void => {
     const existsPos = childValidateProvider.current.findIndex((item) => item.id === input.id);
     if (existsPos > -1)
       childValidateProvider.current.splice(existsPos, 1);
   };
 
-  const registerValidator = (input: IValidator) => {
+  const registerValidator = (input: IValidator): void => {
     const exists = validators.current.find((item) => item.id === input.id);
     if (!exists)
       validators.current = [...validators.current, input];
@@ -69,7 +75,7 @@ const ValidateProvider: FC<PropsWithChildren<IValidateProviderProps>> = ({ child
       });
   };
 
-  const validate = () => {
+  const validate = (): Promise<void> => {
     const promises = validators.current.map((validator) => {
       return validator.validate();
     });

@@ -24,7 +24,7 @@ const GlobalStateProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-function useGlobalState() {
+function useGlobalState(): IGlobalState {
   const context = useContext(GlobalStateContext);
 
   if (context === undefined) {

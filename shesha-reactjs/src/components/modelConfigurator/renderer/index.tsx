@@ -19,7 +19,7 @@ export const ModelConfiguratorRenderer: FC<IModelConfiguratorRendererProps> = ()
   const { message } = App.useApp();
   const { modelConfiguration, form, save, id } = useModelConfigurator();
 
-  const onSettingsSave = (values) => {
+  const onSettingsSave = (values): void => {
     const dto = { ...values, id };
     save(dto)
       .then(() => message.success('Model saved successfully'))

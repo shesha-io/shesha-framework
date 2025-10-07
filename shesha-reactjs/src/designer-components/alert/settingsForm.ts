@@ -2,8 +2,9 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { IAlertComponentProps } from './interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/es/form/Form';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: IAlertComponentProps) => {
+export const getSettings = (data: IAlertComponentProps): FormMarkupWithSettings => {
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();

@@ -29,16 +29,16 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
     <div style={containerStyle}>
       {components?.map((model) => {
         return (
-            <FormComponent
-              componentModel={{
-                ...model,
-                context: model.context,
-                isDynamic: true,
-                readOnly: readOnly === true ? true : model?.readOnly,
-                customEnabled: '',
-              }}
-              key={model?.id}
-            />
+          <FormComponent
+            componentModel={{
+              ...model,
+              context: model.context,
+              isDynamic: true,
+              readOnly: readOnly === true ? true : model?.readOnly,
+              customEnabled: '',
+            }}
+            key={model?.id}
+          />
         );
       })}
     </div>

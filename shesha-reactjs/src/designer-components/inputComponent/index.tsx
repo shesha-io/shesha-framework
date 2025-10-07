@@ -3,7 +3,7 @@ import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Switch 
 import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, ColorPicker, FormAutocomplete, LabelValueEditor, PermissionAutocomplete } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { evaluateString, evaluateValue, executeScript, useAvailableConstantsData, useMetadata, useShaFormInstance } from '@/index';
+import { evaluateString, evaluateValueAsString, executeScript, useAvailableConstantsData, useMetadata, useShaFormInstance } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
@@ -97,9 +97,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     ? meta.getPropertyMeta(property)
     : null;
 
-  const verb = props.httpVerb ? evaluateValue(props.httpVerb, { data: formData }) : props.httpVerb;
+  const verb = props.httpVerb ? evaluateValueAsString(props.httpVerb, { data: formData }) : props.httpVerb;
 
-  const internalOnChange = (v: any) => {
+  const internalOnChange = (v: any): void => {
     onChangeSetting?.(v, formData, setFormData);
     onChange?.(v);
   };
@@ -114,75 +114,75 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     case 'dropdown': {
       const options = dropdownOptions as IDropdownOption[];
       return (
-<Select
-  size={size}
-  mode={dropdownMode}
-  allowClear={allowClear ?? true}
-  disabled={readOnly}
-  variant={variant}
-  className={className}
-  showSearch={showSearch}
-  value={!value ? defaultValue : value}
-  defaultValue={defaultValue}
-  style={{ width: props.width ?? "100%" }}
-  onChange={internalOnChange}
-  onSelect={internalOnChange}
-  placeholder={placeholder}
-  options={[...(options || [])].map((option) => ({ ...option, label: <Icon icon={option.label} size={option.value} styles={styles} hint={tooltip} /> }))}
-/>
+        <Select
+          size={size}
+          mode={dropdownMode}
+          allowClear={allowClear ?? true}
+          disabled={readOnly}
+          variant={variant}
+          className={className}
+          showSearch={showSearch}
+          value={!value ? defaultValue : value}
+          defaultValue={defaultValue}
+          style={{ width: props.width ?? "100%" }}
+          onChange={internalOnChange}
+          onSelect={internalOnChange}
+          placeholder={placeholder}
+          options={[...(options || [])].map((option) => ({ ...option, label: <Icon icon={option.label} size={option.value} styles={styles} hint={tooltip} /> }))}
+        />
       );
     }
     case 'radio':
       return (
-<Radio.Group buttonStyle="solid" defaultValue={defaultValue} value={value || defaultValue} onChange={internalOnChange} size={size} disabled={readOnly}>
-                {
-                  buttonGroupOptions.map(({ value, icon, title }) => {
-                    return <Radio.Button key={value} value={value}>{icon ? <Icon icon={icon || title} hint={title} styles={styles} /> : title}</Radio.Button>;
-                  })
-                }
-</Radio.Group>
+        <Radio.Group buttonStyle="solid" defaultValue={defaultValue} value={value || defaultValue} onChange={internalOnChange} size={size} disabled={readOnly}>
+          {
+            buttonGroupOptions.map(({ value, icon, title }) => {
+              return <Radio.Button key={value} value={value}>{icon ? <Icon icon={icon || title} hint={title} styles={styles} /> : title}</Radio.Button>;
+            })
+          }
+        </Radio.Group>
       );
     case 'switch':
       /* Handle cases where defaultValue is used in place of defaultChecked*/
       return (
-<Switch
-  disabled={readOnly}
-  size="small"
-  defaultChecked={defaultChecked ?? defaultValue}
-  onChange={internalOnChange}
-  value={value}
-/>
+        <Switch
+          disabled={readOnly}
+          size="small"
+          defaultChecked={defaultChecked ?? defaultValue}
+          onChange={internalOnChange}
+          value={value}
+        />
       );
     case 'numberField':
       return (
-<InputNumber
-  placeholder={placeholder}
-  controls={!icon}
-  defaultValue={defaultValue}
-  variant={variant}
-  readOnly={readOnly}
-  size={size}
-  value={value}
-  style={{ width: "100%" }}
-  min={props.min}
-  onChange={internalOnChange}
-  addonAfter={icon ? <Icon icon={icon} hint={tooltip || label} styles={styles} /> : null}
-/>
+        <InputNumber
+          placeholder={placeholder}
+          controls={!icon}
+          defaultValue={defaultValue}
+          variant={variant}
+          readOnly={readOnly}
+          size={size}
+          value={value}
+          style={{ width: "100%" }}
+          min={props.min}
+          onChange={internalOnChange}
+          addonAfter={icon ? <Icon icon={icon} hint={tooltip || label} styles={styles} /> : null}
+        />
       );
     case 'customDropdown': {
       const options = dropdownOptions as IDropdownOption[];
 
       return (
-<CustomDropdown
-  value={value || defaultValue}
-  placeholder={placeholder}
-  defaultValue={defaultValue}
-  options={options.map((option) => ({ ...option, label: <Icon icon={option.label} hint={tooltip} styles={styles} /> }))}
-  readOnly={readOnly}
-  onChange={internalOnChange}
-  size={size}
-  customTooltip={props.customTooltip}
-/>
+        <CustomDropdown
+          value={value || defaultValue}
+          placeholder={placeholder}
+          defaultValue={defaultValue}
+          options={options.map((option) => ({ ...option, label: <Icon icon={option.label} hint={tooltip} styles={styles} /> }))}
+          readOnly={readOnly}
+          onChange={internalOnChange}
+          size={size}
+          customTooltip={props.customTooltip}
+        />
       );
     }
     case 'customLabelValueEditor': {
@@ -190,16 +190,16 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     }
     case 'textArea':
       return (
-<Input.TextArea
-  rows={2}
-  placeholder={placeholder}
-  value={value || defaultValue}
-  defaultValue={defaultValue}
-  readOnly={readOnly}
-  size={size}
-  onChange={internalOnChange}
-  style={{ top: '4px' }}
-/>
+        <Input.TextArea
+          rows={2}
+          placeholder={placeholder}
+          value={value || defaultValue}
+          defaultValue={defaultValue}
+          readOnly={readOnly}
+          size={size}
+          onChange={internalOnChange}
+          style={{ top: '4px' }}
+        />
       );
     case 'codeEditor':
       return getEditor(availableConstantsExpression, codeEditorProps, constantsAccessor);
@@ -207,23 +207,23 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       return <IconPickerWrapper iconSize={iconSize ?? 20} selectBtnSize={size} defaultValue={value} value={value || defaultValue} readOnly={readOnly} onChange={internalOnChange} applicationContext={allData} />;
     case 'imageUploader':
       return (
-<ImagePicker
-  value={value || defaultValue}
-  readOnly={readOnly}
-  onChange={internalOnChange}
-/>
+        <ImagePicker
+          value={value || defaultValue}
+          readOnly={readOnly}
+          onChange={internalOnChange}
+        />
       );
     case 'button':
       return (
-<Button
-  style={{ maxWidth: "100%" }}
-  disabled={readOnly}
-  defaultValue={defaultValue}
-  type={value === true ? 'primary' : 'default'}
-  size={size}
-  icon={!value ? <Icon icon={icon} hint={tooltip} styles={styles} /> : <Icon icon={iconAlt || icon} hint={tooltipAlt || tooltip} styles={styles} />}
-  onClick={() => onChange(!value)}
-/>
+        <Button
+          style={{ maxWidth: "100%" }}
+          disabled={readOnly}
+          defaultValue={defaultValue}
+          type={value === true ? 'primary' : 'default'}
+          size={size}
+          icon={!value ? <Icon icon={icon} hint={tooltip} styles={styles} /> : <Icon icon={iconAlt || icon} hint={tooltipAlt || tooltip} styles={styles} />}
+          onClick={() => onChange(!value)}
+        />
       );
     case 'filtersList':
       return <FiltersList readOnly={readOnly} {...props} />;
@@ -235,17 +235,17 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       return <DynamicActionsConfigurator editorConfig={{ ...props } as IDynamicActionsConfiguratorComponentProps} readOnly={readOnly} value={value} onChange={internalOnChange} size={size} />;
     case 'autocomplete':
       return (
-<Autocomplete
-  dataSourceType={dataSourceType}
-  dataSourceUrl={dataSourceUrl}
-  readOnly={readOnly}
-  value={value || defaultValue}
-  placeholder={placeholder}
-  defaultValue={defaultValue}
-  size={size}
-  {...props}
-  style={{}}
-/>
+        <Autocomplete
+          dataSourceType={dataSourceType}
+          dataSourceUrl={dataSourceUrl}
+          readOnly={readOnly}
+          value={value || defaultValue}
+          placeholder={placeholder}
+          defaultValue={defaultValue}
+          size={size}
+          {...props}
+          style={{}}
+        />
       );
     case 'endpointsAutocomplete':
       return <EndpointsAutocomplete {...props} size={size} httpVerb={verb} value={value} onChange={internalOnChange} />;
@@ -265,39 +265,39 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       return <EditableTagGroup value={value} defaultValue={defaultValue} onChange={internalOnChange} readOnly={props.readOnly} />;
     case 'propertyAutocomplete':
       return (
-<PropertyAutocomplete
-  value={value}
-  onChange={internalOnChange}
-  id={props.id}
-  size={size}
-  mode={props.mode}
-  readOnly={readOnly}
-  autoFillProps={props.autoFillProps ?? true}
-  allowClear={props.allowClear ?? true}
-/>
+        <PropertyAutocomplete
+          value={value}
+          onChange={internalOnChange}
+          id={props.id}
+          size={size}
+          mode={props.mode}
+          readOnly={readOnly}
+          autoFillProps={props.autoFillProps ?? true}
+          allowClear={props.allowClear ?? true}
+        />
       );
     case 'contextPropertyAutocomplete':
       return (
-<ContextPropertyAutocomplete
-  {...{ ...props }}
-  onValuesChange={internalOnChange}
-  style={{}}
-  readOnly={readOnly}
-  defaultModelType="defaultType"
-  id="contextPropertyAutocomplete"
-  componentName={formData.componentName}
-  propertyName={formData.propertyName}
-  contextName={formData.context}
-/>
+        <ContextPropertyAutocomplete
+          {...{ ...props }}
+          onValuesChange={internalOnChange}
+          style={{}}
+          readOnly={readOnly}
+          defaultModelType="defaultType"
+          id="contextPropertyAutocomplete"
+          componentName={formData.componentName}
+          propertyName={formData.propertyName}
+          contextName={formData.context}
+        />
       );
     case 'formAutocomplete':
       return (
-<FormAutocomplete
-  readOnly={readOnly}
-  size={props.size ?? 'small'}
-  value={value}
-  onChange={internalOnChange}
-/>
+        <FormAutocomplete
+          readOnly={readOnly}
+          size={props.size ?? 'small'}
+          value={value}
+          onChange={internalOnChange}
+        />
       );
     case 'labelValueEditor':
       return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
@@ -307,112 +307,112 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       return <MultiColorInput value={value} onChange={internalOnChange} readOnly={readOnly} propertyName={propertyName} />;
     case 'itemListConfiguratorModal':
       return (
-<ItemListConfiguratorModal
-  readOnly={readOnly}
-  initNewItem={onAddNewItem}
-  value={value}
-  onChange={internalOnChange}
-  size={size}
-  settingsMarkupFactory={() => {
-    return {
-      components: listItemSettingsMarkup,
-      formSettings: {
-        colon: false,
-        layout: 'vertical' as FormLayout,
-        labelCol: { span: 24 },
-        wrapperCol: { span: 24 },
-      },
-    };
-  }}
-  itemRenderer={({ item }) => ({
-    ...item,
-    label: item.title || item.label || item.name,
-    description: item.tooltip,
-  })}
-  buttonText={readOnly ? props.buttonTextReadOnly : props.buttonText}
-  modalSettings={
-    {
-      title: readOnly ? props.modalReadonlySettings.title : props.modalSettings.title,
-      header: <Alert message={readOnly ? props.modalReadonlySettings.header : props.modalSettings.header} />,
-    }
-  }
-/>
+        <ItemListConfiguratorModal
+          readOnly={readOnly}
+          initNewItem={onAddNewItem}
+          value={value}
+          onChange={internalOnChange}
+          size={size}
+          settingsMarkupFactory={() => {
+            return {
+              components: listItemSettingsMarkup,
+              formSettings: {
+                colon: false,
+                layout: 'vertical' as FormLayout,
+                labelCol: { span: 24 },
+                wrapperCol: { span: 24 },
+              },
+            };
+          }}
+          itemRenderer={({ item }) => ({
+            ...item,
+            label: item.title || item.label || item.name,
+            description: item.tooltip,
+          })}
+          buttonText={readOnly ? props.buttonTextReadOnly : props.buttonText}
+          modalSettings={
+            {
+              title: readOnly ? props.modalReadonlySettings.title : props.modalSettings.title,
+              header: <Alert message={readOnly ? props.modalReadonlySettings.header : props.modalSettings.header} />,
+            }
+          }
+        />
       );
     case 'formTypeAutocomplete':
       return (
-<AutoComplete
-  disabled={readOnly}
-  options={formTypesOptions}
-  size={size ?? 'small'}
-  value={value}
-  onChange={internalOnChange}
-  onSearch={(t) =>
-    setFormTypesOptions(
-      (t
-        ? formTypes.filter((f) => {
-          return f.toLowerCase().includes(t.toLowerCase());
-        })
-        : formTypes
-      ).map((i) => {
-        return { value: i };
-      })
-    )}
-/>
+        <AutoComplete
+          disabled={readOnly}
+          options={formTypesOptions}
+          size={size ?? 'small'}
+          value={value}
+          onChange={internalOnChange}
+          onSearch={(t) =>
+            setFormTypesOptions(
+              (t
+                ? formTypes.filter((f) => {
+                  return f.toLowerCase().includes(t.toLowerCase());
+                })
+                : formTypes
+              ).map((i) => {
+                return { value: i };
+              })
+            )}
+        />
       );
     case 'configurableActionConfigurator':
       return <ConfigurableActionConfigurator value={value} onChange={internalOnChange} editorConfig={null} level={0} label={label} allowedActions={props.allowedActions} hideLabel={props.hideLabel} />;
     case 'typeAutoComplete':
       return (
-<Autocomplete
-  dataSourceType="url"
-  dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
-  readOnly={readOnly}
-  size={size}
-  value={value}
-  onChange={internalOnChange}
-/>
+        <Autocomplete
+          dataSourceType="url"
+          dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
+          readOnly={readOnly}
+          size={size}
+          value={value}
+          onChange={internalOnChange}
+        />
       );
     case 'componentSelector':
       return (
-<FormComponentSelector
-  componentType={componentType}
-  noSelectionItem={
-    noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined
-  }
-  readOnly={readOnly}
-  size={size}
-  value={value}
-  onChange={internalOnChange}
-  propertyMeta={propertyMeta}
-/>
+        <FormComponentSelector
+          componentType={componentType}
+          noSelectionItem={
+            noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined
+          }
+          readOnly={readOnly}
+          size={size}
+          value={value}
+          onChange={internalOnChange}
+          propertyMeta={propertyMeta}
+        />
       );
     case 'RefListItemSelectorSettingsModal':
       return <RefListItemSelectorSettingsModal {...props} onChange={(e) => onChange(e)} referenceList={referenceList} readOnly={false} />;
 
     case 'Password':
       return (
-<Password
-  value={value || defaultValue}
-  onChange={internalOnChange}
-  size={size}
-  readOnly={readOnly}
-  variant={variant}
-/>
+        <Password
+          value={value || defaultValue}
+          onChange={internalOnChange}
+          size={size}
+          readOnly={readOnly}
+          variant={variant}
+        />
       );
     default:
       return (
-<Input
-  size={size}
-  onChange={(e) => onChange(e.target.value)}
-  readOnly={readOnly}
-  defaultValue={defaultValue}
-  variant={variant}
-  placeholder={placeholder}
-  style={{ width: props.width ?? "100%" }}
-  suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip} styles={styles} /></span>}
-  value={value}
-  type={textType}
-/>
+        <Input
+          size={size}
+          onChange={(e) => onChange(e.target.value)}
+          readOnly={readOnly}
+          defaultValue={defaultValue}
+          variant={variant}
+          placeholder={placeholder}
+          style={{ width: props.width ?? "100%" }}
+          suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip} styles={styles} /></span>}
+          value={value}
+          type={textType}
+        />
       );
   }
 };

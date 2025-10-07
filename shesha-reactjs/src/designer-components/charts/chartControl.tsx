@@ -11,6 +11,7 @@ import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
 import ChartLoader from './components/chartLoader';
+import { IAbpWrappedGetEntityListResponse } from '@/interfaces/gql';
 
 const chartInnerStyle = {
   width: '100%',
@@ -87,7 +88,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     overflow: 'hidden',
   }), [state]);
 
-  const processAndUpdateData = (items: {}[], refListMap: Map<string, Map<number, string>>) => {
+  const processAndUpdateData = (items: {}[], refListMap: Map<string, Map<number, string>>): void => {
     // Process all items efficiently
     let processedItems = processItems(items, refListMap);
 
@@ -131,7 +132,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     const refListMap = new Map<string, Map<number, string>>();
 
     // Function to validate and fetch data
-    const validateAndFetchData = async () => {
+    const validateAndFetchData = async (): Promise<IAbpWrappedGetEntityListResponse> => {
       // Check if maxResultCount is explicitly set and validate it
       if (maxResultCount !== undefined && maxResultCount !== -1) {
         if (maxResultCount > 10000) {
@@ -209,8 +210,8 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     // Execute the validation and fetch process
     validateAndFetchData()
       .then((response) => {
-        if (!response?.result) {
-          throw new Error(response?.error ?? 'Invalid response structure, please check the properties (axisProperty, valueProperty, ..., filters) used in the chart to make sure they are valid for the chosen entity type and try again.');
+        if (!response || !response.result) {
+          throw new Error(response.error?.message ?? 'Invalid response structure, please check the properties (axisProperty, valueProperty, ..., filters) used in the chart to make sure they are valid for the chosen entity type and try again.');
         }
         const items = response.result.items ?? [];
 

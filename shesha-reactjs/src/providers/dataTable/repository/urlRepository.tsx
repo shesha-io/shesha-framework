@@ -148,7 +148,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     return Promise.resolve();
   };
 
-  const reorder = (_payload: RowsReorderPayload) => {
+  const reorder = (_payload: RowsReorderPayload): Promise<void> => {
     return Promise.reject(`Reordering is not supported by the repository '${UrlRepositoryType}'`);
   };
 

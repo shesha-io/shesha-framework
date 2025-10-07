@@ -47,7 +47,7 @@ const designerClassNames = {
 const useStylesResponse = {
   styles: designerClassNames,
 };
-export const useStyles = () => {
+export const useStyles = (): typeof useStylesResponse => {
   return useStylesResponse;
 };
 

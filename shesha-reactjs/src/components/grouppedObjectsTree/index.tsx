@@ -26,7 +26,7 @@ interface GrouppedObjects<TItem> {
   visibleItems: TItem[];
 }
 
-export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTreeProps<TItem>) => {
+export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTreeProps<TItem>): JSX.Element => {
   const childFieldName = props.childFieldName ?? 'children';
 
   const getVisible = (items: TItem[], searchText: string): TItem[] => {
@@ -52,7 +52,7 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
     return result;
   };
 
-  const grouping = (field: string, split: boolean) => {
+  const grouping = (field: string, split: boolean): GrouppedObjects<TItem>[] => {
     const groups = [] as GrouppedObjects<TItem>[];
     if (Boolean(props?.items)) {
       props.items?.forEach((item) => {
@@ -78,13 +78,13 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
     });
   };
 
-  const onCollapseChange = (key: string | string[]) => {
+  const onCollapseChange = (key: string | string[]): void => {
     if (Boolean(props?.setOpenedKeys)) {
       props.setOpenedKeys(Array.isArray(key) ? key : [key]);
     }
   };
 
-  const onChangeHandler = (item: TItem) => {
+  const onChangeHandler = (item: TItem): void => {
     if (Boolean(props.onChange))
       props.onChange(item);
   };
@@ -136,18 +136,18 @@ export const GrouppedObjectsTree = <TItem = unknown>(props: IGrouppedObjectsTree
               forceRender: true,
               children: ds.visibleItems.length === 0 ? null
                 : (
-<div key={ds.groupName}>
-                  <ObjectsTree<TItem>
-                    items={ds.visibleItems}
-                    searchText={props?.searchText}
-                    defaultExpandAll={defaultExpandAll}
-                    onChange={onChangeHandler}
-                    defaultSelected={props.defaultSelected?.toLowerCase()}
-                    onRenterItem={props?.onRenterItem}
-                    getIcon={ds.groupName === '-' ? undefined : props?.getIcon}
-                    getIsLeaf={ds.groupName === '-' ? undefined : props?.getIsLeaf}
-                  />
-</div>
+                  <div key={ds.groupName}>
+                    <ObjectsTree<TItem>
+                      items={ds.visibleItems}
+                      searchText={props?.searchText}
+                      defaultExpandAll={defaultExpandAll}
+                      onChange={onChangeHandler}
+                      defaultSelected={props.defaultSelected?.toLowerCase()}
+                      onRenterItem={props?.onRenterItem}
+                      getIcon={ds.groupName === '-' ? undefined : props?.getIcon}
+                      getIsLeaf={ds.groupName === '-' ? undefined : props?.getIsLeaf}
+                    />
+                  </div>
                 ),
             };
           })}

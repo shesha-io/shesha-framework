@@ -39,7 +39,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
     return saveForm(payload);
   };
 
-  const onSaveClick = () => {
+  const onSaveClick = (): void => {
     message.loading('Saving..', 0);
     saveFormInternal()
       .then(() => {
@@ -57,7 +57,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
       });
   };
 
-  const copyFormName = () => {
+  const copyFormName = (): void => {
     navigator.clipboard.writeText(fullName);
     message.success("Form name copied");
   };

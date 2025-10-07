@@ -16,7 +16,7 @@ export interface IRefListStatusProps {
   value?: any;
 }
 
-const Icon = ({ type, ...rest }) => {
+const Icon = ({ type, ...rest }): JSX.Element => {
   const icons = require(`@ant-design/icons`);
   const Component = icons[type];
   return <Component {...rest} />;

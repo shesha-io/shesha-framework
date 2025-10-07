@@ -83,7 +83,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
             );
           }
 
-          const containerHolder = () => (
+          const containerHolder = (): ReactNode => (
             <ParentProvider model={model}>
               <ComponentsContainer
                 style={{ ...linkStyle, ...model.allStyles.fullStyle }}

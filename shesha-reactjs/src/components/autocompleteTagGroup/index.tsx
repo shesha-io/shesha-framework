@@ -22,7 +22,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
 
       const inputRef = React.useRef<any>(null);
 
-      const handleClose = (removedTag) => {
+      const handleClose = (removedTag): void => {
         const tags = value?.filter((tag) => tag !== removedTag);
 
         if (onChange) {
@@ -30,7 +30,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
         }
       };
 
-      const showInput = () => {
+      const showInput = (): void => {
         setState({ ...state, inputVisible: true });
       };
 
@@ -40,7 +40,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
         }
       }, [state.inputVisible]);
 
-      const handleInputChange = (selected: string) => {
+      const handleInputChange = (selected: string): void => {
         let localValue = value;
 
         if (selected && localValue?.indexOf(selected) === -1) {
@@ -57,7 +57,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
         });
       };
 
-      const onTagEdit = (tag: string) => {
+      const onTagEdit = (tag: string): void => {
         const newTags = value?.filter((v) => v !== tag);
         const { inputValue: currentValue } = state;
 
@@ -69,33 +69,33 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
         onChange(currentValue?.trim() ? [...newTags, currentValue] : newTags);
       };
 
-      const forMap = (tag: string) => {
+      const forMap = (tag: string): JSX.Element => {
         const tagElem = (
-      <>
-        <Show when={!rest?.readOnly}>
-          <Tag
-            closable
-            onClose={(e) => {
-              e.preventDefault();
-              handleClose(tag);
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              onTagEdit(tag);
-            }}
-          >
-            {tag}
-          </Tag>
-        </Show>
-        <Show when={rest?.readOnly}>
-          <Tag>{tag}</Tag>
-        </Show>
-      </>
+          <>
+            <Show when={!rest?.readOnly}>
+              <Tag
+                closable
+                onClose={(e) => {
+                  e.preventDefault();
+                  handleClose(tag);
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTagEdit(tag);
+                }}
+              >
+                {tag}
+              </Tag>
+            </Show>
+            <Show when={rest?.readOnly}>
+              <Tag>{tag}</Tag>
+            </Show>
+          </>
         );
         return (
-      <span key={tag} style={{ display: 'inline-block' }}>
-        {tagElem}
-      </span>
+          <span key={tag} style={{ display: 'inline-block' }}>
+            {tagElem}
+          </span>
         );
       };
 
@@ -103,30 +103,30 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
       const tagChild = Boolean(value) ? value.map(forMap) : null;
 
       return (
-    <>
-      <div style={{ marginBottom: 16 }}>
-        {tagChild}
-      </div>
+        <>
+          <div style={{ marginBottom: 16 }}>
+            {tagChild}
+          </div>
 
-      <Show when={inputVisible}>
-        <Autocomplete.Raw
-          defaultValue={defaultValue}
-          size="small"
-          value={inputValue}
-          onChange={handleInputChange}
-          readOnly={rest?.readOnly}
-          allowClear={true}
-          dataSourceType="url"
-          dataSourceUrl={autocompleteUrl}
-        />
-      </Show>
+          <Show when={inputVisible}>
+            <Autocomplete.Raw
+              defaultValue={defaultValue}
+              size="small"
+              value={inputValue}
+              onChange={handleInputChange}
+              readOnly={rest?.readOnly}
+              allowClear={true}
+              dataSourceType="url"
+              dataSourceUrl={autocompleteUrl}
+            />
+          </Show>
 
-      <Show when={!inputVisible && !rest?.readOnly}>
-        <Tag onClick={showInput} className="site-tag-plus">
-          <PlusOutlined /> New value
-        </Tag>
-      </Show>
-    </>
+          <Show when={!inputVisible && !rest?.readOnly}>
+            <Tag onClick={showInput} className="site-tag-plus">
+              <PlusOutlined /> New value
+            </Tag>
+          </Show>
+        </>
       );
     };
 

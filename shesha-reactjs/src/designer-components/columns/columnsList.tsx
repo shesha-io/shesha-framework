@@ -7,7 +7,6 @@ import {
   DraggableStateSnapshot,
   Droppable,
   DroppableProvided,
-  DroppableStateSnapshot,
 } from 'react-beautiful-dnd';
 
 import { IColumnProps } from './interfaces';
@@ -26,7 +25,7 @@ const EditableContext = createNamedContext(null, "EditableContext");
 
 const DragHandleContext = createNamedContext(null, "DragHandleContext");
 
-const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }) => {
+const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }): JSX.Element => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
   const form = useContext(EditableContext);
@@ -36,14 +35,14 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
     }
   }, [editing]);
 
-  const toggleEdit = () => {
+  const toggleEdit = (): void => {
     setEditing(!editing);
     form.setFieldsValue({
       [dataIndex]: record[dataIndex],
     });
   };
 
-  const save = async () => {
+  const save = async (): Promise<void> => {
     try {
       const values = await form.validateFields();
       toggleEdit();
@@ -96,7 +95,7 @@ const getItemStyle = (draggableStyle: any, isDragging: boolean): {} => ({
   ...draggableStyle,
 });
 
-const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
+const DraggableBodyRowInner = ({ columns, className, style, ...restProps }): JSX.Element => {
   const [form] = Form.useForm();
 
   // function findIndex base on Table rowKey props and should always be a right array index
@@ -123,7 +122,7 @@ const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
   );
 };
 
-const DragHandle = () => {
+const DragHandle = (): JSX.Element => {
   const dragHandleProps = useContext(DragHandleContext);
 
   return <MenuOutlined style={{ color: '#999' }} {...dragHandleProps} />;
@@ -132,12 +131,12 @@ const DragHandle = () => {
 export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
   const columns = value as IColumnProps[];
 
-  const handleDeleteTab = (key: string) => {
+  const handleDeleteTab = (key: string): void => {
     const newColumns = columns.filter((column) => column.id !== key);
     onChange(newColumns);
   };
 
-  const handleAddColumn = () => {
+  const handleAddColumn = (): void => {
     const newColumn: IColumnProps = {
       id: nanoid(),
       flex: 6,
@@ -150,7 +149,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
     onChange(newColumns);
   };
 
-  const handleSaveCell = (row) => {
+  const handleSaveCell = (row): void => {
     const newData = [...columns];
     const index = newData.findIndex((item) => row.id === item.id);
     const currentItem = newData[index];
@@ -225,12 +224,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
     };
   });
 
-  const getListStyle = (_isDraggingOver: boolean) => ({
-    // background: isDraggingOver ? "lightgrey" : "inherit",
-    // overflow: "scroll" as "scroll",
-  });
-
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = (result: DropResult): void => {
     const { source, destination } = result;
 
     if (!destination) {
@@ -256,7 +250,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const toggleModal = () => setShowDialog((prevVisible) => !prevVisible);
+  const toggleModal = (): void => setShowDialog((prevVisible) => !prevVisible);
 
   return (
     <Fragment>
@@ -276,8 +270,8 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
         <Space direction="vertical" style={{ width: '100%' }}>
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="columns">
-              {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
-                <div ref={provided.innerRef} {...provided.droppableProps} style={getListStyle(snapshot.isDraggingOver)}>
+              {(provided: DroppableProvided) => (
+                <div ref={provided.innerRef} {...provided.droppableProps}>
                   <Table
                     scroll={{ x: 'mex-content' }}
                     bordered

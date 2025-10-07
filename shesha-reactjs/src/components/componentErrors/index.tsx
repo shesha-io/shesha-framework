@@ -17,7 +17,7 @@ const ComponentError: FC<IComponentErrorProps> = ({
 }) => {
   const { styles } = useStyles();
 
-  const errortip = (errors: IModelValidation) => <ul>{errors.errors.map((error, index) => <li key={index}>{error.error}</li>)}</ul>;
+  const errortip = (errors: IModelValidation): JSX.Element => <ul>{errors.errors.map((error, index) => <li key={index}>{error.error}</li>)}</ul>;
 
   const tooltipClassName = type === 'info'
     ? styles.cmoponentErrorInfo

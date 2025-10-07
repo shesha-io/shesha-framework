@@ -4,7 +4,7 @@ import EditViewMsg from '../appConfigurator/editViewMsg';
 import React, { MutableRefObject, ReactElement, useEffect } from 'react';
 import { IConfigurableFormProps, SheshaFormProps } from './models';
 import { Form, FormInstance } from 'antd';
-import { useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
+import { useAppConfigurator, useShaRoutingOrUndefined, useSheshaApplication } from '@/providers';
 import { useFormDesignerUrl } from '@/providers/form/hooks';
 import { FormWithFlatMarkup } from './formWithFlatMarkup';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
@@ -112,11 +112,11 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
   //#endregion shaForm sync
 
   const canConfigure = Boolean(app.routes.formsDesigner) && Boolean(formId);
-  const { router } = useShaRouting(false) ?? {};
+  const { router } = useShaRoutingOrUndefined() ?? {};
 
   const formDesignerUrl = useFormDesignerUrl(formId);
 
-  const openInDesigner = () => {
+  const openInDesigner = (): void => {
     if (formDesignerUrl && router) {
       router.push(formDesignerUrl);
       switchApplicationMode('live');

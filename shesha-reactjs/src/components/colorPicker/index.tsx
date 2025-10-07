@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useState } from 'react';
+import React, { CSSProperties, FC, ReactNode, useState } from 'react';
 import { ColorPicker as AntdColorPicker } from 'antd';
 import { ColorValueType } from 'antd/es/color-picker/interface';
 import { AggregationColor } from 'antd/es/color-picker/color';
@@ -24,7 +24,7 @@ export interface IColorPickerProps {
   defaultValue?: ColorValueType;
 }
 
-const formatColor = (color: AggregationColor, format: ColorFormat) => {
+const formatColor = (color: AggregationColor, format: ColorFormat): string | null => {
   if (!color)
     return null;
 
@@ -40,7 +40,7 @@ const formatColor = (color: AggregationColor, format: ColorFormat) => {
  * @param theme
  * @returns a (object) map of theme colors with keys as `primary`, `success`, `warning`, `error`, `info`, `processing`
  */
-export const readThemeColor = (theme: IConfigurableTheme) => ({
+export const readThemeColor = (theme: IConfigurableTheme): Record<string, string> => ({
   primary: theme.application?.primaryColor,
   success: theme.application?.successColor,
   warning: theme.application?.warningColor,
@@ -72,15 +72,15 @@ export const ColorPicker: FC<IColorPickerProps> = ({
     onChange(formattedValue);
   };
 
-  const handleClear = () => {
+  const handleClear = (): void => {
     onChange(null);
   };
 
-  const onPanelClick = (event: React.MouseEvent<HTMLElement>) => {
+  const onPanelClick = (event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();
   };
 
-  const panelRender = (panel: React.ReactNode) => (
+  const panelRender = (panel: React.ReactNode): ReactNode => (
     <div onClick={onPanelClick}>
       {title && (
         <div

@@ -4,7 +4,7 @@ import React from 'react';
 export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { style: React.CSSProperties }) => {
   const { fontWeight, backgroundImage, backgroundColor, ...rest } = style;
 
-  const borderWidthFromWeight = (weight) => {
+  const borderWidthFromWeight = (weight): string => {
     switch (weight) {
       case '100':
         return '1px';

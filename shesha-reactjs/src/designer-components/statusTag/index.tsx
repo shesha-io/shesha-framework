@@ -5,7 +5,7 @@ import { useGlobalState, useFormData, useForm } from '@/providers';
 import { evaluateString, validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
 import { getStyle } from '@/providers/form/utils';
-import StatusTag, { DEFAULT_STATUS_TAG_MAPPINGS, IStatusTagProps as ITagProps } from '@/components/statusTag';
+import StatusTag, { DEFAULT_STATUS_TAG_MAPPINGS, IStatusMappings, IStatusTagProps as ITagProps } from '@/components/statusTag';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -36,7 +36,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     /** Used to inject table row in the status tag if rendered on databale. Uses data if not applicable **/
     // func(model?.injectedTableRow || data, formMode);
 
-    const getValueByExpression = (expression: string = '') => {
+    const getValueByExpression = (expression: string = ''): string => {
       return typeof expression === 'string'
         ? expression?.includes('{{') ? evaluateString(expression, data) : expression
         : '';
@@ -59,7 +59,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
         localColorByExpression,
       ].filter(Boolean)?.length === 0;
 
-    const getParsedMappings = () => {
+    const getParsedMappings = (): IStatusMappings | null => {
       try {
         return jsonSafeParse(model?.mappings);
       } catch {

@@ -13,13 +13,13 @@ export const SpecificationConditionEditor: FC<SpecificationConditionEditorProps>
   });
 
   return (
-        <CodeEditor
-          value={value}
-          onChange={onChange}
-          mode="dialog"
-          propertyName="specificationCondition"
-          label="Specification: condition to apply"
-          description="Enter a condition that determines whether the Specification should be applied or not. Return true to apply the Specification or false to ignore it."
-        />
+    <CodeEditor
+      value={value}
+      onChange={onChange}
+      mode="dialog"
+      propertyName="specificationCondition"
+      label="Specification: condition to apply"
+      description="Enter a condition that determines whether the Specification should be applied or not. Return true to apply the Specification or false to ignore it."
+    />
   );
 };

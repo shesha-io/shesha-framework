@@ -1,5 +1,5 @@
 import { ArcElement, Chart as ChartJS, ChartOptions, Legend, RadialLinearScale, Title, Tooltip } from 'chart.js';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { PolarArea } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
@@ -12,7 +12,7 @@ interface IPolarAreaChartProps extends IChartDataProps {
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, RadialLinearScale);
 
-const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
+const PolarAreaChart = ({ data }: IPolarAreaChartProps): ReactElement => {
   const { showTitle, legendPosition, showLegend, strokeColor, dataMode, strokeWidth, titleFont, legendFont, tickFont } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();

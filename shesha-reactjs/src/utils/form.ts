@@ -12,7 +12,7 @@ interface IDataWithFields {
 export const GHOST_PAYLOAD_KEY = '_&@#GH0ST';
 
 export const getFieldNames = (data: object): string[] => {
-  const processContainer = (container: any, containerName: string, fieldsList: string[]) => {
+  const processContainer = (container: any, containerName: string, fieldsList: string[]): void => {
     if (!container) return;
     if (containerName) fieldsList.push(containerName);
 
@@ -50,11 +50,11 @@ export function addFormFieldsList<TData = any>(
   return { _formFields: allFields, ...formData, ...nonFormData };
 }
 
-export const getFormFullName = (moduleName: string | null, name: string) => {
+export const getFormFullName = (moduleName: string | null, name: string): string => {
   return moduleName ? `${moduleName}/${name}` : name;
 };
 
-export const appendFormData = (formData: FormData, key: string, data: any) => {
+export const appendFormData = (formData: FormData, key: string, data: any): void => {
   if (data === Object(data) || Array.isArray(data)) {
     for (var i in data) {
       if (data.hasOwnProperty(i)) {
@@ -66,7 +66,7 @@ export const appendFormData = (formData: FormData, key: string, data: any) => {
   }
 };
 
-const buildFormData = (formData, data, parentKey) => {
+const buildFormData = (formData, data, parentKey): void => {
   if (data && typeof data === 'object' && !(data instanceof Date) && !(data instanceof File)) {
     Object.keys(data).forEach((key) => {
       buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);

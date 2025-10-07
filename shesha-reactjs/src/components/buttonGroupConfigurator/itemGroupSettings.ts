@@ -1,8 +1,9 @@
 import { buttonTypes } from '@/designer-components/button/util';
+import { FormMarkupWithSettings } from '@/interfaces';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getGroupSettings = () => {
+export const getGroupSettings = (): FormMarkupWithSettings => {
   return {
     components: new DesignerToolbarSettings()
       .addSearchableTabs({

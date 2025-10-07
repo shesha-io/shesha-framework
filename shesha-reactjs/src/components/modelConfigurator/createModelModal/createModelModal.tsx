@@ -13,11 +13,11 @@ export const CreateModelModal: FC<ICreateModelModalProps> = () => {
   const formRef = useShaFormRef();
   const { message } = App.useApp();
 
-  const handleOk = () => {
+  const handleOk = (): void => {
     formRef.current?.submit();
   };
 
-  const onSave = (values) => {
+  const onSave = (values): void => {
     save(values)
       .then(() => {
         message.success('Configuration saved successfully');

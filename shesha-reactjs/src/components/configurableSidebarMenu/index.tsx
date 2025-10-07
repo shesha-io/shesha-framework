@@ -28,7 +28,7 @@ export interface IConfigurableSidebarMenuProps {
 export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = (props) => {
   const { loadedMenu, changeMainMenu, saveMainMenu } = useMainMenu();
 
-  const editor = (editorProps: ISettingsEditorProps<ISideBarMenuProps>) => {
+  const editor = (editorProps: ISettingsEditorProps<ISideBarMenuProps>): JSX.Element => {
     return (
       <ComponentSettingsModal
         title="Sidebar Menu Configuration"
@@ -67,15 +67,15 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = (props
     >
       {(componentState, BlockOverlay) => {
         return (
-            <div className={`sidebar ${componentState.wrapperClassName}`} style={{ position: 'relative' }}>
-                <div style={{ position: 'absolute', top: 0, width: '10px', height: '100px', overflowY: 'hidden' }}>
-                <BlockOverlay>
-                  <EditOutlined style={{ color: "#FFFFFF" }} />
-                </BlockOverlay>
-                </div>
-
-              <SidebarMenu theme={props.theme} />
+          <div className={`sidebar ${componentState.wrapperClassName}`} style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 0, width: '10px', height: '100px', overflowY: 'hidden' }}>
+              <BlockOverlay>
+                <EditOutlined style={{ color: "#FFFFFF" }} />
+              </BlockOverlay>
             </div>
+
+            <SidebarMenu theme={props.theme} />
+          </div>
         );
       }}
     </ConfigurableComponentRenderer>

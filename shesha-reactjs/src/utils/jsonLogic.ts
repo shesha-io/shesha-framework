@@ -17,7 +17,7 @@ export interface IEvaluateJsonLogicNode {
 }
 
 type NodeCallback = (operator: string, args: object[]) => void;
-const processRecursive = (jsonLogic: object, callback: NodeCallback) => {
+const processRecursive = (jsonLogic: object, callback: NodeCallback): void => {
   if (!jsonLogic) return;
   for (const operator in jsonLogic) {
     if (!jsonLogic.hasOwnProperty(operator)) continue;

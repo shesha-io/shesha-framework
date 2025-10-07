@@ -66,8 +66,8 @@ export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
 export const updateSettingsComponents = (
   toolboxComponents: IToolboxComponents,
   components: IConfigurableFormComponent[]
-) => {
-  const processComponent = (component: IConfigurableFormComponent) => {
+): IConfigurableFormComponent[] => {
+  const processComponent = (component: IConfigurableFormComponent): IConfigurableFormComponent => {
     const componentRegistration = toolboxComponents[component.type];
 
     const newComponent: IConfigurableFormComponent = { ...component, jsSetting: false };
@@ -130,8 +130,8 @@ export const updateSettingsComponents = (
 
 export const updateJsSettingsForComponents = (
   toolboxComponents: IToolboxComponents,
-  components: IConfigurableFormComponent[]) => {
-  const processComponent = (component: IConfigurableFormComponent) => {
+  components: IConfigurableFormComponent[]): IConfigurableFormComponent[] => {
+  const processComponent = (component: IConfigurableFormComponent): IConfigurableFormComponent => {
     const componentRegistration = toolboxComponents[component.type];
     const newComponent: IConfigurableFormComponent = {
       ...component,
@@ -165,7 +165,7 @@ export const updateJsSettingsForComponents = (
 export const updateSettingsComponentsDict = (
   toolboxComponents: IToolboxComponents,
   components: IComponentsDictionary
-) => {
+): IComponentsDictionary => {
   const comps: IConfigurableFormComponent[] = [];
 
   for (const key in components) {
@@ -184,7 +184,7 @@ export const updateSettingsComponentsDict = (
   return res;
 };
 
-export const StyledLabel = ({ label }: { label: string }) => {
+export const StyledLabel = ({ label }: { label: string }): JSX.Element => {
   const { styles } = useStyles();
 
   return <span className={styles.label}>{label}</span>;

@@ -17,7 +17,7 @@ export const PermissionAutocomplete: FC<IPermissionAutocompleteProps> = (props) 
 
   const [searchText, setSearchText] = useState('');
 
-  const internalOnChange = (values?: string[]) => {
+  const internalOnChange = (values?: string[]): void => {
     // setSearchText('');
     if (onChange) {
       onChange(values);

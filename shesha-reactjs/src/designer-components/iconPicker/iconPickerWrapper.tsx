@@ -46,7 +46,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
   const hasSaved = useRef(false);
 
 
-  const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes) => {
+  const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes): void => {
     if (onChange) onChange(iconName);
   };
 

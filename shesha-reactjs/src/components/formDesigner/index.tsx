@@ -9,9 +9,9 @@ interface IFormDesignerProps {
 
 const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
   return (
-        <FormProviderWrapper formId={formId}>
-            <FormDesignerRenderer />
-        </FormProviderWrapper>
+    <FormProviderWrapper formId={formId}>
+      <FormDesignerRenderer />
+    </FormProviderWrapper>
   );
 };
 

@@ -31,7 +31,7 @@ export class SettingAccessor<Value = any> implements ISettingAccessor<Value> {
    *
    * @returns setting value
    */
-  getValueAsync() {
+  getValueAsync(): Promise<Value> {
     return this._settingManager.getValueAsync<Value>({ module: this._moduleAccessor, category: this._categoryAccessor, name: this._name });
   };
 

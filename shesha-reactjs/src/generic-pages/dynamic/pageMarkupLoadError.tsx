@@ -19,37 +19,37 @@ export const PageMarkupLoadingError: FC<MarkupLoadingErrorRenderProps> = ({ form
   }, [notification, markupLoadingState]);
 
   return (
-        <>
-            {markupLoadingState.error?.code === 404 && (
-                <Result
-                  status="404"
-                  style={{ height: '100vh - 55px' }}
-                  title="404"
-                  subTitle="Sorry, the page you visited does not exist."
-                  extra={(
-                        <Button type="primary">
-                            <Link href="/">
-                                Back Home
-                            </Link>
-                        </Button>
-                  )}
-                />
-            )}
-            {(markupLoadingState.error?.code === 401 || markupLoadingState.error?.code === 403) && (
-                <Result
-                  status="403"
-                  style={{ height: '100vh - 55px' }}
-                  title="403"
-                  subTitle={getFormForbiddenMessage(formId)}
-                  extra={(
-                        <Button type="primary">
-                            <Link href="/">
-                                Back Home
-                            </Link>
-                        </Button>
-                  )}
-                />
-            )}
-        </>
+    <>
+      {markupLoadingState.error?.code === 404 && (
+        <Result
+          status="404"
+          style={{ height: '100vh - 55px' }}
+          title="404"
+          subTitle="Sorry, the page you visited does not exist."
+          extra={(
+            <Button type="primary">
+              <Link href="/">
+                Back Home
+              </Link>
+            </Button>
+          )}
+        />
+      )}
+      {(markupLoadingState.error?.code === 401 || markupLoadingState.error?.code === 403) && (
+        <Result
+          status="403"
+          style={{ height: '100vh - 55px' }}
+          title="403"
+          subTitle={getFormForbiddenMessage(formId)}
+          extra={(
+            <Button type="primary">
+              <Link href="/">
+                Back Home
+              </Link>
+            </Button>
+          )}
+        />
+      )}
+    </>
   );
 };

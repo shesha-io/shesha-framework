@@ -1,4 +1,4 @@
-import { DesignerToolbarSettings } from "@/index";
+import { DesignerToolbarSettings, FormMarkupWithSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { ITableComponentProps } from "./models";
@@ -87,7 +87,7 @@ const ENABLE_CRUD_EXPOSED_VARIABLES = [
   },
 ].map((item) => JSON.stringify(item));
 
-export const getSettings = (data: ITableComponentProps) => {
+export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const crudTabId = nanoid();

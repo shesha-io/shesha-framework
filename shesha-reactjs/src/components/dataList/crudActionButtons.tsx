@@ -4,7 +4,7 @@ import { useDataListCrud } from '@/providers/dataListCrudContext/index';
 import ActionButton, { IActionButtonProps } from '../actionButton/index';
 import { useStyles } from './styles/styles';
 
-export const CrudActionButtons = () => {
+export const CrudActionButtons = (): JSX.Element => {
   const {
     mode,
     switchMode,
@@ -25,11 +25,11 @@ export const CrudActionButtons = () => {
 
   const { styles } = useStyles();
 
-  const onEditClick = () => {
+  const onEditClick = (): void => {
     switchMode('update');
   };
 
-  const onSaveUpdateClick = async () => {
+  const onSaveUpdateClick = async (): Promise<void> => {
     try {
       await performUpdate();
       switchMode('read');
@@ -38,7 +38,7 @@ export const CrudActionButtons = () => {
     }
   };
 
-  const onSaveCreateClick = async () => {
+  const onSaveCreateClick = async (): Promise<void> => {
     try {
       await performCreate();
       await reset();
@@ -47,12 +47,12 @@ export const CrudActionButtons = () => {
     }
   };
 
-  const onCancelEditClick = async () => {
+  const onCancelEditClick = async (): Promise<void> => {
     await reset();
     switchMode('read');
   };
 
-  const onDeleteClick = () => {
+  const onDeleteClick = (): void => {
     performDelete();
   };
 

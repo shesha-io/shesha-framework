@@ -1,5 +1,5 @@
 import { Radio, Space } from 'antd';
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 import { useGet } from '@/hooks';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
@@ -42,7 +42,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
 
   const val = value ? `${value}` : defaultValue;
 
-  const renderCheckGroup = () => (
+  const renderCheckGroup = (): ReactElement => (
     <Radio.Group
       className="sha-radio-group"
       disabled={model.readOnly}

@@ -1,7 +1,7 @@
 import { IFormSettings } from "@/interfaces";
 import { GqlSubmitterSettings } from "@/providers/form/submitters/interfaces";
 
-export const migrateDefaultApiEndpoints = (prev: IFormSettings) => {
+export const migrateDefaultApiEndpoints = (prev: IFormSettings): IFormSettings => {
   const { dataSubmittersSettings, ...restProps } = prev;
   const { gql } = dataSubmittersSettings ?? {};
   if (!gql)

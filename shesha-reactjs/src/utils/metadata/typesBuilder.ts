@@ -74,7 +74,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     this.registerFile = registerFile;
   }
 
-  #internalRegisterFile = (fileName: string, content: string) => {
+  #internalRegisterFile = (fileName: string, content: string): void => {
     // note: in some cases we have to double check existence of the file because it may be registered recursively
     if (!this.isFileExists(fileName))
       this.registerFile(fileName, content);
@@ -112,7 +112,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     return `entities/${folder}/${typeAccessor}.ts`;
   };
 
-  #appendCommentBlock = (sb: StringBuilder, lines: string[]) => {
+  #appendCommentBlock = (sb: StringBuilder, lines: string[]): void => {
     const filteredLines = lines.filter((l) => Boolean(l));
     if (filteredLines.length > 0) {
       filteredLines.forEach((line, index) => {
@@ -133,11 +133,11 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     return definition;
   };
 
-  makeFile = (fileName: string, content: string) => {
+  makeFile = (fileName: string, content: string): void => {
     this.#internalRegisterFile(fileName, content);
   };
 
-  makeEntitiesBaseTypes = () => {
+  makeEntitiesBaseTypes = (): void => {
     this.makeFile(CODE.ENTITY_BASE_TYPES_PATH, entitiesCode);
   };
 
@@ -369,7 +369,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     return await this.getEntityType(typeId, context);
   };
 
-  #generateFileName = (keyType: string) => {
+  #generateFileName = (keyType: string): string => {
     return `apis/${camelcase(keyType)}.ts`;
   };
 

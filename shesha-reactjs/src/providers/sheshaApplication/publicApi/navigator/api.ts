@@ -24,17 +24,17 @@ export class NavigatorApi implements INavigatorApi {
     this.#shaRouter = shaRouter;
   }
 
-  navigateToUrl = (url: string, queryParameters?: Record<string, string>) => {
+  navigateToUrl = (url: string, queryParameters?: Record<string, string>): void => {
     const finalUrl = buildUrl(url, queryParameters);
     this.#shaRouter.goingToRoute(finalUrl);
   };
 
-  navigateToForm = (formId: FormIdentifier, args?: Record<string, string>) => {
+  navigateToForm = (formId: FormIdentifier, args?: Record<string, string>): void => {
     const url = this.getFormUrl(formId);
     this.navigateToUrl(url, args);
   };
 
-  getFormUrl = (formId: FormIdentifier) => {
+  getFormUrl = (formId: FormIdentifier): string => {
     return this.#shaRouter.getFormUrl(formId);
   };
 }

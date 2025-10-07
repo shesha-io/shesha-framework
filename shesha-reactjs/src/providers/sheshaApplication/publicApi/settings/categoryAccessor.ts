@@ -17,7 +17,7 @@ export class SettingsCategoryAccessor extends BaseAccessor<SettingAccessor, Sett
     this._moduleAccessor = moduleAccessor;
   }
 
-  createChild = (accessor: string) => {
+  createChild = (accessor: string): SettingAccessor => {
     return new SettingAccessor(this._manager, this._moduleAccessor, this._accessor, accessor);
   };
 }

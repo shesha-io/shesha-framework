@@ -35,15 +35,15 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     }, [model.initialDataCode]);
 
     return (
-        <DataContextProvider
-          {...model}
-          name={model.componentName}
-          metadata={metadata}
-          initialData={allData.form?.formMode === 'designer' ? null : initialData}
-          type="control"
-        >
-            <ComponentsContainer containerId={model.id} />
-        </DataContextProvider>
+      <DataContextProvider
+        {...model}
+        name={model.componentName}
+        metadata={metadata}
+        initialData={allData.form?.formMode === 'designer' ? null : initialData}
+        type="control"
+      >
+        <ComponentsContainer containerId={model.id} />
+      </DataContextProvider>
     );
   },
   settingsFormFactory: (props) => {

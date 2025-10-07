@@ -8,7 +8,7 @@ import { FormIdentifier } from '@/providers/form/models';
 import ParentProvider from '@/providers/parentProvider';
 import { get } from '@/utils/fetchers';
 import { App, Button, Popover, PopoverProps } from 'antd';
-import React, { CSSProperties, FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, PropsWithChildren, ReactNode, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
 import { formItemLayout, getQuickViewInitialValues, loadingBox } from './utils';
 import { useStyles } from './styles/styles';
@@ -128,7 +128,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     );
   }, [formMarkup, formData, dataProperties]);
 
-  const render = () => {
+  const render = (): ReactNode => {
     if (children) {
       return <div className={cx(styles.innerEntityReferenceButtonBoxStyle)}>{children}</div>;
     }
@@ -155,7 +155,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       );
     }
 
-    const ifLoadingStateSuccess = () => loadingState === 'success' ? (
+    const ifLoadingStateSuccess = (): ReactNode => loadingState === 'success' ? (
       <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>{formTitle || emptyText}</span>
     ) : (
       <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>Quickview not configured properly</span>

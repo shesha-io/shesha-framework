@@ -65,7 +65,7 @@ export const migrateToButtonGroup = (model: IToolbarProps): ToolbarButtonGroupPr
           customVisibility: item.customVisibility,
           customEnabled: item.customEnabled,
         };
-        const removeContext = (s: string) => s?.replace('context.', '')?.replace('context?.', '');
+        const removeContext = (s: string): string | undefined => s?.replace('context.', '')?.replace('context?.', '');
         const result = migrateFunctionToProp(
           migrateFunctionToProp(newItem as any, 'hidden', 'customVisibility', removeContext, true),
           'disabled',

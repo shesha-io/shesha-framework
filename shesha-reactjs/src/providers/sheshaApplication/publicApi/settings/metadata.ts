@@ -104,7 +104,7 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
     `export interface ${result.typeName} {`,
   ];
 
-  const writeObject = (sb: StringBuilder, property: ISettingPropertyMetadata) => {
+  const writeObject = (sb: StringBuilder, property: ISettingPropertyMetadata): void => {
     if (property.description)
       sb.append(`/** ${property.description} */`);
 

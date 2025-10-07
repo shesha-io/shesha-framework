@@ -25,7 +25,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
   useShaFormDataUpdate();
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchQuery(e.target.value);
   };
 
@@ -39,7 +39,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     }
   }, [activeTabKey]);
 
-  const handleTabChange = (newActiveKey: string) => {
+  const handleTabChange = (newActiveKey: string): void => {
     setActiveTabKey(newActiveKey);
   };
 
@@ -55,7 +55,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     focusActiveTabSearch();
   }, [activeTabKey, focusActiveTabSearch]);
 
-  const isComponentHidden = (component) => {
+  const isComponentHidden = (component): boolean => {
     if (formState.name === "modalSettings") {
       if (component.inputs) {
         const visibleInputs = component.inputs.filter((input) => {
@@ -100,33 +100,33 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         children: visibleComponents.length === 0
           ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
           : (
-<ParentProvider model={model}>
-                         <Input
-                           type="search"
-                           size="small"
-                           allowClear
-                           style={{
-                             marginBottom: '16px',
-                           }}
-                           ref={(el) => {
-                             if (el) {
-                               searchRefs.current.set(tabKey, el);
-                             } else {
-                               searchRefs.current.delete(tabKey);
-                             }
-                           }}
-                           placeholder="Search properties"
-                           value={searchQuery}
-                           onChange={handleSearchChange}
-                           suffix={
-                        <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-                           }
-                         />
-                        <ComponentsContainer
-                          containerId={tab.id + tab.key}
-                          dynamicComponents={visibleComponents}
-                        />
-</ParentProvider>
+            <ParentProvider model={model}>
+              <Input
+                type="search"
+                size="small"
+                allowClear
+                style={{
+                  marginBottom: '16px',
+                }}
+                ref={(el) => {
+                  if (el) {
+                    searchRefs.current.set(tabKey, el);
+                  } else {
+                    searchRefs.current.delete(tabKey);
+                  }
+                }}
+                placeholder="Search properties"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                suffix={
+                  <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                }
+              />
+              <ComponentsContainer
+                containerId={tab.id + tab.key}
+                dynamicComponents={visibleComponents}
+              />
+            </ParentProvider>
           ),
         forceRender: true,
         hidden: tab.hidden || !hasVisibleComponents,
@@ -155,45 +155,45 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
 
   return (
-        <>
-            {newFilteredTabs.length === 0 && (
-<div
-  className={styles.searchField}
-  style={{
-    position: 'sticky',
-    top: -16,
-    zIndex: 2,
-    padding: '8px 0',
-  }}
->
-                <Input
-                  type="search"
-                  size="small"
-                  allowClear
-                  placeholder="Search properties"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  autoFocus
-                  suffix={
-                        <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-                  }
-                />
-</div>
-            )}
-            {newFilteredTabs.length === 0 && searchQuery
-              ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
-              : (
-<Tabs
-  activeKey={activeTabKey}
-  onChange={handleTabChange}
-  size={model.size}
-  type={model.tabType || 'card'}
-  tabPosition={model.position || 'top'}
-  items={newFilteredTabs}
-  className={styles.content}
-/>
-              )}
-        </>
+    <>
+      {newFilteredTabs.length === 0 && (
+        <div
+          className={styles.searchField}
+          style={{
+            position: 'sticky',
+            top: -16,
+            zIndex: 2,
+            padding: '8px 0',
+          }}
+        >
+          <Input
+            type="search"
+            size="small"
+            allowClear
+            placeholder="Search properties"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            autoFocus
+            suffix={
+              <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+            }
+          />
+        </div>
+      )}
+      {newFilteredTabs.length === 0 && searchQuery
+        ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
+        : (
+          <Tabs
+            activeKey={activeTabKey}
+            onChange={handleTabChange}
+            size={model.size}
+            type={model.tabType || 'card'}
+            tabPosition={model.position || 'top'}
+            items={newFilteredTabs}
+            className={styles.content}
+          />
+        )}
+    </>
   );
 };
 

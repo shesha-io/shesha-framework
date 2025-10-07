@@ -42,25 +42,25 @@ interface CodeWrapperProps extends PropsWithChildren {
 const CodeWrapper: FC<CodeWrapperProps> = ({ children, leftPane }) => {
   const { styles } = useStyles();
   return (
-        <SizableColumns
-          sizes={leftPane ? [25, 75] : [0, 100]}
-          minSize={leftPane ? 100 : 0}
-          expandToMin={false}
-          gutterSize={leftPane ? 8 : 0}
-          gutterAlign="center"
-          snapOffset={30}
-          dragInterval={1}
-          direction="horizontal"
-          cursor="col-resize"
-          className={styles.workspaceSplit}
-        >
-            <div className={leftPane ? styles.tree : undefined}>
-                {leftPane}
-            </div>
-            <div className={styles.code}>
-                {children}
-            </div>
-        </SizableColumns>
+    <SizableColumns
+      sizes={leftPane ? [25, 75] : [0, 100]}
+      minSize={leftPane ? 100 : 0}
+      expandToMin={false}
+      gutterSize={leftPane ? 8 : 0}
+      gutterAlign="center"
+      snapOffset={30}
+      dragInterval={1}
+      direction="horizontal"
+      cursor="col-resize"
+      className={styles.workspaceSplit}
+    >
+      <div className={leftPane ? styles.tree : undefined}>
+        {leftPane}
+      </div>
+      <div className={styles.code}>
+        {children}
+      </div>
+    </SizableColumns>
   );
 };
 
@@ -112,7 +112,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
   const metadataFetcher = useCallback((typeId: ModelTypeIdentifier): Promise<IObjectMetadata> => getMetadata({ dataType: DataTypes.entityReference, modelType: typeId.name }), [getMetadata]);
 
   const subscriptions = useRef<IDisposable[]>([]);
-  const addSubscription = (subscription: IDisposable) => {
+  const addSubscription = (subscription: IDisposable): void => {
     subscriptions.current.push(subscription);
   };
   useEffect(() => {
@@ -181,12 +181,12 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     return model;
   };
 
-  const setDiagnosticsOptions = (monaco: Monaco, options: languages.typescript.DiagnosticsOptions) => {
+  const setDiagnosticsOptions = (monaco: Monaco, options: languages.typescript.DiagnosticsOptions): void => {
     monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions(options);
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions(options);
   };
 
-  const setCompilerOptions = (monaco: Monaco, options: languages.typescript.CompilerOptions) => {
+  const setCompilerOptions = (monaco: Monaco, options: languages.typescript.CompilerOptions): void => {
     const jsOptions = monaco.languages.typescript.javascriptDefaults.getCompilerOptions();
     monaco.languages.typescript.javascriptDefaults.setCompilerOptions({ ...jsOptions, ...options });
 
@@ -195,7 +195,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
   };
 
 
-  const initDiagnosticsOptions = (monaco: Monaco) => {
+  const initDiagnosticsOptions = (monaco: Monaco): void => {
     setDiagnosticsOptions(monaco, {
       // disable `A 'return' statement can only be used within a function body.(1108)`
       diagnosticCodesToIgnore: [1108, 1046],
@@ -218,7 +218,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     return fileNamesState.modelFilePath === normalizedPath;
   };
 
-  const navigateToModel = (fileUri?: UriComponents, selectionOrPosition?: IRange | IPosition) => {
+  const navigateToModel = (fileUri?: UriComponents, selectionOrPosition?: IRange | IPosition): void => {
     if (!monacoInst.current || !editorRef.current || !fileUri)
       return;
 
@@ -243,7 +243,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
       setInternalReadOnly(newInternalReadOnly);
   };
 
-  const onEditorMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
+  const onEditorMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco): void => {
     if (!codeEditorEnvironment)
       throw new Error('Code editor environment is not ready');
 
@@ -263,7 +263,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     });
 
     // init editor
-    const registerFile = (fileName: string, content: string) => {
+    const registerFile = (fileName: string, content: string): void => {
       addExtraLib(monaco, content, fileName.startsWith('/') ? fileName : prefixLibPath(fileName));
     };
     const { sourceFiles } = codeEditorEnvironment;
@@ -292,11 +292,11 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
       editor.trigger(null, 'editor.fold', { selectionLines: [0] });
   };
 
-  const onExplorerClick = () => {
+  const onExplorerClick = (): void => {
     setActivePane(activePane === "explorer" ? null : "explorer");
   };
 
-  const onFileSelect = (fileUri?: UriComponents) => {
+  const onFileSelect = (fileUri?: UriComponents): void => {
     navigateToModel(fileUri);
   };
 
@@ -307,63 +307,63 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
   const showTree = isDevMode && (!props.language || props.language === 'typescript' || props.language === 'javascript');
   const finalReadOnly = readOnly || internalReadOnly;
 
-  const renderCodeEditor = () => {
+  const renderCodeEditor = (): JSX.Element => {
     return codeEditorEnvironment
       ? (
-                <>
-                    <CodeEditorMayHaveTemplate
-                      path={fileNamesState.modelFilePath}
-                      language={props.language}
-                      theme="vs-dark"
-                      value={value}
-                      onChange={onChange}
-                      options={{
-                        automaticLayout: true,
-                        readOnly: finalReadOnly,
-                      }}
-                      onMount={onEditorMount}
-                      template={codeEditorEnvironment.template}
-                    />
-                </>
+        <>
+          <CodeEditorMayHaveTemplate
+            path={fileNamesState.modelFilePath}
+            language={props.language}
+            theme="vs-dark"
+            value={value}
+            onChange={onChange}
+            options={{
+              automaticLayout: true,
+              readOnly: finalReadOnly,
+            }}
+            onMount={onEditorMount}
+            template={codeEditorEnvironment.template}
+          />
+        </>
       )
       : <CodeEditorLoadingProgressor message="Load environment..." />;
   };
 
   return showTree
     ? (
-            <div className={styles.codeEditor} style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
-                <div className={styles.sider}>
-                    <Button
-                      block
-                      type="link"
-                      icon={<FileOutlined />}
-                      size="large"
-                      style={{ border: 'none' }}
-                      onClick={onExplorerClick}
-                      className={activePane === "explorer" ? "active" : "inactive"}
-                    />
-                </div>
-                <div className={styles.workspace}>
-                    <CodeWrapper
-                      leftPane={activePane === "explorer"
-                        ? (
-                                <FileTree
-                                  monaco={monacoInst.current}
-                                  onSelect={onFileSelect}
-                                  defaultSelection={getCurrentUri()}
-                                />
-                        )
-                        : undefined}
-                    >
-                        {renderCodeEditor()}
-                    </CodeWrapper>
-                </div>
-            </div>
+      <div className={styles.codeEditor} style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
+        <div className={styles.sider}>
+          <Button
+            block
+            type="link"
+            icon={<FileOutlined />}
+            size="large"
+            style={{ border: 'none' }}
+            onClick={onExplorerClick}
+            className={activePane === "explorer" ? "active" : "inactive"}
+          />
+        </div>
+        <div className={styles.workspace}>
+          <CodeWrapper
+            leftPane={activePane === "explorer"
+              ? (
+                <FileTree
+                  monaco={monacoInst.current}
+                  onSelect={onFileSelect}
+                  defaultSelection={getCurrentUri()}
+                />
+              )
+              : undefined}
+          >
+            {renderCodeEditor()}
+          </CodeWrapper>
+        </div>
+      </div>
     )
     : (
-            <div style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
-                {renderCodeEditor()}
-            </div>
+      <div style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
+        {renderCodeEditor()}
+      </div>
     );
 };
 

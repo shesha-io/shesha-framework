@@ -17,12 +17,12 @@ export const HelpTextPopover: FC<PropsWithChildren<IHelpTextPopoverProps>> = ({ 
     `);
   return content
     ? (
-            <>
-                {children}
-                <Tooltip title={content}>
-                    <QuestionCircleOutlined className={className} />
-                </Tooltip>
-            </>
+      <>
+        {children}
+        <Tooltip title={content}>
+          <QuestionCircleOutlined className={className} />
+        </Tooltip>
+      </>
     )
     : <>{children}</>;
 };

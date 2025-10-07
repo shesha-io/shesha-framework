@@ -10,13 +10,13 @@ export const FormFlatMarkupContext = createNamedContext<IFlatComponentsStructure
 
 export const FormFlatMarkupProvider: FC<PropsWithChildren<IFormFlatMarkupProviderProps>> = ({ children, markup }) => {
   return (
-        <FormFlatMarkupContext.Provider value={markup}>
-            {children}
-        </FormFlatMarkupContext.Provider>
+    <FormFlatMarkupContext.Provider value={markup}>
+      {children}
+    </FormFlatMarkupContext.Provider>
   );
 };
 
-export const useFormMarkup = (require: boolean = true) => {
+export const useFormMarkup = (require: boolean = true): IFlatComponentsStructure | undefined => {
   const context = useContext(FormFlatMarkupContext);
 
   if (require && context === undefined) {

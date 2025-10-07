@@ -29,12 +29,12 @@ export const QueryBuilderRenderer: FC<IQueryBuilderComponentProps> = (props) => 
     <ConfigurableFormItem model={props}>
       {(value, onChange) => {
         return (
-<QueryBuilderField
-  value={value}
-  onChange={onChange}
-  jsonExpanded={props.jsonExpanded}
-  readOnly={props.readOnly}
-/>
+          <QueryBuilderField
+            value={value}
+            onChange={onChange}
+            jsonExpanded={props.jsonExpanded}
+            readOnly={props.readOnly}
+          />
         );
       }}
     </ConfigurableFormItem>

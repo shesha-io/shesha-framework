@@ -1,7 +1,7 @@
 import { IFormSettings } from "@/interfaces";
 import { GqlSubmitterSettings } from "@/providers/form/submitters/interfaces";
 
-export const migrateGqlCustomEndpoint = (prev: IFormSettings) => {
+export const migrateGqlCustomEndpoint = (prev: IFormSettings): IFormSettings => {
   const { dataLoadersSettings, ...restProps } = prev;
   const { gql } = dataLoadersSettings ?? {};
 

@@ -89,7 +89,7 @@ export class SettingsManager {
     return SettingsManager.fetchConfigurationsAsync(this._httpClient);
   };
 
-  #fetchModulesMapAsync = () => {
+  #fetchModulesMapAsync = (): Promise<Map<string, ModuleSettingsMap>> => {
     if (this.#modulesMapPromise)
       return this.#modulesMapPromise;
 

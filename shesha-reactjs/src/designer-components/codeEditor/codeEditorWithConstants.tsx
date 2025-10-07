@@ -6,6 +6,6 @@ import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvail
 export const CodeEditorWithStandardConstants: FC<ICodeEditorProps> = (props) => {
   const standardConstants = useAvailableStandardConstantsMetadata();
   return (
-        <CodeEditor {...props} availableConstants={standardConstants} />
+    <CodeEditor {...props} availableConstants={standardConstants} />
   );
 };

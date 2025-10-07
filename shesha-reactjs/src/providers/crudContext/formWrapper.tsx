@@ -20,7 +20,7 @@ export const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialVa
   if (delayedUpdate)
     delayedUpdate.current = getDelayedUpdate();
 
-  const onValuesChangeInternal = (changedValues: any, values: any) => {
+  const onValuesChangeInternal = (changedValues: any, values: any): void => {
     // recalculate components visibility
     setFormData({ values, mergeValues: true });
 
@@ -28,14 +28,14 @@ export const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialVa
   };
 
   return (
-        <Form
-          component={false}
-          form={form}
-          initialValues={initialValues}
-          onValuesChange={onValuesChangeInternal}
-          {...formSettings}
-        >
-            {children}
-        </Form>
+    <Form
+      component={false}
+      form={form}
+      initialValues={initialValues}
+      onValuesChange={onValuesChangeInternal}
+      {...formSettings}
+    >
+      {children}
+    </Form>
   );
 };

@@ -10,9 +10,9 @@ export const ConfigurableFormSectionsContext = createNamedContext<IFormSections>
 
 export const ConfigurableFormSectionsProvider: FC<PropsWithChildren<ConfigurableFormSectionsProviderProps>> = ({ sections, children }) => {
   return (
-        <ConfigurableFormSectionsContext.Provider value={sections}>
-            {children}
-        </ConfigurableFormSectionsContext.Provider>
+    <ConfigurableFormSectionsContext.Provider value={sections}>
+      {children}
+    </ConfigurableFormSectionsContext.Provider>
   );
 };
 

@@ -1,4 +1,4 @@
-export const getRefListItems = (referenceList: string) => {
+export const getRefListItems = (referenceList: string): FetcherOptions => {
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
@@ -10,6 +10,7 @@ export const getRefListItems = (referenceList: string) => {
   };
 };
 
+import { FetcherOptions } from '@/utils/fetchers';
 import { IRefListItemGroup, RefListGroupItemProps } from './models';
 
 export interface IItemPosition {
@@ -42,7 +43,7 @@ export const getItemById = (items: RefListGroupItemProps[], id: string): RefList
   return position ? position.ownerArray[position.index] : null;
 };
 
-export const getComponentModel = (item: RefListGroupItemProps) => ({
+export const getComponentModel = (item: RefListGroupItemProps): RefListGroupItemProps & { visible: boolean; allowChangeVisibility: boolean } => ({
   ...item,
   visible: true,
   allowChangeVisibility: true,
@@ -71,7 +72,7 @@ export function fadeColor(color: string, fadePercentage: number): string {
     if (s === 0) {
       r = g = b = l; // achromatic
     } else {
-      const hue2rgb = (p: number, q: number, t: number) => {
+      const hue2rgb = (p: number, q: number, t: number): number => {
         if (t < 0) t += 1;
         if (t > 1) t -= 1;
         if (t < 1 / 6) return p + (q - p) * 6 * t;

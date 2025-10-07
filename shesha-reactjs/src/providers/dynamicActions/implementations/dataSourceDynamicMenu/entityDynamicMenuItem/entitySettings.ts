@@ -1,7 +1,8 @@
+import { FormMarkupWithSettings } from '@/interfaces';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 
-export const getSettings = () => {
+export const getSettings = (): FormMarkupWithSettings => {
   const containerId = nanoid();
   return {
     components: new DesignerToolbarSettings()

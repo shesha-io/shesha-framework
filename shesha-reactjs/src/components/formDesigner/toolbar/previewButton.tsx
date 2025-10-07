@@ -14,15 +14,15 @@ export const PreviewButton: FC<IPreviewButtonProps> = (props) => {
   const formMode = useFormDesignerStateSelector((x) => x.formMode);
 
   return (
-        <Button
-          icon={<EyeOutlined />}
-          onClick={() => {
-            setFormMode(formMode === 'designer' ? 'edit' : 'designer');
-            setFormDesignerMode(formMode === 'designer' ? 'edit' : 'designer');
-          }}
-          type={formMode === 'designer' ? 'default' : 'primary'}
-          title="Preview"
-          size={props.size}
-        />
+    <Button
+      icon={<EyeOutlined />}
+      onClick={() => {
+        setFormMode(formMode === 'designer' ? 'edit' : 'designer');
+        setFormDesignerMode(formMode === 'designer' ? 'edit' : 'designer');
+      }}
+      type={formMode === 'designer' ? 'default' : 'primary'}
+      title="Preview"
+      size={props.size}
+    />
   );
 };

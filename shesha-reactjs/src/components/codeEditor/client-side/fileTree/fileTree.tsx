@@ -48,17 +48,17 @@ export const FileTree: FC<IFileTreeProps> = (props) => {
   };
 
   return (
-        <>
-            <DirectoryTree<FileTreeNode>
-              // showLine={{ showLeafIcon: true }}
-              switcherIcon={<DownOutlined />}
-              blockNode={true}
-              onSelect={onSelect}
-              treeData={treeNodes.nodes}
-              defaultSelectedKeys={props.defaultSelection ? [props.defaultSelection.toString()] : undefined}
-              defaultExpandedKeys={props.defaultSelection ? getParentNodes(props.defaultSelection) : undefined}
-              icon={getNodeIcon}
-            />
-        </>
+    <>
+      <DirectoryTree<FileTreeNode>
+        // showLine={{ showLeafIcon: true }}
+        switcherIcon={<DownOutlined />}
+        blockNode={true}
+        onSelect={onSelect}
+        treeData={treeNodes.nodes}
+        defaultSelectedKeys={props.defaultSelection ? [props.defaultSelection.toString()] : undefined}
+        defaultExpandedKeys={props.defaultSelection ? getParentNodes(props.defaultSelection) : undefined}
+        icon={getNodeIcon}
+      />
+    </>
   );
 };

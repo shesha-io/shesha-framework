@@ -8,7 +8,7 @@ export const getInitialValues = (
   globalState?: any,
   parentFormValues?: any,
   formData?: any
-) => {
+): object => {
   const queryParams = getQueryParams();
 
   if (!initialValues) return {};

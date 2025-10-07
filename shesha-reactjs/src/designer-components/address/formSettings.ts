@@ -11,7 +11,8 @@ import { textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions } from '../_settings/utils/background/utils';
-export const getSettings = (data: IAddressCompomentProps) => {
+import { FormMarkupWithSettings } from '@/interfaces';
+export const getSettings = (data: IAddressCompomentProps): FormMarkupWithSettings => {
   // Generate unique IDs for tabs structure
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();

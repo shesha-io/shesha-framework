@@ -12,7 +12,7 @@ const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
     const { fieldDefinition, value, setValue } = props;
     const customSettings = fieldDefinition.fieldSettings as CustomFieldSettings;
 
-    const onChange = (v) => {
+    const onChange = (v): void => {
       setValue(v);
     };
 

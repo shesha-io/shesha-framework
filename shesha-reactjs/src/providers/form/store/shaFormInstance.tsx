@@ -67,7 +67,7 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
   }
 
   getPropertiesWithScript = (keyword: string): IComponentsWithScripts => {
-    const proceed = (addComponent: IPropertiesWithScripts, obj: any, propertyName: string) => {
+    const proceed = (addComponent: IPropertiesWithScripts, obj: any, propertyName: string): void => {
       for (const propName in obj) {
         if (Object.hasOwn(obj, propName)) {
           const fullPropName = propertyName ? `${propertyName}.${propName}` : propName;
@@ -119,27 +119,27 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     this.#form.setFormData({ values: setValueByPropertyName(this.#form.formData, name.toString(), value, true), mergeValues: true });
   };
 
-  setFieldsValue = (values: Values) => {
+  setFieldsValue = (values: Values): void => {
     this.#form.setFormData({ values, mergeValues: true });
   };
 
-  clearFieldsValue = () => {
+  clearFieldsValue = (): void => {
     this.#form?.setFormData({ values: {}, mergeValues: false });
   };
 
-  submit = () => {
+  submit = (): void => {
     this.#form.antdForm.submit();
   };
 
-  setFormData = (payload: ISetFormDataPayload) => {
+  setFormData = (payload: ISetFormDataPayload): void => {
     this.#form.setFormData(payload);
   };
 
-  getFormData = () => {
+  getFormData = (): any => {
     return this.#form.formData;
   };
 
-  setValidationErrors = (payload: IFormValidationErrors) => {
+  setValidationErrors = (payload: IFormValidationErrors): void => {
     this.#form.setValidationErrors(payload);
   };
 
@@ -147,31 +147,31 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     return this.#form.antdForm;
   };
 
-  get formSettings() {
+  get formSettings(): IFormSettings {
     return this.#form.settings;
   };
 
-  get formMode() {
+  get formMode(): FormMode {
     return this.#form.formMode;
   };
 
-  get data() {
+  get data(): any {
     return this.#form.formData;
   };
 
-  get defaultApiEndpoints() {
+  get defaultApiEndpoints(): IEntityEndpoints {
     return this.#form.defaultApiEndpoints;
   };
 
-  get formArguments() {
+  get formArguments(): any {
     return this.#form.formArguments;
   }
 
-  get parentFormValues() {
+  get parentFormValues(): any {
     return this.#form.parentFormValues;
   }
 
-  get initialValues() {
+  get initialValues(): Values | undefined {
     return this.#form.initialValues;
   }
 };
@@ -290,30 +290,30 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     return () => this.unsubscribe(type);
   }
 
-  private unsubscribe(type: ShaFormSubscriptionType) {
+  private unsubscribe(type: ShaFormSubscriptionType): void {
     this.subscriptions.delete(type);
   }
 
-  notifySubscribers(type: ShaFormSubscriptionType) {
+  notifySubscribers(type: ShaFormSubscriptionType): void {
     const callback = this.subscriptions.get(type);
     callback?.(this);
   }
 
   //#endregion
 
-  getDelayedUpdates = () => {
+  getDelayedUpdates = (): IDelayedUpdateGroup[] => {
     return this.dataSubmitContext?.getDelayedUpdates() || [];
   };
 
-  setDataSubmitContext = (context: IDataSubmitContext) => {
+  setDataSubmitContext = (context: IDataSubmitContext): void => {
     this.dataSubmitContext = context;
   };
 
-  setExpressionExecuter = (expressionExecuter: ExpressionExecuter) => {
+  setExpressionExecuter = (expressionExecuter: ExpressionExecuter): void => {
     this.expressionExecuter = expressionExecuter;
   };
 
-  setFormMode = (formMode: FormMode) => {
+  setFormMode = (formMode: FormMode): void => {
     if (this.formMode === formMode)
       return;
 
@@ -321,7 +321,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.forceRootUpdate();
   };
 
-  #setIsDataModified = (value: boolean) => {
+  #setIsDataModified = (value: boolean): void => {
     if (this.dataLoadingState.status !== "ready") {
       return;
     }
@@ -329,7 +329,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.isDataModified = value;
   };
 
-  #setInternalFormData = (values: any) => {
+  #setInternalFormData = (values: any): void => {
     this.formData = values;
     this.#setIsDataModified(true);
     if (this.onValuesChange)
@@ -337,7 +337,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.events.onValuesUpdate?.({ data: removeGhostKeys({ ...values }) });
   };
 
-  setFormData = (payload: ISetFormDataPayload) => {
+  setFormData = (payload: ISetFormDataPayload): void => {
     const { values, mergeValues } = payload;
     if (isEmpty(values) && mergeValues)
       return;
@@ -358,11 +358,11 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.updateData?.();
   };
 
-  setParentFormValues = (values: any) => {
+  setParentFormValues = (values: any): void => {
     this.parentFormValues = values;
   };
 
-  setValidationErrors = (payload: IFormValidationErrors | undefined) => {
+  setValidationErrors = (payload: IFormValidationErrors | undefined): void => {
     this.validationErrors = payload;
     this.forceRootUpdate();
   };
@@ -375,16 +375,16 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   //#region Antd methods
 
-  submit = () => {
+  submit = (): void => {
     this.antdForm.submit();
   };
 
-  setFieldsValue = (values: Partial<Values>) => {
+  setFieldsValue = (values: Partial<Values>): void => {
     this.antdForm.setFieldsValue(values);
     this.updateData?.();
   };
 
-  resetFields = () => {
+  resetFields = (): void => {
     this.antdForm.resetFields();
     const values = this.antdForm.getFieldsValue();
     this.#setInternalFormData(values);
@@ -396,7 +396,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     return this.antdForm.getFieldsValue();
   };
 
-  validateFields = () => {
+  validateFields = (): Promise<Values> => {
     return this.antdForm.validateFields();
   };
 
@@ -406,40 +406,40 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     return this.loadFormByIdAsync({ skipCache: true });
   };
 
-  setLogEnabled = (enabled: boolean) => {
+  setLogEnabled = (enabled: boolean): void => {
     this.logEnabled = enabled;
   };
 
-  log = (...args) => {
+  log = (...args): void => {
     if (this.logEnabled)
     // eslint-disable-next-line no-console
       console.log(...args);
   };
 
-  setInitialValues = (values: Values) => {
+  setInitialValues = (values: Values): void => {
     this.log('LOG: setInitialValues', values);
     this.initialValues = values;
     this.useDataLoader = !Boolean(values);
   };
 
-  setSubmitHandler = (handler: SubmitHandler<Values>) => {
+  setSubmitHandler = (handler: SubmitHandler<Values>): void => {
     this.onFinish = handler;
     this.useDataSubmitter = !Boolean(handler);
   };
 
-  setAfterSubmitHandler = (handler: AfterSubmitHandler<Values>) => {
+  setAfterSubmitHandler = (handler: AfterSubmitHandler<Values>): void => {
     this.onAfterSubmit = handler;
   };
 
-  setOnValuesChange = (handler: OnValuesChangeHandler<Values>) => {
+  setOnValuesChange = (handler: OnValuesChangeHandler<Values>): void => {
     this.onValuesChange = handler;
   };
 
-  setOnMarkupLoaded = (handler: OnMarkupLoadedHandler<Values>) => {
+  setOnMarkupLoaded = (handler: OnMarkupLoadedHandler<Values>): void => {
     this.onMarkupLoaded = handler;
   };
 
-  resetMarkup = () => {
+  resetMarkup = (): void => {
     this.form = undefined;
   };
 
@@ -787,7 +787,7 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
       formRef.current = form;
     } else {
       // Create a new FormStore if not provided
-      const forceReRender = () => {
+      const forceReRender = (): void => {
         forceUpdate({});
       };
 
@@ -807,7 +807,7 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
       });
       const allConstants = makeObservableProxy<IApplicationContext>(accessors);
 
-      const expressionExecuter = (expression: string, data: any = null) => {
+      const expressionExecuter = (expression: string, data: any = null): any => {
         // get formApi here and pass to caller
         return executeScript(expression, { ...allConstants, ...data });
       };

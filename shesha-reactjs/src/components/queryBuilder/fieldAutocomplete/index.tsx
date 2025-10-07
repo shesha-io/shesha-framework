@@ -18,7 +18,7 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
       props.setField(key);
   };
 
-  const onChange = (key) => {
+  const onChange = (key): void => {
     setText(key);
     if (!key)
       props.setField(null);
@@ -43,7 +43,7 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
 
   const readOnly = config.settings.immutableFieldsMode === true;
 
-  const isPropertyVisible = (property: IPropertyItem) => {
+  const isPropertyVisible = (property: IPropertyItem): boolean => {
     const { propertyMetadata } = (fieldWidget?.fieldDefinition?.fieldSettings ?? {}) as CustomFieldSettings;
     if (!propertyMetadata)
       return true;
@@ -52,7 +52,7 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
       (property.dataType === propertyMetadata.dataType || property.dataType === DataTypes.entityReference || property.dataType === DataTypes.object);
   };
 
-  const isPropertySelectable = (property: IPropertyItem) => {
+  const isPropertySelectable = (property: IPropertyItem): boolean => {
     const { propertyMetadata } = (fieldWidget?.fieldDefinition?.fieldSettings ?? {}) as CustomFieldSettings;
     if (!propertyMetadata)
       return true;
@@ -67,15 +67,15 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
   };
 
   return (
-        <PropertySelect
-          readOnly={readOnly}
-          value={text}
-          onChange={onChange}
-          style={{ width }}
-          size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
-          onSelect={onSelect}
-          isPropertyVisible={isPropertyVisible}
-          isPropertySelectable={isPropertySelectable}
-        />
+    <PropertySelect
+      readOnly={readOnly}
+      value={text}
+      onChange={onChange}
+      style={{ width }}
+      size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
+      onSelect={onSelect}
+      isPropertyVisible={isPropertyVisible}
+      isPropertySelectable={isPropertySelectable}
+    />
   );
 };

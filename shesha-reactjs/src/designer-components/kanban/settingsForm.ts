@@ -5,8 +5,9 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: IKanbanProps) => {
+export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
   // Generate unique IDs for top-level components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();

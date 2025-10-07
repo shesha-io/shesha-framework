@@ -17,7 +17,7 @@ export interface IItemListConfiguratorProps<TItem extends ListItemWithId> {
   header?: React.ReactNode;
 }
 
-export const ItemListConfigurator = <TItem extends ListItemWithId>(props: IItemListConfiguratorProps<TItem>) => {
+export const ItemListConfigurator = <TItem extends ListItemWithId>(props: IItemListConfiguratorProps<TItem>): JSX.Element => {
   const {
     value,
     onChange,
@@ -28,27 +28,27 @@ export const ItemListConfigurator = <TItem extends ListItemWithId>(props: IItemL
     header,
   } = props;
   return (
-        <ListEditorWithPropertiesPanel<TItem>
-          value={value}
-          onChange={onChange}
-          initNewItem={initNewItem}
-          readOnly={readOnly}
-          header={header}
-          itemProperties={(itemProps) => (
-                <PropertiesPanel
-                  item={itemProps.item}
-                  onChange={itemProps.onChange}
-                  readOnly={itemProps.readOnly}
-                  settingsMarkupFactory={settingsMarkupFactory}
-                />
-          )}
-        >
-            {(itemProps) => {
-              const rendered = itemRenderer(itemProps);
-              return isDefaultItemRenderingProps(rendered)
-                ? <DefaultListItem item={rendered} />
-                : rendered;
-            }}
-        </ListEditorWithPropertiesPanel>
+    <ListEditorWithPropertiesPanel<TItem>
+      value={value}
+      onChange={onChange}
+      initNewItem={initNewItem}
+      readOnly={readOnly}
+      header={header}
+      itemProperties={(itemProps) => (
+        <PropertiesPanel
+          item={itemProps.item}
+          onChange={itemProps.onChange}
+          readOnly={itemProps.readOnly}
+          settingsMarkupFactory={settingsMarkupFactory}
+        />
+      )}
+    >
+      {(itemProps) => {
+        const rendered = itemRenderer(itemProps);
+        return isDefaultItemRenderingProps(rendered)
+          ? <DefaultListItem item={rendered} />
+          : rendered;
+      }}
+    </ListEditorWithPropertiesPanel>
   );
 };

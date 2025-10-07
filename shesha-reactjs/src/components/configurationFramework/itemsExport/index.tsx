@@ -79,11 +79,11 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
     return newNodes;
   }, [treeNodes, filterState]);
 
-  const getExportFilter = () => {
+  const getExportFilter = (): object => {
     return { in: [{ var: 'id' }, checkedIds] };
   };
 
-  const exportExecuter = () => {
+  const exportExecuter = (): Promise<void> => {
     const filter = getExportFilter();
     const exportUrl = `${backendUrl}/api/services/app/ConfigurationStudio/ExportPackage`;
 
@@ -119,11 +119,11 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
       exportInProgress: exportInProgress,
     };
 
-  const onRefreshClick = () => {
+  const onRefreshClick = (): void => {
     refreshTree();
   };
 
-  const onCheck = (checkedIds: string[]) => {
+  const onCheck = (checkedIds: string[]): void => {
     setCheckedIds(checkedIds);
   };
 

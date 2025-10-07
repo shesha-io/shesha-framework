@@ -11,7 +11,7 @@ import { EntityPickerModal } from './modal';
 import { getValueByPropertyName } from '@/utils/object';
 import { SheshaError } from '@/utils/errors';
 import { addPx } from '@/utils/style';
-const EntityPickerReadOnly = (props: IEntityPickerProps) => {
+const EntityPickerReadOnly = (props: IEntityPickerProps): JSX.Element => {
   const { entityType, displayEntityKey, value } = props;
 
   // Check if all data for displaying is loaded
@@ -45,7 +45,7 @@ const EntityPickerReadOnly = (props: IEntityPickerProps) => {
   return selection.loading ? <Skeleton paragraph={false} active /> : <ReadOnlyDisplayFormItem value={displayText} style={props.style} />;
 };
 
-const EntityPickerEditable = (props: IEntityPickerProps) => {
+const EntityPickerEditable = (props: IEntityPickerProps): JSX.Element => {
   const {
     entityType,
     displayEntityKey,
@@ -128,22 +128,22 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
 
   const selectedMode = mode === 'single' ? undefined : mode;
 
-  const handleMultiChange = (selectedValues: string[]) => {
+  const handleMultiChange = (selectedValues: string[]): void => {
     const newValues = Array.isArray(value) ? value.filter((x) => selectedValues.find((y) => y === incomeValueFunc(x, {}))) : null;
     if (onChange) onChange(newValues, null);
   };
 
-  const showPickerDialog = () => {
+  const showPickerDialog = (): void => {
     setShowModal(true);
   };
 
-  const handleButtonPickerClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleButtonPickerClick = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
     event?.stopPropagation();
 
     showPickerDialog();
   };
 
-  const onClear = () => {
+  const onClear = (): void => {
     if (onChange) onChange(null, null);
   };
 
@@ -247,7 +247,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
   );
 };
 
-export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps) => {
+export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps): JSX.Element => {
   return restProps.readOnly ? (
     <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} style={restProps.style} />
   ) : (

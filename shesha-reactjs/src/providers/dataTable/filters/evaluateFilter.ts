@@ -2,7 +2,7 @@ import { useDeepCompareMemoize } from "@/hooks/index";
 import { useAsyncMemo } from "@/hooks/useAsyncMemo";
 import { IApplicationContext, IMatchData, useAvailableConstantsContexts, wrapConstantsData } from "@/providers/form/utils";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
-import { evaluateDynamicFilters } from "@/utils/index";
+import { evaluateDynamicFilters } from '@/utils/datatable';
 import { FilterExpression, IStoredFilter } from "../interfaces";
 import { useRef } from "react";
 import { TouchableProxy, makeTouchableProxy } from "@/providers/form/touchableProxy";
@@ -51,7 +51,7 @@ export interface UseFormEvaluatedFilterArgs {
   filter?: FilterExpression;
   metadataAccessor?: NestedPropertyMetadatAccessor;
 };
-export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additionalData?: any) => {
+export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additionalData?: any): string => {
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext });
 

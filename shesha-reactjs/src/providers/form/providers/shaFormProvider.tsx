@@ -17,21 +17,21 @@ const ShaFormProvider: FC<PropsWithChildren<IShaFormProviderProps>> = ({ childre
   }, []);
 
   return (
-        <ShaFormInstanceContext.Provider value={shaForm}>
-            <ShaFormDataUpdateContext.Provider value={state}>
-                {children}
-            </ShaFormDataUpdateContext.Provider>
-        </ShaFormInstanceContext.Provider>
+    <ShaFormInstanceContext.Provider value={shaForm}>
+      <ShaFormDataUpdateContext.Provider value={state}>
+        {children}
+      </ShaFormDataUpdateContext.Provider>
+    </ShaFormInstanceContext.Provider>
   );
 };
 
 const FormProviderWithDelayedUpdates: FC<PropsWithChildren<IShaFormProviderProps>> = ({ children, ...props }) => {
   return (
-        <DelayedUpdateProvider>
-            <ShaFormProvider {...props}>
-                {children}
-            </ShaFormProvider>
-        </DelayedUpdateProvider>
+    <DelayedUpdateProvider>
+      <ShaFormProvider {...props}>
+        {children}
+      </ShaFormProvider>
+    </DelayedUpdateProvider>
   );
 };
 
@@ -51,7 +51,7 @@ const useShaFormInstance = (required: boolean = true): IShaFormInstance => {
   return context;
 };
 
-const useShaFormSubscription = (subscriptionType: ShaFormSubscriptionType) => {
+const useShaFormSubscription = (subscriptionType: ShaFormSubscriptionType): object => {
   const shaForm = useShaFormInstance();
   const [dummy, forceUpdate] = useState({});
   useEffect(() => {

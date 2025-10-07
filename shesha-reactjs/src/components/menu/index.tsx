@@ -107,7 +107,7 @@ export const LayoutMenu: FC<IProps> = ({
 
   const initialSelection = useRef<string>(undefined);
 
-  const checkOverflow = () => {
+  const checkOverflow = (): void => {
     if (current) {
       setState((s) => ({
         ...s,
@@ -136,13 +136,13 @@ export const LayoutMenu: FC<IProps> = ({
     }
   }, []);
 
-  const onClick = () => setState((s) => ({ ...s, open: true }));
-  const onClose = () => setState((s) => ({ ...s, open: false }));
+  const onClick = (): void => setState((s) => ({ ...s, open: true }));
+  const onClose = (): void => setState((s) => ({ ...s, open: false }));
 
   const onButtonClick = (
     _itemId: string,
     actionConfiguration: IConfigurableActionConfiguration
-  ) => {
+  ): void => {
     executeAction({
       actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: executionContext,
@@ -210,7 +210,7 @@ export const LayoutMenu: FC<IProps> = ({
 
   if (menuItems.length === 0) return null;
 
-  const onOpenChange = (openKeys: React.Key[]) => {
+  const onOpenChange = (openKeys: React.Key[]): void => {
     setOpenedKeys(openKeys);
   };
 
