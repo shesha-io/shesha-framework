@@ -153,7 +153,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       // Trigger onSelectionChange event
       if (onSelectionChange) {
         const selectedItems = records?.filter((item) => selected.includes(item?.id)) || [];
-        const selectedIndices = records?.map((item, idx) => selected.includes(item?.id) ? idx : -1).filter(idx => idx !== -1) || [];
+        const selectedIndices = records?.map((item, idx) => selected.includes(item?.id) ? idx : -1).filter((idx) => idx !== -1) || [];
         onSelectionChange(selectedItems, selectedIndices);
       }
     } else {
