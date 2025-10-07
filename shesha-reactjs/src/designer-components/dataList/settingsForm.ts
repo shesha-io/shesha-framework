@@ -464,6 +464,30 @@ export const getSettings = (data: any): FormMarkupWithSettings => {
                 description: 'Custom business logic to be executed after successfull deletion of a list item.',
                 hideLabel: true,
               })
+              .addConfigurableActionConfigurator({
+                id: nanoid(),
+                propertyName: 'onListItemClick',
+                label: 'On List Item Click',
+                description: 'Action to execute when a list item is clicked',
+              })
+              .addConfigurableActionConfigurator({
+                id: nanoid(),
+                propertyName: 'onListItemHover',
+                label: 'On List Item Hover',
+                description: 'Action to execute when hovering over a list item',
+              })
+              .addConfigurableActionConfigurator({
+                id: nanoid(),
+                propertyName: 'onListItemSelect',
+                label: 'On List Item Select',
+                description: 'Action to execute when a list item is selected',
+              })
+              .addConfigurableActionConfigurator({
+                id: nanoid(),
+                propertyName: 'onSelectionChange',
+                label: 'On Selection Change',
+                description: 'Action to execute when the selection changes',
+              })
               .toJson(),
             ],
           },

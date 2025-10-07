@@ -78,6 +78,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   showEditIcons = true,
   gap,
   onRowDeleteSuccessAction,
+  onListItemClick,
+  onListItemHover,
+  onListItemSelect,
+  onSelectionChange,
   ...props
 }) => {
   const { styles } = useStyles();
@@ -125,32 +129,82 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     if (selectionMode === 'multiple') {
       let selected = [...selectedIds];
-      if (selectedIds.find((x) => x === row?.id)) selected = selected.filter((x) => x !== row?.id);
-      else selected = [...selected, row?.id];
+      const wasSelected = selectedIds.find((x) => x === row?.id);
+
+      if (wasSelected) {
+        // Deselecting - don't trigger onListItemSelect
+        selected = selected.filter((x) => x !== row?.id);
+      } else {
+        // Selecting - trigger onListItemSelect event
+        if (onListItemSelect) {
+          onListItemSelect(index, row);
+        }
+        selected = [...selected, row?.id];
+      }
+
       changeSelectedIds(selected);
-      onMultiSelectRows(
-        records?.map((item: any, index) => {
-          return { isSelected: Boolean(selected.find((x) => x === item?.id)), index, id: item?.id, original: item };
-        })
-      );
+
+      const updatedSelection = records?.map((item: any, index) => {
+        return { isSelected: Boolean(selected.find((x) => x === item?.id)), index, id: item?.id, original: item };
+      });
+
+      onMultiSelectRows(updatedSelection);
+
+      // Trigger onSelectionChange event
+      if (onSelectionChange) {
+        const selectedItems = records?.filter((item) => selected.includes(item?.id)) || [];
+        const selectedIndices = records?.map((item, idx) => selected.includes(item?.id) ? idx : -1).filter(idx => idx !== -1) || [];
+        onSelectionChange(selectedItems, selectedIndices);
+      }
     } else {
-      if (onSelectRow ?? typeof onSelectRow === 'function') onSelectRow(index, row);
+      // Single selection mode
+      const isCurrentlySelected = selectedRow?.index === index;
+
+      if (isCurrentlySelected) {
+        // Deselecting - don't trigger onListItemSelect
+        if (onSelectRow ?? typeof onSelectRow === 'function') onSelectRow(null, null);
+
+        // Trigger onSelectionChange event for deselection
+        if (onSelectionChange) {
+          onSelectionChange([], []);
+        }
+      } else {
+        // Selecting - trigger onListItemSelect event
+        if (onListItemSelect) {
+          onListItemSelect(index, row);
+        }
+
+        if (onSelectRow ?? typeof onSelectRow === 'function') onSelectRow(index, row);
+
+        // Trigger onSelectionChange event for single selection
+        if (onSelectionChange) {
+          onSelectionChange([row], [index]);
+        }
+      }
     }
   };
 
   const onSelectAllRowsLocal = (val: Boolean): void => {
-    changeSelectedIds(
-      val
-        ? records?.map((item: any) => {
-          return item?.id;
-        })
-        : []
-    );
-    onMultiSelectRows(
-      records?.map((item: any, index) => {
-        return { isSelected: val, index, id: item?.id, original: item };
+    const newSelectedIds = val
+      ? records?.map((item: any) => {
+        return item?.id;
       })
-    );
+      : [];
+
+    changeSelectedIds(newSelectedIds);
+
+    const updatedSelection = records?.map((item: any, index) => {
+      return { isSelected: val, index, id: item?.id, original: item };
+    });
+
+    onMultiSelectRows(updatedSelection);
+
+    // Trigger onSelectionChange event
+    if (onSelectionChange) {
+      const selectedItems = val ? records || [] : [];
+      const selectedIndices = val ? records?.map((_, index) => index) || [] : [];
+      onSelectionChange(selectedItems, selectedIndices);
+    }
   };
 
   const previousIds = usePrevious(selectedIds);
@@ -462,7 +516,17 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               { selected }
             )}
             onClick={() => {
+              // Trigger onListItemClick event
+              if (onListItemClick) {
+                onListItemClick(index, item);
+              }
               onSelectRowLocal(index, item);
+            }}
+            onMouseEnter={() => {
+              // Trigger onListItemHover event
+              if (onListItemHover) {
+                onListItemHover(index, item);
+              }
             }}
             style={{ ...itemStyles, width: orientation === 'wrap' ? 'unset' : itemStyles.width, overflow: 'auto' }}
           >
