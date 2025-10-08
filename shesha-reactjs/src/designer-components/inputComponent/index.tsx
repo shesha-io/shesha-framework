@@ -34,7 +34,7 @@ import { CustomLabelValueEditorInputs, getEditor } from './utils';
 import EditModeSelector from '@/components/editModeSelector';
 import Icon from '@/components/icon/Icon';
 import { DatePickerWrapper } from '../dateField/datePickerWrapper';
-import LayerSelectorSettingsModal from '@/components/options/modal';
+import LayerSelectorSettingsModal from '@/components/layerEditor/modal';
 
 const { Password } = Input;
 

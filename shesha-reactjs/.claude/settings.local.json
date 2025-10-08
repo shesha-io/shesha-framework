@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(copy:*)",
+      "Bash(copy \"c:\\native\\shesha-framework\\shesha-reactjs\\src\\components\\options\\layersContainer.tsx\" \"c:\\native\\shesha-framework\\shesha-reactjs\\src\\components\\layerEditor\\layersContainer.tsx\")",
+      "Bash(copy \"c:\\native\\shesha-framework\\shesha-reactjs\\src\\components\\options\\modal.tsx\" \"c:\\native\\shesha-framework\\shesha-reactjs\\src\\components\\layerEditor\\modal.tsx\")",
+      "Bash(copy \"c:\\native\\shesha-framework\\shesha-reactjs\\src\\components\\options\\properties.tsx\" \"c:\\native\\shesha-framework\\shesha-reactjs\\src\\components\\layerEditor\\properties.tsx\")",
+      "Bash(npm run build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
