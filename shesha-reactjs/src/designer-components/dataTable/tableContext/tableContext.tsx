@@ -61,7 +61,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
         {isDesignerMode && (
           <div className="data-context-label">
             <DatabaseOutlined />
-            Data Context {hasChildComponents && `(${childComponentIds.length} child components)`}
+            Data Context {hasChildComponents && `(${childComponentIds.length} child component${childComponentIds.length > 1 ? 's' : ''})`}
           </div>
         )}
         <DataTableProvider
@@ -87,16 +87,33 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
           customReorderEndpoint={customReorderEndpoint}
         >
           {!isDesignerMode && !hasChildComponents && (
-            <div className="data-context-label">
-              <DatabaseOutlined />
-              Data Context (No child components found)
+            <div className={styles.emptyDataContextWatermark}>
+              <DatabaseOutlined className="watermark-icon" />
+              <div className="watermark-text">No data components configured</div>
+              <div className="watermark-instruction">Add components to display data from this context</div>
             </div>
           )}
-          <ComponentsContainer
-            containerId={id}
-            className={isDesignerMode ? `${styles.dataContextComponentsContainer} ${!hasChildComponents ? styles.dataContextComponentsContainerEmpty : ''}` : undefined}
-            itemsLimit={-1}
-          />
+          {hasChildComponents && (
+            <ComponentsContainer
+              containerId={id}
+              className={isDesignerMode ? styles.dataContextComponentsContainer : undefined}
+              itemsLimit={-1}
+            />
+          )}
+          {!hasChildComponents && isDesignerMode && (
+            <div className={styles.designerDropZoneWithWatermark}>
+              <div className={styles.emptyDataContextWatermark}>
+                <DatabaseOutlined className="watermark-icon" />
+                <div className="watermark-text">No data components configured</div>
+                <div className="watermark-instruction">Drag components here to display data from this context</div>
+              </div>
+              <ComponentsContainer
+                containerId={id}
+                className={`${styles.dataContextComponentsContainer} ${styles.dataContextComponentsContainerEmpty}`}
+                itemsLimit={-1}
+              />
+            </div>
+          )}
         </DataTableProvider>
       </div>
     );

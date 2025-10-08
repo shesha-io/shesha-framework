@@ -7,8 +7,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         justify-content: center;
         flex-direction: column;
         min-height: 60px;
-        border: 2px dashed ${token.colorPrimary}40;
-        border-radius: 8px;
         background-color: ${token.colorPrimaryBg}20;
         margin: 4px 0;
         transition: all 0.2s ease;
@@ -41,9 +39,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         align-items: center;
         justify-content: center;
         min-height: 60px;
-        border: 2px dashed ${token.colorWarning}40;
-        border-radius: 8px;
-        background-color: ${token.colorWarningBg}20;
         margin: 4px 0;
         transition: all 0.2s ease;
 
@@ -124,16 +119,83 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     `);
 
   const dataContextComponentsContainerEmpty = cx("sha-data-context-components-container-empty", css`
-        .sha-components-container-inner {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+    width: 100%;
+    min-height: 100px;
+    .sha-components-container-inner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 100px;
         }
 
         .sha-drop-hint {
             white-space: nowrap;
+            min-height: 100px;
         }
     `);
+
+  const emptyDataContextWatermark = cx("sha-empty-data-context-watermark", css`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 120px;
+    padding: 24px;
+    color: ${token.colorTextTertiary};
+    text-align: center;
+
+    .watermark-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      opacity: 0.4;
+    }
+
+    .watermark-text {
+      font-size: 14px;
+      line-height: 1.4;
+      opacity: 0.6;
+      font-weight: 400;
+      width: 100%;
+    }
+
+    .watermark-instruction {
+      font-size: 12px;
+      margin-top: 8px;
+      opacity: 0.5;
+      font-style: italic;
+      width: 100%;
+    }
+  `);
+
+  const designerDropZoneWithWatermark = cx("sha-designer-dropzone-with-watermark", css`
+    position: relative;
+    width: 100%;
+
+    .sha-empty-data-context-watermark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .sha-data-context-components-container {
+      position: relative;
+      z-index: 2;
+      background: transparent !important;
+      border: 2px dotted ${token.colorPrimary}30;
+
+      &:hover {
+        border-color: ${token.colorPrimary}50;
+        background: transparent !important;
+      }
+    }
+  `);
 
   const quickSearchHintPopover = cx("sha-quick-search-hint-popover", css`
         background-color:rgb(214, 214, 214) !important;
@@ -211,6 +273,8 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     dataContextRuntime,
     dataContextComponentsContainer,
     dataContextComponentsContainerEmpty,
+    emptyDataContextWatermark,
+    designerDropZoneWithWatermark,
     quickSearchHintPopover,
     tableViewSelectorHintPopover,
     tablePagerHintPopover,
