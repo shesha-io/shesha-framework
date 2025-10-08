@@ -166,3 +166,48 @@ export const getIcon = (
   if (!icon) return defaultIcon;
   return new Function('data', 'globalState', 'item', icon)(formData, globalState, item);
 };
+
+export const isDateDisabled = (date: Date, minDate?: string, maxDate?: string): boolean => {
+  // Reset time to start of day for accurate date comparison
+  const dateToCheck = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+  if (minDate) {
+    const minDateObj = new Date(minDate);
+    const minDateReset = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
+    if (dateToCheck < minDateReset) return true;
+  }
+
+  if (maxDate) {
+    const maxDateObj = new Date(maxDate);
+    const maxDateReset = new Date(maxDateObj.getFullYear(), maxDateObj.getMonth(), maxDateObj.getDate());
+    if (dateToCheck > maxDateReset) return true;
+  }
+
+  return false;
+};
+
+export const getDayStyles = (newDate: Date, minDate?: string, maxDate?: string) => {
+  const dateToCheck = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate());
+  const minDateObj = minDate ? new Date(minDate) : null;
+  const maxDateObj = maxDate ? new Date(maxDate) : null;
+
+  if (minDateObj) {
+    const minDateReset = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
+    if (dateToCheck < minDateReset) {
+      return {
+        style: { backgroundColor: '#d9d9d9', color: '#666666', cursor: 'not-allowed' },
+      };
+    }
+  }
+
+  if (maxDateObj) {
+    const maxDateReset = new Date(maxDateObj.getFullYear(), maxDateObj.getMonth(), maxDateObj.getDate());
+    if (dateToCheck > maxDateReset) {
+      return {
+        style: { backgroundColor: '#d9d9d9', color: '#666666', cursor: 'not-allowed', opacity: 0.6 },
+      };
+    }
+  }
+
+  return {};
+};
