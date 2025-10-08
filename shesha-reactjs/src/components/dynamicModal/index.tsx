@@ -7,6 +7,7 @@ import { IModalWithConfigurableFormProps, IModalWithContentProps } from '@/provi
 import { useDynamicModals } from '@/providers';
 import { useMedia } from 'react-use';
 import ConditionalWrap from '../conditionalWrapper';
+import { useStyles } from './styles';
 
 export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isVisible: boolean;
@@ -20,6 +21,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
 
   const { removeModal } = useDynamicModals();
   const isSmall = useMedia('(max-width: 480px)');
+  const { styles } = useStyles();
 
   const hideForm = (): void => {
     if (onClose) onClose();
@@ -39,7 +41,9 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       onCancel={hideForm}
       footer={footer}
       destroyOnHidden
-      width={isSmall ? '90%' : width}
+      width={isSmall ? '90%' : width ?? '80vw'}
+      centered
+      classNames={{ body: styles.dynamicModalBody }}
       maskClosable={false}
       closable={showCloseIcon ?? true} // Add this line - default to true for backward compatibility
       okButtonProps={{ disabled: isSubmitted, loading: isSubmitted }}
