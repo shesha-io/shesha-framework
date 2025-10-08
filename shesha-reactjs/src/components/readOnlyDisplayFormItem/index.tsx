@@ -149,7 +149,11 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     quickviewFormPath,
     quickviewDisplayPropertyName,
     quickviewGetEntityUrl,
-    quickviewWidth
+    quickviewWidth,
+    showIcon,
+    showItemName,
+    solidColor,
+    tagStyle
   ]);
 
   return (
