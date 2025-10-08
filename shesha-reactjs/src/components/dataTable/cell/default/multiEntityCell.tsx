@@ -3,9 +3,9 @@ import { IDataCellProps } from '../interfaces';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useStyles } from '../../styles/styles';
 
-export interface IMultiEntityCellProps<D extends object = {}, V = any> extends IDataCellProps<D, V> {}
+export interface IMultiEntityCellProps<D extends object = object, V = any> extends IDataCellProps<D, V> {}
 
-export const MultiEntityCell = <D extends object = {}, V = any>(props: IMultiEntityCellProps<D, V>): JSX.Element => {
+export const MultiEntityCell = <D extends object = object, V = any>(props: IMultiEntityCellProps<D, V>): JSX.Element => {
   const { styles } = useStyles();
   const { value } = props;
   if (!props.value) return null;

@@ -11,16 +11,13 @@ import { useStyles } from '../styles/styles';
 import Toolbox from '../toolbox';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 
-export interface IDesignerMainAreaProps {
-}
-
 const rightSidebarProps = {
   title: () => <ComponentPropertiesTitle />,
   content: () => <ComponentPropertiesPanel />,
   placeholder: 'Properties',
 };
 
-export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
+export const DesignerMainArea: FC = () => {
   const isDebug = useFormDesignerStateSelector((state) => state.isDebug);
   const readOnly = useFormDesignerStateSelector((state) => state.readOnly);
   const formSettings = useFormDesignerStateSelector((state) => state.formSettings);

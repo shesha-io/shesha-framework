@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 import { IDataCellProps } from '../interfaces';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 
-export interface IMultivalueReferenceListCellProps<D extends object = {}, V = any> extends IDataCellProps<D, V> { }
+export interface IMultivalueReferenceListCellProps<D extends object = object, V = any> extends IDataCellProps<D, V> { }
 
-const MultivalueReferenceListCellInternal = <D extends object = {}, V = any>(
+const MultivalueReferenceListCellInternal = <D extends object = object, V = any>(
   props: IMultivalueReferenceListCellProps<D, V>,
 ): JSX.Element => {
   const { value } = props;
@@ -23,7 +23,7 @@ const MultivalueReferenceListCellInternal = <D extends object = {}, V = any>(
   return <>{mapped}</>;
 };
 
-export const MultivalueReferenceListCell = <D extends object = {}, V = any>(
+export const MultivalueReferenceListCell = <D extends object = object, V = any>(
   props: IMultivalueReferenceListCellProps<D, V>,
 ): JSX.Element => {
   const { value } = props;

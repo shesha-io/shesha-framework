@@ -4,16 +4,12 @@ import React, { ReactNode, FC } from 'react';
 
 import { useSettingsEditor } from './provider';
 
-export interface ISettingsEditorToolbarProps {
-
-}
-
 interface MenuItem {
   isVisible: boolean;
   content: () => ReactNode;
 }
 
-export const SettingsEditorToolbar: FC<ISettingsEditorToolbarProps> = () => {
+export const SettingsEditorToolbar: FC = () => {
   const { settingSelection: selectedSetting, editorMode, saveSetting, cancelEditSetting, startEditSetting } = useSettingsEditor();
   const { message } = App.useApp();
 

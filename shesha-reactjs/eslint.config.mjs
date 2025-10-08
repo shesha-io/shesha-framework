@@ -37,6 +37,7 @@ const strictFolders = isLightBuild
         "src/providers/appConfigurator",
         "src/providers/dataContextManager",
         "src/providers/dataContextProvider",
+        //"src/providers/sheshaApplication",        
     ];
 
 const stylisticOverrides = {
@@ -135,6 +136,7 @@ const legacyTypescriptOverrides = {
         propertyDeclaration: true,
         variableDeclaration: true,
     }],
+    "@typescript-eslint/no-empty-object-type": "warn",
     // TODO: activate and review code
     // "@typescript-eslint/no-explicit-any": "error",
     // "@typescript-eslint/no-unsafe-call": "error",
