@@ -182,7 +182,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   // Check if formId configuration is missing or invalid
   const isFormIdMisconfigured = isDesignMode && (
     (!props.formId && props.formSelectionMode === "name") ||
-    (!props.formType && props.formSelectionMode === "view") ||
+    (props.formSelectionMode === "view" && !props.formType && !props.entityType) ||
     (!props.formIdExpression && props.formSelectionMode === "expression")
   );
 
