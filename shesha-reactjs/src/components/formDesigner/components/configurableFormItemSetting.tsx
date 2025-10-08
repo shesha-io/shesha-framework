@@ -22,7 +22,7 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
     label: model.label,
     // style: model.style,
     required: model.validate?.required,
-    tooltip: model.description,
+    tooltip: model.description || undefined,
     hidden: model.hidden,
   };
 

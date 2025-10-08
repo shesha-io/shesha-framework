@@ -40,7 +40,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     hidden: model.hidden,
     valuePropName: valuePropName,
     initialValue: initialValue,
-    tooltip: model.description,
+    tooltip: model.description || undefined,
     rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
     labelCol: layout?.labelCol,
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
