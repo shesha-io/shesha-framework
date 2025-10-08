@@ -28,6 +28,11 @@ export const LayerItemsContainer: FC<ILayerItemsContainerProps> = (props) => {
 
   return (
     <div className={styles.sidebarContainerMainArea}>
+      {props.items.length === 0 && (
+        <div className={styles.shaLayersEmptyState}>
+          Layers not configured
+        </div>
+      )}
       <ReactSortable
         disabled={readOnly}
         list={props.items}
