@@ -1,9 +1,10 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
-import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Checkbox, Collapse, Divider, Typography, Popover, Avatar, Card } from 'antd';
+import { InfoCircleOutlined, UserOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties, ReactElement, useMemo } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
+import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance, useTheme } from '@/providers';
 import { useMetadataDispatcher } from '@/providers/metadataDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
@@ -117,7 +118,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   ...props
 }) => {
   const { styles } = useStyles();
-
+  const { theme } = useTheme();
   let skipCache = false;
 
   interface IFormIdDictionary {
@@ -416,8 +417,42 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
 
-    if (!entityForm?.formConfiguration?.markup)
-      return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
+    if (!entityForm?.formConfiguration?.markup) {
+      // Show greyed out user cards in both designer and live modes
+      return (
+        <Card
+          size="small"
+          style={{
+            opacity: 0.5,
+            cursor: 'default',
+            border: '1px solid #e8e8e8',
+            borderRadius: '8px',
+            background: '#fafafa',
+          }}
+          styles={{ body: { padding: '12px' } }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Avatar icon={<UserOutlined />} size={40} style={{ backgroundColor: '#bfbfbf' }} />
+            <div style={{ flex: 1, color: '#8c8c8c' }}>
+              <div style={{ fontWeight: 500, marginBottom: '4px' }}>Sample User</div>
+              <div style={{ fontSize: '12px', color: '#bfbfbf' }}>user@example.com</div>
+            </div>
+            <Popover
+              content={(
+                <div style={{ maxWidth: '300px' }}>
+                  <div style={{ fontWeight: 500, marginBottom: '8px' }}>Form Template Missing</div>
+                  <div>Configure the form template in component settings to display actual data.</div>
+                </div>
+              )}
+              title="Configuration Required"
+              trigger={['hover', 'click']}
+            >
+              <InfoCircleOutlined style={{ color: theme.application.warningColor, cursor: 'pointer' }} />
+            </Popover>
+          </div>
+        </Card>
+      );
+    }
 
     const dblClick = (): boolean => {
       if (props.dblClickActionConfiguration) {

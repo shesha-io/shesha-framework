@@ -179,16 +179,28 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     [],
   );
 
+  // Check if formId configuration is missing or invalid
+  const isFormIdMisconfigured = isDesignMode && (
+    (!props.formId && props.formSelectionMode === "name") ||
+    (!props.formType && props.formSelectionMode === "view") ||
+    (!props.formIdExpression && props.formSelectionMode === "expression")
+  );
+
   const data = useDeepCompareMemo(() => {
     // In designer mode, show real data if available and properly configured,
     // otherwise show mock data for layout preview
     if (isDesignMode) {
       // If we have real data and component is configured correctly, show it
-      if (tableData && tableData.length > 0 && repository) {
+      if (tableData && tableData.length > 0 && repository && !isFormIdMisconfigured) {
         return tableData;
       }
 
       // Otherwise show mock data for layout preview
+      // If formId is misconfigured, always show 3 cards regardless of orientation
+      if (isFormIdMisconfigured) {
+        return [{}, {}, {}];
+      }
+
       return orientation === 'vertical'
         ? [{}]
         : [{}, {}, {}, {}];
@@ -196,7 +208,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
     // In live mode, always use real data
     return tableData;
-  }, [isDesignMode, tableData, orientation, repository]);
+  }, [isDesignMode, tableData, orientation, repository, isFormIdMisconfigured]);
 
   // http, moment, setFormData
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
@@ -348,13 +360,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  if (isDesignMode &&
-    (
-      !repository ||
-      (!props.formId && props.formSelectionMode === "name") ||
-      (!props.formType && props.formSelectionMode === "view") ||
-      (!props.formIdExpression && props.formSelectionMode === "expression")
-    )) return <NotConfiguredWarning />;
+  // Show alert only if repository is not configured
+  if (isDesignMode && !repository) {
+    return <NotConfiguredWarning />;
+  }
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
@@ -382,9 +391,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         canAddInline={canAction(canAddInline)}
         canEditInline={canAction(canEditInline)}
         canDeleteInline={canAction(canDeleteInline)}
-        noDataIcon={noDataIcon}
-        noDataSecondaryText={noDataSecondaryText}
-        noDataText={noDataText}
+        noDataIcon={isFormIdMisconfigured ? "ExclamationCircleOutlined" : noDataIcon}
+        noDataSecondaryText={isFormIdMisconfigured ? "The datalist item form template (formId) is not configured correctly. Please configure the form selection in the component settings." : noDataSecondaryText}
+        noDataText={isFormIdMisconfigured ? "Form Template Not Configured" : noDataText}
         entityType={modelType}
         onSelectRow={onSelectRow}
         onMultiSelectRows={setMultiSelectedRow}
