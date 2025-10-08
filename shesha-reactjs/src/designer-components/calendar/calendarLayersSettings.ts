@@ -101,22 +101,23 @@ export const getSettings = () => {
                   parentId: dataTabId,
                   inputs: [
                     {
-                      type: 'autocomplete',
                       id: nanoid(),
+                      type: 'autocomplete',
                       propertyName: 'entityType',
                       label: 'Entity Type',
-                      validate: { required: true },
-                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                      useRawValues: true,
-                      displayPropName: 'displayText',
-                      keyPropName: 'value',
+                      labelAlign: 'right',
+                      parentId: dataTabId,
                       hidden: {
                         _code: 'return getSettingValue(data?.dataSource) !== "entity"',
                         _mode: 'code',
                         _value: false,
                       } as any,
-                      jsSetting: false,
-                    } as any
+                      dataSourceType: 'url',
+                      validate: {},
+                      jsSetting: true,
+                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                      useRawValues: true
+                    }
                   ]
                 })
                 .addSettingsInputRow({
@@ -177,7 +178,7 @@ export const getSettings = () => {
                       type: 'propertyAutocomplete',
                       id: nanoid(),
                       propertyName: 'startTime',
-                      label: 'Start Time',
+                      label: 'Event Start Time',
                       mode: 'single',
                       description: 'Property that will be used to show when the event starts',
                       validate: { required: true },
@@ -189,7 +190,7 @@ export const getSettings = () => {
                       type: 'propertyAutocomplete',
                       id: nanoid(),
                       propertyName: 'endTime',
-                      label: 'End Time',
+                      label: 'Event End Time',
                       mode: 'single',
                       description: 'Property that will be used to show when the event ends',
                       validate: { required: true },
