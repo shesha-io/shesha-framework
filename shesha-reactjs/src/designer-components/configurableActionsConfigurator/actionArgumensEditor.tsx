@@ -31,9 +31,8 @@ const getDefaultFactory = (
     const markupFactory = typeof markup === 'function'
       ? (markup as FormMarkupFactory)
       : () => markup as FormMarkup;
-    const cacheKey = typeof markup !== 'function'
-      ? `${action.ownerUid}-${action.name}-args`
-      : undefined;
+    // omit the use of cacheKey because it causes form state to be shared across different instances of the same action type
+    const cacheKey = undefined;
 
     const formMarkup = markupFactory({ exposedVariables, availableConstants });
     return (
