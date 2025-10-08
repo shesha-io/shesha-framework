@@ -1,4 +1,4 @@
-import { DataTypes, DesignerToolbarSettings, EditMode, IEntityMetadata } from "@/index";
+import { DataTypes, DesignerToolbarSettings, EditMode, IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";

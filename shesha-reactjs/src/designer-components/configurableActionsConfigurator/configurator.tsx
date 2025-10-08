@@ -7,7 +7,7 @@ import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { ActionSelect } from './actionSelect';
-import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/hooks';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { StyledLabel } from '../_settings/utils';
 import { SettingInput } from '../settingsInput/settingsInput';

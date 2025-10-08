@@ -1,5 +1,5 @@
 import { PropertyMetadataDto } from "@/apis/metadata";
-import { DesignerToolbarSettings, EditMode, IEntityMetadata } from "@/index";
+import { DesignerToolbarSettings, EditMode, IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { FormMetadataHelper } from "../formMetadataHelper";

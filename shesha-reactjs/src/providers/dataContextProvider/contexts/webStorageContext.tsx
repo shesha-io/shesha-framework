@@ -1,10 +1,11 @@
 import React, { FC, PropsWithChildren, useMemo, useRef } from "react";
 import DataContextBinder from "../dataContextBinder";
 import { SheshaCommonContexts } from "../../dataContextManager/models";
-import { DataTypes, IObjectMetadata, TypeDefinition, useDataContextManagerActions } from "@/index";
+import { DataTypes, IObjectMetadata, TypeDefinition } from "@/interfaces";
 import { WebStorageProxy } from "./webStorageProxy";
 import { webStorageCode } from '@/publicJsApis';
 import { splitDotNotation } from "@/utils/dotnotation";
+import { useDataContextManagerActions } from "@/providers/dataContextManager";
 
 
 export const WebStorageContextProvider: FC<PropsWithChildren> = ({ children }) => {

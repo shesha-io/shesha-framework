@@ -5,7 +5,7 @@ import { migrateDefaults, migrateFormLifecycle } from "@/designer-components/_co
 import { migrateDefaultApiEndpoints } from "@/designer-components/_common-migrations/migrateDefaultApiEndpoints";
 import { migrateFieldsToFetchAndOnDataLoad } from "@/designer-components/_common-migrations/migrateFieldsToFetchAndOnDataLoad";
 import { migrateGqlCustomEndpoint } from "@/designer-components/_common-migrations/migrateGqlCustomEndpoint";
-import { IToolboxComponents } from "@/index";
+import { IToolboxComponents } from "@/interfaces";
 import { IFormMigrationContext } from "@/designer-components/_common-migrations/models";
 
 

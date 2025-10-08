@@ -3,7 +3,6 @@
 import { evaluateString } from "@/providers/form/utils";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { DataTypes } from "@/interfaces/dataTypes";
-import { DesignerToolbarSettings, EditMode, IConfigurableFormComponent } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y,
   COLUMN_WIDTH_BOOLEAN, COLUMN_WIDTH_DATE, COLUMN_WIDTH_DEFAULT,
@@ -12,6 +11,7 @@ import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y,
   COLUMN_WIDTH_STRING, COLUMN_WIDTH_STRING_MULTILINE, COLUMN_WIDTH_TIME, ROW_COUNT } from "../constants";
 import { FormMetadataHelper } from "./formMetadataHelper";
 import pluralize from 'pluralize';
+import { DesignerToolbarSettings, EditMode, IConfigurableFormComponent } from "@/interfaces";
 
 export function findContainersWithPlaceholderRecursive(
   token: any,
