@@ -15,6 +15,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     const shaTooltipIcon = "sha-tooltip-icon";
     const shaToolbarItemName = "sha-toolbar-item-name";
     const shaHelpIcon = "sha-help-icon";
+    const shaLayersEmptyState = "sha-layers-empty-state";
 
     const shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
     .${shaActionButtons} {
@@ -113,6 +114,13 @@ export const useStyles = createStyles(({ css, cx }) => {
         margin-left: 5px;
         margin-right: 5px;
     }
+
+    .${shaLayersEmptyState} {
+        padding: 16px;
+        text-align: center;
+        color: #999;
+        font-style: italic;
+    }
 `);
 
     return {
@@ -131,5 +139,6 @@ export const useStyles = createStyles(({ css, cx }) => {
         shaTooltipIcon,
         shaToolbarItemName,
         shaHelpIcon,
+        shaLayersEmptyState,
     };
 });
