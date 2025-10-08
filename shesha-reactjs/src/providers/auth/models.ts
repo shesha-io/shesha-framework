@@ -27,6 +27,7 @@ export const ERROR_MESSAGES = {
   GENERIC: 'Oops, something went wrong',
   LOGIN: 'Failed to login',
   USER_PROFILE_LOADING: 'Failed to load user profile',
+  USER_PROFILE_IS_UNAVAILABLE: 'User profile info is unavailable',
 };
 
 export interface IAuthenticator {
