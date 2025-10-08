@@ -89,7 +89,10 @@ export function removeURLParameter(url: string, parameter: string): string {
   if (!(parameter in parsed))
     return url;
   delete parsed[parameter];
-  return baseUrl + '?' + qs.stringify(parsed);
+  const newQueryString = qs.stringify(parsed);
+  return isNullOrWhiteSpace(newQueryString)
+    ? baseUrl
+    : baseUrl + '?' + newQueryString;
 }
 
 

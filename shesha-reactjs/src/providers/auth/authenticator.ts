@@ -230,6 +230,9 @@ export class Authenticator implements IAuthenticator {
       const userProfile = await this.#fetchUserInfoHttp();
       this.#loginInfo = userProfile;
 
+      if (!userProfile.user)
+        throw new Error(ERROR_MESSAGES.USER_PROFILE_IS_UNAVAILABLE);
+
       this.#updateState('ready');
 
       const redirectUrl = this.#getRedirectUrl(this.#router.fullPath, userProfile.user);
