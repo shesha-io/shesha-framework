@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // eslint-plugin-memory-monitor.js
 const memoryUsage = require('process').memoryUsage;
 

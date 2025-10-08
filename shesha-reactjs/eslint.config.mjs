@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import jsdoc from "eslint-plugin-jsdoc";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import stylistic from "@stylistic/eslint-plugin";
@@ -8,7 +9,9 @@ import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
+import { importX, createNodeResolver } from 'eslint-plugin-import-x'
 import memoryTracePlugin from "./src/eslint-plugins/eslint-plugin-memory-monitor.js";
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -169,6 +172,8 @@ const typescriptOverrides = {
 };
 
 const baseTsConfig = {
+    ...importX.flatConfigs.recommended,
+    ...importX.flatConfigs.typescript,
     files: [
         "src/**/*.ts",
         "src/**/*.tsx",
@@ -184,6 +189,7 @@ const baseTsConfig = {
         "react-hooks": hooksPlugin,
         "@typescript-eslint": typescriptEslint,
         "@stylistic": stylistic,
+        "import-x": importX,
     },
 
     languageOptions: {
@@ -196,7 +202,6 @@ const baseTsConfig = {
         sourceType: "module",
 
         parserOptions: {
-            //project: ["tsconfig.json", ...strictFolders.map(f => `${f}/tsconfig.json`)],
             projectService: true, // Enable project service
             tsconfigRootDir: __dirname,
         },
@@ -241,15 +246,22 @@ const baseTsConfig = {
             linkAttribute: "to",
         }],
 
-        "import/resolver": {
-            node: {
-                extensions: [".js", ".jsx", ".json"],
-            },
-        },
-
-        "import/extensions": [".js", ".mjs", ".jsx"],
-        "import/core-modules": [],
-        "import/ignore": ["node_modules", "\\.(coffee|scss|css|less|hbs|svg|json)$"],
+        'import-x/resolver-next': [
+            createTypeScriptImportResolver(
+                {
+                    alwaysTryTypes: true,
+                    project: [
+                        'tsconfig.json',
+                    ],
+                    tsconfigRootDir: __dirname,
+                }
+            ),
+            createNodeResolver(
+                {
+                    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+                }
+            ),
+        ],
     },
 
     rules: {
@@ -263,6 +275,9 @@ const baseTsConfig = {
         "memory-monitor/track-memory": "off",
         ...hooksPlugin.configs.recommended.rules,
         ...reactPlugin.configs.recommended.rules,
+        ...importX.flatConfigs.recommended.rules,
+        ...importX.flatConfigs.typescript.rules,
+
         "react/prop-types": ["off"],
         "require-await": "error",
         "no-restricted-imports": ["error", {
@@ -356,6 +371,10 @@ const baseTsConfig = {
         "spaced-comment": ["off", "always", {
             markers: ["/"],
         }],
+        "import-x/no-cycle": ["error", { maxDepth: Infinity }],
+        //"import-x/no-duplicates": "error",
+        "import-x/no-self-import": "error",
+        "import-x/no-unresolved": "error",
     }
 };
 
@@ -369,7 +388,6 @@ const makeStrictConfig = (path) => {
         languageOptions: {
             ...baseTsConfig.languageOptions,
             parserOptions: {
-                //project: `${path}/tsconfig.json`,
                 projectService: true, // Enable project service
                 tsconfigRootDir: __dirname,
             },
@@ -403,12 +421,24 @@ export default [
     ...strictFolders.map(f => makeStrictConfig(f)),
     {
         files: ['**/*.js', '**/*.mjs'],
+        ignores: [
+            "dist/**",
+            ".next/**",
+            "src/rollup-plugins/**",
+            "server.js",
+        ],
         ...js.configs.recommended,
         languageOptions: {
             sourceType: 'module',
             ecmaVersion: 'latest',
         },
+        plugins: {
+            'import-x': importX,
+        },
         rules: {
+            ...importX.flatConfigs.recommended.rules,
+            "import-x/no-cycle": ["error", { maxDepth: Infinity }],
+            "no-console": "error",
             '@typescript-eslint/no-var-requires': 'off', // Allow require() in JS files
         }
     },
