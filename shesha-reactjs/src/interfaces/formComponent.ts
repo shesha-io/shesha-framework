@@ -6,8 +6,6 @@ export enum StandardNodeTypes {
   ConfigurableActionConfig = 'action-config',
 };
 
-export interface IFormComponentDataType {}
-
 export type StringValueChange = (key: string, value: string) => void;
 export type NumberValueChange = (key: string, value: number) => void;
 export type BooleanValueChange = (key: string, value: boolean) => void;

@@ -41,7 +41,7 @@ export const useShaDataContextAccessor = <TData extends object = object>(
 ): IShaDataWrapper<TData> => {
   const storage = useRef<IShaDataWrapper<TData>>();
 
-  const path = useShaRouting().router?.path;
+  const path = useShaRouting().router.path;
   const key = `${type}:${path}`;
 
   const storageType = type === 'app' ? 'localStorage' : 'sessionStorage';

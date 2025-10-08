@@ -45,7 +45,7 @@ interface IRequestFilePayload {
   // fileId?: string;
 }
 
-export interface IUploadFilePayload extends IRequestFilePayload {}
+export type IUploadFilePayload = IRequestFilePayload;
 
 export interface IDownloadFilePayload {
   fileId: string;

@@ -1,16 +1,12 @@
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { SettingsManager } from "./manager";
-import { ISettingsModuleAccessor, SettingsModuleAccessor } from "./moduleAccessor";
-
-export interface ISettingsApi {
-
-}
+import { SettingsModuleAccessor } from "./moduleAccessor";
 
 /**
  * Settings API. Provides settings to the application settings groupped by modules.
  */
-export class SettingsApi implements ISettingsApi {
-  readonly _modules: Map<string, ISettingsModuleAccessor>;
+export class SettingsApi {
+  readonly _modules: Map<string, SettingsModuleAccessor>;
 
   readonly _settingManager: SettingsManager;
 
@@ -18,9 +14,9 @@ export class SettingsApi implements ISettingsApi {
    * Retrieves the settings for a module by name, creating a new module settings object if it doesn't already exist.
    *
    * @param {string} name - The name of the module
-   * @return {ISettingsModuleAccessor} The settings for the specified module
+   * @return {SettingsModuleAccessor} The settings for the specified module
    */
-  getModuleSettings(name: string): ISettingsModuleAccessor {
+  getModuleSettings(name: string): SettingsModuleAccessor {
     if (this._modules.has(name))
       return this._modules.get(name);
 
@@ -31,7 +27,7 @@ export class SettingsApi implements ISettingsApi {
 
   constructor(httpClient: HttpClientApi) {
     this._settingManager = new SettingsManager(httpClient);
-    this._modules = new Map<string, ISettingsModuleAccessor>();
+    this._modules = new Map<string, SettingsModuleAccessor>();
 
     return new Proxy(this, {
       get(target, name) {

@@ -3,7 +3,7 @@ import { FormMarkup } from '@/interfaces';
 import { DynamicItemsEvaluationHook } from '@/providers/dynamicActionsDispatcher/models';
 import { createNamedContext } from '@/utils/react';
 
-export interface IDynamicActionsStateContext<TSettings = any> {
+export interface IDynamicActionsContext<TSettings = any> {
   id: string;
   name: string;
   useEvaluator: DynamicItemsEvaluationHook;
@@ -16,18 +16,6 @@ export interface IDynamicActionsStateContext<TSettings = any> {
    * Settings form factory
    */
   settingsFormFactory?: IProviderSettingsFormFactory<TSettings>;// <TArguments>;
-}
-
-export interface IDynamicActionsActionsContext {
-
-}
-
-export interface IDynamicActionsContext extends IDynamicActionsStateContext, IDynamicActionsActionsContext {
-
-}
-
-export interface ITestActionPayload {
-
 }
 
 /** initial state */

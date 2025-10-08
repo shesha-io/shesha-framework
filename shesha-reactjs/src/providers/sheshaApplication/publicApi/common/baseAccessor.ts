@@ -1,11 +1,7 @@
-export interface IBaseAccessor {
-
-}
-
 /**
  * Base group accessor
  */
-export class BaseAccessor<TChild = IBaseAccessor, TManager = any> implements IBaseAccessor {
+export class BaseAccessor<TChild extends object = object, TManager = any> {
   readonly _accessor: string;
 
   readonly _children: Map<string, TChild>;
@@ -16,9 +12,10 @@ export class BaseAccessor<TChild = IBaseAccessor, TManager = any> implements IBa
     throw new Error("Method 'createChild()' must be implemented. Accessor: " + accessor);
   }
 
-  getChildAccessor(accessor: string): IBaseAccessor {
-    if (this._children.has(accessor))
-      return this._children.get(accessor);
+  getChildAccessor(accessor: string): TChild {
+    const existingChild = this._children.get(accessor);
+    if (existingChild)
+      return existingChild;
 
     const children = this.createChild(accessor);
     this._children.set(accessor, children);

@@ -14,9 +14,6 @@ export interface IValidateProviderStateContext {
   validate: () => Promise<void>;
 }
 
-export interface IValidateProviderProps {
-}
-
 export const ValidateProviderStateContext = createNamedContext<IValidateProviderStateContext>(
   {
     id: '',
@@ -42,7 +39,7 @@ export function useValidator(require: boolean = true): IValidateProviderStateCon
   return stateContext;
 }
 
-const ValidateProvider: FC<PropsWithChildren<IValidateProviderProps>> = ({ children }) => {
+const ValidateProvider: FC<PropsWithChildren> = ({ children }) => {
   const parent = useValidator(false);
   const id = useId();
 

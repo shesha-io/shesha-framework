@@ -1,10 +1,8 @@
 import { createAction } from 'redux-actions';
 import {
   IComponentLoadErrorPayload,
-  IComponentLoadPayload,
   IComponentLoadSuccessPayload,
   IComponentSaveErrorPayload,
-  IComponentSavePayload,
   IComponentSaveSuccessPayload,
 } from './contexts';
 
@@ -20,7 +18,7 @@ export enum ConfigurableComponentActionEnums {
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
 
-export const loadRequestAction = createAction<IComponentLoadPayload>(ConfigurableComponentActionEnums.LoadRequest);
+export const loadRequestAction = createAction(ConfigurableComponentActionEnums.LoadRequest);
 export const loadSuccessAction = createAction<IComponentLoadSuccessPayload, IComponentLoadSuccessPayload>(
   ConfigurableComponentActionEnums.LoadSuccess,
   (p) => p,
@@ -30,10 +28,7 @@ export const loadErrorAction = createAction<IComponentLoadErrorPayload, ICompone
   (p) => p,
 );
 
-export const saveRequestAction = createAction<IComponentSavePayload, IComponentSavePayload>(
-  ConfigurableComponentActionEnums.SaveRequest,
-  (p) => p,
-);
+export const saveRequestAction = createAction(ConfigurableComponentActionEnums.SaveRequest);
 export const saveSuccessAction = createAction<IComponentSaveSuccessPayload, IComponentSaveSuccessPayload>(
   ConfigurableComponentActionEnums.SaveSuccess,
   (p) => p,

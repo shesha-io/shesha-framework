@@ -38,9 +38,9 @@ export interface IRequestFilePayload {
   ownerName?: string;
 }
 
-export interface IUploadFilePayload extends IRequestFilePayload {}
+export type IUploadFilePayload = IRequestFilePayload;
 
-export interface IDownloadZipPayload extends IRequestFilePayload {}
+export type IDownloadZipPayload = IRequestFilePayload;
 
 export interface IDownloadFilePayload {
   fileId: string;

@@ -13,7 +13,6 @@ import {
   ConfigurableActionArgumentsMigrationContext,
   DynamicContextHook,
   EMPTY_DYNAMIC_CONTEXT_HOOK,
-  IConfigurableActionArguments,
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
@@ -243,7 +242,7 @@ const ConfigurableActionDispatcherConsumer = ConfigurableActionDispatcherActions
 /**
  * Register configurable action
  */
-function useConfigurableAction<TArguments = IConfigurableActionArguments, TResponse = unknown>(
+function useConfigurableAction<TArguments extends object = object, TResponse = unknown>(
   payload: IRegisterActionPayload<TArguments, TResponse>,
   deps?: DependencyList,
 ): void {

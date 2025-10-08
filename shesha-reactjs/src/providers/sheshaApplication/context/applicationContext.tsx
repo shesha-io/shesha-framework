@@ -12,8 +12,6 @@ import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
 import { IMetadataBuilder, IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { createNamedContext } from '@/utils/react';
 
-export interface IApplicationDataProviderProps {}
-
 export interface ApplicationPluginRegistration {
   name: string;
   buildMetadata: (apiBuilder: IObjectMetadataBuilder, metadataBuilder: IMetadataBuilder) => void;
@@ -34,7 +32,7 @@ export const ApplicationPublicApiContext = createNamedContext<IApplicationApi>(
   'ApplicationPublicApiContext',
 );
 
-export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProviderProps>> = ({ children }) => {
+export const ApplicationDataProvider: FC<PropsWithChildren> = ({ children }) => {
   const [plugins, setPlugins] = useState<ApplicationPluginRegistration[]>([]);
   const httpClient = useHttpClient();
   const cacheProvider = useCacheProvider();

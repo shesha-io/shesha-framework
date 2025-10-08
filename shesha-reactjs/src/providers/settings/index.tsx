@@ -1,16 +1,11 @@
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import { settingsGetValue } from '@/apis/settings';
-import useThunkReducer from '@/hooks/thunkReducer';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { ISettingsActionsContext, ISettingsContext, SETTINGS_CONTEXT_INITIAL_STATE, SettingsContext } from './contexts';
+import { ISettingsActionsContext, ISettingsContext, SettingsContext } from './contexts';
 import { ISettingIdentifier, ISettingsDictionary } from './models';
-import reducer from './reducer';
 
-export interface ISettingsProviderProps {}
-
-const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ children }) => {
-  const [state] = useThunkReducer(reducer, SETTINGS_CONTEXT_INITIAL_STATE);
+const SettingsProvider: FC<PropsWithChildren> = ({ children }) => {
   const settings = useRef<ISettingsDictionary>({});
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -42,7 +37,6 @@ const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ child
   };
 
   const contextValue: ISettingsContext = {
-    ...state,
     getSetting,
   };
 

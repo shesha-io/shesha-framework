@@ -17,7 +17,7 @@ import FormCell from './formCell/formCell';
 import { wrapDisplayName } from '@/utils/react';
 import { RendererCell } from './rendererCell';
 
-export const getCellRenderer = <D extends object = {}, V = any>(
+export const getCellRenderer = <D extends object = object, V = any>(
   column: ITableColumn,
   propertyMeta?: IPropertyMetadata,
   shaForm?: IShaFormInstance,

@@ -10,10 +10,6 @@ import { useDevMode } from '@/hooks/useIsDevMode';
 const { Panel } = Collapse;
 type MenuItem = Required<MenuProps>['items'][number];
 
-export interface ISettingsMenuProps {
-
-}
-
 interface ISettingItem {
   config: ISettingConfiguration;
   app?: IFrontEndApplication;
@@ -41,7 +37,7 @@ const getSettingKey = (config: ISettingConfiguration, app?: IFrontEndApplication
   return `${config.module}|${config.name}|${app?.appKey}`;
 };
 
-export const SettingsMenu: FC<ISettingsMenuProps> = () => {
+export const SettingsMenu: FC = () => {
   const [isDevmode, setDevMode] = useDevMode();
 
   const [openedKeys, setOpenedKeys] = useLocalStorage('settings-editor.openedKeys', {});// ['']);

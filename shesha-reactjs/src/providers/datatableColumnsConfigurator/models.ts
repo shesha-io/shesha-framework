@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 
 type ColumnsItemType = 'item' | 'group';
 
-export interface IColumnEditorProps extends IConfigurableFormComponent {}
+export type IColumnEditorProps = IConfigurableFormComponent;
 
 export interface IFieldComponentProps {
   type: string;
@@ -60,9 +60,7 @@ export const isDataColumn = (column: IConfigurableColumnsProps): column is IData
   return Boolean(column) && column.columnType === 'data';
 };
 
-export interface ICrudOperationsColumnProps extends IConfigurableColumnsProps {
-
-}
+export type ICrudOperationsColumnProps = IConfigurableColumnsProps;
 
 /**
  * Configurable form column (displays form)

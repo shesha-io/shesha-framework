@@ -6,10 +6,6 @@ import React, { PropsWithChildren, useMemo, FC } from 'react';
 import { DynamicActionsProvider } from '../index';
 import { wrapDisplayName } from '@/utils/react';
 
-export interface IStandardApisProps {
-
-}
-
 const StandardApisItems: ButtonGroupItemProps[] = [
   { id: 'r1', name: 'http', label: 'Http client', itemType: 'item', itemSubType: 'button', sortOrder: 0 },
   { id: 'r2', name: 'message', label: 'message', itemType: 'item', itemSubType: 'button', sortOrder: 1 },
@@ -40,7 +36,7 @@ const standardApisHoc: DynamicRenderingHoc = (WrappedComponent) => {
   }, "standardApisHoc");
 };
 
-export const StandardApis: FC<PropsWithChildren<IStandardApisProps>> = ({ children }) => {
+export const StandardApis: FC<PropsWithChildren> = ({ children }) => {
   return (
     <DynamicActionsProvider
       id="shesha-apis"

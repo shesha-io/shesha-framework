@@ -6,10 +6,7 @@ import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { DataTypes, IObjectMetadata } from '@/index';
 import { canvasContextCode } from '@/publicJsApis';
 
-export interface ICanvasProviderProps {
-}
-
-const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
+const CanvasProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({

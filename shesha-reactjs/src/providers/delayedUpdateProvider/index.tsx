@@ -7,9 +7,7 @@ import {
 } from './context';
 import { IDelayedUpdateGroup } from './models';
 
-interface IDelayedUpdateProps {}
-
-const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ children }) => {
+const DelayedUpdateProvider: FC<PropsWithChildren> = ({ children }) => {
   const state = useRef<IDelayedUpdateStateContext>(DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE);
 
   const addItem = (groupName: string, id: any, data?: any): void => {

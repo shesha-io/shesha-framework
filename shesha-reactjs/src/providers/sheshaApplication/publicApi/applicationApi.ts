@@ -1,7 +1,7 @@
 import { CurrentUserApi, IInternalCurrentUserApi } from './currentUser/api';
-import { ISettingsApi, SettingsApi } from './settings/api';
+import { SettingsApi } from './settings/api';
 import { HttpClientApi } from '@/publicJsApis/httpClient';
-import { EntitiesApi, IEntitiesApi } from './entities/api';
+import { EntitiesApi } from './entities/api';
 import { UtilsApi, IUtilsApi } from './utils/api';
 import { FormsApi, IFormsApi } from './forms/api';
 import { ICacheProvider, IEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/models';
@@ -16,8 +16,8 @@ export interface IApplicationPlugin {
 
 export interface IApplicationApi {
   user: IInternalCurrentUserApi;
-  settings: ISettingsApi;
-  entities: IEntitiesApi;
+  settings: SettingsApi;
+  entities: EntitiesApi;
   navigator: INavigatorApi;
 
   addPlugin: (plugin: IApplicationPlugin) => void;
@@ -27,9 +27,9 @@ export interface IApplicationApi {
 export class ApplicationApi implements IApplicationApi {
   public user: IInternalCurrentUserApi;
 
-  public settings: ISettingsApi;
+  public settings: SettingsApi;
 
-  public entities: IEntitiesApi;
+  public entities: EntitiesApi;
 
   public utils: IUtilsApi;
 

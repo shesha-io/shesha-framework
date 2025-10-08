@@ -7,10 +7,6 @@ import React, { PropsWithChildren, useMemo, FC } from 'react';
 import { DynamicActionsProvider } from '../index';
 import { wrapDisplayName } from '@/utils/react';
 
-export interface IReportingActionsProps {
-
-}
-
 const ReportTestItems: ButtonGroupItemProps[] = [
   { id: 'r1', name: 'btn1', label: 'report item 1', itemType: 'item', itemSubType: 'button', sortOrder: 0 },
   { id: 'r2', name: 'btn2', label: 'report item 2', itemType: 'item', itemSubType: 'button', sortOrder: 1 },
@@ -40,7 +36,7 @@ const reportingActionsHoc: DynamicRenderingHoc = (WrappedComponent) => {
   }, "reportingActionsHoc");
 };
 
-export const ReportingActions: FC<PropsWithChildren<IReportingActionsProps>> = ({ children }) => {
+export const ReportingActions: FC<PropsWithChildren> = ({ children }) => {
   return (
     <DynamicActionsProvider
       id="reports"

@@ -13,9 +13,7 @@ import useThunkReducer from '@/hooks/thunkReducer';
 import { DynamicItemsEvaluationHook, IProvidersDictionary } from './models';
 import { IDynamicActionsContext } from '../dynamicActions/contexts';
 
-export interface IDynamicActionsDispatcherProviderProps { }
-
-const DynamicActionsDispatcherProvider: FC<PropsWithChildren<IDynamicActionsDispatcherProviderProps>> = ({ children }) => {
+const DynamicActionsDispatcherProvider: FC<PropsWithChildren> = ({ children }) => {
   const initial: IDynamicActionsDispatcherStateContext = {
     ...DYNAMIC_ACTIONS_DISPATCHER_CONTEXT_INITIAL_STATE,
   };

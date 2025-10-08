@@ -20,8 +20,7 @@ export interface IObjectMetadataBuilder extends IPublicObjectMetadataBuilder {
   setTypeDefinition(typeDefinitionLoader: TypeDefinitionLoader): this;
 }
 
-export interface IMetadataBuilder extends IPublicMetadataBuilder<IObjectMetadataBuilder> {
-}
+export type IMetadataBuilder = IPublicMetadataBuilder<IObjectMetadataBuilder>;
 
 export type MetadataFetcher = (typeId: ModelTypeIdentifier) => Promise<IObjectMetadata>;
 export type MetadataBuilderAction = (builder: IObjectMetadataBuilder, name: string) => void;

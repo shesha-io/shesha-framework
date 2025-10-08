@@ -19,7 +19,7 @@ export interface ITableCustomTypeEditor {
   render: (data: IColumnEditFieldProps) => ReactNode;
 }
 
-export type DataTableColumn<D extends object = {}> = Column<D> & {
+export type DataTableColumn<D extends object = object> = Column<D> & {
   resizable?: boolean;
   originalConfig?: ITableColumn;
   metadata?: IPropertyMetadata;
@@ -27,11 +27,11 @@ export type DataTableColumn<D extends object = {}> = Column<D> & {
   cellStyleAccessor?: CellStyleFunc;
 };
 
-export type IStyledColumn<D extends object = {}> = DataTableColumn<D> & {
+export type IStyledColumn<D extends object = object> = DataTableColumn<D> & {
   cellStyleAccessor: CellStyleFunc;
 };
 
-export const isStyledColumn = <D extends object = {}>(column: DataTableColumn<D>): column is IStyledColumn<D> => {
+export const isStyledColumn = <D extends object = object>(column: DataTableColumn<D>): column is IStyledColumn<D> => {
   const typed = column as IStyledColumn<D>;
   return typed && typed.cellStyleAccessor && typeof typed.cellStyleAccessor === 'function';
 };

@@ -2,10 +2,8 @@ import { ReduxCompatibleReducer, handleActions } from 'redux-actions';
 import { ConfigurableComponentActionEnums } from './actions';
 import {
   IComponentLoadErrorPayload,
-  IComponentLoadPayload,
   IComponentLoadSuccessPayload,
   IComponentSaveErrorPayload,
-  IComponentSavePayload,
   IComponentSaveSuccessPayload,
   IConfigurableComponentStateContext,
 } from './contexts';
@@ -17,7 +15,7 @@ const reducerFactory = <TSettings extends any>(
     {
       [ConfigurableComponentActionEnums.LoadRequest]: (
         state: IConfigurableComponentStateContext<TSettings>,
-        _action: ReduxActions.Action<IComponentLoadPayload>,
+        _action: ReduxActions.Action<void>,
       ) => {
         return {
           ...state,
@@ -58,7 +56,7 @@ const reducerFactory = <TSettings extends any>(
 
       [ConfigurableComponentActionEnums.SaveRequest]: (
         state: IConfigurableComponentStateContext<TSettings>,
-        _action: ReduxActions.Action<IComponentSavePayload>,
+        _action: ReduxActions.Action<void>,
       ) => {
         return {
           ...state,

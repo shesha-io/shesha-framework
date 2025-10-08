@@ -7,10 +7,6 @@ import React, { PropsWithChildren, useMemo, FC } from 'react';
 import { DynamicActionsProvider } from '../index';
 import { wrapDisplayName } from '@/utils/react';
 
-export interface IEntityCrudActionsProps {
-
-}
-
 const EntityTestItems: ButtonGroupItemProps[] = [
   { id: '1', name: 'btn1', label: 'entity action 1', itemType: 'item', itemSubType: 'button', sortOrder: 0, buttonType: 'link' },
   { id: '2', name: 'btn2', label: 'entity action 2', itemType: 'item', itemSubType: 'button', sortOrder: 1 },
@@ -93,7 +89,7 @@ const entityActionsHoc: DynamicRenderingHoc = (WrappedComponent) => {
   }, "entityActionsHoc");
 };
 
-export const EntityCrudActions: FC<PropsWithChildren<IEntityCrudActionsProps>> = ({ children }) => {
+export const EntityCrudActions: FC<PropsWithChildren> = ({ children }) => {
   return (
     <DynamicActionsProvider
       id="entity-crud"

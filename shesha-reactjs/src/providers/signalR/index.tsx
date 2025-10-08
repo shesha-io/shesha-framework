@@ -1,13 +1,10 @@
 import * as signalR from '@microsoft/signalr';
 
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
-import { getFlagSetters } from '../utils/flagsSetters';
 import {
-  ISignalRActionsContext,
   ISignalRConnection,
   ISignalRStateContext,
   SIGNAL_R_CONTEXT_INITIAL_STATE,
-  SignalRActionsContext,
   SignalRStateContext,
 } from './contexts';
 import { signalRReducer } from './reducer';
@@ -73,14 +70,7 @@ const SignalRProvider: FC<PropsWithChildren<ISignalRProvider>> = ({
 
   return (
     <SignalRStateContext.Provider value={state}>
-      <SignalRActionsContext.Provider
-        value={{
-          ...getFlagSetters(dispatch),
-          /* NEW_ACTION_GOES_HERE */
-        }}
-      >
-        {children}
-      </SignalRActionsContext.Provider>
+      {children}
     </SignalRStateContext.Provider>
   );
 };
@@ -95,28 +85,10 @@ function useSignalRState(require: boolean): ISignalRStateContext | undefined {
   return context;
 }
 
-function useSignalRActions(require: boolean): ISignalRActionsContext | undefined {
-  const context = useContext(SignalRActionsContext);
-
-  if (context === undefined && require) {
-    throw new Error('useSignalRActions must be used within a SignalRProvider');
-  }
-
-  return context;
-}
-
-function useSignalR(require: boolean = true): ISignalRStateContext & ISignalRActionsContext | undefined {
-  const actionsContext = useSignalRActions(require);
-  const stateContext = useSignalRState(require);
-
-  // useContext() returns initial state when provider is missing
-  // initial context state is useless especially when require == true
-  // so we must return value only when both context are available
-  return actionsContext !== undefined && stateContext !== undefined
-    ? { ...actionsContext, ...stateContext }
-    : undefined;
+function useSignalR(require: boolean = true): ISignalRStateContext | undefined {
+  return useSignalRState(require);
 }
 
 export default SignalRProvider;
 
-export { SignalRProvider, useSignalR, useSignalRActions, useSignalRState };
+export { SignalRProvider, useSignalR, useSignalRState };

@@ -11,7 +11,7 @@ import {
   useNestedPropertyMetadatAccessor,
 } from '@/providers';
 import { useGet } from '@/hooks';
-import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from '../model';
+import { IDataSourceArguments } from '../model';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { getSettings } from './entitySettings';
 
@@ -77,7 +77,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   return operations;
 };
 
-export const EntityActions: FC<PropsWithChildren<IWorkflowInstanceStartActionsProps>> = ({ children }) => {
+export const EntityActions: FC<PropsWithChildren> = ({ children }) => {
   return (
     <DynamicActionsProvider
       id="Entity"
