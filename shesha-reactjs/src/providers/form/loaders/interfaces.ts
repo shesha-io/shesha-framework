@@ -26,9 +26,7 @@ export interface GetFormFieldsPayload {
   formSettings: IFormSettings;
 }
 
-export interface GetGqlFieldsPayload extends GetFormFieldsPayload {
-
-}
+export type GetGqlFieldsPayload = GetFormFieldsPayload;
 
 export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
 export interface LoadingCallbackState {

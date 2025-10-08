@@ -18,15 +18,9 @@ export interface IConfigurableComponentStateContext<TSettings = any>
   settings: TSettings;
 }
 
-export interface IComponentLoadPayload {
-  // id: string;
-}
-
 export interface IComponentLoadErrorPayload {
   error: string;
 }
-
-export interface IComponentSavePayload {}
 
 export interface IComponentSaveErrorPayload {
   error: string;

@@ -30,7 +30,7 @@ export interface IWithUrlRepositoryArgs {
 
 export const UrlRepositoryType = 'url-repository';
 
-export interface IUrlRepository extends IRepository { }
+export type IUrlRepository = IRepository;
 
 interface ICreateUrlRepositoryArgs extends IWithUrlRepositoryArgs {
   backendUrl: string;

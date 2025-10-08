@@ -7,9 +7,7 @@ import {
 } from './contexts';
 import { IDataSourceDescriptor, IDataSourceDictionary, IGetDataSourcePayload, IRegisterDataSourcePayload } from './models';
 
-export interface IDataSourcesProviderProps {}
-
-const DataSourcesProvider: FC<PropsWithChildren<IDataSourcesProviderProps>> = ({ children }) => {
+const DataSourcesProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state] = useState<IDataSourcesProviderStateContext>({});
 
   const dataSources = useRef<IDataSourceDictionary>({});

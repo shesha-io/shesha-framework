@@ -326,7 +326,7 @@ export class Authenticator implements IAuthenticator {
   };
 }
 
-export const useAuthenticatorInstance = (args: AuthenticatorArgs): IAuthenticator[] => {
+export const useAuthenticatorInstance = (args: AuthenticatorArgs): [IAuthenticator] => {
   const authenticatorRef = React.useRef<IAuthenticator>();
   const [, forceUpdate] = React.useState({});
 

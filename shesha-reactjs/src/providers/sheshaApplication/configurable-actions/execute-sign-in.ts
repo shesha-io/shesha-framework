@@ -3,14 +3,12 @@ import { useConfigurableAction } from '@/providers/configurableActionsDispatcher
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { ILoginForm } from '@/interfaces/loginForm';
 
-export interface IExcuteSignInArguments {}
-
 export const useExecuteSignIn = (): void => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
   const auth = useAuthOrUndefined();
 
-  useConfigurableAction<IExcuteSignInArguments>(
+  useConfigurableAction(
     {
       name: 'Sign In',
       owner: 'Common',

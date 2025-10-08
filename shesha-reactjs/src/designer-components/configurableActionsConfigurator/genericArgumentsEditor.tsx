@@ -1,10 +1,9 @@
 import React, { ReactElement } from 'react';
 import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
-import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
-export interface IProps<TModel extends IConfigurableActionArguments> {
+export interface IProps<TModel extends object = object> {
   model: TModel;
   markup: FormMarkup;
   onSave: (model: TModel) => void;
@@ -14,7 +13,7 @@ export interface IProps<TModel extends IConfigurableActionArguments> {
   cacheKey?: string;
 }
 
-function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
+function GenericArgumentsEditor<TModel extends object = object>({
   onSave,
   model,
   markup,

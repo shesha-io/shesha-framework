@@ -121,7 +121,7 @@ export const isRendererColumn = (column: ITableColumn): column is ITableRenderer
 
 export interface ITableActionColumn extends ITableColumn, IActionColumnProps { }
 
-export interface ITableCrudOperationsColumn extends ITableColumn { }
+export type ITableCrudOperationsColumn = ITableColumn;
 
 export interface ITableRendererColumn extends ITableColumn {
   renderCell: (row: object) => ReactNode | string;
@@ -247,7 +247,7 @@ export interface IPublicDataTableActions {
   exportToExcel?: () => void;
 }
 
-export interface IDataTableInstance extends IPublicDataTableActions { }
+export type IDataTableInstance = IPublicDataTableActions;
 
 export type ListSortDirection = 0 | 1;
 

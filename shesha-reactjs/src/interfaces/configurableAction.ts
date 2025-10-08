@@ -37,12 +37,7 @@ export type IConfigurableActionExecuter<TArguments, TReponse> = (
   context: IActionExecutionContext
 ) => Promise<TReponse>;
 
-
-export interface IConfigurableActionArguments {
-
-}
-
-export interface ISettingsFormFactoryArgs<TModel = IConfigurableActionArguments> {
+export interface ISettingsFormFactoryArgs<TModel extends object = object> {
   model: TModel;
   onSave: (values: TModel) => void;
   onCancel: () => void;
@@ -58,7 +53,7 @@ export interface FormMarkupFactoryArgs {
 }
 export type FormMarkupFactory = (factoryArgs: FormMarkupFactoryArgs) => FormMarkup;
 
-export type IConfigurableActionArgumentsFormFactory<TModel = IConfigurableActionArguments> = (
+export type IConfigurableActionArgumentsFormFactory<TModel extends object = object> = (
   props: ISettingsFormFactoryArgs<TModel>
 ) => ReactNode;
 
@@ -84,9 +79,7 @@ export interface IConfigurableActionIdentifier extends IHasActionOwner {
 export type DynamicContextHook = () => GenericDictionary;
 export const EMPTY_DYNAMIC_CONTEXT_HOOK: DynamicContextHook = () => ({});
 
-export interface ConfigurableActionArgumentsMigrationContext {
-
-}
+export type ConfigurableActionArgumentsMigrationContext = never;
 
 /**
  * Arguments migrator
@@ -98,7 +91,7 @@ export type ConfigurableActionArgumentsMigrator<TArguments> = (
 /**
  * Configurable action descriptor. Is used to define consigurable actions
  */
-export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionArguments, TReponse = unknown>
+export interface IConfigurableActionDescriptor<TArguments extends object = object, TReponse = unknown>
   extends IConfigurableActionIdentifier {
   /**
    * User friendly name of the action. Action name is displayed if the label is not specified

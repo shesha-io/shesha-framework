@@ -2,14 +2,10 @@ import { SettingsManager } from "./manager";
 import { SettingAccessor } from "./settingAccessor";
 import { BaseAccessor } from "../common/baseAccessor";
 
-export interface ISettingsCategoryAccessor {
-
-}
-
 /**
  * Settings category API
  */
-export class SettingsCategoryAccessor extends BaseAccessor<SettingAccessor, SettingsManager> implements ISettingsCategoryAccessor {
+export class SettingsCategoryAccessor extends BaseAccessor<SettingAccessor, SettingsManager> {
   readonly _moduleAccessor: string;
 
   constructor(settingManager: SettingsManager, moduleAccessor: string, name: string) {
@@ -17,7 +13,7 @@ export class SettingsCategoryAccessor extends BaseAccessor<SettingAccessor, Sett
     this._moduleAccessor = moduleAccessor;
   }
 
-  createChild = (accessor: string): SettingAccessor => {
+  override createChild = (accessor: string): SettingAccessor => {
     return new SettingAccessor(this._manager, this._moduleAccessor, this._accessor, accessor);
   };
 }

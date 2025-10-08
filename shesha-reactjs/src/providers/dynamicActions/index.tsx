@@ -1,13 +1,9 @@
-import React, { useContext, PropsWithChildren, ReactElement } from 'react';
-import metadataReducer from './reducer';
+import React, { useContext, PropsWithChildren, ReactElement, useState } from 'react';
 import {
   DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
-  IDynamicActionsStateContext,
-  IDynamicActionsActionsContext,
   IDynamicActionsContext,
   DynamicActionsContext,
 } from './contexts';
-import useThunkReducer from '@/hooks/thunkReducer';
 import { useDynamicActionsDispatcher } from '@/providers/dynamicActionsDispatcher';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from '@/providers/dynamicActionsDispatcher/models';
@@ -31,7 +27,7 @@ export interface IHasActions {
 }
 
 const DynamicActionsProvider = <TSettings = unknown>({ id, name, useEvaluator, children, hasArguments = false, settingsFormFactory, settingsFormMarkup }: PropsWithChildren<IDynamicActionsProps<TSettings>>): ReactElement => {
-  const initial: IDynamicActionsStateContext<TSettings> = {
+  const [state] = useState<IDynamicActionsContext>(() => ({
     ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
     id,
     name,
@@ -39,21 +35,14 @@ const DynamicActionsProvider = <TSettings = unknown>({ id, name, useEvaluator, c
     hasArguments,
     settingsFormFactory,
     settingsFormMarkup,
-  };
-
-  const [state/* , dispatch*/] = useThunkReducer(metadataReducer, initial);
+  }));
 
   // register provider in the dispatcher if exists
   const { registerProvider } = useDynamicActionsDispatcher();
 
-  const dynamicActions: IDynamicActionsActionsContext = {
-    /* NEW_ACTION_GOES_HERE */
-  };
+  registerProvider({ id, contextValue: state });
 
-  const contextValue: IDynamicActionsContext = { ...state, ...dynamicActions };
-  registerProvider({ id, contextValue });
-
-  return <DynamicActionsContext.Provider value={contextValue}>{children}</DynamicActionsContext.Provider>;
+  return <DynamicActionsContext.Provider value={state}>{children}</DynamicActionsContext.Provider>;
 };
 
 function useDynamicActions(require: boolean): IDynamicActionsContext | undefined {

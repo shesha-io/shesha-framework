@@ -78,7 +78,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
   });
 
   const fetchInternal = (loader: PromisedValue<IComponentSettings>): void => {
-    dispatch(loadRequestAction({ name, isApplicationSpecific }));
+    dispatch(loadRequestAction());
 
     loader.promise
       .then((component) => {
@@ -112,7 +112,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
       return Promise.resolve();
     }
 
-    dispatch(saveRequestAction({}));
+    dispatch(saveRequestAction());
 
     // keep version number, it may be removed by the settings editor
     const version = (state.settings as IHasVersion)?.version;

@@ -150,7 +150,7 @@ export class FormMetadataHelper {
    * @param isReadOnly Whether the field should be read-only (default: false).
    * @throws Error if required metadata is missing for certain property types.
    */
-  public getConfigFields(property: PropertyMetadataDto, builder: DesignerToolbarSettings<{}>, isReadOnly: boolean = false): void {
+  public getConfigFields(property: PropertyMetadataDto, builder: DesignerToolbarSettings, isReadOnly: boolean = false): void {
     const commonProps = {
       id: nanoid(),
       propertyName: toCamelCase(property.path || ""),

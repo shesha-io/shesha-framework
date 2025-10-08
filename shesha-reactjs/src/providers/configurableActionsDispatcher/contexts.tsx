@@ -1,5 +1,4 @@
 import {
-  IConfigurableActionArguments,
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
@@ -32,13 +31,13 @@ export interface IPrepareActionArgumentsPayload<TArguments extends ActionParamet
   argumentsEvaluationContext: IArgumentsEvaluationContext;
 }
 
-export interface IRegisterActionPayload<TArguments = IConfigurableActionArguments, TReponse = unknown>
+export interface IRegisterActionPayload<TArguments extends object = object, TReponse = unknown>
   extends IConfigurableActionDescriptor<TArguments, TReponse> {
   isPermament?: boolean;
 }
 
 export interface RegisterActionType {
-  <TArguments = IConfigurableActionArguments, TResponse = unknown>(
+  <TArguments extends object = object, TResponse = unknown>(
     arg: IRegisterActionPayload<TArguments, TResponse>
   ): void;
 }

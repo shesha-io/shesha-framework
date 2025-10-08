@@ -2,7 +2,7 @@ import { useGet } from '@/hooks';
 import { DynamicActionsProvider, DynamicItemsEvaluationHook, FormMarkup } from '@/providers';
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
-import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from '../model';
+import { IDataSourceArguments } from '../model';
 import { useUrlTemplates } from '../utils';
 import { getSettings } from './urlSettings';
 
@@ -54,7 +54,7 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
   return operations;
 };
 
-export const UrlActions: FC<PropsWithChildren<IWorkflowInstanceStartActionsProps>> = ({ children }) => {
+export const UrlActions: FC<PropsWithChildren> = ({ children }) => {
   return (
     <DynamicActionsProvider
       id="Url"

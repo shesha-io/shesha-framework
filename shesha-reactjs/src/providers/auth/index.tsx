@@ -1,9 +1,11 @@
 import React, { FC, MutableRefObject, PropsWithChildren, useContext } from 'react';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { useShaRouting } from '@/providers/shaRouting';
-import { useHttpClient, useSettings, useSheshaApplication } from '..';
 import { useAuthenticatorInstance } from './authenticator';
 import { IAuthenticator } from './models';
+import { useHttpClient } from '../sheshaApplication/publicApi/http/hooks';
+import { useSheshaApplication } from '../sheshaApplication';
+import { useSettings } from '../settings';
 
 export interface IAuthProviderRefProps {
   anyOfPermissionsGranted?: (permissions: string[]) => boolean;

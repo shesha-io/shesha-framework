@@ -1,7 +1,5 @@
 import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
 
-export interface IWorkflowInstanceStartActionsProps { }
-
 export interface IDataSourceArguments {
   dataSourceUrl?: any;
   queryParams?: any;
