@@ -48,6 +48,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
                       .sidebar-body {
                         height: calc(100% - 35px);
                         overflow: auto;
+
+                        /* Remove border styles from read-only display form items in properties panel */
+                        .read-only-display-form-item {
+                          border: none !important;
+                          border-radius: 0 !important;
+                        }
                       }
                     }
                   }
