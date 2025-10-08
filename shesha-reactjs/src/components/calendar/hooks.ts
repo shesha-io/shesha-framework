@@ -1,7 +1,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-big-calendar';
-import { evaluateFilters, getCalendarRefetchParams, getLayerMarkers, getResponseListToState } from './utils';
+import { evaluateFilters, getCalendarRefetchParams, getLayerEventsData, getResponseListToState } from './utils';
 import { useGet, useMutate } from '@/hooks';
 
 import { DataTypes } from '@/interfaces';
@@ -13,7 +13,7 @@ interface IGetData {
   fetchData: () => void;
   fetchDefaultCalendarView: () => Promise<ISettingResponse>;
   layerData: { [key in string]: any }[];
-  layerMarkers: ICalendarLayersProps[];
+  layerEvents: ICalendarLayersProps[];
   updateDefaultCalendarView: (value: string) => Promise<any>;
 }
 
@@ -25,7 +25,7 @@ interface ISettingResponse {
 type NestedPropertyMetadatAccessor = ReturnType<typeof useNestedPropertyMetadatAccessor>;
 
 
-export const useMetaMapMarker = (layers: ICalendarLayersProps[]): IGetData => {
+export const useCalendarLayers = (layers: ICalendarLayersProps[]): IGetData => {
   const { refreshTrigger } = useLayerGroupConfigurator();
   const [state, setState] = useState<Pick<IGetData, 'layerData'>>({
     layerData: [],
@@ -41,7 +41,7 @@ export const useMetaMapMarker = (layers: ICalendarLayersProps[]): IGetData => {
 
   const { refetch } = useGet({ path: '', lazy: true });
 
-  const layerMarkers = getLayerMarkers(layers, layerData) || [];
+  const layerEvents = getLayerEventsData(layers, layerData) || [];
 
   const dispatcher = useMetadataDispatcher();
 
@@ -130,7 +130,7 @@ export const useMetaMapMarker = (layers: ICalendarLayersProps[]): IGetData => {
 
   return {
     fetchData,
-    layerMarkers,
+    layerEvents,
     layerData,
     fetchDefaultCalendarView,
     updateDefaultCalendarView

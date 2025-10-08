@@ -6,8 +6,8 @@ import { Calendar, momentLocalizer, SlotInfo, View } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useDeepCompareEffect } from 'react-use';
 import { EventComponent } from './eventComponent';
-import { useMetaMapMarker } from './hooks';
-import { getLayerMarkerOptions, getMarkerPoints } from './utils';
+import { useCalendarLayers } from './hooks';
+import { getLayerOptions, getLayerEvents } from './utils';
 import {
   evaluateString,
   executeScript,
@@ -47,9 +47,9 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const { data } = useFormData();
   const form = useForm();
   const { globalState } = useGlobalState();
-  const { layerMarkers, fetchData, fetchDefaultCalendarView, updateDefaultCalendarView } = useMetaMapMarker(items);
+  const { layerEvents, fetchData, fetchDefaultCalendarView, updateDefaultCalendarView } = useCalendarLayers(items);
 
-  const [points, setPoints] = useState<any>([]);
+  const [events, setEvents] = useState<any>([]);
   const [defaultView, setDefaultView] = useState<View>(displayPeriod?.[0]);
   const [internalStartDate, setInternalStartDate] = useState<string>(externalStartDate);
   const [internalEndDate, setInternalEndDate] = useState<string>(externalEndDate);
@@ -58,7 +58,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const lastClickedEventRef = useRef<ICalendarLayersProps | null>(null);
 
   const primaryColor = theme.application.primaryColor;
-  const defaultChecked = getLayerMarkerOptions(items)?.map((item) => item.value);
+  const defaultVisibleLayers = getLayerOptions(items)?.map((item) => item.value);
 
   const dummyEvent = {
     start: new Date(internalStartDate),
@@ -66,12 +66,12 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     color: primaryColor,
   };
 
-  const updatedPoints = useMemo(() =>
-    points.map((point: any) => ({
-      ...point,
-      title: evaluateString(point.title, point),
+  const updatedEvents = useMemo(() =>
+    events.map((event: any) => ({
+      ...event,
+      title: evaluateString(event.title, event),
     })),
-    [points]
+    [events]
   );
 
   // Handle external date changes
@@ -103,10 +103,10 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     }
   }, [displayPeriod, defaultView]);
 
-  // Update points when layer markers change
+  // Update events when layer events change
   useDeepCompareEffect(() => {
-    setPoints(getMarkerPoints(layerMarkers, defaultChecked));
-  }, [layerMarkers]);
+    setEvents(getLayerEvents(layerEvents, defaultVisibleLayers));
+  }, [layerEvents]);
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -137,7 +137,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   };
 
   const onChange = (checked: string[]) => {
-    setPoints(getMarkerPoints(layerMarkers, checked as string[]));
+    setEvents(getLayerEvents(layerEvents, checked as string[]));
   };
 
   const handleCustomSelect = (event: ICalendarLayersProps) => {
@@ -160,7 +160,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       if (lastClickedEventRef.current === event) {
         const evaluationContext = {
           ...allData,
-          points,
+          events,
           selectedRow: event,
         };
 
@@ -189,7 +189,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
 
     const evaluationContext = {
       ...allData,
-      points,
+      events,
       selectedRow: event,
       event,
     };
@@ -229,7 +229,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
 
   const menu = (
     <Menu style={{ display: 'block', padding: '20px', opacity: 0.9 }}>
-      <Checkbox.Group options={getLayerMarkerOptions(items)} onChange={onChange} defaultValue={defaultChecked} />
+      <Checkbox.Group options={getLayerOptions(items)} onChange={onChange} defaultValue={defaultVisibleLayers} />
     </Menu>
   );
 
@@ -315,7 +315,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
         localizer={localizer}
         defaultDate={new Date()}
         view={displayPeriod?.includes(defaultView) ? defaultView : displayPeriod?.[0]}
-        events={updatedPoints.concat(dummyEvent)}
+        events={updatedEvents.concat(dummyEvent)}
         style={styles}
         onSelectEvent={handleCustomSelect}
         onDoubleClickEvent={handleCustomDoubleClick}
