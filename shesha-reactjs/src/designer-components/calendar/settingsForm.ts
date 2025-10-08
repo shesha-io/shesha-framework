@@ -56,24 +56,6 @@ export const getSettings = (data: any) => {
                                         { label: 'Agenda', value: 'agenda' }
                                     ]
                                 })
-                                .toJson(),
-                        ],
-                    },
-                    {
-                        key: '2',
-                        title: 'Data',
-                        id: dataTabId,
-                        components: [
-                            ...new DesignerToolbarSettings()
-                                .addSettingsInput({
-                                    inputType: 'layerSelectorSettingsModal',
-                                    id: nanoid(),
-                                    parentId: dataTabId,
-                                    propertyName: 'items',
-                                    label: 'Layer Selector Settings Modal',
-                                    hideLabel: true,
-                                    settings: getCalendarLayersSettings(),
-                                })
                                 .addSettingsInputRow({
                                     id: nanoid(),
                                     parentId: dataTabId,
@@ -146,10 +128,27 @@ export const getSettings = (data: any) => {
                                                 },
                                             ]
                                         }
-
                                     ]
-
                                 })
+                                .toJson(),
+                        ],
+                    },
+                    {
+                        key: '2',
+                        title: 'Data',
+                        id: dataTabId,
+                        components: [
+                            ...new DesignerToolbarSettings()
+                                .addSettingsInput({
+                                    inputType: 'layerSelectorSettingsModal',
+                                    id: nanoid(),
+                                    parentId: dataTabId,
+                                    propertyName: 'items',
+                                    label: 'Layer Selector Settings Modal',
+                                    hideLabel: true,
+                                    settings: getCalendarLayersSettings(),
+                                })
+
                                 .toJson(),
                         ],
                     },
