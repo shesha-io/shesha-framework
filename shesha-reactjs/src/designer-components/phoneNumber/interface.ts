@@ -1,5 +1,5 @@
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
-import { CSSProperties } from 'styled-components';
+import { CSSProperties } from 'react';
 
 export type ValueFormat = 'fullNumber' | 'object';
 
@@ -19,6 +19,7 @@ export interface IPhoneNumberInputComponentProps extends IConfigurableFormCompon
     defaultCountry?: string;
     allowClear?: boolean;
     enableArrow?: boolean;
+    enableSearch?: boolean;
     disableParentheses?: boolean;
     onlyCountries?: string[];
     excludeCountries?: string[];

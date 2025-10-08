@@ -1,2 +1,2 @@
 export { default } from './phoneNumber';
-export type { IPhoneNumberInputComponentProps, IPhoneNumberValue, ValueFormat } from './interfaces';
+export type { IPhoneNumberInputComponentProps, IPhoneNumberValue, ValueFormat } from './interface';

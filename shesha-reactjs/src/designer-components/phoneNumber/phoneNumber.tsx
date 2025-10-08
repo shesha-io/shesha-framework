@@ -5,10 +5,10 @@ import { getEventHandlers } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IPhoneNumberInputComponentProps, IPhoneNumberValue } from './interfaces';
+import { IPhoneNumberInputComponentProps, IPhoneNumberValue } from './interface';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
+import { ReadOnlyDisplayFormItem } from '@/components/readOnlyDisplayFormItem';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import PhoneInput from 'antd-phone-input';
 import settingsFormJson from './settingsForm.json';
@@ -30,6 +30,7 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
             defaultCountry,
             allowClear,
             enableArrow = true,
+            enableSearch = true,
             disableParentheses,
             onlyCountries,
             excludeCountries,
@@ -108,7 +109,7 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
                             onChange={onChangeInternal}
                             onFocus={onFocusInternal}
                             onBlur={onBlurInternal}
-                            enableSearch={true}
+                            enableSearch={enableSearch}
                             enableArrow={enableArrow}
                             disableParentheses={disableParentheses}
                             country={country || defaultCountry || 'za'}
