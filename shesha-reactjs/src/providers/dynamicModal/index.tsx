@@ -61,7 +61,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       },
       argumentsFormMarkup: showConfirmationArgumentsForm,
     },
-    actionDependencies
+    actionDependencies,
   );
 
   const removeModal = (id: string): void => {
@@ -139,7 +139,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       },
       migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0),
     },
-    actionDependencies
+    actionDependencies,
   );
 
   const getLatestVisibleInstance = (): IModalInstance | null => {
@@ -177,7 +177,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       },
       argumentsFormMarkup: closeDialogArgumentsForm,
     },
-    actionDependencies
+    actionDependencies,
   );
   //#endregion
 

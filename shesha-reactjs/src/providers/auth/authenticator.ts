@@ -128,7 +128,7 @@ export class Authenticator implements IAuthenticator {
   };
 
   #checkRegistrationCompletion = (
-    response: AuthenticateResultModelAjaxResponse
+    response: AuthenticateResultModelAjaxResponse,
   ): void => {
     const result = extractAjaxResponse(response);
 
@@ -139,7 +139,7 @@ export class Authenticator implements IAuthenticator {
       }
       if (result.redirectModule && result.redirectForm) {
         this.#redirect(
-          `/no-auth/${result.redirectModule}/${result.redirectForm}?user=${result.userId}`
+          `/no-auth/${result.redirectModule}/${result.redirectForm}?user=${result.userId}`,
         );
         throw new Error('Redirecting to another form.');
       }
@@ -181,7 +181,7 @@ export class Authenticator implements IAuthenticator {
     const headers = this.#getHttpHeaders();
     const httpResponse = await this.#httpClient.get<void, HttpResponse<GetCurrentLoginInfoOutputAjaxResponse>>(
       URLS.GET_CURRENT_LOGIN_INFO,
-      { headers: headers }
+      { headers: headers },
     );
     const response = extractAjaxResponse(httpResponse.data, 'Failed to get user profile');
 
@@ -319,9 +319,9 @@ export class Authenticator implements IAuthenticator {
           (!gp.permissionedEntity ||
             gp.permissionedEntity.length === 0 ||
             gp.permissionedEntity.some((pe) =>
-              permissionedEntities?.some((ppe) => pe.id === ppe.id && ppe._className === pe._className)
-            ))
-      )
+              permissionedEntities?.some((ppe) => pe.id === ppe.id && ppe._className === pe._className),
+            )),
+      ),
     );
   };
 }

@@ -19,7 +19,7 @@ export const useStyles = createStyles(({ css, cx }, { fullStyles }: { fullStyles
           .ant-picker-cell-inner {
             font-weight: var(--ant-font-weight) !important;
           }
-        `
+        `,
   );
 
 

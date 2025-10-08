@@ -35,7 +35,7 @@ export const useEvaluatedFilter = (args: UseEvaluatedFilterArgs): string => {
     const response = await evaluateDynamicFilters(
       [{ expression: filter } as IStoredFilter],
       preparedMappings,
-      metadataAccessor
+      metadataAccessor,
     );
 
     // note: don't return empty filter to take unevaluated filters into account
@@ -79,7 +79,7 @@ export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additio
     const response = await evaluateDynamicFilters(
       [{ expression: args.filter } as IStoredFilter],
       mappings,
-      args.metadataAccessor
+      args.metadataAccessor,
     );
 
     return JSON.stringify(response[0]?.expression) || '';

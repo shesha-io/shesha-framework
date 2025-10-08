@@ -5,7 +5,7 @@ import { aggregateValues, getPredictableColor, getPredictableColorPolarArea, get
 
 export const useIsSmallScreen = (): boolean => {
   const [isSmallScreen, setIsSmallScreen] = useState(
-    typeof window !== 'undefined' && window.innerWidth <= 480
+    typeof window !== 'undefined' && window.innerWidth <= 480,
   );
 
   useEffect(() => {

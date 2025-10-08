@@ -6,7 +6,7 @@ const reducer = handleActions<ISettingsStateContext, any>(
   {
     [SettingsActionEnums.LoadSettingRequest]: (
       state: ISettingsStateContext,
-      _action: ReduxActions.Action<ILoadSettingPayload>
+      _action: ReduxActions.Action<ILoadSettingPayload>,
     ) => {
       // const { payload } = action;
 
@@ -16,7 +16,7 @@ const reducer = handleActions<ISettingsStateContext, any>(
     },
   },
 
-  SETTINGS_CONTEXT_INITIAL_STATE
+  SETTINGS_CONTEXT_INITIAL_STATE,
 );
 
 export default reducer;

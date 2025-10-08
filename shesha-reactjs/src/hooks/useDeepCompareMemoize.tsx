@@ -33,7 +33,7 @@ export function useDeepCompareMemoize(value: Readonly<any>): any {
         ? { ...item.getData() }
         : item instanceof ObservableProxy
           ? { ...item }
-          : item
+          : item,
     )
     : value;
 

@@ -41,7 +41,7 @@ const getClosestComponent = (flatStructure: IFlatComponentsStructure, id: string
 
 export const migrateToTable = (
   props: IChildTableComponentProps,
-  context: SettingsMigrationContext
+  context: SettingsMigrationContext,
 ): IPanelComponentProps => {
   const { flatStructure } = context;
 

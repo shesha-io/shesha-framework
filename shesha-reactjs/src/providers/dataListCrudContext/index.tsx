@@ -178,8 +178,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           filterDataByOutputComponents(
             mergedData,
             props.formFlatMarkup.allComponents,
-            toolboxComponents
-          )
+            toolboxComponents,
+          ),
         );
         // send data of stored files
         const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
@@ -215,7 +215,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
       performUpdate();
     },
     // delay in ms
-    300
+    300,
   );
 
   const performCreate = (): Promise<any> => {

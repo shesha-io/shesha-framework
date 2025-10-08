@@ -147,14 +147,14 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
     {
       lazy: true,
       queryParams: getListFetcherQueryParams(null, maxResultCount),
-    }
+    },
   );
 
   const valueFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, any, IGenericGetAllPayload>(
     `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
     {
       lazy: true,
-    }
+    },
   );
   useEffect(() => {
     if (valueFetcher.data?.success && valueFetcher.data.result) {
@@ -228,7 +228,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
       listFetcher.refetch({ queryParams: getListFetcherQueryParams(localValue, maxResultCount) });
     },
     // delay in ms
-    100
+    100,
   );
 
 

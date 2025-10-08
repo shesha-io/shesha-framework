@@ -23,7 +23,7 @@ export const useKanbanActions = (): KanbanActions => {
           module: 'Shesha',
           value: JSON.stringify(updatedSettings),
           datatype: 'string',
-        }
+        },
       );
 
       if (response?.success) {
@@ -43,7 +43,7 @@ export const useKanbanActions = (): KanbanActions => {
         {
           name: descriminator,
           module: 'Shesha',
-        }
+        },
       );
 
       if (response?.success && response?.result !== undefined) {
@@ -59,7 +59,7 @@ export const useKanbanActions = (): KanbanActions => {
         url: url,
         httpVerb: 'PUT',
       },
-      payload
+      payload,
     );
   };
 
@@ -69,7 +69,7 @@ export const useKanbanActions = (): KanbanActions => {
         url: url,
         httpVerb: 'POST',
       },
-      payload
+      payload,
     );
   };
 

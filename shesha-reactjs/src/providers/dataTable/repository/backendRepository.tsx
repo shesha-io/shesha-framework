@@ -101,7 +101,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   /** Convert back-end response to a form that is used by the data source */
   const convertListDataResponse = (
     response: IResult<ITableDataResponse>,
-    pageSize: number
+    pageSize: number,
   ): ITableDataInternalResponse => {
     if (!isAjaxSuccessResponse(response))
       throw 'Failed to fetch data';
@@ -123,7 +123,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     const getDataPayload = convertPayload(payload);
 
     const getDataUrl = `${getListUrl || `${GENERIC_ENTITIES_ENDPOINT}/GetAll`}?${qs.stringify(
-      getDataPayload
+      getDataPayload,
     )}`;
 
     const response = await httpClient.get<IAjaxResponse<ITableDataResponse>>(getDataUrl);

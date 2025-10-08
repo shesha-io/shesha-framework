@@ -24,7 +24,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     if (!url) return null;
     const queryString = props.additionalProperties
       ? '?' + props.additionalProperties.map(({ key, value }) =>
-        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
       ).join('&')
       : '';
     return url + queryString;

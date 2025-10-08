@@ -67,7 +67,7 @@ export const ObjectsTree = <TItem = unknown>(props: IProps<TItem>): JSX.Element 
               return [...state, getId(item)];
             return state;
           });
-      })
+      }),
     )]);
   }, [props.items, props.defaultExpandAll]);
 

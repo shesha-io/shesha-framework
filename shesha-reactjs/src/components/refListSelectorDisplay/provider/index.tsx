@@ -104,7 +104,7 @@ function useRefListItemGroupConfiguratorActions(): IRefListItemGroupConfigurator
 
   if (context === undefined) {
     throw new Error(
-      'useRefListItemGroupConfiguratorActions must be used within a RefListItemGroupConfiguratorProvider'
+      'useRefListItemGroupConfiguratorActions must be used within a RefListItemGroupConfiguratorProvider',
     );
   }
 

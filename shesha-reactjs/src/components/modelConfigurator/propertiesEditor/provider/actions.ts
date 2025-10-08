@@ -18,12 +18,12 @@ export const selectItemAction = createAction<string, string>(ModelActionEnums.Se
 
 export const updateChildItemsAction = createAction<IUpdateChildItemsPayload, IUpdateChildItemsPayload>(
   ModelActionEnums.UpdateChildItems,
-  (p) => p
+  (p) => p,
 );
 
 export const updateItemAction = createAction<IUpdateItemSettingsPayload, IUpdateItemSettingsPayload>(
   ModelActionEnums.UpdateItem,
-  (p) => p
+  (p) => p,
 );
 
 /* NEW_ACTION_GOES_HERE */

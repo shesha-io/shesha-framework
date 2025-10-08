@@ -155,7 +155,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       jsSetting: true,
                     },
                   ],
-                }
+                },
               )
               .addSettingsInputRow(
                 {
@@ -180,7 +180,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       defaultValue: true,
                     },
                   ],
-                }
+                },
               )
               .toJson(),
             ],

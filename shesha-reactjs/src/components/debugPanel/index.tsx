@@ -42,7 +42,7 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({ children })
           setOpen(true);
         return Promise.resolve();
       },
-    }, []
+    }, [],
   );
 
   const [position, setPosition] = useLocalStorage('debugPanelposition', 'bottom');

@@ -54,7 +54,7 @@ const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = 
             }}
           >
             <DynamicModal {...instance.props} key={instance.id} id={instance.id} isVisible={instance.isVisible} />
-          </DynamicModalInstanceContext.Provider>
+          </DynamicModalInstanceContext.Provider>,
         );
       }
     }

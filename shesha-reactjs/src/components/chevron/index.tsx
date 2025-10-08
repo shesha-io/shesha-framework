@@ -71,7 +71,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
     const handleScroll = (): void => {
       setShowLeftArrow(container.scrollLeft > 0);
       setShowRightArrow(
-        container.scrollLeft < container.scrollWidth - container.clientWidth
+        container.scrollLeft < container.scrollWidth - container.clientWidth,
       );
     };
 

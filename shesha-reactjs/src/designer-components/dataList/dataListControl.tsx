@@ -87,7 +87,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         return Promise.resolve();
       },
     },
-    []
+    [],
   );
 
   const data = useDeepCompareMemo(() => {
@@ -243,7 +243,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       model={{ ...props, hideLabel: true }}
       className={classNames(
         styles.shaDatalistComponent,
-        { horizontal: props?.orientation === 'horizontal' && allData.form?.formMode !== 'designer' } //
+        { horizontal: props?.orientation === 'horizontal' && allData.form?.formMode !== 'designer' }, //
       )}
       wrapperCol={{ md: 24 }}
     >

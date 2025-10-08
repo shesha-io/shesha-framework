@@ -90,14 +90,14 @@ export const getAllEventHandlers = <T = any>(model: IConfigurableFormComponent, 
 
 export const customDateEventHandler = (
   model: IConfigurableFormComponent,
-  context: IApplicationContext
+  context: IApplicationContext,
 ): IEventHandlers => ({
   onChange: (value: any | null, dateString: string | [string, string]) => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(
         expression,
-        addContextData(context, { dateString, value })
+        addContextData(context, { dateString, value }),
       );
     }
   },
@@ -107,7 +107,7 @@ export const customDateEventHandler = (
     if (Boolean(expression)) {
       return executeScriptSync(
         expression,
-        addContextData(context, { event })
+        addContextData(context, { event }),
       );
     }
   },
@@ -117,7 +117,7 @@ export const customDateEventHandler = (
     if (Boolean(expression)) {
       return executeScriptSync(
         expression,
-        addContextData(context, { event })
+        addContextData(context, { event }),
       );
     }
   },

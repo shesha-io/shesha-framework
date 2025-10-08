@@ -75,7 +75,7 @@ export interface IApiEndpointWithPathParams<TData> {
 }
 
 export const useMutateForEndpoint = <TData = any, TResponse = any>(
-  endpoint: IApiEndpointWithPathParams<TData>
+  endpoint: IApiEndpointWithPathParams<TData>,
 ): IUseMutateResponseFixedEndpoint<TData, TResponse> => {
   const response = useMutate<TData, TResponse>();
 

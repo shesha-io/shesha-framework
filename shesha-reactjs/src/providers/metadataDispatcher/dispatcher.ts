@@ -43,7 +43,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
       })
       : Promise.resolve(isDataPropertyMetadata(mainProperty) && isPropertiesArray(mainProperty.properties)
         ? this.#getPropertyByName(mainProperty.properties, name)
-        : undefined
+        : undefined,
       );
   };
 
@@ -149,7 +149,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
     const asyncReduce = async <T, U>(
       array: T[],
       callback: (accumulator: U, currentValue: T, index: number, array: T[]) => Promise<U | undefined>,
-      initialValue: U
+      initialValue: U,
     ): Promise<U | undefined> => {
       let accumulator: U = initialValue;
 
@@ -186,7 +186,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
     const { dataType, properties, modelType } = payload;
 
     const promises = properties.map((p) => this.getPropertyMetadata({ dataType, modelType: modelType, propertyPath: p })
-      .then<IPropertyPathWithMetadata | null>((propMeta) => propMeta ? { path: p, metadata: propMeta } : null)
+      .then<IPropertyPathWithMetadata | null>((propMeta) => propMeta ? { path: p, metadata: propMeta } : null),
     );
 
     return Promise.allSettled(promises).then((results) => {

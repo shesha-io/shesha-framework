@@ -105,7 +105,7 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
 
     groups.forEach((setting) => {
       const filteredSettings = setting.settings.filter((c) =>
-        c.config.name?.toLowerCase().includes(searchText?.toLowerCase())
+        c.config.name?.toLowerCase().includes(searchText?.toLowerCase()),
       );
       if (filteredSettings.length > 0) result.push({ ...setting, settings: filteredSettings });
     });

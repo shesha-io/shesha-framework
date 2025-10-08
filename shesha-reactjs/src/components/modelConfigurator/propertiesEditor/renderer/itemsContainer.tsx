@@ -64,7 +64,7 @@ export const ItemsContainer: FC<IItemsContainerProps> = (props) => {
           parent={props.parent}
           containerRendering={(args) => (<ItemsContainer {...args} />)}
         />
-      )
+      ),
       )}
     </ReactSortable>
   );

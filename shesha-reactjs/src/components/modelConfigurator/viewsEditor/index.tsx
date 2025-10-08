@@ -87,7 +87,7 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
             </Row>
           </Col>
         </Row>
-      )
+      ),
       )}
       <Row>
         <Col offset={5} span={8}>

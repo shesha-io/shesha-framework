@@ -106,7 +106,7 @@ export const usePinchZoom = (
   currentZoom: number,
   minZoom: number = DEFAULT_OPTIONS.minZoom,
   maxZoom: number = DEFAULT_OPTIONS.maxZoom,
-  isAutoWidth: boolean = false
+  isAutoWidth: boolean = false,
 ): MutableRefObject<HTMLDivElement> => {
   const elementRef = useRef<HTMLDivElement>(null);
   const lastDistance = useRef<number>(0);
@@ -118,7 +118,7 @@ export const usePinchZoom = (
     if (!touch1 || !touch2) return 0;
     return Math.sqrt(
       Math.pow(touch2.clientX - touch1.clientX, 2) +
-      Math.pow(touch2.clientY - touch1.clientY, 2)
+      Math.pow(touch2.clientY - touch1.clientY, 2),
     );
   }, []);
 

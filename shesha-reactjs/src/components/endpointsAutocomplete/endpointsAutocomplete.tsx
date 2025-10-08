@@ -91,7 +91,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       doFetchItems(localValue, localVerb);
     },
     // delay in ms
-    200
+    200,
   );
 
   const currentVerb = mode === 'url' ? props.httpVerb : getVerbFromValue(props.value);

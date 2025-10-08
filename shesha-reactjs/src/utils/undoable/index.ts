@@ -31,7 +31,7 @@ export const UndoableActionCreators = {
 
 export default function undoable<State>(
   reducer: Reducer<State, Action>,
-  options: IUndoableOptions
+  options: IUndoableOptions,
 ): Reducer<StateWithHistory<State>, Action> {
   const includeAction = options.includeAction ?? (() => true);
 

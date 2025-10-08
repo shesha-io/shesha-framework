@@ -69,7 +69,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
     setLoadingState({ loading: true, loadingText: 'Saving...' });
     modelConfigurationsMerge(
       { sourceId: entityConfig.id, destinationId: autocompleteResult.id, deleteAfterMerge: del },
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     )
       .then((response) => {
         if (isAjaxSuccessResponse(response)) {

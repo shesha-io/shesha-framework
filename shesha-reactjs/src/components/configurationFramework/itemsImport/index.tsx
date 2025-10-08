@@ -64,7 +64,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
 
       setPackageContent(response.data.success
         ? response.data.result
-        : undefined
+        : undefined,
       );
       payload.onSuccess({});
       setIsPackLoading(false);

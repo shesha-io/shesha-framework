@@ -30,7 +30,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
     m
       .add<IKeyInformationBarProps>(
         0,
-        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IKeyInformationBarProps
+        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IKeyInformationBarProps,
       )
       .add<IKeyInformationBarProps>(1, (prev) => migrateVisibility(prev))
       .add<IKeyInformationBarProps>(2, (prev) => removeComponents(prev))

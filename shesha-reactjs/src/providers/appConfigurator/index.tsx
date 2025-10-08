@@ -36,7 +36,7 @@ interface IUseAppConfiguratorSettingsResponse extends IAppConfiguratorModesState
 const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
   const [isFormInfoVisible, setIsFormInfoVisible] = useLocalStorage<boolean>(
     'FORM_INFO_VISIBLE',
-    AppConfiguratorModeDefaults.isInformerVisible
+    AppConfiguratorModeDefaults.isInformerVisible,
   );
   const auth = useAuthOrUndefined();
 
@@ -89,7 +89,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren> = ({ children }) => {
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
-    actionDependencies
+    actionDependencies,
   );
   //#endregion
 

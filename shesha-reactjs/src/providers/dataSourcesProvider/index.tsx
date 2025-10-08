@@ -72,7 +72,7 @@ function useDataSources(require: boolean = true): IDataSourcesProviderActionsCon
 
 function useDataSource(
   payload: IRegisterDataSourcePayload,
-  deps?: ReadonlyArray<any>
+  deps?: ReadonlyArray<any>,
 ): void {
   const { registerDataSource, unregisterDataSource } = useDataSources();
 

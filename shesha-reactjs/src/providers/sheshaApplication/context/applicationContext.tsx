@@ -27,11 +27,11 @@ export interface IApplicationActionsContext {
 }
 export const ApplicationActionsContext = createNamedContext<IApplicationActionsContext>(
   undefined,
-  'ApplicationActionsContext'
+  'ApplicationActionsContext',
 );
 export const ApplicationPublicApiContext = createNamedContext<IApplicationApi>(
   undefined,
-  'ApplicationPublicApiContext'
+  'ApplicationPublicApiContext',
 );
 
 export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProviderProps>> = ({ children }) => {
@@ -44,7 +44,7 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
 
   // inject fields from plugins
   const [contextData] = useState<IApplicationApi>(
-    () => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter, metadataDispatcher)
+    () => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter, metadataDispatcher),
   );
 
   const { loginInfo } = useAuthOrUndefined() ?? {};
@@ -69,14 +69,14 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
       // register property
       contextData.addPlugin({ name: plugin.name, data: plugin.data });
     },
-    [setPlugins]
+    [setPlugins],
   );
 
   const unregisterPlugin = useCallback(
     (pluginName: string) => {
       setPlugins((p) => p.filter((p) => p.name !== pluginName));
     },
-    [setPlugins]
+    [setPlugins],
   );
 
   const contextMetadata = useApplicationContextMetadata({ plugins }); // inject meta from plugins

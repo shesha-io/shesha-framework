@@ -45,7 +45,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
             data: { ...allData.pageContext },
           },
         ],
-        propertyMetadataAccessor
+        propertyMetadataAccessor,
       );
 
       if (response.find((f) => f?.unevaluatedExpressions?.length))

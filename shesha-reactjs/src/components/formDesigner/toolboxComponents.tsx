@@ -28,7 +28,7 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
 
     toolboxComponentGroups.forEach((group) => {
       const filteredComponents = group.components.filter((c) =>
-        c.name?.toLowerCase().includes(searchText?.toLowerCase())
+        c.name?.toLowerCase().includes(searchText?.toLowerCase()),
       );
       if (filteredComponents.length > 0) result.push({ ...group, components: filteredComponents });
     });

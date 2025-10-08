@@ -167,7 +167,7 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
 export const prepareColumn = (
   column: IConfigurableColumnsProps,
   columns: DataTableColumnDto[],
-  userConfig: IDataTableUserConfig
+  userConfig: IDataTableUserConfig,
 ): ITableColumn => {
   const userColumnId = isDataColumnProps(column) ? column.propertyName : column.id;
   const userColumn = userConfig?.columns?.find((c) => c.id === userColumnId);

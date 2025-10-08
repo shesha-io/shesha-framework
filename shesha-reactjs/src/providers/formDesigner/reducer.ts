@@ -40,7 +40,7 @@ const addComponentToFlatStructure = (
   toolboxComponentGroups: IToolboxComponentGroup[],
   formComponents: IConfigurableFormComponent[],
   containerId: string,
-  index: number
+  index: number,
 ): IFlatComponentsStructure => {
   // build all components dictionary
   const allComponents = { ...formFlatMarkup.allComponents };
@@ -107,7 +107,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
     },
     [FormActionEnums.SetFlatComponentsAction]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IFlatComponentsStructure>
+      action: ReduxActions.Action<IFlatComponentsStructure>,
     ) => {
       const { payload } = action;
 
@@ -119,7 +119,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.DataPropertyAdd]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IAddDataPropertyPayload>
+      action: ReduxActions.Action<IAddDataPropertyPayload>,
     ) => {
       const {
         payload: { propertyMetadata, index, containerId },
@@ -137,7 +137,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
             allComponents: formFlatMarkup.allComponents,
             componentRelations: formFlatMarkup.componentRelations,
           }, true);
-        }
+        },
       );
       if (!Boolean(formComponent)) return state;
 
@@ -152,7 +152,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
     },
     [FormActionEnums.ComponentAdd]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IComponentAddPayload>
+      action: ReduxActions.Action<IComponentAddPayload>,
     ) => {
       const { payload } = action;
 
@@ -217,7 +217,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.ComponentDelete]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IComponentDeletePayload>
+      action: ReduxActions.Action<IComponentDeletePayload>,
     ) => {
       const { payload } = action;
 
@@ -249,14 +249,14 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.ComponentDuplicate]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IComponentDuplicatePayload>
+      action: ReduxActions.Action<IComponentDuplicatePayload>,
     ) => {
       const { payload } = action;
 
       const cloneComponent = (
         component: IConfigurableFormComponent,
         nestedComponents: IComponentsDictionary,
-        nestedRelations: IComponentRelations
+        nestedRelations: IComponentRelations,
       ): IConfigurableFormComponent => {
         const newId = nanoid();
         const clone = { ...component, id: newId };
@@ -344,7 +344,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.ComponentUpdate]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IComponentUpdatePayload>
+      action: ReduxActions.Action<IComponentUpdatePayload>,
     ) => {
       const { payload } = action;
 
@@ -428,7 +428,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.SetValidationErrors]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IFormValidationErrors>
+      action: ReduxActions.Action<IFormValidationErrors>,
     ) => {
       const { payload } = action;
 
@@ -440,7 +440,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.UpdateChildComponents]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IUpdateChildComponentsPayload>
+      action: ReduxActions.Action<IUpdateChildComponentsPayload>,
     ) => {
       const { payload } = action;
 
@@ -482,7 +482,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.SetSelectedComponent]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<ISetSelectedComponentPayload>
+      action: ReduxActions.Action<ISetSelectedComponentPayload>,
     ) => {
       const { payload } = action;
 
@@ -494,7 +494,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.SetPreviousSelectedComponent]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<ISetSelectedComponentPayload>
+      action: ReduxActions.Action<ISetSelectedComponentPayload>,
     ) => {
       const { payload } = action;
 
@@ -506,7 +506,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.ChangeMarkup]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IFlatComponentsStructure>
+      action: ReduxActions.Action<IFlatComponentsStructure>,
     ) => {
       const { payload } = action;
 
@@ -518,7 +518,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.UpdateFormSettings]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IFormSettings>
+      action: ReduxActions.Action<IFormSettings>,
     ) => {
       const { payload } = action;
 
@@ -530,7 +530,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.ComponentUpdateSettingsValidation]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IComponentUpdateSettingsValidationPayload>
+      action: ReduxActions.Action<IComponentUpdateSettingsValidationPayload>,
     ) => {
       const { payload } = action;
 
@@ -572,7 +572,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.UpdateToolboxComponentGroups]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IToolboxComponentGroup[]>
+      action: ReduxActions.Action<IToolboxComponentGroup[]>,
     ) => {
       const { payload } = action;
 
@@ -583,7 +583,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
     },
   },
 
-  FORM_DESIGNER_CONTEXT_INITIAL_STATE
+  FORM_DESIGNER_CONTEXT_INITIAL_STATE,
 );
 
 const undoableActions: string[] = [

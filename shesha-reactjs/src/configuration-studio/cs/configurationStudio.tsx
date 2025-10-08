@@ -608,7 +608,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         icon: getIcon(
           TreeNodeType.ConfigurationItem,
           it.itemType,
-          false
+          false,
         ),
         editor: this._documentDefinitions.get(it.itemType),
       };

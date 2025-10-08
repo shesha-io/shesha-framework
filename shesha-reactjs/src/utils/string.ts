@@ -12,14 +12,14 @@ const handlePreserveConsecutiveUppercase = (decamelized: string, separator: stri
   // `data_For_USACounties` → `data_for_USACounties`
   const result = decamelized.replace(
     /([\p{Uppercase_Letter}\d])[\p{Uppercase_Letter}\d](?![\p{Uppercase_Letter}\d])/gu,
-    ($0) => $0.toLowerCase()
+    ($0) => $0.toLowerCase(),
   );
 
   // Remaining uppercase sequences will be separated from lowercase sequences.
   // `data_For_USACounties` → `data_for_USA_counties`
   return result.replace(
     /(\p{Uppercase_Letter}+)(\p{Uppercase_Letter}\p{Lowercase_Letter}+)/gu,
-    (_, $1, $2: string) => $1 + separator + (!isNullOrWhiteSpace($2) ? $2.toLowerCase() : "")
+    (_, $1, $2: string) => $1 + separator + (!isNullOrWhiteSpace($2) ? $2.toLowerCase() : ""),
   );
 };
 

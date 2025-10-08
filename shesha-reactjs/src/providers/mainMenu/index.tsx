@@ -56,7 +56,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
       // form navigation, check form permissions
       const form = formsPermission.find((x) =>
         x.module === item.actionConfiguration?.actionArguments?.formId?.module &&
-        x.name === item.actionConfiguration?.actionArguments?.formId?.name
+        x.name === item.actionConfiguration?.actionArguments?.formId?.name,
       );
       item.hidden = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
     }
@@ -141,7 +141,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
         appKey: applicationKey,
         value: value,
       },
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     )
       .then((response) => {
         return response;

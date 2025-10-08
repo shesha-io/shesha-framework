@@ -47,7 +47,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
     const nodes = items.map((item) =>
       getTreeData(item, (currentItem) => {
         expanded.push(currentItem.path);
-      })
+      }),
     );
 
     return {

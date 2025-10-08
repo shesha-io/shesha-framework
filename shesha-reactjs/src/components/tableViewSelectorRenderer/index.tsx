@@ -88,7 +88,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
     (info: { key: string }) => {
       onSelectFilter(info?.key);
     },
-    [filters, onSelectFilter]
+    [filters, onSelectFilter],
   );
 
   const menuItems = useMemo<MenuItem[]>(() => {

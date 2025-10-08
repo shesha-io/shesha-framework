@@ -31,7 +31,7 @@ const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ child
 
     const settingPromise = settingsGetValue(
       { name: settingId.name, module: settingId.module },
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     ).then((response) => {
       return response.success ? response.result : null;
     });

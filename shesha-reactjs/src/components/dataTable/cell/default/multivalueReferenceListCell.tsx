@@ -5,7 +5,7 @@ import { useReferenceList } from '@/providers/referenceListDispatcher';
 export interface IMultivalueReferenceListCellProps<D extends object = {}, V = any> extends IDataCellProps<D, V> { }
 
 const MultivalueReferenceListCellInternal = <D extends object = {}, V = any>(
-  props: IMultivalueReferenceListCellProps<D, V>
+  props: IMultivalueReferenceListCellProps<D, V>,
 ): JSX.Element => {
   const { value } = props;
   const { referenceListName, referenceListModule } = props.columnConfig;
@@ -24,7 +24,7 @@ const MultivalueReferenceListCellInternal = <D extends object = {}, V = any>(
 };
 
 export const MultivalueReferenceListCell = <D extends object = {}, V = any>(
-  props: IMultivalueReferenceListCellProps<D, V>
+  props: IMultivalueReferenceListCellProps<D, V>,
 ): JSX.Element => {
   const { value } = props;
   if (!value || !props.columnConfig) return null;

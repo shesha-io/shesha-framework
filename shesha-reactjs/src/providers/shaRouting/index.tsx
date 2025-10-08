@@ -115,7 +115,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
       },
       argumentsFormMarkup: navigateArgumentsForm,
     },
-    actionDependencies
+    actionDependencies,
   );
 
   return (

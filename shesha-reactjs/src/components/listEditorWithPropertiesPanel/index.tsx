@@ -31,7 +31,7 @@ export interface IListEditorWithPropertiesPanelProps<TItem extends ListItemWithI
 const findAndUpdateItemRecursively = <TItem extends ListItemWithId>(
   items: TItem[],
   targetId: string,
-  newValues: TItem
+  newValues: TItem,
 ): { updated: boolean; newItems: TItem[] } => {
   const newItems = [...items];
 

@@ -4,7 +4,7 @@ export function useWebStorage<T>(
   storage: 'localStorage' | 'sessionStorage',
   key: string,
   initialValue: T,
-  ignoredKeys?: string[]
+  ignoredKeys?: string[],
 ): [T, (v: T) => void] {
   // State to store our value
   // Pass initial state function to useState so logic is only executed once

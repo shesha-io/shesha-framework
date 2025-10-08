@@ -24,7 +24,7 @@ export interface IActionArgumentsEditorProps {
 
 const getDefaultFactory = (
   action: IConfigurableActionDescriptor,
-  readOnly: boolean
+  readOnly: boolean,
 ): IConfigurableActionArgumentsFormFactory => {
   const { argumentsFormMarkup: markup } = action;
   return wrapDisplayName(({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }) => {

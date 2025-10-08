@@ -20,7 +20,7 @@ export class CreateViewGenerationLogic extends BaseGenerationLogic {
     markup: any,
     _entity: IEntityMetadata,
     nonFrameworkProperties: PropertyMetadataDto[],
-    metadataHelper: FormMetadataHelper
+    metadataHelper: FormMetadataHelper,
   ): Promise<void> {
     try {
       // Add details panel - using shared function

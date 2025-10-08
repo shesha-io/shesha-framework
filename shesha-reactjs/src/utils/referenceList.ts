@@ -6,7 +6,7 @@ const getNameWithNamespace = (namespace: string | null | undefined, name: string
 
 export const getLegacyReferenceListIdentifier = (
   referenceListNamespace: string | null | undefined,
-  referenceListName: string
+  referenceListName: string,
 ): IReferenceListIdentifier | null => {
   return !referenceListNamespace && !referenceListName
     ? null

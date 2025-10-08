@@ -182,7 +182,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       onChange(
         keys?.checked.map((item) => {
           return item.toString();
-        })
+        }),
       );
   };
 
@@ -504,7 +504,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -531,7 +531,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -561,7 +561,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -588,7 +588,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   const getLoadingHint = (): string => {

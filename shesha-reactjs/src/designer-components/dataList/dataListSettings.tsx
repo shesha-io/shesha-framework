@@ -164,7 +164,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
     formTypes.map((i) => {
       return { value: i };
-    })
+    }),
   );
 
   const getGroupStyleConstants = useAvailableConstantsMetadata({
@@ -263,7 +263,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                     : formTypes
                   ).map((i) => {
                     return { value: i };
-                  })
+                  }),
                 )}
             />
           </SettingsFormItem>
@@ -391,7 +391,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                     : formTypes
                   ).map((i) => {
                     return { value: i };
-                  })
+                  }),
                 )}
             />
           </SettingsFormItem>

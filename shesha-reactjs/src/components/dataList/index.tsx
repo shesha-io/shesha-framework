@@ -131,7 +131,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       onMultiSelectRows(
         records?.map((item: any, index) => {
           return { isSelected: Boolean(selected.find((x) => x === item?.id)), index, id: item?.id, original: item };
-        })
+        }),
       );
     } else {
       if (onSelectRow ?? typeof onSelectRow === 'function') onSelectRow(index, row);
@@ -144,12 +144,12 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         ? records?.map((item: any) => {
           return item?.id;
         })
-        : []
+        : [],
     );
     onMultiSelectRows(
       records?.map((item: any, index) => {
         return { isSelected: val, index, id: item?.id, original: item };
-      })
+      }),
     );
   };
 
@@ -221,7 +221,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             entityForm.formId = e;
             entityForm.formConfiguration = response;
             isReady(entityForms.current);
-          })
+          }),
       );
 
       loadedFormId.current[`${entityForm.entityType}_${fType}`] = f;
@@ -459,7 +459,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           <div
             className={classNames(
               orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem,
-              { selected }
+              { selected },
             )}
             onClick={() => {
               onSelectRowLocal(index, item);
@@ -496,7 +496,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     return () => Promise.resolve(
       props.onNewListItemInitialize
         ? onNewListItemInitializeExecuter(allData.form, allData.contexts ?? {}, allData.globalState, allData.contexts, allData.http, moment)
-        : {}
+        : {},
     );
   }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
 
@@ -507,7 +507,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const updateContent = (): void => {
     setContent(groups
       ? groups?.map((item: RowsGroup, index) => renderGroup(item, index))
-      : records?.map((item: any, index) => renderRow(item, index, records?.length - 1 === index))
+      : records?.map((item: any, index) => renderRow(item, index, records?.length - 1 === index)),
     );
   };
 

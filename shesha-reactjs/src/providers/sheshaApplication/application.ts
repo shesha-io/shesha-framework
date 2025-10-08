@@ -269,5 +269,5 @@ export const useSheshaApplicationInstance = (args: IShaApplicationArgs): IShesha
 
 export const SheshaApplicationInstanceContext = createNamedContext<ISheshaApplicationInstance>(
   undefined,
-  'SheshaApplicationInstanceContext'
+  'SheshaApplicationInstanceContext',
 );

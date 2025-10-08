@@ -156,7 +156,7 @@ export const toBase64 = (file): Promise<string> => new Promise<string>((resolve,
 
 export function executeScript<TResult = any>(
   expression: string,
-  expressionArgs: IExpressionExecuterArguments
+  expressionArgs: IExpressionExecuterArguments,
 ): Promise<TResult> {
   return new Promise<TResult>((resolve, reject) => {
     if (!expression) reject('Expression must be defined');
@@ -360,7 +360,7 @@ const getSettingValue = (
   calcFunction: (setting: IPropertySetting, allData: any) => any,
   parentReadOnly?: boolean,
   propertyFilter?: (name: string, value: any) => boolean,
-  processedObjects?: any[]
+  processedObjects?: any[],
 ): unknown => {
   if (!processedObjects)
     processedObjects = [];
@@ -453,7 +453,7 @@ export const getActualModel = <T extends object = object>(
   allData: any,
   parentReadOnly?: boolean,
   propertyFilter?: (name: string, value: any) => boolean,
-  processedObjects?: any[]
+  processedObjects?: any[],
 ): T => {
   if (!processedObjects)
     processedObjects = [];
@@ -547,7 +547,7 @@ const getSubContainers = (component: IConfigurableFormComponent, componentRegist
  */
 export const componentsTreeToFlatStructure = (
   toolboxComponents: IToolboxComponents,
-  components: IConfigurableFormComponent[]
+  components: IConfigurableFormComponent[],
 ): IFlatComponentsStructure => {
   const result: IFlatComponentsStructure = {
     allComponents: {},
@@ -595,7 +595,7 @@ export const upgradeComponent = (
   definition: IToolboxComponent,
   formSettings: IFormSettings,
   flatStructure: IFlatComponentsStructure,
-  isNew?: boolean
+  isNew?: boolean,
 ): IConfigurableFormComponent => {
   if (!definition.migrator) return componentModel;
 
@@ -615,7 +615,7 @@ export const upgradeComponents = (
   toolboxComponents: IToolboxComponents,
   formSettings: IFormSettings,
   flatStructure: IFlatComponentsStructure,
-  isNew?: boolean
+  isNew?: boolean,
 ): void => {
   const { allComponents } = flatStructure;
   for (const key in allComponents) {
@@ -651,7 +651,7 @@ export const getClosestTableId = (context: SettingsMigrationContext): string | n
 /** Convert flat components structure to a component tree */
 export const componentsFlatStructureToTree = (
   toolboxComponents: IToolboxComponents,
-  flat: IFlatComponentsStructure
+  flat: IFlatComponentsStructure,
 ): IConfigurableFormComponent[] => {
   const tree: IConfigurableFormComponent[] = [];
 
@@ -730,7 +730,7 @@ export const componentsFlatStructureToTree = (
 export const upgradeComponentsTree = (
   toolboxComponents: IToolboxComponents,
   formSettings: IFormSettings,
-  components: IConfigurableFormComponent[]
+  components: IConfigurableFormComponent[],
 ): IConfigurableFormComponent[] => {
   const flatStructure = componentsTreeToFlatStructure(toolboxComponents, components);
   upgradeComponents(toolboxComponents, formSettings, flatStructure);
@@ -940,7 +940,7 @@ export interface IEvaluateComplexStringResult {
 export const evaluateComplexStringWithResult = (
   expression: string,
   mappings: IMatchData[],
-  requireNonEmptyResult: boolean
+  requireNonEmptyResult: boolean,
 ): IEvaluateComplexStringResult => {
   const matches = new Set([...expression?.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 
@@ -981,7 +981,7 @@ export function executeExpression<TResult>(
   expression: string,
   expressionArgs: IExpressionExecuterArguments,
   defaultValue: TResult,
-  onFail: IExpressionExecuterFailedHandler<TResult>
+  onFail: IExpressionExecuterFailedHandler<TResult>,
 ): TResult {
   if (expression) {
     try {
@@ -1023,7 +1023,7 @@ export const getFunctionExecutor = <TResult = any>(
 
 export const isComponentFiltered = (
   component: IConfigurableFormComponent,
-  propertyFilter?: (name: string) => boolean
+  propertyFilter?: (name: string) => boolean,
 ): boolean => {
   if (propertyFilter && component.propertyName) {
     const filteredOut = propertyFilter(component.propertyName);
@@ -1037,7 +1037,7 @@ export const isComponentFiltered = (
  */
 export const getFilteredComponentIds = (
   components: IComponentsDictionary,
-  propertyFilter?: (name: string) => boolean
+  propertyFilter?: (name: string) => boolean,
 ): string[] => {
   const visibleComponents: string[] = [];
   for (const key in components) {
@@ -1131,7 +1131,7 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
             rule,
             value,
             callback,
-            options?.getFormData ? options?.getFormData() : options?.formData
+            options?.getFormData ? options?.getFormData() : options?.formData,
           ),
       });
   }
@@ -1245,7 +1245,7 @@ export const replaceTags = (value: string, dictionary: any): string | null => {
 
 export const findToolboxComponent = (
   availableComponents: IToolboxComponentGroup[],
-  predicate: (component: IToolboxComponent) => boolean
+  predicate: (component: IToolboxComponent) => boolean,
 ): IToolboxComponent => {
   if (availableComponents) {
     for (const group of availableComponents) {
@@ -1306,7 +1306,7 @@ export const validateConfigurableComponentSettings = (markup: FormMarkup, values
 export function linkComponentToModelMetadata<TModel extends IConfigurableFormComponent>(
   component: IToolboxComponent<TModel>,
   model: TModel,
-  metadata: IPropertyMetadata
+  metadata: IPropertyMetadata,
 ): TModel {
   let mappedModel = model;
 
@@ -1339,7 +1339,7 @@ export const processRecursive = (
   componentsRegistration: IToolboxComponentGroup[],
   parentId: string,
   component: IConfigurableFormComponent,
-  func: ProcessingFunc
+  func: ProcessingFunc,
 ): void => {
   func(component, parentId);
 
@@ -1373,7 +1373,7 @@ export const processRecursive = (
  */
 export const cloneComponents = (
   componentsRegistration: IToolboxComponentGroup[],
-  components: IConfigurableFormComponent[]
+  components: IConfigurableFormComponent[],
 ): IConfigurableFormComponent[] => {
   const result: IConfigurableFormComponent[] = [];
 
@@ -1405,7 +1405,7 @@ export const createComponentModelForDataProperty = (
   migrator?: (
     componentModel: IConfigurableFormComponent,
     toolboxComponent: IToolboxComponent<any>
-  ) => IConfigurableFormComponent
+  ) => IConfigurableFormComponent,
 ): IConfigurableFormComponent => {
   let toolboxComponent = findToolboxComponent(components, (c) => c.type === propertyMetadata.formatting.defaultEditor);
   toolboxComponent = toolboxComponent ||
@@ -1413,7 +1413,7 @@ export const createComponentModelForDataProperty = (
       components,
       (c) =>
         Boolean(c.dataTypeSupported) &&
-        c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat })
+        c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat }),
     );
 
   if (!Boolean(toolboxComponent)) return null;
@@ -1486,7 +1486,7 @@ const convertToKeyValues = (obj: IAnyObject): IKeyValue[] => {
 
 export const evaluateKeyValuesToObjectMatchedData = <T extends any>(
   obj: IKeyValue[] | IAnyObject,
-  matches: IMatchData[]
+  matches: IMatchData[],
 ): T => {
   const queryParamObj: IAnyObject = {};
 
@@ -1557,7 +1557,7 @@ export const getStyle = (
   style: string,
   formData: any = {},
   globalState: any = {},
-  defaultStyle: object = emptyStyle
+  defaultStyle: object = emptyStyle,
 ): CSSProperties => {
   if (!style) return defaultStyle;
   // tslint:disable-next-line:function-constructor
@@ -1712,7 +1712,7 @@ const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any
 
 export const recursiveEvaluator = <TArguments = ActionParametersDictionary>(
   argumentsConfiguration: TArguments,
-  evaluationContext: EvaluationContext
+  evaluationContext: EvaluationContext,
 ): Promise<TArguments> => {
   if (!Boolean(argumentsConfiguration)) return Promise.resolve(null);
 
@@ -1724,7 +1724,7 @@ export const recursiveEvaluator = <TArguments = ActionParametersDictionary>(
 
 export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDictionary>(
   argumentsConfiguration: TArguments,
-  evaluationData: GenericDictionary
+  evaluationData: GenericDictionary,
 ): Promise<TArguments> => {
   const evaluationContext: EvaluationContext = {
     contextData: evaluationData,
@@ -1739,7 +1739,7 @@ export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDic
  */
 export const getFormActionArguments = (
   params: ActionParameters,
-  evaluationContext: GenericDictionary
+  evaluationContext: GenericDictionary,
 ): Promise<ActionArguments> => {
   if (!Boolean(params)) return Promise.resolve({});
 

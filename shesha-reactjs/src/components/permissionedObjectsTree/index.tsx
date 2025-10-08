@@ -94,7 +94,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -109,7 +109,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
         setGroupBy(arg.group);
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -124,7 +124,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
         setSearchText(arg.searchText);
         return Promise.resolve();
       },
-    }
+    },
   );
 
   const onChangeAction = (selectedRow: PermissionedObjectDto): void => {

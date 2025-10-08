@@ -257,7 +257,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     ) {
       console.error('File component is not configured');
       dispatch(
-        uploadFileErrorAction({ ...newFile, uid: '-1', status: 'error', error: 'File component is not configured' })
+        uploadFileErrorAction({ ...newFile, uid: '-1', status: 'error', error: 'File component is not configured' }),
       );
       return;
     }

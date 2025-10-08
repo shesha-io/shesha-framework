@@ -198,7 +198,7 @@ const baseTsConfig = {
         },
 
         parser: tsParser,
-        ecmaVersion: 5,
+        ecmaVersion: "latest",
         sourceType: "module",
 
         parserOptions: {

@@ -18,7 +18,7 @@ export function getButtonGroupMenuItem(
   label: React.ReactNode,
   key: React.Key,
   disabled = false,
-  children?: MenuItem[]
+  children?: MenuItem[],
 ): MenuItem {
   return {
     key,

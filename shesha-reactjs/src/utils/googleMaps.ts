@@ -31,7 +31,7 @@ export const convertFuncPointsArrayToSimplePointsArray = ({ lat, lng }: IFuncPoi
 
 export const pointsInPolygon = (
   points: SimplePointsArray | IFuncPointsArray,
-  polygon: LatLngPolygon | PointPolygon
+  polygon: LatLngPolygon | PointPolygon,
 ): boolean => {
   const pts: SimplePointsArray = !Array.isArray(points) ? convertFuncPointsArrayToSimplePointsArray(points) : points;
 

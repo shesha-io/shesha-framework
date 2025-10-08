@@ -224,7 +224,7 @@ export const getSettings = (data: any): FormMarkupWithSettings => {
                                   { name: 'moment', description: 'moment', type: '' },
                                   { name: 'http', description: 'axiosHttp', type: '' },
                                 ].map((item) => JSON.stringify(item)),
-                              }
+                              },
                               )
                               .toJson(),
                           ],
@@ -822,7 +822,7 @@ export const getSettings = (data: any): FormMarkupWithSettings => {
                           { name: 'http', description: 'axiosHttp', type: '' },
                         ].map((item) => JSON.stringify(item)),
                         jsSetting: true,
-                      }
+                      },
                       )
                       .toJson(),
                   ],

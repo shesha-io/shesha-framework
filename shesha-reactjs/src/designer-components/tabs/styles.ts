@@ -197,7 +197,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 `};
 
            }
-        `
+        `,
   );
 
   return {

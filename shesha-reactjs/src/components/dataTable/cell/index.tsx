@@ -20,7 +20,7 @@ import { RendererCell } from './rendererCell';
 export const getCellRenderer = <D extends object = {}, V = any>(
   column: ITableColumn,
   propertyMeta?: IPropertyMetadata,
-  shaForm?: IShaFormInstance
+  shaForm?: IShaFormInstance,
 ): Renderer<CellProps<D, V>> | undefined => {
   if (isDataColumn(column)) {
     // TODO: move to the column settings and use pre-=processor that adds a metadata to the column settings

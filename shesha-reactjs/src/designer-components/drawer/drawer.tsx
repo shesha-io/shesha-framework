@@ -122,7 +122,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
         return Promise.resolve();
       },
     },
-    [state]
+    [state],
   );
 
   useConfigurableAction(
@@ -136,7 +136,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
         return Promise.resolve();
       },
     },
-    [state]
+    [state],
   );
 
   const context = {

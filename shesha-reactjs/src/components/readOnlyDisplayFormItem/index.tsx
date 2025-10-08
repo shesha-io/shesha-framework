@@ -132,7 +132,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         }
 
         throw new Error(
-          `Invalid data type passed. Expected IGuidNullableEntityReferenceDto[] but found ${typeof value}`
+          `Invalid data type passed. Expected IGuidNullableEntityReferenceDto[] but found ${typeof value}`,
         );
       }
       case 'time': {

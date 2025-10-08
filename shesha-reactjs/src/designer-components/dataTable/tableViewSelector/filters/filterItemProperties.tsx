@@ -21,7 +21,7 @@ export const FilterItemProperties: FC<IFilterItemPropertiesProps> = ({ value, on
       onChange({ ...value, ...values });
     },
     // delay in ms
-    200
+    200,
   );
 
   const editor = useMemo(() => {

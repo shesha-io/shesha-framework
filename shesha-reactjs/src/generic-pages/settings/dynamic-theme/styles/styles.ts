@@ -11,7 +11,7 @@ export const useStyles = createStyles(({ css, cx }) => {
       &::-webkit-scrollbar {
         display: none;
       }
-    `
+    `,
   );
 
   const themeHeader = cx(
@@ -19,7 +19,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     css`
     font-size: 18px;
     font-weight: 700;
-    `
+    `,
   );
 
   return {

@@ -34,7 +34,7 @@ export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
     event?:
       | React.MouseEvent<HTMLElement, MouseEvent> |
       React.ChangeEvent<HTMLInputElement> |
-      React.KeyboardEvent<HTMLInputElement>
+      React.KeyboardEvent<HTMLInputElement>,
   ): void => {
     event?.stopPropagation();
     event?.preventDefault();

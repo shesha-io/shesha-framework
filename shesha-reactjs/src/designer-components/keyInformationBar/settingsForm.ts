@@ -41,7 +41,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                   validate: {
                     required: true,
                   },
-                }
+                },
               )
               .addSettingsInputRow({
                 id: 'componentName-hide-row',

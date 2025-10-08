@@ -21,7 +21,7 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
       onChange?.({ ...item, ...values });
     },
     // delay in ms
-    300
+    300,
   );
 
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus

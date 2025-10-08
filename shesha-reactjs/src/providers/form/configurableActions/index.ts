@@ -28,7 +28,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -44,7 +44,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -63,7 +63,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -77,7 +77,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -91,7 +91,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
         return shaForm.fetchData();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -108,7 +108,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction<{ data: object }>(
@@ -130,7 +130,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -145,6 +145,6 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 };

@@ -59,7 +59,7 @@ export const migrateDynamicExpression = (expression: any): object => {
         return {
           handled: false,
         };
-      }
+      },
     );
     return convertedExpression;
   } catch (error) {

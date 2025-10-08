@@ -45,7 +45,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     undefined,
     undefined,
     (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
-    undefined
+    undefined,
   );
 
   actualModel.hidden = shaForm.formMode !== 'designer' &&

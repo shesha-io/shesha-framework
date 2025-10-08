@@ -50,7 +50,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     zoom,
     DEFAULT_OPTIONS.minZoom,
     DEFAULT_OPTIONS.maxZoom,
-    autoZoom
+    autoZoom,
   );
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   }, [isOpenRight, isOpenLeft, leftSidebarProps, rightSidebarProps, allowFullCollapse]);
 
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
-    [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
+    [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft],
   );
 
   const isDesigner = formMode === 'designer';
@@ -122,14 +122,14 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'no-left-panel': !leftSidebarProps },
             { 'no-right-panel': !rightSidebarProps },
             { 'no-padding': noPadding },
-            { 'allow-full-collapse': allowFullCollapse }
+            { 'allow-full-collapse': allowFullCollapse },
           )}
         >
           <div
             ref={canvasRef}
             className={classNames(
               styles.sidebarContainerMainAreaBody,
-              { [styles.designerCanvas]: isDesigner && canZoom }
+              { [styles.designerCanvas]: isDesigner && canZoom },
             )}
             style={isDesigner && canZoom ? {
               width: designerWidth,

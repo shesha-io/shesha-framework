@@ -30,7 +30,7 @@ export const DatatableColumnsSelector: FC<IDatatableColumnsSelectorProps> = () =
             ({ header }) =>
               getSafelyTrimmedString(header)
                 ?.toLowerCase()
-                ?.includes(getSafelyTrimmedString(columnFilter)?.toLowerCase())
+                ?.includes(getSafelyTrimmedString(columnFilter)?.toLowerCase()),
           )
           : visibleColumns
         ).map(({ header, show, id }) => {

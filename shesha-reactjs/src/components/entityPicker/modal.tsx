@@ -123,7 +123,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): JSX.Element 
         { match: 'globalState', data: globalState },
         { match: 'pageContext', data: { ...pageContext?.getFull() } },
       ],
-      propertyMetadataAccessor
+      propertyMetadataAccessor,
     ).then((evaluatedFilters) => {
       let parsedFilters = evaluatedFilters;
 

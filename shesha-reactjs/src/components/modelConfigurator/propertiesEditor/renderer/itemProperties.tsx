@@ -30,7 +30,7 @@ export const ToolbarItemProperties: FC<IProps> = () => {
       updateItem({ id: selectedItemId, settings: values });
     },
     // delay in ms
-    300
+    300,
   );
 
   useEffect(() => {

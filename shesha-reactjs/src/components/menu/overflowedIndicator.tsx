@@ -11,7 +11,7 @@ interface ISidebarGroupMutate extends Omit<ISidebarGroup, "title"> {
 }
 
 export const getMutatedMenuItem = (
-  item: ISidebarGroupMutate
+  item: ISidebarGroupMutate,
 ): ISidebarMenuItem => ({
   ...item,
   title: item?.childItems?.length ? (

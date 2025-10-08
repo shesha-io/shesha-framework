@@ -41,7 +41,7 @@ export const PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE: IPropertiesEditorStateCont
 
 export const PropertiesEditorStateContext = createNamedContext<IPropertiesEditorStateContext>(
   PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
-  "PropertiesEditorStateContext"
+  "PropertiesEditorStateContext",
 );
 
 export const PropertiesEditorActionsContext = createNamedContext<IPropertiesEditorActionsContext>(undefined, "PropertiesEditorActionsContext");

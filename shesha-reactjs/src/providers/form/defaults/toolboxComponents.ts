@@ -119,7 +119,7 @@ import DividerComponent from '@/designer-components/_legacyComponents/divider';
 
 export const getToolboxComponents = (
   devMode: boolean,
-  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'>
+  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'>,
 ): IToolboxComponentGroup[] => {
   return [
     {

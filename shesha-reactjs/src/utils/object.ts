@@ -184,7 +184,7 @@ export const pickProps = <T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> =
 export const mapProps = <T extends object, K extends keyof T>(
   source: T,
   target: Partial<T>,
-  properties: K[]
+  properties: K[],
 ): void => {
   properties.forEach((prop) => {
     if (source[prop] !== undefined) {

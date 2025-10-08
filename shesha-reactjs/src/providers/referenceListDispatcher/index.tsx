@@ -108,7 +108,7 @@ const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IR
 const useReferenceListItem = (
   moduleName: string,
   listName: string,
-  itemValue?: number
+  itemValue?: number,
 ): ILoadingState<IReferenceListItem> => {
   const { getReferenceList } = useReferenceListDispatcher();
 

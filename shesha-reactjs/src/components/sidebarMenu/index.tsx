@@ -64,7 +64,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
             }
           }
         },
-      })
+      }),
     );
   }, [items, { ...executionContext }]); // use spread to get the values of the ObservableProxy fields
 

@@ -75,7 +75,7 @@ export const getSettings = (data: any): FormMarkupWithSettings => {
                   label: 'Hide',
                   jsSetting: true,
                   parentId: commonTabId,
-                }
+                },
               )
               .addSettingsInputRow({
                 id: nanoid(),

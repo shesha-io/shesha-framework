@@ -25,7 +25,7 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
       onChange?.({ ...item, ...values });
     },
     // delay in ms
-    300
+    300,
   );
 
   const editor = useMemo(() => {

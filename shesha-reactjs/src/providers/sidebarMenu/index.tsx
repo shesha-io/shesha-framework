@@ -86,7 +86,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
       // form navigation, check form permissions
       const form = formsPermission.find((x) =>
         x.module === item.actionConfiguration?.actionArguments?.formId?.module &&
-        x.name === item.actionConfiguration?.actionArguments?.formId?.name
+        x.name === item.actionConfiguration?.actionArguments?.formId?.name,
       );
       item.hidden = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
     }
@@ -96,7 +96,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     if (itemsToCheck.length > 0) {
       formConfigurationCheckPermissions(
         itemsToCheck.map((x) => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto),
-        { base: backendUrl, headers: httpHeaders }
+        { base: backendUrl, headers: httpHeaders },
       )
         .then((result) => {
           if (isAjaxSuccessResponse(result)) {

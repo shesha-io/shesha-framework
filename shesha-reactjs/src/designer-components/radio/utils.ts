@@ -34,7 +34,7 @@ export const getDataSourceList = (
   dataSource: DataSourceType,
   values: ILabelValue[],
   refList: ReferenceListItemDto[],
-  urlList: ILabelValue<any>[] = []
+  urlList: ILabelValue<any>[] = [],
 ): ILabelValue[] => {
   switch (dataSource) {
     case 'values':

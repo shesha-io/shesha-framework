@@ -36,7 +36,7 @@ class StatefulPromise<T> implements PromisedValue<T> {
         resolve: (value: T | PromiseLike<T>) => void,
         reject: (reason?: unknown) => void
       ) => void) |
-      Promise<T>
+      Promise<T>,
   ) {
     if (executorOrPromise instanceof Promise) {
       // Wrap an existing promise
@@ -67,7 +67,7 @@ class StatefulPromise<T> implements PromisedValue<T> {
                     error: innerError,
                   });
                   reject(innerError);
-                }
+                },
               );
             } else {
               this._updateState({
@@ -157,13 +157,13 @@ class StatefulPromise<T> implements PromisedValue<T> {
   // Promise-like interface
   then<TResult1 = T, TResult2 = never>(
     onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
-    onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
+    onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null,
   ): Promise<TResult1 | TResult2> {
     return this._promise.then(onfulfilled, onrejected);
   }
 
   catch<TResult = never>(
-    onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | null
+    onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | null,
   ): Promise<T | TResult> {
     return this._promise.catch(onrejected);
   }
@@ -243,7 +243,7 @@ function createStatefulPromise<T>(
   executor: (
     resolve: (value: T | PromiseLike<T>) => void,
     reject: (reason?: unknown) => void
-  ) => void
+  ) => void,
 ): StatefulPromise<T> {
   return new StatefulPromise<T>(executor);
 }

@@ -29,7 +29,7 @@ export const getCellStyleAccessor = (columnItem: ITableColumn): CellStyleFunc =>
 export const getAnchoredCellStyleAccessor = (
   row: Cell<any, any, any>[],
   cell: Cell<any>,
-  rowIndex: number
+  rowIndex: number,
 ): React.CSSProperties => {
   const anchored = getColumnAnchored((cell?.column as any)?.anchored);
 
@@ -50,7 +50,7 @@ export const getAnchoredCellStyleAccessor = (
       rightColumn.shadowPosition = totalColumns - calculateTotalColumnsOnFixed(row, 'right');
       rightColumn.shift = calculatePositionShift(row, index, totalColumns - 1)?.reduce(
         (acc, curr) => (acc as number) + curr,
-        0
+        0,
       );
     } else if (anchored?.direction === 'left') {
       leftColumn.shadowPosition = calculateTotalColumnsOnFixed(row, 'left') - 1;

@@ -52,12 +52,12 @@ const filter = (inputValue: string, path: Option[]): boolean =>
   path.some(
     (option) =>
       option.labelText.toLowerCase().indexOf(inputValue.toLowerCase()) >
-      -1
+      -1,
   );
 
 const renderDotNotation = (
   labels: string[],
-  selectedOptions: Option[]
+  selectedOptions: Option[],
 ): ReactNode => {
   return labels.map((label, index) => {
     const option = selectedOptions && index <= selectedOptions.length - 1

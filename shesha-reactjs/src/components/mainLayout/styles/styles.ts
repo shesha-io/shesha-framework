@@ -39,7 +39,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     'site-layout',
     css`
         min-height: 100vh;
-    `
+    `,
   );
   const headerPart = css`
         display: flex;
@@ -216,7 +216,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
         top: ${sheshaStyles.layoutHeaderHeight};
       }
     }
-    `
+    `,
   );
 
   const shaSiteLayoutBackgroundNoPadding = cx(css``);

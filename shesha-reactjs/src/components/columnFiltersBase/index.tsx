@@ -26,7 +26,7 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
   currentFilter,
 }) => {
   const filterableColumns = getTableDataColumns(columns).filter((c) =>
-    Boolean(currentFilter.find((f) => f.columnId === c.id))
+    Boolean(currentFilter.find((f) => f.columnId === c.id)),
   );
 
   return (
@@ -84,7 +84,7 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
           }
 
           return null;
-        }
+        },
       )}
     </div>
   );

@@ -173,7 +173,7 @@ export class DesignerToolbarSettings<T extends object = object> {
   }
 
   public addCollapsiblePanel(
-    props: ICollapsiblePanelPropsEditorType | ((data: T) => ICollapsiblePanelPropsEditorType)
+    props: ICollapsiblePanelPropsEditorType | ((data: T) => ICollapsiblePanelPropsEditorType),
   ): this {
     const obj = typeof props !== 'function' ? props : props(this.data);
     obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
@@ -242,7 +242,7 @@ export class DesignerToolbarSettings<T extends object = object> {
   }
 
   public addContextPropertyAutocomplete(
-    props: ContextPropertyAutocompleteType | ((data: T) => ContextPropertyAutocompleteType)
+    props: ContextPropertyAutocompleteType | ((data: T) => ContextPropertyAutocompleteType),
   ): this {
     return this.addProperty(props, 'contextPropertyAutocomplete');
   }
@@ -336,7 +336,7 @@ export class DesignerToolbarSettings<T extends object = object> {
   }
 
   public addConfigurableActionConfigurator(
-    props: ConfigurableActionConfiguratorType | ((data: T) => ConfigurableActionConfiguratorType)
+    props: ConfigurableActionConfiguratorType | ((data: T) => ConfigurableActionConfiguratorType),
   ): this {
     return this.addProperty(props, 'configurableActionConfigurator');
   }

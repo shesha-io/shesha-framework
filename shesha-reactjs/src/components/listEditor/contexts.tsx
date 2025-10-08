@@ -33,7 +33,7 @@ export interface IListEditorContext<TItem = any> extends IListEditorStateContext
 }
 
 export const getListEditorContextInitialState = <TItem extends any>(
-  value: TItem[]
+  value: TItem[],
 ): IListEditorStateContext<TItem> => {
   return {
     value: value,
@@ -41,7 +41,7 @@ export const getListEditorContextInitialState = <TItem extends any>(
 };
 
 export const getListEditorStateContext = <TItem extends any>(
-  initialState: IListEditorStateContext<TItem>
+  initialState: IListEditorStateContext<TItem>,
 ): Context<IListEditorStateContext<TItem>> => createNamedContext<IListEditorStateContext<TItem>>(initialState, "ListEditorStateContext");
 
 export const getListEditorActionsContext = <TItem extends any>(): Context<IListEditorActionsContext<TItem>> =>

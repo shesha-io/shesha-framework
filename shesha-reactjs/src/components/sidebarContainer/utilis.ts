@@ -12,7 +12,7 @@ function getPanelSizes(
   rightOpen: boolean,
   leftSidebarProps?: ISidebarProps,
   rightSidebarProps?: ISidebarProps,
-  allowFullCollapse?: boolean
+  allowFullCollapse?: boolean,
 ): PanelSizes {
   if (allowFullCollapse) {
     return {

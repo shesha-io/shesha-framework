@@ -197,14 +197,14 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
     {
       lazy: true,
       queryParams: getListFetcherQueryParams(entityType, null, maxResultCount, filter),
-    }
+    },
   );
 
   const valueFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, any, IGenericGetAllPayload>(
     listEndpoint.url,
     {
       lazy: true,
-    }
+    },
   );
   useEffect(() => {
     if (valueFetcher.data?.success && valueFetcher.data.result) {
@@ -286,7 +286,7 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
       listFetcher.refetch({ queryParams: getListFetcherQueryParams(entityType, localValue, maxResultCount, filter) });
     },
     // delay in ms
-    100
+    100,
   );
 
 

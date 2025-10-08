@@ -187,7 +187,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       [
         newStart?.format(pickerFormat),
         newEnd?.format(pickerFormat),
-      ]
+      ],
     );
   };
 

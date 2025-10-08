@@ -55,5 +55,5 @@ export default handleActions<ICanvasStateContext, any>(
       };
     },
   },
-  CANVAS_CONTEXT_INITIAL_STATE
+  CANVAS_CONTEXT_INITIAL_STATE,
 );

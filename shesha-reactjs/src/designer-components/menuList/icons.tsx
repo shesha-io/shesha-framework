@@ -35,5 +35,5 @@ const RebaseEditOutlinedSvg = (): JSX.Element => (
 );
 
 export const RebaseEditOutlined: FC<Partial<CustomIconComponentProps>> = (
-  props
+  props,
 ) => <Icon component={RebaseEditOutlinedSvg} {...props} />;

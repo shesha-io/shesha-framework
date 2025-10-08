@@ -86,7 +86,7 @@ const createMenuItem = (
   props: MenuButton,
   getIsVisible: VisibilityEvaluator,
   appContext: IApplicationContext,
-  form: FormInstance<any>
+  form: FormInstance<any>,
 ): MenuItem => {
   const buttonProps = props.itemType === 'item' ? (props as IButtonGroupItem) : null;
   const isDivider = buttonProps && (buttonProps.itemSubType === 'line' || buttonProps.itemSubType === 'separator');
@@ -101,7 +101,7 @@ const createMenuItem = (
       <RenderButton props={props} uuid={props.id} form={form} />,
       props.id,
       props.readOnly,
-      childItems
+      childItems,
     );
 };
 
@@ -224,7 +224,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
       <Space.Compact size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }} className={styles.shaHideEmpty}>
         <Space size={gap}>
           {filteredItems?.map((item) =>
-            (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} form={form} />)
+            (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} form={form} />),
           )}
         </Space>
       </Space.Compact>
@@ -250,7 +250,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
     props.items?.map((item) => ({ ...item, size: item.size ?? props.size ?? 'middle' })),
     props.readOnly,
     null,
-    standartActualModelPropertyFilter
+    standartActualModelPropertyFilter,
   );
   const memoizedItems = useDeepCompareMemo(() => items, [items]) ?? [];
   return (

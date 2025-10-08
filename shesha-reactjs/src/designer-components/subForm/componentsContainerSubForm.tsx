@@ -29,7 +29,7 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
       const evaluated = executeScriptSync(expression, { data: subFormData, globalState });
       return typeof evaluated === 'boolean' ? evaluated : true;
     },
-    [subFormData, globalState]
+    [subFormData, globalState],
   );
 
   return (

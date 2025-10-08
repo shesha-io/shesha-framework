@@ -125,7 +125,7 @@ const IconPicker: FC<IIconPickerProps> = ({
 
       for (const key of objectKeys) {
         filteredGroup[key] = activeGroup[key].filter((groupItem: string) =>
-          groupItem?.toLowerCase()?.includes(searchQuery?.toLowerCase())
+          groupItem?.toLowerCase()?.includes(searchQuery?.toLowerCase()),
         );
       }
       return filteredGroup;

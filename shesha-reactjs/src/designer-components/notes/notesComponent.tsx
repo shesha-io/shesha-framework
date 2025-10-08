@@ -158,10 +158,10 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
               migrateFunctionToProp(
                 migrateFunctionToProp(prev, 'ownerId', 'ownerIdExpression'),
                 'ownerType',
-                'ownerTypeExpression'
-              )
-            )
-          ) as INotesProps
+                'ownerTypeExpression',
+              ),
+            ),
+          ) as INotesProps,
       )
       .add<INotesProps>(1, (prev) => migrateVisibility(prev))
       .add<INotesProps>(2, (prev) => migrateReadOnly(prev))

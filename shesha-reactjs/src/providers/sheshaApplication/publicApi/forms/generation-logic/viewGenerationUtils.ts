@@ -17,7 +17,7 @@ export function findContainersWithPlaceholderRecursive(
   token: any,
   placeholder: string,
   results: any[],
-  visited: WeakSet<any>
+  visited: WeakSet<any>,
 ): void {
   if (!token) return;
   if (typeof token === 'object' && token !== null) {
@@ -28,7 +28,7 @@ export function findContainersWithPlaceholderRecursive(
     }
     if (Array.isArray(token)) {
       token.forEach((item) =>
-        findContainersWithPlaceholderRecursive(item, placeholder, results, visited)
+        findContainersWithPlaceholderRecursive(item, placeholder, results, visited),
       );
     } else {
       for (const key in token) {

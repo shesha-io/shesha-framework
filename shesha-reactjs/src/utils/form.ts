@@ -32,7 +32,7 @@ export const getFieldNames = (data: object): string[] => {
 export function addFormFieldsList<TData = any>(
   formData: TData,
   nonFormData: object,
-  form: FormInstance
+  form: FormInstance,
 ): IDataWithFields {
   const formFields = [];
 
@@ -121,7 +121,7 @@ export const removeGhostKeys = (form: any): any => {
 
 export const evaluateYesNo = (
   value: YesNoInherit,
-  formMode: FormMode
+  formMode: FormMode,
 ): boolean => {
   switch (value) {
     case 'yes':

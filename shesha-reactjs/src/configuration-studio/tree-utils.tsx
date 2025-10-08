@@ -34,7 +34,7 @@ const applyIcon = (node: TreeNode): void => {
     return getIcon(
       node.nodeType,
       isConfigItemTreeNode(node) ? node.itemType : undefined,
-      props.expanded
+      props.expanded,
     );
   };
 };

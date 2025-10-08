@@ -26,7 +26,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
     entity: IEntityMetadata,
     nonFrameworkProperties: PropertyMetadataDto[],
     metadataHelper: FormMetadataHelper,
-    replacements: object
+    replacements: object,
   ): Promise<void> {
     try {
       const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
@@ -105,7 +105,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
       });
 
       const keyInfoProperties = metadata.filter((x) =>
-        extensionJson.keyInformationBarProperties?.includes(x.path || x.label || '')
+        extensionJson.keyInformationBarProperties?.includes(x.path || x.label || ''),
       );
 
       if (keyInfoProperties.length === 0) {
@@ -184,7 +184,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
     const entities: IEntityMetadata[] = await Promise.all(
       extensionJson.childTablesList.map(async (childTable: string) => {
         return await metadataHelper.fetchEntityMetadataAsync(childTable);
-      })
+      }),
     );
 
     if (entities.length > 0) {

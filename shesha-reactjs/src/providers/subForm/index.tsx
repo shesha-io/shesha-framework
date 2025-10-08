@@ -155,7 +155,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         ...payload,
         components: tree,
         ...flatStructure,
-      })
+      }),
     );
   };
 
@@ -281,7 +281,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         getUrl,
         finalQueryParams,
         { base: backendUrl, headers: httpHeaders },
-        dataRequestAbortController.current.signal
+        dataRequestAbortController.current.signal,
       )
         .then((dataResponse) => {
           if (dataRequestAbortController.current?.signal?.aborted) return;
@@ -431,7 +431,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -445,7 +445,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -459,7 +459,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   //#endregion
