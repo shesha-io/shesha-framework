@@ -180,12 +180,23 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   );
 
   const data = useDeepCompareMemo(() => {
-    return isDesignMode
-      ? orientation === 'vertical'
+    // In designer mode, show real data if available and properly configured,
+    // otherwise show mock data for layout preview
+    if (isDesignMode) {
+      // If we have real data and component is configured correctly, show it
+      if (tableData && tableData.length > 0 && repository) {
+        return tableData;
+      }
+
+      // Otherwise show mock data for layout preview
+      return orientation === 'vertical'
         ? [{}]
-        : [{}, {}, {}, {}]
-      : tableData;
-  }, [isDesignMode, tableData, orientation]);
+        : [{}, {}, {}, {}];
+    }
+
+    // In live mode, always use real data
+    return tableData;
+  }, [isDesignMode, tableData, orientation, repository]);
 
   // http, moment, setFormData
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
@@ -247,6 +258,31 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       });
     };
   }, [onListItemSaveSuccessAction]);
+
+
+  // Handle form properties discovered by DataList - register them with the data source
+  const handleFormPropertiesDiscovered = useCallback((properties: string[]) => {
+    if (properties.length > 0 && dataSource?.registerConfigurableColumns) {
+      const virtualColumns = properties.map((prop, index) => ({
+        id: `datalist_form_${prop}`,
+        propertyName: prop,
+        caption: prop,
+        label: prop,
+        columnType: 'data' as const,
+        isVisible: false, // Hidden - just for data fetching
+        sortOrder: index,
+        itemType: 'item' as const,
+        allowSorting: false,
+      }));
+
+      dataSource.registerConfigurableColumns(`datalist_${props.id}`, virtualColumns);
+
+      // Refresh the data to include the new properties
+      if (dataSource.refreshTable) {
+        dataSource.refreshTable();
+      }
+    }
+  }, [dataSource, props.id]);
 
   const updater = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = getRepository();
@@ -370,6 +406,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         onListItemHover={handleListItemHover}
         onListItemSelect={handleListItemSelect}
         onSelectionChange={handleSelectionChange}
+        onFormPropertiesDiscovered={handleFormPropertiesDiscovered}
       />
     </ConfigurableFormItem>
   );

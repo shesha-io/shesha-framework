@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties, ReactElement, useMemo } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
 import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
+import { useMetadataDispatcher } from '@/providers/metadataDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
@@ -33,6 +34,37 @@ interface EntityForm {
   isFetchingFormConfiguration?: boolean;
   formConfiguration: IFormDto;
 }
+
+// Utility function to extract propertyName values from form components
+const extractPropertyNames = (components: any[]): string[] => {
+  const propertyNames: string[] = [];
+
+  const traverse = (obj: any): void => {
+    if (obj && typeof obj === 'object') {
+      // Check if this object has a propertyName
+      if (obj.propertyName && typeof obj.propertyName === 'string') {
+        propertyNames.push(obj.propertyName);
+      }
+
+      // Recursively traverse all properties
+      Object.values(obj).forEach((value) => {
+        if (Array.isArray(value)) {
+          value.forEach((item) => traverse(item));
+        } else if (value && typeof value === 'object') {
+          traverse(value);
+        }
+      });
+    }
+  };
+
+  components.forEach((component) => traverse(component));
+  return propertyNames;
+};
+
+// Utility function to check if an item is a group
+const isGroup = (item: RowOrGroup): item is RowsGroup => {
+  return item && Array.isArray((item as RowsGroup).$childs);
+};
 
 export const DataList: FC<Partial<IDataListProps>> = ({
   id,
@@ -220,6 +252,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   }, [isFetchingTableData]);
 
   const { getEntityFormId, getForm } = useConfigurationItemsLoader();
+  const { getMetadata } = useMetadataDispatcher();
 
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
@@ -263,6 +296,53 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       getForm({ formId: entityForm.formId, skipCache })
         .then((response) => {
           entityForm.formConfiguration = response;
+
+          // Extract all propertyName values recursively
+          const propertyNames = extractPropertyNames(response.markup || []);
+
+          // Get model metadata and find matching properties (similar to charts)
+          if (entityType && getMetadata && propertyNames.length > 0) {
+            getMetadata({ modelType: entityType, dataType: 'entity' })
+              .then((metaData) => {
+                if (metaData?.properties) {
+                  // Extract available property paths from metadata and convert to camelCase
+                  const modelProperties: string[] = [];
+                  const modelPropertiesCamel: string[] = [];
+                  if (Array.isArray(metaData.properties)) {
+                    metaData.properties.forEach((prop: any) => {
+                      if (prop.path) {
+                        modelProperties.push(prop.path);
+                        modelPropertiesCamel.push(toCamelCase(prop.path));
+                      }
+                    });
+                  }
+
+                  // Find matching properties (compare form camelCase with model camelCase)
+                  const matchingProperties = propertyNames.filter((formProp) => {
+                    const rootFormProp = formProp.split('.')[0];
+
+                    return modelPropertiesCamel.some((modelPropCamel) => {
+                      // Direct match: form property matches model property (both camelCase)
+                      if (formProp === modelPropCamel) return true;
+
+                      // Nested property match (e.g., customer.name -> customer matches customer property)
+                      if (formProp.includes('.') && rootFormProp === modelPropCamel) return true;
+
+                      return false;
+                    });
+                  });
+
+                  // Call onFormPropertiesDiscovered if provided by parent
+                  if (props.onFormPropertiesDiscovered) {
+                    props.onFormPropertiesDiscovered(matchingProperties);
+                  }
+                }
+              })
+              .catch((error) => {
+                console.error('Error fetching metadata:', error);
+              });
+          }
+
           isReady(entityForms.current);
         });
     } else {
@@ -390,9 +470,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     );
   };
 
-  const isGroup = (item: RowOrGroup): item is RowsGroup => {
-    return item && Array.isArray((item as RowsGroup).$childs);
-  };
 
   const groups = useDeepCompareMemo(() => {
     if (grouping?.length > 0) {

@@ -96,6 +96,9 @@ interface IDataListActions {
 
   changeSelectedIds?: (selectedIds: string[]) => void;
 
+  /** Called when form properties are discovered and need to be registered with datacontext */
+  onFormPropertiesDiscovered?: (properties: string[]) => void;
+
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;
   updateAction?: (rowIndex: number, data: any) => Promise<any>;
   createAction?: (data: any) => Promise<any>;
