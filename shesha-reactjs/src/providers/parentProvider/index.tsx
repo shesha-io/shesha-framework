@@ -133,9 +133,10 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
             <DataContextManager id={id}>
               <ConfigurableActionDispatcherProvider>
                 <DataContextProvider
-                  id={SheshaCommonContexts.FormContext}
+                  id={id}
                   name={SheshaCommonContexts.FormContext}
                   type="form"
+                  webStorageType="sessionStorage"
                   description={`${props.name || id}`}
                 >
                   {children}

@@ -1,30 +1,42 @@
 import { setValueByPropertyName } from "@/utils/object";
 import { FieldValueSetter } from '@/utils/dotnotation';
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { CreateDataAccessor, IShaDataAccessor, IShaDataWrapper } from "./shaDataAccessProxy";
-import { DataContextType } from "../contexts";
+import { ContextSetFieldValue } from "../contexts";
 import { useShaRouting } from "@/providers/shaRouting";
 import { useWebStorage } from "@/hooks";
+import { useEffectOnce } from "react-use";
+import { WebStorageType } from "./webStorageProxy";
 
-export type GetShaDataContextAccessor<TData extends object = object> = (onChange: () => void, initialData?: TData, setStorageData?: (data: TData) => void) => IShaDataAccessor<TData>;
+export type GetShaDataContextAccessor<TData extends object = object> = (
+  setFieldValue: ContextSetFieldValue<TData>,
+  setData: (changedData: TData) => void,
+  initialData?: TData,
+  setStorageData?: (data: TData) => void,
+) => IShaDataAccessor<TData>;
 
-export const GetShaContextDataAccessor = <TData extends object = object>(onChange: () => void, initialData?: TData, setStorageData?: (data: TData) => void): IShaDataAccessor<TData> => {
-  let data: TData = initialData as TData;
+export const GetShaContextDataAccessor = <TData extends object = object>(
+  setFieldValueProp: ContextSetFieldValue<TData>,
+  setDataProp: (changedData: TData) => void,
+  initialData?: TData,
+  setStorageData?: (data: TData) => void,
+): IShaDataAccessor<TData> => {
+  let data: TData = initialData ?? {} as TData;
 
   const saveWebStorage = (data: TData): void => {
     setStorageData?.(data);
   };
 
   const setFieldValue: FieldValueSetter<TData> = (propertyName, value): void => {
+    setFieldValueProp(propertyName, value);
     setValueByPropertyName(data, propertyName.toString(), value);
-    onChange();
     saveWebStorage(data);
   };
 
   const setData = (inputData: TData): void => {
     if (data !== inputData) {
       data = inputData;
-      onChange();
+      setDataProp(data);
     }
     saveWebStorage(data);
   };
@@ -35,31 +47,44 @@ export const GetShaContextDataAccessor = <TData extends object = object>(onChang
 const emptyData = {};
 
 export const useShaDataContextAccessor = <TData extends object = object>(
-  onChangeContextData: () => void,
-  type: DataContextType,
+  id: string,
+  setFieldValue: ContextSetFieldValue<TData>,
+  setData: (changedData: TData) => void,
+  webStorageType?: WebStorageType,
   getShaDataContextAccessor?: GetShaDataContextAccessor<TData>,
 ): IShaDataWrapper<TData> => {
   const storage = useRef<IShaDataWrapper<TData>>();
 
   const path = useShaRouting().router.path;
-  const key = `${type}:${path}`;
+  const key = Boolean(webStorageType) ? `${id}:${path}` : 'no-key';
 
-  const storageType = type === 'app' ? 'localStorage' : 'sessionStorage';
-  const needStore = type === 'page' || type === 'form' || type === 'app';
+  const needStore = Boolean(webStorageType);
 
-  const [storedData, setStorageData] = useWebStorage(storageType, key, {} as TData);
+  const [storedData, setStorageData] = useWebStorage(webStorageType ?? 'sessionStorage', key, {} as TData);
 
-  const getDataContextAccessor = typeof getShaDataContextAccessor === 'function'
-    ? () => getShaDataContextAccessor(onChangeContextData, needStore ? storedData : undefined, needStore ? setStorageData : undefined) as IShaDataWrapper<TData>
-    : () => GetShaContextDataAccessor<TData>(onChangeContextData, needStore ? storedData : undefined, needStore ? setStorageData : undefined) as IShaDataWrapper<TData>;
+  const getDataContextAccessor: () => IShaDataWrapper<TData> = () =>
+    typeof getShaDataContextAccessor === 'function'
+      ? getShaDataContextAccessor(
+        setFieldValue,
+        setData,
+        needStore ? storedData : undefined,
+        needStore ? setStorageData : undefined
+      ) as IShaDataWrapper<TData>
+      : GetShaContextDataAccessor<TData>(
+        setFieldValue,
+        setData,
+        needStore ? storedData : undefined,
+        needStore ? setStorageData : undefined
+      ) as IShaDataWrapper<TData>;
 
   storage.current = storage.current ?? getDataContextAccessor();
 
-  useEffect(() => {
+  useEffectOnce(() => {
     // reset context data on unmount
     return () => {
-      if (type === 'page' || type === 'form')
+      if (needStore) {
         storage.current?.setData(emptyData as TData);
+      }
     };
   });
 

@@ -68,11 +68,12 @@ export const DesignerMainArea: FC = () => {
         >
           <ParentProvider model={null} formMode="designer">
             {/* pageContext has added only to customize the designed form. It is not used as a data context.*/}
-            <DataContextProvider id="pageContext" name="pageContext" type="page">
+            <DataContextProvider id="pageContext" name="pageContext" type="page" webStorageType="sessionStorage">
               <DataContextProvider
-                id={SheshaCommonContexts.FormContext}
+                id="designerFormContext"
                 name={SheshaCommonContexts.FormContext}
                 type="form"
+                webStorageType="sessionStorage"
                 description="Form designer"
               >
                 <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>

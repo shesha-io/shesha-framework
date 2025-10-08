@@ -8,15 +8,16 @@ import { setValueByPropertyName } from "@/utils/object";
 import { IApplicationContext, useAvailableConstantsDataNoRefresh } from "../form/utils";
 import { IShaDataWrapper } from "./contexts/shaDataAccessProxy";
 import { IAnyObject } from "@/interfaces";
-import { isDefined } from "@/utils/nullables";
 import { Path } from "@/utils/dotnotation";
 import { GetShaDataContextAccessor, useShaDataContextAccessor } from "./contexts/contextDataAccessor";
+import { WebStorageType } from "./contexts/webStorageProxy";
 
 export interface IDataContextProviderProps<TData extends object> {
   id: string;
   name: string;
   description?: string | undefined;
   type: DataContextType;
+  webStorageType?: WebStorageType;
   initialData?: Promise<TData> | undefined;
   metadata?: Promise<IModelMetadata> | undefined;
   onChangeData?: ContextOnChangeData | undefined;
@@ -32,6 +33,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
     name,
     description,
     type,
+    webStorageType,
     initialData,
     metadata,
     getShaDataContextAccessor,
@@ -42,7 +44,27 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
   const allData = useRef<IApplicationContext>(undefined);
   allData.current = useAvailableConstantsDataNoRefresh({ topContextId: id });
 
-  const storage = useShaDataContextAccessor<TData>(onChangeContextData, type, getShaDataContextAccessor);
+  const setDataInternal = (changedData: TData): void => {
+    storage.setData(changedData);
+
+    if (onChangeData.current)
+      onChangeData.current(changedData, changedData);
+  };
+
+  const setFieldValue: ContextSetFieldValue<TData> = (name, value): void => {
+    const partial = setValueByPropertyName({} as TData, name.toString(), value, false) as Partial<TData>;
+    onChangeAction(partial);
+    onChangeContextData();
+  };
+
+  const setData = (changedData: TData): void => {
+    if (onChangeData.current)
+      onChangeData.current(storage.getData(), changedData);
+    onChangeAction(changedData);
+    onChangeContextData();
+  };
+
+  const storage = useShaDataContextAccessor<TData>(id, setFieldValue, setData, webStorageType, getShaDataContextAccessor);
 
   const initialDataRef = useRef<IAnyObject>(undefined);
 
@@ -61,35 +83,11 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
 
   const onChangeAction = (changedData: Partial<TData>): void => {
     if (props.onChangeAction?.actionName) {
-      const data = { ...allData.current };
-      // TODO: Alex, please check this assignment
-      // update self
-      const { contexts } = data;
-      if (isDefined(contexts))
-        contexts[name] = getData();
       executeAction({
         actionConfiguration: props.onChangeAction,
         argumentsEvaluationContext: { ...allData.current, changedData },
       });
     }
-  };
-
-  const setFieldValue: ContextSetFieldValue<TData> = (name, value): void => {
-    storage.setFieldValue(name, value);
-    const partial = setValueByPropertyName({} as TData, name.toString(), value, false) as Partial<TData>;
-    onChangeAction(partial);
-  };
-
-  const setDataInternal = (changedData: TData): void => {
-    storage.setData(changedData);
-
-    if (onChangeData.current)
-      onChangeData.current(changedData, changedData);
-  };
-
-  const setData = (changedData: TData): void => {
-    setDataInternal(changedData);
-    onChangeAction(changedData);
   };
 
   if (initialData && initialDataRef.current === undefined) {
