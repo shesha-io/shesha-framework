@@ -167,7 +167,8 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
             destroyOnHidden={true}
             classNames={{ body: styles.codeEditorModalBody }}
             className={styles.codeEditorModal}
-            width={null}
+            width="80vw"
+            centered
             footer={[
               hasValue && (
                 <Button key="clear" danger onClick={onClear} disabled={readOnly}>

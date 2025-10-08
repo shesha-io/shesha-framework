@@ -8,7 +8,7 @@ export const isDefined = <T>(value: T | null | undefined): value is NonNullable<
  * @returns True if the string is null or white space, false otherwise.
  */
 export const isNullOrWhiteSpace = (value: string | null | undefined): value is null | undefined => {
-  return value === null || value === undefined || value.trim() === '';
+  return value === null || value === undefined || (typeof value === 'string' && value.trim() === '');
 };
 
 /**

@@ -91,7 +91,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (val: number | string | null): void => {
             const newValue = val !== undefined && val !== null && model.highPrecision
-              ? parseInt(val + '', 10)
+              ? (typeof val === 'string' ? parseFloat(val) : val)
               : val;
             customEvents.onChange(newValue);
             onChange(newValue);

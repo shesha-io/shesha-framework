@@ -46,6 +46,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     showEditIcons,
     onRowDeleteSuccessAction,
     orientation = 'vertical',
+    onListItemClick,
+    onListItemHover,
+    onListItemSelect,
+    onSelectionChange,
   } = props;
   const {
     tableData,
@@ -70,8 +74,93 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const onSelectRow = useCallback((index: number, row: any) => {
     if (row) {
       setSelectedRow(index, row);
+    } else {
+      // Handle deselection - clear the selection
+      setSelectedRow(null, null);
     }
   }, [setSelectedRow]);
+
+  // Event handlers for the new events
+  const handleListItemClick = useCallback((index: number, item: any) => {
+    if (onListItemClick) {
+      const evaluationContext = {
+        data: item,
+        index,
+        selectedItem: item,
+        selectedIndex: index,
+        formData: allData.data,
+        globalState: allData.globalState,
+        contexts: allData.contexts,
+        http: httpClient,
+        moment,
+      };
+      executeAction({
+        actionConfiguration: onListItemClick,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    }
+  }, [onListItemClick, allData, httpClient, executeAction]);
+
+  const handleListItemHover = useCallback((index: number, item: any) => {
+    if (onListItemHover) {
+      const evaluationContext = {
+        data: item,
+        index,
+        selectedItem: item,
+        selectedIndex: index,
+        formData: allData.data,
+        globalState: allData.globalState,
+        contexts: allData.contexts,
+        http: httpClient,
+        moment,
+      };
+      executeAction({
+        actionConfiguration: onListItemHover,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    }
+  }, [onListItemHover, allData, httpClient, executeAction]);
+
+  const handleListItemSelect = useCallback((index: number, item: any) => {
+    if (onListItemSelect) {
+      const evaluationContext = {
+        data: item,
+        index,
+        selectedItem: item,
+        selectedIndex: index,
+        formData: allData.data,
+        globalState: allData.globalState,
+        contexts: allData.contexts,
+        http: httpClient,
+        moment,
+      };
+      executeAction({
+        actionConfiguration: onListItemSelect,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    }
+  }, [onListItemSelect, allData, httpClient, executeAction]);
+
+  const handleSelectionChange = useCallback((selectedItems: any[], selectedIndices: number[]) => {
+    if (onSelectionChange) {
+      const evaluationContext = {
+        selectedItems,
+        selectedIndices,
+        selectedIds: selectedItems
+          .map((item) => item?.id)
+          .filter((id) => id !== undefined && id !== null),
+        formData: allData.data,
+        globalState: allData.globalState,
+        contexts: allData.contexts,
+        http: httpClient,
+        moment,
+      };
+      executeAction({
+        actionConfiguration: onSelectionChange,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    }
+  }, [onSelectionChange, allData, httpClient, executeAction]);
 
   const dataListRef = useRef<any>({});
 
@@ -277,6 +366,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         deleteAction={deleter}
         actionRef={dataListRef}
         modalWidth={width ?? '60%'}
+        onListItemClick={handleListItemClick}
+        onListItemHover={handleListItemHover}
+        onListItemSelect={handleListItemSelect}
+        onSelectionChange={handleSelectionChange}
       />
     </ConfigurableFormItem>
   );

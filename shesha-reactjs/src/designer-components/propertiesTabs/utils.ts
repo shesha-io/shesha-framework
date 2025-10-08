@@ -4,7 +4,7 @@ import { ISettingsInputRowProps, isSettingsInputRow } from "../settingsInputRow"
 import { isPropertyRouterComponent } from "../propertyRouter";
 import { isDefined } from "@/utils/nullables";
 
-export const getHeaderStyles = (): IStyleType => (
+export const getHeaderStyles = (primaryColor?: string): IStyleType => (
   {
     font: {
       color: "darkslategray",
@@ -34,7 +34,7 @@ export const getHeaderStyles = (): IStyleType => (
         bottom: {
           width: "2px",
           style: "solid",
-          color: "#d9d9d9",
+          color: primaryColor || "#d9d9d9",
         },
         left: {},
       },
@@ -66,7 +66,7 @@ export const getBodyStyles = (): IStyleType => ({
 const isComponent = (component: unknown): component is IConfigurableFormComponent => isDefined(component) && "id" in component && "type" in component;
 const isComponentsContainer = (component: IConfigurableFormComponent): component is IConfigurableFormComponent & IComponentsContainer => isComponent(component) && "components" in component && Array.isArray(component.components);
 
-export const filterDynamicComponents = (components: IConfigurableFormComponent[], query: string): IConfigurableFormComponent[] => {
+export const filterDynamicComponents = (components: IConfigurableFormComponent[], query: string, primaryColor?: string): IConfigurableFormComponent[] => {
   if (!components || !Array.isArray(components)) return [];
 
 
@@ -97,7 +97,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
 
     // Handle propertyRouter
     if (isPropertyRouterComponent(c)) {
-      const filteredComponents = filterDynamicComponents(c.components, query);
+      const filteredComponents = filterDynamicComponents(c.components, query, primaryColor);
 
       return {
         ...c,
@@ -108,7 +108,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
 
     // Handle collapsiblePanel
     if (isCollapsiblePanel(c)) {
-      const contentComponents = filterDynamicComponents(c.content?.components || [], query);
+      const contentComponents = filterDynamicComponents(c.content?.components || [], query, primaryColor);
       const hasVisibleChildren = contentComponents.length > 0;
 
       return {
@@ -120,7 +120,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
         },
         ghost: false,
         collapsedByDefault: false,
-        headerStyles: getHeaderStyles(),
+        headerStyles: getHeaderStyles(primaryColor),
         // TODO: review and convert styles. I relized that types are incompatible after conversion to typed version
         // allStyles: getBodyStyles(),
         border: getBodyStyles().border,
@@ -146,7 +146,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
 
     // Handle components with nested components
     if (isComponentsContainer(c)) {
-      const filteredComponents = filterDynamicComponents(c.components, query);
+      const filteredComponents = filterDynamicComponents(c.components, query, primaryColor);
       const hasVisibleChildren = filteredComponents.length > 0;
 
       return {
