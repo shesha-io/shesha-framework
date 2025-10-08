@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
-import { Alert } from 'antd';
 import { DataList } from '@/components/dataList';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import classNames from 'classnames';
@@ -14,10 +13,6 @@ import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { IFormApi } from '@/providers/form/formApi';
 
-export const NotConfiguredWarning: FC = () => {
-  return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
-};
-
 export type OnSaveHandler = (data: object, formData: object, contexts: object, globalState: object) => Promise<object>;
 export type OnSaveSuccessHandler = (
   data: object,
@@ -27,7 +22,7 @@ export type OnSaveSuccessHandler = (
   setGlobalState: Function
 ) => void;
 
-const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
+const DataListControlInner: FC<IDataListWithDataSourceProps> = (props) => {
   const {
     dataSourceInstance: dataSource,
     onListItemSave,
@@ -234,7 +229,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         console.error('Error executing row delete success action:', error);
       }
     };
-  }, [onRowDeleteSuccessAction, httpClient]);
+  }, [onRowDeleteSuccessAction, httpClient, executeAction]);
 
 
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
@@ -245,7 +240,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       const preparedData = executer(data, form, contexts, globalState, allData.http, allData.moment);
       return Promise.resolve(preparedData);
     };
-  }, [onListItemSave]);
+  }, [onListItemSave, allData.http, allData.moment]);
 
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onListItemSaveSuccessAction)
@@ -269,7 +264,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         argumentsEvaluationContext: evaluationContext,
       });
     };
-  }, [onListItemSaveSuccessAction]);
+  }, [onListItemSaveSuccessAction, allData.http, executeAction]);
 
 
   // Handle form properties discovered by DataList - register them with the data source
@@ -360,11 +355,6 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  // Show alert only if repository is not configured
-  if (isDesignMode && !repository) {
-    return <NotConfiguredWarning />;
-  }
-
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
   if (groupingColumns?.length > 0 && orientation === "wrap") {
@@ -416,9 +406,20 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         onListItemSelect={handleListItemSelect}
         onSelectionChange={handleSelectionChange}
         onFormPropertiesDiscovered={handleFormPropertiesDiscovered}
+        isOutsideDataContext={!repository}
       />
     </ConfigurableFormItem>
   );
+};
+
+const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
+  const uniqueKey = useMemo(() => {
+    const formIdStr = typeof props.formId === 'string' ? props.formId
+      : typeof props.formId === 'object' ? `${props.formId.module ?? ''}_${props.formId.name ?? ''}` : '';
+    return `${props.dataSource ?? 'no-datasource'}_${props.entityType ?? 'no-entity'}_${formIdStr}`;
+  }, [props.dataSource, props.entityType, props.formId]);
+
+  return <DataListControlInner key={uniqueKey} {...props} />;
 };
 
 export default DataListControl;

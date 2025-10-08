@@ -37,6 +37,8 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+
+  isOutsideDataContext?: boolean;
 }
 
 export interface IDataListBaseProps extends IStyleType {

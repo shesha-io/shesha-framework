@@ -116,6 +116,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   onListItemHover,
   onListItemSelect,
   onSelectionChange,
+  isOutsideDataContext,
   ...props
 }) => {
   const { styles } = useStyles();
@@ -439,8 +440,17 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             <Popover
               content={(
                 <div style={{ maxWidth: '300px' }}>
-                  <div style={{ fontWeight: 500, marginBottom: '8px' }}>Form Template Missing</div>
-                  <div>Configure the form template in component settings to display actual data.</div>
+                  {isOutsideDataContext ? (
+                    <>
+                      <div style={{ fontWeight: 500, marginBottom: '8px' }}>Data Context Required</div>
+                      <div>This DataList component needs to be placed inside a Data Context (like a Table Context) to display actual data from your data source.</div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ fontWeight: 500, marginBottom: '8px' }}>Form Template Missing</div>
+                      <div>Configure the form template in component settings to display actual data.</div>
+                    </>
+                  )}
                 </div>
               )}
               title="Configuration Required"
