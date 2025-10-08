@@ -2,7 +2,7 @@ import { getAccessToken, removeAccessToken, saveUserToken } from '@/utils/auth';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '../sheshaApplication/contexts';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { IEntityReferenceDto, IErrorInfo, ILoginForm, toErrorInfo } from '@/interfaces';
-import { HttpClientApi } from '@/publicJsApis/httpClient';
+import { HttpClientApi, HttpResponse } from '@/publicJsApis/httpClient';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, UserLoginInfoDto } from '@/apis/session';
 import { getQueryParam, isSameUrls, removeURLParameter } from '@/utils/url';
@@ -11,7 +11,7 @@ import React from 'react';
 import { IAccessToken, IHttpHeaders } from '@/interfaces/accessToken';
 import { getLocalizationOrDefault } from '@/utils/localization';
 import { getTenantId } from '@/utils/multitenancy';
-import { HttpResponse } from '@/publicJsApis/httpClient';
+
 import {
   ASPNET_CORE_CULTURE,
   AuthenticationState,

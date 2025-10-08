@@ -1,5 +1,5 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
+
 import qb_compact_styles from './css/compact_styles.css';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {

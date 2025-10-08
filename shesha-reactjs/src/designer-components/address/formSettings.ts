@@ -4,13 +4,13 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { IAddressCompomentProps } from './models';
 import { COUNTRY_CODES } from '@/shesha-constants/country-codes';
 import { EXPOSED_VARIABLES } from './utils';
-import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
-import { fontTypes } from '../_settings/utils/font/utils';
-import { fontWeightsOptions } from '../_settings/utils/font/utils';
-import { textAlignOptions } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
-import { backgroundTypeOptions } from '../_settings/utils/background/utils';
+import { positionOptions, repeatOptions, sizeOptions, backgroundTypeOptions } from '../_settings/utils/background/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
+
+
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+
+
 import { FormMarkupWithSettings } from '@/interfaces';
 export const getSettings = (data: IAddressCompomentProps): FormMarkupWithSettings => {
   // Generate unique IDs for tabs structure

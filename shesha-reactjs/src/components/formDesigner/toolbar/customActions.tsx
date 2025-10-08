@@ -4,8 +4,8 @@ import { useFormPersister } from "@/providers/formPersisterProvider";
 import { downloadAsJson } from "@/utils/configurationFramework/actions";
 import { MenuOutlined } from "@ant-design/icons";
 import { App, Button, Dropdown, MenuProps } from "antd";
-import React from "react";
-import { FC } from "react";
+import React, { FC } from "react";
+
 
 type MenuItem = MenuProps['items'][number];
 

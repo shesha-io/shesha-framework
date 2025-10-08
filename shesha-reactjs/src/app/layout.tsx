@@ -1,5 +1,5 @@
-import React from 'react';
-import { Suspense } from 'react';
+import React, { Suspense } from 'react';
+
 import { AppProvider } from './app-provider';
 import { unstable_noStore as noStore } from 'next/cache';
 import { AntdRegistry } from '@ant-design/nextjs-registry';

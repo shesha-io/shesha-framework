@@ -1,7 +1,7 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState, FC } from 'react';
 import SearchBox from '../formDesigner/toolboxSearchBox';
 import { DataNode, EventDataNode } from 'antd/lib/tree';
-import { FC } from 'react';
+
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { Key } from 'rc-tree/lib/interface';
 import {

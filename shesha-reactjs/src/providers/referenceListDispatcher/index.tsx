@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, /* useRef,*/ useState } from 'react';
-import { IReferenceList, IReferenceListItem } from '@/interfaces/referenceList';
+import { IReferenceList, IReferenceListItem, IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { PromisedValue, StatefulPromise } from '@/utils/promises';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
@@ -8,7 +8,7 @@ import {
   ReferenceListDispatcherActionsContext,
 } from './contexts';
 import { ILoadingState } from './models';
-import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+
 import { isDefined } from '@/utils/nullables';
 
 const ReferenceListDispatcherProvider: FC<PropsWithChildren> = ({

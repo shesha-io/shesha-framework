@@ -1,6 +1,6 @@
-import { IReferenceList, IReferenceListItem } from '@/interfaces/referenceList';
+import { IReferenceList, IReferenceListItem, IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { PromisedValue } from '@/utils/promises';
-import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+
 import { createNamedContext } from '@/utils/react';
 
 export interface IGetReferenceListPayload {

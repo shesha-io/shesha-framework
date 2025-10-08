@@ -1,11 +1,10 @@
 import { DataTypes, IReferenceListIdentifier } from "@/interfaces";
 import { IEntityProperty, IMethodMetadata, IObjectMetadata, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinition, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
-import { Environment, PropertiesBuilder, StandardConstantInclusionArgs } from "@/publicJsApis/metadataBuilder";
-import { registerMetadataBuilderAction } from "./standardProperties";
-import {
+import { Environment, PropertiesBuilder, StandardConstantInclusionArgs,
   IMetadataBuilder as IPublicMetadataBuilder,
-  IObjectMetadataBuilder as IPublicObjectMetadataBuilder,
-} from '@/publicJsApis/metadataBuilder';
+  IObjectMetadataBuilder as IPublicObjectMetadataBuilder } from "@/publicJsApis/metadataBuilder";
+import { registerMetadataBuilderAction } from "./standardProperties";
+
 
 import { IMemberType, IMetadata } from '@/publicJsApis/metadata';
 import { metadataSourceCode } from '@/publicJsApis';

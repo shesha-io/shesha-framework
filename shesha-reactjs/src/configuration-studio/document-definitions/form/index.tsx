@@ -1,7 +1,7 @@
 import { FormDesigner } from "@/components";
 import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
-import { DocumentDefinition, ItemEditorProps, ProviderRendererProps } from "@/configuration-studio/models";
-import { ITEM_TYPES } from "@/configuration-studio/models";
+import { DocumentDefinition, ItemEditorProps, ProviderRendererProps, ITEM_TYPES } from "@/configuration-studio/models";
+
 import React, { ReactNode } from "react";
 import { FormToolbar } from "./toolbar";
 import { DesignerMainArea } from "@/components/formDesigner/designerMainArea";

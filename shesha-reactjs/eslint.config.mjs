@@ -372,7 +372,7 @@ const baseTsConfig = {
             markers: ["/"],
         }],
         "import-x/no-cycle": ["error", { maxDepth: Infinity }],
-        //"import-x/no-duplicates": "error",
+        "import-x/no-duplicates": "error",
         "import-x/no-self-import": "error",
         "import-x/no-unresolved": "error",
     }

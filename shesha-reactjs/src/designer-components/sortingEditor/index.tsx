@@ -4,8 +4,8 @@ import React from 'react';
 import { GroupOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/index';
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { evaluateString } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings, evaluateString } from '@/providers/form/utils';
+
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator/index';
 import { MetadataProvider } from '@/providers/index';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';

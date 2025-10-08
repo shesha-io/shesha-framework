@@ -4,8 +4,8 @@ import GenericOutlined from '@/icons/genericOutlined';
 import { JsonOutlined } from '@/icons/jsonOutlined';
 import { DataTypes, ObjectFormats } from '@/interfaces/dataTypes';
 import { IModelMetadata, IPropertyMetadata, isEntityMetadata, isEntityReferencePropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
-import { camelcaseDotNotation, getNumberFormat } from '@/utils/string';
-import { toCamelCase } from '../string';
+import { camelcaseDotNotation, getNumberFormat, toCamelCase } from '@/utils/string';
+
 import React, { ReactNode } from 'react';
 import { ProductOutlined } from '@ant-design/icons';
 

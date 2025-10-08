@@ -4,7 +4,7 @@ import React, { CSSProperties } from 'react';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { ITextTypographyProps } from './models';
+import { ITextTypographyProps, FONT_SIZES } from './models';
 import TypographyComponent from './typography';
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -12,7 +12,7 @@ import { getSettings } from './settingsForm';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles, remToPx } from './utils';
-import { FONT_SIZES } from './models';
+
 
 const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   type: 'text',

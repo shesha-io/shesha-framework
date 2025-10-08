@@ -1,5 +1,5 @@
-import { CSSProperties, FC, useEffect, useMemo, useRef, useState } from "react";
-import React from "react";
+import React, { CSSProperties, FC, useEffect, useMemo, useRef, useState } from "react";
+
 import { Button, Form, FormInstance } from "antd";
 import ConfigurableButton from "@/designer-components/button/configurableButton";
 import { pickStyleFromModel, StyleBoxValue, useTheme } from "@/index";

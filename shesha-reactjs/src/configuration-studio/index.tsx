@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
-import { Divider, Splitter } from 'antd';
+import { Divider, Splitter, Layout } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/workArea';
 import { NewButton } from '@/configuration-studio/components/new-button';
 import { ConfigurationItemMenu } from '@/configuration-studio/components/item-menu';
 import { ConfigurationStudioProvider } from '@/configuration-studio/cs/contexts';
-import { Layout } from 'antd';
+
 import { useStyles } from './styles';
 import Image from 'next/image';
 import { UserProfileBlock } from './components/user-profile-dropdown';

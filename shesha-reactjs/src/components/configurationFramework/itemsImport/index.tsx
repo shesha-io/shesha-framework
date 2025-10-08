@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useState } from 'react';
+import React, { MutableRefObject, useState, FC } from 'react';
 import { appendFormData } from '@/utils/form';
 import {
   DeleteOutlined,
@@ -6,11 +6,11 @@ import {
   InboxOutlined,
   LoadingOutlined,
 } from '@ant-design/icons';
-import { FC } from 'react';
+
 import { Form, Spin, Upload } from 'antd';
 import { nanoid } from '@/utils/uuid';
-import { RcFile } from 'antd/lib/upload/interface';
-import { UploadFile } from 'antd/lib/upload/interface';
+import { RcFile, UploadFile } from 'antd/lib/upload/interface';
+
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import { useHttpClient } from '@/providers';
 import { useStyles } from './styles/styles';
