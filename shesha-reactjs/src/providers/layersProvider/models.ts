@@ -53,6 +53,19 @@ export interface ILayerGroup extends ILayerGroupItemBase {
   childItems?: LayerGroupItemProps[];
 }
 
+export interface ICalendarEvent {
+  id: string;
+  start: Date;
+  end: Date;
+  title: string;
+  icon?: string;
+  showIcon?: boolean;
+  color?: string;
+  iconColor?: string;
+  onDblClick?: IConfigurableActionConfiguration;
+  onSelect?: IConfigurableActionConfiguration;
+  [key: string]: any; // For additional layer-specific properties
+}
 
 export interface ICalendarLayersProps {
   id: string;
@@ -78,7 +91,7 @@ export interface ICalendarLayersProps {
   filters: { [key in string]: any };
   useQuickView?: boolean;
   quickViewForm?: FormIdentifier;
-  markers?: any[];
+  events?: ICalendarEvent[];
   onSelect?: IConfigurableActionConfiguration;
   onDblClick?: IConfigurableActionConfiguration;
   onSlotClick?: IConfigurableActionConfiguration;

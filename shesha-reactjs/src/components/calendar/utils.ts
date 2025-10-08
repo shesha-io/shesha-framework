@@ -10,14 +10,14 @@ export const parseIntOrDefault = (input: any, defaultValue: number = 0): number 
   return isNaN(parsed) ? defaultValue : parsed;
 };
 
-export const getLayerMarkerPoints = (
+export const getLayerEventItems = (
   item: ICalendarLayersProps,
   layerDataItem: { [x: string]: any }[] | { [x: string]: any },
 ) => {
-  let markers;
+  let events;
   const { startTime, endTime , title, icon, iconColor , showIcon, color, onDblClick, onSelect, } = item;
   if (Array.isArray(layerDataItem)) {
-    markers = layerDataItem
+    events = layerDataItem
       .filter((i) => i?.[startTime] && i?.[endTime])
       .map((j) => ({
         id: j?.id,
@@ -33,7 +33,7 @@ export const getLayerMarkerPoints = (
         ...j,
       }));
   } else {
-    markers = [
+    events = [
       {
         start: new Date(layerDataItem?.[startTime]),
         end: new Date(layerDataItem?.[endTime]),
@@ -41,17 +41,17 @@ export const getLayerMarkerPoints = (
       },
     ];
   }
-  return { ...item, markers };
+  return { ...item, events };
 };
 
-export const getLayerMarkers = (layers: ICalendarLayersProps[], layerData: { [x: string]: any }[]): ICalendarLayersProps[] =>
+export const getLayerEventsData = (layers: ICalendarLayersProps[], layerData: { [x: string]: any }[]): ICalendarLayersProps[] =>
   (layers || []).map((item, index) => {
     const layerDataItem = (layerData[index] as any[]) || [];
 
-    return getLayerMarkerPoints(item, layerDataItem);
+    return getLayerEventItems(item, layerDataItem);
   });
 
-export const getLayerMarkerOptions = (layers: ICalendarLayersProps[]) =>
+export const getLayerOptions = (layers: ICalendarLayersProps[]) =>
   (layers || [])
     .filter((item) => item.visible)
     .map((i) => ({
@@ -91,10 +91,10 @@ export const getCalendarRefetchParams = (param: ICalendarLayersProps, filter: st
   };
 };
 
-export const getMarkerPoints = (layerMarker: ICalendarLayersProps[], checked: string[]) =>
+export const getLayerEvents = (layerEvents: ICalendarLayersProps[], checked: string[]) =>
   checked
     .map(
-      (item) => layerMarker.find(({ id }) => id === item)?.markers as any[],
+      (item) => layerEvents.find(({ id }) => id === item)?.events as any[],
     )
     .filter((i) => i)
     .reduce((prev, curr) => [...(prev || []), ...(curr || [])], []);
