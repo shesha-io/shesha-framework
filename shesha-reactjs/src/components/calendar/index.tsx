@@ -7,7 +7,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useDeepCompareEffect } from 'react-use';
 import { EventComponent } from './eventComponent';
 import { useCalendarLayers } from './hooks';
-import { getLayerOptions, getLayerEvents } from './utils';
+import { getLayerOptions, getLayerEvents, isDateDisabled, getDayStyles } from './utils';
+import { useCalendarStyles } from './styles/styles';
 import {
   evaluateString,
   executeScript,
@@ -42,6 +43,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const { executeAction } = useConfigurableActionDispatcher();
   const allData = useAvailableConstantsData();
   const { theme } = useTheme();
+  const { styles: calendarStyles } = useCalendarStyles();
   const { backendUrl } = useSheshaApplication();
   const httpClient = useHttpClient();
   const { data } = useFormData();
@@ -117,32 +119,13 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     };
   }, []);
 
-  const isDateDisabled = (date: Date): boolean => {
-    // Reset time to start of day for accurate date comparison
-    const dateToCheck = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-    if (minDate) {
-      const minDateObj = new Date(minDate);
-      const minDateReset = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
-      if (dateToCheck < minDateReset) return true;
-    }
-
-    if (maxDate) {
-      const maxDateObj = new Date(maxDate);
-      const maxDateReset = new Date(maxDateObj.getFullYear(), maxDateObj.getMonth(), maxDateObj.getDate());
-      if (dateToCheck > maxDateReset) return true;
-    }
-
-    return false;
-  };
-
   const onChange = (checked: string[]) => {
     setEvents(getLayerEvents(layerEvents, checked as string[]));
   };
 
   const handleCustomSelect = (event: ICalendarLayersProps) => {
     // Prevent selection if the event date is disabled
-    if (event.startTime && isDateDisabled(new Date(event.startTime))) {
+    if (event.startTime && isDateDisabled(new Date(event.startTime), minDate, maxDate)) {
       return;
     }
 
@@ -174,7 +157,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
 
   const handleCustomDoubleClick = (event: ICalendarLayersProps) => {
     // Prevent double click if the event date is disabled
-    if (event.startTime && isDateDisabled(new Date(event.startTime))) {
+    if (event.startTime && isDateDisabled(new Date(event.startTime), minDate, maxDate)) {
       return;
     }
 
@@ -213,7 +196,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
 
   const handleSlotClick = (slotInfo: SlotInfo) => {
     // Prevent slot click if the date is disabled
-    if (isDateDisabled(slotInfo.start)) {
+    if (isDateDisabled(slotInfo.start, minDate, maxDate)) {
       return;
     }
 
@@ -228,25 +211,23 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   };
 
   const menu = (
-    <Menu style={{ display: 'block', padding: '20px', opacity: 0.9 }}>
+    <Menu className={calendarStyles.calendarMenu}>
       <Checkbox.Group options={getLayerOptions(items)} onChange={onChange} defaultValue={defaultVisibleLayers} />
     </Menu>
   );
 
   const renderLegend = () => (
-    <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+    <div className={calendarStyles.calendarLegendContainer}>
       {items?.map((layer) =>
         layer.showLegend ? (
-          <div key={layer.id} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <div key={layer.id} className={calendarStyles.calendarLegendItem}>
             <div
+              className={calendarStyles.calendarLegendColor}
               style={{
-                width: '12px',
-                height: '12px',
                 backgroundColor: (layer.color as any) || primaryColor,
-                borderRadius: '2px',
               }}
             />
-            <span style={{ fontSize: '14px' }}>{layer.label}</span>
+            <span className={calendarStyles.calendarLegendLabel}>{layer.label}</span>
           </div>
         ) : null,
       )}
@@ -254,14 +235,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   );
 
   const renderHeader = () => (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '10px',
-      }}
-    >
+    <div className={calendarStyles.calendarHeader}>
       {renderLegend()}
       <Dropdown overlay={menu}>
         <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
@@ -270,32 +244,6 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       </Dropdown>
     </div>
   );
-
-  const getDayStyles = (newDate: Date) => {
-    const dateToCheck = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate());
-    const minDateObj = minDate ? new Date(minDate) : null;
-    const maxDateObj = maxDate ? new Date(maxDate) : null;
-
-    if (minDateObj) {
-      const minDateReset = new Date(minDateObj.getFullYear(), minDateObj.getMonth(), minDateObj.getDate());
-      if (dateToCheck < minDateReset) {
-        return {
-          style: { backgroundColor: '#d9d9d9', color: '#666666', cursor: 'not-allowed' },
-        };
-      }
-    }
-
-    if (maxDateObj) {
-      const maxDateReset = new Date(maxDateObj.getFullYear(), maxDateObj.getMonth(), maxDateObj.getDate());
-      if (dateToCheck > maxDateReset) {
-        return {
-          style: { backgroundColor: '#d9d9d9', color: '#666666', cursor: 'not-allowed', opacity: 0.6 },
-        };
-      }
-    }
-
-    return {};
-  };
 
   if (!displayPeriod?.length) {
     return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Selected Calendar Views!" />;
@@ -326,7 +274,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
         components={{
           event: EventComponent,
         }}
-        dayPropGetter={getDayStyles}
+        dayPropGetter={(date: Date) => getDayStyles(date, minDate, maxDate)}
       />
     </>
   );
