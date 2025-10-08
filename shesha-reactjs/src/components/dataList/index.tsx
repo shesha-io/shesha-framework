@@ -322,15 +322,12 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
                   // Find matching properties (compare form camelCase with model camelCase)
                   const matchingProperties = propertyNames.filter((formProp) => {
-                    const rootFormProp = formProp.split('.')[0];
+                    const formPropCamel = toCamelCase(formProp);
+                    const rootFormPropCamel = toCamelCase(formProp.split('.')[0]);
 
                     return modelPropertiesCamel.some((modelPropCamel) => {
-                      // Direct match: form property matches model property (both camelCase)
-                      if (formProp === modelPropCamel) return true;
-
-                      // Nested property match (e.g., customer.name -> customer matches customer property)
-                      if (formProp.includes('.') && rootFormProp === modelPropCamel) return true;
-
+                      if (formPropCamel === modelPropCamel) return true;
+                      if (formProp.includes('.') && rootFormPropCamel === modelPropCamel) return true;
                       return false;
                     });
                   });
