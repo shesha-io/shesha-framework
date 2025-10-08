@@ -333,9 +333,11 @@ export class ConfigurationLoader implements IConfigurationLoader {
     const key = this.getExistingConfigRequestKey(id, topLevelModule);
     requests[key] = promise;
     promise.catch((e) => {
-      // remove request to be able to retry
-      if (requests[key] === promise)
-        requests[key] = undefined;
+      // schedule removal of current request from cache after 10 seconds
+      setTimeout(() => {
+        if (requests[key] === promise)
+          requests[key] = undefined;
+      }, 10000);
       throw e;
     });
   };
