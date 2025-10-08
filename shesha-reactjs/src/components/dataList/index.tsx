@@ -23,6 +23,7 @@ import DataListItemCreateModal from './createModal';
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
+import { useStyles as useTableStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
@@ -118,6 +119,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   ...props
 }) => {
   const { styles } = useStyles();
+  const { styles: tableStyles } = useTableStyles();
   const { theme } = useTheme();
   let skipCache = false;
 
@@ -446,6 +448,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               )}
               title="Configuration Required"
               trigger={['hover', 'click']}
+              rootClassName={tableStyles.dataListHintPopover}
+              classNames={{
+                body: tableStyles.dataListHintPopover,
+              }}
             >
               <InfoCircleOutlined style={{ color: theme.application.warningColor, cursor: 'pointer' }} />
             </Popover>
@@ -736,6 +742,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   return (
     <>
+      <style>
+        {tableStyles.quickSearchPopoverArrowStyles}
+      </style>
       {createModalOpen && createFormInfo?.current?.formConfiguration && (
         <DataListItemCreateModal
           id={id}

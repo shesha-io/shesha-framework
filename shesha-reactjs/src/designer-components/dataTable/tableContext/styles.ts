@@ -150,6 +150,11 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         border-radius: 8px !important;
     `);
 
+  const dataListHintPopover = cx("sha-data-list-hint-popover", css`
+        background-color:rgb(214, 214, 214) !important;
+        border-radius: 8px !important;
+    `);
+
   const quickSearchPopoverArrowStyles = `
     .ant-popover.sha-quick-search-hint-popover .ant-popover-arrow::before,
     .ant-popover.sha-quick-search-hint-popover .ant-popover-arrow::after {
@@ -161,6 +166,10 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     }
     .ant-popover.sha-table-pager-hint-popover .ant-popover-arrow::before,
     .ant-popover.sha-table-pager-hint-popover .ant-popover-arrow::after {
+      background-color: rgb(214, 214, 214) !important;
+    }
+    .ant-popover.sha-data-list-hint-popover .ant-popover-arrow::before,
+    .ant-popover.sha-data-list-hint-popover .ant-popover-arrow::after {
       background-color: rgb(214, 214, 214) !important;
     }
   `;
@@ -205,6 +214,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     quickSearchHintPopover,
     tableViewSelectorHintPopover,
     tablePagerHintPopover,
+    dataListHintPopover,
     quickSearchPopoverArrowStyles,
     quickSearchContainer,
     tablePagerContainer,
