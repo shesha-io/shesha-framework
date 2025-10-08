@@ -34,4 +34,9 @@ export interface IDataListInlineEditableProps {
   cardHeight?: string;
   cardSpacing?: string;
   showBorder?: boolean;
+
+  onListItemClick?: IConfigurableActionConfiguration;
+  onListItemHover?: IConfigurableActionConfiguration;
+  onListItemSelect?: IConfigurableActionConfiguration;
+  onSelectionChange?: IConfigurableActionConfiguration;
 }

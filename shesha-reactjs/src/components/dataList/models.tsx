@@ -99,6 +99,11 @@ interface IDataListActions {
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;
   updateAction?: (rowIndex: number, data: any) => Promise<any>;
   createAction?: (data: any) => Promise<any>;
+
+  onListItemClick?: (index: number, item: any) => void;
+  onListItemHover?: (index: number, item: any) => void;
+  onListItemSelect?: (index: number, item: any) => void;
+  onSelectionChange?: (selectedItems: any[], selectedIndices: number[]) => void;
 }
 
 export interface Row {
