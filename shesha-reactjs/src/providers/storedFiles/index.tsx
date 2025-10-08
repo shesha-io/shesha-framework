@@ -200,7 +200,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           uid: '-1',
           status: 'error',
           error: 'File list component is not configured',
-        })
+        }),
       );
       return;
     }

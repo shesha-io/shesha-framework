@@ -15,7 +15,7 @@ function recFindByExt(base: string, ext: string, files: string[] = null, result:
           result.push(newbase);
         }
       }
-    }
+    },
   );
   return result;
 }

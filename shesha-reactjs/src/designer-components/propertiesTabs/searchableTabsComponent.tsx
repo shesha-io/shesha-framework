@@ -139,7 +139,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   useEffect(() => {
     if (searchQuery && newFilteredTabs.length > 0) {
       const firstVisibleTab = newFilteredTabs.find((tab) =>
-        Array.isArray(tab.components) ? tab.components.length > 0 : !!tab.components
+        Array.isArray(tab.components) ? tab.components.length > 0 : !!tab.components,
       );
       if (firstVisibleTab && firstVisibleTab.key !== activeTabKey) {
         setActiveTabKey(firstVisibleTab.key);

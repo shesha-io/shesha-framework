@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, FC } from 'react';
 import { CustomFormSettingEditor } from './customFormSettingEditor';
 import { Empty } from 'antd';
-import { FC } from 'react';
+
 import { GenericSettingEditor } from './genericSettingEditor';
 import { SettingValue } from './provider/models';
 import { useSettingsEditor } from './provider';

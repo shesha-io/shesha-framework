@@ -98,7 +98,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
 
     const promises = containers.map((prefix) =>
       getContainerMetadata({ metadata: metadata, containerPath: prefix })
-        .then((response) => getPropertiesFromMeta(response, prefix))
+        .then((response) => getPropertiesFromMeta(response, prefix)),
     );
 
     Promise.allSettled(promises).then((results) => {

@@ -1,6 +1,6 @@
 import { AutoComplete, Empty, Spin, Typography } from 'antd';
-import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import { FC } from 'react';
+import React, { ReactNode, useEffect, useMemo, useRef, useState, FC } from 'react';
+
 import { useGet } from '@/hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import { GENERIC_ENTITIES_ENDPOINT, LEGACY_REFERENCE_LISTS_MODULE_NAME } from '@/shesha-constants';
@@ -147,14 +147,14 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
     {
       lazy: true,
       queryParams: getListFetcherQueryParams(null, maxResultCount),
-    }
+    },
   );
 
   const valueFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, any, IGenericGetAllPayload>(
     `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
     {
       lazy: true,
-    }
+    },
   );
   useEffect(() => {
     if (valueFetcher.data?.success && valueFetcher.data.result) {
@@ -228,7 +228,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
       listFetcher.refetch({ queryParams: getListFetcherQueryParams(localValue, maxResultCount) });
     },
     // delay in ms
-    100
+    100,
   );
 
 

@@ -125,6 +125,6 @@ export const useExecuteScriptAction = (): void => {
         return executeScript(actionArgs.expression, context);
       },
     },
-    []
+    [],
   );
 };

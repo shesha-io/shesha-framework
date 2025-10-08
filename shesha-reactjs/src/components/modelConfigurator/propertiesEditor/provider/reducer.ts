@@ -40,7 +40,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
   {
     [ModelActionEnums.AddItem]: (
       state: IPropertiesEditorStateContext,
-      action: ReduxActions.Action<IAddItemPayload | null>
+      action: ReduxActions.Action<IAddItemPayload | null>,
     ) => {
       const { payload } = action;
 
@@ -71,7 +71,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 
     [ModelActionEnums.DeleteItem]: (
       state: IPropertiesEditorStateContext,
-      action: ReduxActions.Action<string>
+      action: ReduxActions.Action<string>,
     ) => {
       const { payload } = action;
 
@@ -86,7 +86,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 
     [ModelActionEnums.SelectItem]: (
       state: IPropertiesEditorStateContext,
-      action: ReduxActions.Action<string>
+      action: ReduxActions.Action<string>,
     ) => {
       const { payload } = action;
 
@@ -98,7 +98,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 
     [ModelActionEnums.UpdateItem]: (
       state: IPropertiesEditorStateContext,
-      action: ReduxActions.Action<IUpdateItemSettingsPayload>
+      action: ReduxActions.Action<IUpdateItemSettingsPayload>,
     ) => {
       const { payload } = action;
 
@@ -186,7 +186,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 
     [ModelActionEnums.UpdateChildItems]: (
       state: IPropertiesEditorStateContext,
-      action: ReduxActions.Action<IUpdateChildItemsPayload>
+      action: ReduxActions.Action<IUpdateChildItemsPayload>,
     ) => {
       const {
         payload: { index, childs: childIds },
@@ -238,7 +238,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
     },
   },
 
-  PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE
+  PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
 );
 
 export default modelReducer;

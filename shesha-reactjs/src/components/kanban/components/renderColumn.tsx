@@ -120,7 +120,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
         });
       });
     },
-    [allData, executeAction]
+    [allData, executeAction],
   );
 
   const handleUpdate = async (evt: any): Promise<void> => {
@@ -134,7 +134,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
         to: { dataset: { columnId: targetColumn.id, targetColumn: targetColumn } },
         dragged: { dataset: { id: taskId, value: draggedTask[props.groupingProperty] } },
       },
-      targetColumn
+      targetColumn,
     );
 
     if (!canUpdate) {

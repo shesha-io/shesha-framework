@@ -47,7 +47,7 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       onChange?.({ ...item, ...values });
     },
     // delay in ms
-    300
+    300,
   );
 
   const linkToModelMetadata = (metadata: IPropertyMetadata): void => {

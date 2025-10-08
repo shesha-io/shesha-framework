@@ -45,7 +45,7 @@ ChartJS.register(
   LineElement,
   PointElement,
   LinearScale,
-  Legend
+  Legend,
 );
 
 const PieChart = ({ data }: IPieChartProps): JSX.Element => {

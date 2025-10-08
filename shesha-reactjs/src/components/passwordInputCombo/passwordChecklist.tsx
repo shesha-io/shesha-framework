@@ -11,7 +11,7 @@ interface IProps {
 export const PasswordChecklist: FC<IProps> = ({ password, passwordLength = 4 }) => {
   const { hasEightChars, hasLowerCaseChar, hasNumericChar, hasSpecialChar, hasUpperCaseChar } = getPasswordValidations(
     password,
-    passwordLength
+    passwordLength,
   );
 
   return (

@@ -31,7 +31,7 @@ export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyl
           color: #ad393981;
         }
       }
-    `
+    `,
   );
 
   return {

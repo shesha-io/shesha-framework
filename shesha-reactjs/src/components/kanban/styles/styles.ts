@@ -22,7 +22,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
      `
         border: none !important;
         `}
-    `
+    `,
   );
 
   const combinedHeaderStyle = cx(
@@ -50,7 +50,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
         : `
                transform: rotate(360deg);
            `}
-    `
+    `,
   );
 
   const taskContainer = cx(
@@ -61,7 +61,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
       &:hover .three-dots {
         opacity: 1;
       }
-    `
+    `,
   );
 
   const noTask = cx(
@@ -74,7 +74,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
       border: 1px dashed #d9d9d9;
       border-radius: 5px;
       display: block;
-    `
+    `,
   );
 
   const container = cx(
@@ -89,7 +89,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
       /* Hide scrollbar for IE, Edge and Firefox */
       -ms-overflow-style: none; /* IE and Edge */
       scrollbar-width: none; /* Firefox */
-    `
+    `,
   );
 
   const threeDots = cx(
@@ -102,7 +102,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
       z-index: 10;
       opacity: 0;
       transition: opacity 0.3s ease;
-    `
+    `,
   );
 
   return {

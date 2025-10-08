@@ -91,7 +91,7 @@ export const useChartFilters = (model: IChartProps): UseChartFiltersResult => {
       const response = evaluateDynamicFiltersSync(
         filters,
         match,
-        metaData?.properties
+        metaData?.properties,
       );
 
       // Combine multiple evaluated filters using 'and' operator

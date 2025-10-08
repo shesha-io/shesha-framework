@@ -13,5 +13,5 @@ export enum SettingsActionEnums {
 
 export const loadSettingAction = createAction<ILoadSettingPayload, ILoadSettingPayload>(
   SettingsActionEnums.LoadSettingRequest,
-  (p) => p
+  (p) => p,
 );

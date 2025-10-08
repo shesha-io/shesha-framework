@@ -1,7 +1,7 @@
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import React, { MutableRefObject, useMemo, useState } from 'react';
-import { FC } from 'react';
+import React, { MutableRefObject, useMemo, useState, FC } from 'react';
+
 import {
   Button,
   Card,

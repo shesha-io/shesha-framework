@@ -1,13 +1,12 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { FC, useState } from 'react';
+import React, { FC, useState,
+  useEffect,
+  useMemo } from 'react';
 import { ISettingEditorWithValueProps } from './models';
 import { ISettingIdentifier } from './provider/models';
 import { useSettingsEditor } from './provider';
-import React, {
-  useEffect,
-  useMemo,
-} from 'react';
+
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
 export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props) => {

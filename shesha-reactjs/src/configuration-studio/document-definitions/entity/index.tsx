@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
-import { DocumentDefinition, ItemEditorProps, ProviderRendererProps } from "@/configuration-studio/models";
-import { ITEM_TYPES } from "@/configuration-studio/models";
+import { DocumentDefinition, ItemEditorProps, ProviderRendererProps, ITEM_TYPES } from "@/configuration-studio/models";
+
 import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
 import { EntityToolbar } from "./toolbar";
 import { Form } from "antd";

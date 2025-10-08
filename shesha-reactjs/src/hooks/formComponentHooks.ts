@@ -176,7 +176,7 @@ export function useActualContextExecutionExecutor<T = any>(executor: (context: a
 };
 
 export const useFormComponentStyles = <TModel>(
-  model: TModel & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>
+  model: TModel & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>,
 ): IFormComponentStyles => {
   const app = useSheshaApplication();
   const jsStyle = useActualContextExecution(model.style, null, {}); // use default style if empty or error
@@ -192,7 +192,7 @@ export const useFormComponentStyles = <TModel>(
         backgroundPosition: background?.position,
         backgroundRepeat: background?.repeat,
       }
-      : getBackgroundStyle(background, jsStyle)
+      : getBackgroundStyle(background, jsStyle),
   );
 
   const styligBox = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');

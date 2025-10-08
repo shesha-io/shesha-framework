@@ -191,7 +191,7 @@ const buildConfigurationItemNodeContextMenu = (args: BuildNodeMenuArgs<ConfigIte
     ],
   },
   getDivider(),
-  ...buildConfiguraitonItemActionsMenu(args)
+  ...buildConfiguraitonItemActionsMenu(args),
   );
 
   return result;

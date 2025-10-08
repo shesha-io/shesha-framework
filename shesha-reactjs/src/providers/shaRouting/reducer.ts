@@ -3,7 +3,7 @@ import { IShaRoutingStateContext } from './contexts';
 
 export function shaRoutingReducer(
   incomingState: IShaRoutingStateContext,
-  action: ReduxActions.Action<IShaRoutingStateContext>
+  action: ReduxActions.Action<IShaRoutingStateContext>,
 ): IShaRoutingStateContext {
   //#region Register flags reducer
   // const state = flagsReducer(incomingState, action);

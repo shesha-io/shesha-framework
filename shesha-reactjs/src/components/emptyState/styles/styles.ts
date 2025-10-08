@@ -25,7 +25,7 @@ export const useStyles = createStyles(({ css, cx }) => {
       margin-top: 5px;
       font-size: 14px
     }
-    `
+    `,
   );
   return {
     shaGlobalEmptyState,

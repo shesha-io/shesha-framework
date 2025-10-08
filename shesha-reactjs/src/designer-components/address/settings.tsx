@@ -15,7 +15,7 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { Option } from 'antd/lib/mentions';
 import { useForm } from '@/providers';
 import { useFormDesignerState } from '@/providers/formDesigner';
-import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 interface IEntityReferenceSettingsState extends IAddressCompomentProps { }

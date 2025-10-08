@@ -22,7 +22,7 @@ export const ModelItemProperties: FC<IModelItemProperties> = ({ item, onChange }
       onChange?.({ ...item, ...values });
     },
     // delay in ms
-    300
+    300,
   );
 
   return item

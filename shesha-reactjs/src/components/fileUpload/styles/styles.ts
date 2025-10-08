@@ -227,7 +227,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         }
         ${listType !== 'thumbnail' && style}
       }
-    `
+    `,
   );
 
   const antPreviewDownloadIcon = cx(
@@ -240,7 +240,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       :hover {
         color: #fff;
       }
-    `
+    `,
   );
 
   const thumbnailControls = cx(
@@ -252,7 +252,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       object-fit: cover !important;
       display: flex !important;
       justify-content: center !important;
-    `
+    `,
   );
 
   const overlayThumbnailControls = cx(
@@ -282,7 +282,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       &:hover {
         opacity: 1;
       }
-    `
+    `,
   );
 
   const styledFileControls = cx(
@@ -305,7 +305,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         }
       }
       ${style}
-    `
+    `,
   );
 
   const thumbnailReadOnly = cx("ant-upload-list-item thumbnail-readonly", css`

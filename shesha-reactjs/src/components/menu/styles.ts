@@ -37,7 +37,7 @@ export const useStyles = createStyles(
       styleOnSelected,
       width,
       fontStyles,
-    }: IStyleProps
+    }: IStyleProps,
   ) => {
     const menuContainer = css`
       display: flex;
@@ -158,7 +158,7 @@ export const useStyles = createStyles(
         ::-webkit-scrollbar {
           display: none;
         }
-      `
+      `,
     );
 
     const shaHamburgerItem = css`
@@ -211,7 +211,7 @@ export const useStyles = createStyles(
       scrollButtons,
       scrollButton,
     };
-  }
+  },
 );
 
 export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGlobalStyle`

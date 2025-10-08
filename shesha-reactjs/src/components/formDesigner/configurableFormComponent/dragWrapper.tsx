@@ -47,7 +47,7 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
 
     if (selectedComponentId !== props.componentId)
       setSelectedComponent(
-        props.componentId
+        props.componentId,
       );
   };
 

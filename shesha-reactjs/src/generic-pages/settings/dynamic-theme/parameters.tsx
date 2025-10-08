@@ -29,14 +29,14 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
 
   const mergeThemeSection = (
     section: keyof IConfigurableTheme,
-    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
+    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
   ): IConfigurableTheme => {
     return { ...(theme[section] as unknown as Record<string, unknown>), ...(update as Record<string, unknown>) };
   };
 
   const updateTheme = (
     section: keyof IConfigurableTheme,
-    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
+    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
   ): void => {
     changeThemeInternal({
       ...theme,
@@ -51,7 +51,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
       initialColor: string,
       onChange: (color: string) => void,
       presetColors?: string[],
-      hint?: string
+      hint?: string,
     ) => (
       <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
         <Space>
@@ -74,7 +74,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
         </Space>
       </div>
     ),
-    [theme]
+    [theme],
   );
 
   const colorConfigs: IThemeConfig[] = [
@@ -97,7 +97,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
       <Space direction="vertical" align="start" size={24}>
         <Space direction="vertical" align="start">
           {colorConfigs.map((config, index) =>
-            renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], (hex) => config.onChange(hex))
+            renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], (hex) => config.onChange(hex)),
           )}
         </Space>
 
@@ -107,7 +107,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           'layoutBackground',
           theme?.layoutBackground,
           (hex) => changeThemeInternal({ ...theme, layoutBackground: hex }),
-          BACKGROUND_PRESET_COLORS
+          BACKGROUND_PRESET_COLORS,
         )}
       </Space>
 
@@ -121,8 +121,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             theme?.text?.[config.name],
             (hex) => config.onChange(hex),
             TEXT_PRESET_COLORS,
-            config?.hint
-          )
+            config?.hint,
+          ),
         )}
       </Space>
 

@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { ConfigItemTreeNode, FlatTreeNode, FolderTreeNode, isConfigItemTreeNode, isTreeNode, ITEM_TYPES, ModuleTreeNode, TREE_NODE_TYPES, TreeNode, TreeNodeType } from "./models";
 import { FileUnknownOutlined, FolderOpenOutlined, FolderOutlined, FormOutlined, MessageOutlined, NotificationOutlined, OrderedListOutlined, ProductOutlined, SafetyOutlined, SettingOutlined, TableOutlined, TeamOutlined } from "@ant-design/icons";
-import React from "react";
+
 import { TreeNodeProps } from "antd";
 import { CsTreeNode } from "./components/tree-node";
 import { isDefined } from "@/utils/nullables";
@@ -34,7 +34,7 @@ const applyIcon = (node: TreeNode): void => {
     return getIcon(
       node.nodeType,
       isConfigItemTreeNode(node) ? node.itemType : undefined,
-      props.expanded
+      props.expanded,
     );
   };
 };

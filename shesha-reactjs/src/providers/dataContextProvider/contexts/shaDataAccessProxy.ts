@@ -27,7 +27,7 @@ export const CreateDataAccessor = <TData extends object = object>(
   getData: () => TData,
   setData: (data: TData) => void,
   setFieldValue: FieldValueSetter<TData>,
-  propertyName?: Path<TData>
+  propertyName?: Path<TData>,
 ): IShaDataAccessor<TData> => {
   const data = getValueByPropertyName(getData(), isDefined(propertyName) ? propertyName : '');
   const property: IShaDataAccessorWithNested<TData> = (Array.isArray(data))

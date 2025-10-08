@@ -416,7 +416,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     jsExpression: string,
     formMode: FormMode,
     formData: any,
-    globalState: IAnyObject
+    globalState: IAnyObject,
   ): boolean => {
     switch (value) {
       case 'yes':
@@ -447,14 +447,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         props.canDeleteInlineExpression,
         formMode,
         formData,
-        globalState
+        globalState,
       ),
       canEdit: evaluateYesNoInheritJs(
         props.canEditInline,
         props.canEditInlineExpression,
         formMode,
         formData,
-        globalState
+        globalState,
       ),
       inlineEditMode,
       formMode,
@@ -477,7 +477,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
               canEdit: props.canEditInline,
               canAdd: props.canAddInline,
               inlineEditMode,
-            }
+            },
           );
           column.minWidth = minWidth;
           column.maxWidth = maxWidth;
@@ -640,7 +640,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const getCrudComponents = (
     allowEdit: boolean,
-    componentAccessor: (col: ITableDataColumn) => IFieldComponentProps
+    componentAccessor: (col: ITableDataColumn) => IFieldComponentProps,
   ): IFlatComponentsStructure => {
     const result: IFlatComponentsStructure = {
       allComponents: {},

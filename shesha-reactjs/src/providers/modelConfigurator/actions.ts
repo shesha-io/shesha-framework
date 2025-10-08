@@ -28,7 +28,7 @@ export enum ModelActionEnums {
 
 export const createNewAction = createAction<ModelConfigurationDto, ModelConfigurationDto>(
   ModelActionEnums.CreateNew,
-  (p) => p
+  (p) => p,
 );
 
 export const changeModelIdAction = createAction<string>(ModelActionEnums.ChangeModelId);
@@ -36,7 +36,7 @@ export const changeModelIdAction = createAction<string>(ModelActionEnums.ChangeM
 export const loadRequestAction = createAction(ModelActionEnums.LoadRequest);
 export const loadSuccessAction = createAction<ModelConfigurationDto, ModelConfigurationDto>(
   ModelActionEnums.LoadSuccess,
-  (p) => p
+  (p) => p,
 );
 export const loadErrorAction = createAction<IErrorInfo, IErrorInfo>(ModelActionEnums.LoadError, (p) => p);
 

@@ -40,7 +40,7 @@ export const DYNAMIC_MODAL_INSTANCE_CONTEXT_INITIAL_STATE: IDynamicModalInstance
 
 export const DynamicModalInstanceContext = createNamedContext<IDynamicModalInstanceContext>(
   DYNAMIC_MODAL_INSTANCE_CONTEXT_INITIAL_STATE,
-  "DynamicModalInstanceContext"
+  "DynamicModalInstanceContext",
 );
 
 //#endregion
@@ -63,7 +63,7 @@ export const DYNAMIC_MODAL_RENDERER_CONTEXT_INITIAL_STATE: IDynamicModalRenderer
 
 export const DynamicModalRendererContext = createNamedContext<IDynamicModalRendererContext>(
   DYNAMIC_MODAL_RENDERER_CONTEXT_INITIAL_STATE,
-  "DynamicModalRendererContext"
+  "DynamicModalRendererContext",
 );
 
 //#endregion

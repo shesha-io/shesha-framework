@@ -3,9 +3,9 @@ import FormItem from "../_settings/components/formItem";
 import { InputComponent } from '../inputComponent';
 import { ISettingsInputProps } from './interfaces';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { MetadataProvider } from '@/providers';
+import { MetadataProvider, useSettingsComponents } from '@/providers';
 import { evaluateString, IToolboxComponent, useShaFormInstance } from '@/index';
-import { useSettingsComponents } from '@/providers';
+
 
 export interface ISettingsComponent extends IToolboxComponent {
   settingsComponent?: React.FC<any>;

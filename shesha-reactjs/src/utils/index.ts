@@ -13,7 +13,7 @@ export const getSelectedKeys = (path: string, menuItems: ISidebarGroup[]): strin
     [
       item?.actionConfiguration?.actionArguments?.url,
       getDynamicPath(item?.actionConfiguration?.actionArguments?.formId),
-    ].includes(path)
+    ].includes(path),
   );
   return keys ? [keys?.id] : [];
 };

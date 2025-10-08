@@ -23,7 +23,7 @@ const RefListItemGroupReducer = handleActions<IRefListItemGroupConfiguratorState
     },
     [RefListItemGroupActionEnums.StoreSettings]: (
       state: IRefListItemGroupConfiguratorStateContext,
-      action: ReduxActions.Action<ISettingsUpdatePayload>
+      action: ReduxActions.Action<ISettingsUpdatePayload>,
     ) => {
       const { payload } = action;
       return {

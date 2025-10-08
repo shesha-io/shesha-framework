@@ -82,7 +82,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
     RestfulShesha.get<IAbpWrappedGetEntityListResponse<SettingConfigurationDto>, any, IGenericGetAllPayload, any>(
       `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
       getListFetcherQueryParams(1000),
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     )
       .then((response) => {
         if (response.success) {
@@ -118,7 +118,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
         quickSearch: null,
         sorting: '',
       },
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     )
       .then((response) => {
         if (response.success) {
@@ -167,7 +167,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
   const fetchSettingValue = (settingId: ISettingIdentifier): Promise<SettingValue> => {
     return settingsGetValue(
       { name: settingId.name, module: settingId.module, appKey: settingId.appKey },
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     )
       .then((response) => {
         return isAjaxSuccessResponse(response)
@@ -188,7 +188,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
         appKey: settingId.appKey,
         value: value,
       },
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     )
       .then((response) => {
         dispatch(setSaveStatusAction('success'));

@@ -117,7 +117,7 @@ interface IGetFormByIdPayload {
 }
 
 export const getMarkupFromResponse = (
-  data: IAbpWrappedGetEntityResponse<FormConfigurationDto>
+  data: IAbpWrappedGetEntityResponse<FormConfigurationDto>,
 ): FormMarkupWithSettings => {
   const markupJson = data?.result?.markup;
   return markupJson ? (JSON.parse(markupJson) as FormMarkupWithSettings) : null;

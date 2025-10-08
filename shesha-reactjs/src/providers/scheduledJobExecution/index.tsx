@@ -68,7 +68,7 @@ const ScheduledJobExecutionProvider: FC<PropsWithChildren<IScheduledJobExecution
         // @ts-ignore
         const { result } = executionLogResponse;
         const events = result.map(
-          (e) => ({ message: e.message, timeStamp: moment(e.timeStamp), level: e.level }) as IExecutionLogEvent
+          (e) => ({ message: e.message, timeStamp: moment(e.timeStamp), level: e.level }) as IExecutionLogEvent,
         );
 
         dispatch(getExecutionLogSuccessAction(events));

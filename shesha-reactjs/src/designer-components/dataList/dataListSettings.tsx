@@ -18,7 +18,7 @@ import { InlineEditMode, InlineSaveMode } from '@/components/dataList/models';
 import { ISettingsFormFactoryArgs, YesNoInherit } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
-import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
@@ -164,7 +164,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
     formTypes.map((i) => {
       return { value: i };
-    })
+    }),
   );
 
   const getGroupStyleConstants = useAvailableConstantsMetadata({
@@ -263,7 +263,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                     : formTypes
                   ).map((i) => {
                     return { value: i };
-                  })
+                  }),
                 )}
             />
           </SettingsFormItem>
@@ -391,7 +391,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                     : formTypes
                   ).map((i) => {
                     return { value: i };
-                  })
+                  }),
                 )}
             />
           </SettingsFormItem>

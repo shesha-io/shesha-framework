@@ -92,7 +92,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const executionContext = useAvailableConstantsData();
 
   const [formIdentifier, setFormIdentifier] = useState<FormIdentifier>(
-    props.formSelectionMode === 'name' ? props.formIdentifier : null
+    props.formSelectionMode === 'name' ? props.formIdentifier : null,
   );
   const [fetched, setFetched] = useState(false);
   const [properties, setProperties] = useState<IPropertyMetadata[]>([]);

@@ -1,6 +1,6 @@
 import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import React, { ComponentType, useMemo } from "react";
-import { FC } from "react";
+import React, { ComponentType, useMemo, FC } from "react";
+
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
 import { IHasRepository, IRepository, RowsReorderPayload } from "./interfaces";
 import { wrapDisplayName } from "@/utils/react";

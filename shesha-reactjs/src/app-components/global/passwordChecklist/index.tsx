@@ -8,7 +8,7 @@ interface IProps {
 
 export const PasswordChecklist: FC<IProps> = ({ password }) => {
   const { hasEightChars, hasLowerCaseChar, hasNumericChar, hasSpecialChar, hasUpperCaseChar } = getPasswordValidations(
-    password || ''
+    password || '',
   );
 
   return (

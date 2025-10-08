@@ -4,7 +4,7 @@ import { IScheduledJobExecutionStateContext } from './contexts';
 
 export function scheduledJobExecutionReducer(
   incomingState: IScheduledJobExecutionStateContext,
-  action: ReduxActions.Action<IScheduledJobExecutionStateContext>
+  action: ReduxActions.Action<IScheduledJobExecutionStateContext>,
 ): IScheduledJobExecutionStateContext {
   //#region Register flags reducer
   const state = flagsReducer(incomingState, action);

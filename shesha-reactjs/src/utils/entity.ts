@@ -71,7 +71,7 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
     {
       lazy: true,
       queryParams: getValuePayload,
-    }
+    },
   );
 
   useEffect(() => {

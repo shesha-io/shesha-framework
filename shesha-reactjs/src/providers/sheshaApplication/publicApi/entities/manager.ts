@@ -2,9 +2,9 @@ import { IApiEndpoint, StandardEntityActions } from "@/interfaces/metadata";
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { EntityConfigurationDto, IEntity, IEntityTypeIndentifier } from "./models";
 import { IAjaxResponse, IEntityMetadata } from "@/interfaces";
-import { ICacheProvider } from "@/providers/metadataDispatcher/entities/models";
+import { ICacheProvider, IEntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/models";
 import qs from "qs";
-import { IEntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/models";
+
 import { IEntityEndpoints } from "./entityTypeAccessor";
 
 export const ENTITIES_URLS = {

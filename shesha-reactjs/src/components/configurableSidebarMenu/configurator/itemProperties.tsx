@@ -24,7 +24,7 @@ export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, o
       onChange?.({ ...item, ...values });
     },
     // delay in ms
-    300
+    300,
   );
 
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus

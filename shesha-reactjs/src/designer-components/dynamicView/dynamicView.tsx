@@ -49,7 +49,7 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
             allComponents: allComponents,
             componentRelations: componentRelations,
           }, true);
-        }
+        },
       );
 
       if (component)

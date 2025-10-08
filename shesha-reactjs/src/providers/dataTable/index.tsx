@@ -252,7 +252,7 @@ const sortingItems2ColumnSorting = (items: ISortingItem[]): IColumnSorting[] => 
 };
 
 export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTableProviderWithRepositoryProps>> = (
-  props
+  props,
 ) => {
   const {
     children,
@@ -405,12 +405,12 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
             totalRows: 0,
             totalRowsBeforeFilter: 0,
             rows: [],
-          })
+          }),
         );
       }
     },
     // delay in ms
-    300
+    300,
   );
 
   const debouncedFetch = (payload: IGetListDataPayload): void => {
@@ -687,7 +687,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         return Promise.resolve();
       },
     },
-    [state, props.disableRefresh]
+    [state, props.disableRefresh],
   );
 
   useConfigurableAction(
@@ -701,7 +701,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         return exportToExcel();
       },
     },
-    [state]
+    [state],
   );
 
   useConfigurableAction(
@@ -715,7 +715,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         return Promise.resolve();
       },
     },
-    [state]
+    [state],
   );
 
   useConfigurableAction(
@@ -729,7 +729,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         return Promise.resolve();
       },
     },
-    [state]
+    [state],
   );
 
   //#endregion

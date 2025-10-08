@@ -16,7 +16,7 @@ export const DynamicActionsEvaluator: FC<IDynamicActionsEvaluatorProps> = ({ ite
     const preparedItems = getDynamicActionsItemsLevel(items,
       (dynamicItem) => {
         dynamicItems.push(dynamicItem);
-      }
+      },
     );
 
     return {

@@ -29,7 +29,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
       disabled: readOnly,
       onChange: handleChange(onChange),
       [valuePropName]: value,
-    }
+    },
   );
 
   return (
@@ -63,7 +63,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
             hasCode={hasCode}
             readOnly={readOnly}
           >
-            {(value, onChange) => createClonedElement(value, onChange,)}
+            {(value, onChange) => createClonedElement(value, onChange)}
           </SettingsControl>
         )}
     </ConfigurableFormItem>

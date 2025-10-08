@@ -218,7 +218,7 @@ export class GqlLoader implements IFormDataLoader {
               const metaPromise = getContainerProperties({ metadata: metadata, containerPath: containerPath }).then(
                 (response) => {
                   field.property = response.find((p) => p.path.toLowerCase() === field.name.toLowerCase());
-                }
+                },
               );
               // add promise to list
               promises.push(metaPromise);

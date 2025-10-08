@@ -65,7 +65,7 @@ export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
  */
 export const updateSettingsComponents = (
   toolboxComponents: IToolboxComponents,
-  components: IConfigurableFormComponent[]
+  components: IConfigurableFormComponent[],
 ): IConfigurableFormComponent[] => {
   const processComponent = (component: IConfigurableFormComponent): IConfigurableFormComponent => {
     const componentRegistration = toolboxComponents[component.type];
@@ -164,7 +164,7 @@ export const updateJsSettingsForComponents = (
 
 export const updateSettingsComponentsDict = (
   toolboxComponents: IToolboxComponents,
-  components: IComponentsDictionary
+  components: IComponentsDictionary,
 ): IComponentsDictionary => {
   const comps: IConfigurableFormComponent[] = [];
 

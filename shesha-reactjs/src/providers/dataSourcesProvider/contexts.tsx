@@ -20,7 +20,7 @@ export const DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE: IDataSourcesProviderSt
 
 export const DataSourcesProviderStateContext = createNamedContext<IDataSourcesProviderStateContext>(
   DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE,
-  "DataSourcesProviderStateContext"
+  "DataSourcesProviderStateContext",
 );
 
 export const DataSourcesProviderActionsContext = createNamedContext<IDataSourcesProviderActionsContext>(undefined, "DataSourcesProviderActionsContext");

@@ -13,7 +13,7 @@ export const useStyles = createStyles(({ css, cx }, props: IStyle) => {
       width: ${props?.subText ? '400px' : '200px'};
       align-items: center;
       padding: 0px 5px 0px 5px;
-    `
+    `,
   );
 
   const shaProfileDropdown = cx(
@@ -26,7 +26,7 @@ export const useStyles = createStyles(({ css, cx }, props: IStyle) => {
       white-space: nowrap;
       flex-wrap: nowrap;
       gap: 5px;
-    `
+    `,
   );
 
   return {

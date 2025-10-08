@@ -125,7 +125,7 @@ const evaluateMustacheAsync = async (evaluationNode: IEvaluateNode, allArgs: any
   const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(
     evaluationNode.evaluate.expression,
     mappings,
-    evaluationNode.evaluate.required
+    evaluationNode.evaluate.required,
   );
 
   let convertedResult: any = result;
@@ -177,7 +177,7 @@ const evaluateMustacheSync = (evaluationNode: IEvaluateNode, allArgs: any[], opt
   const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(
     evaluationNode.evaluate.expression,
     mappings,
-    evaluationNode.evaluate.required
+    evaluationNode.evaluate.required,
   );
 
   let convertedResult: any = result;
@@ -242,7 +242,7 @@ export const getEvaluationNodeFromJsonLogicNode = (node: any): IEvaluateNode => 
 
 export const convertJsonLogicNode = async (
   jsonLogic: object,
-  options: IJsonLogicConversionOptions
+  options: IJsonLogicConversionOptions,
 ): Promise<object> => {
   if (!jsonLogic) return null;
 
@@ -251,7 +251,7 @@ export const convertJsonLogicNode = async (
   const parseNestedNodeAsync = async (
     node: object,
     allArgs: any[],
-    nestedOptions: IJsonLogicConversionOptions
+    nestedOptions: IJsonLogicConversionOptions,
   ): Promise<NestedNodeParsingResult> => {
     // special handling for evaluation nodes
     const evaluationNode = getEvaluationNodeFromJsonLogicNode(node);
@@ -293,7 +293,7 @@ export const convertJsonLogicNode = async (
 
           const evaluationResult = argumentEvaluator(operatorName, args, argIdx);
           return evaluationResult.handled ? evaluationResult.value : arg;
-        })
+        }),
       );
       convertedArgs = convertedArgs.filter((a) => a !== undefined);
     } else {
@@ -326,7 +326,7 @@ export const convertJsonLogicNode = async (
 // Synchronous version of convertJsonLogicNode
 export const convertJsonLogicNodeSync = (
   jsonLogic: object,
-  options: IJsonLogicConversionOptionsSync
+  options: IJsonLogicConversionOptionsSync,
 ): object => {
   if (!jsonLogic) return null;
 
@@ -335,7 +335,7 @@ export const convertJsonLogicNodeSync = (
   const parseNestedNodeSync = (
     node: object,
     allArgs: any[],
-    nestedOptions: IJsonLogicConversionOptionsSync
+    nestedOptions: IJsonLogicConversionOptionsSync,
   ): NestedNodeParsingResult => {
     // special handling for evaluation nodes
     const evaluationNode = getEvaluationNodeFromJsonLogicNode(node);

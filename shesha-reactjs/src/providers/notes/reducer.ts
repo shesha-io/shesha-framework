@@ -4,7 +4,7 @@ import { INote, INotesStateContext } from './contexts';
 
 export function notesReducer(
   incomingState: INotesStateContext,
-  action: ReduxActions.Action<INotesStateContext>
+  action: ReduxActions.Action<INotesStateContext>,
 ): INotesStateContext {
   //#region Register flags reducer
   const state = flagsReducer(incomingState, action) as INotesStateContext;

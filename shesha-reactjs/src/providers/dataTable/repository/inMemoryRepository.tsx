@@ -1,6 +1,6 @@
 import { IConfigurableColumnsProps, isDataColumn } from "@/providers/datatableColumnsConfigurator/models";
-import React, { ComponentType, useCallback, useMemo } from "react";
-import { FC } from "react";
+import React, { ComponentType, useCallback, useMemo, FC } from "react";
+
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
 import { IHasModelType, IHasRepository, IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
 import { IHasFormDataSourceConfig, useMetadataDispatcher } from "@/providers";

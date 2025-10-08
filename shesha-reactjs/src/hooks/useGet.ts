@@ -64,7 +64,7 @@ export interface UseGetReturn<TData, TError, TQueryParams = {}, TPathParams = un
 }
 
 export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>(
-  props: UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams>
+  props: UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams>,
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams> => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
@@ -99,7 +99,7 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
           throw error;
         });
     },
-    [props.lazy, props.path, props.base, props.resolve, props.queryParams, props.pathParams, backendUrl, httpHeaders]
+    [props.lazy, props.path, props.base, props.resolve, props.queryParams, props.pathParams, backendUrl, httpHeaders],
   );
 
   useDeepCompareEffect(() => {

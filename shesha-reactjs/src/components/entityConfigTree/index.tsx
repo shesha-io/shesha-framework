@@ -48,7 +48,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
   const [showSuppress, setShowSuppress] = useLocalStorage('shaEntityConfig.toolbox.objects.showSuppress', false);
   const [showNotImplemented, setShowNotImplemented] = useLocalStorage(
     'shaEntityConfig.toolbox.objects.showNotImplemented',
-    false
+    false,
   );
 
   const [response, setResponse] = useState<EntityConfigDtoPagedResultDto>();
@@ -115,7 +115,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
       return {
         ...prev,
         items: prev.items.map((i) =>
-          i.id === objectId ? { ...i, className: item.className, suppress: item.suppress, module: item.module } : i
+          i.id === objectId ? { ...i, className: item.className, suppress: item.suppress, module: item.module } : i,
         ),
       };
     });

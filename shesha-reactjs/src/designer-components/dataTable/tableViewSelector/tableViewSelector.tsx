@@ -87,7 +87,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     evaluateDynamicFilters(
       permissionedFilters,
       match,
-      propertyMetadataAccessor
+      propertyMetadataAccessor,
     ).then((evaluatedFilters) => {
       dataFetchDep.ready();
       setPredefinedFilters(evaluatedFilters);

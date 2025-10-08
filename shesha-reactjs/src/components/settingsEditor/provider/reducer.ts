@@ -100,5 +100,5 @@ export const settingsEditorReducer = handleActions<ISettingsEditorStateContext, 
     },
   },
 
-  SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE
+  SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE,
 );

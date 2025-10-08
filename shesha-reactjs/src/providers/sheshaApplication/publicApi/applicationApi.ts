@@ -46,7 +46,7 @@ export class ApplicationApi implements IApplicationApi {
     cacheProvider: ICacheProvider,
     metadataFetcher: IEntityMetadataFetcher,
     shaRouter: ShaRouting,
-    metadataDispatcher: IMetadataDispatcher
+    metadataDispatcher: IMetadataDispatcher,
   ) {
     this.#plugins = new Map<string, IApplicationPlugin>();
 

@@ -17,7 +17,7 @@ type MenuItem = MenuProps['items'][number];
 
 export const getMenuItem = (
   items: IButtonGroup[] = [],
-  execute: (payload: IConfigurableActionConfiguration) => void
+  execute: (payload: IConfigurableActionConfiguration) => void,
 ): ItemType[] =>
   items.map(({ childItems, id, icon, label, ...payload }) => ({
     key: id,
@@ -32,7 +32,7 @@ export const getMenuItem = (
 
 export const getAccountMenuItems = (
   accountDropdownListItems: IHeaderAction[],
-  logoutUser: IAuthenticator['logoutUser']
+  logoutUser: IAuthenticator['logoutUser'],
 ): MenuItem[] => {
   const result = (accountDropdownListItems ?? []).map<MenuItem>(({ icon, text, url: link, onClick }, index) => ({
     key: index,

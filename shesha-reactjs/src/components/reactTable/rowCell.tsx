@@ -40,7 +40,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
         ? cell.column.cellStyleAccessor(context)
         : undefined;
     },
-    { row: cell.row.original, value: cell.value }
+    { row: cell.row.original, value: cell.value },
   );
 
   const anchored = getColumnAnchored((cell?.column as any)?.anchored);

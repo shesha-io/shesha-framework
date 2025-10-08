@@ -28,7 +28,7 @@ export const DebugPanel: FC<DebugPanelProps> = () => {
             <pre>{JSON.stringify(ctx.getData(), null, 2)}</pre>
           </Col>
         </CollapsiblePanel>
-      )
+      ),
       )}
     </>
   );

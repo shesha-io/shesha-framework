@@ -44,7 +44,7 @@ export const FORM_PERSISTER_CONTEXT_INITIAL_STATE: IFormPersisterStateContext = 
 
 export const FormPersisterStateContext = createNamedContext<IFormPersisterStateContext | undefined>(
   undefined,
-  "FormPersisterStateContext"
+  "FormPersisterStateContext",
 );
 
 export type IFormPersisterContext = IFormPersisterActionsContext & IFormPersisterStateContext;

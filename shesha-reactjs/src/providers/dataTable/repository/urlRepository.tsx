@@ -3,8 +3,8 @@ import { IHasEntityDataSourceConfig, useMetadataDispatcher, useSheshaApplication
 import { IResult } from '@/interfaces/result';
 import { IHttpHeadersDictionary } from '@/providers/sheshaApplication/contexts';
 import qs from 'qs';
-import React, { ComponentType, useMemo } from 'react';
-import { FC } from 'react';
+import React, { ComponentType, useMemo, FC } from 'react';
+
 import { camelcaseDotNotation } from '@/utils/string';
 import {
   DataTableColumnDto,
@@ -90,7 +90,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
   /** Convert back-end response to a form that is used by the data source */
   const convertListDataResponse = (
     response: IResult<ITableDataResponse>,
-    pageSize: number
+    pageSize: number,
   ): ITableDataInternalResponse => {
     if (!isAjaxSuccessResponse(response))
       throw 'Failed to parse response';
@@ -186,7 +186,7 @@ export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository =
 };
 
 export function withUrlRepository<WrappedProps>(
-  WrappedComponent: ComponentType<WrappedProps & IHasRepository>
+  WrappedComponent: ComponentType<WrappedProps & IHasRepository>,
 ): FC<WrappedProps> {
   return wrapDisplayName((props) => {
     const { getDataPath } = props as IHasEntityDataSourceConfig;

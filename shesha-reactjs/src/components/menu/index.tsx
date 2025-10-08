@@ -98,7 +98,7 @@ export const LayoutMenu: FC<IProps> = ({
 
   const [openedKeys, setOpenedKeys] = useLocalStorage(
     "openedSidebarKeys",
-    null
+    null,
   );
 
   const currentUrl = normalizeUrl(router?.fullPath);
@@ -141,7 +141,7 @@ export const LayoutMenu: FC<IProps> = ({
 
   const onButtonClick = (
     _itemId: string,
-    actionConfiguration: IConfigurableActionConfiguration
+    actionConfiguration: IConfigurableActionConfiguration,
   ): void => {
     executeAction({
       actionConfiguration: actionConfiguration,
@@ -158,14 +158,14 @@ export const LayoutMenu: FC<IProps> = ({
           const url = getUrlFromNavigationRequest(args?.actionArguments);
           const href = evaluateString(
             decodeURIComponent(url),
-            executionContext
+            executionContext,
           );
           return href;
         },
         getUrl: (url) => {
           const href = evaluateString(
             decodeURIComponent(url),
-            executionContext
+            executionContext,
           );
           return href;
         },
@@ -176,7 +176,7 @@ export const LayoutMenu: FC<IProps> = ({
             isNavigationActionConfiguration(nestedItem.actionConfiguration)
           ) {
             const url = getUrlFromNavigationRequest(
-              nestedItem.actionConfiguration.actionArguments
+              nestedItem.actionConfiguration.actionArguments,
             );
 
             if (url && normalizeUrl(url) === currentUrl) {
@@ -185,7 +185,7 @@ export const LayoutMenu: FC<IProps> = ({
             }
           }
         },
-      })
+      }),
     );
 
     if (menuId) {
@@ -252,7 +252,7 @@ export const LayoutMenu: FC<IProps> = ({
         className={classNames(
           styles.menuWrapper,
           styles.menuWrapperScroll,
-          menuId ? `horizontal-menu-${menuId}` : undefined
+          menuId ? `horizontal-menu-${menuId}` : undefined,
         )}
         ref={menuWrapperRef}
       >

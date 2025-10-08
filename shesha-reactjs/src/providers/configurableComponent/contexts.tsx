@@ -54,7 +54,7 @@ export interface IConfigurableComponentContext<TSettings>
   IConfigurableComponentActionsContext<TSettings> {}
 
 export const getContextInitialState = <TSettings extends any>(
-  defaultSettings: TSettings
+  defaultSettings: TSettings,
 ): IConfigurableComponentStateContext<TSettings> => {
   return {
     isInProgress: {},
@@ -66,7 +66,7 @@ export const getContextInitialState = <TSettings extends any>(
 };
 
 export const getConfigurableComponentStateContext = <TSettings extends any>(
-  initialState: IConfigurableComponentStateContext<TSettings>
+  initialState: IConfigurableComponentStateContext<TSettings>,
 ): Context<IConfigurableComponentStateContext<TSettings>> => createNamedContext<IConfigurableComponentStateContext<TSettings>>(initialState, "ConfigurableComponentStateContext");
 
 export const getConfigurableComponentActionsContext = <TSettings extends any>(): Context<IConfigurableComponentActionsContext<TSettings>> =>

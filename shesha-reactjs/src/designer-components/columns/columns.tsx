@@ -161,7 +161,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     m
       .add<IColumnsComponentProps>(
         0,
-        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IColumnsComponentProps
+        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IColumnsComponentProps,
       )
       .add<IColumnsComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<IColumnsComponentProps>(2, (prev) => removeComponents(prev))

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { useDeepCompareMemoize } from '.';
+import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 
 /**
  * Accepts a function that contains imperative, possibly effectful code.

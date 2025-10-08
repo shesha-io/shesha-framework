@@ -55,7 +55,7 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
 
       rightColumn.shift = calculatePositionShift(rowColumns, index, totalColumns - 1)?.reduce(
         (acc, curr) => (acc as number) + curr,
-        0
+        0,
       );
     } else if (anchored?.direction === 'left') {
       leftColumn.shadowPosition = calculateTotalColumnsOnFixed(rowColumns, 'left') - 1;

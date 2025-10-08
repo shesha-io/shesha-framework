@@ -2,7 +2,7 @@ import { getAccessToken, removeAccessToken, saveUserToken } from '@/utils/auth';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '../sheshaApplication/contexts';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { IEntityReferenceDto, IErrorInfo, ILoginForm, toErrorInfo } from '@/interfaces';
-import { HttpClientApi } from '@/publicJsApis/httpClient';
+import { HttpClientApi, HttpResponse } from '@/publicJsApis/httpClient';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, UserLoginInfoDto } from '@/apis/session';
 import { getQueryParam, isSameUrls, removeURLParameter } from '@/utils/url';
@@ -11,7 +11,7 @@ import React from 'react';
 import { IAccessToken, IHttpHeaders } from '@/interfaces/accessToken';
 import { getLocalizationOrDefault } from '@/utils/localization';
 import { getTenantId } from '@/utils/multitenancy';
-import { HttpResponse } from '@/publicJsApis/httpClient';
+
 import {
   ASPNET_CORE_CULTURE,
   AuthenticationState,
@@ -128,7 +128,7 @@ export class Authenticator implements IAuthenticator {
   };
 
   #checkRegistrationCompletion = (
-    response: AuthenticateResultModelAjaxResponse
+    response: AuthenticateResultModelAjaxResponse,
   ): void => {
     const result = extractAjaxResponse(response);
 
@@ -139,7 +139,7 @@ export class Authenticator implements IAuthenticator {
       }
       if (result.redirectModule && result.redirectForm) {
         this.#redirect(
-          `/no-auth/${result.redirectModule}/${result.redirectForm}?user=${result.userId}`
+          `/no-auth/${result.redirectModule}/${result.redirectForm}?user=${result.userId}`,
         );
         throw new Error('Redirecting to another form.');
       }
@@ -181,7 +181,7 @@ export class Authenticator implements IAuthenticator {
     const headers = this.#getHttpHeaders();
     const httpResponse = await this.#httpClient.get<void, HttpResponse<GetCurrentLoginInfoOutputAjaxResponse>>(
       URLS.GET_CURRENT_LOGIN_INFO,
-      { headers: headers }
+      { headers: headers },
     );
     const response = extractAjaxResponse(httpResponse.data, 'Failed to get user profile');
 
@@ -319,9 +319,9 @@ export class Authenticator implements IAuthenticator {
           (!gp.permissionedEntity ||
             gp.permissionedEntity.length === 0 ||
             gp.permissionedEntity.some((pe) =>
-              permissionedEntities?.some((ppe) => pe.id === ppe.id && ppe._className === pe._className)
-            ))
-      )
+              permissionedEntities?.some((ppe) => pe.id === ppe.id && ppe._className === pe._className),
+            )),
+      ),
     );
   };
 }

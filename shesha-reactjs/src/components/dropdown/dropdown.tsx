@@ -92,7 +92,7 @@ export const Dropdown: FC<IDropdownProps> = ({
         (e) => {
           console.error(e);
           return 'unknown';
-        }
+        },
       )
       : fetchedItem.item);
 

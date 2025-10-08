@@ -1,7 +1,7 @@
 import { CloseOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
 import { Button, App } from 'antd';
-import React, { ReactNode } from 'react';
-import { FC } from 'react';
+import React, { ReactNode, FC } from 'react';
+
 import { useSettingsEditor } from './provider';
 
 export interface ISettingsEditorToolbarProps {

@@ -49,7 +49,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
 
   const wrapValue = (
     localValue: TValue | TValue[],
-    allOptions: ISelectOption<TValue>[]
+    allOptions: ISelectOption<TValue>[],
   ): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
     if (localValue === undefined || localValue === null) return mode === 'multiple' ? [] : undefined;
     if (mode === 'multiple') {
@@ -89,7 +89,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     // Note: we shouldn't process full list and make it unique because by this way we'll hide duplicates received from the back-end
     const selectedItems = selectedItem !== undefined && selectedItem !== null
       ? (Array.isArray(selectedItem) ? selectedItem : [selectedItem]).filter(
-        (i) => fetchedItems.findIndex((fi) => String(fi.value) === String(i.value)) === -1
+        (i) => fetchedItems.findIndex((fi) => String(fi.value) === String(i.value)) === -1,
       )
       : [];
 

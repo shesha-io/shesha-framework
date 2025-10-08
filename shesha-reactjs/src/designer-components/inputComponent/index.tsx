@@ -44,7 +44,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
     formTypes.map((i) => {
       return { value: i };
-    })
+    }),
   );
 
   const metadataBuilderFactory = useMetadataBuilderFactory();
@@ -355,7 +355,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 : formTypes
               ).map((i) => {
                 return { value: i };
-              })
+              }),
             )}
         />
       );

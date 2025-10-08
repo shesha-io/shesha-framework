@@ -7,7 +7,7 @@ export const getInitialValues = (
   initialValues: IKeyValue[],
   globalState?: any,
   parentFormValues?: any,
-  formData?: any
+  formData?: any,
 ): object => {
   const queryParams = getQueryParams();
 

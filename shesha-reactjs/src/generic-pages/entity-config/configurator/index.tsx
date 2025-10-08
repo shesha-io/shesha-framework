@@ -2,7 +2,7 @@ import EntityConfigTree, { IEntityConfigTreeInstance } from '@/components/entity
 import IndexToolbar from '@/components/indexToolbar';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Checkbox, Col, Form, App, Modal, Row } from 'antd';
-import { Autocomplete, Page } from '@/components';
+import { Autocomplete, Page, ValidationErrors } from '@/components';
 import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import { EntityConfigDto } from '@/apis/entityConfig';
 import { IToolbarItem, PageWithLayout } from '@/interfaces';
@@ -10,7 +10,7 @@ import { MetadataSourceType } from '@/interfaces/metadata';
 import { modelConfigurationsMerge } from '@/apis/modelConfigurations';
 import { useLocalStorage } from '@/hooks';
 import { useModelConfigurator, useSheshaApplication } from '@/providers';
-import { ValidationErrors } from '@/components';
+
 import { SizableColumns } from '@/components/sizableColumns';
 import classNames from 'classnames';
 import { useStyles } from './styles';
@@ -69,7 +69,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
     setLoadingState({ loading: true, loadingText: 'Saving...' });
     modelConfigurationsMerge(
       { sourceId: entityConfig.id, destinationId: autocompleteResult.id, deleteAfterMerge: del },
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     )
       .then((response) => {
         if (isAjaxSuccessResponse(response)) {

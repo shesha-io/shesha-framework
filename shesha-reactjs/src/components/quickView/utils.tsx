@@ -46,7 +46,7 @@ export const compareValueToProperty = (key: string, value: string, properties: I
 
 export const getQuickViewInitialValues = (
   data: { [key in string]: any },
-  properties: IPropertyMetadata[]
+  properties: IPropertyMetadata[],
 ): { [key in string]: ReactNode } =>
   Object.entries(data || {})
     .map(([key, value]) => compareValueToProperty(key, value, properties))

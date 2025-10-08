@@ -102,7 +102,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
             migrateFunctionToProp(
               migrateFunctionToProp(prev, 'override', 'overrideCodeEvaluator'),
               'value', 'valueCodeEvaluator'),
-            'color', 'colorCodeEvaluator')
+            'color', 'colorCodeEvaluator'),
         )))
     .add<IStatusTagProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) })),
   initModel: (model) => ({

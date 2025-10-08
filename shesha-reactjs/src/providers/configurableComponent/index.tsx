@@ -176,7 +176,7 @@ export const createConfigurableComponent = <TSettings extends any>(defaultSettin
   };
 
   const ConfigurableComponentProvider = <T extends PropsWithChildren<IConfigurableComponentProviderProps>>(
-    props: T
+    props: T,
   ): ReactElement => {
     return (
       <GenericConfigurableComponentProvider<TSettings>

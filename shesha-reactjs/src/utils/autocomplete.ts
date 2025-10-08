@@ -74,7 +74,7 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
     {
       lazy: autocompleteValueIsEmpty(props.value),
       queryParams: getValuePayload,
-    }
+    },
   );
 
 
@@ -82,7 +82,7 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
     `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
     {
       lazy: true,
-    }
+    },
   );
 
   const search = (term: string): void => {

@@ -6,7 +6,7 @@ export const getStyleChangeValue = (
   type: keyof IValue,
   direction: keyof IInputDirection,
   value: string,
-  prevVal: string
+  prevVal: string,
 ): string => {
   const v = jsonSafeParse<object>(prevVal || '{}');
 

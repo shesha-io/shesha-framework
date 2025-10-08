@@ -11,5 +11,5 @@ export const STACKED_NAVIGATION_MODAL_CONTEXT_INITIAL_STATE: IStackedNavigationM
 
 export const StackedNavigationModalStateContext = createNamedContext<IStackedNavigationModalStateContext>(
   STACKED_NAVIGATION_MODAL_CONTEXT_INITIAL_STATE,
-  "StackedNavigationModalStateContext"
+  "StackedNavigationModalStateContext",
 );

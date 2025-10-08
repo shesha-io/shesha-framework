@@ -37,7 +37,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
 
   const options = useMemo(
     () => getDataSourceList(model.dataSourceType, items, refListItems?.items, reducedData) || [],
-    [model.dataSourceType, items, refListItems?.items, reducedData]
+    [model.dataSourceType, items, refListItems?.items, reducedData],
   );
 
   const val = value ? `${value}` : defaultValue;

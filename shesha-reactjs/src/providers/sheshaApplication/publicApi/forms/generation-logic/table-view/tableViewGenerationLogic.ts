@@ -25,7 +25,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     markup: any,
     entity: IEntityMetadata,
     nonFrameworkProperties: PropertyMetadataDto[],
-    _metadataHelper: FormMetadataHelper
+    _metadataHelper: FormMetadataHelper,
   ): Promise<void> {
     try {
       // Add header components

@@ -43,7 +43,7 @@ export const calculatePositionShift = (row: Cell[], start: number, end: number):
 export const evaluateDynamicFilters = async (
   filters: IStoredFilter[],
   mappings: IMatchData[],
-  propertyMetadataAccessor: NestedPropertyMetadatAccessor
+  propertyMetadataAccessor: NestedPropertyMetadatAccessor,
 ): Promise<IStoredFilter[]> => {
   if (filters?.length === 0 || !mappings?.length) return filters;
 
@@ -103,7 +103,7 @@ export const evaluateDynamicFilters = async (
       }
 
       return Promise.resolve(filter);
-    })
+    }),
   );
 
   return convertedFilters;
@@ -113,7 +113,7 @@ export const evaluateDynamicFilters = async (
 export const evaluateDynamicFiltersSync = (
   filters: IStoredFilter[],
   mappings: IMatchData[],
-  propertyMetadata: NestedProperties
+  propertyMetadata: NestedProperties,
 ): IStoredFilter[] => {
   if (filters?.length === 0 || !mappings?.length) return filters;
 

@@ -178,7 +178,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
             componentUpdateSettingsValidationAction({
               componentId: payload.componentId,
               validationErrors,
-            })
+            }),
           );
         });
     }

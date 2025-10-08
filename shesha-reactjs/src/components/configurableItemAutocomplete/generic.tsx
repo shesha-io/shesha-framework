@@ -1,6 +1,6 @@
 import { Empty, Select, Spin, Typography } from 'antd';
-import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import { FC } from 'react';
+import React, { ReactNode, useEffect, useMemo, useRef, useState, FC } from 'react';
+
 import { useGet } from '@/hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '@/shesha-constants';
@@ -197,14 +197,14 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
     {
       lazy: true,
       queryParams: getListFetcherQueryParams(entityType, null, maxResultCount, filter),
-    }
+    },
   );
 
   const valueFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, any, IGenericGetAllPayload>(
     listEndpoint.url,
     {
       lazy: true,
-    }
+    },
   );
   useEffect(() => {
     if (valueFetcher.data?.success && valueFetcher.data.result) {
@@ -286,7 +286,7 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
       listFetcher.refetch({ queryParams: getListFetcherQueryParams(entityType, localValue, maxResultCount, filter) });
     },
     // delay in ms
-    100
+    100,
   );
 
 

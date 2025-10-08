@@ -5,7 +5,7 @@ import { addFile, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } 
 
 export function storedFilesReducer(
   incomingState: IStoredFilesStateContext,
-  action: ReduxActions.Action<IStoredFilesStateContext>
+  action: ReduxActions.Action<IStoredFilesStateContext>,
 ): IStoredFilesStateContext {
   //#region Register flags reducer
   const state = flagsReducer(incomingState, action) as IStoredFilesStateContext;
@@ -89,7 +89,7 @@ export function storedFilesReducer(
         return {
           ...state,
           fileList: state.fileList.filter(
-            (x) => !(x.uid === payload.fileId && x.status === 'error')
+            (x) => !(x.uid === payload.fileId && x.status === 'error'),
           ),
         };
 

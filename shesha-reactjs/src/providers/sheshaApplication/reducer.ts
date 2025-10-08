@@ -9,7 +9,7 @@ export default handleActions<ISheshaApplicationStateContext, any>(
   {
     [SheshaApplicationActionEnums.SetRequestHeaders]: (
       state: ISheshaApplicationStateContext,
-      action: ReduxActions.Action<IRequestHeaders>
+      action: ReduxActions.Action<IRequestHeaders>,
     ) => {
       const { payload } = action;
       const { httpHeaders } = state;
@@ -25,7 +25,7 @@ export default handleActions<ISheshaApplicationStateContext, any>(
 
     [SheshaApplicationActionEnums.SetBackendUrl]: (
       state: ISheshaApplicationStateContext,
-      action: ReduxActions.Action<string>
+      action: ReduxActions.Action<string>,
     ) => {
       const { payload } = action;
 
@@ -36,7 +36,7 @@ export default handleActions<ISheshaApplicationStateContext, any>(
     },
     [SheshaApplicationActionEnums.SetGlobalVariables]: (
       state: ISheshaApplicationStateContext,
-      action: ReduxActions.Action<{ [x: string]: any }>
+      action: ReduxActions.Action<{ [x: string]: any }>,
     ) => {
       const { payload } = action;
 
@@ -48,7 +48,7 @@ export default handleActions<ISheshaApplicationStateContext, any>(
 
     [SheshaApplicationActionEnums.RegisterFormDesignerComponents]: (
       state: ISheshaApplicationStateContext,
-      action: ReduxActions.Action<RegisterFormDesignerComponentsActionPayload>
+      action: ReduxActions.Action<RegisterFormDesignerComponentsActionPayload>,
     ) => {
       const { payload } = action;
 
@@ -68,5 +68,5 @@ export default handleActions<ISheshaApplicationStateContext, any>(
 
   },
 
-  SHESHA_APPLICATION_CONTEXT_INITIAL_STATE
+  SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
 );

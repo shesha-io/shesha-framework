@@ -1,7 +1,7 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState, FC } from 'react';
 import SearchBox from '../formDesigner/toolboxSearchBox';
 import { DataNode, EventDataNode } from 'antd/lib/tree';
-import { FC } from 'react';
+
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { Key } from 'rc-tree/lib/interface';
 import {
@@ -182,7 +182,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       onChange(
         keys?.checked.map((item) => {
           return item.toString();
-        })
+        }),
       );
   };
 
@@ -504,7 +504,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -531,7 +531,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -561,7 +561,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -588,7 +588,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   const getLoadingHint = (): string => {

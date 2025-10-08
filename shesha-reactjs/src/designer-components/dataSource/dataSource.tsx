@@ -53,7 +53,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
         { match: 'globalState', data: globalState },
         { match: 'pageContext', data: { ...pageContext?.getFull() } },
       ],
-      propertyMetadataAccessor
+      propertyMetadataAccessor,
     ).then((evaluatedFilters) => {
       setPredefinedFilters(evaluatedFilters);
     });

@@ -134,7 +134,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
       const filteredInputs = c.inputs?.filter((input) =>
         matchesQuery(input.label) ||
         matchesQuery(input.propertyName) ||
-        (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
+        (input.propertyName && matchesQuery(input.propertyName.split('.').join(' '))),
       ) || [];
 
       return {

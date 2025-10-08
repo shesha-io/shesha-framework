@@ -9,7 +9,7 @@ import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
 import { MetadataProvider } from '@/providers';
 import { IKanbanProps } from '@/components/kanban/model';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
-import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 
 interface IKanbanSettingsState extends IKanbanProps { }
 

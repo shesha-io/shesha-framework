@@ -64,7 +64,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
           return !((!granted || !isVisibleByCondition) && allData.form?.formMode !== 'designer');
         }),
-    [tabs]
+    [tabs],
   );
 
   const currentStep = visibleSteps[current];
@@ -158,7 +158,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
               actionConfiguration: afterAction,
               argumentsEvaluationContext,
             });
-        }
+        },
       );
     };
 
@@ -180,7 +180,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         executeActionIfConfigured(
           (tab) => tab.beforeNextActionConfiguration,
           (tab) => tab.afterNextActionConfiguration,
-          () => successCallback('next')
+          () => successCallback('next'),
         );
       }
     } catch (errInfo) {
@@ -200,14 +200,14 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   const cancel = (): void =>
     executeActionIfConfigured(
       (tab) => tab.beforeCancelActionConfiguration,
-      (tab) => tab.afterCancelActionConfiguration
+      (tab) => tab.afterCancelActionConfiguration,
     );
 
   const done = (): void => {
     try {
       executeActionIfConfigured(
         (tab) => tab.beforeDoneActionConfiguration,
-        (tab) => tab.afterDoneActionConfiguration
+        (tab) => tab.afterDoneActionConfiguration,
       );
     } catch (errInfo) {
       console.error("Couldn't Proceed", errInfo);
@@ -234,7 +234,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -248,7 +248,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -262,7 +262,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -276,7 +276,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -290,7 +290,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
 
   useConfigurableAction(
@@ -307,7 +307,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         return Promise.resolve();
       },
     },
-    actionDependencies
+    actionDependencies,
   );
   //#endregion
 

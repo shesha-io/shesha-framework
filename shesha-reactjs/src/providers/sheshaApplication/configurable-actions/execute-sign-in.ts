@@ -24,6 +24,6 @@ export const useExecuteSignIn = (): void => {
         return auth.loginUserAsync(data);
       },
     },
-    [backendUrl, httpHeaders]
+    [backendUrl, httpHeaders],
   );
 };

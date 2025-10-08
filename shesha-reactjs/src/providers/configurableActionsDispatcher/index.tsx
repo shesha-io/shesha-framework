@@ -46,7 +46,7 @@ const useConfigurableActionDispatcher = (): IConfigurableActionDispatcherActions
 
   if (context === undefined) {
     throw new Error(
-      'useConfigurableActionDispatcherActions must be used within a ConfigurableActionDispatcherProvider'
+      'useConfigurableActionDispatcherActions must be used within a ConfigurableActionDispatcherProvider',
     );
   }
 
@@ -245,7 +245,7 @@ const ConfigurableActionDispatcherConsumer = ConfigurableActionDispatcherActions
  */
 function useConfigurableAction<TArguments = IConfigurableActionArguments, TResponse = unknown>(
   payload: IRegisterActionPayload<TArguments, TResponse>,
-  deps?: DependencyList
+  deps?: DependencyList,
 ): void {
   const { registerAction, unregisterAction } = useConfigurableActionDispatcher();
 

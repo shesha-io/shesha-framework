@@ -33,7 +33,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
     formTypes.map((i) => {
       return { value: i };
-    })
+    }),
   );
 
   return (
@@ -143,7 +143,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
                     : formTypes
                   ).map((i) => {
                     return { value: i };
-                  })
+                  }),
                 )}
             />
           </SettingsFormItem>

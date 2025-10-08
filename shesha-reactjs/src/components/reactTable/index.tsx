@@ -127,7 +127,7 @@ export const ReactTable: FC<IReactTableProps> = ({
       width: 150, // width is used for both the flex-basis and flex-grow
       // maxWidth: 200, // maxWidth is only used as a limit for resizing
     }),
-    []
+    [],
   );
 
   const onChangeHeader = (callback: (...args: any) => void, rows: Row<any>[] | Row) => (e: ChangeEvent) => {
@@ -274,7 +274,7 @@ export const ReactTable: FC<IReactTableProps> = ({
           }
         });
       }
-    }
+    },
   );
 
   const { pageIndex, pageSize, selectedRowIds, sortBy } = state;
@@ -369,7 +369,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         /* nop*/
       };
 
-    return (data,) => {
+    return (data) => {
       const evaluationContext = {
         ...allData,
         data,
@@ -602,7 +602,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                         rightColumn.shadowPosition =
                           headerGroup?.headers?.length -
                           headerGroup?.headers?.filter(
-                            (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'right'
+                            (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'right',
                           ).length;
                       } else if (anchored?.direction === 'left') {
                         leftColumn.shift = (
@@ -615,7 +615,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
                         leftColumn.shadowPosition =
                           headerGroup?.headers?.filter(
-                            (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'left'
+                            (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'left',
                           ).length - 1;
                       }
                     }

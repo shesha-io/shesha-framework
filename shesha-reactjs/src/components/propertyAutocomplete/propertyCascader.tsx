@@ -4,8 +4,8 @@ import { useMetadata } from "@/providers";
 import { getIconByPropertyMetadata } from "@/utils/metadata";
 import { Cascader, CascaderProps, GetProp } from "antd";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
-import React, { CSSProperties, FC, ReactNode, useEffect, useMemo } from "react";
-import { useState } from "react";
+import React, { CSSProperties, FC, ReactNode, useEffect, useMemo, useState } from "react";
+
 
 type DefaultOptionType = GetProp<CascaderProps, "options">[number];
 
@@ -52,12 +52,12 @@ const filter = (inputValue: string, path: Option[]): boolean =>
   path.some(
     (option) =>
       option.labelText.toLowerCase().indexOf(inputValue.toLowerCase()) >
-      -1
+      -1,
   );
 
 const renderDotNotation = (
   labels: string[],
-  selectedOptions: Option[]
+  selectedOptions: Option[],
 ): ReactNode => {
   return labels.map((label, index) => {
     const option = selectedOptions && index <= selectedOptions.length - 1

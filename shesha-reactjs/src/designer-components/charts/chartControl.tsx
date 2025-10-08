@@ -161,7 +161,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
 
       // Pre-filter reference list properties and create lookup maps
       const refListProperties = (metaData.properties as Array<IRefListPropertyMetadata>).filter(
-        (metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item' && (metaItem.path.toLowerCase() === axisProperty.toLowerCase() || metaItem.path.toLowerCase() === groupingProperty?.toLowerCase())
+        (metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item' && (metaItem.path.toLowerCase() === axisProperty.toLowerCase() || metaItem.path.toLowerCase() === groupingProperty?.toLowerCase()),
       );
 
       const refListPromises = refListProperties.map(async (metaItem: IRefListPropertyMetadata) => {
@@ -201,7 +201,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
         orderBy,
         orderDirection,
         0,
-        maxResultCount ?? -1
+        maxResultCount ?? -1,
       );
 
       return refetch({ ...params, signal: newController.signal });

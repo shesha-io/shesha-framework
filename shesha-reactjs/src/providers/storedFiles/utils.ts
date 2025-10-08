@@ -12,14 +12,14 @@ export const addFile = (newFile, fileList = []): IStoredFile[] => {
   return fileList.map((file) =>
     file.uid === newFile.uid
       ? { ...newFile, uid: newFile.id }
-      : file
+      : file,
   );
 };
 
 export const updateDownloadedAFile = (fileList, fileId): IStoredFile[] => fileList?.map((file) =>
   file.id === fileId || file.uid === fileId
     ? { ...file, userHasDownloaded: true }
-    : file
+    : file,
 );
 
 export const updateAllFilesDownloaded = (fileList): IStoredFile[] => fileList?.map((file) => ({

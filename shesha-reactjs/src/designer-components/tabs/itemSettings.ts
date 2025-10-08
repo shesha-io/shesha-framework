@@ -175,7 +175,7 @@ export const getItemSettings = (): FormRawMarkup => {
                   hidden: false,
                   validate: {},
                   jsSetting: true,
-                }
+                },
               )
               .toJson(),
           ],

@@ -18,7 +18,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     display: flex;
     flex-direction: row;
         justify-content: flex-start;
-    }`
+    }`,
   );
 
   return {

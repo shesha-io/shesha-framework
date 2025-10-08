@@ -56,12 +56,12 @@ export const setReadOnlyAction = createAction<boolean, boolean>(FormActionEnums.
 
 export const dataPropertyAddAction = createAction<IAddDataPropertyPayload, IAddDataPropertyPayload>(
   FormActionEnums.DataPropertyAdd,
-  (p) => p
+  (p) => p,
 );
 
 export const componentAddAction = createAction<IComponentAddPayload, IComponentAddPayload>(
   FormActionEnums.ComponentAdd,
-  (p) => p
+  (p) => p,
 );
 
 export const componentAddFromTemplateAction = createAction<
@@ -71,17 +71,17 @@ export const componentAddFromTemplateAction = createAction<
 
 export const componentDeleteAction = createAction<IComponentDeletePayload, IComponentDeletePayload>(
   FormActionEnums.ComponentDelete,
-  (p) => p
+  (p) => p,
 );
 
 export const componentDuplicateAction = createAction<IComponentDuplicatePayload, IComponentDuplicatePayload>(
   FormActionEnums.ComponentDuplicate,
-  (p) => p
+  (p) => p,
 );
 
 export const componentUpdateAction = createAction<IComponentUpdatePayload, IComponentUpdatePayload>(
   FormActionEnums.ComponentUpdate,
-  (p) => p
+  (p) => p,
 );
 
 export const componentUpdateSettingsValidationAction = createAction<
@@ -91,12 +91,12 @@ export const componentUpdateSettingsValidationAction = createAction<
 
 export const changeMarkupAction = createAction<IFlatComponentsStructure, IFlatComponentsStructure>(
   FormActionEnums.ChangeMarkup,
-  (p) => p
+  (p) => p,
 );
 
 export const setFlatComponentsAction = createAction<IFlatComponentsStructure, IFlatComponentsStructure>(
   FormActionEnums.SetFlatComponentsAction,
-  (p) => p
+  (p) => p,
 );
 
 export const setDebugModeAction = createAction<boolean, boolean>(FormActionEnums.SetDebugMode, (p) => p);
@@ -110,27 +110,27 @@ export const endDraggingAction = createAction(FormActionEnums.EndDragging);
 
 export const setValidationErrorsAction = createAction<IFormValidationErrors, IFormValidationErrors>(
   FormActionEnums.SetValidationErrors,
-  (p) => p
+  (p) => p,
 );
 
 export const updateChildComponentsAction = createAction<IUpdateChildComponentsPayload, IUpdateChildComponentsPayload>(
   FormActionEnums.UpdateChildComponents,
-  (p) => p
+  (p) => p,
 );
 
 export const setSelectedComponentAction = createAction<ISetSelectedComponentPayload, ISetSelectedComponentPayload>(
   FormActionEnums.SetSelectedComponent,
-  (p) => p
+  (p) => p,
 );
 
 export const setPreviousSelectedComponentAction = createAction<ISetSelectedComponentPayload, ISetSelectedComponentPayload>(
   FormActionEnums.SetPreviousSelectedComponent,
-  (p) => p
+  (p) => p,
 );
 
 export const updateFormSettingsAction = createAction<IFormSettings, IFormSettings>(
   FormActionEnums.UpdateFormSettings,
-  (p) => p
+  (p) => p,
 );
 
 //#region
@@ -142,7 +142,7 @@ export const setActiveDataSourceAction = createAction<string, string>(FormAction
 
 export const updateToolboxComponentGroupsAction = createAction<IToolboxComponentGroup[], IToolboxComponentGroup[]>(
   FormActionEnums.UpdateToolboxComponentGroups,
-  (p) => p
+  (p) => p,
 );
 
 //#endregion

@@ -220,7 +220,7 @@ export const getResponsiveStyle = (props: IChartsProps): CSSProperties => {
  */
 export function filterNonNull<T extends object>(obj: T): Partial<T> {
   return Object.fromEntries(
-    Object.entries(obj).filter(([_, v]) => v !== null && v !== undefined)
+    Object.entries(obj).filter(([_, v]) => v !== null && v !== undefined),
   ) as Partial<T>;
 }
 
@@ -793,7 +793,7 @@ type FontConfig = { family: string; size: number; weight: string | number };
 export function createFontConfig(
   fontConfig?: { family?: string; size?: number; weight?: string; color?: string },
   defaultSize: number = 12,
-  defaultWeight: string | number = '400'
+  defaultWeight: string | number = '400',
 ): FontConfig {
   return {
     family: fontConfig?.family || 'Segoe UI',

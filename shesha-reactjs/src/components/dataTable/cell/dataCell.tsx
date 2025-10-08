@@ -75,14 +75,14 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     customComponent.settings,
     component,
     DEFAULT_FORM_SETTINGS,
-    { allComponents: { component: customComponent.settings }, componentRelations: {} }
+    { allComponents: { component: customComponent.settings }, componentRelations: {} },
   ), [customComponent.settings]);
 
   const actualModel = useActualContextData(
     model, props.readOnly ? true : undefined,
     {
       tableRow: injectables.injectedTableRow,
-    }
+    },
   );
 
   const componentModel: IConfigurableFormComponent = useDeepCompareMemo(() => {

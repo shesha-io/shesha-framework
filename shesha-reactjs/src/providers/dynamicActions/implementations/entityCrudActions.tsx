@@ -2,8 +2,8 @@ import { isEntityMetadata } from '@/interfaces/metadata';
 import { useMetadata } from '@/providers';
 import { ButtonGroupItemProps, IButtonGroupItem } from '@/providers/buttonGroupConfigurator/models';
 import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from '@/providers/dynamicActionsDispatcher/models';
-import React, { PropsWithChildren, useMemo } from 'react';
-import { FC } from 'react';
+import React, { PropsWithChildren, useMemo, FC } from 'react';
+
 import { DynamicActionsProvider } from '../index';
 import { wrapDisplayName } from '@/utils/react';
 

@@ -56,7 +56,7 @@ export const get = <
   path: string,
   queryParams: TQueryParams,
   props: Omit<GetProps<TData, TError, TQueryParams, _TPathParams>, 'queryParams'>,
-  signal?: RequestInit['signal']
+  signal?: RequestInit['signal'],
 ): Promise<TData | null> => {
   const url = constructUrl(props?.base, path, typeof (queryParams) === 'object' ? queryParams as object : undefined);
   const headers = {
@@ -101,7 +101,7 @@ export const mutate = <
   method: string,
   path: string,
   data: TRequestBody,
-  props: Omit<MutateProps<TData, TError, TQueryParams, TRequestBody, _TPathParams>, 'data'>
+  props: Omit<MutateProps<TData, TError, TQueryParams, TRequestBody, _TPathParams>, 'data'>,
 ): Promise<TData | null> => {
   let fixedPath = path;
   if (method === 'DELETE' && typeof data === 'string') {

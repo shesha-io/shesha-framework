@@ -1,5 +1,5 @@
-import { CSSProperties, FC, useEffect, useMemo, useRef, useState } from "react";
-import React from "react";
+import React, { CSSProperties, FC, useEffect, useMemo, useRef, useState } from "react";
+
 import { Button, Form, FormInstance } from "antd";
 import ConfigurableButton from "@/designer-components/button/configurableButton";
 import { pickStyleFromModel, StyleBoxValue, useTheme } from "@/index";
@@ -71,7 +71,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
     const handleScroll = (): void => {
       setShowLeftArrow(container.scrollLeft > 0);
       setShowRightArrow(
-        container.scrollLeft < container.scrollWidth - container.clientWidth
+        container.scrollLeft < container.scrollWidth - container.clientWidth,
       );
     };
 

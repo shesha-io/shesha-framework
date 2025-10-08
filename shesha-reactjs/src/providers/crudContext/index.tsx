@@ -201,7 +201,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
         const postData = filterDataByOutputComponents(
           removeGhostKeys(mergedData), // TODO: temporary use ghost keys for file upload components, form colums still not provide components structure
           props.editorComponents.allComponents,
-          toolboxComponents
+          toolboxComponents,
         );
         // send data of stored files
         if (Boolean(delayedUpdate)) postData._delayedUpdate = delayedUpdate.current;
@@ -236,7 +236,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
       performUpdate();
     },
     // delay in ms
-    300
+    300,
   );
 
   const performCreate = (): Promise<void> => {

@@ -48,7 +48,7 @@ export const getFormProps = (formSettings: IFormSettings): FormProps => ({
 
 export const getFormItemProps = (
   model: IPasswordComponentProps,
-  { formData, hidden }: IFormPropOptions
+  { formData, hidden }: IFormPropOptions,
 ): FormItemProps => ({
   className: classNames({ 'form-item-hidden': model?.hideLabel }),
   name: getFieldNameFromExpression(model?.propertyName),

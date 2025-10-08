@@ -19,7 +19,7 @@ export interface IProviderSettingsEditorProps {
 
 const getDefaultFactory = (
   markup: FormMarkup | FormMarkupFactory,
-  readOnly: boolean
+  readOnly: boolean,
 ): IConfigurableActionArgumentsFormFactory => {
   const component = ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }): JSX.Element => {
     const markupFactory = typeof markup === 'function' ? (markup as FormMarkupFactory) : () => markup as FormMarkup;

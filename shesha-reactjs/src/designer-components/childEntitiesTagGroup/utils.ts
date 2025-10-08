@@ -2,7 +2,7 @@ import { IChildEntitiesTagGroupSelectOptions } from './models';
 
 export const addChildEntitiesTagGroupOption = (
   values: IChildEntitiesTagGroupSelectOptions[],
-  option: IChildEntitiesTagGroupSelectOptions
+  option: IChildEntitiesTagGroupSelectOptions,
 ): IChildEntitiesTagGroupSelectOptions[] =>
   values.some(({ value }) => value === option?.value)
     ? values.map((item) => (item?.value === option?.value ? option : item))
