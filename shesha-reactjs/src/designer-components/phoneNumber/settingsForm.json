@@ -159,6 +159,15 @@
                         "textType": "text"
                     },
                     {
+                        "id": "phone_enable_search",
+                        "type": "checkbox",
+                        "propertyName": "enableSearch",
+                        "parentId": "phone_display_content",
+                        "label": "Enable Search",
+                        "description": "Enable search functionality in country dropdown",
+                        "version": 2
+                    },
+                    {
                         "id": "phone_enable_arrow",
                         "type": "checkbox",
                         "propertyName": "enableArrow",

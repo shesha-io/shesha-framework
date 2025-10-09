@@ -1,17 +1,21 @@
 import { PhoneOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { CSSProperties, useState } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getEventHandlers } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
+import { evaluateString, getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IPhoneNumberInputComponentProps, IPhoneNumberValue } from './interface';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { ReadOnlyDisplayFormItem } from '@/components/readOnlyDisplayFormItem';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import PhoneInput from 'antd-phone-input';
 import settingsFormJson from './settingsForm.json';
+import { removeUndefinedProps } from '@/utils/object';
+
+const settingsForm = settingsFormJson as FormMarkup;
 
 const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentProps> = {
     type: 'phoneNumberInput',
@@ -40,32 +44,62 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
         const allData = useAvailableConstantsData();
         const [isValid, setIsValid] = useState(true);
 
+        const styling = JSON.parse(model.stylingBox || '{}');
+        const stylingBoxAsCSS = pickStyleFromModel(styling);
+
+        const additionalStyles: CSSProperties = removeUndefinedProps({
+            ...stylingBoxAsCSS,
+        });
+        const jsStyle = getStyle(model.style, allData.data);
+        const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
+
         if (hidden) return null;
 
         return (
-            <ConfigurableFormItem model={model}>
+            <ConfigurableFormItem
+                model={model}
+                initialValue={
+                    model.initialValue
+                        ? evaluateString(model.initialValue, {
+                            formData: allData.data,
+                            formMode: allData.form.formMode,
+                            globalState: allData.globalState,
+                        })
+                        : undefined
+                }
+            >
                 {(value, onChange) => {
-                    const eventHandlers = getEventHandlers(model, allData);
+                    const customEvents = getEventHandlers(model, allData);
 
                     const onChangeInternal = (phoneValue: any) => {
                         if (!phoneValue || !phoneValue?.areaCode) {
                             setIsValid(true);
-                            eventHandlers?.onChange?.({ target: { value: '' } } as any);
+                            const syntheticEvent = {
+                                target: { value: '' },
+                                currentTarget: { value: '' },
+                                phoneValue,
+                            };
+                            customEvents?.onChange?.(syntheticEvent as any);
                             onChange?.('');
                             return;
                         }
 
                         // Validate phone number format using the library's built-in validation
-                        const isValidFormat = phoneValue.valid ? phoneValue.valid() : true;
+                        const isValidFormat = phoneValue.valid !== undefined ? phoneValue.valid : true;
                         setIsValid(isValidFormat);
 
                         if (!isValidFormat) {
                             // Don't save invalid phone numbers, but still fire the event
-                            eventHandlers?.onChange?.({ target: { value: '' } } as any);
+                            const syntheticEvent = {
+                                target: { value: '' },
+                                currentTarget: { value: '' },
+                                phoneValue,
+                            };
+                            customEvents?.onChange?.(syntheticEvent as any);
                             return;
                         }
 
-                        const fullNumber = `+${phoneValue.countryCode}${phoneValue.areaCode}${phoneValue.phoneNumber}`;
+                        const fullNumber = `+${phoneValue.countryCode || ''}${phoneValue.areaCode || ''}${phoneValue.phoneNumber || ''}`;
 
                         const outputValue: string | IPhoneNumberValue = model.valueFormat === 'object' ? {
                             number: fullNumber,
@@ -73,7 +107,12 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
                             countryCode: phoneValue?.isoCode || '',
                         } : fullNumber;
 
-                        eventHandlers?.onChange?.({ target: { value: outputValue } } as any);
+                        const syntheticEvent = {
+                            target: { value: outputValue },
+                            currentTarget: { value: outputValue },
+                            phoneValue,
+                        };
+                        customEvents?.onChange?.(syntheticEvent as any);
                         onChange?.(outputValue);
                     };
 
@@ -89,31 +128,26 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
 
                     const displayValue = typeof value === 'string' ? value : (value as IPhoneNumberValue)?.number;
 
-                    const onFocusInternal = (e: React.FocusEvent<HTMLInputElement>) => {
-                        eventHandlers?.onFocus?.(e);
-                    };
-
-                    const onBlurInternal = (e: React.FocusEvent<HTMLInputElement>) => {
-                        eventHandlers?.onBlur?.(e);
-                    };
-
                     return readOnly ? (
-                        <ReadOnlyDisplayFormItem value={displayValue} />
+                        <ReadOnlyDisplayFormItem
+                            value={displayValue}
+                            disabled={readOnly}
+                        />
                     ) : (
                         <PhoneInput
+                            {...customEvents}
                             placeholder={model.placeholder}
                             size={model.size}
                             disabled={readOnly}
                             allowClear={allowClear}
                             value={phoneInputValue}
                             onChange={onChangeInternal}
-                            onFocus={onFocusInternal}
-                            onBlur={onBlurInternal}
                             enableSearch={enableSearch}
                             enableArrow={enableArrow}
                             disableParentheses={disableParentheses}
                             country={country || defaultCountry || 'za'}
                             status={!isValid ? 'error' : undefined}
+                            style={finalStyle}
                             {...(searchNotFound && { searchNotFound })}
                             {...(onlyCountries && onlyCountries.length > 0 && { onlyCountries })}
                             {...(excludeCountries && excludeCountries.length > 0 && { excludeCountries })}
@@ -124,15 +158,24 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
             </ConfigurableFormItem>
         );
     },
-    settingsFormMarkup: settingsFormJson as any,
-    validateSettings: (model) => validateConfigurableComponentSettings(settingsFormJson as any, model),
+    settingsFormMarkup: settingsForm,
+    validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
     initModel: (model) => ({ ...model, valueFormat: 'fullNumber', defaultCountry: 'za', enableArrow: true, enableSearch: true }),
     migrator: (m) => m
         .add<IPhoneNumberInputComponentProps>(0, (prev) => ({ ...prev, valueFormat: 'fullNumber', defaultCountry: 'za', enableArrow: true, enableSearch: true }))
         .add<IPhoneNumberInputComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
         .add<IPhoneNumberInputComponentProps>(2, (prev) => migrateVisibility(prev))
         .add<IPhoneNumberInputComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))
-        .add<IPhoneNumberInputComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
+        .add<IPhoneNumberInputComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+        .add<IPhoneNumberInputComponentProps>(5, (prev) => {
+            const styles: IInputStyles = {
+                size: prev.size,
+                stylingBox: prev.stylingBox,
+                style: prev.style,
+            };
+
+            return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+        }),
     linkToModelMetadata: (model): IPhoneNumberInputComponentProps => model,
 };
 
