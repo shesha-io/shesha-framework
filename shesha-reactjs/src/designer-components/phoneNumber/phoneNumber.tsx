@@ -4,13 +4,10 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { getEventHandlers } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { FormMarkup, IInputStyles } from '@/providers/form/models';
+import { FormMarkup } from '@/providers/form/models';
 import { evaluateString, getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IPhoneNumberInputComponentProps, IPhoneNumberValue } from './interface';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import PhoneInput from 'antd-phone-input';
 import settingsFormJson from './settingsForm.json';
 import { removeUndefinedProps } from '@/utils/object';
@@ -72,41 +69,32 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
                     const customEvents = getEventHandlers(model, allData);
 
                     const onChangeInternal = (phoneValue: any) => {
+                        // Prepare the output value
+                        let outputValue: string | IPhoneNumberValue | null = null;
+                        let isValidFormat = true;
+
                         if (!phoneValue || !phoneValue?.areaCode) {
                             setIsValid(true);
-                            const syntheticEvent = {
-                                target: { value: '' },
-                                currentTarget: { value: '' },
-                                phoneValue,
-                            };
-                            customEvents?.onChange?.(syntheticEvent as any);
-                            onChange?.('');
-                            return;
+                            outputValue = '';
+                        } else {
+                            // Validate phone number format using the library's built-in validation
+                            isValidFormat = phoneValue.valid !== undefined ? phoneValue.valid : true;
+                            setIsValid(isValidFormat);
+
+                            if (!isValidFormat) {
+                                outputValue = '';
+                            } else {
+                                const fullNumber = `+${phoneValue.countryCode || ''}${phoneValue.areaCode || ''}${phoneValue.phoneNumber || ''}`;
+
+                                outputValue = model.valueFormat === 'object' ? {
+                                    number: fullNumber,
+                                    dialCode: phoneValue?.countryCode ? `+${phoneValue.countryCode}` : '',
+                                    countryCode: phoneValue?.isoCode || '',
+                                } : fullNumber;
+                            }
                         }
 
-                        // Validate phone number format using the library's built-in validation
-                        const isValidFormat = phoneValue.valid !== undefined ? phoneValue.valid : true;
-                        setIsValid(isValidFormat);
-
-                        if (!isValidFormat) {
-                            // Don't save invalid phone numbers, but still fire the event
-                            const syntheticEvent = {
-                                target: { value: '' },
-                                currentTarget: { value: '' },
-                                phoneValue,
-                            };
-                            customEvents?.onChange?.(syntheticEvent as any);
-                            return;
-                        }
-
-                        const fullNumber = `+${phoneValue.countryCode || ''}${phoneValue.areaCode || ''}${phoneValue.phoneNumber || ''}`;
-
-                        const outputValue: string | IPhoneNumberValue = model.valueFormat === 'object' ? {
-                            number: fullNumber,
-                            dialCode: phoneValue?.countryCode ? `+${phoneValue.countryCode}` : '',
-                            countryCode: phoneValue?.isoCode || '',
-                        } : fullNumber;
-
+                        // Execute events
                         const syntheticEvent = {
                             target: { value: outputValue },
                             currentTarget: { value: outputValue },
@@ -148,10 +136,10 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
                             country={country || defaultCountry || 'za'}
                             status={!isValid ? 'error' : undefined}
                             style={finalStyle}
-                            {...(searchNotFound && { searchNotFound })}
-                            {...(onlyCountries && onlyCountries.length > 0 && { onlyCountries })}
-                            {...(excludeCountries && excludeCountries.length > 0 && { excludeCountries })}
-                            {...(preferredCountries && preferredCountries.length > 0 && { preferredCountries })}
+                            searchNotFound={searchNotFound}
+                            onlyCountries={onlyCountries}
+                            excludeCountries={excludeCountries?.length > 0 ? excludeCountries : undefined}
+                            preferredCountries={preferredCountries?.length > 0 ? preferredCountries : undefined}
                         />
                     );
                 }}
@@ -160,22 +148,8 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
     },
     settingsFormMarkup: settingsForm,
     validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-    initModel: (model) => ({ ...model, valueFormat: 'fullNumber', defaultCountry: 'za', enableArrow: true, enableSearch: true }),
     migrator: (m) => m
-        .add<IPhoneNumberInputComponentProps>(0, (prev) => ({ ...prev, valueFormat: 'fullNumber', defaultCountry: 'za', enableArrow: true, enableSearch: true }))
-        .add<IPhoneNumberInputComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-        .add<IPhoneNumberInputComponentProps>(2, (prev) => migrateVisibility(prev))
-        .add<IPhoneNumberInputComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))
-        .add<IPhoneNumberInputComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-        .add<IPhoneNumberInputComponentProps>(5, (prev) => {
-            const styles: IInputStyles = {
-                size: prev.size,
-                stylingBox: prev.stylingBox,
-                style: prev.style,
-            };
-
-            return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-        }),
+        .add<IPhoneNumberInputComponentProps>(0, (prev) => ({ ...prev, valueFormat: 'fullNumber', defaultCountry: 'za', enableArrow: true, enableSearch: true })),
     linkToModelMetadata: (model): IPhoneNumberInputComponentProps => model,
 };
 

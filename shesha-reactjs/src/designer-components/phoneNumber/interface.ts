@@ -14,6 +14,7 @@ export interface IPhoneNumberInputComponentProps extends IConfigurableFormCompon
     tablet?: CSSProperties;
     mobile?: CSSProperties;
     placeholder?: string;
+    initialValue?: string;
     valueFormat?: ValueFormat;
     country?: string;
     defaultCountry?: string;
