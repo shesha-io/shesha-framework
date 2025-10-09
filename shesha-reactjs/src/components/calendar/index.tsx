@@ -23,6 +23,7 @@ import {
 } from '@/index';
 import { ICalendarLayersProps } from '@/providers/layersProvider/models';
 import { ICalendarProps } from '@/designer-components/calendar/interfaces';
+import { DataContextProvider } from '@/providers/dataContextProvider';
 
 moment.locale('en-za');
 const localizer = momentLocalizer(moment);
@@ -37,7 +38,9 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     onViewChange,
     externalStartDate,
     externalEndDate,
-    styles
+    styles,
+    componentName,
+    id
   } = props;
 
   const { executeAction } = useConfigurableActionDispatcher();
@@ -78,13 +81,17 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
 
   // Handle external date changes
   useEffect(() => {
-    executeScript(externalStartDate, { data, globalState, httpClient, form, backendUrl }).then(res => {
-      setInternalStartDate(res);
-    });
-    executeScript(externalEndDate, { data, globalState, httpClient, form, backendUrl }).then(res => {
-      setInternalEndDate(res ? res : internalStartDate);
-    });
-  }, [externalStartDate, externalEndDate, data, globalState, httpClient, form, backendUrl]);
+    if (externalStartDate) {
+      executeScript(externalStartDate, allData).then(res => {
+        setInternalStartDate(res);
+      });
+    }
+    if (externalEndDate) {
+      executeScript(externalEndDate, allData).then(res => {
+        setInternalEndDate(res ? res : internalStartDate);
+      });
+    }
+  }, [externalStartDate, externalEndDate, allData]);
 
   // Fetch initial data
   useEffect(() => {
@@ -245,39 +252,64 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     </div>
   );
 
-  if (!displayPeriod?.length) {
-    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Selected Calendar Views!" />;
+  const exposedData = useMemo(() => Promise.resolve({
+    events: updatedEvents,
+    defaultView,
+    startDate: internalStartDate,
+    endDate: internalEndDate,
+    visibleLayers: defaultVisibleLayers,
+  }), [updatedEvents, defaultView, internalStartDate, internalEndDate, defaultVisibleLayers]);
+
+  const calendarContent = () => {
+    if (!displayPeriod?.length) {
+      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Selected Calendar Views!" />;
+    }
+
+    return (
+      <>
+        {renderHeader()}
+        <Calendar
+          views={displayPeriod as any}
+          onView={(view) => {
+            updateDefaultCalendarView(view);
+            setDefaultView(view);
+            handleViewChange(view);
+          }}
+          selectable
+          localizer={localizer}
+          defaultDate={new Date()}
+          view={displayPeriod?.includes(defaultView) ? defaultView : displayPeriod?.[0]}
+          events={updatedEvents.concat(dummyEvent)}
+          style={styles}
+          onSelectEvent={handleCustomSelect}
+          onDoubleClickEvent={handleCustomDoubleClick}
+          onSelectSlot={handleSlotClick}
+          eventPropGetter={(event: any) => ({
+            style: { backgroundColor: event.color || primaryColor, height: '100%' },
+          })}
+          components={{
+            event: EventComponent,
+          }}
+          dayPropGetter={(date: Date) => getDayStyles(date, minDate, maxDate)}
+        />
+      </>
+    );
+  };
+
+  if (componentName) {
+    return (
+      <DataContextProvider
+        id={id}
+        name={componentName}
+        type="control"
+        initialData={exposedData}
+      >
+        {calendarContent()}
+      </DataContextProvider>
+    );
   }
 
-  return (
-    <>
-      {renderHeader()}
-      <Calendar
-        views={displayPeriod as any}
-        onView={(view) => {
-          updateDefaultCalendarView(view);
-          setDefaultView(view);
-          handleViewChange(view);
-        }}
-        selectable
-        localizer={localizer}
-        defaultDate={new Date()}
-        view={displayPeriod?.includes(defaultView) ? defaultView : displayPeriod?.[0]}
-        events={updatedEvents.concat(dummyEvent)}
-        style={styles}
-        onSelectEvent={handleCustomSelect}
-        onDoubleClickEvent={handleCustomDoubleClick}
-        onSelectSlot={handleSlotClick}
-        eventPropGetter={(event: any) => ({
-          style: { backgroundColor: event.color || primaryColor, height: '100%' },
-        })}
-        components={{
-          event: EventComponent,
-        }}
-        dayPropGetter={(date: Date) => getDayStyles(date, minDate, maxDate)}
-      />
-    </>
-  );
+  return calendarContent();
 };
 
 export default CalendarControl;
