@@ -7,7 +7,7 @@ import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { FormMarkup } from '@/providers/form/models';
 import { evaluateString, getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IPhoneNumberInputComponentProps, IPhoneNumberValue } from './interface';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { ReadOnlyDisplayFormItem } from '@/components/readOnlyDisplayFormItem';
 import PhoneInput from 'antd-phone-input';
 import settingsFormJson from './settingsForm.json';
 import { removeUndefinedProps } from '@/utils/object';
@@ -78,7 +78,7 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
                             outputValue = '';
                         } else {
                             // Validate phone number format using the library's built-in validation
-                            isValidFormat = phoneValue.valid !== undefined ? phoneValue.valid : true;
+                            isValidFormat = typeof phoneValue.valid === 'function' ? phoneValue.valid() : true;
                             setIsValid(isValidFormat);
 
                             if (!isValidFormat) {
@@ -119,7 +119,6 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
                     return readOnly ? (
                         <ReadOnlyDisplayFormItem
                             value={displayValue}
-                            disabled={readOnly}
                         />
                     ) : (
                         <PhoneInput
