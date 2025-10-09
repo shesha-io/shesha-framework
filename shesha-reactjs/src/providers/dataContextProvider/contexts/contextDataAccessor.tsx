@@ -68,13 +68,13 @@ export const useShaDataContextAccessor = <TData extends object = object>(
         setFieldValue,
         setData,
         needStore ? storedData : undefined,
-        needStore ? setStorageData : undefined
+        needStore ? setStorageData : undefined,
       ) as IShaDataWrapper<TData>
       : GetShaContextDataAccessor<TData>(
         setFieldValue,
         setData,
         needStore ? storedData : undefined,
-        needStore ? setStorageData : undefined
+        needStore ? setStorageData : undefined,
       ) as IShaDataWrapper<TData>;
 
   storage.current = storage.current ?? getDataContextAccessor();

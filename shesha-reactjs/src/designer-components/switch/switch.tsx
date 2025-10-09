@@ -43,16 +43,16 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
 
 
           return (
-<Switch
-  className="sha-switch"
-  disabled={model.readOnly}
-  style={finalStyle}
-  size={model.size as SwitchSize}
-  checked={value}
-  defaultChecked={model.defaultChecked}
-  defaultValue={model.defaultValue}
-  onChange={onChangeInternal}
-/>
+            <Switch
+              className="sha-switch"
+              disabled={model.readOnly}
+              style={finalStyle}
+              size={model.size as SwitchSize}
+              checked={value}
+              defaultChecked={model.defaultChecked}
+              defaultValue={model.defaultValue}
+              onChange={onChangeInternal}
+            />
           );
         }}
       </ConfigurableFormItem>
