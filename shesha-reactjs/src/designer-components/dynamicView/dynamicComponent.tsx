@@ -35,7 +35,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
     deviceModel,
     undefined,
     undefined,
-    (name: string) => formComponentActualModelPropertyFilter(toolboxComponent, name),
+    (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
     undefined,
   );
 
