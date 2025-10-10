@@ -14,11 +14,6 @@ import {
   executeScript,
   useAvailableConstantsData,
   useConfigurableActionDispatcher,
-  useForm,
-  useFormData,
-  useGlobalState,
-  useHttpClient,
-  useSheshaApplication,
   useTheme
 } from '@/index';
 import { ICalendarLayersProps } from '@/providers/layersProvider/models';
@@ -47,11 +42,6 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const allData = useAvailableConstantsData();
   const { theme } = useTheme();
   const { styles: calendarStyles } = useCalendarStyles();
-  const { backendUrl } = useSheshaApplication();
-  const httpClient = useHttpClient();
-  const { data } = useFormData();
-  const form = useForm();
-  const { globalState } = useGlobalState();
   const { layerEvents, fetchData, fetchDefaultCalendarView, updateDefaultCalendarView } = useCalendarLayers(items);
 
   const [events, setEvents] = useState<any>([]);

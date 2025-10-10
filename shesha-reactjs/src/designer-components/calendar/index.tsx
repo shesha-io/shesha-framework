@@ -16,7 +16,7 @@ const CalendarComponent: IToolboxComponent<ICalendarProps> = {
   name: 'Calendar',
   icon: <FolderOpenOutlined />,
   Factory: ({ model }) => {
-    const { description, allStyles } = model;
+    const { allStyles } = model;
 
     if (model.hidden) return null;
 
@@ -31,7 +31,6 @@ const CalendarComponent: IToolboxComponent<ICalendarProps> = {
           <CalendarControl
             {...model}
             styles={additionalStyles}
-            description={description}
           />
         </CalendarActionsAccessor>
       </LayerGroupConfiguratorProvider>
