@@ -85,7 +85,7 @@ const GenericListEditorProvider = <TItem extends object>({
 
   const refresh = (applyValue: boolean): void => {
     if (applyValue)
-      onChange(value);
+      onChange(value ? [...value] : value);
 
     forceUpdate();
   };
