@@ -90,20 +90,6 @@ export const getSettings = (data: any) => {
                                             description: 'Use javascript to set the start date to reflect on the calendar',
                                             language: 'javascript',
                                             wrapInTemplate: true,
-                                            exposedVariables: [
-                                                {
-                                                    id: nanoid(),
-                                                    name: 'data',
-                                                    description: 'Form data',
-                                                    type: 'object',
-                                                },
-                                                {
-                                                    id: nanoid(),
-                                                    name: 'globalState',
-                                                    description: 'The global state',
-                                                    type: 'object',
-                                                },
-                                            ]
                                         },
                                         {
                                             type: 'codeEditor',
@@ -113,20 +99,6 @@ export const getSettings = (data: any) => {
                                             description: 'Use javascript to set the end date to reflect on the calendar',
                                             language: 'javascript',
                                             wrapInTemplate: true,
-                                            exposedVariables: [
-                                                {
-                                                    id: nanoid(),
-                                                    name: 'data',
-                                                    description: 'Form data',
-                                                    type: 'object',
-                                                },
-                                                {
-                                                    id: nanoid(),
-                                                    name: 'globalState',
-                                                    description: 'The global state',
-                                                    type: 'object',
-                                                },
-                                            ]
                                         }
                                     ]
                                 })
