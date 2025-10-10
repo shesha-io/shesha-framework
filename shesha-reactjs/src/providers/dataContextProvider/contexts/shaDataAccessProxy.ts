@@ -3,30 +3,31 @@ import { IFormApi } from "../../form/formApi";
 import { getValueByPropertyName, hasProperty, safeGetProperty } from "@/utils/object";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { FieldValueGetter, FieldValueSetter, Path } from '@/utils/dotnotation';
+import { ContextSetData, ContextSetFieldValue } from "../contexts";
 
 export interface IHasGetAccessorValue {
   getAccessorValue: () => unknown;
 };
 
-export interface IShaDataAccessor<TData = unknown> extends IHasGetAccessorValue {
-  setFieldValue: FieldValueSetter<TData>;
+export interface IShaDataAccessor<TData extends object> extends IHasGetAccessorValue {
+  setFieldValue: ContextSetFieldValue<TData>;
+  setData: ContextSetData<TData>;
   getFieldValue: FieldValueGetter<TData>;
   getData: () => TData;
-  setData: (data: TData) => void;
 }
 
-export type IShaDataWrapper<TData> = TData & IShaDataAccessor<TData>;
+export type IShaDataWrapper<TData extends object> = TData & IShaDataAccessor<TData>;
 
-export interface IHasDataAccessor<TData = unknown> extends IHasGetAccessorValue {
+export interface IHasDataAccessor<TData extends object> extends IHasGetAccessorValue {
   readonly accessor: IShaDataAccessor<TData>;
 }
 
-export type IShaDataAccessorWithNested<TData = unknown> = IShaDataAccessor<TData> & IHasDataAccessor<TData>;
+export type IShaDataAccessorWithNested<TData extends object> = IShaDataAccessor<TData> & IHasDataAccessor<TData>;
 
 export const CreateDataAccessor = <TData extends object = object>(
   getData: () => TData,
-  setData: (data: TData) => void,
-  setFieldValue: FieldValueSetter<TData>,
+  setData: ContextSetData<TData>,
+  setFieldValue: ContextSetFieldValue<TData>,
   propertyName?: Path<TData>,
 ): IShaDataAccessor<TData> => {
   const data = getValueByPropertyName(getData(), isDefined(propertyName) ? propertyName : '');
@@ -91,13 +92,13 @@ export const CreateDataAccessor = <TData extends object = object>(
 export class ShaObjectAccessProxy<TData extends object = object> implements IShaDataAccessor<TData>, IHasDataAccessor<TData> {
   readonly accessor: ShaDataAccessor<TData>;
 
-  setFieldValue: FieldValueSetter<TData> = (name, value) => this.accessor.setFieldValue(name, value);
+  setFieldValue: ContextSetFieldValue<TData> = (name, value, refreshContext) => this.accessor.setFieldValue(name, value, refreshContext);
+
+  setData: ContextSetData<TData> = (data: TData, refreshContext): void => this.accessor.setData(data, refreshContext);
 
   getFieldValue: FieldValueGetter<TData> = (name) => this.accessor.getFieldValue(name);
 
   getData = (): TData => this.accessor.getData();
-
-  setData = (data: TData): void => this.accessor.setData(data);
 
   getAccessorValue = (): unknown => this.accessor.getAccessorValue();
 
@@ -109,13 +110,13 @@ export class ShaObjectAccessProxy<TData extends object = object> implements ISha
 export class ShaArrayAccessProxy<TData extends object = Array<unknown>> extends Array implements IShaDataAccessor<TData>, IHasDataAccessor<TData> {
   readonly accessor: IShaDataAccessor<TData>;
 
-  setFieldValue: FieldValueSetter<TData> = (name, value) => this.accessor.setFieldValue(name, value);
+  setFieldValue: ContextSetFieldValue<TData> = (name, value, refreshContext) => this.accessor.setFieldValue(name, value, refreshContext);
+
+  setData: ContextSetData<TData> = (data: TData, refreshContext): void => this.accessor.setData(data, refreshContext);
 
   getFieldValue: FieldValueGetter<TData> = (name) => this.accessor.getFieldValue(name);
 
   getData = (): TData => this.accessor.getData();
-
-  setData = (data: TData): void => this.accessor.setData(data);
 
   getAccessorValue = (): unknown => this.accessor.getAccessorValue();
 
@@ -128,9 +129,9 @@ export class ShaArrayAccessProxy<TData extends object = Array<unknown>> extends 
 export class ShaDataAccessor<TData extends object = object> implements IShaDataAccessor<TData> {
   readonly getData: () => TData;
 
-  readonly setData: (data: TData) => void;
+  readonly setData: ContextSetData<TData>;
 
-  readonly _setFieldValue: FieldValueSetter<TData>;
+  readonly _setFieldValue: ContextSetFieldValue<TData>;
 
   readonly propertyName: Path<TData> | undefined;
 
@@ -165,8 +166,8 @@ export class ShaDataAccessor<TData extends object = object> implements IShaDataA
     return propValue;
   };
 
-  setFieldValue: FieldValueSetter<TData> = (propertyName, value) => {
-    this._setFieldValue(this.getFullPropertyName(propertyName), value);
+  setFieldValue: ContextSetFieldValue<TData> = (propertyName, value, refreshContext) => {
+    this._setFieldValue(this.getFullPropertyName(propertyName), value, refreshContext);
   };
 
   constructor(getData: () => TData, setData: (data: TData) => void, setFieldValue: FieldValueSetter<TData>, propertyName?: Path<TData>) {
