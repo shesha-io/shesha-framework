@@ -78,7 +78,7 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
                             outputValue = '';
                         } else {
                             // Validate phone number format using the library's built-in validation
-                            isValidFormat = typeof phoneValue.valid === 'function' ? phoneValue.valid() : true;
+                            isValidFormat = typeof phoneValue.valid === 'function' ? phoneValue.valid() : false;
                             setIsValid(isValidFormat);
 
                             if (!isValidFormat) {
@@ -122,7 +122,8 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
                         />
                     ) : (
                         <PhoneInput
-                            {...customEvents}
+                            onBlur={customEvents?.onBlur}
+                            onFocus={customEvents?.onFocus}
                             placeholder={model.placeholder}
                             size={model.size}
                             disabled={readOnly}

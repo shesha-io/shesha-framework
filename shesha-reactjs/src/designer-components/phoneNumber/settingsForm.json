@@ -354,6 +354,98 @@
                             "functionName": "onChange"
                         },
                         "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"value\", \"Component current value (phone number)\")\r\n        .addObject(\"phoneValue\", \"Raw phone input object\")\r\n        .build();"
+                    },
+                    {
+                        "id": "phone_on_blur",
+                        "type": "codeEditor",
+                        "propertyName": "onBlurCustom",
+                        "label": "On Blur",
+                        "labelAlign": "right",
+                        "parentId": "phone_events_content",
+                        "hidden": false,
+                        "description": "Custom event handler triggered when the phone input loses focus",
+                        "validate": {},
+                        "settingsValidationErrors": [],
+                        "exposedVariables": [
+                            {
+                                "name": "data",
+                                "description": "Selected form values",
+                                "type": "object"
+                            },
+                            {
+                                "name": "form",
+                                "description": "Form instance",
+                                "type": "FormInstance"
+                            },
+                            {
+                                "name": "formMode",
+                                "description": "The form mode",
+                                "type": "'readonly' | 'edit' | 'designer'"
+                            },
+                            {
+                                "name": "globalState",
+                                "description": "The global state of the application",
+                                "type": "object"
+                            },
+                            {
+                                "name": "event",
+                                "description": "The blur event object",
+                                "type": "FocusEvent"
+                            }
+                        ],
+                        "version": 3,
+                        "language": "typescript",
+                        "placeholder": "",
+                        "wrapInTemplate": true,
+                        "templateSettings": {
+                            "functionName": "onBlur"
+                        }
+                    },
+                    {
+                        "id": "phone_on_focus",
+                        "type": "codeEditor",
+                        "propertyName": "onFocusCustom",
+                        "label": "On Focus",
+                        "labelAlign": "right",
+                        "parentId": "phone_events_content",
+                        "hidden": false,
+                        "description": "Custom event handler triggered when the phone input receives focus",
+                        "validate": {},
+                        "settingsValidationErrors": [],
+                        "exposedVariables": [
+                            {
+                                "name": "data",
+                                "description": "Selected form values",
+                                "type": "object"
+                            },
+                            {
+                                "name": "form",
+                                "description": "Form instance",
+                                "type": "FormInstance"
+                            },
+                            {
+                                "name": "formMode",
+                                "description": "The form mode",
+                                "type": "'readonly' | 'edit' | 'designer'"
+                            },
+                            {
+                                "name": "globalState",
+                                "description": "The global state of the application",
+                                "type": "object"
+                            },
+                            {
+                                "name": "event",
+                                "description": "The focus event object",
+                                "type": "FocusEvent"
+                            }
+                        ],
+                        "version": 3,
+                        "language": "typescript",
+                        "placeholder": "",
+                        "wrapInTemplate": true,
+                        "templateSettings": {
+                            "functionName": "onFocus"
+                        }
                     }
                 ]
             },
