@@ -37,6 +37,8 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+
+  isOutsideDataContext?: boolean;
 }
 
 export interface IDataListBaseProps extends IStyleType {
@@ -95,6 +97,9 @@ interface IDataListActions {
   onRowsChanged?: (rows: object[]) => void;
 
   changeSelectedIds?: (selectedIds: string[]) => void;
+
+  /** Called when form properties are discovered and need to be registered with datacontext */
+  onFormPropertiesDiscovered?: (properties: string[]) => void;
 
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;
   updateAction?: (rowIndex: number, data: any) => Promise<any>;
