@@ -10,7 +10,14 @@ import { gradientDirectionOptions } from '../_settings/utils/background/utils';
 import { InputRow } from '../settingsInputRow';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
 
-export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }): ReactElement => {
+type MultiColorInputProps = {
+  value: { [key: string]: string | undefined };
+  onChange: (newColor: { [key: string]: string }) => void;
+  readOnly?: boolean;
+  propertyName: string;
+};
+
+export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }: MultiColorInputProps): ReactElement => {
   const { theme } = useTheme();
   const [colors, setColors] = useState(value);
 

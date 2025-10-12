@@ -48,10 +48,10 @@ export interface CustomLoaderSettings {
   onDataLoad: string;
 }
 
-export const isGqlLoaderSettings = (s: any): s is GqlLoaderSettings => {
-  return s && typeof s === 'object' && s.endpointType;
+export const isGqlLoaderSettings = (s: unknown): s is GqlLoaderSettings => {
+  return s && typeof s === 'object' && "endpointType" in s && typeof (s.endpointType) === 'string';
 };
 
-export const isCustomLoaderSettings = (s: any): s is CustomLoaderSettings => {
-  return s && typeof s === 'object' && s.onDataLoad;
+export const isCustomLoaderSettings = (s: unknown): s is CustomLoaderSettings => {
+  return s && typeof s === 'object' && "onDataLoad" in s && typeof (s.onDataLoad) === 'string';
 };

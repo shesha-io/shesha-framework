@@ -9,14 +9,14 @@ import { useStyles } from './styles/styles';
  * @param {any} data - The data to be checked
  * @return {boolean} Indicates whether the data is an instance of IPropertySetting
  */
-export const isPropertySettings = <Value = any>(data: any): data is IPropertySetting<Value> => {
+export const isPropertySettings = <Value = any>(data: unknown): data is IPropertySetting<Value> => {
   if (!data || typeof data !== 'object') return false;
 
   const typed = data as IPropertySetting;
   return typed._mode === 'code' || typed._mode === 'value';
 };
 
-export const getPropertySettingsFromData = (data: any, propName: string): IPropertySetting => {
+export const getPropertySettingsFromData = (data: unknown, propName: string): IPropertySetting => {
   if (!propName || !data) return { _mode: 'value', _code: undefined, _value: undefined };
 
   const propNames = propName.split('.');
@@ -38,7 +38,7 @@ export const updateSettingsFromValues = <T = unknown>(model: T, values: T): T =>
   return copy;
 };
 
-export const getValueFromPropertySettings = (value: any): any => {
+export const getValueFromPropertySettings = (value: unknown): any => {
   if (isPropertySettings(value)) return value._value;
   else return value;
 };
@@ -51,7 +51,7 @@ export const getValuesFromSettings = <T = unknown>(model: T): T => {
   return copy;
 };
 
-export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
+export const getPropertySettingsFromValue = (value: unknown): IPropertySetting => {
   if (!isPropertySettings(value) || !value) return { _mode: 'value', _code: undefined, _value: value };
   else return value;
 };

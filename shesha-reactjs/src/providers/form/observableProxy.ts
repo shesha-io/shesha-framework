@@ -46,7 +46,7 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
     }
   };
 
-  setAdditionalData = (data: any): void => {
+  setAdditionalData = (data: object): void => {
     for (let key in data)
       if (Object.hasOwn(data, key))
         this.addAccessor(key, () => data[key]);

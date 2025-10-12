@@ -2,7 +2,7 @@ import { evaluateString } from "@/providers/form/utils";
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 
 export interface IUtilsApi {
-  evaluateString: (template: string, data: any) => string;
+  evaluateString: (template: string, data: object) => string;
 }
 
 /**
@@ -15,7 +15,7 @@ export class UtilsApi implements IUtilsApi {
     this._httpClient = httpClient;
   }
 
-  evaluateString = (template: string, data: any): string => {
+  evaluateString = (template: string, data: object): string => {
     return evaluateString(template, data);
   };
 }

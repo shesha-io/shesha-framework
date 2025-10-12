@@ -19,15 +19,10 @@ export interface IAjaxErrorResponse extends IAjaxResponseCommon {
 export type IAjaxResponse<T> = IAjaxSuccessResponse<T> | IAjaxErrorResponse;
 export type IAjaxResponseBase = IAjaxResponseCommon | IAjaxErrorResponse;
 
-/*
-export const isAjaxSuccessResponse = <T>(value: any): value is IAjaxSuccessResponse<T> => value && value.success === true;
-export const isAjaxErrorResponse = <T>(value: IAjaxResponse<T>): value is IAjaxErrorResponse => value && value.success === false;
-export const isAjaxErrorResponse = (value: any): value is IAjaxErrorResponse => value && value.success === false;
-*/
 export const isAjaxSuccessResponse = <T>(value: IAjaxResponse<T>): value is IAjaxSuccessResponse<T> => value && value.success === true;
-export const isAjaxErrorResponse = (value: any): value is IAjaxErrorResponse => value && value.success === false;
+export const isAjaxErrorResponse = (value: unknown): value is IAjaxErrorResponse => value && typeof (value) === 'object' && "success" in value && value.success === false;
 
-export const isAxiosResponse = (value: any): value is AxiosResponse => {
+export const isAxiosResponse = (value: unknown): value is AxiosResponse => {
   const typed = value as AxiosResponse;
   return value && typeof (typed.status) === 'number' && typed.data && typeof (typed.config) === 'object';
 };

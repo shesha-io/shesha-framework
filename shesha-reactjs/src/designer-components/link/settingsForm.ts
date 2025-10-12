@@ -4,7 +4,7 @@ import { FormLayout } from 'antd/es/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any): FormMarkupWithSettings => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();

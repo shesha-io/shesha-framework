@@ -99,13 +99,7 @@ const legacyTypescriptOverrides = {
         "allowDirectConstAssertionInArrowFunctions": true
     }],
 
-    "@typescript-eslint/explicit-module-boundary-types": ["off", {
-        allowArgumentsExplicitlyTypedAsAny: true,
-        allowDirectConstAssertionInArrowFunctions: true,
-        allowHigherOrderFunctions: false,
-        allowTypedFunctionExpressions: false,
-    }],
-
+    "@typescript-eslint/explicit-module-boundary-types": "error",
     "@typescript-eslint/indent": "off",
 
     "@typescript-eslint/naming-convention": ["error", {

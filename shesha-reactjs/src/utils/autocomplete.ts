@@ -33,7 +33,7 @@ const buildFilterById = (value: AutocompleteValueType): string => {
   return getEntityFilterByIds(ids);
 };
 
-export const autocompleteValueIsEmpty = (value: any): boolean => {
+export const autocompleteValueIsEmpty = (value: AutocompleteValueType): boolean => {
   return Array.isArray(value) ? value.length === 0 : !Boolean(value);
 };
 
