@@ -6,10 +6,7 @@ import { PropertiesEditorRenderer } from './renderer';
 import { useModelConfigurator } from '@/index';
 import { MetadataSourceTypeUseDefined } from '@/apis/modelConfigurations';
 
-export interface IPropertiesEditorComponentProps {
-}
-
-export interface IPropertiesEditorProps extends IPropertiesEditorComponentProps {
+export interface IPropertiesEditorProps {
   allowAdd?: Boolean;
   value?: IModelItem[];
   onChange?: (value: IModelItem[]) => void;
@@ -23,7 +20,7 @@ export const PropertiesEditor: FC<IPropertiesEditorProps> = (props) => {
   );
 };
 
-export const PropertiesEditorComponent: FC<IPropertiesEditorComponentProps> = () => {
+export const PropertiesEditorComponent: FC = () => {
   const modelConfigurator = useModelConfigurator();
 
   return (

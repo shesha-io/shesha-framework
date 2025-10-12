@@ -56,7 +56,7 @@ type RefetchOptions<TData, TQueryParams, TPathParams> = Partial<
   Omit<UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams>, 'lazy'>
 >;
 
-export interface UseGetReturn<TData, TError, TQueryParams = {}, TPathParams = unknown> extends GetState<TData, TError> {
+export interface UseGetReturn<TData, TError, TQueryParams = IQueryParams, TPathParams = unknown> extends GetState<TData, TError> {
   /**
    * Refetch
    */

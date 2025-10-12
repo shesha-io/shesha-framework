@@ -2,9 +2,7 @@ import React, { FC } from 'react';
 import { Modal } from 'antd';
 import { useAppConfigurator } from '@/providers';
 
-export interface IProps {}
-
-export const SwitchToLiveModeConfirmation: FC<IProps> = () => {
+export const SwitchToLiveModeConfirmation: FC = () => {
   const {
     closeEditModeConfirmationVisible,
     switchApplicationMode,

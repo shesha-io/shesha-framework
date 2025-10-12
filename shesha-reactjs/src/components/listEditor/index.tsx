@@ -48,10 +48,6 @@ export interface IListEditorProps<TItem = any> extends IGenericListEditorProps<T
   maxItemsCount?: number;
 }
 
-export interface IListEditorProviderProps {
-
-}
-
 interface CreateListEditorComponentResult<TItem extends object> {
   ListEditorProvider: <T extends React.PropsWithChildren<IGenericListEditorProps<TItem>>>(props: T) => React.JSX.Element;
   useListEditorComponent: () => IListEditorContext<TItem>;

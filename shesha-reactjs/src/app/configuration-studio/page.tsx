@@ -4,7 +4,7 @@ import React from 'react';
 import { PageWithLayout } from '@/interfaces';
 import ConfigurationStudio from '@/configuration-studio';
 
-const Page: PageWithLayout<{}> = () => {
+const Page: PageWithLayout = () => {
   return (
     <ConfigurationStudio />
   );

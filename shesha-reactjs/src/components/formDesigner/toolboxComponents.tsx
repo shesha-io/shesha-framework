@@ -11,9 +11,7 @@ import { useStyles } from './styles/styles';
 
 type PanelType = CollapseProps['items'][number];
 
-export interface IToolboxComponentsProps { }
-
-export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
+export const ToolboxComponents: FC = () => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaDesigner.toolbox.components.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaDesigner.toolbox.components.search', '');
   const { styles } = useStyles();

@@ -10,7 +10,7 @@ import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from '@/providers/dyn
 import { IProviderSettingsFormFactory } from '@/designer-components/dynamicActionsConfigurator/interfaces';
 import { FormMarkup } from '@/interfaces';
 
-export interface IDynamicActionsProps<TSettings> {
+export interface IDynamicActionsProps<TSettings extends object = object> {
   id?: string;
   name: string;
   renderingHoc?: DynamicRenderingHoc;
@@ -26,7 +26,7 @@ export interface IHasActions {
   items: ButtonGroupItemProps[]; // TODO: make a generic interface with minimal number of properties, ButtonGroupItemProps will implement/extend this interface
 }
 
-const DynamicActionsProvider = <TSettings = unknown>({ id, name, useEvaluator, children, hasArguments = false, settingsFormFactory, settingsFormMarkup }: PropsWithChildren<IDynamicActionsProps<TSettings>>): ReactElement => {
+const DynamicActionsProvider = <TSettings extends object = object>({ id, name, useEvaluator, children, hasArguments = false, settingsFormFactory, settingsFormMarkup }: PropsWithChildren<IDynamicActionsProps<TSettings>>): ReactElement => {
   const [state] = useState<IDynamicActionsContext>(() => ({
     ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
     id,

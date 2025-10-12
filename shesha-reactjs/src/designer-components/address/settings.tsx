@@ -18,7 +18,7 @@ import { useFormDesignerState } from '@/providers/formDesigner';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
-interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
+type IEntityReferenceSettingsState = IAddressCompomentProps;
 
 const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({ readOnly }) => {
   const { values, model, onValuesChange } = useSettingsForm<IAddressCompomentProps>();

@@ -13,7 +13,7 @@ import { PropertiesEditor } from '@/components/modelConfigurator/propertiesEdito
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
-interface IDataContextSettingsState extends IDataContextComponentProps { }
+type IDataContextSettingsState = IDataContextComponentProps;
 
 const convertPropertyMetadataToModelItem = (property: IPropertyMetadata): IModelItem => {
   const { path, properties, itemsType, ...commonProps } = property;

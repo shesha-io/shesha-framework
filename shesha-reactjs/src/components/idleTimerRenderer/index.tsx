@@ -15,8 +15,6 @@ import { useInterval } from 'react-use';
 import { useSettingValue } from '@/providers/settings';
 import { useStyles } from './styles/styles';
 
-export interface IIdleTimerRendererProps { }
-
 interface IIdleTimerState {
   readonly isIdle: boolean;
   readonly remainingTime: number;
@@ -29,7 +27,7 @@ const INIT_STATE: IIdleTimerState = {
 
 const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security.AutoLogoffTimeout', module: 'Shesha' };
 
-export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> = ({ children }) => {
+export const IdleTimerRenderer: FC<PropsWithChildren> = ({ children }) => {
   const { styles } = useStyles();
   const { value: autoLogoffTimeout } = useSettingValue<number>(autoLogoffTimeoutSettingId);
   const timeoutSeconds = autoLogoffTimeout ?? 0;

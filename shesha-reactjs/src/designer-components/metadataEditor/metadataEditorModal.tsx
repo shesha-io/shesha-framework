@@ -10,8 +10,7 @@ import { ListItem } from '@/components/listEditor/models';
 
 type ItemType = IModelItem;
 
-export interface IMetadataEditorModalProps extends IMetadataEditorProps {
-}
+export type IMetadataEditorModalProps = IMetadataEditorProps;
 
 export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onChange, readOnly }) => {
   const [selectedItem, setSelectedItem] = useState<ItemType>();

@@ -7,7 +7,7 @@ import FormComponentDateDisplay from './formComponentDateDisplay';
 import FormComponentNumberDisplay from './formComponentNumberDisplay';
 import FormComponentBoolDisplay from './formComponentBoolDisplay';
 
-export interface IFormComponentProps extends IFormComponent {}
+export type IFormComponentProps = IFormComponent;
 
 export const FormComponent: FC<IFormComponentProps> = (props) => {
   const {

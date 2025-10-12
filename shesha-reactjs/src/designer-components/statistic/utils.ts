@@ -1,6 +1,14 @@
-import { IStyleType } from '@/index';
+import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
+import { IStyleType } from '@/providers/form/models';
+import { CSSProperties } from 'react';
 
-export const defaultStyles = (): {} extends IStyleType | null ? any : any => {
+type DefaultStyles = Omit<IStyleType, 'style'> & {
+  titleFont: IFontValue;
+  valueFont: IFontValue;
+  style: IStyleType['style'] | CSSProperties;
+};
+
+export const defaultStyles = (): DefaultStyles => {
   return {
     background: { type: 'color', color: '#fff' },
     titleFont: { weight: '300', size: 20, color: '#000', type: 'Segoe UI', align: 'center' },

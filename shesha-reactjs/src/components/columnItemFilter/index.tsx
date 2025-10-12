@@ -53,7 +53,7 @@ interface IFilterBaseProps {
   onPressEnter: () => void;
 }
 
-interface ISingleValueFilterProps extends IFilterBaseProps { }
+type ISingleValueFilterProps = IFilterBaseProps;
 
 interface IStringFilterProps extends ISingleValueFilterProps {
   value: string;

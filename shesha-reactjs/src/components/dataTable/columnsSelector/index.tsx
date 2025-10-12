@@ -6,9 +6,7 @@ import { useDataTable } from '@/providers';
 import { getSafelyTrimmedString } from '@/utils';
 import { useStyles } from './styles/styles';
 
-export interface IDatatableColumnsSelectorProps {}
-
-export const DatatableColumnsSelector: FC<IDatatableColumnsSelectorProps> = () => {
+export const DatatableColumnsSelector: FC = () => {
   const { styles } = useStyles();
   const { columns, toggleColumnVisibility } = useDataTable();
 
