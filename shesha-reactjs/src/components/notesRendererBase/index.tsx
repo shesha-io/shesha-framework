@@ -88,6 +88,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     }
   }, [isPostingNotes]);
 
+
   const handleTextChange = (value: string): void => {
     setNewComments(value);
     setCharCount(value.length);
@@ -127,9 +128,9 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
       };
       postNotes(payload);
 
-      // Call onCreateAction after successful post
+      // Call onCreateAction immediately with the payload
       if (onCreateAction) {
-        // This would be called after the note is actually created in the success handler
+        onCreateAction(payload as any);
       }
     } else {
       notification.info({
