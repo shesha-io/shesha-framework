@@ -11,10 +11,10 @@ import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y,
   COLUMN_WIDTH_STRING, COLUMN_WIDTH_STRING_MULTILINE, COLUMN_WIDTH_TIME, ROW_COUNT } from "../constants";
 import { FormMetadataHelper } from "./formMetadataHelper";
 import pluralize from 'pluralize';
-import { DesignerToolbarSettings, EditMode, IConfigurableFormComponent } from "@/interfaces";
+import { DesignerToolbarSettings, EditMode, IConfigurableFormComponent, isConfigurableFormComponent } from "@/interfaces";
 
 export function findContainersWithPlaceholderRecursive(
-  token: any,
+  token: unknown,
   placeholder: string,
   results: any[],
   visited: WeakSet<any>,
@@ -23,7 +23,7 @@ export function findContainersWithPlaceholderRecursive(
   if (typeof token === 'object' && token !== null) {
     if (visited.has(token)) return;
     visited.add(token);
-    if (token.componentName === placeholder || token.propertyName === placeholder) {
+    if (isConfigurableFormComponent(token) && (token.componentName === placeholder || token.propertyName === placeholder)) {
       results.push(token);
     }
     if (Array.isArray(token)) {
@@ -40,7 +40,7 @@ export function findContainersWithPlaceholderRecursive(
   }
 }
 
-export function findContainersWithPlaceholder(markup: any, placeholder: string): any[] {
+export function findContainersWithPlaceholder(markup: unknown, placeholder: string): any[] {
   const containers: any[] = [];
   const visited = new WeakSet();
   findContainersWithPlaceholderRecursive(markup, placeholder, containers, visited);
@@ -163,7 +163,7 @@ export function getColumnWidthByDataType(dataType: string | null | undefined, da
  */
 export function addDetailsPanel(
   metadata: PropertyMetadataDto[],
-  markup: any,
+  markup: unknown,
   metadataHelper: FormMetadataHelper,
 ): void {
   const placeholderName = "//*DETAILSPANEL*//";

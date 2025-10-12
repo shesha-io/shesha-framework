@@ -21,7 +21,7 @@ export const standartActualModelPropertyFilter = (name: string): boolean => {
   return propertiesToSkip.indexOf(name) === -1;
 };
 
-export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: any): boolean => {
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: unknown): boolean => {
   return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true) &&
     propertiesToSkip.indexOf(name) === -1;
 };

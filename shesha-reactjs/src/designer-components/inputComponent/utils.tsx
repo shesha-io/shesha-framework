@@ -7,7 +7,9 @@ import { InputComponent } from '.';
 import { useStyles } from './styles';
 import { getWidth } from '../settingsInput/utils';
 import { IDropdownOption, InputType } from '../settingsInput/interfaces';
-export const getEditor = (availableConstantsExpression: string, codeEditorProps: any, constantsAccessor: any): ReactElement => {
+import { ICodeEditorProps } from '../codeEditor/interfaces';
+import { IObjectMetadata } from '@/interfaces';
+export const getEditor = (availableConstantsExpression: string, codeEditorProps: ICodeEditorProps, constantsAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>)): ReactElement => {
   return availableConstantsExpression?.trim()
     ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
     : <CodeEditorWithStandardConstants {...codeEditorProps} />;

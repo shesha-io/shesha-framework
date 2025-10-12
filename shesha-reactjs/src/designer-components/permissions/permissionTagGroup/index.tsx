@@ -1,8 +1,9 @@
+import { IToolboxComponent } from '@/interfaces';
 import AutocompleteTagGroupComponent, { IAutocompleteTagsOutlinedComponentProps } from '../../autocompleteTagGroup';
 
 // Just initialize AutocompleteTagsOutlinedComponent with specific URL
 
-const PermissionTagGroupComponent = {
+const PermissionTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlinedComponentProps> = {
   ...AutocompleteTagGroupComponent,
   type: 'permissionTagGroup',
   name: 'Permission Tag Group',

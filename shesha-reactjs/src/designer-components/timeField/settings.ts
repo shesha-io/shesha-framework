@@ -6,7 +6,7 @@ import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/ut
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any): FormMarkupWithSettings => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const validationTabId = nanoid();

@@ -8,7 +8,7 @@ export class CustomLoader implements IFormDataLoader {
     return isCustomLoaderSettings(loaderSettings) ? loaderSettings : { onDataLoad: '' };
   };
 
-  canLoadData = (_formArguments: any): boolean => true;
+  canLoadData = (_formArguments: object): boolean => true;
 
   loadAsync = async (payload: FormDataLoadingPayload): Promise<any> => {
     const { loadingCallback, formSettings, expressionExecuter } = payload;

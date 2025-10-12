@@ -19,7 +19,7 @@ export const jsonSafeParse = <T = unknown>(value: string, defaultValue?: T): T |
   }
 };
 
-export const isProxy = (value: any): boolean => {
+export const isProxy = <TValue extends object = object>(value: TValue): boolean => {
   return value && (
     value instanceof TouchableProperty ||
     value instanceof TouchableArrayProperty ||
@@ -134,7 +134,7 @@ export const safeGetProperty = <T extends object>(obj: T, key: string | symbol):
     : undefined;
 };
 
-export const setValueByPropertyName = <TData extends object = object>(data: TData, propertyName: string, value: any, makeCopy: boolean = false): TData => {
+export const setValueByPropertyName = <TData extends object = object>(data: TData, propertyName: string, value: unknown, makeCopy: boolean = false): TData => {
   const resultData = makeCopy ? { ...data } : data;
   const path = propertyName.split(/\.|\[|\]/g).filter(Boolean);
   const lastPropName = path.length > 0 ? path[path.length - 1] : undefined;

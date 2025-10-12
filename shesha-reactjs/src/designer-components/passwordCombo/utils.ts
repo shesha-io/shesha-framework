@@ -60,7 +60,7 @@ export const getFormItemProps = (
   style: model?.hidden ? { display: 'none' } : {},
 });
 
-export const getInputProps = (model: IPasswordComponentProps, formData: any): InputProps => ({
+export const getInputProps = (model: IPasswordComponentProps, formData: object): InputProps => ({
   bordered: !model?.hideBorder,
   size: model?.size,
   readOnly: model.readOnly,

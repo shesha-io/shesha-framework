@@ -55,6 +55,6 @@ export const getInjectables = ({ defaultRow, defaultValue }: IComponentWrapperPr
   return result;
 };
 
-export const asNumber = (value: any): number => {
+export const asNumber = (value: unknown): number => {
   return typeof value === 'number' ? value : null;
 };

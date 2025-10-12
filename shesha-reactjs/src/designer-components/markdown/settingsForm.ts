@@ -6,7 +6,7 @@ import { repeatOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
 import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any): FormMarkupWithSettings => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
