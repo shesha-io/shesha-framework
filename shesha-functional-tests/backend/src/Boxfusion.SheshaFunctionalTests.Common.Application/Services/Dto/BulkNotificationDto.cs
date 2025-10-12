@@ -1,11 +1,16 @@
 ﻿using Abp.Application.Services.Dto;
 using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
+using Shesha.Notifications.Dto;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
 {
     public class BulkNotificationDto
     {
+        public List<NotificationAttachmentDto>? NotificationAttachments { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public EntityDto<Guid>? Type { get; set; }
         /// <summary>
         /// 
