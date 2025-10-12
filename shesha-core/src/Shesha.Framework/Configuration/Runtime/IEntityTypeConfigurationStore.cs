@@ -6,24 +6,24 @@ namespace Shesha.Configuration.Runtime
     /// <summary>
     /// Stores information about entities
     /// </summary>
-    public interface IEntityConfigurationStore
+    public interface IEntityTypeConfigurationStore
     {
         Task InitializeDynamicAsync();
 
         /// <summary>
-        /// Returns <see cref="EntityConfiguration"/> by entity type
+        /// Returns <see cref="EntityTypeConfiguration"/> by entity type
         /// </summary>
-        EntityConfiguration Get(Type entityType);
+        EntityTypeConfiguration Get(Type entityType);
 
         /// <summary>
-        /// Returns <see cref="EntityConfiguration"/> by class name or type short alias
+        /// Returns <see cref="EntityTypeConfiguration"/> by class name or type short alias
         /// </summary>
-        EntityConfiguration Get(string nameOrAlias);
+        EntityTypeConfiguration Get(string nameOrAlias);
 
         /// <summary>
-        /// Returns <see cref="EntityConfiguration"/> by class name or type short alias
+        /// Returns <see cref="EntityTypeConfiguration"/> by class name or type short alias
         /// </summary>
-        EntityConfiguration? GetOrNull(string nameOrAlias);
+        EntityTypeConfiguration? GetOrNull(string nameOrAlias);
 
         /// <summary>
         /// Register default application service for entity type

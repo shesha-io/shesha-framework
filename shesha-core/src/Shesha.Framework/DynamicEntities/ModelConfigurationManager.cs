@@ -680,7 +680,10 @@ namespace Shesha.DynamicEntities
             {
                 using (var uow = UnitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew))
                 {
-                    var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == className && m.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
+                    var modelConfig = await _entityConfigRepository.GetAll()
+                        // ToDo: AS - V1 remove IsExposed
+                        .Where(m => m.ClassName == className && m.Namespace == @namespace && !m.IsDeleted && !m.IsExposed)
+                        .FirstOrDefaultAsync();
                     if (modelConfig == null)
                         return null;
 

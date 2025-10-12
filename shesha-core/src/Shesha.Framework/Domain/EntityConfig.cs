@@ -3,6 +3,7 @@ using Shesha.Domain.Constants;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -51,6 +52,7 @@ namespace Shesha.Domain
         public virtual EntityConfigTypes? EntityConfigType { get; set; } = EntityConfigTypes.Class;
 
         [NotMapped]
+        [ReadonlyProperty]
         public virtual string FullClassName => $"{Namespace}.{ClassName}";
 
         [MaxLength(100)]

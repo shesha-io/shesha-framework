@@ -27,10 +27,10 @@ namespace Shesha.Metadata
     /// </summary>
     public class HardcodeMetadataProvider : IHardcodeMetadataProvider, ITransientDependency
     {
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
 
         public HardcodeMetadataProvider(
-            IEntityConfigurationStore entityConfigurationStore
+            IEntityTypeConfigurationStore entityConfigurationStore
         )
         {
             _entityConfigurationStore = entityConfigurationStore;

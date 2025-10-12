@@ -62,7 +62,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             _logger = logger;
         }
 
-        public List<Type> GenerateTypes(IEntityConfigurationStore entityConfigurationStore)
+        public List<Type> GenerateTypes(IEntityTypeConfigurationStore entityConfigurationStore)
         {
             List<Type> list;
             using (var unitOfWork = _unitOfWorkManager.Begin())
@@ -76,7 +76,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             return list;
         }
 
-        private List<Type> GenerateTypesInternal(IEntityConfigurationStore entityConfigurationStore)
+        private List<Type> GenerateTypesInternal(IEntityTypeConfigurationStore entityConfigurationStore)
         {
             _logger.Warn("DynamicEntityTypeBuilder: GetTypes");
 

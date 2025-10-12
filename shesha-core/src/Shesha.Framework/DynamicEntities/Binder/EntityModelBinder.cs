@@ -44,7 +44,7 @@ namespace Shesha.DynamicEntities.Binder
         private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IIocManager _iocManager;
         private readonly IShaTypeFinder _typeFinder;
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly IObjectValidatorManager _objectValidatorManager;
         private readonly IModelConfigurationManager _modelConfigurationManager;
 
@@ -55,7 +55,7 @@ namespace Shesha.DynamicEntities.Binder
             IHardcodeMetadataProvider metadataProvider,
             IIocManager iocManager,
             IShaTypeFinder typeFinder,
-            IEntityConfigurationStore entityConfigurationStore,
+            IEntityTypeConfigurationStore entityConfigurationStore,
             IObjectValidatorManager propertyValidatorManager,
             ModelConfigurationManager modelConfigurationManager
             )

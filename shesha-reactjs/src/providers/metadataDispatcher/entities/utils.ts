@@ -5,6 +5,7 @@ import { isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
 
 const CACHE = {
   ENTITIES: 'entities',
+  ENTITIES_LOOKUP: 'entities_lookup',
   MISC: 'misc',
 };
 
@@ -120,6 +121,20 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
               promises.push(metadataCache.removeItem(key));
               return;
             }
+          });
+        });
+
+        const lookupCache = context.cacheProvider.getCache(CACHE.ENTITIES_LOOKUP);
+        lookupCache.clear().then(_ => {
+          data.lookups.forEach((m) => {
+            const key = getEntityMetadataCacheKey({ module: m.module, name: m.name });
+
+            const data = {} as {[key: string]: string};
+            m.items.forEach((e) => {
+              data[e.module] = e.match;
+            });
+
+            promises.push(lookupCache.setItem(key, data));
           });
         });
         return Promise.all(promises).then();

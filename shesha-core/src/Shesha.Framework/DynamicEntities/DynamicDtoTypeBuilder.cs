@@ -27,7 +27,7 @@ namespace Shesha.DynamicEntities
     public class DynamicDtoTypeBuilder : IEventHandler<EntityChangedEventData<EntityProperty>>, IDynamicDtoTypeBuilder, ITransientDependency
     {
         private readonly IEntityConfigCache _entityConfigCache;
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
 
         /// <summary>
         /// Cache of proxy classes
@@ -42,7 +42,7 @@ namespace Shesha.DynamicEntities
 
         public DynamicDtoTypeBuilder(
             IEntityConfigCache entityConfigCache,
-            IEntityConfigurationStore entityConfigurationStore,
+            IEntityTypeConfigurationStore entityConfigurationStore,
             IFullProxyCacheHolder fullProxyCacheHolder,
             IDynamicTypeCacheHolder _dynamicTypeCacheHolder
         )

@@ -41,8 +41,20 @@ export interface ModuleSyncResponse {
   entities: EntitySyncResponse[];
 }
 
+export interface LookupItemSyncResponse {
+  module: string;
+  match: string;
+}
+
+export interface LookupSyncResponse{
+  module: string;
+  name: string;
+  items: LookupItemSyncResponse[];
+}
+
 export interface SyncAllResponse {
   modules: ModuleSyncResponse[];
+  lookups: LookupSyncResponse[];
 }
 
 export interface ICacheProvider {
@@ -54,6 +66,7 @@ export interface ICache {
   setItem<T>(key: string, value: T, callback?: (err: unknown, value: T) => void): Promise<T>;
   iterate<T, U>(iteratee: (value: T, key: string, iterationNumber: number) => U, callback?: (err: unknown, result: U) => void): Promise<U>;
   removeItem(key: string, callback?: (err: unknown) => void): Promise<void>;
+  clear(callback?: (err: any) => void): Promise<void>;
 }
 
 export interface IEntityTypesMap {

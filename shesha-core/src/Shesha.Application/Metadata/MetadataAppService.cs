@@ -17,13 +17,13 @@ namespace Shesha.Metadata
     /// inheritedDoc
     public class MetadataAppService : SheshaAppServiceBase, IMetadataAppService
     {
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly IHardcodeMetadataProvider _hardcodeMetadataProvider;
         private readonly IMetadataProvider _metadataProvider;
         private readonly EntityModelProvider _entityModelProvider;
 
         public MetadataAppService(
-            IEntityConfigurationStore entityConfigurationStore,
+            IEntityTypeConfigurationStore entityConfigurationStore,
             IHardcodeMetadataProvider hardcodeMetadataProvider,
             IMetadataProvider metadataProvider,
             EntityModelProvider entityModelProvider

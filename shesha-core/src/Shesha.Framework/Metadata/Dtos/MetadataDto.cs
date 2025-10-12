@@ -10,6 +10,14 @@ namespace Shesha.Metadata.Dtos
     /// </summary>
     public class MetadataDto
     {
+        public bool IsExposed { get; set; }
+
+        public string Name { get; set; }
+
+        public string? Label { get; set; }
+
+        public string? Description { get; set; }
+
         /// <summary>
         /// Data type
         /// </summary>

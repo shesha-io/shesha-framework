@@ -62,7 +62,7 @@ namespace Shesha.DynamicEntities.Dtos
                 .ForMember(e => e.Label, m => m.MapFrom(e => e.Label))
                 .ForMember(e => e.Description, m => m.MapFrom(e => e.Description))
                 .ForMember(e => e.NotImplemented, c => c.MapFrom(e => e.Source == MetadataSourceType.ApplicationCode
-                        && StaticContext.IocManager.Resolve<EntityConfigurationStore>().GetOrNull(e.FullClassName) == null))
+                        && StaticContext.IocManager.Resolve<EntityTypeConfigurationStore>().GetOrNull(e.FullClassName) == null))
                 .ForMember(e => e.AllowConfigureAppService, c => c.MapFrom(e => e.Source == MetadataSourceType.ApplicationCode 
                         && AllowConfigureAppService(e)))
                 ;
@@ -81,7 +81,7 @@ namespace Shesha.DynamicEntities.Dtos
 
         private bool AllowConfigureAppService(EntityConfig entityConfig)
         {
-            var attr = StaticContext.IocManager.Resolve<IEntityConfigurationStore>().GetOrNull(entityConfig.FullClassName)?.EntityType?.GetAttributeOrNull<EntityAttribute>();
+            var attr = StaticContext.IocManager.Resolve<IEntityTypeConfigurationStore>().GetOrNull(entityConfig.FullClassName)?.EntityType?.GetAttributeOrNull<EntityAttribute>();
             return attr == null || attr.GenerateApplicationService == GenerateApplicationServiceState.UseConfiguration;
         }
     }

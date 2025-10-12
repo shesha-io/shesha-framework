@@ -32,7 +32,7 @@ namespace Shesha.DynamicEntities
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IModuleManager _moduleManager;
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly IAssemblyFinder _assembleFinder;
         private readonly IHardcodeMetadataProvider _metadataProvider;
 
@@ -41,7 +41,7 @@ namespace Shesha.DynamicEntities
 
         public EntityConfigsBootstrapper(
             IRepository<EntityConfig, Guid> entityConfigRepository,
-            IEntityConfigurationStore entityConfigurationStore,
+            IEntityTypeConfigurationStore entityConfigurationStore,
             IAssemblyFinder assembleFinder,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IHardcodeMetadataProvider metadataProvider,
@@ -194,6 +194,7 @@ namespace Shesha.DynamicEntities
                 config.db.TableName = config.code.Config.TableName;
                 config.db.DiscriminatorValue = config.code.Config.DiscriminatorValue;
                 config.db.IsCodeBased = true;
+                config.db.SurfaceStatus = RefListSurfaceStatus.Visible;
 
                 // restore entity if deleted
                 config.db.IsDeleted = false;
@@ -277,6 +278,7 @@ namespace Shesha.DynamicEntities
                     EntityConfigType = MappingHelper.IsJsonEntity(config.Config.EntityType)
                         ? EntityConfigTypes.Interface
                         : EntityConfigTypes.Class,
+                    SurfaceStatus = RefListSurfaceStatus.Visible,
                 };
 
                 ec.Accessor = config.Config.Accessor;

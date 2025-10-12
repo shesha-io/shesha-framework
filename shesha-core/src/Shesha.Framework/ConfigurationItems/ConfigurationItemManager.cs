@@ -151,6 +151,8 @@ namespace Shesha.ConfigurationItems
                 {
                     Name = item.Name,
                     Module = module,
+                	Label = item.Label,
+                	Description = item.Description,
                     ExposedFrom = item,
                     ExposedFromRevision = srcRevision,
                     SurfaceStatus = RefListSurfaceStatus.Overridden,
