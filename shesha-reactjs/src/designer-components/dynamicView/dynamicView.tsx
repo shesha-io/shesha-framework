@@ -8,9 +8,7 @@ import { useFormDesignerComponentGroups } from '@/providers/form/hooks';
 import { useMetadata } from '@/providers/metadata';
 import DynamicContainer from './dynamicContainer';
 
-export interface DynamicViewProps extends IConfigurableFormComponent {
-
-}
+export type DynamicViewProps = IConfigurableFormComponent;
 
 export const DynamicView: FC<DynamicViewProps> = (model) => {
   const currentMeta = useMetadata(false)?.metadata;

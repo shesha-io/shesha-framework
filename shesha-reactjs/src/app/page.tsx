@@ -21,7 +21,7 @@ const StyledAlert: any = styled(Alert)`
   margin-bottom: 15px;
 `;
 
-const Home: PageWithLayout<{}> = () => {
+const Home: PageWithLayout = () => {
   const { LayoutComponent } = useLayoutSelection('defaultLayout');
 
   return (

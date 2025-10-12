@@ -4,9 +4,7 @@ import { SaveOutlined } from '@ant-design/icons';
 import { useModelConfigurator } from '@/providers';
 import { useStyles } from '../styles/styles';
 
-export interface IProps { }
-
-export const ModelConfiguratorToolbar: FC<IProps> = () => {
+export const ModelConfiguratorToolbar: FC = () => {
   const { styles } = useStyles();
   const configurator = useModelConfigurator();
 

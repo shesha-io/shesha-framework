@@ -119,20 +119,20 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
       .then((response) => (response.data?.success ? response.data.result : false));
   }
 
-  getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any> {
+  getUserSettingValueAsync = <TValue = unknown>(name: string, module: string, defaultValue?: TValue, dataType?: string): Promise<any> => {
     return this.#httpClient
       .post<IAjaxResponse<void>>(URLS.GET_USER_SETTING_VALUE, { name, module, defaultValue, dataType })
       .then((res) => {
         return res.data.success ? res.data.result : undefined;
       });
-  }
+  };
 
-  updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void> {
+  updateUserSettingValueAsync = <TValue = unknown>(name: string, module: string, value: TValue, dataType?: string): Promise<void> => {
     return this.#httpClient
       .post<IAjaxResponse<void>>(URLS.UPDATE_USER_SETTING_VALUE, { name, module, value, dataType })
       .then((res) => {
         if (isAjaxErrorResponse(res.data))
           throw new Error('Failed to update setting value: ' + res.data.error.message);
       });
-  }
+  };
 }

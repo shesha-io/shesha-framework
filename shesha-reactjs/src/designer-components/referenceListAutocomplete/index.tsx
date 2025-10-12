@@ -5,8 +5,7 @@ import React from 'react';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { IConfigurableItemAutocompleteComponentProps } from '../configurableItemAutocomplete/interfaces';
 
-export interface IReferenceListAutocompleteProps extends IConfigurableFormComponent {
-}
+export type IReferenceListAutocompleteProps = IConfigurableFormComponent;
 
 /**
  * @deprecated. Use ConfigurableItemAutocompleteComponent instead

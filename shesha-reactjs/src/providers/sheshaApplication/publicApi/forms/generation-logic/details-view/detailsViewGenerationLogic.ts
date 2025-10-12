@@ -22,7 +22,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
   }
 
   protected async addComponentsToMarkup(
-    markup: any,
+    markup: unknown,
     entity: IEntityMetadata,
     nonFrameworkProperties: PropertyMetadataDto[],
     metadataHelper: FormMetadataHelper,

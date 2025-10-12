@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { IDataCellProps } from '../interfaces';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 
-export interface IMultivalueReferenceListCellProps<D extends object = object, V = any> extends IDataCellProps<D, V> { }
+export type IMultivalueReferenceListCellProps<D extends object = object, V = any> = IDataCellProps<D, V>;
 
 const MultivalueReferenceListCellInternal = <D extends object = object, V = any>(
   props: IMultivalueReferenceListCellProps<D, V>,

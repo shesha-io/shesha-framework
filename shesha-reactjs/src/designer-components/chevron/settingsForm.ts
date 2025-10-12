@@ -12,7 +12,7 @@ const styleRouterId = nanoid();
 const pnlFontStyleId = nanoid();
 const dimensionsStylePnlId = nanoid();
 
-export const getSettings = (data: any): FormMarkupWithSettings => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   return {
     components: new DesignerToolbarSettings(data)
       .addSearchableTabs({

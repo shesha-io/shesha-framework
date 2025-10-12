@@ -214,7 +214,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   initialValues: any;
 
-  parentFormValues: any;
+  parentFormValues: object | undefined;
 
   formArguments?: any;
 
@@ -358,7 +358,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.updateData?.();
   };
 
-  setParentFormValues = (values: any): void => {
+  setParentFormValues = (values: object): void => {
     this.parentFormValues = values;
   };
 
@@ -410,7 +410,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.logEnabled = enabled;
   };
 
-  log = (...args): void => {
+  log = (...args: unknown[]): void => {
     if (this.logEnabled)
     // eslint-disable-next-line no-console
       console.log(...args);
@@ -651,7 +651,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     return this.loadData(this.formArguments);
   };
 
-  loadData = async (formArguments: any): Promise<Values> => {
+  loadData = async (formArguments: object | undefined): Promise<Values> => {
     this.log('LOG: loadData, use loader: ', this.useDataLoader, this.initialValues);
     if (!this.useDataLoader) {
       this.log('LOG: loadData', this.useDataLoader);

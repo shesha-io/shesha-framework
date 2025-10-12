@@ -1,4 +1,4 @@
-import { Type, Config, BasicConfig, AntdConfig, Funcs, BasicFuncs, CoreTypes, ValueSource } from '@react-awesome-query-builder/antd';
+import { Type, Config, BasicConfig, AntdConfig, Funcs, BasicFuncs, CoreTypes, ValueSource, DateTimeWidget } from '@react-awesome-query-builder/antd';
 import EntityAutocompleteWidget from './widgets/entityAutocomplete';
 import RefListDropdownWidget from './widgets/refListDropDown';
 import moment from 'moment';
@@ -123,23 +123,26 @@ const operators = {
   },
 };
 
+const customDatetimeWidget: DateTimeWidget<Config> = {
+  ...standardWidgets.datetime,
+  timeFormat: 'HH:mm',
+  jsonLogic: (val, _, wgtDef): string => {
+    return moment(val, (wgtDef as DateTimeWidget<Config>).valueFormat).format();
+  },
+};
+const custonDateWidget: DateTimeWidget<Config> = {
+  ...standardWidgets.date,
+  jsonLogic: (val, _, wgtDef): string => {
+    return moment(val, (wgtDef as DateTimeWidget<Config>).valueFormat).format();
+  },
+};
+
 const widgets = {
   ...standardWidgets,
   entityAutocomplete: EntityAutocompleteWidget,
   refListDropdown: RefListDropdownWidget,
-  datetime: {
-    ...standardWidgets.datetime,
-    timeFormat: 'HH:mm',
-    jsonLogic: (val, _, wgtDef) => {
-      return moment(val, wgtDef.valueFormat).format();
-    },
-  },
-  date: {
-    ...standardWidgets.date,
-    jsonLogic: (val, _, wgtDef) => {
-      return moment(val, wgtDef.valueFormat).format();
-    },
-  },
+  datetime: customDatetimeWidget,
+  date: custonDateWidget,
   specification: SpecificationWidget,
   javascript: JavaScriptWidget,
   field: FieldWidget,

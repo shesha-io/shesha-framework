@@ -54,6 +54,7 @@ import { App } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { IDataContextFull, useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
 import {
+  FormMode,
   HttpClientApi,
   IApplicationApi,
   STYLE_BOX_CSS_POPERTIES,
@@ -76,6 +77,7 @@ import { QueryStringParams } from '@/utils/url';
 import { TouchableProxy } from './touchableProxy';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
 import { jsonSafeParse, unproxyValue } from '@/utils/object';
+import { isDefined } from '@/utils/nullables';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value extends object = object> {
@@ -147,7 +149,7 @@ const AsyncFunction = Object.getPrototypeOf(async function () {
   // nop
 }).constructor;
 
-export const toBase64 = (file): Promise<string> => new Promise<string>((resolve, reject) => {
+export const toBase64 = (file: Blob): Promise<string> => new Promise<string>((resolve, reject) => {
   const reader = new FileReader();
   reader.readAsDataURL(file);
   reader.onload = () => resolve(reader.result as string);
@@ -330,7 +332,7 @@ const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, a
  * @param args arguments
  * @returns Application contexts
  */
-export const useAvailableConstantsDataNoRefresh = (args: GetAvailableConstantsDataArgs = {}, additionalData?: any): IApplicationContext => {
+export const useAvailableConstantsDataNoRefresh = (args: GetAvailableConstantsDataArgs = {}, additionalData?: object): IApplicationContext => {
   const fullContext = useAvailableConstantsContextsNoRefresh();
   var result = useWrapAvailableConstantsData(fullContext, args, additionalData);
   return result;
@@ -341,7 +343,7 @@ export const useAvailableConstantsDataNoRefresh = (args: GetAvailableConstantsDa
  * @param args arguments
  * @returns Application contexts
  */
-export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = {}, additionalData?: any): IApplicationContext => {
+export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = {}, additionalData?: object): IApplicationContext => {
   const fullContext = useAvailableConstantsContexts();
   var result = useWrapAvailableConstantsData(fullContext, args, additionalData);
   return result;
@@ -450,7 +452,7 @@ export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean): bo
  */
 export const getActualModel = <T extends object = object>(
   model: T,
-  allData: any,
+  allData: object,
   parentReadOnly?: boolean,
   propertyFilter?: (name: string, value: any) => boolean,
   processedObjects?: any[],
@@ -471,7 +473,9 @@ export const getActualModel = <T extends object = object>(
     m[propName] = getSettingValue(propName, model[propName], allData, calcValue, parentReadOnly, propertyFilter, processedObjects) as any;
   }
 
-  const readOnly = typeof parentReadOnly === 'undefined' ? allData?.formMode === 'readonly' : parentReadOnly;
+  const readOnly = typeof parentReadOnly === 'undefined'
+    ? "formMode" in allData ? allData?.formMode === 'readonly' : undefined // TODO: review type of allData and update condition
+    : parentReadOnly;
 
   // update ReadOnly if exists
   if (m.hasOwnProperty('editMode')) m['readOnly'] = getReadOnlyBool(m['editMode'], readOnly);
@@ -484,17 +488,21 @@ export const isCommonContext = (name: string): boolean => {
   return r.filter((i) => i === name)?.length > 0;
 };
 
-export const getParentReadOnly = (parent: IParentProviderProps, allData: any): boolean =>
-  allData.form?.formMode !== 'designer' &&
-  (parent?.model?.readOnly as boolean ?? (parent?.formMode === 'readonly' || allData.form?.formMode === 'readonly'));
+export const getParentReadOnly = (parent: IParentProviderProps, allData: unknown): boolean => {
+  // TODO: review type of allData
+  const form = typeof allData === 'object' && "form" in allData ? allData.form : undefined;
+  const formMode: FormMode | undefined = isDefined(form) && "formMode" in form ? form.formMode as FormMode : undefined;
+  return formMode !== 'designer' &&
+    (parent?.model?.readOnly as boolean ?? (parent?.formMode === 'readonly' || formMode === 'readonly'));
+};
 
 // TODO: Alex, please review this. Purpose of the function is not clear from its name
-export const getActualPropertyValue = <T>(model: T, allData: any, propertyName: string): T => {
+export const getActualPropertyValue = <T>(model: T, allData: unknown, propertyName: string): T => {
   return { ...model, [propertyName]: getSettingValue(propertyName, model[propertyName], allData, calcValue) } as T;
 };
 
 // const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
-export const updateModelToMoment = async (model: any, properties: NestedProperties): Promise<any> => {
+export const updateModelToMoment = async (model: object, properties: NestedProperties): Promise<any> => {
   if (properties === null)
     return model;
   const newModel = { ...model };
@@ -599,7 +607,7 @@ export const upgradeComponent = (
 ): IConfigurableFormComponent => {
   if (!definition.migrator) return componentModel;
 
-  const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent>();
+  const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent, SettingsMigrationContext>();
   const fluent = definition.migrator(migrator);
   const versionedModel = { ...componentModel, version: componentModel.version ?? -1 };
   const model = fluent.migrator.upgrade(versionedModel, {
@@ -770,7 +778,7 @@ class StaticMustacheTag {
  * @param data - data to use to evaluate the string
  * @returns {string} evaluated string
  */
-export const evaluateString = (template: string = '', data: any, skipUnknownTags: boolean = false): string => {
+export const evaluateString = (template: string = '', data: object, skipUnknownTags: boolean = false): string => {
   // store moment toString function to get ISO format of datetime
   var toString = moment.prototype.toString;
   moment.prototype.toString = function () {
@@ -1071,7 +1079,7 @@ export const getBoolean = (value: unknown): boolean => {
   return false;
 };
 
-export const hasBoolean = (value: any): boolean => {
+export const hasBoolean = (value: unknown): boolean => {
   if (typeof value === 'boolean') {
     return true;
   } else if (typeof value === 'string') {
@@ -1155,7 +1163,7 @@ const NESTED_ACCESSOR_REGEX = /((?<key>[\w]+)\.(?<accessor>[^\}]+))/;
  * @param data the data to use to evaluate the expression
  * @returns
  */
-export const evaluateStringLiteralExpression = (expression: string, data: any): string => {
+export const evaluateStringLiteralExpression = (expression: string, data: object): string => {
   return expression.replace(/\$\{(.*?)\}/g, (_, token) => nestedProperty.get(data, token));
 };
 
@@ -1173,7 +1181,7 @@ export const evaluateStringLiteralExpression = (expression: string, data: any): 
  * @returns
  */
 
-export const evaluateExpression = (expression, data: any): string => {
+export const evaluateExpression = (expression: string, data: object): string => {
   return expression.replace(/\{\{(.*?)\}\}/g, (_, token) => nestedProperty.get(data, token)) as string;
 };
 
@@ -1216,18 +1224,18 @@ const evaluateValueInternal = (value: string, dictionary: any, isRoot: boolean):
   }
 };
 
-export const evaluateValue = (value: string, dictionary: any): unknown => {
+export const evaluateValue = (value: string, dictionary: object): unknown => {
   return evaluateValueInternal(value, dictionary, true);
 };
 
-export const evaluateValueAsString = (value: string, dictionary: any): string | undefined => {
+export const evaluateValueAsString = (value: string, dictionary: object): string | undefined => {
   const evaluated = evaluateValue(value, dictionary);
   return evaluated ? evaluated.toString() : undefined;
 };
 
 const TAGS_REGEX = /{(?<key>[\w]+)\.(?<accessor>[^\}]+)\}/;
 
-export const replaceTags = (value: string, dictionary: any): string | null => {
+export const replaceTags = (value: string, dictionary: object): string | null => {
   if (!value) return value;
 
   const match = value.match(TAGS_REGEX);
@@ -1451,7 +1459,7 @@ interface IKeyValue {
   value: string;
 }
 
-export const evaluateKeyValuesToObject = (arr: IKeyValue[], data: any): IAnyObject => {
+export const evaluateKeyValuesToObject = (arr: IKeyValue[], data: object): IAnyObject => {
   const queryParamObj: IAnyObject = {};
 
   if (arr?.length) {
@@ -1795,7 +1803,7 @@ export const executeCustomExpression = (expression: string, returnBoolean = fals
   return typeof evaluated === 'boolean' ? evaluated : true;
 };
 
-export const executeCustomExpressionV2 = (expression: string, context: any, returnBoolean = false): boolean => {
+export const executeCustomExpressionV2 = (expression: string, context: object, returnBoolean = false): boolean => {
   if (!expression) {
     if (returnBoolean) {
       return true;

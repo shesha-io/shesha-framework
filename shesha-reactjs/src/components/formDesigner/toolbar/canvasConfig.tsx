@@ -6,11 +6,7 @@ import { useCanvas } from "@/providers";
 import { DeviceOptions } from "./mobileDropdown";
 import { DEFAULT_OPTIONS } from "@/providers/canvas/utils";
 
-export interface ICanvasConfigProps {
-
-}
-
-export const CanvasConfig: FC<ICanvasConfigProps> = () => {
+export const CanvasConfig: FC = () => {
   const { styles } = useStyles();
   const { setCanvasZoom, setCanvasAutoZoom, autoZoom, zoom } = useCanvas();
 

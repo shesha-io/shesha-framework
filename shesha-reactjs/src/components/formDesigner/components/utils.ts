@@ -23,7 +23,7 @@ export interface ICustomEventHandler {
   setGlobalState: (payload: ISetStatePayload) => void;
 };
 
-export const addContextData = (context: any, additionalContext: any): any => {
+export const addContextData = (context: object, additionalContext: object): any => {
   // if context is an ObservableProxy
   if (context instanceof ObservableProxy || context instanceof TouchableProxy) {
     for (const propName in additionalContext) {
@@ -164,9 +164,9 @@ export const customOnClickEventHandler = (model: IConfigurableFormComponent, con
 export const customAddressEventHandler = (
   model: IConfigurableFormComponent,
   context: IApplicationContext,
-  onChangeCustom,
-  onSelectCustom,
-  onFocusCustom,
+  onChangeCustom: (value: string) => void,
+  onSelectCustom: (selected: IAddressAndCoords) => Promise<IOpenCageResponse | IAddressAndCoords>,
+  onFocusCustom: (value: string) => void,
 ): IGooglePlacesAutocompleteProps => {
   const onCustomEvent = (event: any, key: string): void => {
     const expression = model?.[key];
@@ -194,7 +194,7 @@ export const customAddressEventHandler = (
     onCustomEvent(e, 'onFocusCustom');
   };
 
-  const onGeocodeChange = (event: IAddressAndCoords): void =>
+  const onGeocodeChange = (event: IAddressAndCoords): Promise<void> =>
     onSelectCustom(event).then((payload) => onCustomEvent({ ...event, ...(payload || {}) }, 'onSelectCustom'));
 
   return {

@@ -128,6 +128,4 @@ export interface IAutocompleteBaseProps {
   typeShortAlias?: string;
 }
 
-export interface IAutocompleteProps extends Omit<IAutocompleteBaseProps, 'uid'> {
-
-}
+export type IAutocompleteProps = Omit<IAutocompleteBaseProps, 'uid'>;

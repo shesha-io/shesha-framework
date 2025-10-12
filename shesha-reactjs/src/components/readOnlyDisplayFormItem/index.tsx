@@ -7,15 +7,8 @@ import { IReadOnlyDisplayFormItemProps } from './models';
 import { useStyles } from './styles/styles';
 import ReflistTag from '../refListDropDown/reflistTag';
 import InputField from './inputField';
-import * as antdIcons from '@ant-design/icons';
 
 type AutocompleteType = ISelectOption;
-
-export const Icon = ({ type, ...rest }): JSX.Element => {
-  const icons = antdIcons;
-  const Component = icons[type];
-  return <Component {...rest} />;
-};
 
 export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props) => {
   const {

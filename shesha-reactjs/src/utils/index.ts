@@ -99,12 +99,14 @@ export const joinStringValues = (values: string[], delimiter = ' '): string | un
   return values?.filter(Boolean)?.join(delimiter);
 };
 
-export const getCircularReplacer = () => {
+type JsonReplacer = (key: string, value: unknown) => unknown;
+
+export const getCircularReplacer = (): JsonReplacer => {
   const seen = new WeakSet();
-  return (_key, value) => {
+  return (_key: string, value: unknown): unknown => {
     if (typeof value === 'object' && value !== null) {
       if (seen.has(value)) {
-        return;
+        return undefined;
       }
       seen.add(value);
     }
@@ -112,7 +114,7 @@ export const getCircularReplacer = () => {
   };
 };
 
-export const getValidDefaultBool = (value: any, defalutValue: boolean = true): boolean =>
+export const getValidDefaultBool = (value: unknown, defalutValue: boolean = true): boolean =>
   typeof value === 'boolean' ? value : defalutValue;
 
 export const getPlainValue = <T = object | any[]>(value: T): T => {

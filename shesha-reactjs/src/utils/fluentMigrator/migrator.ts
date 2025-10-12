@@ -11,7 +11,7 @@ export interface MigrationRegistration<TPrev = IHasVersion, TNext = IHasVersion>
   up: Migration<TPrev, TNext>;
 }
 
-export const isHasVersion = (value: any): value is IHasVersion => {
+export const isHasVersion = (value: unknown): value is IHasVersion => {
   const version = (value as IHasVersion)?.version;
   return version && (typeof (version) === 'number' || version === 'latest');
 };
@@ -42,7 +42,7 @@ export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext =
   };
 }
 
-export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = any>
+export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = unknown>
 implements IMigrationRegistrationsOwner<TDst> {
   migrations: MigrationRegistration[];
 

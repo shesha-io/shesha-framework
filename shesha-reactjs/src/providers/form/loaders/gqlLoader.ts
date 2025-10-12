@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { IFormSettings, useMetadataDispatcher } from "@/providers";
 import { EntityAjaxResponse } from "@/generic-pages/dynamic/interfaces";
+import { isDefined } from "@/utils/nullables";
 
 export interface GqlLoaderArguments {
   httpClient: HttpClientApi;
@@ -36,8 +37,8 @@ export class GqlLoader implements IFormDataLoader {
     this.#endpointsEvaluator = args.endpointsEvaluator;
   }
 
-  canLoadData = (formArguments: any): boolean => {
-    return Boolean(formArguments?.id);
+  canLoadData = (formArguments: object | undefined): boolean => {
+    return isDefined(formArguments) && "id" in formArguments && isDefined(formArguments.id);
   };
 
   #getGqlSettings = (formSettings: IFormSettings): GqlLoaderSettings => {

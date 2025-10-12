@@ -10,7 +10,7 @@ import {
 } from '../_settings/utils/background/utils';
 import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any): FormMarkupWithSettings => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   return {
     components: new DesignerToolbarSettings(data)
       .addSearchableTabs({

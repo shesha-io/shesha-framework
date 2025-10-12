@@ -8,9 +8,9 @@ const videoTypes = ['.mp4', '.webm', '.ogg'];
 const audioTypes = ['.mp3', '.wav', '.ogg', '.m4a'];
 const compressedTypes = ['.zip', '.rar', '.tar'];
 
-export const isImageType = (type): boolean => imageTypes.includes(type);
-export const isVideoType = (type): boolean => videoTypes.includes(type);
-export const isAudioType = (type): boolean => audioTypes.includes(type);
+export const isImageType = (type: string): boolean => imageTypes.includes(type);
+export const isVideoType = (type: string): boolean => videoTypes.includes(type);
+export const isAudioType = (type: string): boolean => audioTypes.includes(type);
 
 export const fileIcons = {
   ...Object.assign({}, ...imageTypes.map((type) => ({ [type]: { component: <FileImageOutlined style={{ color: '#0083BE' }} /> } }))),

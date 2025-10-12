@@ -9,7 +9,10 @@ function canSubmit(data: IAnnotation[], minPoints: number): boolean {
   return true;
 }
 
-function parseIntOrDefault(input: any, defaultValue: number = 0): number {
+function parseIntOrDefault(input: string | number | undefined | null, defaultValue: number = 0): number {
+  if (typeof (input) === 'number')
+    return input;
+
   const parsed = parseInt(input, 10);
   return isNaN(parsed) ? defaultValue : parsed;
 }
@@ -73,14 +76,4 @@ function getViewData(data: IAnnotation[], allowAddingNotes = false): IAnnotation
   return viewData;
 }
 
-function getCustomEnabled(customVisibility: string, name: string, data = {}, globalState = {}, formMode): boolean {
-  if (customVisibility) {
-    const customVisibilityExecutor = new Function('value, data, globalState, formMode', customVisibility);
-
-    return customVisibilityExecutor(data?.[name], data, globalState, formMode);
-  } else {
-    return true;
-  }
-}
-
-export { parseIntOrDefault, sortAnnotationData, getViewData, canSubmit, getCustomEnabled, getImageBits };
+export { parseIntOrDefault, sortAnnotationData, getViewData, canSubmit, getImageBits };

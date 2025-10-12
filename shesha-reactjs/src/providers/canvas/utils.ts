@@ -67,7 +67,7 @@ export const DEFAULT_OPTIONS = {
   minZoom: 25,
   maxZoom: 200,
   sizes: [25, 50, 25],
-  configTreePanelWidth: (val: number = 20) => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
+  configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
   gutter: 4,
   designerWidth: '1024px',
 };

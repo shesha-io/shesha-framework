@@ -26,8 +26,7 @@ export const SettingsFormStateContext = createNamedContext<SettingsFormState<any
 
 export const SettingsFormActionsContext = createNamedContext<ISettingsFormActions>(undefined, "SettingsFormActionsContext");
 
-export interface SettingsFormProps<TModel> extends ISettingsFormFactoryArgs<TModel> {
-}
+export type SettingsFormProps<TModel> = ISettingsFormFactoryArgs<TModel>;
 
 const SettingsForm = <TModel = unknown>(props: PropsWithChildren<SettingsFormProps<TModel>>): ReactElement => {
   const {

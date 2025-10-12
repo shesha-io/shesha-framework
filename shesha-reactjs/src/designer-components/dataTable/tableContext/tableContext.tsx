@@ -14,8 +14,7 @@ import { useStyles } from './styles';
 import { ShaForm } from '@/providers/form';
 import { useParent } from '@/providers/parentProvider';
 
-interface ITableContextInnerProps extends ITableContextComponentProps {
-}
+type ITableContextInnerProps = ITableContextComponentProps;
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering, components } = props;

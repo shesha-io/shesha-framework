@@ -227,7 +227,7 @@ interface IFieldData {
 }
 
 export const filterDataByOutputComponents = (
-  data: any,
+  data: object,
   components: IComponentsDictionary,
   toolboxComponents: IToolboxComponents,
 ): any => {

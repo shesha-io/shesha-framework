@@ -2,7 +2,7 @@ import { FormRawMarkup } from '@/index';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 
-export const getSettings = (data: any): FormRawMarkup =>
+export const getSettings = (data: object): FormRawMarkup =>
   new DesignerToolbarSettings(data)
     .addCollapsiblePanel({
       id: '11164664-cbc9-4cef-babc-6fbea44cd0ca',

@@ -10,11 +10,9 @@ import { useModelConfigurator } from '@/providers';
 import { ViewsEditorComponent } from '../viewsEditor';
 import { useStyles } from '../styles/styles';
 
-export interface IModelConfiguratorRendererProps { }
-
 const markup = modelSettingsMarkup as FormMarkup;
 
-export const ModelConfiguratorRenderer: FC<IModelConfiguratorRendererProps> = () => {
+export const ModelConfiguratorRenderer: FC = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
   const { modelConfiguration, form, save, id } = useModelConfigurator();

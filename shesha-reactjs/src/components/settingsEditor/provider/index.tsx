@@ -34,8 +34,6 @@ import {
 import { settingsEditorReducer } from './reducer';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
-export interface ISettingsEditorProviderProps {}
-
 const getListFetcherQueryParams = (maxResultCount): IGenericGetAllPayload => {
   return {
     skipCount: 0,
@@ -63,7 +61,7 @@ interface SettingConfigurationDto {
   };
 }
 
-const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>> = ({ children }) => {
+const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
   const initial: ISettingsEditorStateContext = {
     ...SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE,
   };

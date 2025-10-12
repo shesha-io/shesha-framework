@@ -3,9 +3,7 @@ import { Button, ButtonProps } from 'antd';
 import { RedoOutlined, UndoOutlined } from '@ant-design/icons';
 import { useFormDesignerActions, useFormDesignerUndoableState } from '@/providers/formDesigner';
 
-export interface IUndoRedoButtonsProps extends Pick<ButtonProps, 'size' | 'type'> {
-
-}
+export type IUndoRedoButtonsProps = Pick<ButtonProps, 'size' | 'type'>;
 
 export const UndoRedoButtons: FC<IUndoRedoButtonsProps> = (props) => {
   const { canUndo, canRedo } = useFormDesignerUndoableState();

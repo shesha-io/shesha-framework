@@ -42,7 +42,7 @@ const convertJsonLogicNode = (jsonLogic: object, argumentEvaluator: JsonLogicCon
   return result;
 };
 
-export const migrateDynamicExpression = (expression: any): object => {
+export const migrateDynamicExpression = (expression: string | object): object => {
   try {
     const parsedExpression = typeof expression === 'string' ? JSON.parse(expression) : expression;
 
@@ -64,7 +64,7 @@ export const migrateDynamicExpression = (expression: any): object => {
     return convertedExpression;
   } catch (error) {
     console.error('Failed to parse expression', error);
-    return expression;
+    return {};
   }
 };
 

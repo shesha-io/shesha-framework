@@ -11,7 +11,7 @@ import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
 import ChartLoader from './components/chartLoader';
-import { IAbpWrappedGetEntityListResponse } from '@/interfaces/gql';
+import { EntityData, IAbpWrappedGetEntityListResponse } from '@/interfaces/gql';
 
 const chartInnerStyle = {
   width: '100%',
@@ -88,7 +88,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     overflow: 'hidden',
   }), [state]);
 
-  const processAndUpdateData = (items: {}[], refListMap: Map<string, Map<number, string>>): void => {
+  const processAndUpdateData = (items: EntityData[], refListMap: Map<string, Map<number, string>>): void => {
     // Process all items efficiently
     let processedItems = processItems(items, refListMap);
 

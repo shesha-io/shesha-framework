@@ -10,7 +10,7 @@ export interface IMemberType {
   baseType?: IMemberType;
 }
 
-export const isIMemberType = (value: any): value is IMemberType => {
+export const isIMemberType = (value: object): value is IMemberType => {
   const typed = value as IMemberType;
   return typed && typeof typed.dataType === 'string' && isDefined(typed.dataType);
 };
@@ -63,7 +63,7 @@ export interface IHasTypeDefinition {
   typeDefinitionLoader: TypeDefinitionLoader;
 }
 
-export const hasTypeDefinition = (value: any): value is IHasTypeDefinition => value && value.typeDefinitionLoader && typeof value.typeDefinitionLoader === 'function';
+export const hasTypeDefinition = (value: object): value is IHasTypeDefinition => value && "typeDefinitionLoader" in value && typeof value.typeDefinitionLoader === 'function';
 
 export interface IMetadata extends Partial<IHasTypeDefinition> {
   dataType: string;
@@ -77,14 +77,14 @@ export interface IMemberMetadata extends IMemberType, Partial<IHasTypeDefinition
   description?: string | null;
 }
 
-export const isIMemberMetadata = (value: any): value is IMemberMetadata => value && value.path && isIMemberType(value);
+export const isIMemberMetadata = (value: object): value is IMemberMetadata => value && isIMemberType(value) && "path" in value && typeof (value.path) === 'string';
 // DataTypeInfo
 
 export interface IHasItemsType {
   itemsType: IMemberType;
 }
 
-export const isIHasItemsType = (value: any): value is IHasItemsType => value && value.itemsType && isIMemberType(value.itemsType);
+export const isIHasItemsType = (value: object): value is IHasItemsType => value && "itemsType" in value && typeof (value.itemsType) === 'object' && isIMemberType(value.itemsType);
 
 export interface IHasChildPropertiesMetadata {
   properties: IPropertyMetadata[];
@@ -106,7 +106,7 @@ export interface IHasEntityType {
 export interface IEntityProperty extends IPropertyMetadata, IHasEntityType {
 }
 
-export const isIHasEntityType = (value: any): value is IHasEntityType => {
+export const isIHasEntityType = (value: unknown): value is IHasEntityType => {
   const typed = value as IHasEntityType;
   return typed && typeof typed.entityType === 'string';
 };
