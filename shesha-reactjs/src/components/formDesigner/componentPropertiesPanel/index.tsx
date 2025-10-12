@@ -2,9 +2,7 @@ import React, { FC } from 'react';
 import { Empty } from 'antd';
 import { useFormDesignerState } from '@/providers/formDesigner';
 
-export interface IProps { }
-
-const ComponentPropertiesPanelInner: FC<IProps> = () => {
+const ComponentPropertiesPanelInner: FC = () => {
   const { selectedComponentId, readOnly, settingsPanelRef } = useFormDesignerState();
 
   return (

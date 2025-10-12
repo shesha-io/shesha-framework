@@ -599,7 +599,7 @@ export const upgradeComponent = (
 ): IConfigurableFormComponent => {
   if (!definition.migrator) return componentModel;
 
-  const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent>();
+  const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent, SettingsMigrationContext>();
   const fluent = definition.migrator(migrator);
   const versionedModel = { ...componentModel, version: componentModel.version ?? -1 };
   const model = fluent.migrator.upgrade(versionedModel, {

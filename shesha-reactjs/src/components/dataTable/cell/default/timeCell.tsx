@@ -3,7 +3,7 @@ import React from 'react';
 import { IDataCellProps } from '../interfaces';
 import { asNumber } from '../utils';
 
-export interface ITimeCellProps<D extends object = object, V = any> extends IDataCellProps<D, V> {}
+export type ITimeCellProps<D extends object = object, V = any> = IDataCellProps<D, V>;
 
 export const TimeCell = <D extends object = object, V = number>(props: ITimeCellProps<D, V>): JSX.Element => {
   const numberValue = asNumber(props.value);

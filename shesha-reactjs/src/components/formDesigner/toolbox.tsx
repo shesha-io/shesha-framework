@@ -7,9 +7,7 @@ import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { useMetadata } from '@/providers';
 
-export interface IProps { }
-
-const Toolbox: FC<IProps> = () => {
+const Toolbox: FC = () => {
   const { styles } = useStyles();
   const formDs = useFormDesignerStateSelector((x) => x.dataSources);
   const currentMeta = useMetadata(false);

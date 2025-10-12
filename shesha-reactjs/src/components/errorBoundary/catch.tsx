@@ -5,7 +5,7 @@ type ErrorHandlingComponent<Props> = (props: Props, error?: Error) => React.Reac
 
 interface ErrorState { error?: Error }
 
-export default function Catch<Props extends {}>(
+export default function Catch<Props>(
   component: ErrorHandlingComponent<Props>,
   errorHandler?: ErrorHandler,
 ): React.ComponentType<Props> {

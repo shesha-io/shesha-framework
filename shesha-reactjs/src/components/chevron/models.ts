@@ -8,8 +8,7 @@ export interface IRefListGroupItemBase extends IButtonItem {
   item?: string;
 }
 
-export interface IRefListItemFormModel extends IRefListGroupItemBase {
-}
+export type IRefListItemFormModel = IRefListGroupItemBase;
 
 export interface IRefListItemGroup extends IRefListGroupItemBase {
   childItems?: RefListGroupItemProps[];

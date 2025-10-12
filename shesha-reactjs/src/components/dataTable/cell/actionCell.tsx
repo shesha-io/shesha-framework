@@ -14,7 +14,7 @@ import { useAsyncDeepCompareMemo } from '@/hooks/useAsyncMemo';
 import { TypedProxy, useAvailableConstantsData } from '@/index';
 
 
-export interface IActionCellProps<D extends object = object, V = any> extends ICommonCellProps<ITableActionColumn, D, V> { }
+export type IActionCellProps<D extends object = object, V = any> = ICommonCellProps<ITableActionColumn, D, V>;
 
 export const ActionCell = <D extends object = object, V = any>(props: IActionCellProps<D, V>): JSX.Element => {
   const { columnConfig } = props;

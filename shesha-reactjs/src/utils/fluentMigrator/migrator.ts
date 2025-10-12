@@ -42,7 +42,7 @@ export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext =
   };
 }
 
-export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = any>
+export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = unknown>
 implements IMigrationRegistrationsOwner<TDst> {
   migrations: MigrationRegistration[];
 

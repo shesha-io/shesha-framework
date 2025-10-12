@@ -3,9 +3,7 @@ import { Page } from '@/components';
 import { ConfigurableThemeContent } from './content';
 import { useTheme } from '@/index';
 
-export interface IConfigurableThemePageProps { }
-
-export const ConfigurableThemePage: FC<IConfigurableThemePageProps> = () => {
+export const ConfigurableThemePage: FC = () => {
   const { theme, changeTheme } = useTheme();
 
   return (
