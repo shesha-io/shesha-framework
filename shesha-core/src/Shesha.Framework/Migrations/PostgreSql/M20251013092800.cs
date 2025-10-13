@@ -31,21 +31,22 @@ BEGIN
     ""Separator"" := ', ';
     ""NullValueName"" := '';
 
-    SELECT refList.""Id"" INTO ""ReferenceListId"" FROM ""Frwk_ReferenceLists"" refList
-    INNER JOIN ""Frwk_ConfigurationItems"" config ON config.""Id"" = refList.""Id""
-    WHERE ""Name"" = CONCAT(coalesce(CONCAT(""RefListNamespace"" , '.'), '') , ""RefListName"")
-    AND ""ItemType"" = 'reference-list' AND ""VersionStatusLkp"" = 3; /*Live*/
+    SELECT config.id INTO ""ReferenceListId"" FROM frwk.configuration_items config
+    WHERE config.name = CONCAT(coalesce(CONCAT(""RefListNamespace"" , '.'), '') , ""RefListName"")
+    AND config.item_type = 'reference-list'
+    AND config.is_deleted = false;
 
     IF (""RefListItemValue"" IS NULL) THEN
         ""RetVal"" := '';
     ELSE
         SELECT
-            string_agg(""Item"", ""Separator"") INTO ""ConcatenatedList""
+            string_agg(item, ""Separator"") INTO ""ConcatenatedList""
         FROM
-            ""Frwk_ReferenceListItems""
+            frwk.reference_list_items
         WHERE
-            ""ReferenceListId"" = ""ReferenceListId""
-        AND (""ItemValue"" & ""RefListItemValue"") > 0;
+            reference_list_id = ""ReferenceListId""
+        AND (item_value & ""RefListItemValue"") > 0
+        AND is_deleted = false;
 
         ""RetVal"" := ""ConcatenatedList"";
     END IF;

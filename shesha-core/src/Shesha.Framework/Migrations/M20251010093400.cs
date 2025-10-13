@@ -29,22 +29,23 @@ BEGIN
     SET @Separator = ', '
     SET @NullValueName = ''
 
-    SELECT @ReferenceListId = refList.Id FROM Frwk_ReferenceLists refList
-	INNER JOIN Frwk_ConfigurationItems config ON config.Id = refList.Id
-	WHERE Name = CONCAT(coalesce(CONCAT(@RefListNamespace , '.'), '') , @RefListName)
-	AND ItemType = 'reference-list' AND VersionStatusLkp = 3 /*Live*/
+    SELECT @ReferenceListId = config.id FROM frwk.configuration_items config
+	WHERE config.name = CONCAT(coalesce(CONCAT(@RefListNamespace , '.'), '') , @RefListName)
+	AND config.item_type = 'reference-list'
+	AND config.is_deleted = 0
                             
     IF (@RefListItemValue IS NULL)
         SET @RetVal = ''
     ELSE
     BEGIN
         SELECT
-            @ConcatenatedList = COALESCE(@ConcatenatedList + @Separator, '') + Item
-            FROM 
-                Frwk_ReferenceListItems
+            @ConcatenatedList = COALESCE(@ConcatenatedList + @Separator, '') + item
+            FROM
+                frwk.reference_list_items
             WHERE
-                ReferenceListId = @ReferenceListId
-            AND (ItemValue & @RefListItemValue) > 0  
+                reference_list_id = @ReferenceListId
+            AND (item_value & @RefListItemValue) > 0
+            AND is_deleted = 0  
             
         SELECT @RetVal = substring(@ConcatenatedList, LEN(@Separator) + 1, len(@ConcatenatedList))
     END
