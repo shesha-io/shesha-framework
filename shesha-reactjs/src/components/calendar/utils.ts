@@ -15,11 +15,12 @@ export const getLayerEventItems = (
   layerDataItem: { [x: string]: any }[] | { [x: string]: any },
 ) => {
   let events;
-  const { startTime, endTime , title, icon, iconColor , showIcon, color, onDblClick, onSelect, } = item;
+  const { startTime, endTime, title, icon, iconColor, showIcon, color, onDblClick, onSelect, } = item;
   if (Array.isArray(layerDataItem)) {
     events = layerDataItem
       .filter((i) => i?.[startTime] && i?.[endTime])
       .map((j) => ({
+        ...j,
         id: j?.id,
         start: new Date(j?.[startTime]),
         end: new Date(j?.[endTime]),
@@ -30,7 +31,6 @@ export const getLayerEventItems = (
         title,
         onDblClick,
         onSelect,
-        ...j,
       }));
   } else {
     events = [
@@ -60,7 +60,7 @@ export const getLayerOptions = (layers: ICalendarLayersProps[]) =>
       disabled: !i.allowChangeVisibility,
     }));
 
-export const getQueryProperties = ({startTime, endTime, propertyList }: ICalendarLayersProps) => {
+export const getQueryProperties = ({ startTime, endTime, propertyList }: ICalendarLayersProps) => {
   const properties = new Set<string>(['id']);
   properties.add(startTime).add(endTime);
   if (propertyList) {
@@ -91,13 +91,25 @@ export const getCalendarRefetchParams = (param: ICalendarLayersProps, filter: st
   };
 };
 
-export const getLayerEvents = (layerEvents: ICalendarLayersProps[], checked: string[]) =>
-  checked
-    .map(
-      (item) => layerEvents.find(({ id }) => id === item)?.events as any[],
-    )
+export const getLayerEvents = (
+  layerEvents: ICalendarLayersProps[],
+  checked: string[]
+) => {
+  return checked
+    .map((item) => {
+      const found = layerEvents.find(({ id }) => id === item);
+      // Map each event to include the layer's properties
+      return found?.events?.map(event => ({
+        ...event,
+        color: event.color ?? found.color,
+        icon: event.icon ?? found.icon,
+        showIcon: event.showIcon ?? found.showIcon,
+        iconColor: event.iconColor ?? found.iconColor
+      })) as any[];
+    })
     .filter((i) => i)
     .reduce((prev, curr) => [...(prev || []), ...(curr || [])], []);
+};
 
 export const getResponseListToState = (res: { [key in string]: any }[]) =>
   res.map((res) => (res?.result?.items ? res.result.items : res?.result));
