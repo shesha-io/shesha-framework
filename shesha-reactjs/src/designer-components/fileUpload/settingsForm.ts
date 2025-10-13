@@ -320,7 +320,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                     hideLabel: true,
                                     width: 60,
                                     hidden: {
-                                      _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
+                                      _code: 'return  getSettingValue(data.listType) === "thumbnail";',
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
