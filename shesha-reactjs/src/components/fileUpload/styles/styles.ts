@@ -43,6 +43,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
   const { layout, isDragger, hideFileName, listType } = model;
 
+  const justifyContentMap = {
+   left: 'flex-start',
+   right: 'flex-end',
+   center: 'center',
+   justify: 'space-between',
+  };
+
+  const justifyContentValue = justifyContentMap[textAlign] || textAlign;
+
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const antUploadText = `${prefixCls}-upload-text`;
   const antUploadHint = `${prefixCls}-upload-hint`;
@@ -203,7 +212,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       .ant-btn {
         color: ${primaryColor || token.colorPrimary} !important;
         ${commonTextStyles}
-        justify-content: ${textAlign} !important;
+        justify-content: ${justifyContentValue} !important;
         padding: 0;
         * {
           ${commonTextStyles}
