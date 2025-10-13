@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Shesha.Configuration.Runtime
 {
@@ -7,7 +8,7 @@ namespace Shesha.Configuration.Runtime
     /// </summary>
     public interface IEntityConfigurationStore
     {
-        void InitializeDynamic();
+        Task InitializeDynamicAsync();
 
         /// <summary>
         /// Returns <see cref="EntityConfiguration"/> by entity type
@@ -31,6 +32,6 @@ namespace Shesha.Configuration.Runtime
         /// <param name="applicationServiceType"></param>
         void SetDefaultAppService(Type entityType, Type applicationServiceType);
 
-        void ReInitialize();
+        Task ReInitializeAsync();
     }
 }

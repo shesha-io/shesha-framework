@@ -326,8 +326,9 @@ namespace Shesha.Domain
                 if (rootConfigAssemblyName != configAssemblyName)
                 {
                     // This column extends a table created in another module - we should add a prefix
-                    if (!Prefixes.ContainsKey(rootConfigAssemblyName.NotNull())
-                        || Prefixes[rootConfigAssemblyName] != Prefixes[configAssemblyName.NotNull()])
+                    if (Prefixes.ContainsKey(configAssemblyName.NotNull())
+                        && (!Prefixes.ContainsKey(rootConfigAssemblyName.NotNull()) 
+                            || Prefixes[rootConfigAssemblyName] != Prefixes[configAssemblyName.NotNull()]))
                         return Prefixes[configAssemblyName.NotNull()];
                 }
             }
