@@ -162,6 +162,17 @@ export const getSettings = (_data?: IWizardStepProps) =>
       parentId: 'root',
       label: 'Back Button',
     })
+    .addCheckbox({
+      id: 'c3f15e0f-7c8a-4d8b-9f0e-5a3b8c9d1e2f',
+      propertyName: 'showBackButton',
+      label: 'Show Back Button',
+      description: 'Controls the visibility of the Back button. Note: The Back button is always hidden on the first step.',
+      labelAlign: 'right',
+      parentId: 'root',
+      hidden: false,
+      defaultValue: true,
+      validate: {},
+    })
     .addTextField({
       id: 'ed059dec-4f1b-408b-8739-05f0242d662a',
       propertyName: 'backButtonText',
@@ -218,6 +229,16 @@ export const getSettings = (_data?: IWizardStepProps) =>
       propertyName: 'doneButtonSeparatorVisibility',
       parentId: 'root',
       label: 'Done Button',
+    })
+    .addCheckbox({
+      id: 'a8e9c6d4-2b3a-4f5e-8c7d-1a2b3c4d5e6f',
+      propertyName: 'showDoneButton',
+      label: 'Show Done Button',
+      labelAlign: 'right',
+      parentId: 'root',
+      hidden: false,
+      defaultValue: true,
+      validate: {},
     })
     .addTextField({
       id: '20ea7d88-2e09-4d2e-9e4a-caa23b1e3502',

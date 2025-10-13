@@ -26,6 +26,9 @@ export interface IWizardStepProps {
   backButtonCustomEnabled?: string;
   doneButtonCustomEnabled?: string;
 
+  showBackButton?: boolean;
+  showDoneButton?: boolean;
+
   cancelButtonActionConfiguration?: IConfigurableActionConfiguration;
   nextButtonActionConfiguration?: IConfigurableActionConfiguration;
   backButtonActionConfiguration?: IConfigurableActionConfiguration;
