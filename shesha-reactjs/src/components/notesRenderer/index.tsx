@@ -16,7 +16,7 @@ export interface INotesRendererProps {
   minLength?: number;
   maxLength?: number;
   onDeleteAction?: (note: INote) => void;
-  onCreateAction?: (note: any) => void;
+  onCreateAction?: (createdNotes: INote[]) => void;
   allowEdit?: boolean;
   onUpdateAction?: (note: INote) => void;
 }

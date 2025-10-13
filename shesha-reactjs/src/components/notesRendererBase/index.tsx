@@ -22,7 +22,7 @@ export interface INotesRendererBaseProps {
   isFetchingNotes?: boolean;
   isPostingNotes?: boolean;
   notes?: INote[];
-  postNotes: (payload: ICreateNotePayload) => void;
+  postNotes: (payload: ICreateNotePayload) => Promise<INote> | void;
   deleteNotes: (selectedCommentId: string) => void;
   buttonFloatRight?: boolean;
   autoSize?: boolean;
@@ -32,7 +32,7 @@ export interface INotesRendererBaseProps {
   minLength?: number;
   maxLength?: number;
   onDeleteAction?: (note: INote) => void;
-  onCreateAction?: (note: INote) => void;
+  onCreateAction?: (createdNotes: INote[]) => void;
   allowEdit?: boolean;
   updateNotes?: (payload: ICreateNotePayload) => void;
   onUpdateAction?: (note: ICreateNotePayload) => void;
@@ -115,7 +115,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     }
   };
 
-  const handleSaveNotes = (): void => {
+  const handleSaveNotes = async (): Promise<void> => {
     // Validate against min length
     if (minLength && newComments.length < minLength) {
       setValidationError(`Minimum ${minLength} characters required`);
@@ -126,11 +126,38 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
       const payload = {
         noteText: newComments,
       };
-      postNotes(payload);
 
-      // Call onCreateAction immediately with the payload
-      if (onCreateAction) {
-        onCreateAction(payload as any);
+      try {
+        const result = postNotes(payload);
+
+        // If postNotes returns a Promise, wait for it and call onCreateAction with the result
+        if (result && typeof result.then === 'function') {
+          const createdNote = await result;
+          if (onCreateAction && createdNote) {
+            onCreateAction([createdNote]);
+          }
+        } else {
+          // For backward compatibility, if postNotes doesn't return a Promise,
+          // call onCreateAction immediately (existing behavior)
+          if (onCreateAction) {
+            // Create a mock note structure for backward compatibility
+            const mockNote: INote = {
+              id: '', // Will be set by the server
+              noteText: payload.noteText,
+              creationTime: new Date().toISOString(),
+              author: null,
+              ownerId: '',
+              ownerType: '',
+              category: '',
+              priority: null,
+              parentId: null,
+            };
+            onCreateAction([mockNote]);
+          }
+        }
+      } catch (error) {
+        // If posting fails, don't call onCreateAction
+        console.error('Failed to save note:', error);
       }
     } else {
       notification.info({

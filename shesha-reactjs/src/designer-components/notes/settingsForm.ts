@@ -169,7 +169,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             ],
           },
           {
-            key: '3',
+            key: 'events',
             title: 'Events',
             id: eventsTabId,
             components: [
