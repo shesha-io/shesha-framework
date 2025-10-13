@@ -44,10 +44,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const { layout, isDragger, hideFileName, listType } = model;
 
   const justifyContentMap = {
-   left: 'flex-start',
-   right: 'flex-end',
-   center: 'center',
-   justify: 'space-between',
+    left: 'flex-start',
+    right: 'flex-end',
+    center: 'center',
+    justify: 'space-between',
   };
 
   const justifyContentValue = justifyContentMap[textAlign] || textAlign;
