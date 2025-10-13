@@ -79,6 +79,12 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const { styles, cx } = useStyles();
 
   useEffect(() => {
+    // Skip markup fetch when using formArguments - the ConfigurableForm will handle loading via formId
+    if (formArguments) {
+      return;
+    }
+
+    // Only fetch markup for backward compatibility when not using formArguments
     if (formIdentifier) {
       fetchForm()
         .then((response) => {
@@ -89,7 +95,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
           setLoadingState('error');
         });
     }
-  }, [formIdentifier]);
+  }, [formIdentifier, formArguments, fetchForm]);
 
   // When using formArguments, the form's data loader will handle data fetching
   // Only use manual data fetching logic if formArguments is not provided (backward compatibility)
