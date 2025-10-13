@@ -15,7 +15,6 @@ import { migratePrevStyles, migrateStyles } from '@/designer-components/_common-
 import { defaultContainerStyles, defaultStyles } from './utils';
 import { ConfigurableFormItem } from '@/components';
 import { useStyles } from './styles/styles';
-import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { nanoid } from '@/utils/uuid';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
