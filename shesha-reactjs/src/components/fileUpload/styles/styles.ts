@@ -203,6 +203,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       .ant-btn {
         color: ${primaryColor || token.colorPrimary} !important;
         ${commonTextStyles}
+        justify-content: ${textAlign} !important;
         padding: 0;
         * {
           ${commonTextStyles}
