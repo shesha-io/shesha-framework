@@ -1,4 +1,3 @@
-
 import { FormIdentifier, IConfigurableActionConfiguration } from '@/providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
@@ -67,9 +66,7 @@ export interface ICalendarLayersProps {
   startTime?: string;
   endTime?: string;
   title?: string;
-  color?: {
-    hex: string;
-  };
+  color?: string;
   showIcon?: boolean;
   propertyList?: string[];
   overfetch?: boolean;

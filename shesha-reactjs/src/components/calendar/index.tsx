@@ -221,7 +221,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
             <div
               className={calendarStyles.calendarLegendColor}
               style={{
-                backgroundColor: (layer.color as any) || primaryColor,
+                backgroundColor: (layer.color) || primaryColor,
               }}
             />
             <span className={calendarStyles.calendarLegendLabel}>{layer.label}</span>
