@@ -245,7 +245,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
     // If formIdentifier is provided directly, use it
     if (props.formIdentifier) {
       setFormConfig(props.formIdentifier);
-    } else if (props.className && props.formType && !formConfig) {
+    } else if (props.className && props.formType && formConfig === undefined) {
       // Otherwise, fetch form ID dynamically using className and formType
       getEntityFormId(props.className, props.formType)
         .then((f) => {
