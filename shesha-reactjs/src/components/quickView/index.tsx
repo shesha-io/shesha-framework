@@ -94,10 +94,11 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   // When using formArguments, the form's data loader will handle data fetching
   // Only use manual data fetching logic if formArguments is not provided (backward compatibility)
   useEffect(() => {
-    if (formArguments) {
+    if (formArguments && formIdentifier) {
       // When using formArguments, let the form handle loading via its data loader
+      // But only after we have the formIdentifier
       setLoadingState('success');
-    } else if (!formData && entityId && formMarkup) {
+    } else if (!formArguments && !formData && entityId && formMarkup) {
       // Fallback to manual data fetching for backward compatibility
       const getUrl = getEntityUrl ?? formMarkup?.formSettings?.getUrl;
       const fetcher = getUrl
@@ -114,16 +115,16 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
           notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> });
         });
     }
-  }, [entityId, getEntityUrl, formMarkup, formArguments, formData, backendUrl, httpHeaders, className, displayProperty, notification]);
+  }, [entityId, getEntityUrl, formMarkup, formArguments, formData, backendUrl, httpHeaders, className, displayProperty, notification, formIdentifier]);
 
   const formContent = useMemo(() => {
-    // When using formArguments, only require formMarkup (data will be loaded by form's data loader)
+    // When using formArguments, require formIdentifier (data will be loaded by form's data loader)
     // When not using formArguments, require both formMarkup and formData (backward compatibility)
-    const canRenderForm = formMarkup && (formArguments || formData);
+    const canRenderForm = formArguments ? formIdentifier : (formMarkup && formData);
 
     return canRenderForm ? (
       <FormItemProvider namePrefix={undefined}>
-        <MetadataProvider id="dynamic" modelType={formMarkup?.formSettings.modelType}>
+        <MetadataProvider id="dynamic" modelType={formArguments ? className : formMarkup?.formSettings.modelType}>
           <ParentProvider
             formMode="readonly"
             model={{ editMode: 'readOnly', readOnly: true } /* force readonly to show popup dialog always read only */}
@@ -131,7 +132,10 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
             <ConfigurableForm
               mode="readonly"
               {...formItemLayout}
-              markup={formMarkup}
+              // Use formId when available to enable proper data loading (same as dialog mode)
+              formId={formArguments ? formIdentifier : undefined}
+              // Fall back to markup when not using formArguments (backward compatibility)
+              markup={formArguments ? undefined : formMarkup}
               // Use formArguments to enable form's data loader (same as dialog mode)
               formArguments={formArguments}
               // Only use initialValues when formArguments is not provided (backward compatibility)
@@ -143,7 +147,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     ) : (
       <></>
     );
-  }, [formMarkup, formData, dataProperties, formArguments]);
+  }, [formMarkup, formData, dataProperties, formArguments, formIdentifier, className]);
 
   const render = (): ReactNode => {
     if (children) {
@@ -200,12 +204,12 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
   return (
     <Popover
-      overlayStyle={typeof width === 'string' && /%$/.test(width as string) ? { width } : undefined}
-      overlayInnerStyle={
-        typeof width === 'string' && /%$/.test(width as string)
+      styles={{
+        root: typeof width === 'string' && /%$/.test(width as string) ? { width } : undefined,
+        body: typeof width === 'string' && /%$/.test(width as string)
           ? { width: '100%', maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }
-          : { width, minWidth: width, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }
-      }
+          : { width, minWidth: width, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' },
+      }}
       content={formContent}
       title={(
         <div
