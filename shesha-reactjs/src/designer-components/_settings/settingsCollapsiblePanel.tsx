@@ -3,7 +3,7 @@ import { CollapsiblePanel, ICollapsiblePanelProps } from '@/components';
 import { useSettingsForm } from './settingsForm';
 import { createNamedContext } from '@/utils/react';
 
-interface ISettingsCollapsiblePanelProps extends ICollapsiblePanelProps { }
+type ISettingsCollapsiblePanelProps = ICollapsiblePanelProps;
 
 export interface ISettingsCollapsiblePanelActionsContext {
   registerField: (name: string) => void;

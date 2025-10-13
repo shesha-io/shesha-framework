@@ -6,9 +6,7 @@ import { LOGIN_CONFIGURATION } from '@/components/mainLayout/constant';
 import { FormFullName } from '@/providers';
 import { PageWithLayout } from '@/index';
 
-interface IProps {}
-
-const Login: PageWithLayout<IProps> = () => (
+const Login: PageWithLayout = () => (
   <ConfigurableForm mode="edit" formId={LOGIN_CONFIGURATION as FormFullName} />
 );
 

@@ -18,8 +18,7 @@ import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
 
-interface ITableViewSelectorProps extends ITableViewSelectorComponentProps {
-}
+type ITableViewSelectorProps = ITableViewSelectorComponentProps;
 
 export const TableViewSelector: FC<ITableViewSelectorProps> = ({
   id,

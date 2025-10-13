@@ -4,9 +4,7 @@ import { useCanvas } from '@/providers';
 import CustomDropdown from '@/designer-components/_settings/utils/CustomDropdown';
 import { getDeviceTypeByWidth, screenSizeOptions } from '@/providers/canvas/utils';
 
-export interface IPreviewButtonProps { }
-
-export const DeviceOptions: FC<IPreviewButtonProps> = () => {
+export const DeviceOptions: FC = () => {
   const { setCanvasWidth, designerWidth } = useCanvas();
 
   return (

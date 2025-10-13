@@ -6,8 +6,6 @@ import { GenericSettingEditor } from './genericSettingEditor';
 import { SettingValue } from './provider/models';
 import { useSettingsEditor } from './provider';
 
-export interface ISettingEditorProps { }
-
 interface ISettingEditorState {
   isLoading: boolean;
   loadingError?: any;
@@ -16,7 +14,7 @@ interface ISettingEditorState {
   editor?: React.ReactElement;
 }
 
-export const SettingEditor: FC<ISettingEditorProps> = () => {
+export const SettingEditor: FC = () => {
   const { settingSelection, fetchSettingValue } = useSettingsEditor();
   const [state, setState] = useState<ISettingEditorState>({ isLoading: false });
 

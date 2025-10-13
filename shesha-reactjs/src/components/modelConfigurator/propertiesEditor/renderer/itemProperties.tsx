@@ -1,4 +1,3 @@
-// import propertySettingsJson from './propertySettings.json';
 import React, {
   FC,
   ReactNode,
@@ -7,7 +6,6 @@ import React, {
 } from 'react';
 import { ConfigurableForm } from '../../..';
 import { Empty } from 'antd';
-// import { FormMarkup } from '@/providers/form/models';
 import { nanoid } from '@/utils/uuid';
 import { useDebouncedCallback } from 'use-debounce';
 import { usePropertiesEditor } from '../provider';
@@ -16,9 +14,7 @@ import { getSettings } from './propertySettings/propertySettings';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 
-export interface IProps { }
-
-export const ToolbarItemProperties: FC<IProps> = () => {
+export const ToolbarItemProperties: FC = () => {
   const { selectedItemId, getItem, updateItem } = usePropertiesEditor();
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);

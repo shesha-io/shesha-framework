@@ -40,6 +40,6 @@ export interface IPropertyWithCustomQBSettings extends IProperty, IHasCustomQBSe
 
 }
 
-export const hasCustomQBSettings = (property: any): property is IHasCustomQBSettings => {
+export const hasCustomQBSettings = (property: unknown): property is IHasCustomQBSettings => {
   return property && typeof ((property as IPropertyMetadataWithQBSettings).toQueryBuilderField) === 'function';
 };

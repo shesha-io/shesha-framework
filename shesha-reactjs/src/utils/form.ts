@@ -54,15 +54,15 @@ export const getFormFullName = (moduleName: string | null, name: string): string
   return moduleName ? `${moduleName}/${name}` : name;
 };
 
-export const appendFormData = (formData: FormData, key: string, data: any): void => {
-  if (data === Object(data) || Array.isArray(data)) {
+export const appendFormData = (formData: FormData, key: string, data: unknown): void => {
+  if (typeof data === 'object' || Array.isArray(data)) {
     for (var i in data) {
       if (data.hasOwnProperty(i)) {
         appendFormData(formData, key + '[' + i + ']', data[i]);
       }
     }
   } else {
-    formData.append(key, data);
+    formData.append(key, data?.toString());
   }
 };
 
@@ -78,7 +78,7 @@ const buildFormData = (formData, data, parentKey): void => {
   }
 };
 
-export const jsonToFormData = (data: any): FormData => {
+export const jsonToFormData = (data: unknown): FormData => {
   const formData = new FormData();
 
   buildFormData(formData, data, undefined);
@@ -86,7 +86,7 @@ export const jsonToFormData = (data: any): FormData => {
   return formData;
 };
 
-export const hasFiles = (data: any): boolean => {
+export const hasFiles = (data: unknown): boolean => {
   if (!data || typeof data !== 'object') return false;
 
   const hasFile = Object.keys(data).find((key) => {
@@ -100,11 +100,11 @@ export const hasFiles = (data: any): boolean => {
 const hasGhostKeys = (form: any): boolean => Boolean(form) && Object.entries(form).some(([key]) => key.includes(GHOST_PAYLOAD_KEY));
 
 // TODO: remove GHOST_PAYLOAD_KEY and all functions that use it
-export const removeGhostKeys = (form: any): any => {
-  if (!hasGhostKeys(form))
-    return form;
+export const removeGhostKeys = <TData extends object = object>(data: TData): TData => {
+  if (!hasGhostKeys(data))
+    return data;
 
-  const entries = Object.entries(form || {})
+  const entries = Object.entries(data || {})
     .filter(([key]) => !key.includes(GHOST_PAYLOAD_KEY))
     .map(([key, value]) => {
       if (key === '_formFields') {
@@ -114,9 +114,9 @@ export const removeGhostKeys = (form: any): any => {
       return [[key], value];
     });
 
-  const payload = entries.reduce((acc, [key, value]) => ({ ...acc, ...{ [key as string]: value } }), {});
+  const result = entries.reduce((acc, [key, value]) => ({ ...acc, ...{ [key as string]: value } }), {});
 
-  return payload;
+  return result as TData;
 };
 
 export const evaluateYesNo = (

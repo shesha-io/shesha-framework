@@ -32,7 +32,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
         </ConfigurableFormItem>
       );
   },
-  actualModelPropertyFilter: (name, value) => name !== 'items' || isPropertySettings(value), // handle items later to use buttonGroup's readOnly setting
+  actualModelPropertyFilter: (name) => name !== 'items', // handle items later to use buttonGroup's readOnly setting
   migrator: (m) => m
     .add<IButtonGroupComponentProps>(0, (prev) => {
       return {

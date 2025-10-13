@@ -1,6 +1,7 @@
 import { IStyleType } from "@/index";
+import { IEntityPickerComponentProps } from ".";
 
-export const defaultStyles = (prev): IStyleType => {
+export const defaultStyles = (prev: IEntityPickerComponentProps): IStyleType => {
   const { size } = prev;
 
   return {

@@ -4,7 +4,7 @@ import { FormLayout } from "antd/lib/form/Form";
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
 
-export const getSettings = (data: any): FormMarkupWithSettings => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -495,7 +495,6 @@ export const getSettings = (data: any): FormMarkupWithSettings => {
                 size: 'small',
                 parentId: securityId,
                 jsSetting: true,
-                permissions: data.permissions,
                 tooltip: "Enter a list of permissions that should be associated with this component",
               })
               .toJson(),

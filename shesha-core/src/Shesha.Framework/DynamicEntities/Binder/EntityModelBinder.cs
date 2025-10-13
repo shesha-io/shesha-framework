@@ -223,7 +223,6 @@ namespace Shesha.DynamicEntities.Binder
                                 case DataTypes.Number:
                                 case DataTypes.Boolean:
                                 case DataTypes.Guid:
-                                case DataTypes.ReferenceListItem:
                                 case DataTypes.Time: // ToDo: Review parsing of time
                                                      //case DataTypes.Enum: // Enum binded as integer
                                     object? parsedValue = null;
@@ -239,6 +238,16 @@ namespace Shesha.DynamicEntities.Binder
                                     if (dbValue?.ToString() != value.ToString())
                                         if (await ValidateAsync(entity, jFullName, value, context))
                                             property.SetValue(entity, value);
+                                    break;
+                                case DataTypes.ReferenceListItem:
+                                    object? parsedRefListValue = null;
+                                    var refListValue = jproperty.Value is JObject
+                                        ? jproperty.Value["itemValue"]?.ToString()
+                                        : jproperty.Value.ToString();
+                                    result = Parser.TryParseToValueType(refListValue, property.PropertyType, out parsedRefListValue, isDateOnly: propType.DataType == DataTypes.Date);
+                                    if (result && dbValue?.ToString() != parsedRefListValue?.ToString())
+                                        if (await ValidateAsync(entity, jFullName, parsedRefListValue, context))
+                                            property.SetValue(entity, parsedRefListValue);
                                     break;
                                 case DataTypes.Array:
                                     switch (propType.DataFormat)

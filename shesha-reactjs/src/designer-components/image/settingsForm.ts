@@ -5,7 +5,7 @@ import { positionOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
 import { FormMarkupWithSettings } from '@/index';
 
-export const getSettings = (data): FormMarkupWithSettings => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const validationTabId = nanoid();

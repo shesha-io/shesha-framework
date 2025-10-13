@@ -1,7 +1,5 @@
 import React, { ReactNode, useEffect, useRef, useState, FC } from 'react';
 import SearchBox from '../formDesigner/toolboxSearchBox';
-import { DataNode, EventDataNode } from 'antd/lib/tree';
-
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { Key } from 'rc-tree/lib/interface';
 import {
@@ -10,6 +8,7 @@ import {
   Tag,
   Tooltip,
   Tree,
+  TreeProps,
 } from 'antd';
 import { IConfigurableActionConfiguration, useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
 import { useLocalStorage } from 'react-use';
@@ -37,22 +36,6 @@ interface IDataNode {
 interface IPermissionModule {
   moduleName: string;
   permissions: PermissionDto[];
-}
-
-// note: antd types were changed, CustomEventDataNode was added to fix build, to be reviewed later
-interface CustomEventDataNode extends EventDataNode<{}> { }
-
-interface ICheckInfo {
-  event: 'check';
-  node: CustomEventDataNode;
-  checked: boolean;
-  nativeEvent: MouseEvent;
-  checkedNodes: DataNode[];
-  checkedNodesPositions?: {
-    node: DataNode;
-    pos: string;
-  }[];
-  halfCheckedKeys?: Key[];
 }
 
 export type PermissionsTreeMode = 'Edit' | 'Select' | 'View';
@@ -175,12 +158,14 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     }
   }, [isFetchingData, fetchingDataError, fetchingDataResponse]);
 
-  const onCheck = (keys: any, _info: ICheckInfo): void => {
+  const onCheck: TreeProps['onCheck'] = (keys, _info): void => {
     if (rest.readOnly) return;
-    setChecked(keys?.checked);
+    if (!keys || Array.isArray(keys))
+      return;
+    setChecked(keys.checked);
     if (Boolean(onChange))
       onChange(
-        keys?.checked.map((item) => {
+        keys.checked.map((item) => {
           return item.toString();
         }),
       );

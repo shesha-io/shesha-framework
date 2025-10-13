@@ -21,7 +21,7 @@ export const generateNewKey = (json: IConfigurableFormComponent[]): IConfigurabl
 
 export const filterVisibility =
   (context: IExpressionExecuterArguments) =>
-    ({ customVisibility }: IConfigurableColumnsProps) => {
+    ({ customVisibility }: IConfigurableColumnsProps): boolean => {
       if (customVisibility) {
         return executeScriptSync(customVisibility, context);
       }

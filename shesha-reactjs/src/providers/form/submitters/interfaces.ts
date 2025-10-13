@@ -38,16 +38,16 @@ export interface GqlSubmitterSettings {
   dynamicEndpoint?: string;
 }
 
-export const isGqlSubmitterSettings = (s: any): s is GqlSubmitterSettings => {
-  return s && typeof s === 'object' && s.endpointType;
+export const isGqlSubmitterSettings = (s: unknown): s is GqlSubmitterSettings => {
+  return s && typeof s === 'object' && "endpointType" in s && typeof (s.endpointType) === 'string';
 };
 
 export interface CustomSubmitterSettings {
   onSubmitData: string;
 }
 
-export const isCustomSubmitterSettings = (s: any): s is CustomSubmitterSettings => {
-  return s && typeof s === 'object' && s.onSubmitData;
+export const isCustomSubmitterSettings = (s: unknown): s is CustomSubmitterSettings => {
+  return s && typeof s === 'object' && "onSubmitData" in s && typeof (s.onSubmitData) === 'string';
 };
 
 export type SubmitCaller = (data: any) => Promise<any>;

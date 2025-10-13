@@ -4,9 +4,7 @@ import { CopyOutlined, DeleteFilled } from '@ant-design/icons';
 import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
 
-export interface IProps {}
-
-export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
+export const ComponentPropertiesTitle: FC = ({}) => {
   const selectedComponentId = useFormDesignerStateSelector((x) => x.selectedComponentId);
   const formFlatMarkup = useFormDesignerStateSelector((x) => x.formFlatMarkup);
   const readOnly = useFormDesignerStateSelector((x) => x.readOnly);

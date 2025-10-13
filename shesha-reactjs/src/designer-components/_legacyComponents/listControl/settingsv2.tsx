@@ -23,7 +23,7 @@ export interface IListControlSettingsProps {
   onValuesChange?: (changedValues: any, values: IListItemsProps) => void;
 }
 
-interface IListSettingsState extends IListItemsProps {}
+type IListSettingsState = IListItemsProps;
 
 export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, onSave, model, onValuesChange }) => {
   const [state, setState] = useState<IListSettingsState>(model);

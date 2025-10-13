@@ -10,7 +10,7 @@ export interface DefaultItemRenderingProps extends IStyleType {
   stylingBox?: string;
 }
 
-export const isDefaultItemRenderingProps = (renderer: any): renderer is DefaultItemRenderingProps => {
+export const isDefaultItemRenderingProps = (renderer: unknown): renderer is DefaultItemRenderingProps => {
   return typeof (renderer) === 'object' && 'label' in renderer;
 };
 

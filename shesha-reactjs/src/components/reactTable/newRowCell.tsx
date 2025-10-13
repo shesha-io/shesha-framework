@@ -25,7 +25,7 @@ const cellProps: HeaderPropGetter<object> = (props) => [
 
 export interface INewRowCellProps {
   column: ColumnInstance;
-  row?: ColumnInstance<{}>[];
+  row?: ColumnInstance[];
   rowIndex?: number;
   parentFormId?: FormIdentifier;
 }
@@ -104,7 +104,7 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
         <CreateFormCell columnConfig={columnConfig} {...parentFormProps} />
       )}
       {columnConfig && columnConfig.columnType === 'crud-operations' && (
-        <CrudOperationsCell columnConfig={columnConfig} />
+        <CrudOperationsCell />
       )}
     </div>
   );

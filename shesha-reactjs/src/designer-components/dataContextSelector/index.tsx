@@ -36,7 +36,7 @@ const DataContextSelector: FC<IDataContextSelectorProps> = (props) => {
   );
 };
 
-interface IDataContextSelectorComponentProps extends IConfigurableFormComponent { }
+type IDataContextSelectorComponentProps = IConfigurableFormComponent;
 
 const DataContextSelectorComponent: IToolboxComponent<IDataContextSelectorComponentProps> = {
   type: 'dataContextSelector',

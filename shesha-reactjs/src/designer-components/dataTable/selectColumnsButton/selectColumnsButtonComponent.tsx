@@ -9,7 +9,7 @@ import { SlidersOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
-export interface ISelectColumnsButtonComponentProps extends IConfigurableFormComponent { }
+export type ISelectColumnsButtonComponentProps = IConfigurableFormComponent;
 
 const settingsForm = settingsFormJson as FormMarkup;
 

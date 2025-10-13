@@ -12,7 +12,7 @@ import { buttonTypes } from '@/designer-components/button/util';
 import { fontTypes, fontWeightsOptions } from '@/designer-components/_settings/utils/font/utils';
 import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any): FormMarkupWithSettings => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();

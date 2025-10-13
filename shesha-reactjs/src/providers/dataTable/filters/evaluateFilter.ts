@@ -51,7 +51,7 @@ export interface UseFormEvaluatedFilterArgs {
   filter?: FilterExpression;
   metadataAccessor?: NestedPropertyMetadatAccessor;
 };
-export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additionalData?: any): string => {
+export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additionalData?: object): string => {
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext });
 

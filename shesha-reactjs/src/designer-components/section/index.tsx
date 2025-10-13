@@ -10,8 +10,7 @@ import { Alert } from 'antd';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { useConfigurableFormSections } from '@/providers/form/sections';
 
-export interface ISectionProps extends IConfigurableFormComponent {
-}
+export type ISectionProps = IConfigurableFormComponent;
 
 const settingsForm = settingsFormJson as FormMarkup;
 

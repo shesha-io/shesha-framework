@@ -12,7 +12,7 @@ import { Option } from 'antd/lib/mentions';
 import { IChevronProps } from '@/components/chevron/models';
 import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
 
-interface IChevronSettingsState extends IChevronProps { }
+type IChevronSettingsState = IChevronProps;
 
 export const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
   const { values, onValuesChange } = useSettingsForm<IChevronProps>();

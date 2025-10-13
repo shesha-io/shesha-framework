@@ -7,10 +7,7 @@ import { CloseOutlined } from "@ant-design/icons";
 import DebugPanelDataContent from "./dataContent";
 import { useStyles } from './styles/styles';
 
-export interface DebugPanelProps {
-}
-
-export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({ children }) => {
+export const DebugPanel: FC<PropsWithChildren> = ({ children }) => {
   const { styles } = useStyles();
   const [open, setOpen] = useState(false);
   const [ctrlPressed] = useKeyPress('Control');

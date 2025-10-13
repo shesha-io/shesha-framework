@@ -32,7 +32,7 @@ import { getOverflowStyle } from "@/designer-components/_settings/utils/overflow
 export function useActualContextData<T extends object = object>(
   model: T,
   parentReadonly?: boolean,
-  additionalData?: any,
+  additionalData?: object,
   propertyFilter?: (name: string, value: any) => boolean,
   executor?: (data: any, context: any) => any,
 ): T {
@@ -120,7 +120,7 @@ export function useCalculatedModel<T = any>(
   return calculatedModelRef.current;
 }
 
-export function useActualContextExecution<T = any>(code: string, additionalData?: any, defaultValue?: T): T {
+export function useActualContextExecution<T = any>(code: string, additionalData?: object, defaultValue?: T): T {
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext });
 
@@ -149,7 +149,7 @@ export function useActualContextExecution<T = any>(code: string, additionalData?
   return actualDataRef.current;
 }
 
-export function useActualContextExecutionExecutor<T = any>(executor: (context: any) => any, additionalData?: any): T {
+export function useActualContextExecutionExecutor<T = any>(executor: (context: any) => any, additionalData?: object): T {
   const fullContext = useAvailableConstantsContextsNoRefresh();
   const accessors = wrapConstantsData({ fullContext });
 

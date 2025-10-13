@@ -56,7 +56,7 @@ export type ContextGetData<TData extends object = object> = () => TData;
 export type ContextSetFieldValue<TData extends object = object> = <P extends Path<TData>>(name: P, value: PathValue<TData, P>, refreshContext?: RefreshContext) => void;
 export type ContextSetData<TData extends object = object> = (changedData: TData, refreshContext?: RefreshContext) => void;
 export type ContextOnChangeData = <T>(data: T, changedData: unknown, refreshContext?: RefreshContext) => void;
-export type RefreshContext = () => void;
+export type RefreshContext<TData extends object = object> = (data?: Partial<TData>) => void;
 
 export const useDataContextOrUndefined = (): IDataContextProviderStateContext & IDataContextProviderActionsContext | undefined => {
   const actionsContext = useContext(DataContextProviderActionsContext);

@@ -4,11 +4,7 @@ import { Button } from 'antd';
 import { useFormDesignerUrl } from '@/providers/form/hooks';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 
-export interface IOpenOnNewPageButtonProps {
-
-}
-
-export const OpenOnNewPageButton: FC<IOpenOnNewPageButtonProps> = () => {
+export const OpenOnNewPageButton: FC = () => {
   const { formId } = useFormPersister();
   const formDesignerUrl = useFormDesignerUrl(formId);
   return (

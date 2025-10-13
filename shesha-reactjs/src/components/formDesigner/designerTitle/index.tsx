@@ -4,11 +4,7 @@ import { getFormFullName } from '@/utils/form';
 import { Space } from 'antd';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 
-
-export interface IDesignerTitleProps {
-}
-
-export const DesignerTitle: FC<IDesignerTitleProps> = ({ }) => {
+export const DesignerTitle: FC = ({ }) => {
   const { formProps } = useFormPersister();
   const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
   const title = formProps?.label ? `${formProps.label} (${fullName})` : fullName;

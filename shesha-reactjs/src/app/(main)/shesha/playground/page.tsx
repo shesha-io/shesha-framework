@@ -37,7 +37,7 @@ interface CreateFormPayload {
   description: string;
 }
 
-const Page: PageWithLayout<{}> = () => {
+const Page: PageWithLayout = () => {
   const fetcher = (url): Promise<ComponentSettingsFile[]> => fetch(url).then((res) => res.json());
 
   const { data } = useSWR<ComponentSettingsFile[]>('/shesha/playground/api/filesList', fetcher);

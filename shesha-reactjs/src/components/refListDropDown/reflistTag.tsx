@@ -2,13 +2,13 @@ import { getTagStyle } from '@/utils/style';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
 import { Tag, Tooltip, TooltipProps } from 'antd';
 import React, { CSSProperties } from 'react';
-import { Icon } from '../readOnlyDisplayFormItem';
+import ShaIcon, { IconType } from '../shaIcon';
 
 interface IReflistTagProps {
   value?: string | number;
   description?: string;
   color?: string;
-  icon?: string | React.ReactNode;
+  icon?: string;
   showIcon?: boolean;
   tagStyle?: CSSProperties;
   solidColor?: boolean;
@@ -28,7 +28,7 @@ function ReflistTag({ value, description, color, icon, showIcon, tagStyle, solid
       <Tag
         key={value}
         color={memoizedColor}
-        icon={(icon && showIcon) && <Icon type={icon} />}
+        icon={(icon && showIcon) && <ShaIcon iconName={icon as IconType} />}
         style={getTagStyle(tagStyle, !!color)}
       >{showItemName && labelToRender}
       </Tag>

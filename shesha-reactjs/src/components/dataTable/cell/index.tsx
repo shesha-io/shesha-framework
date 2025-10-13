@@ -33,8 +33,7 @@ export const getCellRenderer = <D extends object = object, V = any>(
   }
 
   if (isCrudOperationsColumn(column)) {
-    const baseProps = { columnConfig: column };
-    return wrapDisplayName(() => <CrudOperationsCell {...baseProps} />, "CrudOperationsCell");
+    return wrapDisplayName(() => <CrudOperationsCell />, "CrudOperationsCell");
   }
 
   if (isFormColumn(column)) {

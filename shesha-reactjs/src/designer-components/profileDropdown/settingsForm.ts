@@ -4,7 +4,7 @@ import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/ut
 import { FormLayout } from 'antd/es/form/Form';
 import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any): FormMarkupWithSettings => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const styleTabId = nanoid();

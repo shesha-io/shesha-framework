@@ -99,13 +99,7 @@ const legacyTypescriptOverrides = {
         "allowDirectConstAssertionInArrowFunctions": true
     }],
 
-    "@typescript-eslint/explicit-module-boundary-types": ["off", {
-        allowArgumentsExplicitlyTypedAsAny: true,
-        allowDirectConstAssertionInArrowFunctions: true,
-        allowHigherOrderFunctions: false,
-        allowTypedFunctionExpressions: false,
-    }],
-
+    "@typescript-eslint/explicit-module-boundary-types": "error",
     "@typescript-eslint/indent": "off",
 
     "@typescript-eslint/naming-convention": ["error", {
@@ -136,7 +130,7 @@ const legacyTypescriptOverrides = {
         propertyDeclaration: true,
         variableDeclaration: true,
     }],
-    "@typescript-eslint/no-empty-object-type": "warn",
+    "@typescript-eslint/no-empty-object-type": "error",
     // TODO: activate and review code
     // "@typescript-eslint/no-explicit-any": "error",
     // "@typescript-eslint/no-unsafe-call": "error",
@@ -150,8 +144,7 @@ const typescriptOverrides = {
         varsIgnorePattern: "^_",
         argsIgnorePattern: "^_",
         ignoreRestSiblings: true,
-    }],
-
+    }],    
     "@typescript-eslint/explicit-module-boundary-types": "error",
     "@typescript-eslint/explicit-function-return-type": [
         "error",

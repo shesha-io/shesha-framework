@@ -11,8 +11,6 @@ import { IKanbanProps } from '@/components/kanban/model';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 
-interface IKanbanSettingsState extends IKanbanProps { }
-
 const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
   const { values } = useSettingsForm<IKanbanProps>();
   const { readOnly } = props;
@@ -177,5 +175,5 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
 };
 
 export const KanbanSettingsForm: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
-  return SettingsForm<IKanbanSettingsState>({ ...props, children: <KanbanSettings {...props} /> });
+  return SettingsForm({ ...props, children: <KanbanSettings {...props} /> });
 };
