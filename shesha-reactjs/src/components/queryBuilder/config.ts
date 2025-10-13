@@ -40,6 +40,16 @@ const types = {
   specification: SpecificationType,
   "strict-boolean": StrictBoolean,
   guid: GuidType,
+  javascript: {
+  ...standardTypes.text,
+  defaultWidget: 'javascript',
+  widgets: {
+    javascript: {
+      widgetProps: {},
+      opProps: {},
+      }
+    }
+  },
 };
 
 const typeModifiers: IDictionary<TypeModifier> = {
@@ -69,6 +79,15 @@ const typeModifiers: IDictionary<TypeModifier> = {
       'not_like',
       'starts_with',
       'ends_with',
+    ]
+  },
+  'javascript': {
+    valueSources: ['value'],
+    operators: [
+      'equal',
+      'not_equal',
+      'is_empty',
+      'is_not_empty',
     ]
   },
 };

@@ -13,12 +13,12 @@ interface ITableContextInnerProps extends ITableContextComponentProps {
 }
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
-    const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering } = props;
+    const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering, onBeforeRowReorder, onAfterRowReorder } = props;
     const { formMode } = useForm();
     const { data } = useFormData();
 
     const allData = useAvailableConstantsData();
-    const disableRefresh = Boolean(props.disableRefresh) ? executeScriptSync(props.disableRefresh, allData) : false;
+    const disableRefresh = Boolean(props.disableRefresh) ? () => executeScriptSync(props.disableRefresh, allData) as boolean : false;
 
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
     const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
@@ -56,6 +56,8 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
             permanentFilter={permanentFilter}
             disableRefresh={disableRefresh}
             customReorderEndpoint={customReorderEndpoint}
+            onBeforeRowReorder={onBeforeRowReorder}
+            onAfterRowReorder={onAfterRowReorder}
         >
             <ComponentsContainer containerId={id} />
         </DataTableProvider>

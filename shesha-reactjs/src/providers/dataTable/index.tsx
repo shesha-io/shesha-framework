@@ -94,6 +94,7 @@ import {
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { dataTableContextCode } from '@/publicJsApis';
 import { DataTypes, IObjectMetadata } from '@/index';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -131,12 +132,22 @@ interface IDataTableProviderBaseProps {
    * Disable refresh data expression
    * Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)
    */
-  disableRefresh?: boolean;
+  disableRefresh?: boolean | (() => boolean);
 
   /**
    * Custom reorder endpoint
    */
   customReorderEndpoint?: string;
+
+  /**
+   * Action to execute before row reorder (allows validation and cancellation)
+   */
+  onBeforeRowReorder?: IConfigurableActionConfiguration;
+
+  /**
+   * Action to execute after row reorder (receives API response)
+   */
+  onAfterRowReorder?: IConfigurableActionConfiguration;
 }
 
 interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
@@ -268,6 +279,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     allowReordering = false,
     permanentFilter,
     customReorderEndpoint,
+    onBeforeRowReorder,
+    onAfterRowReorder,
+    disableRefresh = false,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -284,6 +298,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     standardSorting: sortingItems2ColumnSorting(sortingItems),
     permanentFilter,
     customReorderEndpoint,
+    onBeforeRowReorder,
+    onAfterRowReorder,
   });
 
   const changePageSize = (val: number) => {
@@ -413,7 +429,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const fetchTableDataInternal = (payload: IGetListDataPayload) => {
-    if (tableIsReady.current === true && !props.disableRefresh) {
+    if (tableIsReady.current === true && (disableRefresh === false || typeof disableRefresh === 'function' && disableRefresh() === false)) {
       dispatch(fetchTableDataAction(payload));
       debouncedFetch(payload);
     }
@@ -453,7 +469,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const refreshTable = () => {
-    if (tableIsReady.current === true && !props.disableRefresh) {
+    if (tableIsReady.current === true && (disableRefresh === false || typeof disableRefresh === 'function' && disableRefresh() === false)) {
       fetchTableData(state);
     }
   };
@@ -607,13 +623,13 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const onSort = (sorting: IColumnSorting[]) => {
-    if (tableIsReady.current === true && !props.disableRefresh) {
+    if (tableIsReady.current === true && (disableRefresh === false || typeof disableRefresh === 'function' && disableRefresh() === false)) {
       dispatch(onSortAction(sorting));
     }
   };
 
   const onGroup = (grouping: ISortingItem[]) => {
-    if (tableIsReady.current === true && !props.disableRefresh) {
+    if (tableIsReady.current === true && (disableRefresh === false || typeof disableRefresh === 'function' && disableRefresh() === false)) {
       dispatch(onGroupAction(grouping));
     }
   };

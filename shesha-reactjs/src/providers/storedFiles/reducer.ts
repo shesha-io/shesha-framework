@@ -1,6 +1,7 @@
 import flagsReducer from '../utils/flagsReducer';
 import { StoredFilesActionEnums } from './actions';
 import { IStoredFilesStateContext } from './contexts';
+import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 
 export function storedFilesReducer(
   incomingState: IStoredFilesStateContext,
@@ -26,6 +27,7 @@ export function storedFilesReducer(
     case StoredFilesActionEnums.DownloadZipRequest:
     case StoredFilesActionEnums.DownloadZipSuccess:
     case StoredFilesActionEnums.DownloadZipError:
+    case StoredFilesActionEnums.InitializeFileList:
       /* NEW_ACTION_ENUM_GOES_HERE */
 
       return {
@@ -37,9 +39,7 @@ export function storedFilesReducer(
     case StoredFilesActionEnums.OnFileDeleted:
       return {
         ...state,
-        fileList: state.fileList?.filter(
-          ({ id, uid }) => id !== payload.fileIdToDelete && uid !== payload.fileIdToDelete
-        ),
+        fileList: removeFile(state.fileList, payload.fileId),
       };
     case StoredFilesActionEnums.UploadFileRequest:
       return {
@@ -97,15 +97,31 @@ export function storedFilesReducer(
       };
     }
     case StoredFilesActionEnums.DeleteFileError: {
-      if (state.fileList?.find(x => x.uid === payload.fileIdToDelete)?.status === 'error')
+      if (state.fileList?.find(x => x.uid === payload.fileId)?.status === 'error')
         return {
           ...state,
           fileList: state.fileList.filter(
-            ({ id, uid }) => id !== payload.fileIdToDelete && uid !== payload.fileIdToDelete
+            ({ id, uid }) => id !== payload.fileId && uid !== payload.fileId
           ),
         };
       
       return state;
+    }
+
+    case StoredFilesActionEnums.UpdateIsDownloadedSuccess: {
+      const { fileId } = payload;
+
+      return {
+        ...state,
+        fileList: updateDownloadedAFile(state.fileList, fileId) || [],
+      };
+    }
+
+    case StoredFilesActionEnums.UpdateAllFilesDownloadedSuccess: {
+      return {
+        ...state,
+        fileList: updateAllFilesDownloaded(state.fileList) || [],
+      };
     }
 
     default: {

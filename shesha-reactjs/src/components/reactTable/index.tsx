@@ -294,12 +294,38 @@ export const ReactTable: FC<IReactTableProps> = ({
         return typedRow.original !== rows[index].original;
       });
       if (changedIndex) {
+        const oldRows = rows.map(row => row.original);
+        const newRows = newState.map(row => row.original);
+
+        let oldIndex = -1;
+        let newIndex = -1;
+
+        const oldPositions = new Map(oldRows.map((item, idx) => [item, idx]));
+        const newPositions = new Map(newRows.map((item, idx) => [item, idx]));
+
+        let maxDistance = -1;
+        for (const [item, newPos] of newPositions) {
+          const oldPos = oldPositions.get(item);
+          if (oldPos !== undefined && oldPos !== newPos) {
+            if (oldRows[oldPos] === item && newRows[oldPos] !== item) {
+              const distance = Math.abs(oldPos - newPos);
+              if (distance > maxDistance) {
+                maxDistance = distance;
+                oldIndex = oldPos;
+                newIndex = newPos;
+              }
+            }
+          }
+        }
+
         const payload: OnRowsReorderedArgs = {
           getOld: () => rows.map((row) => row.original),
           getNew: () => newState.map((row) => row.original),
           applyOrder: (orderedItems) => {
             setComponentState((prev) => ({ ...prev, allRows: orderedItems }));
           },
+          oldIndex: oldIndex >= 0 ? oldIndex : undefined,
+          newIndex: newIndex >= 0 ? newIndex : undefined,
         };
 
         onRowsReordered(payload).catch((error) => {

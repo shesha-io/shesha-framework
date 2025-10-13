@@ -1,6 +1,9 @@
 # Release Notes
 
+💪 Enhancements
+- New row reordering events on DataTable
+
+
 🐞 Bug Fixes
-- Number component does not allow saving null value
-- Fix export forms problem
-- Fix job's deactivation
+- Disable Refresh function returns initial evaluation and does not update after state changes
+- DataTable Display. Edit and Create Component Logging Returns Form Data Instead of Row Data
