@@ -15,7 +15,7 @@ CREATE OR ALTER   FUNCTION [dbo].[Frwk_GetMultiValueRefListItemNames]
     @RefListName                    varchar(255),           -- The Id of the Reference List to use for the lookup
     @RefListItemValue               bigint                     -- The Value of the Item to whose name should be returned
 )
-RETURNS varchar(255)
+RETURNS varchar(MAX)
 AS
 BEGIN
     /************************************************************************************************
