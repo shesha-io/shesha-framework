@@ -16,14 +16,12 @@ namespace Shesha
             _ioc = ioc;
         }
 
-        public Task ProcessAsync()
+        public async Task ProcessAsync()
         {
-            _ioc.Resolve<IEntityConfigurationStore>().InitializeDynamic();
             _ioc.Resolve<ShaPermissionManager>().Initialize();
+            await _ioc.Resolve<IEntityConfigurationStore>().InitializeDynamicAsync();
 
             // ToDo: AS - refresh WebApi
-
-            return Task.CompletedTask;
         }
     }
 }
