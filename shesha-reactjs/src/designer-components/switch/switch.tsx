@@ -1,59 +1,58 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IToolboxComponent } from '@/interfaces';
-import { IInputStyles, useFormData } from '@/providers';
-import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IInputStyles } from '@/providers';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SwitcherOutlined } from '@ant-design/icons';
-import { InputProps, Switch } from 'antd';
-import { SwitchSize } from 'antd/lib/switch';
-import React, { CSSProperties } from 'react';
+import { Switch } from 'antd';
+import { SwitchChangeEventHandler, SwitchSize } from 'antd/lib/switch';
+import React, { useMemo } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ISwitchComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
-import { removeUndefinedProps } from '@/utils/object';
 
-const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
+interface ISwitchComponentCalulatedValues {
+  eventHandlers: IEventHandlers;
+}
+
+const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponentCalulatedValues> = {
   type: 'switch',
   name: 'Switch',
   icon: <SwitcherOutlined />,
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  Factory: ({ model: passedModel }) => {
-    const { size, ...model } = passedModel;
-    const { data: formData } = useFormData();
-    const allData = useAvailableConstantsData();
+  calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
+  Factory: ({ model, calculatedModel }) => {
+    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
-    const jsStyle = getStyle(model.style, passedModel);
-    const style = getStyle(model?.style, formData);
-
-    const additionalStyles: CSSProperties = removeUndefinedProps({
-      ...style
-    });
-
-    const finalStyle = removeUndefinedProps({ ...additionalStyles });
-
-    const inputProps: InputProps = {
-      style: { ...finalStyle, ...jsStyle },
-    };
 
     return (
       <ConfigurableFormItem model={model} valuePropName="checked">
         {(value, onChange) => {
-          const customEvent = customOnChangeValueEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]) => {
-            customEvent.onChange(args[0]);
-            if (typeof onChange === 'function')
-              onChange(args[0]);
+          const customEvents = calculatedModel.eventHandlers;
+          const onChangeInternal: SwitchChangeEventHandler = (checked: boolean, event) => {
+            customEvents.onChange({ value: checked }, event);
+            if (typeof onChange === 'function') onChange(checked);
           };
 
-          return model.readOnly ? (
-            <ReadOnlyDisplayFormItem type="switch" disabled={model.readOnly} checked={value} />
-          ) : (
-            <Switch className="sha-switch" disabled={model.readOnly} style={inputProps.style} size={size as SwitchSize} checked={value} {...customEvent} defaultChecked={model.defaultChecked} defaultValue={model.defaultValue} onChange={onChangeInternal} />
+
+          return (
+            <Switch
+              className="sha-switch"
+              disabled={model.readOnly}
+              style={finalStyle}
+              size={model.size as SwitchSize}
+              checked={value}
+              defaultChecked={model.defaultChecked}
+              defaultValue={model.defaultValue}
+              onChange={onChangeInternal}
+            />
           );
         }}
       </ConfigurableFormItem>
@@ -75,12 +74,11 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
     .add<ISwitchComponentProps>(6, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
-        style: prev.style
+        style: prev.style,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-    })
-  ,
+    }),
 };
 
 export default SwitchComponent;

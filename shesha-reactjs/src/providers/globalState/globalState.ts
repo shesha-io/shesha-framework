@@ -2,31 +2,32 @@ import { IAnyObject } from "@/interfaces";
 import { GlobalStateRerenderTrigger, IGlobalState, ISetStatePayload } from "./contexts";
 
 export class GlobalState implements IGlobalState {
-    #forceUpdate: GlobalStateRerenderTrigger;
-    #state: IAnyObject;
+  #forceUpdate: GlobalStateRerenderTrigger;
 
-    constructor(forceUpdate: GlobalStateRerenderTrigger) {
-        this.#forceUpdate = forceUpdate;
-        this.#state = {};
-    }
+  #state: IAnyObject;
 
-    get globalState(): IAnyObject {
-        return this.#state;
-    };
+  constructor(forceUpdate: GlobalStateRerenderTrigger) {
+    this.#forceUpdate = forceUpdate;
+    this.#state = {};
+  }
 
-    setState = (payload: ISetStatePayload) => {
-        const { key, data } = payload;
+  get globalState(): IAnyObject {
+    return this.#state;
+  };
 
-        this.#state[key] = data;
-        this.#forceUpdate();
-    };
+  setState = (payload: ISetStatePayload): void => {
+    const { key, data } = payload;
 
-    clearState = (stateKey: string) => {
-        delete this.#state[stateKey];
-        this.#forceUpdate();
-    };
+    this.#state[key] = data;
+    this.#forceUpdate();
+  };
 
-    getStateByKey = (key: string): IAnyObject => {
-        return (this.#state?.globalState || {})[key];
-    };
+  clearState = (stateKey: string): void => {
+    delete this.#state[stateKey];
+    this.#forceUpdate();
+  };
+
+  getStateByKey = (key: string): IAnyObject => {
+    return (this.#state?.globalState || {})[key];
+  };
 }

@@ -1,15 +1,15 @@
 import { nanoid } from '@/utils/uuid';
-import { DesignerToolbarSettings } from '@/interfaces';
+import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
- 
-export const getSettings = (data: any) => {
+
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
- 
+
   return {
     components: new DesignerToolbarSettings(data)
       .addSearchableTabs({
@@ -33,7 +33,7 @@ export const getSettings = (data: any) => {
                 label: 'Property name',
                 size: 'small',
                 validate: {
-                  required: true
+                  required: true,
                 },
                 styledLabel: true,
                 jsSetting: true,
@@ -44,14 +44,13 @@ export const getSettings = (data: any) => {
                 label: 'Label',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
                 hideLabel: true,
-            })
+              })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
-                    type:'editModeSelector',
+                    type: 'editModeSelector',
                     id: nanoid(),
                     propertyName: 'editMode',
                     label: 'Edit Mode',
@@ -65,10 +64,10 @@ export const getSettings = (data: any) => {
                     label: 'Hide',
                     jsSetting: true,
                   },
-                ]
+                ],
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'data',
@@ -78,21 +77,6 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                inputs: [
-                  {
-                    type: 'numberField',
-                    id: nanoid(),
-                    propertyName: 'defaultValue',
-                    label: 'Default Value',
-                    jsSetting: true,
-                  }
-                ]
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: dataTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     type: 'numberField',
@@ -107,11 +91,11 @@ export const getSettings = (data: any) => {
                     propertyName: 'max',
                     label: 'Maximum',
                     jsSetting: true,
-                  }
-                ]
+                  },
+                ],
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -129,10 +113,19 @@ export const getSettings = (data: any) => {
                 propertyRouteName: {
                   _mode: "code",
                   _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
-                  _value: ""
+                  _value: "",
                 },
                 components: [
                   ...new DesignerToolbarSettings()
+                    .addSettingsInput({
+                      id: nanoid(),
+                      parentId: styleRouterId,
+                      propertyName: 'enableStyleOnReadonly',
+                      label: 'Enable Style On Readonly',
+                      tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                      inputType: 'switch',
+                      jsSetting: true,
+                    })
                     .addCollapsiblePanel({
                       id: nanoid(),
                       propertyName: 'customStyle',
@@ -153,15 +146,15 @@ export const getSettings = (data: any) => {
                             mode: 'dialog',
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                           })
-                          .toJson()
-                        ]
-                      }
+                          .toJson(),
+                        ],
+                      },
                     })
-                    .toJson()
-                ]
+                    .toJson(),
+                ],
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'security',
@@ -178,17 +171,17 @@ export const getSettings = (data: any) => {
                 tooltip: 'Enter a list of permissions that should be associated with this component',
                 jsSetting: true,
               })
-              .toJson()
-            ]
-          }
-        ]
+              .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

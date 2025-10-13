@@ -1,120 +1,277 @@
 import { useGet } from '@/hooks';
-import { useFormData } from '@/index';
-import { LoadingOutlined } from '@ant-design/icons';
-import { Alert, Flex, Result, Spin } from 'antd';
-import React, { useEffect } from 'react';
+import { Alert, Button } from 'antd';
+import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
-import BarChart from './components/bar';
-import LineChart from './components/line';
-import PieChart from './components/pie';
-import PolarAreaChart from './components/polarArea';
-import { useChartURLData } from './hooks';
+import { useChartURLData } from './hooks/hooks';
 import { IChartsProps } from './model';
 import useStyles from './styles';
-import { getURLChartDataRefetchParams } from './utils';
+import { getURLChartDataRefetchParams, renderChart } from './utils';
+import ChartLoader from './components/chartLoader';
+import { useTheme } from '@/providers/theme';
 
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
-  const { url, chartType } = props;
+  const { url, chartType, requestTimeout = 5000 } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
-  const { setIsLoaded, setControlProps, setUrlTypeData } = useChartDataActionsContext();
-  const { data: formData } = useFormData();
+  const { setIsLoaded, setUrlTypeData } = useChartDataActionsContext();
+  const { theme } = useTheme();
+  const [error, setError] = useState<string | null>(null);
+  const isFetchingRef = useRef(false);
+  const currentControllerRef = useRef<AbortController | null>(null);
 
   const { styles, cx } = useStyles();
+  const transformedUrl = useMemo(() => {
+    if (!url) return null;
+    const queryString = props.additionalProperties
+      ? '?' + props.additionalProperties.map(({ key, value }) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+      ).join('&')
+      : '';
+    return url + queryString;
+  }, [url, props.additionalProperties]);
 
-  useEffect(() => {
-    setControlProps({
-      ...props
-    });
-  }, [props, formData]);
-
-  useEffect(() => {
-    if (!url) {
+  const fetchData = useCallback(() => {
+    // Early return if already fetching or missing required URL
+    if (isFetchingRef.current || !transformedUrl || transformedUrl === '') {
       return;
     }
-    refetch(getURLChartDataRefetchParams(url))
+
+    const newController = new AbortController();
+    currentControllerRef.current = newController;
+
+    // Set up timeout (configurable, default 5 seconds)
+    const timeoutId = setTimeout(() => {
+      if (currentControllerRef.current) {
+        currentControllerRef.current.abort("Request timed out");
+        isFetchingRef.current = false;
+        setError(`Request timed out after ${requestTimeout / 1000} seconds`);
+        setIsLoaded(true);
+      }
+    }, requestTimeout);
+
+    // Clear any previous errors
+    setError(null);
+    isFetchingRef.current = true;
+
+    refetch({ ...getURLChartDataRefetchParams(transformedUrl), signal: newController.signal })
       .then((data) => {
-        if (!data.result) {
-          setIsLoaded(true);
-          throw new Error('No data returned from the server. Please check the URL and try again.');
+        if (!data?.result) {
+          throw new Error(data?.error?.details ?? 'Invalid response structure, please check the URL and try again.');
         }
-        if (!data.result.datasets || !data.result.labels) {
-          var errors: string[] = [];
-          if (!data.result.datasets) {
-            errors.push('No datasets returned from the server. Please check the URL and try again.');
-          }
-          if (!data.result.labels) {
-            errors.push('No labels returned from the server. Please check the URL and try again.');
-          }
-          throw new Error(errors.join(' '));
-        }
-        setUrlTypeData(data.result);
+        setUrlTypeData(data.result ?? { labels: [], datasets: [] });
         setIsLoaded(true);
       })
-      .catch((err: any) => console.error('refetch getURLChartDataRefetchParams, err data', err))
-      .finally(() => setIsLoaded(true));
-  }, [url, formData]);
+      .catch((err: Error) => {
+        console.error('Error fetching URL chart data:', err);
+
+        // Check if this is an intentional abort (reset, unmount, user cancellation, or component initialization)
+        const abortMessage = err?.message || '';
+        const isIntentionalAbort = abortMessage.includes('Resetting chart') ||
+          abortMessage.includes('Unmounting chart') ||
+          abortMessage.includes('Request cancelled by user') ||
+          abortMessage.includes('Component initialization');
+
+        if (err?.name === 'AbortError' && isIntentionalAbort) {
+          // Don't set error for intentional aborts - just clean up
+          isFetchingRef.current = false;
+          return;
+        }
+
+        // Check if it's a timeout error
+        const isTimeoutError = err?.name === 'AbortError' && err?.message?.includes('timeout');
+
+        const altErrorMessage = err instanceof Error ? err.message : 'An error occurred while fetching chart data from URL';
+        const errorMessage = isTimeoutError
+          ? `Request timed out after ${requestTimeout / 1000} seconds`
+          : altErrorMessage;
+        setError(errorMessage);
+        setIsLoaded(true);
+      })
+      .finally(() => {
+        isFetchingRef.current = false;
+        clearTimeout(timeoutId);
+      });
+  }, [transformedUrl, requestTimeout, refetch, setUrlTypeData, setIsLoaded, setError]);
+
+  useEffect(() => {
+    // Only fetch data if URL is properly configured
+    if (!transformedUrl || transformedUrl === '') {
+      // If missing URL, just set loaded state without fetching
+      setIsLoaded(true);
+      setError(null);
+      return;
+    }
+
+    // Reset loading state when chart properties change
+    setIsLoaded(false);
+    setError(null);
+
+    fetchData();
+  }, [transformedUrl, requestTimeout]);
+
+  // Cleanup effect to abort requests on unmount
+  useEffect(() => {
+    return () => {
+      if (currentControllerRef.current && isFetchingRef.current) {
+        try {
+          currentControllerRef.current.abort("Unmounting chart");
+        } catch {
+          // Ignore abort errors during unmount - this is expected behavior
+        }
+      }
+    };
+  }, []);
 
   const memoUrlTypeData = useChartURLData();
 
-  if (!url || !chartType) {
+  // Memoize missing properties check to prevent unnecessary re-renders
+  const missingPropertiesInfo = useMemo(() => {
     const missingProperties: string[] = [];
     if (!url) missingProperties.push("'url'");
     if (!chartType) missingProperties.push("'chartType'");
 
-    const descriptionMessage = `Please make sure that you've specified the following properties: ${missingProperties.join(', ')}.`;
+    return {
+      hasMissingProperties: missingProperties.length > 0,
+      descriptionMessage: `Please make sure that you've specified the following properties: ${missingProperties.join(', ')}.`,
+    };
+  }, [url, chartType]);
+
+  // Memoize Alert components to prevent re-renders
+  const missingPropertiesAlert = useMemo(() => {
+    if (url && chartType) return null;
 
     return (
       <Alert
         showIcon
         message="Chart control properties not set correctly!"
-        description={descriptionMessage}
+        description={missingPropertiesInfo.descriptionMessage}
         type="warning"
       />
     );
+  }, [url, chartType, missingPropertiesInfo.descriptionMessage]);
+
+  const errorAlert = useMemo(() => {
+    if (!error) return null;
+
+    const isUserCancelled = error === 'Request cancelled by user';
+    const isTimeoutError = error.includes('Request timed out after');
+
+    return (
+      <Alert
+        showIcon
+        message={isUserCancelled ? "Request cancelled" : isTimeoutError ? "Request timed out" : "Error loading chart data from URL"}
+        description={error}
+        type={isUserCancelled ? "info" : isTimeoutError ? "warning" : "error"}
+        action={(
+          <Button
+            color="danger"
+            onClick={() => {
+              fetchData();
+            }}
+          >
+            Retry
+          </Button>
+        )}
+      />
+    );
+  }, [error, theme.application.errorColor]);
+
+  const noDataAlert = useMemo(() => {
+    if (state.urlTypeData?.labels?.length > 0 && state.urlTypeData?.datasets?.length > 0 &&
+      memoUrlTypeData.datasets.length > 0 && memoUrlTypeData.labels.length > 0) {
+      return null;
+    }
+
+    return (
+      <Alert
+        showIcon
+        message="No data to display!"
+        description="Please check the URL and try again."
+        type="warning"
+      />
+    );
+  }, [state.urlTypeData, memoUrlTypeData]);
+
+  // Memoize the loader component
+  const loaderComponent = useMemo(() => {
+    if (!state.isLoaded) {
+      return (
+        <div className={cx(styles.loadingContainer)}>
+          <ChartLoader
+            chartType={chartType}
+            handleCancelClick={() => {
+              if (isFetchingRef.current && currentControllerRef.current) {
+                try {
+                  currentControllerRef.current.abort("Request cancelled by user");
+                } catch {
+                  // Ignore abort errors during user cancellation - this is expected behavior
+                }
+                isFetchingRef.current = false;
+                setError('Request cancelled by user');
+                setIsLoaded(true);
+              }
+            }}
+          />
+          <div className={cx(styles.loadingText)}>Loading data...</div>
+        </div>
+      );
+    }
+    return null;
+  }, [state.isLoaded, chartType, cx, styles.loadingContainer, styles.loadingText, setIsLoaded]);
+
+  // Memoize chart container styles to prevent unnecessary re-renders
+  const chartContainerStyle = useMemo(() => ({
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
+    margin: 0,
+    overflow: 'hidden',
+  }), []);
+
+  const chartInnerStyle = useMemo(() => ({
+    width: '100%',
+    height: '100%',
+    position: 'relative' as const,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
+    margin: 0,
+    overflow: 'hidden',
+  }), []);
+
+  const hasValidData = useMemo(() => {
+    return state.urlTypeData?.labels?.length > 0 && state.urlTypeData?.datasets?.length > 0 &&
+      memoUrlTypeData.datasets.length > 0 && memoUrlTypeData.labels.length > 0;
+  }, [state.urlTypeData, memoUrlTypeData]);
+
+  // Early returns with memoized components
+  if (error) {
+    return errorAlert;
+  }
+
+  if (!url || !chartType) {
+    return missingPropertiesAlert;
   }
 
   if (!state.isLoaded) {
-    return (
-      <Flex align="center" justify='center'>
-        <Spin indicator={<LoadingOutlined className={cx(styles.chartControlSpinFontSize)} spin />} />
-      </Flex>
-    );
+    return loaderComponent;
   }
 
-  if (!state.urlTypeData) {
-    return (
-      <Result
-        status="404"
-        title="404"
-        subTitle="Sorry, no data to display. Please check the URL and try again."
-      />
-    );
+  if (!hasValidData) {
+    return noDataAlert;
   }
 
   return (
-    <Flex align='center' justify='center' className={cx(styles.chartControlContainer)} style={{
-      height: props?.height > 200 ? props.height : 'auto',
-      width: props?.width > 300 ? props.width : 'auto',
-      border: props?.showBorder ? '1px solid #ddd' : 'none'
-    }}>
-      {
-        (() => {
-          switch (chartType) {
-            case 'line':
-              return <LineChart data={memoUrlTypeData as any} />;
-            case 'bar':
-              return <BarChart data={memoUrlTypeData as any} />;
-            case 'pie':
-              return <PieChart data={memoUrlTypeData as any} />;
-            case 'polarArea':
-              return <PolarAreaChart data={memoUrlTypeData as any} />;
-            default:
-              return <Result status="404" title="404" subTitle="Sorry, please select a valid chart type." />;
-          }
-        })()
-      }
-    </Flex>
+    <div style={chartContainerStyle}>
+      <div style={chartInnerStyle}>
+        {renderChart(chartType, memoUrlTypeData)}
+      </div>
+    </div>
   );
 };
 

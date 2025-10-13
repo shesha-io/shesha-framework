@@ -1,4 +1,5 @@
-import { createStyles } from 'antd-style';
+import { createStyles, SerializedStyles } from 'antd-style';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 
 const tableClassNames = {
   shaTable: 'sha-table',
@@ -24,16 +25,30 @@ const tableClassNames = {
   shaSortable: 'sha-sortable',
   shaDragging: 'sha-dragging',
   shaTooltipIcon: 'sha-tooltip-icon',
+  shaCellParent: 'sha-cell-parent',
+  shaCellParentFW: 'sha-cell-parent-fw', // Full width cell parent, used for cells that should take full width of the row,
+  shaSpanCenterVertically: 'sha-span-center-vertically',
 };
 const tableStyles = {
   styles: tableClassNames,
 };
 
-export const useStyles = () => {
+export const useStyles = (): typeof tableStyles => {
   return tableStyles;
 };
 
-export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
+export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }, {
+  rowBackgroundColor,
+  rowAlternateBackgroundColor,
+  rowHoverBackgroundColor,
+  rowSelectedBackgroundColor,
+}: {
+  rowBackgroundColor?: string;
+  rowAlternateBackgroundColor?: string;
+  rowHoverBackgroundColor?: string;
+  rowSelectedBackgroundColor?: string;
+  border?: IBorderValue;
+}) => {
   const {
     shaTable,
     thead,
@@ -58,17 +73,20 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaSortable,
     shaDragging,
     shaTooltipIcon,
+    shaCellParent,
+    shaCellParentFW,
+    shaSpanCenterVertically,
   } = tableClassNames;
 
   // var(--ant-primary-3)
   const hoverableRow = `
         &:not(.${trSelected}) {
-            background: ${token.colorPrimaryBgHover} !important;
+            background: ${rowHoverBackgroundColor || token.colorPrimaryBgHover} !important;
         }
     `;
 
   const groupBorder = '1px solid lightgray';
-  const nestedPaddings = (indexStart: number, index: number) => {
+  const nestedPaddings = (indexStart: number, index: number): SerializedStyles | null => {
     return indexStart < index
       ? css`
           &.sha-group-level-${indexStart} {
@@ -88,20 +106,29 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
       : null;
   };
 
+
   // .sha-react-table
   const shaReactTable = cx(
     'sha-react-table',
     css`
-      margin: 0 12px;
       background: white;
       /* These styles are suggested for the table fill all available space in its containing element */
       display: block;
       /* These styles are required for a horizontaly scrollable table overflow */
       overflow: auto;
 
+      .${shaSpanCenterVertically} {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
+      .anticon svg{
+        margin-top: 3px !important;
+      }
+
       .${shaTable} {
         border-spacing: 0;
-        border: 1px solid #ddd;
         display: inline-block;
         min-width: 100%;
 
@@ -162,15 +189,22 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
         .${tr} {
+          height: 100%; 
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
+          }
+
+          &.${trBody} {
+            ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
           }
 
           .${shaCrudCell} {
             display: flex;
             width: 100%;
             min-height: 22px;
+            height: 100%;
             justify-content: center;
+            align-items: center; 
 
             .sha-link {
               border: none;
@@ -193,8 +227,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${shaNewRow} {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: -webkit-fill-available !important;
+            border-top: 0.5px solid rgb(220, 220, 220) !important;
+            border-bottom: 0.5px solid rgb(218, 218, 218) !important;
+            
             .${shaCrudCell} {
-              height: 100%;
+              height: -webkit-fill-available !important;
 
               .sha-link {
                 .${iconPrefixCls} {
@@ -213,14 +254,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trOdd} {
-            background: #f0f0f0;
+            ${(rowAlternateBackgroundColor || rowBackgroundColor) ? `background: ${rowAlternateBackgroundColor || rowBackgroundColor} !important;` : ''}
           }
 
           &.${trSelected} {
             .sha-link {
               color: white;
             }
-            background: ${token.colorPrimary};
+            background: ${rowSelectedBackgroundColor || token.colorPrimary} !important;
             color: white;
 
             .ant-form-item-control-input-content, button, a {
@@ -253,6 +294,48 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               }
             }
           }
+
+          .${shaCellParent} {
+              min-width: 100%;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              cursor: auto;
+
+              & .ant-form-item-control-input {
+                overflow: visible;
+                position: relative;
+                z-index: 999;
+                width: 100% !important;
+              }
+              
+              /* Override vertical alignment for form controls in table cells */
+              & .ant-select,
+              & .ant-input,
+              & .ant-input-number,
+              & .ant-picker {
+                vertical-align: middle !important;
+              }
+          }
+
+          .${shaCellParentFW} {
+              min-width: 100%;
+              & .ant-form-item-control-input {
+                overflow: visible;
+                position: relative;
+                z-index: 999;
+                width: 100% !important;
+              }
+              
+              /* Override vertical alignment for form controls in table cells */
+              & .ant-select,
+              & .ant-input,
+              & .ant-input-number,
+              & .ant-picker {
+                vertical-align: middle !important;
+              }
+          }
+
         }
         .${shaTooltipIcon} {
           color: darkgray !important;
@@ -277,6 +360,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             display: inline-block;
             position: relative;
             z-index: -100;
+
           }
 
           &.${boxShadowLeft} {
@@ -284,6 +368,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
           &.${boxShadowRight} {
             box-shadow: -5px 0 3px -2px #ccc;
+          }
+
+          &.ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
         }
 
@@ -340,7 +430,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
       }
-    `
+    `,
+
+
   );
   return {
     shaReactTable,

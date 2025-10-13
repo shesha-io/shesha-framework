@@ -1,5 +1,5 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import { Button, Space, Select, Skeleton, ConfigProvider } from 'antd';
+import { Button, Select, Skeleton } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import React, { useMemo, useRef, useState } from 'react';
 import { useEntitySelectionData } from '@/utils/entity';
@@ -10,19 +10,19 @@ import { useStyles } from './styles/styles';
 import { EntityPickerModal } from './modal';
 import { getValueByPropertyName } from '@/utils/object';
 import { SheshaError } from '@/utils/errors';
-
-const EntityPickerReadOnly = (props: IEntityPickerProps) => {
+import { addPx } from '@/utils/style';
+const EntityPickerReadOnly = (props: IEntityPickerProps): JSX.Element => {
   const { entityType, displayEntityKey, value } = props;
 
   // Check if all data for displaying is loaded
   const isLoaded = value
     ? Array.isArray(value)
-      ? !value.find(x => typeof (getValueByPropertyName(x, displayEntityKey)) === 'undefined')
+      ? !value.find((x) => typeof (getValueByPropertyName(x, displayEntityKey)) === 'undefined')
       : typeof (getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
     : false;
 
   const valueId = Array.isArray(value)
-    ? value.map(x => props.incomeValueFunc(x, {}))
+    ? value.map((x) => props.incomeValueFunc(x, {}))
     : props.incomeValueFunc(value, {});
 
   const selection = useEntitySelectionData({
@@ -39,13 +39,13 @@ const EntityPickerReadOnly = (props: IEntityPickerProps) => {
   }, [isLoaded, value, selectionRows]);
 
   const displayText = useMemo(() => {
-    return selectedItems?.map(ent => getValueByPropertyName(ent, displayEntityKey)).join(', ');
+    return selectedItems?.map((ent) => getValueByPropertyName(ent, displayEntityKey)).join(', ');
   }, [selectedItems, displayEntityKey]);
 
-  return selection.loading ? <Skeleton paragraph={false} active /> : <ReadOnlyDisplayFormItem value={displayText} />;
+  return selection.loading ? <Skeleton paragraph={false} active /> : <ReadOnlyDisplayFormItem value={displayText} style={props.style} />;
 };
 
-const EntityPickerEditable = (props: IEntityPickerProps) => {
+const EntityPickerEditable = (props: IEntityPickerProps): JSX.Element => {
   const {
     entityType,
     displayEntityKey,
@@ -63,13 +63,13 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     outcomeValueFunc,
     incomeValueFunc,
     placeholder,
-    hideBorder
+    dividerStyle,
   } = props;
 
   if (!entityType)
     throw SheshaError.throwPropertyError('entityType');
 
-  const { styles } = useStyles(style);
+  const { styles } = useStyles({ style });
   const selectRef = useRef(undefined);
 
   const [showModal, setShowModal] = useState(false);
@@ -77,13 +77,13 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
   // Check if all data for displaying is loaded
   const isLoaded = value
     ? Array.isArray(value)
-      ? !value.find(x => typeof (getValueByPropertyName(x, displayEntityKey)) === 'undefined')
+      ? !value.find((x) => typeof (getValueByPropertyName(x, displayEntityKey)) === 'undefined')
       : typeof (getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
     : false;
 
   const valueId = useMemo(() => {
     return Array.isArray(value)
-      ? value.map(x => incomeValueFunc(x, {}))
+      ? value.map((x) => incomeValueFunc(x, {}))
       : incomeValueFunc(value, {});
   }, [value, incomeValueFunc]);
 
@@ -108,18 +108,18 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
           ? valueId
           : [valueId])
         : [];
-      result = items.map(item => ({
+      result = items.map((item) => ({
         label: 'loading...',
         value: item,
-        rawValue: item
+        rawValue: item,
       }));
     } else {
-      result = (selectedItems ?? []).map(ent => {
+      result = (selectedItems ?? []).map((ent) => {
         const itemValue = incomeValueFunc(outcomeValueFunc(ent, {}), {});
         return {
           label: getValueByPropertyName(ent, displayEntityKey),
           value: ent.id,
-          rawValue: itemValue
+          rawValue: itemValue,
         };
       });
     }
@@ -128,98 +128,118 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
 
   const selectedMode = mode === 'single' ? undefined : mode;
 
-  const handleMultiChange = (selectedValues: string[]) => {
-    const newValues = Array.isArray(value) ? value.filter(x => selectedValues.find(y => y === incomeValueFunc(x, {}))) : null;
+  const handleMultiChange = (selectedValues: string[]): void => {
+    const newValues = Array.isArray(value) ? value.filter((x) => selectedValues.find((y) => y === incomeValueFunc(x, {}))) : null;
     if (onChange) onChange(newValues, null);
   };
 
-  const showPickerDialog = () => {
+  const showPickerDialog = (): void => {
     setShowModal(true);
   };
 
-  const handleButtonPickerClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const handleButtonPickerClick = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
     event?.stopPropagation();
 
     showPickerDialog();
   };
 
-  const onClear = () => {
+  const onClear = (): void => {
     if (onChange) onChange(null, null);
   };
 
-  const { background, backgroundImage, borderRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
-    borderBottomWidth, borderRightColor, borderRightStyle, borderColor, borderBottomLeftRadius,
-    borderTopLeftRadius, MozBorderTopColors, borderTopStyle, borderTopColor, borderTop, boxShadow,
-    borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, ...restStyle } = style;
+  const { borderBottomLeftRadius,
+    borderTopLeftRadius, borderTopRightRadius,
+    borderBottomRightRadius, width, minWidth,
+    maxWidth, boxShadow, background, backgroundImage,
+    marginTop, marginRight, marginBottom,
+    height, minHeight, maxHeight,
+    marginLeft, paddingTop, paddingRight, paddingBottom,
+    backgroundSize, backgroundPosition, backgroundRepeat,
+    paddingLeft, ...restStyle } = style;
 
   const borderRadii = style?.borderRadius?.toString().split(' ');
 
   return (
-    <div className={styles.entityPickerContainer}>
+    <div className={styles.entityPickerContainer} style={{ width, minWidth, maxWidth }}>
       <div>
-        <ConfigProvider
-          theme={{
-            components: {
-              Select: {
-                fontSize: Number(style?.fontSize ?? 14),
-                colorText: style?.color,
-                fontFamily: style?.fontFamily,
-                fontWeightStrong: Number(style.fontWeight)
-              },
-            },
+        {useButtonPicker ? (
+          <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})} style={style}>
+            {title}
+          </Button>
+        ) : (
+          <div style={{
+            display: 'flex', flexDirection: 'row', alignItems: 'stretch', position: 'relative', backgroundSize, backgroundPosition, backgroundRepeat,
+            boxShadow, marginTop, marginRight, marginBottom, marginLeft, background, backgroundImage, borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius, height, minHeight, maxHeight,
           }}
-        >
-          {useButtonPicker ? (
-            <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})}>
-              {title}
-            </Button>
-          ) : (
-            <Space.Compact style={{ width: '100%', ...style }}>
-              <Select
-                size={size}
-                onDropdownVisibleChange={(_e) => {
-                  selectRef.current.blur();
-                  showPickerDialog();
-                }}
-                onClear={onClear}
-                value={selection.loading ? undefined : valueId}
-                placeholder={selection.loading ? 'Loading...' : placeholder}
-                notFoundContent={''}
-                defaultValue={defaultValue}
-                disabled={disabled || selection.loading}
-                ref={selectRef}
-                allowClear
-                mode={selectedMode}
-                options={options}
-                variant={hideBorder ? 'borderless' : null}
-                suffixIcon={null}
-                onChange={handleMultiChange}
-                className={styles.entitySelect}
-                style={{ width: '100%' }}
-                loading={selection.loading}
-              >
-                {''}
-              </Select>
-              <Button
-                onClick={showPickerDialog}
-                className={styles.pickerInputGroupEllipsis}
-                disabled={disabled}
-                loading={loading ?? false}
-                size={size}
-                icon={<EllipsisOutlined />}
-                style={{
-                  ...restStyle,
-                  borderRadius: `0px ${borderRadii?.[1]} ${borderRadii?.[2]} 0px`,
-                  background: 'transparent',
-                  borderLeft: '1px solid #d9d9d9',
-                  height: '100%',
-                  zIndex: 1,
-                }}
-                type='text'
-              />
-            </Space.Compact>
-          )}
-        </ConfigProvider>
+          >
+            <Select
+              size={size}
+              onOpenChange={(_e) => {
+                selectRef.current.blur();
+                showPickerDialog();
+              }}
+              onClear={onClear}
+              value={selection.loading ? undefined : valueId}
+              placeholder={selection.loading ? 'Loading...' : placeholder}
+              notFoundContent=""
+              defaultValue={defaultValue}
+              disabled={disabled || selection.loading}
+              ref={selectRef}
+              allowClear
+              mode={selectedMode}
+              options={options}
+              variant="borderless"
+              suffixIcon={null}
+              onChange={handleMultiChange}
+              className={styles.entitySelect}
+              style={{
+                ...restStyle,
+                height: '100%',
+                borderRightStyle: 'none',
+                marginTop: 0,
+                marginRight: 0, marginBottom: 0, marginLeft: 0, paddingTop, paddingRight, paddingBottom, paddingLeft,
+                borderTopRightRadius: 0, borderBottomRightRadius: 0,
+                borderTopLeftRadius,
+                borderBottomLeftRadius,
+              }}
+              loading={selection.loading}
+            >
+
+            </Select>
+            <Button
+              onClick={showPickerDialog}
+              className={styles.pickerInputGroupEllipsis}
+              disabled={disabled}
+              loading={loading ?? false}
+              icon={<EllipsisOutlined />}
+              style={{
+                ...restStyle,
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
+                borderTopRightRadius,
+                borderBottomRightRadius,
+                marginTop: 0,
+                marginRight: 0,
+                marginBottom: 0,
+                marginLeft: 0,
+                paddingTop,
+                paddingRight,
+                paddingBottom,
+                paddingLeft,
+                borderLeftStyle: dividerStyle?.style ?? 'solid',
+                borderLeftWidth: addPx(dividerStyle?.width) ?? '1px',
+                borderLeftColor: dividerStyle?.color ?? '#d9d9d9',
+                borderRadius: `0px ${borderRadii?.[1]} ${borderRadii?.[2]} 0px`,
+                height: '100%',
+                minHeight: '100%',
+                maxHeight: '100%',
+                position: 'absolute',
+                left: 'calc(100% - 32px)',
+              }}
+              type="text"
+            />
+          </div>
+        )}
       </div>
 
       {showModal && <EntityPickerModal {...props} onCloseModal={() => setShowModal(false)} />}
@@ -227,9 +247,9 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
   );
 };
 
-export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps) => {
+export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps): JSX.Element => {
   return restProps.readOnly ? (
-    <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} />
+    <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} style={restProps.style} />
   ) : (
     <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />
   );

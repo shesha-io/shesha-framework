@@ -1,19 +1,24 @@
-﻿using Abp.TestBase;
-using Shesha.Metadata;
+﻿using Shesha.Metadata;
+using Shesha.Tests.Fixtures;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Shesha.Tests.Metadata
 {
-    public class MetadataProvider_Tests: AbpIntegratedTestBase<SheshaTestModule>
+    [Collection(SqlServerCollection.Name)]
+    public class MetadataProvider_Tests : SheshaNhTestBase
     {
+        public MetadataProvider_Tests(SqlServerFixture fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public async Task ShouldInclude_NotMappedProperties_TestAsync() 
         {
             var metadataProvider = Resolve<MetadataProvider>();
             
-            var properties = await metadataProvider.GetPropertiesAsync(typeof(EntityWithReadonlyProp), "");
+            var properties = await metadataProvider.GetPropertiesAsync(typeof(EntityWithReadonlyProp));
 
             var includesCalculatedReadonly = properties.Any(p => p.Path == nameof(EntityWithReadonlyProp.CalculatedReadonly));
             Assert.True(includesCalculatedReadonly, $"Calculated readonly property '{nameof(EntityWithReadonlyProp.CalculatedReadonly)}' must be included into metadata");

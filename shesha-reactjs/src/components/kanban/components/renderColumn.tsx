@@ -1,7 +1,7 @@
-import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { ConfigurableForm, ShaIcon, useAvailableConstantsData, useConfigurableActionDispatcher } from '@/index';
-import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
+import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
 import { LeftOutlined, MoreOutlined, PlusOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Flex, MenuProps, Popconfirm } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -41,7 +41,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   const [isCollapsed, setIsCollapsed] = useState(collapse);
   const { updateUserSettings } = useKanbanActions();
   const { storeSettings, userSettings } = useRefListItemGroupConfigurator();
-  const dimensionsStyles = useMemo(() => getSizeStyle(props.columnStyles.dimensions), [props.columnStyles.dimensions]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(props.columnStyles.dimensions), [props.columnStyles.dimensions]);
   const fontStyles = useMemo(() => getFontStyle(props.font), [props.font]);
   const { styles } = useStyles({ ...props, isCollapsed, dimensionsStyles, fontStyles });
   const { updateKanban } = useKanbanActions();
@@ -52,7 +52,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
     setIsCollapsed(collapse);
   }, [collapse]);
   // Update user settings and persist to backend
-  const toggleFold = async () => {
+  const toggleFold = async (): Promise<void> => {
     try {
       const newCollapseState = !isCollapsed;
       setIsCollapsed(newCollapseState);
@@ -120,10 +120,10 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
         });
       });
     },
-    [allData, executeAction]
+    [allData, executeAction],
   );
 
-  const handleUpdate = async (evt: any) => {
+  const handleUpdate = async (evt: any): Promise<void> => {
     const taskId = evt.item.dataset.id;
     const newColumnValue = evt.to.firstChild.dataset.value;
     const draggedTask = tasks.find((task) => task.id === taskId);
@@ -134,7 +134,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
         to: { dataset: { columnId: targetColumn.id, targetColumn: targetColumn } },
         dragged: { dataset: { id: taskId, value: draggedTask[props.groupingProperty] } },
       },
-      targetColumn
+      targetColumn,
     );
 
     if (!canUpdate) {
@@ -174,7 +174,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
             style={props.headerStyles || {}}
           >
             {props.showIcons && column.icon && <ShaIcon iconName={column.icon} readOnly style={iconStyles} />}
-            <h3
+            <span
               style={{
                 textWrap: 'nowrap',
                 textOverflow: 'ellipsis',
@@ -182,7 +182,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
               }}
             >
               {column.item} ({columnTasks.length})
-            </h3>
+            </span>
 
             {props.kanbanReadonly || props.readonly || !(props.allowNewRecord || props.collapsible) ? null : (
               <Dropdown trigger={['click']} menu={{ items: columnDropdownItems }} placement="bottomRight">
@@ -248,7 +248,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
                         key={selectedItem ? selectedItem.id : 'new-item'}
                         initialValues={t}
                         formId={props.modalFormId}
-                        mode={'readonly'}
+                        mode="readonly"
                         className={styles.taskContainer}
                       />
                       {props.kanbanReadonly || props.readonly || !(props.allowDelete || props.allowEdit) ? null : (

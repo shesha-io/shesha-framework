@@ -9,7 +9,7 @@ import { CodeSandboxSquareFilled } from '@ant-design/icons';
 import { Card } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ICardComponentProps } from './interfaces';
-import { getSettings } from './new-cardSettings';
+import { getSettings } from './settingsForm';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import classNames from 'classnames';
 import { useStyles } from './styles';
@@ -44,8 +44,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
     useEffect(() => {
-      const fetchStyles = async () => {
-
+      const fetchStyles = async (): Promise<void> => {
         const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
           ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
             { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
@@ -67,7 +66,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
       ...borderStyles,
       ...backgroundStyles,
       ...shadowStyles,
-      ...jsStyle
+      ...jsStyle,
     };
 
     const headerComponents = model?.header?.components ?? [];
@@ -89,7 +88,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
           className={classNames(model.className, { [styles.hideWhenEmpty]: model.hideWhenEmpty })}
           title={title}
           extra={extra}
-          style={{...removeNullUndefined(newStyles), ...getLayoutStyle(model, { data, globalState })}}
+          style={{ ...removeNullUndefined(newStyles), ...getLayoutStyle(model, { data, globalState }) }}
         >
           <ComponentsContainer
             containerId={model?.content?.id}
@@ -103,7 +102,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
     ...model,
     header: { id: nanoid(), components: [] },
     content: { id: nanoid(), components: [] },
-    stylingBox: "{\"marginBottom\":\"5\"}"
+    stylingBox: "{\"marginBottom\":\"5\"}",
   }),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),

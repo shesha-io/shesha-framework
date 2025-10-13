@@ -2,22 +2,22 @@ import { useCallback, useMemo } from 'react';
 import { FormIdentifier, useSheshaApplication } from '..';
 import { IToolboxComponent, IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
 import { getToolboxComponents } from './defaults/toolboxComponents';
-import { useLocalStorage } from '@/hooks';
-import { useFormPersister } from '../formPersisterProvider';
+import { useFormPersisterIfAvailable } from '../formPersisterProvider';
+import { useIsDevMode } from '@/hooks/useIsDevMode';
 
-export const useFormDesignerComponentGroups = () => {
+export const useFormDesignerComponentGroups = (): IToolboxComponentGroup[] => {
   const app = useSheshaApplication(false);
-  const [isDevmode] = useLocalStorage('application.isDevMode', false);
-  const formPersister = useFormPersister(false);
+  const isDevMode = useIsDevMode();
+  const formPersister = useFormPersisterIfAvailable();
 
   const { formId, formProps } = formPersister || {};
 
   const toolboxComponentGroups = useMemo(() => {
-    const defaultToolboxComponents = getToolboxComponents(isDevmode, { formId, formProps });
+    const defaultToolboxComponents = getToolboxComponents(isDevMode, { formId, formProps });
     const appComponentGroups = app?.formDesignerComponentGroups;
 
     return [...(defaultToolboxComponents || []), ...(appComponentGroups || [])];
-  }, [formId, formProps, isDevmode, app?.formDesignerComponentGroups]);
+  }, [formId, formProps, isDevMode, app?.formDesignerComponentGroups]);
 
   return toolboxComponentGroups;
 };
@@ -54,7 +54,7 @@ export const useFormDesignerComponentGetter = (): FormDesignerComponentGetter =>
   return getter;
 };
 
-const getDesignerUrl = (designerUrl: string, fId: FormIdentifier) => {
+const getDesignerUrl = (designerUrl: string, fId: FormIdentifier): string | null => {
   return typeof fId === 'string'
     ? `${designerUrl}?id=${fId}`
     : Boolean(fId?.name)
@@ -62,7 +62,7 @@ const getDesignerUrl = (designerUrl: string, fId: FormIdentifier) => {
       : null;
 };
 
-export const useFormDesignerUrl = (formId: FormIdentifier) => {
+export const useFormDesignerUrl = (formId: FormIdentifier): string => {
   const app = useSheshaApplication();
   return getDesignerUrl(app.routes.formsDesigner, formId);
 };

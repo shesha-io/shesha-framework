@@ -32,13 +32,13 @@ export interface ISelectionProps {
 /** Table context */
 
 export type IFlagProgressFlags =
-  | 'isFiltering'
-  | 'isSelectingColumns'
-  | 'fetchTableData'
-  | 'exportToExcel' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
-export type IFlagSucceededFlags = 'exportToExcel' | 'fetchTableData' /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
-export type IFlagErrorFlags = 'exportToExcel' /* NEW_ERROR_FLAG_GOES_HERE */;
-export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
+  'isFiltering' |
+  'isSelectingColumns' |
+  'fetchTableData' |
+  'exportToExcel';
+export type IFlagSucceededFlags = 'exportToExcel' | 'fetchTableData';
+export type IFlagErrorFlags = 'exportToExcel';
+export type IFlagActionedFlags = '__DEFAULT__';
 
 export const DEFAULT_PAGE_SIZE_OPTIONS = [5, 10, 20, 30, 40, 50, 100];
 
@@ -78,7 +78,7 @@ export interface IDataTableStoredConfig {
 
 export interface IDataTableStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-    IHasModelType {
+  IHasModelType {
   exportToExcelError?: string;
 
   exportToExcelWarning?: string;
@@ -120,7 +120,7 @@ export interface IDataTableStateContext
 
   /** Rows grouping */
   grouping?: GroupingItem[];
-  
+
   /** Sort mode (standard or strict) */
   sortMode?: SortMode;
   /** Sort sorting: order by */
@@ -140,7 +140,7 @@ export interface IDataTableStateContext
   selectedStoredFilterIds?: string[];
 
   /** index of selected row */
-  //selectedRow?: any;
+  // selectedRow?: any;
 
   actionedRow?: any;
 
@@ -169,6 +169,8 @@ export interface IDataTableStateContext
 
   allowReordering: boolean;
   dragState?: DragState;
+
+  customReorderEndpoint?: string;
 }
 
 export type DragState = 'started' | 'finished' | null;
@@ -215,7 +217,7 @@ export interface IDataTableActionsContext
 
   changeDisplayColumn: (displayColumnName: string) => void;
   changePersistedFiltersToggle: (persistSelectedFilters: boolean) => void;
-  
+
   /**
    * Get current repository of the datatable
    */
@@ -267,6 +269,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   selectedRows: [],
   permanentFilter: null,
   allowReordering: false,
+  customReorderEndpoint: null,
 };
 
 export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }

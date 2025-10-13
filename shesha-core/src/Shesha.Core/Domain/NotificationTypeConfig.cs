@@ -1,5 +1,5 @@
 ﻿using Shesha.Domain.Attributes;
-using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain.Constants;
 using Shesha.Extensions;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,18 +10,19 @@ using System.Text.Json;
 namespace Shesha.Domain
 {
     [DiscriminatorValue(ItemTypeName)]
-    [JoinedProperty("Core_NotificationTypeConfigs")]
-    [Entity(TypeShortAlias = "Shesha.Domain.NotificationTypeConfig")]
-    public class NotificationTypeConfig : ConfigurationItemBase, INotificationTypeSpecificProps
+    [Prefix(UsePrefixes = false)]
+    [JoinedProperty("notification_types", Schema = "frwk")]
+    [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-notification-type-create")]
+    [FixedView(ConfigurationItemsViews.Rename, SheshaFrameworkModule.ModuleName, "cs-item-rename")]
+    [Entity(
+        FriendlyName = "Notification",
+        TypeShortAlias = "Shesha.Domain.NotificationTypeConfig"
+    )]
+    [SnakeCaseNaming]
+    public class NotificationTypeConfig : ConfigurationItem, INotificationTypeSpecificProps
     {
         public NotificationTypeConfig()
         {
-            Init();
-        }
-
-        private void Init()
-        {
-            VersionStatus = ConfigurationItemVersionStatus.Draft;
         }
 
         /// <summary>
@@ -33,32 +34,25 @@ namespace Shesha.Domain
         /// 
         /// </summary>
         public override string ItemType => ItemTypeName;
+
         /// <summary>
         /// 
         /// </summary>
-        public bool AllowAttachments { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool Disable { get; set; }
+        public virtual bool Disable { get; set; }
         /// <summary>
         /// If true indicates that users may opt out of this notification
         /// </summary>
-        public bool CanOptOut { get; set; }
+        public virtual bool CanOptOut { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public string Category { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public int OrderIndex { get; set; }
+        public virtual string Category { get; set; } = string.Empty;
 
         /// <summary>
         /// Serialized JSON string representing override channels.
         /// </summary>
-        [StringLength(int.MaxValue)]
-        public string? OverrideChannels { get; set; }
+        [MaxLength(int.MaxValue)]
+        public virtual string OverrideChannels { get; set; } = string.Empty;
 
         private List<NotificationChannelIdentifier> _parsedOverrideChannels;
 
@@ -66,7 +60,7 @@ namespace Shesha.Domain
         /// Deserialized override channels as composite identifiers.
         /// </summary>
         [NotMapped]
-        public List<NotificationChannelIdentifier> ParsedOverrideChannels
+        public virtual List<NotificationChannelIdentifier> ParsedOverrideChannels
         {
             get
             {
@@ -107,7 +101,7 @@ namespace Shesha.Domain
                 }
                 else
                 {
-                    OverrideChannels = null;
+                    OverrideChannels = string.Empty;
                 }
             }
         }
@@ -115,6 +109,11 @@ namespace Shesha.Domain
         /// <summary>
         ///  messages without which the user should not proceed in any case e.g. OTP
         /// </summary>
-        public bool IsTimeSensitive { get; set; }
+        public virtual bool IsTimeSensitive { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual bool AllowAttachments { get; set; }
     }
 }

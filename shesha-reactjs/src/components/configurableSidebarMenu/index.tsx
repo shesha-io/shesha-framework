@@ -25,14 +25,13 @@ export interface IConfigurableSidebarMenuProps {
   isApplicationSpecific: boolean;
 }
 
-export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props => {
-  
+export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = (props) => {
   const { loadedMenu, changeMainMenu, saveMainMenu } = useMainMenu();
 
-  const editor = (editorProps: ISettingsEditorProps<ISideBarMenuProps>) => {
+  const editor = (editorProps: ISettingsEditorProps<ISideBarMenuProps>): JSX.Element => {
     return (
       <ComponentSettingsModal
-        title='Sidebar Menu Configuration'
+        title="Sidebar Menu Configuration"
         settings={editorProps.settings ?? EmptySidebarProps}
         onSave={editorProps.onSave}
         onCancel={editorProps.onCancel}
@@ -42,43 +41,43 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
 
   const context: IConfigurableComponentContext<ISideBarMenuProps> = {
     settings: loadedMenu,
-    load: () => {/**/},
+    load: () => { /**/ },
     save: (settings: ISideBarMenuProps) => {
-      return saveMainMenu({...loadedMenu, ...settings})
+      return saveMainMenu({ ...loadedMenu, ...settings })
         .then(() => {
-          changeMainMenu({...loadedMenu, ...settings});
+          changeMainMenu({ ...loadedMenu, ...settings });
         });
     },
-    setIsInProgressFlag: () => {/**/},
-    setSucceededFlag: () => {/**/},
-    setFailedFlag: () => {/**/},
-    setActionedFlag: () => {/**/},
-    resetIsInProgressFlag: () => {/**/},
-    resetSucceededFlag: () => {/**/},
-    resetFailedFlag: () => {/**/},
-    resetActionedFlag: () => {/**/},
-    resetAllFlag: () => {/**/},
+    setIsInProgressFlag: () => { /**/ },
+    setSucceededFlag: () => { /**/ },
+    setFailedFlag: () => { /**/ },
+    setActionedFlag: () => { /**/ },
+    resetIsInProgressFlag: () => { /**/ },
+    resetSucceededFlag: () => { /**/ },
+    resetFailedFlag: () => { /**/ },
+    resetActionedFlag: () => { /**/ },
+    resetAllFlag: () => { /**/ },
   };
 
   return (
     <ConfigurableComponentRenderer
       canConfigure={true}
       contextAccessor={() => context}
-      settingsEditor={{render: editor}}
+      settingsEditor={{ render: editor }}
     >
       {(componentState, BlockOverlay) => {
-          return (
-            <div className={`sidebar ${componentState.wrapperClassName}`} style={{position: 'relative'}}>
-                <div style={{position: 'absolute', top: 0, width: '10px', height: '100px', overflowY: 'hidden'}}>
-                <BlockOverlay>
-                  <EditOutlined style={{color: "#FFFFFF"}}/>
-                </BlockOverlay>
-                </div>
-
-              <SidebarMenu theme={props.theme} />
+        return (
+          <div className={`sidebar ${componentState.wrapperClassName}`} style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 0, width: '10px', height: '100px', overflowY: 'hidden' }}>
+              <BlockOverlay>
+                <EditOutlined style={{ color: "#FFFFFF" }} />
+              </BlockOverlay>
             </div>
-          );
-        }}
+
+            <SidebarMenu theme={props.theme} />
+          </div>
+        );
+      }}
     </ConfigurableComponentRenderer>
   );
 };

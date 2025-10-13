@@ -3,21 +3,19 @@ import { ToolboxComponents } from './toolboxComponents';
 import { ToolboxDataSources } from './toolboxDataSources';
 import { useStyles } from './styles/styles';
 import { Tabs } from 'antd';
-import { useFormDesignerState } from '@/providers/formDesigner';
+import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { useMetadata } from '@/providers';
 
-export interface IProps { }
-
-const Toolbox: FC<IProps> = () => {
+const Toolbox: FC = () => {
   const { styles } = useStyles();
-  const { dataSources: formDs } = useFormDesignerState();
+  const formDs = useFormDesignerStateSelector((x) => x.dataSources);
   const currentMeta = useMetadata(false);
 
   const builderItems = useMemo(() => {
     const dataSources = [...formDs];
 
-    const defaultItems = [{ key: '1', label: 'Widgets', children: <ToolboxComponents /> }];
+    const defaultItems = [{ key: '1', label: 'Components', children: <ToolboxComponents /> }];
 
     if (isEntityMetadata(currentMeta?.metadata))
       dataSources.push({
@@ -35,7 +33,7 @@ const Toolbox: FC<IProps> = () => {
 
   return (
     <div className={styles.shaDesignerToolbox}>
-      <Tabs style={{paddingBottom: '50px'}} defaultActiveKey="1" type="card" items={[...builderItems]} />
+      <Tabs style={{ paddingBottom: '50px' }} defaultActiveKey="1" type="card" items={[...builderItems]} />
     </div>
   );
 };

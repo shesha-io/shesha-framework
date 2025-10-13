@@ -1,52 +1,48 @@
-import { useState, useCallback, useEffect } from "react";
-import ReactDOM from "react-dom";
+'use client';
 
-type PortalRender = (props: { children: React.ReactNode }) => React.ReactPortal;
+import { FC, PropsWithChildren, ReactNode, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { ReactElement } from 'react-markdown/lib/react-markdown';
 
-interface PortalState {
-  render: PortalRender;
-  remove: () => void;
-}
-
-const NullPortalState: PortalState = {
-  render: () => null,
-  remove: () => null,
-};
-
-export const usePortal = (el) => {
-  const [portal, setPortal] = useState<PortalState>(NullPortalState);
-
-  const createPortal = useCallback((el): PortalState => {
-    if (!el)
-      return NullPortalState;
-    
-    //render a portal at the given DOM node:
-    const Portal = ({ children }) => ReactDOM.createPortal(children, el);
-    //delete the portal from memory:
-    const remove = () => ReactDOM.unmountComponentAtNode(el);
-
-    return {
-      render: Portal,
-      remove,
-    };
-  }, []);
+/**
+ * Custom hook that creates a portal component for a given container
+ * @param container - The DOM element to portal into (defaults to document.body)
+ * @returns A Portal component that renders children into the specified container
+ */
+export function usePortal(container?: HTMLElement | null): FC<PropsWithChildren> {
+  const [targetContainer, setTargetContainer] = useState(container || document.body);
+  const portalRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    //if there is an existing portal, remove the new instance.
-    //is prevents memory leaks
-    if (el)
-      portal.remove();
+    // Update if container prop changes
+    setTargetContainer(container || document.body);
+  }, [container]);
 
-    //otherwise, create a new portal and render it
-    const newPortal = createPortal(el);
+  /**
+   * Portal component that renders children into the target container
+   */
+  const Portal = ({ children }: { children: ReactNode }): ReactElement => {
+    if (!portalRef.current) {
+      portalRef.current = document.createElement('div');
+      portalRef.current.setAttribute('data-portal', 'true');
+    }
 
-    setPortal(newPortal);
+    useEffect(() => {
+      if (!portalRef.current) return undefined;
 
-    //when the user exits the page, delete the portal from memory.
-    return () => {
-      newPortal.remove();
-    };
-  }, [el, createPortal]);
+      const containerToUse = targetContainer || document.body;
+      containerToUse.appendChild(portalRef.current);
 
-  return portal.render;
-};
+      return () => {
+        if (portalRef.current) {
+          containerToUse.removeChild(portalRef.current);
+        }
+      };
+    }, [targetContainer]);
+
+    if (!portalRef.current) return null;
+    return createPortal(children, portalRef.current);
+  };
+
+  return Portal;
+}

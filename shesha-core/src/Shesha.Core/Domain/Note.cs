@@ -8,8 +8,8 @@ namespace Shesha.Domain
     [Entity(TypeShortAlias = "Shesha.Framework.Note")]
     public class Note : FullPowerChildEntity
     {
-        [ReferenceList("Shesha", "NoteType")]
-        public virtual int? Category { get; set; }
+        [StringLength(50)]
+        public virtual string? Category { get; set; }
 
         public virtual Note Parent { get; set; }
 

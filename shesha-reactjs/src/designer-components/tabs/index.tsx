@@ -1,28 +1,24 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
-import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
 import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { nanoid } from '@/utils/uuid';
-import { ConfigProvider, Tabs, TabsProps } from 'antd';
+import { Tabs, TabsProps } from 'antd';
 import { useDeepCompareMemo } from '@/hooks';
-import { useFormData, useSheshaApplication } from '@/providers';
+import { useSheshaApplication } from '@/providers';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getSettings } from './settingsForm';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 import { defaultCardStyles, defaultStyles } from './utils';
-import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 type TabItem = TabsProps['items'][number];
 
@@ -32,82 +28,21 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   name: 'Tabs',
   icon: <FolderOutlined />,
   Factory: ({ model }) => {
-    const { backendUrl, httpHeaders, anyOfPermissionsGranted } = useSheshaApplication();
+    const { anyOfPermissionsGranted } = useSheshaApplication();
     const allData = useAvailableConstantsData();
-    const { data } = useFormData();
-
+    const [activeKey, setActiveKey] = useState<string>(model.defaultActiveKey || (model.tabs?.length && model.tabs[0]?.key));
 
     const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top', tabLineColor } = model;
 
-    const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
-
-    const [finalStyle, setFinalStyle] = useState<React.CSSProperties>({});
-    const [cardFinalStyle, setCardFinalStyle] = useState<React.CSSProperties>({});
-
-    const jsStyle = getStyle(model.style);
-    const dimensions = model.dimensions;
-    const border = model?.border;
-    const font = model?.font;
-    const shadow = model?.shadow;
-
-    const dimensionsStyles = getSizeStyle(dimensions);
-    const borderStyles = getBorderStyle(border, jsStyle);
-    const fontStyles = getFontStyle(font);
-    const shadowStyles = getShadowStyle(shadow);
-
-    const cardJsStyle = getStyle(model?.card?.style, data);
-    const cardDimensions = model?.card?.dimensions;
-    const cardBorder = model?.card?.border;
-    const cardFont = model?.card?.font;
-    const cardShadow = model?.card?.shadow;
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const cardStyling = JSON.parse(model?.card?.stylingBox || '{}');
-
-    const cardDimensionsStyles = getSizeStyle(cardDimensions);
-    const cardBorderStyles = getBorderStyle(cardBorder, cardJsStyle);
-    const cardFontStyles = getFontStyle(cardFont);
-    const cardShadowStyles = getShadowStyle(cardShadow);
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-    const cardStylingBoxAsCSS = pickStyleFromModel(cardStyling);
-
-    const style = {
-      ...dimensionsStyles,
-      ...borderStyles,
-      ...fontStyles,
-      ...shadowStyles,
-      ...jsStyle,
-      ...stylingBoxAsCSS
-    };
-
-    const cardStyle = {
-      ...cardDimensionsStyles,
-      ...cardBorderStyles,
-      ...cardFontStyles,
-      ...cardShadowStyles,
-      ...cardJsStyle,
-      ...cardStylingBoxAsCSS
-    };
-
     useEffect(() => {
-      const fetchTabStyles = async () => {
-        const background = model?.background;
-        const cardBackground = model?.card?.background;
+      if (defaultActiveKey) {
+        setActiveKey(defaultActiveKey);
+      }
+    }, [defaultActiveKey]);
 
-        // Fetch background style asynchronously
-        const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
-        const cardStoredImageUrl = await getBackgroundImageUrl(cardBackground, backendUrl, httpHeaders);
+    const cardStyles = useFormComponentStyles({ ...model.card });
 
-        const backgroundStyle = await getBackgroundStyle(background, jsStyle, storedImageUrl);
-        const cardBackgroundStyle = await getBackgroundStyle(cardBackground, cardJsStyle, cardStoredImageUrl);
-
-        setCardFinalStyle({ ...cardStyle, ...(tabType === 'card' && cardBackgroundStyle) });
-        setFinalStyle({ ...style, ...backgroundStyle });
-      };
-
-      fetchTabStyles();
-    }, [model.background, model?.card?.background, backendUrl, httpHeaders, jsStyle]);
-
-    const { styles } = useStyles({ styles: finalStyle, cardStyles: tabType === 'line' ? { ...cardFontStyles, ...cardDimensionsStyles, } : cardFinalStyle, position: tabPosition, tabType, tabLineColor });
+    const { styles } = useStyles({ styles: model.allStyles.fullStyle, cardStyles: tabType === 'line' ? { ...cardStyles.fontStyles, ...cardStyles.dimensionsStyles } : cardStyles.fullStyle, position: tabPosition, tabType, tabLineColor, overflow: model.allStyles.overflowStyles });
 
     const items = useDeepCompareMemo(() => {
       const tabItems: TabItem[] = [];
@@ -149,12 +84,15 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           className: className,
           forceRender: forceRender,
           animated: animated,
-          destroyInactiveTabPane: destroyInactiveTabPane,
+          destroyOnHidden: destroyInactiveTabPane,
           closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
-          disabled: selectMode === 'readOnly' || selectMode === 'inherited' && readOnly,
+          disabled: selectMode === 'readOnly' || (selectMode === 'inherited' && readOnly),
           children: (
             <ParentProvider model={item}>
-              <ComponentsContainer containerId={id} dynamicComponents={model?.isDynamic ? components : []} />
+              <ComponentsContainer
+                containerId={id}
+                dynamicComponents={model?.isDynamic ? components : []}
+              />
             </ParentProvider>
           ),
         };
@@ -163,18 +101,17 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       return tabItems;
     }, [tabs]);
 
-    return model.hidden ? null : (
-      <ConfigProvider
-        theme={{
-          components: {
-            Tabs: {
-              titleFontSize: font.size
-            }
-          },
-        }}
-      >
-        <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={tabPosition} items={items} className={styles.content} />
-      </ConfigProvider>
+    return model.hidden || !items.length ? null : (
+      <Tabs
+        animated={false}
+        activeKey={activeKey}
+        onChange={setActiveKey}
+        size={size}
+        type={tabType}
+        tabPosition={tabPosition}
+        items={items}
+        className={styles.content}
+      />
     );
   },
   initModel: (model) => {
@@ -190,7 +127,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         title: 'Tab 1',
         editMode: 'inherited',
         selectMode: 'editable',
-        components: []
+        components: [],
       }],
     };
     return tabsModel;
@@ -203,7 +140,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     })
     .add<ITabsComponentProps>(1, (prev) => {
       const newModel = { ...prev };
-      newModel.tabs = newModel.tabs.map(x => migrateReadOnly(x, 'inherited'));
+      newModel.tabs = newModel.tabs.map((x) => migrateReadOnly(x, 'inherited'));
       return newModel;
     })
     .add<ITabsComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
@@ -213,10 +150,11 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       const initialCardStyle = { ...defaultCardStyles, font: { ...defaultCardStyles.font, color: '#000000' } };
       return {
         ...newModel,
+        overflow: true,
         card: { ...initialCardStyle },
         desktop: { ...newModel.desktop, card: { ...initialCardStyle } },
         tablet: { ...newModel.tablet, card: { ...initialCardStyle } },
-        mobile: { ...newModel.mobile, card: { ...initialCardStyle } }
+        mobile: { ...newModel.mobile, card: { ...initialCardStyle } },
       };
     }),
   settingsFormMarkup: () => getSettings(),

@@ -1,10 +1,11 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
-    const shaResponsiveButtonGroup = "sha-responsive-button-group";
-    const shaResponsiveButtonGroupInlineContainer = "sha-responsive-button-group-inline-container";
-    const shaButtonMenu = "sha-button-menu";
-    const a = css`
+  const shaResponsiveButtonGroup = "sha-responsive-button-group";
+  const shaResponsiveButtonGroupInlineContainer = "sha-responsive-button-group-inline-container";
+  const shaButtonMenu = "sha-button-menu";
+  const a = css`
+
         .${shaButtonMenu} {
             .${prefixCls}-menu-submenu.${prefixCls}-menu-submenu-popup & {
                 padding: unset !important;
@@ -18,28 +19,29 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
     `;
 
-/*
-// Make sure that all the buttons in the popups are styled like links
-.${prefixCls}-menu-submenu.${prefixCls}-menu-submenu-popup {
-  .sha-button-menu {
-    padding: unset !important;
-    button {
-      color: var(--ant-primary-color) !important;
-      border-color: transparent !important;
-      background: transparent !important;
-      box-shadow: none !important;
+  /*
+  // Make sure that all the buttons in the popups are styled like links
+  .${prefixCls}-menu-submenu.${prefixCls}-menu-submenu-popup {
+    .sha-button-menu {
+      padding: unset !important;
+      button {
+        color: var(--ant-primary-color) !important;
+        border-color: transparent !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
     }
   }
-}
-*/
+  */
 
-    const shaResponsiveButtonGroupContainer = cx("sha-responsive-button-group-container", css`
-        .${shaResponsiveButtonGroup} {
-          line-height: unset;
-          min-height: 30px;
-          .${prefixCls}-menu-item,
-          .${prefixCls}-menu-vertical,
-          .${prefixCls}-menu-submenu,
+  const shaResponsiveButtonGroupContainer = cx("sha-responsive-button-group-container", css`
+
+          .${shaResponsiveButtonGroup} {
+            line-height: unset;
+            min-height: 30px;
+            .${prefixCls}-menu-item,
+            .${prefixCls}-menu-vertical,
+            .${prefixCls}-menu-submenu,
           .${prefixCls}-menu-sub,
           .${prefixCls}-menu-item-only-child {
             padding: unset !important;
@@ -94,11 +96,45 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             }
           }
         }
+
+        > ul {
+          &:empty {
+            display: none;
+          }
+        }
   `);
-    return {
-        shaResponsiveButtonGroupContainer,
-        shaResponsiveButtonGroup,
-        shaResponsiveButtonGroupInlineContainer,
-        a,
-    };
-  });
+
+  const shaHideEmpty = cx("sha-hide-empty", css`
+    &:empty {
+      display: none;
+    }
+    
+    /* Hide when containing empty ul elements */
+    &:has(ul:empty) {
+      display: none;
+    }
+    
+    /* Hide when containing ul with no li children */
+    &:has(ul:not(:has(li))) {
+      display: none;
+    }
+    
+    /* Hide when containing empty ant-btn-group */
+    &:has(.ant-btn-group:empty) {
+      display: none;
+    }
+    
+    /* Hide when containing ant-btn-group with no button children */
+    &:has(.ant-btn-group:not(:has(button))) {
+      display: none;
+    }
+  `);
+
+  return {
+    shaResponsiveButtonGroupContainer,
+    shaResponsiveButtonGroup,
+    shaResponsiveButtonGroupInlineContainer,
+    a,
+    shaHideEmpty,
+  };
+});

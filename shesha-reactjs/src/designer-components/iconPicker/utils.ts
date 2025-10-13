@@ -1,33 +1,34 @@
 import { IStyleType } from '@/index';
 
 export const defaultStyles = (): IStyleType => {
-    return {
-        background: { type: 'color', color: '#fff' },
-        font: {
-            weight: '400',
-            size: 20,
-            color: '#000',
-            type: 'Segoe UI',
+  return {
+    background: { type: 'color', color: '#fff' },
+    font: {
+      weight: '400',
+      size: 24,
+      color: '#000',
+      type: 'Segoe UI',
+    },
+    border: {
+      border: {
+        all: {
+          width: 0,
+          style: 'solid',
+          color: '#ffffff',
         },
-        border: {
-            border: {
-                all: {
-                    width: 1,
-                    style: 'solid',
-                    color: '#d9d9d9',
-                },
-            },
-            radius: { all: 8 },
-            borderType: 'all',
-            radiusType: 'all',
-        },
-        dimensions: {
-            width: '34px',
-            height: '34px',
-            minHeight: '0px',
-            maxHeight: 'auto',
-            minWidth: '0px',
-            maxWidth: 'auto',
-        },
-    };
+      },
+      radius: { all: 8 },
+      borderType: 'all',
+      radiusType: 'all',
+    },
+    dimensions: {
+      width: 'auto',
+      height: 'auto',
+      minHeight: '0px',
+      maxHeight: 'auto',
+      minWidth: '0px',
+      maxWidth: 'auto',
+
+    },
+  };
 };

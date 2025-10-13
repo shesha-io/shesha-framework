@@ -1,9 +1,8 @@
 import ConfigurableButton from './configurableButton';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { BorderOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
-import { getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IButtonComponentProps } from './interfaces';
 import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { IToolboxComponent } from '@/interfaces';
@@ -12,14 +11,7 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { useForm, useFormData, useSheshaApplication } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { removeNullUndefined } from '@/providers/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './util';
 
@@ -32,85 +24,31 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   icon: <BorderOutlined />,
   Factory: ({ model, form }) => {
     const { style, ...restProps } = model;
-    const { formMode } = useForm();
-    const { data } = useFormData();
-    const { backendUrl, httpHeaders } = useSheshaApplication();
-    const { anyOfPermissionsGranted } = useSheshaApplication();
 
-    const fieldModel = {
-      ...restProps,
-      label: null,
-      tooltip: null,
+    const finalStyle = {
+      ...model.allStyles.dimensionsStyles,
+      ...(['primary', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.borderStyles),
+      ...model.allStyles.fontStyles,
+      ...(['dashed', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles.backgroundStyles),
+      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.shadowStyles),
+      ...model.allStyles.stylingBoxAsCSS,
+      ...model.allStyles.jsStyle,
+      justifyContent: model.font?.align,
     };
 
-    const grantedPermission = anyOfPermissionsGranted(restProps?.permissions || []);
-
-    const dimensions = model?.dimensions;
-    const border = model?.border;
-    const font = model?.font;
-    const shadow = model?.shadow;
-    const background = model?.background;
-
-    const jsStyle = useMemo(() => getStyle(model.style, data), [model.style, data]);
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    useEffect(() => {
-      const fetchStyles = async () => {
-
-        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-            .then((response) => {
-              return response.blob();
-            })
-            .then((blob) => {
-              return URL.createObjectURL(blob);
-            }) : '';
-
-        const style = getBackgroundStyle(background, jsStyle, storedImageUrl);
-        setBackgroundStyles(style);
-      };
-
-      fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders, jsStyle]);
-
-
-    if (!grantedPermission && formMode !== 'designer') {
-      return null;
-    }
-
-    const newStyles = {
-      ...dimensionsStyles,
-      ...(['primary', 'default'].includes(model.buttonType) && borderStyles),
-      ...fontStyles,
-      ...(['dashed', 'default'].includes(model.buttonType) && backgroundStyles),
-      ...(['primary', 'default'].includes(model.buttonType) && shadowStyles),
-      ...stylingBoxAsCSS,
-      ...jsStyle,
-      justifyContent: font?.align
-    };
-
-    return (
-      <ConfigurableFormItem model={fieldModel}>
-        <ConfigurableButton
-          {...restProps}
-          readOnly={model.readOnly}
-          block={restProps?.block}
-          style={{ ...removeNullUndefined(newStyles), ...getStyle(style, data) }}
-          form={form}
-        />
-      </ConfigurableFormItem>
+    return model.hidden ? null : (
+      <ConfigurableButton
+        {...restProps}
+        readOnly={model.readOnly}
+        block={restProps?.block}
+        style={finalStyle}
+        form={form}
+      />
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
-  initModel: model => {
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  initModel: (model) => {
     const buttonModel: IButtonComponentProps = {
       ...model,
       label: 'Submit',
@@ -119,16 +57,16 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     };
     return buttonModel;
   },
-  migrator: m =>
+  migrator: (m) =>
     m
-      .add<IButtonGroupItemBaseV0>(0, prev => {
+      .add<IButtonGroupItemBaseV0>(0, (prev) => {
         const buttonModel: IButtonGroupItemBaseV0 = {
           ...prev,
           hidden: prev.hidden,
           label: prev.label ?? 'Submit',
           sortOrder: 0,
           itemType: 'item',
-          name: prev['name']
+          name: prev['name'],
         };
         return buttonModel;
       })
@@ -143,7 +81,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
         ...prev,
         desktop: { ...prev.desktop, buttonType: prev.buttonType || 'default' },
         mobile: { ...prev.mobile, buttonType: prev.buttonType || 'default' },
-        tablet: { ...prev.tablet, buttonType: prev.buttonType || 'default' }
+        tablet: { ...prev.tablet, buttonType: prev.buttonType || 'default' },
       }))
       .add<IButtonComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };

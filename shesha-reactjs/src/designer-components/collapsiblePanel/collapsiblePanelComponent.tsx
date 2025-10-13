@@ -1,31 +1,22 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { CollapsiblePanel, headerType } from '@/components/panel';
+import { CollapsiblePanel } from '@/components/panel';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IToolboxComponent } from '@/interfaces';
-import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { useFormData } from '@/providers';
 import { useForm } from '@/providers/form';
-import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
-import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { nanoid } from '@/utils/uuid';
-import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getSettings } from './settingsForm';
-import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultHeaderStyles, defaultStyles } from './utils';
-
-type PanelContextType = 'parent' | 'child' | undefined;
-
-const PanelContext = createContext<PanelContextType>(undefined);
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentProps> = {
   type: 'collapsiblePanel',
@@ -33,13 +24,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
   name: 'Panel',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
-    const { formMode, formSettings } = useForm();
+    const { formMode } = useForm();
     const { data } = useFormData();
-    const { globalState } = useGlobalState();
-    const { backendUrl, httpHeaders } = useSheshaApplication();
-    const isFormSettings = formSettings?.isSettingsForm;
-    const [finalStyle, setFinalStyle] = useState<React.CSSProperties>({});
-    const [headerFinalStyle, setHeaderFinalStyle] = useState<React.CSSProperties>({});
 
     const {
       label,
@@ -51,74 +37,24 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       bodyColor,
       hideCollapseContent,
       hideWhenEmpty,
-      dimensions,
-      border,
-      font,
-      shadow,
-      headerStyles,
       hasCustomHeader,
       isDynamic,
       customHeader,
       content,
       className,
       hidden,
-      stylingBox
     } = model;
 
-    const panelContextState = useContext(PanelContext);
 
     const evaluatedLabel = useMemo(() => (
       typeof label === 'string' ? evaluateString(label, data) : label
     ), [label, data]);
 
-    const styling = useMemo(() => JSON.parse(stylingBox || '{}'), [stylingBox]);
-    const headerStylingBox = useMemo(() => JSON.parse(headerStyles?.stylingBox || '{}'), [headerStyles?.stylingBox]);
-    const getBodyStyle = useMemo(() => ({
-      ...pickStyleFromModel(styling),
-      ...(getStyle(model?.style, { data, globalState }) || {}),
-    }), [styling, model?.style, data, globalState]);
-
-    const getHeaderStyle = useMemo(() => ({
-      ...(getStyle(model?.headerStyles?.style, { data, globalState }) || {}),
-      ...(pickStyleFromModel(headerStylingBox)),
-    }), [model?.headerStyles?.style, data, globalState, headerStylingBox]);
-
-    const style = useMemo(() => ({
-      ...getSizeStyle(dimensions),
-      ...(!ghost && getBorderStyle(border, getBodyStyle)),
-      ...getFontStyle(font),
-      ...(!ghost && getShadowStyle(shadow)),
-      ...getBodyStyle
-    }), [dimensions, border, font, shadow, getBodyStyle, ghost]);
-
-    const headerStyle = useMemo(() => ({
-      ...getSizeStyle(headerStyles?.dimensions),
-      ...(!ghost && getBorderStyle(headerStyles?.border, getHeaderStyle)),
-      ...getFontStyle(headerStyles?.font),
-      ...getShadowStyle(headerStyles?.shadow),
-      ...getHeaderStyle,
-    }), [headerStyles, getHeaderStyle, ghost]);
-
-    useEffect(() => {
-      const fetchTabStyles = async () => {
-        const background = model?.background;
-        const headerBackground = headerStyles?.background;
-
-        const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
-        const headerStoredImageUrl = await getBackgroundImageUrl(headerBackground, backendUrl, httpHeaders);
-
-        const backgroundStyle = await getBackgroundStyle(background, getBodyStyle, storedImageUrl);
-        const headerBackgroundStyle = await getBackgroundStyle(headerBackground, getHeaderStyle, headerStoredImageUrl);
-
-        setHeaderFinalStyle({ ...headerBackgroundStyle, ...headerStyle });
-        setFinalStyle({ ...backgroundStyle, ...style, overflow: model?.overflow });
-      };
-
-      fetchTabStyles();
-    }, [model.background, headerStyles?.background, backendUrl, httpHeaders, getBodyStyle, getHeaderStyle, style, headerStyle]);
-
     const headerComponents = model?.header?.components ?? [];
 
+    const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? null : model.headerStyles?.border } }).fullStyle;
+
+    const isIconHidden = expandIconPosition === 'hide';
     const extra = ((headerComponents?.length > 0 || formMode === 'designer') && !hasCustomHeader) ? (
       <ComponentsContainer
         containerId={model.header?.id}
@@ -127,53 +63,36 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       />
     ) : null;
 
-    const panelPosition = !!panelContextState ? 'child' : 'parent';
-
-    const headType: headerType = (() => {
-      if (isFormSettings) {
-        return 'default';
-      } else {
-        if (panelPosition === 'parent') {
-          return 'parent';
-        } else {
-          return 'child';
-        };
-      };
-    })();
-
-    if (hidden) return null;
-
-    return (
+    return hidden ? null : (
       <ParentProvider model={model}>
-        <PanelContext.Provider value={panelPosition}>
-          <CollapsiblePanel
-            header={hasCustomHeader ? (
-              <ComponentsContainer
-                containerId={customHeader.id}
-                dynamicComponents={isDynamic ? customHeader?.components : []}
-              />
-            ) : evaluatedLabel}
-            expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'start'}
-            collapsedByDefault={collapsedByDefault}
-            extra={extra}
-            collapsible={collapsible === 'header' ? 'header' : 'icon'}
-            showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
-            ghost={ghost}
-            bodyStyle={finalStyle}
-            headerStyle={headerFinalStyle}
-            className={className}
-            bodyColor={bodyColor}
-            isSimpleDesign={isSimpleDesign}
-            panelHeadType={headType}
-            hideCollapseContent={hideCollapseContent}
-            hideWhenEmpty={hideWhenEmpty}
-          >
+        <CollapsiblePanel
+          header={hasCustomHeader ? (
             <ComponentsContainer
-              containerId={content.id}
-              dynamicComponents={isDynamic ? content.components : []}
+              containerId={customHeader.id}
+              dynamicComponents={isDynamic ? customHeader?.components : []}
             />
-          </CollapsiblePanel>
-        </PanelContext.Provider>
+          ) : evaluatedLabel}
+          expandIconPosition={isIconHidden ? undefined : expandIconPosition}
+          showArrow={collapsible !== 'disabled' && !isIconHidden}
+          collapsedByDefault={collapsedByDefault}
+          extra={extra}
+          collapsible={collapsible === 'header' ? 'header' : 'icon'}
+          ghost={ghost}
+          bodyStyle={model.allStyles.fullStyle}
+          headerStyle={headerStyles}
+          className={className}
+          bodyColor={bodyColor}
+          isSimpleDesign={isSimpleDesign}
+          hideCollapseContent={hideCollapseContent}
+          hideWhenEmpty={hideWhenEmpty}
+          accentStyle={model?.accentStyle}
+          overflowStyle={model.allStyles.overflowStyles}
+        >
+          <ComponentsContainer
+            containerId={content.id}
+            dynamicComponents={isDynamic ? content.components : []}
+          />
+        </CollapsiblePanel>
       </ParentProvider>
     );
   },
@@ -206,7 +125,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           header,
           content,
           collapsible: 'icon',
-          overflow: 'auto',
+          overflow: true,
         };
       })
       .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -224,16 +143,25 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       .add<ICollapsiblePanelComponentProps>(6, (prev) => removeComponents(prev))
       .add<ICollapsiblePanelComponentProps>(7, (prev) => ({
         ...prev,
-        customHeader: { id: nanoid(), components: [] }
+        customHeader: { id: nanoid(), components: [] },
       }))
       .add<ICollapsiblePanelComponentProps>(8, (prev) => {
+        const accentStyle = prev?.overflow === undefined;
+
+        return {
+          ...prev, accentStyle, desktop: { ...prev.desktop, accentStyle },
+          tablet: { ...prev.tablet, accentStyle },
+          mobile: { ...prev.mobile, accentStyle },
+        };
+      })
+      .add<ICollapsiblePanelComponentProps>(9, (prev) => {
         const newModel = migratePrevStyles(prev, defaultStyles(prev));
-        const defaultHeaderStyle = defaultHeaderStyles(prev);
+        const defaultHeaderStyle = { ...defaultHeaderStyles(prev) };
 
         return {
           ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
-          tablet: { ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
-          mobile: { ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle }
+          tablet: { ...newModel.tablet, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle },
+          mobile: { ...newModel.mobile, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle },
         };
       }),
   customContainerNames: ['header', 'content', 'customHeader'],

@@ -4,23 +4,40 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IToolboxComponent } from '@/interfaces';
-import { IFormComponentContainer, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { IFormComponentContainer, StyleBoxValue, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { getLayoutStyle, getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
-import { removeUndefinedProps } from '@/utils/object';
+import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
 import { SplitCellsOutlined } from '@ant-design/icons';
 import { Col, Row } from 'antd';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { IColumnsComponentProps, IColumnsInputProps } from './interfaces';
+import { IColumnProps, IColumnsComponentProps, IColumnsInputProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { nanoid } from '@/utils/uuid';
+import { Property } from 'csstype';
+
+// Validation function to ensure columns don't exceed 24-column limit
+const validateColumns = (columns: IColumnProps[]): IColumnProps[] => {
+  if (!columns || columns.length === 0) return [];
+
+  const totalFlex = columns.reduce((sum, col) => sum + (col.flex || 0), 0);
+
+  // If total is exactly 24 or less, no normalization needed
+  if (totalFlex <= 24) {
+    return columns;
+  }
+
+  console.warn(`Columns component: Total flex value (${totalFlex}) exceeds 24. Columns will wrap to new rows.`);
+
+  return columns;
+};
 
 const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   type: 'columns',
@@ -40,13 +57,13 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     const background = model?.background;
     const jsStyle = getStyle(model.style, data);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
     useEffect(() => {
-      const fetchStyles = async () => {
+      const fetchStyles = async (): Promise<void> => {
         const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
           ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
             { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
@@ -69,31 +86,50 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-    const styling = JSON.parse(model.stylingBox || '{}');
+    const styling = jsonSafeParse<StyleBoxValue>(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
-    const additionalStyles: CSSProperties = removeUndefinedProps({
+    const additionalStyles = removeUndefinedProps({
       ...stylingBoxAsCSS,
       ...dimensionsStyles,
       ...borderStyles,
       ...backgroundStyles,
-      ...shadowStyles
+      ...shadowStyles,
     });
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
+    // Add padding when border is configured to prevent border from touching components
+    const hasBorder = border && !border.hideBorder && (
+      (border.border?.all?.width && border.border.all.width !== '0px' && border.border.all.width !== 0 && border.border.all.width !== '0') ||
+      (border.border?.top?.width && border.border.top.width !== '0px' && border.border.top.width !== 0 && border.border.top.width !== '0') ||
+      (border.border?.right?.width && border.border.right.width !== '0px' && border.border.right.width !== 0 && border.border.right.width !== '0') ||
+      (border.border?.bottom?.width && border.border.bottom.width !== '0px' && border.border.bottom.width !== 0 && border.border.bottom.width !== '0') ||
+      (border.border?.left?.width && border.border.left.width !== '0px' && border.border.left.width !== 0 && border.border.left.width !== '0')
+    );
+
+
+    const hPad = `${((gutterX || 0) / 2) + 8}px`;
+    const vPadTop = `${((gutterY || 0) / 2) + 8}px`;
+    const vPadBottom = `${((gutterY || 0) / 2) + 3}px`; // keep the reduced bottom margin intent
+    const containerPadding = hasBorder
+      ? { paddingTop: vPadTop, paddingLeft: hPad, paddingRight: hPad, paddingBottom: vPadBottom }
+      : {};
+    const boxSizing = hasBorder ? { boxSizing: 'border-box' as Property.BoxSizing } : {};
+    // Validate and normalize columns to prevent overflow
+    const validatedColumns = validateColumns(columns);
+
     return (
-      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...finalStyle }}>
+      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...containerPadding, ...boxSizing, ...finalStyle }}>
         <Row gutter={[gutterX || 0, gutterY || 0]}>
           <ParentProvider model={model}>
-            {columns &&
-              columns.map((col, index) => (
+            {validatedColumns &&
+              validatedColumns.map((col, index) => (
                 <Col
                   key={index}
                   md={col.flex}
                   offset={col.offset}
                   pull={col.pull}
                   push={col.push}
-                  className="sha-designer-column"
                 >
                   <ComponentsContainer
                     containerId={col.id}
@@ -116,7 +152,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
       ],
       gutterX: 12,
       gutterY: 12,
-      stylingBox: "{\"marginBottom\":\"5\"}"
+      stylingBox: "{\"marginBottom\":\"5\"}",
     };
 
     return tabsModel;
@@ -125,22 +161,22 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     m
       .add<IColumnsComponentProps>(
         0,
-        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IColumnsComponentProps
+        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IColumnsComponentProps,
       )
       .add<IColumnsComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<IColumnsComponentProps>(2, (prev) => removeComponents(prev))
       .add<IColumnsComponentProps>(3, (prev) => {
-        const columns = prev.columns.map(c => ({
+        const columns = prev.columns.map((c) => ({
           ...c,
-          components: c.components.map(c => ({
+          components: c.components.map((c) => ({
             ...c,
-            propertyName: c.propertyName || c.id
-          }))
+            propertyName: c.propertyName || c.id,
+          })),
         }));
 
         return {
           ...prev,
-          columns
+          columns,
         };
       })
       .add<IColumnsComponentProps>(4, (prev) => {
@@ -155,9 +191,9 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
           borderRadius: prev.borderRadius,
           border: {
             radius: {
-              all: prev.borderRadius
-            }
-          }
+              all: prev.borderRadius,
+            },
+          },
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })

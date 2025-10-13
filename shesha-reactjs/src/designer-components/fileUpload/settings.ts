@@ -1,7 +1,8 @@
+import { FormRawMarkup } from '@/interfaces';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 
-export const getSettings = () =>
+export const getSettings = (): FormRawMarkup =>
   new DesignerToolbarSettings()
     .addCollapsiblePanel({
       id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
@@ -103,9 +104,9 @@ export const getSettings = () =>
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
             validate: {},
-          }).toJson()
-        ]
-      }
+          }).toJson(),
+        ],
+      },
     })
 
     .addCollapsiblePanel({
@@ -125,9 +126,9 @@ export const getSettings = () =>
             propertyName: 'validate.required',
             parentId: 'root',
             label: 'Required',
-          }).toJson()
-        ]
-      }
+          }).toJson(),
+        ],
+      },
     })
 
     .addCollapsiblePanel({
@@ -161,7 +162,7 @@ export const getSettings = () =>
             label: 'Owner Type',
             labelAlign: 'right',
             dataSourceType: 'url',
-            dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+            dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
             displayPropName: 'displayText',
             keyPropName: 'value',
             mode: 'single',
@@ -172,9 +173,9 @@ export const getSettings = () =>
             label: 'Allowed File Types',
             parentId: 'abc8b8f9-ec00-4d0a-9d2a-44a630cb2dcb',
             description: 'File types that can be accepted.',
-          }).toJson()
-        ]
-      }
+          }).toJson(),
+        ],
+      },
     })
     .addCollapsiblePanel({
       id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
@@ -196,8 +197,9 @@ export const getSettings = () =>
             parentId: 'root',
             hidden: false,
             validate: {},
-          }).toJson()
-        ]
-      }
+            jsSetting: true,
+          }).toJson(),
+        ],
+      },
     })
     .toJson();

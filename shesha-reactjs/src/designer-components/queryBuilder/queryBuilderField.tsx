@@ -17,7 +17,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
 
   const { readOnly = false } = props;
 
-  const onOkClick = () => {
+  const onOkClick = (): void => {
     if (jsonLogicResult) {
       if (jsonLogicResult && jsonLogicResult.errors && jsonLogicResult.errors.length > 0) {
         // show errors
@@ -31,19 +31,18 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
     setModalVisible(false);
   };
 
-  const onChange = (result: JsonLogicResult) => {
-    if (result !== jsonLogicResult)
-      setJsonLogicResult(result);
+  const onChange = (result: JsonLogicResult): void => {
+    if (result !== jsonLogicResult) setJsonLogicResult(result);
   };
 
-  const onExpandClick = () => {
+  const onExpandClick = (): void => {
     setJsonExpanded(!jsonExpanded);
   };
 
   const hasValue = Boolean(props?.value);
 
   return (
-    <>
+    <div className={styles.shaQueryBuilderMarginTop8}>
       <Collapse
         className={styles.shaQueryBuilderField}
         activeKey={jsonExpanded ? '1' : null}
@@ -59,11 +58,10 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
             <span onClick={onExpandClick}>
               show json <CaretRightOutlined rotate={0} />
             </span>
-          )
-        }
+          )}
         items={[
           {
-            key: "1",
+            key: '1',
             label: (
               <Space>
                 <Button type={readOnly ? 'default' : 'primary'} onClick={() => setModalVisible(true)} size="small">
@@ -87,11 +85,12 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
             children: (
               <CodeEditor
                 readOnly={true}
-                value={props.value ? JSON.stringify(props.value, null, 2) : null}
-                language='javascript'
+                value={props.value ? JSON.stringify(props.value, null, 2) : ""}
+                language="javascript"
+                style={{ marginTop: 8 }}
               />
-            )
-          }
+            ),
+          },
         ]}
       >
       </Collapse>
@@ -103,17 +102,13 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
         okButtonProps={{ hidden: readOnly }}
         onCancel={() => setModalVisible(false)}
         cancelText={readOnly ? 'Close' : undefined}
-        destroyOnClose
+        destroyOnHidden
       >
         <h4>Here you can create your own filter using the query builder below</h4>
 
-        <QueryBuilder
-          value={props.value}
-          onChange={onChange}
-          readOnly={readOnly}
-        />
+        <QueryBuilder value={props.value} onChange={onChange} readOnly={readOnly} />
       </Modal>
-    </>
+    </div>
   );
 };
 

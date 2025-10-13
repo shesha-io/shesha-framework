@@ -39,6 +39,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
         .${shaConfigurableComponent} {
           position: relative;
           min-height: 30px;
+          display: block;
       
           &.${shaConfigurableComponentSelected} {
             border: 2px dashed ${token.colorPrimary};
@@ -52,6 +53,8 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
             right: 0;
             z-index: 10;
             cursor: pointer;
+            display: block;
+            min-height: 100%;
 
             .sha-configurable-logo-button-wrapper {
               position: absolute;
@@ -73,7 +76,10 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
               padding: 4px;
               height: 34px;
               overflow-y: hidden;
-              width: 100%
+              width: 100%;
+              position: relative;
+              z-index: 11;
+              pointer-events: auto;
             }
             
             .sha-configurable-view-details {
@@ -89,6 +95,9 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
               top: 3px;
               left: calc(50% - 14px);
               border: none;
+              z-index: 12;
+              display: block;
+              visibility: visible;
             }
 
           .lite{
@@ -98,6 +107,19 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
             height: 100%;
             padding: 20px;
             padding-top: 10px;
+            position: relative;
+            
+            > button {
+              color: #ffffff;
+              background-color: #14A38B;
+              height: 28px;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              border: none;
+              z-index: 12;
+            }
           } 
       
           .${shaConfigurableComponentOverlay}:after {

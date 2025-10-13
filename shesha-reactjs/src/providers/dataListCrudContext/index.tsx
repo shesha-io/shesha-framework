@@ -86,7 +86,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
   const toolboxComponents = useFormDesignerComponents();
 
-  const switchModeInternal = (mode: CrudMode, allowChangeMode: boolean) => {
+  const switchModeInternal = (mode: CrudMode, allowChangeMode: boolean): void => {
     if (mode === 'read')
       setFormMode('readonly');
     if (mode === 'update' || mode === 'create')
@@ -94,7 +94,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     dispatch(switchModeAction({ mode, allowChangeMode }));
   };
 
-  const switchMode = (mode: CrudMode) => {
+  const switchMode = (mode: CrudMode): void => {
     if (state.allowChangeMode) switchModeInternal(mode, state.allowChangeMode);
   };
 
@@ -109,11 +109,11 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
       switchModeInternal(modeToUse, allowChangeMode);
   }, [mode, allowChangeMode]);
 
-  const setInitialValuesLoading = (loading: boolean) => {
+  const setInitialValuesLoading = (loading: boolean): void => {
     dispatch(setInitialValuesLoadingAction(loading));
   };
 
-  const setInitialValues = (values: object) => {
+  const setInitialValues = (values: object): void => {
     dispatch(setInitialValuesAction(values));
   };
 
@@ -134,7 +134,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   //#region Allow Edit/Delete/Create
 
-  const setAllowEdit = (allowEdit: boolean) => {
+  const setAllowEdit = (allowEdit: boolean): void => {
     dispatch(setAllowEditAction(allowEdit));
   };
 
@@ -142,7 +142,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     if (state.allowEdit !== allowEdit) setAllowEdit(allowEdit);
   }, [allowEdit]);
 
-  const setAllowDelete = (allowDelete: boolean) => {
+  const setAllowDelete = (allowDelete: boolean): void => {
     dispatch(setAllowDeleteAction(allowDelete));
   };
 
@@ -152,7 +152,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   //#endregion
 
-  const resetErrors = () => {
+  const resetErrors = (): void => {
     dispatch(resetErrorsAction());
   };
 
@@ -163,7 +163,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     };
   };
 
-  const performSave = (processor: DataProcessor, updateType: string) => {
+  const performSave = (processor: DataProcessor, updateType: string): Promise<any> => {
     if (!processor) return Promise.reject('`processor` must be defined');
 
     dispatch(saveStartedAction());
@@ -178,8 +178,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           filterDataByOutputComponents(
             mergedData,
             props.formFlatMarkup.allComponents,
-            toolboxComponents
-          )
+            toolboxComponents,
+          ),
         );
         // send data of stored files
         const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
@@ -204,7 +204,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
       });
   };
 
-  const performUpdate = () => {
+  const performUpdate = (): Promise<any> => {
     if (!updater) return Promise.reject('CrudProvider: `updater` property is not specified');
 
     return performSave(updater, 'Update');
@@ -215,16 +215,16 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
       performUpdate();
     },
     // delay in ms
-    300
+    300,
   );
 
-  const performCreate = () => {
+  const performCreate = (): Promise<any> => {
     if (!creater) return Promise.reject('CrudProvider: `creater` property is not specified');
 
     return performSave(creater, 'Create');
   };
 
-  const performDelete = async () => {
+  const performDelete = async (): Promise<void> => {
     if (!deleter) throw 'CrudProvider: `deleter` property is not specified';
 
     dispatch(deleteStartedAction());
@@ -238,21 +238,21 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     }
   };
 
-  const reset = async () => {
+  const reset = async (): Promise<void> => {
     await form.resetFields();
     resetErrors();
   };
 
-  const getFormData = () => {
+  const getFormData = (): object => {
     return form.getFieldsValue();
   };
-  const getInitialData = () => {
+  const getInitialData = (): any => {
     return state.initialValues;
   };
 
   const autoSaveEnqueued = useRef<boolean>(false);
 
-  const handleFocusIn = () => {
+  const handleFocusIn = (): void => {
     if (autoSaveEnqueued.current === true) {
       autoSaveEnqueued.current = false;
       // auto save
@@ -260,7 +260,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     }
   };
 
-  const onValuesChangeInternal = (_changedValues: any, values: any) => {
+  const onValuesChangeInternal = (_changedValues: any, values: any): void => {
     // recalculate components visibility
     setFormData({ values, mergeValues: true });
 
@@ -302,7 +302,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
         onValuesChange={onValuesChangeInternal}
         {...props.formSettings}
       >
-        <ParentProvider model={{ componentName: 'ListItem', editMode: parentMode, readOnly: state.mode === "read" }} isScope >
+        <ParentProvider model={{ componentName: 'ListItem', editMode: parentMode, readOnly: state.mode === "read" }} isScope>
           {children}
         </ParentProvider>
       </Form>
@@ -327,7 +327,7 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
         formFlatMarkup: formFlatMarkup,
         formSettings: formSettings,
       });
-    }
+    },
   });
 
   return (
@@ -335,7 +335,7 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
       <ShaForm.MarkupProvider markup={formFlatMarkup}>
         <FormProvider
           form={form}
-          name={''}
+          name=""
           formSettings={formSettings}
           mode={mode === 'read' ? 'readonly' : 'edit'}
           isActionsOwner={false}
@@ -350,7 +350,7 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
   );
 };
 
-function useDataListCrud(require: boolean = true) {
+function useDataListCrud(require: boolean = true): ICrudContext | undefined {
   const context = useContext(CrudContext);
 
   if (context === undefined && require) {

@@ -1,12 +1,11 @@
 import React, { FC, PropsWithChildren } from 'react';
-import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import {
   Form,
   FormInstance,
   Result,
-  Skeleton
+  Skeleton,
 } from 'antd';
-import { FormDesignerProvider, useFormDesignerState } from '@/providers/formDesigner';
+import { FormDesignerProvider, useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { FormIdentifier } from '@/providers/form/models';
 import { FormPersisterProvider } from '@/providers/formPersisterProvider';
 import { FormPersisterStateConsumer } from '@/providers/formPersisterProvider/contexts';
@@ -21,7 +20,9 @@ export interface IFormProviderWrapperProps extends PropsWithChildren {
 }
 
 const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = ({ form, children }) => {
-  const { formSettings, formFlatMarkup } = useFormDesignerState();
+  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
+  const formFlatMarkup = useFormDesignerStateSelector((x) => x.formFlatMarkup);
+
   const [shaForm] = useShaForm({
     form: undefined,
     antdForm: form,
@@ -32,7 +33,7 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
         formFlatMarkup,
         formArguments: undefined,
       });
-    }
+    },
   });
 
   return (
@@ -67,7 +68,7 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
   return (
     <FormPersisterProvider formId={formId} skipCache={true}>
       <FormPersisterStateConsumer>
-        {formStore => {
+        {(formStore) => {
           if (formStore.loading)
             return (<Skeleton loading active />);
 
@@ -77,7 +78,7 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
               <FormDesignerProvider
                 flatMarkup={flatStructure}
                 formSettings={settings}
-                readOnly={formStore.formProps?.versionStatus !== ConfigurationItemVersionStatus.Draft}
+                readOnly={false}
               >
                 <FormProviderWrapperInner form={form}>
                   {children}
@@ -92,7 +93,8 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
                 status={formStore.loadError.code as ResultStatusType}
                 title={formStore.loadError.code}
                 subTitle={formStore.loadError.message}
-              />);
+              />
+            );
 
           return null;
         }}

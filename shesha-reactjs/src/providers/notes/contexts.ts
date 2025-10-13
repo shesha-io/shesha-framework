@@ -2,24 +2,24 @@ import { NoteDto } from '@/apis/note';
 import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { createNamedContext } from '@/utils/react';
 
-export type IFlagProgressFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
-export type IFlagSucceededFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes' /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
-export type IFlagErrorFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes' /* NEW_ERROR_FLAG_GOES_HERE */;
-export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
+export type IFlagProgressFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes';
+export type IFlagSucceededFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes';
+export type IFlagErrorFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes';
+export type IFlagActionedFlags = '__DEFAULT__';
 
 export interface INoteSettings {
   ownerId: string;
   ownerType: string;
-  category?: number;
+  category?: string;
   allCategories?: boolean;
 }
 
-export interface INote extends NoteDto {}
+export type INote = NoteDto;
 
 export interface ICreateNotePayload {
   ownerId?: string;
   ownerType?: string;
-  category?: number;
+  category?: string;
   priority?: number;
   parentId?: string;
   noteText: string;
@@ -42,6 +42,7 @@ export interface INotesActionsContext
   deleteNotes: (selectedCommentId: string) => void;
   refreshNotes: () => void;
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
+  updateNotes: (payload: ICreateNotePayload) => void;
 }
 
 export const COMMENTS_CONTEXT_INITIAL_STATE: INotesStateContext = {

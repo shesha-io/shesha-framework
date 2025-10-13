@@ -1,9 +1,9 @@
 using Abp.Domain.Repositories;
+using Abp.Threading;
 using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Extensions;
-using Shesha.Utilities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,16 +17,14 @@ namespace Boxfusion.Authorization
     {
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _rolePersonRepository;
-        private readonly IRepository<ShaRoleAppointmentEntity, Guid> _appEntityRepository;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public SheshaWebCorePermissionChecker(IRepository<Person, Guid> personRepository, IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository, IRepository<ShaRoleAppointmentEntity, Guid> appEntityRepository)
+        public SheshaWebCorePermissionChecker(IRepository<Person, Guid> personRepository, IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository)
         {
             _personRepository = personRepository;
             _rolePersonRepository = rolePersonRepository;
-            _appEntityRepository = appEntityRepository;
         }
 
         /// inheritedDoc
@@ -46,9 +44,9 @@ namespace Boxfusion.Authorization
         }
 
         /// inheritedDoc
-        public async Task<bool> IsInAnyOfRolesAsync(Person person, params string[] roles)
+        public Task<bool> IsInAnyOfRolesAsync(Person person, params string[] roles)
         {
-            return await _rolePersonRepository.GetAll()
+            return _rolePersonRepository.GetAll()
                 .Where(e => e.Role != null && roles.Contains(e.Role.Name) && e.Person == person)
                 .AnyAsync();
         }
@@ -58,9 +56,9 @@ namespace Boxfusion.Authorization
         /// </summary>
         /// <param name="person"></param>
         /// <returns></returns>
-        public async Task<bool> IsDataAdministratorAsync(Person person)
+        public Task<bool> IsDataAdministratorAsync(Person person)
         {
-            return await IsInAnyOfRolesAsync(person, RoleNames.SystemAdministrator);
+            return IsInAnyOfRolesAsync(person, RoleNames.SystemAdministrator);
         }
 
         public bool IsGranted(long userId, string permissionName)
@@ -68,9 +66,9 @@ namespace Boxfusion.Authorization
             return AsyncHelper.RunSync(() => IsGrantedAsync(userId, permissionName));
         }
 
-        public async Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        public Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
         {
-            return await IsGrantedAsync(userId, permissionName);
+            return IsGrantedAsync(userId, permissionName);
         }
 
         public bool IsGranted(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)

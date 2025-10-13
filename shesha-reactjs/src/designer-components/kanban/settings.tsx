@@ -1,5 +1,5 @@
 import { Autocomplete, CodeEditor, ColorPicker, FormAutocomplete, PropertyAutocomplete, Show } from '@/components';
-import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal';
+import RefListItemSelectorSettingsModal from '@/components/refListSelectorDisplay/options/modal';
 import { Checkbox, Input } from 'antd';
 import React, { FC } from 'react';
 import SettingsForm, { useSettingsForm } from '../_settings/settingsForm';
@@ -9,9 +9,7 @@ import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
 import { MetadataProvider } from '@/providers';
 import { IKanbanProps } from '@/components/kanban/model';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
-import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
-
-interface IKanbanSettingsState extends IKanbanProps { }
+import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 
 const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
   const { values } = useSettingsForm<IKanbanProps>();
@@ -26,7 +24,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
     <>
       <SettingsCollapsiblePanel header="Display">
         <SettingsFormItem key="entityType" name="entityType" label="Entity Type" jsSetting>
-          <Autocomplete dataSourceType="url" dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" />
+          <Autocomplete dataSourceType="url" dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete" />
         </SettingsFormItem>
         <SettingsFormItem name="componentName" label="Component Name" required>
           <Input readOnly={readOnly} />
@@ -53,7 +51,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
           <Autocomplete
             dataSourceType="entitiesList"
             entityType="Shesha.Framework.ReferenceList"
-            filter={{ "and": [{ "==": [{ "var": "isLast" }, true] }] }}
+            filter={{ and: [{ "==": [{ var: "isLast" }, true] }] }}
             readOnly={values.readOnly}
           />
         </SettingsFormItem>
@@ -177,5 +175,5 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
 };
 
 export const KanbanSettingsForm: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
-  return SettingsForm<IKanbanSettingsState>({ ...props, children: <KanbanSettings {...props} /> });
+  return SettingsForm({ ...props, children: <KanbanSettings {...props} /> });
 };

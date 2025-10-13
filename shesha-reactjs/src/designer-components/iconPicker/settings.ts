@@ -80,7 +80,7 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
             propertyName: 'description',
             parentId: 'root',
             label: 'Description',
-          }).toJson()
+          }).toJson(),
       ],
     },
   })
@@ -131,13 +131,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     content: {
       id: 'pnl24bf6-f76d-4139-a850-cbf06c8b71',
       components: [...new DesignerToolbarSettings()
-        .addIconPicker({
-          id: nanoid(),
-          propertyName: 'defaultValue',
-          label: 'Default Icon',
-          labelAlign: 'left',
-          jsSetting: true
-        })
         .addColorPicker({
           id: nanoid(),
           propertyName: 'color',
@@ -168,7 +161,7 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           id: nanoid(),
           propertyName: 'fontSize',
           label: 'Size',
-          defaultValue: 24
+          defaultValue: 24,
         })
         .addColorPicker({
           id: nanoid(),
@@ -185,9 +178,9 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           validate: {},
           settingsValidationErrors: [],
           jsSetting: false,
-        }).toJson()
-      ]
-    }
+        }).toJson(),
+      ],
+    },
   })
   .addCollapsiblePanel({
     id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
@@ -209,9 +202,10 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           parentId: 'root',
           hidden: false,
           validate: {},
-        }).toJson()
-      ]
-    }
+          jsSetting: true,
+        }).toJson(),
+      ],
+    },
   })
   .toJson();
 

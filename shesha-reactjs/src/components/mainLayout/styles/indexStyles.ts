@@ -12,7 +12,6 @@ export const GlobalSheshaStyles = createGlobalStyle`
       align-items: center;
 
       min-height: ${shaPageHeadingHeight};
-      max-height: ${shaPageHeadingHeight};
       background: white;
 
       &.fixed-heading {
@@ -89,6 +88,15 @@ export const GlobalSheshaStyles = createGlobalStyle`
     }
   }
 
+  .sha-form-settings-editor .ant-form-item .ant-row.ant-form-item-row {
+   margin-bottom: 0px !important;
+   .ant-form-item-control-input{
+     display: inline !important;
+    }
+  }
+
+
+
   .sha-form-designer {
     .sha-index-toolbar {
       max-height: unset !important;
@@ -126,6 +134,10 @@ export const GlobalSheshaStyles = createGlobalStyle`
       .ant-tabs-dropdown {
       --ant-tabs-z-index-popup: 2000 !important;
       z-index: 2000 !important;
+      }
+      .ant-dropdown-menu-submenu-title {
+        display: flex !important;
+        align-items: center !important;
       }
     }
   }

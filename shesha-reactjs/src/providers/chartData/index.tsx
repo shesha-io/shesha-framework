@@ -1,58 +1,67 @@
-import { IChartData, IChartsProps, IFilter } from "@/designer-components/charts/model";
-import React, { FC, PropsWithChildren, useContext, useReducer } from "react";
-import { SetChartFiltersAction, SetControlPropsAction, SetDataAction, SetFilterdDataAction, SetIsFilterVisibleAction, SetIsLoadedAction, SetUrlTypeDataAction } from "./actions";
-import { ChartDataActionsContext, ChartDataStateContext, INITIAL_STATE } from "./context";
+import { IChartProps } from "@/designer-components/charts/model";
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from "react";
+import { CleanDataAction, SetAxisPropertyLabelAction, SetControlPropsAction, SetDataAction, SetIsLoadedAction, SetUrlTypeDataAction, SetValuePropertyLabelAction } from "./actions";
+import { ChartDataActionsContext, ChartDataStateContext, IChartDataAtionsContext, IChartDataContext, INITIAL_STATE } from "./context";
 import { chartDataReducer } from "./reducer";
 
-const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChildren<{}>) => {
-  const [state, dispatch] = useReducer(chartDataReducer, INITIAL_STATE);
+interface IChartDataProviderProps {
+  model: IChartProps;
+}
 
-  const setData = (data: IChartData[]) => {
-    dispatch(SetDataAction(data));
-  };
+const ChartDataProvider: FC<PropsWithChildren<IChartDataProviderProps>> = ({ children, model }) => {
+  const [state, dispatch] = useReducer(chartDataReducer, { ...INITIAL_STATE, ...model });
 
-  const setFilterdData = (filteredData: object[]) => {
-    dispatch(SetFilterdDataAction(filteredData));
-  };
-
-  const setChartFilters = (filters: IFilter[]) => {
-    dispatch(SetChartFiltersAction(filters));
-  };
-
-  const setIsLoaded = (isLoaded: boolean) => {
-    dispatch(SetIsLoadedAction(isLoaded));
-  };
-
-  const setIsFilterVisible = (isFilterVisible: boolean) => {
-    dispatch(SetIsFilterVisibleAction(isFilterVisible));
-  };
-
-  const setControlProps = (controlProps: IChartsProps) => {
+  const setControlProps = (controlProps: IChartProps): void => {
     dispatch(SetControlPropsAction(controlProps));
   };
 
-  const setUrlTypeData = (urlTypeData: object) => {
+  useEffect(() => {
+    dispatch(SetControlPropsAction(model));
+  }, [model]);
+
+  const setData = (data: object[]): void => {
+    dispatch(SetDataAction(data));
+  };
+
+  const setIsLoaded = (isLoaded: boolean): void => {
+    dispatch(SetIsLoadedAction(isLoaded));
+  };
+
+  const setUrlTypeData = (urlTypeData: object): void => {
     dispatch(SetUrlTypeDataAction(urlTypeData));
+  };
+
+  const cleanData = (): void => {
+    dispatch(CleanDataAction());
+  };
+
+  const setAxisPropertyLabel = (axisPropertyLabel: string): void => {
+    dispatch(SetAxisPropertyLabelAction(axisPropertyLabel));
+  };
+
+  const setValuePropertyLabel = (valuePropertyLabel: string): void => {
+    dispatch(SetValuePropertyLabelAction(valuePropertyLabel));
   };
 
   return (
     <ChartDataStateContext.Provider value={state}>
       <ChartDataActionsContext.Provider value={{
         setData,
-        setFilterdData,
-        setChartFilters,
         setIsLoaded,
-        setIsFilterVisible,
         setControlProps,
-        setUrlTypeData
-      }}>
+        setUrlTypeData,
+        cleanData,
+        setAxisPropertyLabel,
+        setValuePropertyLabel,
+      }}
+      >
         {children}
       </ChartDataActionsContext.Provider>
     </ChartDataStateContext.Provider>
   );
 };
 
-export const useChartDataStateContext = () => {
+export const useChartDataStateContext = (): IChartDataContext => {
   const context = useContext(ChartDataStateContext);
   if (!context) {
     throw new Error("useChartDataStateContext must be used within a ChartDataProvider");
@@ -60,7 +69,7 @@ export const useChartDataStateContext = () => {
   return context;
 };
 
-export const useChartDataActionsContext = () => {
+export const useChartDataActionsContext = (): IChartDataAtionsContext => {
   const context = useContext(ChartDataActionsContext);
   if (!context) {
     throw new Error("useChartDataActionsContext must be used within a ChartDataProvider");
@@ -68,4 +77,4 @@ export const useChartDataActionsContext = () => {
   return context;
 };
 
-export default ChartDataProvider;
+export default React.memo(ChartDataProvider);

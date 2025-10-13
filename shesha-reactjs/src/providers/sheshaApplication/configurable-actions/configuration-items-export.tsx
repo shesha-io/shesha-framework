@@ -3,7 +3,7 @@ import React, {
   FC,
   MutableRefObject,
   useRef,
-  useState
+  useState,
 } from 'react';
 import { Button, App } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
@@ -14,12 +14,13 @@ import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { ValidationErrors } from '@/components';
 import _ from 'lodash';
+import { isDefined } from '@/utils/nullables';
 
 const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsExportFooterProps {
   hideModal: () => void;
-  exporterRef: MutableRefObject<IExportInterface>;
+  exporterRef: MutableRefObject<IExportInterface | undefined>;
 }
 
 export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterProps> = (props) => {
@@ -27,8 +28,11 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
   const { notification } = App.useApp();
   const { hideModal, exporterRef } = props;
 
-  const onExport = () => {
+  const onExport = (): void => {
     setInProgress(true);
+
+    if (!isDefined(exporterRef.current))
+      throw new Error('exporterRef is not defined');
 
     exporterRef.current.exportExecuter().then(() => {
       hideModal();
@@ -36,7 +40,7 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
       notification.error({
         message: "Failed to export package",
         icon: null,
-        description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
+        description: <ValidationErrors error={error} renderMode="raw" defaultMessage="" />,
       });
       setInProgress(false);
     });
@@ -44,13 +48,13 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
 
   return (
     <>
-      <Button type='default' onClick={hideModal}>Cancel</Button>
-      <Button type='primary' icon={<ExportOutlined />} onClick={onExport} loading={inProgress}>Export</Button>
+      <Button type="default" onClick={hideModal}>Cancel</Button>
+      <Button type="primary" icon={<ExportOutlined />} onClick={onExport} loading={inProgress}>Export</Button>
     </>
   );
 };
 
-export const useConfigurationItemsExportAction = () => {
+export const useConfigurationItemsExportAction = (): void => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
   const exporterRef = useRef<IExportInterface>();
@@ -64,13 +68,12 @@ export const useConfigurationItemsExportAction = () => {
       const modalId = nanoid();
 
       return new Promise((resolve, reject) => {
-
-        const hideModal = () => {
+        const hideModal = (): void => {
           reject();
           removeModal(modalId);
         };
 
-        const onExported = () => {
+        const onExported = (): void => {
           removeModal(modalId);
           resolve(true);
         };
@@ -78,7 +81,7 @@ export const useConfigurationItemsExportAction = () => {
         const modalProps: ICommonModalProps = {
           ...actionArgs,
           id: modalId,
-          title: "Export Configuration Items",
+          title: "Export Configuration",
           isVisible: true,
           showModalFooter: false,
           width: "60%",
@@ -90,7 +93,7 @@ export const useConfigurationItemsExportAction = () => {
             }
           },
           content: <ConfigurationItemsExport onExported={onExported} exportRef={exporterRef} />,
-          footer: <ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />
+          footer: <ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />,
         };
         createModal({ ...modalProps });
       });

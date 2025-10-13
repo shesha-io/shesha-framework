@@ -10,11 +10,12 @@ import { IConfigurableActionConfiguration, useConfigurableAction } from '@/provi
 import { IKeyValue } from '@/interfaces/keyValue';
 import { mapKeyValueToDictionary } from '@/utils/dictionary';
 import { navigateArgumentsForm } from './actions/navigate-arguments';
-import { ShaRouting, ShaRoutingActionsContext, ShaRoutingStateContext } from './contexts';
+import { IShaRoutingActionsContext, IShaRoutingStateContext, ShaRouting, ShaRoutingActionsContext, ShaRoutingStateContext } from './contexts';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 
 export type NavigationType = 'url' | 'form';
 
+const SCRIPT_ACTION_NAME = 'Execute Script';
 const NAVIGATE_ACTION_NAME = 'Navigate';
 const LOGGED_IN_DYNAMIC_PAGE = 'dynamic';
 const ANONYMOUS_DYNAMIC_PAGE = 'no-auth';
@@ -38,6 +39,10 @@ export interface INavigateActoinArguments {
   queryParameters?: IKeyValue[];
 }
 
+export interface IScriptActionArguments {
+  expression: string;
+}
+
 interface ShaRoutingProviderProps {
   router: IRouter;
   getFormUrlFunc?: (formId: FormIdentifier, isLoggedIn: boolean) => string;
@@ -45,11 +50,11 @@ interface ShaRoutingProviderProps {
 }
 
 const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ children, router, getFormUrlFunc, getIsLoggedIn }) => {
-  const goingToRoute = (route: string) => {
+  const goingToRoute = (route: string): void => {
     router?.push(route);
   };
 
-  const getFormUrl = (formId: FormIdentifier) => {
+  const getFormUrl = (formId: FormIdentifier): string => {
     const isLoggedIn = getIsLoggedIn();
     if (getFormUrlFunc)
       return getFormUrlFunc(formId, isLoggedIn);
@@ -76,7 +81,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
       return Promise.reject("Both router and windows are not defined");
   };
 
-  const prepareUrl = (url: string, queryParameters?: IKeyValue[]) => {
+  const prepareUrl = (url: string, queryParameters?: IKeyValue[]): string => {
     const queryParams = mapKeyValueToDictionary(queryParameters);
     return buildUrl(url, queryParams);
   };
@@ -110,7 +115,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
       },
       argumentsFormMarkup: navigateArgumentsForm,
     },
-    actionDependencies
+    actionDependencies,
   );
 
   return (
@@ -128,7 +133,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
   );
 };
 
-function useShaRoutingState(require: boolean = true) {
+function useShaRoutingState(require: boolean = true): IShaRoutingStateContext | undefined {
   const context = useContext(ShaRoutingStateContext);
 
   if (require && context === undefined) {
@@ -138,7 +143,7 @@ function useShaRoutingState(require: boolean = true) {
   return context;
 }
 
-function useShaRoutingActions(require: boolean = true) {
+function useShaRoutingActions(require: boolean = true): IShaRoutingActionsContext | undefined {
   const context = useContext(ShaRoutingActionsContext);
 
   if (require && context === undefined) {
@@ -148,9 +153,9 @@ function useShaRoutingActions(require: boolean = true) {
   return context;
 }
 
-const useShaRouting = (require: boolean = true): ShaRouting => {
-  const actionsContext = useShaRoutingActions(require);
-  const stateContext = useShaRoutingState(require);
+const useShaRoutingOrUndefined = (): ShaRouting | undefined => {
+  const actionsContext = useShaRoutingActions(false);
+  const stateContext = useShaRoutingState(false);
 
   // useContext() returns initial state when provider is missing
   // initial context state is useless especially when require == true
@@ -160,8 +165,19 @@ const useShaRouting = (require: boolean = true): ShaRouting => {
     : undefined;
 };
 
+const useShaRouting = (): ShaRouting => {
+  const context = useShaRoutingOrUndefined();
+  if (context === undefined) {
+    throw new Error('useShaRouting must be used within a ShaRoutingProvider');
+  }
+  return context;
+};
+
 const isNavigationActionConfiguration = (actionConfig: IConfigurableActionConfiguration): actionConfig is IConfigurableActionConfiguration<INavigateActoinArguments> => {
   return actionConfig && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === NAVIGATE_ACTION_NAME;
 };
+const isScriptActionConfiguration = (actionConfig: IConfigurableActionConfiguration): actionConfig is IConfigurableActionConfiguration<IScriptActionArguments> => {
+  return actionConfig && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === SCRIPT_ACTION_NAME;
+};
 
-export { ShaRoutingProvider, useShaRouting, useShaRoutingActions, useShaRoutingState, isNavigationActionConfiguration, type IRouter };
+export { ShaRoutingProvider, useShaRouting, useShaRoutingOrUndefined, useShaRoutingActions, useShaRoutingState, isNavigationActionConfiguration, isScriptActionConfiguration, type IRouter };

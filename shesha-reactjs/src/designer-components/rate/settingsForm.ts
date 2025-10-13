@@ -2,8 +2,9 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { IRateProps } from '.';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: IRateProps) => {
+export const getSettings = (data: IRateProps): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
@@ -34,7 +35,7 @@ export const getSettings = (data: IRateProps) => {
                   styledLabel: true,
                   validate: { required: true },
                   size: 'small',
-                  jsSetting: true
+                  jsSetting: true,
                 })
                 .addLabelConfigurator({
                   id: nanoid(),
@@ -57,7 +58,6 @@ export const getSettings = (data: IRateProps) => {
                     },
                   ],
                   hidden: { _code: 'return  getSettingValue(data?.hideLabel);', _mode: 'code', _value: false } as any,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -78,12 +78,10 @@ export const getSettings = (data: IRateProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
-                  readOnly: { _code: `return getSettingValue(data.readOnly)`, _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'editModeSelector',
@@ -102,29 +100,56 @@ export const getSettings = (data: IRateProps) => {
                       size: 'small',
                       defaultValue: 'inherit',
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
+            key: 'events',
+            title: 'Events',
+            id: eventsTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  parentId: securityTabId,
+                  inputType: 'codeEditor',
+                  propertyName: 'onChangeCustom',
+                  label: 'On Change',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on changing of event.',
+                  parentId: eventsTabId,
                 })
-                .toJson()
-            ]
+                .addSettingsInput({
+                  id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
+                  inputType: 'codeEditor',
+                  propertyName: 'onFocusCustom',
+                  label: 'On Focus',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on focus of event.',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                })
+                .addSettingsInput({
+                  id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
+                  inputType: 'codeEditor',
+                  propertyName: 'onBlurCustom',
+                  label: 'On Blur',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on blur of event.',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                })
+                .addSettingsInput({
+                  id: '1232d96c-b808-4316-8a36-701b09e5f6c7',
+                  inputType: 'codeEditor',
+                  propertyName: 'onClickCustom',
+                  label: 'On Click',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on click of event.',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                })
+                .toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -143,14 +168,14 @@ export const getSettings = (data: IRateProps) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
+                    _value: "",
                   },
                   components: [
                     ...new DesignerToolbarSettings()
                       .addCollapsiblePanel({
                         id: 'customStyleCollapsiblePanel',
                         propertyName: 'customStyle',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: 'styleRouter',
@@ -159,7 +184,6 @@ export const getSettings = (data: IRateProps) => {
                           id: nanoid(),
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
@@ -167,43 +191,42 @@ export const getSettings = (data: IRateProps) => {
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
-                      .toJson()
-                  ]
+                      .toJson(),
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
-            key: 'events',
-            title: 'Events',
-            id: eventsTabId,
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onChangeCustom',
-                  label: 'On Change',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
-                  parentId: eventsTabId
+                  inputType: 'permissions',
+                  propertyName: 'permissions',
+                  label: 'Permissions',
+                  size: 'small',
+                  jsSetting: true,
+                  parentId: securityTabId,
                 })
-                .toJson()
-            ]
-          }
-        ]
+                .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

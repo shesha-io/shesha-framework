@@ -19,7 +19,7 @@ const tabSettingsMarkup = itemSettings as FormMarkup;
 const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
   const { readOnly } = props;
 
-  const onAddNewItem = (items) => {
+  const onAddNewItem = (items): ITabPaneProps => {
     const count = (items ?? []).length;
     const id = nanoid();
     const buttonProps: ITabPaneProps = {
@@ -37,7 +37,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
 
   return (
     <>
-      <SettingsCollapsiblePanel header='Display'>
+      <SettingsCollapsiblePanel header="Display">
         <SettingsFormItem name="componentName" label="Component name" required={true}>
           <Input />
         </SettingsFormItem>
@@ -83,7 +83,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
             itemRenderer={({ item }) => ({
               label: item.title || item.label || item.name,
               description: item.tooltip,
-              icon: item.icon
+              icon: item.icon,
             })}
             buttonText={readOnly ? "View Tab Panes" : "Configure Tab Panes"}
             modalSettings={{
@@ -95,7 +95,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="Style" >
+      <SettingsCollapsiblePanel header="Style">
         <SettingsFormItem
           label="Style"
           name="style"

@@ -6,6 +6,10 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
 {
     public class NotificationDto
     {
+        public string? SchoolId { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public EntityDto<Guid>? Type { get; set; }
         /// <summary>
         /// 

@@ -4,7 +4,7 @@ import { IStoredFileStateContext } from './contexts';
 
 export function storedFilesReducer(
   incomingState: IStoredFileStateContext,
-  action: ReduxActions.Action<IStoredFileStateContext>
+  action: ReduxActions.Action<IStoredFileStateContext>,
 ): IStoredFileStateContext {
   //#region Register flags reducer
   const state = flagsReducer(incomingState, action);
@@ -27,14 +27,14 @@ export function storedFilesReducer(
     case StoredFileActionEnums.FileViewRequest:
     case StoredFileActionEnums.FileViewSuccess:
     case StoredFileActionEnums.FileViewError:
-      /* NEW_ACTION_ENUM_GOES_HERE */
+    /* NEW_ACTION_ENUM_GOES_HERE */
 
       return {
         ...state,
         ...payload,
       };
 
-    case StoredFileActionEnums.DeleteFileSuccess: 
+    case StoredFileActionEnums.DeleteFileSuccess:
       return {
         ...state,
         fileInfo: null,
@@ -45,7 +45,7 @@ export function storedFilesReducer(
           ...state,
           fileInfo: null,
         };
-      
+
       return state;
     }
     default: {

@@ -1,13 +1,19 @@
 ﻿using AutoMapper;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Mapper;
+using Shesha.Tests.Fixtures;
 using System;
 using Xunit;
 
 namespace Shesha.Tests.DynamicEntities
 {
-    public class NumericToEnumTypeConverter_Test: SheshaNhTestBase
+    [Collection(SqlServerCollection.Name)]
+    public class NumericToEnumTypeConverter_Test : SheshaNhTestBase
     {
+        public NumericToEnumTypeConverter_Test(SqlServerFixture fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public void ConvertInt64ToPersonTitle_Test()
         {

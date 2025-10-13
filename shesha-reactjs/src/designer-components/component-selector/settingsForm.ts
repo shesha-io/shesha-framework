@@ -1,7 +1,8 @@
 import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { FormRawMarkup } from '@/index';
 
-export const getSettings = (data: any) =>
+export const getSettings = (data: object): FormRawMarkup =>
   new DesignerToolbarSettings(data)
     .addPropertyAutocomplete({
       id: nanoid(),

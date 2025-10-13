@@ -1,7 +1,6 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const leftSidebarWidth = "550px";
   const sidebarBtnHeight = "35px";
 
@@ -17,16 +16,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
   const sidebarBodyContent = "sidebar-body-content";
   const sidebarContainerLeft = "sidebar-container-left";
   const sidebarContainerRight = "sidebar-container-right";
+  const designerCanvas = "designer-canvas";
 
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
       overflow-x: hidden;
 
       .${sidebarContainerMainAreaBody}{
-        max-height: 85vh;
         overflow: auto;
-        margin: 0 auto;
-       
+        height: 100%;
+
       }
     
       .${sidebarContainerHeader} {
@@ -39,10 +38,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         display: flex;
         position: relative;
         width: 100%;
+        min-height: 100%;
     
         .${sidebarContainerLeft},
         .${sidebarContainerRight} {
-
           &.allow-full-collapse {
             display: none;
           }
@@ -77,20 +76,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
             .sidebar-header-title {
               width: calc(${leftSidebarWidth} - ${sidebarBtnHeight});
-              background: #282828;
               display: none;
               align-items: center;
               padding: 0 ${sheshaStyles.paddingLG}px;
               font-weight: 500;
-              font-size: 16px;
-              color: white;
+              font-size: 14px;
             }
     
             .${sidebarHeaderBtn} {
               height: ${sidebarBtnHeight};
               width: ${sidebarBtnHeight};
-              background: ${token.colorPrimary};
-              color: white;
               display: flex;
               justify-content: center;
               align-items: center;
@@ -170,14 +165,22 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
         .${sidebarContainerMainArea} {
          width: 100%;
-         position: sticky;
-          overflow-x: auto;
-    
+         display: flex;
+         flex-direction: column;
+         overflow: auto;
+         height: calc(100vh - 100px);
+
           &::not(.no-padding) {
             padding: ${sheshaStyles.paddingLG}px;
           }
         }
-      }    
+
+        .${designerCanvas} {
+          margin: 0 auto;
+          height: 100%;
+          transform-origin: top left;
+        }
+      }
     `);
 
   return {
@@ -194,5 +197,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     sidebarBodyContent,
     sidebarContainerLeft,
     sidebarContainerRight,
+    designerCanvas,
   };
 });

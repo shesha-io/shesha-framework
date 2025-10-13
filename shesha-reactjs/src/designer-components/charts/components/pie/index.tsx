@@ -1,5 +1,6 @@
 import {
-  ArcElement, CategoryScale,
+  ArcElement,
+  CategoryScale,
   Chart as ChartJS,
   ChartOptions,
   Decimation,
@@ -7,17 +8,20 @@ import {
   Filler,
   Legend,
   LinearScale,
-  LineController, LineElement,
+  LineController,
+  LineElement,
   PieController,
   PointElement,
   RadialLinearScale,
-  Title, Tooltip,
+  Title,
+  Tooltip,
 } from 'chart.js';
 import React from 'react';
 import { Pie, Doughnut } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
-import { useGeneratedTitle } from "../../hooks";
+import { useGeneratedTitle } from '../../hooks/hooks';
+import { splitTitleIntoLines, createFontConfig } from '../../utils';
 
 interface IPieChartProps extends IChartDataProps {
   data: IChartData;
@@ -44,50 +48,87 @@ ChartJS.register(
   Legend,
 );
 
-const PieChart = ({ data }: IPieChartProps) => {
-  const { showLegend, showTitle, legendPosition, isDoughnut, strokeColor, dataMode, strokeWidth } = useChartDataStateContext(); 
+const PieChart = ({ data }: IPieChartProps): JSX.Element => {
+  const { showLegend, showTitle, legendPosition, isDoughnut, strokeColor, strokeWidth, dataMode, titleFont, legendFont } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
 
-  if (!data || !data.datasets || !data.labels) {
-    if (!data)
-      throw new Error('PieChart: No data to display. Please check the data source');
-
-    if (!data.datasets || !data.labels)
-      throw new Error('PieChart: No datasets or labels to display. Please check the data source');
-  }
-
   data.datasets.forEach((dataset: { data: any[] }) => {
-    dataset.data = dataset?.data?.map((item) => item === null || item === undefined ? 'undefined' : item);
+    dataset.data = dataset?.data?.map((item) => item ?? 'undefined');
   });
 
   if (dataMode === 'url') {
     data?.datasets?.map((dataset: any) => {
       dataset.borderColor = strokeColor || 'black';
-      dataset.borderWidth = typeof (strokeWidth) === 'number' || strokeWidth > 1 ? strokeWidth : 1;
+      dataset.borderWidth = typeof strokeWidth === 'number' ? strokeWidth : 0;
       dataset.strokeColor = strokeColor || 'black';
       return dataset;
     });
-  } 
+  }
 
   const options: ChartOptions<any> = {
     responsive: true,
-    plugins: {
-      legend: {
-        display: showLegend ? true : false,
-        position: legendPosition ?? 'top',
-      },
-      title: {
-        display: showTitle && chartTitle.length > 0,
-        text: chartTitle,
-      },
-    },
+    maintainAspectRatio: false, // Allow the chart to fill available space
+    aspectRatio: 1, // Square aspect ratio for pie charts
     layout: {
       padding: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10,
+      },
+    },
+    transitions: {
+      active: {
+        animation: {
+          duration: 400, // Quick animation for hover effects
+        },
+      },
+      resize: {
+        animation: {
+          duration: 800, // Smooth resize animation
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: !!showLegend,
+        position: legendPosition ?? 'top',
+        align: (legendPosition === 'left' || legendPosition === 'right') ? 'center' : 'center',
+        fullSize: false, // This ensures legend doesn't consume chart space
+        labels: {
+          boxWidth: 20,
+          padding: 10,
+          font: createFontConfig(legendFont, 12, '400'),
+          color: legendFont?.color || '#000000',
+          usePointStyle: true, // Use point style for better visual consistency
+          generateLabels: function (chart) {
+            const data = chart.data;
+            if (data.labels.length && data.datasets.length) {
+              return data.labels.map((label, i) => {
+                const dataset = data.datasets[0];
+                return {
+                  text: String(label), // Ensure label is a string
+                  fillStyle: dataset.backgroundColor[i] || dataset.borderColor,
+                  strokeStyle: dataset.borderColor,
+                  lineWidth: dataset.borderWidth,
+                  pointStyle: 'circle',
+                  hidden: false,
+                  index: i,
+                };
+              });
+            }
+            return [];
+          },
+        },
+      },
+      title: {
+        display: !!(showTitle && chartTitle?.length > 0),
+        text: splitTitleIntoLines(chartTitle),
+        font: createFontConfig(titleFont, 16, 'bold'),
+        color: titleFont?.color || '#000000',
+        align: 'center',
+        fullSize: false, // This ensures title doesn't consume chart space
       },
     },
   };

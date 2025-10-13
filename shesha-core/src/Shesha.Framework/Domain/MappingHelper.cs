@@ -1,5 +1,8 @@
 ﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
+using Newtonsoft.Json.Linq;
 using PluralizeService.Core;
+using Shesha.Authorization.Users;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Conventions;
@@ -7,6 +10,7 @@ using Shesha.Domain.Interfaces;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
+using Shesha.Metadata;
 using Shesha.Reflection;
 using System;
 using System.Collections;
@@ -99,10 +103,10 @@ namespace Shesha.Domain
                 if (tableAttribute != null)
                     return tableAttribute.Name;
 
-                var name = PluralizationProvider.Pluralize(entityType.Name);
+                var plural = PluralizationProvider.Pluralize(entityType.Name);
+                var conventions = GetNamingConventions(entityType);
                 var prefix = GetTablePrefix(entityType);
-                if (!string.IsNullOrWhiteSpace(prefix))
-                    name = $"{prefix}{name}";
+                var name = conventions.GetTableName(prefix, plural);
 
                 return name;
             }
@@ -175,13 +179,29 @@ namespace Shesha.Domain
             var columnPrefix = GetColumnPrefix(memberInfo.DeclaringType);
             var propertyType = memberInfo.GetPropertyOrFieldType().GetUnderlyingTypeIfNullable();
 
-            var suffix = memberInfo.IsReferenceListProperty()
-                ? "Lkp"
-                : propertyType == typeof(TimeSpan) || propertyType == typeof(TimeSpan?)
-                    ? "Ticks"
-                    : null;
+            var suffix = propertyType.IsEntityType()
+                ? "Id"
+                :memberInfo.IsReferenceListProperty()
+                    ? "Lkp"
+                    : propertyType == typeof(TimeSpan) || propertyType == typeof(TimeSpan?)
+                        ? "Ticks"
+                        : null;
 
             return GetNameForMember(memberInfo, columnPrefix, memberInfo.Name, suffix);
+        }
+
+        public static string GetColumnName(EntityProperty propertyConfig, IModuleList moduleList)
+        {
+            // ToDo: AS V1 - use correct nameConventions
+
+            var suffix = propertyConfig.DataType == DataTypes.EntityReference || propertyConfig.DataType == DataTypes.File
+                ? "Id"
+                : propertyConfig.DataType == DataTypes.ReferenceListItem 
+                    || (propertyConfig.DataType == DataTypes.Array && propertyConfig.DataFormat == ArrayFormats.MultivalueReferenceList)
+                    ? "Lkp"
+                    : null;
+            return $"{GetColumnPrefix(propertyConfig.EntityConfig, moduleList)}{propertyConfig.Name}{suffix}";
+
         }
 
         /// <summary>
@@ -226,6 +246,12 @@ namespace Shesha.Domain
         {
             var conventionsType = type.GetAttributeOrNull<NamingConventionsAttribute>(false)?.ConventionsType ?? typeof(DefaultNamingConventions);
             return ActivatorHelper.CreateNotNullObject(conventionsType).ForceCastAs<INamingConventions>();
+        }
+
+        public static string? GetDbNamesExpression(Type type) 
+        {
+            var conventions = GetNamingConventions(type);
+            return conventions.DbNamesExpression;
         }
 
         public static Type GetPropertyOrFieldType(this MemberInfo propertyOrField)
@@ -281,6 +307,34 @@ namespace Shesha.Domain
         }
 
         /// <summary>
+        /// Returns prefix for the table columns of the specified type of entity
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="moduleList"></param>
+        /// <returns></returns>
+        public static string GetColumnPrefix(EntityConfig config, IModuleList moduleList)
+        {
+            if (config.InheritedFrom != null)
+            {
+                var rootConfig = config.InheritedFrom;
+                // ToDo: AS - infinity loop should not be there but need to think how to be shure
+                while (rootConfig.InheritedFrom != null)
+                    rootConfig = rootConfig.InheritedFrom;
+                
+                var configAssemblyName = moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == config.Module.NotNull().Name)?.Assembly.FullName;
+                var rootConfigAssemblyName = moduleList.Modules.FirstOrDefault(x => x.ModuleInfo.Name == rootConfig.Module.NotNull().Name)?.Assembly.FullName;
+                if (rootConfigAssemblyName != configAssemblyName)
+                {
+                    // This column extends a table created in another module - we should add a prefix
+                    if (!Prefixes.ContainsKey(rootConfigAssemblyName.NotNull())
+                        || Prefixes[rootConfigAssemblyName] != Prefixes[configAssemblyName.NotNull()])
+                        return Prefixes[configAssemblyName.NotNull()];
+                }
+            }
+            return "";
+        }
+
+        /// <summary>
         /// Returns prefix for the table of the specified type of entity
         /// </summary>
         /// <param name="type"></param>
@@ -288,6 +342,13 @@ namespace Shesha.Domain
         public static string GetTablePrefix(Type type)
         {
             return Prefixes.TryGetValue(type.GetAssemblyFullName(), out var prefix)
+                ? prefix ?? string.Empty
+                : string.Empty;
+        }
+
+        public static string GetTablePrefix(Assembly assembly)
+        {
+            return Prefixes.TryGetValue(assembly.FullName.NotNull(), out var prefix)
                 ? prefix ?? string.Empty
                 : string.Empty;
         }
@@ -322,6 +383,15 @@ namespace Shesha.Domain
         }
 
         /// <summary>
+        /// Returns true if the specified type is a Proxy
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsProxy([NotNullWhen(true)] Type? type)
+        {
+            return type != null && type != type.StripCastleProxyType();
+        }
+
+        /// <summary>
         /// Returns true if the specified type is an entity type
         /// </summary>
         public static bool IsEntity([NotNullWhen(true)]Type? type)
@@ -349,7 +419,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Returns true if the specified type is an Json entity type
         /// </summary>
-        public static bool IsJsonEntity(Type type)
+        public static bool IsJsonEntity(Type? type)
         {
             // todo: use global helper
             return type != null &&
@@ -381,9 +451,16 @@ namespace Shesha.Domain
         public static bool IsListType(Type type)
         {
             return type.IsGenericType
+                && type != typeof(JObject)
                 && (
                     type.GetGenericTypeDefinition().IsAssignableTo(typeof(IList<>))
                     || type.GetGenericTypeDefinition().IsAssignableTo(typeof(List<>))
+                    || type.ImplementsGenericInterface(typeof(IList<>)) 
+                    || type.ImplementsGenericInterface(typeof(ICollection<>)) 
+                    || type.ImplementsGenericInterface(typeof(IEnumerable<>)) 
+                    || type.GetInterface(nameof(IEnumerable)) != null
+                    || type.GetInterface(nameof(ICollection)) != null
+                    || type.GetInterface(nameof(IList)) != null
                 );
         }
 
@@ -403,13 +480,27 @@ namespace Shesha.Domain
         public static string GetForeignKeyColumn(MemberInfo prop)
         {
             var foreignKeyAttribute = prop.GetAttributeOrNull<ForeignKeyAttribute>(true);
-            if (foreignKeyAttribute != null)
-                return foreignKeyAttribute.Name;
+            if (foreignKeyAttribute != null) 
+            {
+                var skipFkAttribute = IsDeclaredInGenericType(prop, typeof(AuditedEntity<,>)) && prop.Name == nameof(AuditedEntity<Guid, User>.CreatorUser)
+                    || IsDeclaredInGenericType(prop, typeof(AuditedEntity<,>)) && prop.Name == nameof(AuditedEntity<Guid, User>.LastModifierUser)
+                    || IsDeclaredInGenericType(prop, typeof(FullAuditedEntity<,>)) && prop.Name == nameof(FullAuditedEntity<Guid, User>.DeleterUser);
+                
+                if (!skipFkAttribute)
+                    return foreignKeyAttribute.Name;
+            }                
 
             var columnPrefix = GetColumnPrefix(prop.DeclaringType.NotNull());
 
             var conventions = GetNamingConventions(prop);
             return conventions.GetColumnName(columnPrefix, prop.Name, "Id");
+        }
+
+        private static bool IsDeclaredInGenericType(MemberInfo prop, Type type) 
+        {
+            return prop.DeclaringType != null &&
+                prop.DeclaringType.IsGenericType &&
+                prop.DeclaringType.GetGenericTypeDefinition() == type;
         }
 
         /// <summary>

@@ -4,7 +4,7 @@ import { IComponentsContainerBaseProps } from '@/interfaces';
 import { removeUndefinedProperties } from '@/utils/array';
 import { useParent } from '@/providers/parentProvider/index';
 import { getAlignmentStyle } from '@/components/formDesigner/containers/util';
-import DynamicComponent from '@/designer-components/dynamicView/dynamicComponent';
+import FormComponent from '@/components/formDesigner/formComponent';
 
 interface IComponentsContainerFormCellProps extends IComponentsContainerBaseProps, ICommonContainerProps { }
 
@@ -17,22 +17,30 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
 
   const style = getAlignmentStyle(props);
 
+  const containerStyle = {
+    ...removeUndefinedProperties(style),
+    width: '100%',
+    maxWidth: '100%',
+    overflow: 'hidden',
+    boxSizing: 'border-box' as const,
+  };
+
   return (
-    <div style={removeUndefinedProperties(style)}>
+    <div style={containerStyle}>
       {components?.map((model) => {
-          return (
-            <DynamicComponent
-              model={{
-                ...model,
-                context: model.context,
-                isDynamic: true,
-                readOnly: readOnly === true ? true : model?.readOnly,
-                customEnabled: '',
-              }}
-              key={model?.id}
-            />
-          );
-        })}
+        return (
+          <FormComponent
+            componentModel={{
+              ...model,
+              context: model.context,
+              isDynamic: true,
+              readOnly: readOnly === true ? true : model?.readOnly,
+              customEnabled: '',
+            }}
+            key={model?.id}
+          />
+        );
+      })}
     </div>
   );
 };

@@ -139,7 +139,10 @@ namespace Shesha.JsonEntities.Proxy
             {
                 GetEntityById = (entityType, id, displayName, propPath, ctx) =>
                 {
-                    _references.Add(propPath.Split(".").Last(), new JsonReference() { Id = id, _displayName = displayName });
+                    _references.Add(
+                        propPath.Split(".").Last(),
+                        new JsonReference() { Id = id, _displayName = displayName, _className = entityType.FullName }
+                    );
                     return null;
                 },
                 GetObjectOrObjectReference = (objectType, jobject, ctx, formFields) =>

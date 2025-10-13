@@ -96,6 +96,7 @@ import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
 import PermissionAutocompleteComponent from '@/designer-components/permissions/permissionAutocomplete';
 import EditModeToggler from '@/designer-components/editModeToggler';
 import ProfileDropdown from '@/designer-components/profileDropdown';
+import HorizontalMenu from '@/designer-components/horizontalMenu';
 import { IFormPersisterStateContext } from '@/providers/formPersisterProvider/contexts';
 import { HEADER_CONFIGURATION, HEADER_PUB_PORTAL_CONFIGURATION } from '@/components/mainLayout/constant';
 import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
@@ -109,13 +110,16 @@ import ChevronComponent from '@/designer-components/chevron/chevron';
 import SettingsInput from '@/designer-components/settingsInput';
 import SettingsInputRow from '@/designer-components/settingsInputRow';
 import KanbanComponent from '@/designer-components/kanban';
-import ChartComponent from '@/designer-components/charts';
+import BarChartComponent from '@/designer-components/charts/bar';
+import LineChartComponent from '@/designer-components/charts/line';
+import PieChartComponent from '@/designer-components/charts/pie';
+import PolarAreaChartComponent from '@/designer-components/charts/polarArea';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
 import DividerComponent from '@/designer-components/_legacyComponents/divider';
 
 export const getToolboxComponents = (
   devMode: boolean,
-  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'>
+  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'>,
 ): IToolboxComponentGroup[] => {
   return [
     {
@@ -141,7 +145,7 @@ export const getToolboxComponents = (
     {
       name: 'Data display',
       visible: true,
-      components: [Alert, Link, Statistic, Text, ValidationErrors, ChartComponent],
+      components: [Alert, Link, Statistic, Text, ValidationErrors, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent],
     },
     {
       name: 'Advanced',
@@ -149,7 +153,6 @@ export const getToolboxComponents = (
       components: [
         Address,
         Autocomplete,
-        AutocompleteTagGroup,
         ColorPickerComponent,
         IconPicker,
         HtmlRender,
@@ -162,7 +165,7 @@ export const getToolboxComponents = (
         RefListStatusComponent,
         StatusTag,
         ChevronComponent,
-        KanbanComponent
+        KanbanComponent,
       ],
     },
     {
@@ -213,6 +216,7 @@ export const getToolboxComponents = (
         Tabs,
         Wizard,
         SubForm,
+        HorizontalMenu,
       ],
     },
     {
@@ -223,13 +227,14 @@ export const getToolboxComponents = (
         Title,
         Toolbar,
         List,
-        EditableTagGroup,,
+        EditableTagGroup,
         FormAutocompleteComponent,
         ReferenceListAutocompleteComponent,
         NotificationAutocompleteComponent,
         TableTemplate,
         DividerComponent,
         DynamicView,
+        AutocompleteTagGroup,
       ],
     },
     {

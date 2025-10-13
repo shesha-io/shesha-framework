@@ -44,7 +44,7 @@ export interface ErrorInfo {
 
 export interface AbpWrappedResponse<TData, TError> {
   targetUrl?: string | null;
-  success?: boolean;
+  success: boolean;
   error?: TError;
   unAuthorizedRequest?: boolean;
   __abp?: boolean;
@@ -61,10 +61,8 @@ export interface EntityData {
   [key: string]: any;
 }
 
-export interface IAbpWrappedResponse<TResponse, TError = ErrorInfo> extends AbpWrappedResponse<TResponse, TError> {}
+export type IAbpWrappedResponse<TResponse, TError = ErrorInfo> = AbpWrappedResponse<TResponse, TError>;
 
-export interface IAbpWrappedGetEntityResponse<TItem = EntityData, TError = ErrorInfo>
-  extends AbpWrappedResponse<TItem, TError> {}
+export type IAbpWrappedGetEntityResponse<TItem = EntityData, TError = ErrorInfo> = AbpWrappedResponse<TItem, TError>;
 
-export interface IAbpWrappedGetEntityListResponse<TItem = EntityData, TError = ErrorInfo>
-  extends AbpWrappedResponse<GetAllResponse<TItem>, TError> {}
+export type IAbpWrappedGetEntityListResponse<TItem = EntityData, TError = ErrorInfo> = AbpWrappedResponse<GetAllResponse<TItem>, TError>;

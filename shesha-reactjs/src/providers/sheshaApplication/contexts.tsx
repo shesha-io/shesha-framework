@@ -47,10 +47,10 @@ export const DEFAULT_ACCESS_TOKEN_NAME = 'xDFcxiooPQxazdndDsdRSerWQPlincytLDCarc
 
 export const SheshaApplicationStateContext = createNamedContext<ISheshaApplicationStateContext>(
   SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
-  'SheshaApplicationStateContext'
+  'SheshaApplicationStateContext',
 );
 
 export const SheshaApplicationActionsContext = createNamedContext<ISheshaApplicationActionsContext | undefined>(
   undefined,
-  'SheshaApplicationActionsContext'
+  'SheshaApplicationActionsContext',
 );

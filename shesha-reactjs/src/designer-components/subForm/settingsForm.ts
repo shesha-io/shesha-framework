@@ -2,8 +2,9 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { ISubFormComponentProps } from '.';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: ISubFormComponentProps) => {
+export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -37,12 +38,14 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 label: "Property Name",
                 size: "small",
                 validate: {
-                  required: true
+                  required: true,
                 },
                 styledLabel: true,
                 jsSetting: true,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+
               })
+
+              // hide label by default
               .addLabelConfigurator({
                 id: nanoid(),
                 propertyName: 'hideLabel',
@@ -53,7 +56,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -62,8 +64,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     parentId: commonTabId,
                     label: "Edit Mode",
                     jsSetting: true,
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                    defaultValue: 'inherited'
+                    defaultValue: 'inherited',
                   },
                   {
                     type: 'switch',
@@ -71,11 +72,11 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     propertyName: 'hidden',
                     label: 'Hide',
                     jsSetting: true,
-                  }
-                ]
+                  },
+                ],
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'data',
@@ -93,14 +94,12 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 defaultValue: 'name',
                 dropdownOptions: [
                   { label: "Name", value: "name" },
-                  { label: "Dynamic", value: "dynamic" }
+                  { label: "Dynamic", value: "dynamic" },
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -108,23 +107,22 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     propertyName: "formType",
                     label: "Form Type",
                     jsSetting: true,
-                    dropdownOptions: formTypes.map(value => ({ label: value, value }))
-                  }
+                    dropdownOptions: formTypes.map((value) => ({ label: value, value })),
+                  },
                 ],
                 hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
                     type: "formAutocomplete",
                     propertyName: "formId",
                     label: "Form",
-                    jsSetting: true
-                  }
+                    jsSetting: true,
+                  },
                 ],
                 hidden: { _code: 'return getSettingValue(data?.formSelectionMode) === "dynamic";', _mode: 'code', _value: false } as any,
               })
@@ -137,15 +135,13 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 tooltip: "The list data to be used can be the data that comes with the form of can be fetched from the API",
                 defaultValue: 'form',
                 dropdownOptions: [
-                  { label: "form", value: "form" },
-                  { label: "api", value: "api" }
+                  { label: "Form", value: "form" },
+                  { label: "API", value: "api" },
                 ],
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -155,18 +151,17 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     defaultValue: "entityType",
                     tooltip: "The API mode to use to fetch data",
                     dropdownOptions: [
-                      { label: "Entity Name", value: "entityName" },
-                      { label: "URL", value: "url" }
+                      { label: "Entity name", value: "entityName" },
+                      { label: "URL", value: "url" },
                     ],
                     jsSetting: true,
-                  }
+                  },
                 ],
                 hidden: { _code: 'return getSettingValue(data?.dataSource) === "form";', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -176,14 +171,13 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     dataSourceType: "url",
                     dataSourceUrl: "/api/services/app/Metadata/TypeAutocomplete",
                     jsSetting: true,
-                  }
+                  },
                 ],
                 hidden: { _code: 'return getSettingValue(data?.dataSource) === "form" || getSettingValue(data?.apiMode) !== "entityName";', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -193,15 +187,15 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     language: "graphql",
                     description: "Properties in GraphQL-like syntax",
                     jsSetting: true,
-                    mode: "inline"
-                  }
+                    mode: "inline",
+                    wrapInTemplate: false,
+                  },
                 ],
                 hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -226,11 +220,11 @@ export const getSettings = (data: ISubFormComponentProps) => {
                         name: 'queryParams',
                         description: 'Query parameters',
                         type: 'object',
-                      }
+                      },
                     ],
                     wrapInTemplate: true,
                     templateSettings: {
-                      functionName: 'getQueryParams'
+                      functionName: 'getQueryParams',
                     },
                   },
                   {
@@ -238,10 +232,10 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     type: "codeEditor",
                     propertyName: "getUrl",
                     parentId: dataTabId,
-                    label: "GET Url",
-                    tooltip: "The API url that will be used to fetch the data. Write the code that returns the string",
+                    label: "GET URL",
+                    tooltip: "The API URL that will be used to fetch the data. Write the code that returns the string",
                     mode: "dialog",
-                    description: "The API url that will be used to fetch the data. Write the code that returns the string",
+                    description: "The API URL that will be used to fetch the data. Write the code that returns the string",
                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     hidden: { _code: 'return getSettingValue(data?.dataSource) === "form" || getSettingValue(data?.apiMode) === "entityName";', _mode: 'code', _value: false } as any,
                     exposedVariables: [
@@ -259,20 +253,19 @@ export const getSettings = (data: ISubFormComponentProps) => {
                         name: 'queryParams',
                         description: 'Query parameters',
                         type: 'object',
-                      }
+                      },
                     ],
                     wrapInTemplate: true,
                     templateSettings: {
-                      functionName: 'getGetUrl'
+                      functionName: 'getGetUrl',
                     },
-                  }
+                  },
                 ],
               })
 
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
                     id: nanoid(),
@@ -280,10 +273,10 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     type: "codeEditor",
                     propertyName: "postUrl",
                     parentId: dataTabId,
-                    label: "POST Url",
-                    tooltip: "The API url that will be used to update data. Write the code that returns the string",
+                    label: "POST URL",
+                    tooltip: "The API URL that will be used to create new data. Write a function that returns this URL as a string.",
                     mode: "dialog",
-                    description: "The API url that will be used to update data. Write the code that returns the string",
+                    description: "The API URL that will be used to update data. Write the code that returns the string",
                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     exposedVariables: [
                       {
@@ -300,11 +293,11 @@ export const getSettings = (data: ISubFormComponentProps) => {
                         name: 'queryParams',
                         description: 'Query parameters',
                         type: 'object',
-                      }
+                      },
                     ],
                     wrapInTemplate: true,
                     templateSettings: {
-                      functionName: 'getPostUrl'
+                      functionName: 'getPostUrl',
                     },
                   },
                   {
@@ -313,10 +306,10 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     type: "codeEditor",
                     propertyName: "putUrl",
                     parentId: dataTabId,
-                    label: "PUT Url",
-                    tooltip: "The API url that will be used to update data. Write the code that returns the string",
+                    label: "PUT URL",
+                    tooltip: "The API URL that will be used to update data. Write the code that returns the string",
                     mode: "dialog",
-                    description: "The API url that will be used to update data. Write the code that returns the string",
+                    description: "The API URL that will be used to update data. Write the code that returns the string",
                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     exposedVariables: [
                       {
@@ -333,13 +326,13 @@ export const getSettings = (data: ISubFormComponentProps) => {
                         name: 'queryParams',
                         description: 'Query parameters',
                         type: 'object',
-                      }
+                      },
                     ],
                     wrapInTemplate: true,
                     templateSettings: {
-                      functionName: 'getPutUrl'
+                      functionName: 'getPutUrl',
                     },
-                  }
+                  },
                 ],
               })
               .addSettingsInput({
@@ -350,10 +343,9 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 label: "Unique State ID",
                 tooltip: "A unique identifier used to maintain component state across sessions. Enable this if you need to preserve the component's state when the page reloads.",
                 jsSetting: true,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'events',
@@ -369,7 +361,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 tooltip: "Triggered after successfully creating a new sub-form object in the back-end",
                 mode: "dialog",
                 description: "Triggered after successfully creating a new sub-form object in the back-end",
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 exposedVariables: [
                   {
                     name: 'response',
@@ -395,11 +386,11 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     name: 'publish',
                     description: 'Event publisher',
                     type: 'function',
-                  }
+                  },
                 ],
                 wrapInTemplate: true,
                 templateSettings: {
-                  functionName: 'onCreated'
+                  functionName: 'onCreated',
                 },
               })
               .addSettingsInput({
@@ -411,7 +402,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 tooltip: "Triggered after successfully updating the sub-form object in the back-end",
                 mode: "dialog",
                 description: "Triggered after successfully updating the sub-form object in the back-end",
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 exposedVariables: [
                   {
                     name: 'response',
@@ -437,15 +427,15 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     name: 'publish',
                     description: 'Event publisher',
                     type: 'function',
-                  }
+                  },
                 ],
                 wrapInTemplate: true,
                 templateSettings: {
-                  functionName: 'onUpdated'
+                  functionName: 'onUpdated',
                 },
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -463,7 +453,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 propertyRouteName: {
                   _mode: "code",
                   _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
-                  _value: ""
+                  _value: "",
                 },
                 components: [
                   ...new DesignerToolbarSettings()
@@ -479,30 +469,9 @@ export const getSettings = (data: ISubFormComponentProps) => {
                       content: {
                         id: nanoid(),
                         components: [...new DesignerToolbarSettings()
-                          .addSettingsInput({
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            id: nanoid(),
-                            inputType: 'codeEditor',
-                            propertyName: 'style',
-                            hideLabel: false,
-                            label: 'Style',
-                            description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                            exposedVariables: [
-                              {
-                                name: 'data',
-                                description: 'Form data',
-                                type: 'object',
-                              }
-                            ],
-                            wrapInTemplate: true,
-                            templateSettings: {
-                              functionName: 'getStyle'
-                            },
-                          })
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: commonTabId,
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
                                 id: nanoid(),
@@ -515,7 +484,6 @@ export const getSettings = (data: ISubFormComponentProps) => {
                                 max: 24,
                                 defaultValue: 16,
                                 step: 1,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               },
                               {
                                 id: nanoid(),
@@ -528,19 +496,18 @@ export const getSettings = (data: ISubFormComponentProps) => {
                                 max: 24,
                                 defaultValue: 8,
                                 step: 1,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              }
-                            ]
+                              },
+                            ],
                           })
-                          .toJson()
-                        ]
-                      }
+                          .toJson(),
+                        ],
+                      },
                     })
-                    .toJson()
-                ]
+                    .toJson(),
+                ],
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'security',
@@ -549,26 +516,25 @@ export const getSettings = (data: ISubFormComponentProps) => {
             components: [...new DesignerToolbarSettings()
               // Permissions - from Security section in map
               .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',
                 label: 'Permissions',
                 tooltip: "Enter a list of permissions that should be associated with this component",
                 parentId: securityTabId,
-                jsSetting: true
+                jsSetting: true,
               })
-              .toJson()
-            ]
-          }
-        ]
+              .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

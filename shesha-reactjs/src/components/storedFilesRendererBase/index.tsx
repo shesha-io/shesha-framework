@@ -1,32 +1,26 @@
-import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import { DraggerStub } from '@/components/fileUpload/stubs';
+import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getFileIcon, isImageType } from '@/icons/fileIcons';
+import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
+import { IFormComponentStyles } from '@/providers/form/models';
+import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import { addPx } from '@/utils/style';
+import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
+  App,
   Button,
   ButtonProps,
-  App,
-  Upload,
   Image,
+  Upload,
   UploadFile,
-  ConfigProvider,
 } from 'antd';
-import { DraggerStub } from '@/components/fileUpload/stubs';
-import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
-import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import { useStyles } from './styles/styles';
-import { getStyle, IInputStyles, IStyleType, pickStyleFromModel, useSheshaApplication, ValidationErrors } from '@/index';
-import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
-import { getFileIcon, isImageType } from '@/icons/fileIcons';
-import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
-import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
-import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
-import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
-import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
+import React, { FC, useEffect, useState } from 'react';
 import { isValidGuid } from '../formDesigner/components/utils';
-import { removeUndefinedProps } from '@/utils/object';
-import { CSSProperties } from 'styled-components';
-import { addPx } from '@/designer-components/_settings/utils';
+import { useStyles } from './styles/styles';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -49,7 +43,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadZipFile?: () => void;
   downloadZip?: boolean;
   downloadFile: (payload: IDownloadFilePayload) => void;
-  onFileListChanged?: (list: IStoredFile[]) => void;
   validFileTypes?: IUploaderFileTypes[];
   maxFileLength?: number;
   isDragger?: boolean;
@@ -68,6 +61,9 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   gap?: number;
   container?: IStyleType;
   primaryColor?: string;
+  allStyles?: IFormComponentStyles;
+  enableStyleOnReadonly?: boolean;
+  thumbnail?: IStyleType;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -79,7 +75,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   uploadFile,
   downloadZipFile,
   downloadFile,
-  onFileListChanged,
   ownerId,
   ownerType,
   fetchFilesError,
@@ -97,82 +92,51 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   layout,
   listType,
   gap,
+  enableStyleOnReadonly = true,
   ...rest
 }) => {
-  const { message, notification } = App.useApp();
+  const { message, notification, modal } = App.useApp();
+  const { httpHeaders } = useSheshaApplication();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
 
   const model = rest;
   const hasFiles = !!fileList.length;
-  const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  const dimensions = model?.dimensions;
-  const border = model?.border;
-  const font = model?.font;
-  const shadow = model?.shadow;
-  const background = model?.background;
-  const jsStyle = getStyle(model.style, model);
-  const containerJsStyle = getStyle(model.container?.style, model.container);
-
-  const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-  const containerDimensions = useMemo(() => getSizeStyle(model.container?.dimensions), [model.container?.dimensions]);
-  const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
-  const fontStyles = useMemo(() => getFontStyle(font), [font]);
-  const [backgroundStyles, setBackgroundStyles] = useState({});
-  const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-  useEffect(() => {
-
-    const fetchStyles = async () => {
-      const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-        ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-          { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-          .then((response) => {
-            return response.blob();
-          })
-          .then((blob) => {
-            return URL.createObjectURL(blob);
-          }) : '';
-
-      const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
-      setBackgroundStyles(style);
-    };
-
-    fetchStyles();
-  }, [background, backendUrl, httpHeaders, jsStyle]);
-
-  const styling = JSON.parse(model.container?.stylingBox || '{}');
-  const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-  const additionalStyles: CSSProperties = removeUndefinedProps({
-    ...dimensionsStyles,
-    ...borderStyles,
-    ...fontStyles,
-    ...backgroundStyles,
-    ...shadowStyles
-  });
-
-
-  const finalStyle = removeUndefinedProps(additionalStyles);
+  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
 
   const { styles } = useStyles({
-    containerStyles: { ...{ ...containerDimensions, width: layout === 'vertical' ? '' : addPx(containerDimensions.width), height: layout === 'horizontal' ? '' : addPx(containerDimensions.height) }, ...containerJsStyle, ...stylingBoxAsCSS },
-    style: finalStyle, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
-    primaryColor
+    containerStyles: {
+      ...(containerDimensionsStyles ?? {}),
+      width: layout === 'vertical' ? undefined : addPx(containerDimensionsStyles?.width),
+      height: layout === 'horizontal' ? undefined : addPx(containerDimensionsStyles?.height),
+      ...containerJsStyle,
+      ...stylingBoxAsCSS,
+    },
+    style: enableStyleOnReadonly && disabled
+      ? { ...(model?.allStyles?.dimensionsStyles ?? {}), ...(model?.allStyles?.fontStyles ?? {}) }
+      : { ...(model?.allStyles?.fullStyle ?? {}) },
+    model: {
+      gap: addPx(gap),
+      layout: listType === 'thumbnail' && !isDragger,
+      hideFileName: rest.hideFileName && listType === 'thumbnail',
+      isDragger,
+      isStub,
+    },
+    primaryColor,
   });
 
   const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
 
-  const openFilesZipNotification = () =>
+  const openFilesZipNotification = (): void =>
     notification.success({
       message: `Download success!`,
       description: 'Your files have been downloaded successfully. Please check your download folder.',
       placement: 'topRight',
     });
 
-  const fetchStoredFile = (url: string) => {
+  const fetchStoredFile = (url: string): Promise<string> => {
     const response = fetch(`${url}`,
       { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
       .then((response) => {
@@ -192,7 +156,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   }, [isDownloadZipSucceeded]);
 
   useEffect(() => {
-    const fetchImages = async () => {
+    const fetchImages = async (): Promise<void> => {
       const newImageUrls = { ...imageUrls };
       for (const file of fileList) {
         if (isImageType(file.type) && !newImageUrls[file.uid]) {
@@ -206,12 +170,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     fetchImages();
   }, [fileList]);
 
-  const handlePreview = async (file: UploadFile) => {
+  const handlePreview = (file: UploadFile): void => {
     setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
     setPreviewOpen(true);
   };
 
-  const iconRender = (file) => {
+  const iconRender = (file): JSX.Element => {
     const { type, uid } = file;
 
     if (isImageType(type)) {
@@ -228,6 +192,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
 
+
+  const showDeleteConfirmation = (file): void => {
+    modal.confirm({
+      title: 'Delete Attachment',
+      content: 'Are you sure you want to delete this attachment?',
+      okText: 'Yes',
+      cancelText: 'Cancel',
+      okType: 'danger',
+      onOk: () => {
+        deleteFile(file.uid);
+      },
+    });
+  };
+
   const props: DraggerProps = {
     name: '',
     accept: allowedFileTypes?.join(','),
@@ -241,10 +219,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
       }
-      onFileListChanged(info.fileList);
     },
     onRemove(file) {
-      deleteFile(file.uid);
+      showDeleteConfirmation(file);
+      return false;
     },
     customRequest(options: any) {
       // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
@@ -287,47 +265,51 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
 
-  const renderUploadContent = () => {
+  const renderUploadContent = (): JSX.Element => {
     return (
-      <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
-        {listType === 'text' && '(press to upload)'}
-      </Button>
+      !disabled && (
+        <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
+          {listType === 'text' && '(press to upload)'}
+        </Button>
+      )
     );
   };
 
   return (
-    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal :
-      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
-      <ConfigProvider
-        theme={{
-          components: {
-            Upload: {
-              actionsColor: primaryColor,
-            },
-          },
-        }}
-      >
-        {isStub
-          ? (isDragger
-            ? <Dragger disabled><DraggerStub /></Dragger>
-            : <div
+    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
+      : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
+        : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
+    >
+      {isStub
+        ? (isDragger
+          ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
+          : (
+            <div
               className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
             >
               {renderUploadContent()}
-              {listType !== 'text' && !rest.hideFileName &&
-                <span className='ant-upload-list-item-name ant-upload-list-item-name-stub'>
-                  {'file name'}
-                </span>}
-            </div>)
-          : (props.disabled
-            ? <Upload {...props} style={finalStyle} listType={listTypeAndLayout} />
-            : isDragger ?
-              <Dragger {...props}>
-                <DraggerStub />
-              </Dragger>
-              : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
-        }
-      </ConfigProvider>
+              {listType !== 'text' && !rest.hideFileName && (
+                <span className="ant-upload-list-item-name ant-upload-list-item-name-stub">
+                  file name
+                </span>
+              )}
+            </div>
+          ))
+        : (props.disabled && fileList.length === 0
+          ? (
+            <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
+              {renderUploadContent()}
+            </div>
+          )
+          : props.disabled
+            ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
+            : isDragger
+              ? (
+                <Dragger {...props}>
+                  <DraggerStub styles={styles} />
+                </Dragger>
+              )
+              : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
       {previewImage && (
         <Image
           wrapperStyle={{ display: 'none' }}

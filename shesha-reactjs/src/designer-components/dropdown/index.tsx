@@ -1,11 +1,11 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
-import { customDropDownEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
-import { DataTypes } from '@/interfaces/dataTypes';
+import React from 'react';
+import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
+import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IDropdownComponentProps } from './model';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -13,20 +13,17 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { removeUndefinedProps } from '@/utils/object';
-import { ValidationErrors } from '@/components';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { useSheshaApplication } from '@/providers';
-import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from './utils';
-import { ConfigProvider } from 'antd';
+import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles, defaultTagStyles } from './utils';
+import { CustomLabeledValue } from '@/components/refListDropDown/models';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
+interface ITextFieldComponentCalulatedValues {
+  eventHandlers?: { onChange: (value: CustomLabeledValue<any>, option: any) => any };
+  defaultValue?: any;
+}
 
-const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
+const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldComponentCalulatedValues> = {
   type: 'dropdown',
   isInput: true,
   isOutput: true,
@@ -34,98 +31,47 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   isHidden: false,
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
-  Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
-
-    const localStyle = getStyle(model.style, allData.data);
-    const dimensions = model?.dimensions;
-    const border = model?.border;
-    const font = model?.font;
-    const shadow = model?.shadow;
-    const background = model?.background;
-
-    const { backendUrl, httpHeaders } = useSheshaApplication();
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, localStyle), [border]);
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-
-    useEffect(() => {
-
-      const fetchStyles = async () => {
-        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-            .then((response) => {
-              return response.blob();
-            })
-            .then((blob) => {
-              return URL.createObjectURL(blob);
-            }) : '';
-
-        const style = await getBackgroundStyle(background, localStyle, storedImageUrl);
-        setBackgroundStyles(style);
-      };
-
-      fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
-
-    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
-      return <ValidationErrors error="The provided StoredFileId is invalid" />;
-    }
-
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
+  calculateModel: (model, allData) => ({
+    eventHandlers: customDropDownEventHandler(model, allData),
+    // quick fix not to default to empty string or null while working with multi-mode
+    defaultValue: Array.isArray(model.defaultValue)
+      ? model.defaultValue
+      : model.defaultValue
+        ? evaluateString(model.defaultValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState }) || undefined
+        : undefined,
+  }),
+  Factory: ({ model, calculatedModel }) => {
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
+    const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
 
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
+    const finalStyle = model.enableStyleOnReadonly && model.readOnly
+      ? { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles }
+      : { ...model.allStyles.fullStyle, width: '100%', height: '100%', overflow: 'hidden',
 
-    const additionalStyles: CSSProperties = removeUndefinedProps({
-      ...stylingBoxAsCSS,
-      ...dimensionsStyles,
-      ...borderStyles,
-      ...fontStyles,
-      ...backgroundStyles,
-      ...shadowStyles
-    });
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
+      };
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
         {(value, onChange) => {
-          const customEvent = customDropDownEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]) => {
+          const customEvent = calculatedModel.eventHandlers;
+          const onChangeInternal = (...args: any[]): void => {
             customEvent.onChange(args[0], args[1]);
             if (typeof onChange === 'function')
               onChange(...args);
           };
 
           return (
-            <ConfigProvider
-              theme={{
-                components: {
-                  Dropdown: {
-                    fontFamily: model?.font?.type,
-                    fontSize: model?.font?.size,
-                    fontWeightStrong: Number(fontStyles.fontWeight),
-                  },
-                },
-              }}
-            >
-              <Dropdown
-                {...model}
-                style={{
-                  ...finalStyle
-                }}
-                {...customEvent}
-                value={value}
-                size={model?.size}
-                onChange={onChangeInternal}
-              />
-            </ConfigProvider>
-
+            <Dropdown
+              {...model}
+              style={finalStyle}
+              {...customEvent}
+              defaultValue={calculatedModel.defaultValue}
+              value={value}
+              size={model?.size}
+              tagStyle={{ ...tagStyle, alignContent: 'center', justifyContent: tagStyle.textAlign }}
+              onChange={onChangeInternal}
+            />
           );
         }}
       </ConfigurableFormItem>
@@ -156,6 +102,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
         : prev['useRawValue'] === true
           ? 'simple'
           : 'listItem',
+      editMode: prev?.editMode ?? 'inherited',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IDropdownComponentProps>(7, (prev) => {
@@ -184,10 +131,24 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<IDropdownComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-  ,
+    .add<IDropdownComponentProps>(10, (prev) => {
+      const initTagStyle = migrateStyles({}, defaultTagStyles());
+
+      return {
+        ...prev,
+        tag: { ...initTagStyle },
+        showItemName: prev.showItemName ?? true,
+        showIcon: prev.showIcon ?? true,
+        solidColor: prev.solidColor ?? true,
+        displayStyle: prev.displayStyle ?? 'text',
+        desktop: { ...prev.desktop, tag: { ...initTagStyle } },
+        tablet: { ...prev.tablet, tag: { ...initTagStyle } },
+        mobile: { ...prev.mobile, tag: { ...initTagStyle } },
+      };
+    }),
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
-    const isMultipleRefList = metadata.dataType === 'array' && metadata.dataFormat === 'reference-list-item';
+    const isMultipleRefList = metadata.dataType === DataTypes.array && metadata.dataFormat === ArrayFormats.multivalueReferenceList;
 
     return {
       ...model,

@@ -2,13 +2,17 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { ISwitchComponentProps } from './interfaces';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: ISwitchComponentProps) => {
+export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
+  const styleRouterId = nanoid();
+  const dimensionsStylePnlId = nanoid();
+  const customStylePnlId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -56,12 +60,10 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
-                  readOnly: { _code: `return getSettingValue(data.readOnly)`, _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'editModeSelector',
@@ -79,29 +81,29 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       label: 'Hide',
                       size: 'small',
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
+            key: 'events',
+            title: 'Events',
+            id: eventsTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  parentId: securityTabId,
+                  inputType: 'codeEditor',
+                  propertyName: 'onChangeCustom',
+                  label: 'On Change',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on changing of event.',
+                  parentId: eventsTabId,
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -110,7 +112,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
             components: [
               ...new DesignerToolbarSettings()
                 .addPropertyRouter({
-                  id: 'styleRouter',
+                  id: styleRouterId,
                   propertyName: 'propertyRouter1',
                   componentName: 'propertyRouter',
                   label: 'Property router1',
@@ -120,27 +122,34 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
+                    _value: "",
                   },
                   components: [
                     ...new DesignerToolbarSettings()
-
+                      .addSettingsInput({
+                        id: nanoid(),
+                        parentId: styleRouterId,
+                        propertyName: 'enableStyleOnReadonly',
+                        label: 'Enable Style On Readonly',
+                        tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                        inputType: 'switch',
+                        jsSetting: true,
+                      })
                       .addCollapsiblePanel({
-                        id: 'dimensionsStyleCollapsiblePanel',
+                        id: nanoid(),
                         propertyName: 'pnlDimensions',
                         label: 'Dimensions',
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         labelAlign: 'right',
                         ghost: true,
                         collapsible: 'header',
                         content: {
-                          id: 'dimensionsStylePnl',
+                          id: dimensionsStylePnlId,
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: 'dimensionsStylePnl',
+                              parentId: dimensionsStylePnlId,
                               inline: true,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
                                   type: 'dropdown',
@@ -151,70 +160,68 @@ export const getSettings = (data: ISwitchComponentProps) => {
                                   dropdownOptions: [
                                     { value: 'small', label: 'Small' },
                                     { value: 'default', label: 'Default' },
-                                  ]
+                                  ],
                                 },
-                              ]
+                              ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
-                        id: 'customStyleCollapsiblePanel',
+                        id: nanoid(),
                         propertyName: 'customStyle',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
-                          id: nanoid(),
+                          id: customStylePnlId,
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
-                      .toJson()
-                  ]
+                      .toJson(),
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
-            key: 'events',
-            title: 'Events',
-            id: eventsTabId,
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onChangeCustom',
-                  label: 'On Change',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
-                  parentId: eventsTabId
+                  inputType: 'permissions',
+                  propertyName: 'permissions',
+                  label: 'Permissions',
+                  jsSetting: true,
+                  size: 'small',
+                  parentId: securityTabId,
                 })
-                .toJson()
-            ]
-          }
-        ]
+                .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

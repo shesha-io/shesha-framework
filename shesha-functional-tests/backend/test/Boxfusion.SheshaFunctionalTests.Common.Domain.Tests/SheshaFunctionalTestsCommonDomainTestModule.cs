@@ -122,8 +122,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Tests
 
             IocManager.IocContainer.AddFacility<LoggingFacility>(f => f.UseAbpLog4Net().WithConfig("log4netTest.config"));
 
-            StaticContext.SetIocManager(IocManager);
-
             ServiceCollectionRegistrar.Register(IocManager);
         }
 

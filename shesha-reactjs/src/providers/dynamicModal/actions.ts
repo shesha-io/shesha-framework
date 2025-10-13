@@ -15,7 +15,7 @@ export const openAction = createAction<IModalProps, IModalProps>(DynamicModalAct
 
 export const createModalAction = createAction<ICreateModalPayload, ICreateModalPayload>(
   DynamicModalActionEnums.CreateModal,
-  (p) => p
+  (p) => p,
 );
 
 export const removeModalAction = createAction<string, string>(DynamicModalActionEnums.RemoveModal, (p) => p);

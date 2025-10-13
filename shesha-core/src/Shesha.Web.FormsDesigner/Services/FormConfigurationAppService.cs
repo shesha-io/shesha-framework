@@ -1,19 +1,15 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
-using Abp.Extensions;
 using Abp.Runtime.Validation;
+using Abp.Threading;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
-using Shesha.Configuration.Runtime;
-using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
-using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.Exceptions;
@@ -22,9 +18,10 @@ using Shesha.Mvc;
 using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Utilities;
-using Shesha.Validations;
 using Shesha.Web.FormsDesigner.Dtos;
+using Shesha.Web.FormsDesigner.Dtos.Forms;
 using Shesha.Web.FormsDesigner.Exceptions;
+using Shesha.Web.FormsDesigner.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -35,34 +32,27 @@ using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
 {
-    public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationDto, UpdateFormConfigurationDto, GetFormByIdInput>
+    public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationRequest, UpdateFormConfigurationDto, GetFormByIdInput>
     {
-
-        public const string MovePermissionName = "";
-        public const string CopyPermissionName = "";
-
+        private readonly IRepository<ConfigurationItemFolder, Guid> _folderRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly IFormManager _formManager;
-        private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
-        private readonly IEntityConfigManager _entityConfigManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
 
         public FormConfigurationAppService(
             IRepository<FormConfiguration, Guid> repository,
             IRepository<Module, Guid> moduleRepository,
+            IRepository<ConfigurationItemFolder, Guid> folderRepository,
             IFormManager formManager,
-            IConfigurationFrameworkRuntime cfRuntime,
             IConfigurationItemClientSideCache clientSideCache,
-            IEntityConfigManager entityConfigManager,
             IPermissionedObjectManager permissionedObjectManager
         ) : base(repository)
         {
             _moduleRepository = moduleRepository;
+            _folderRepository = folderRepository;
             _formManager = formManager;
-            _cfRuntime = cfRuntime;
             _clientSideCache = clientSideCache;
-            _entityConfigManager = entityConfigManager;
             _permissionedObjectManager = permissionedObjectManager;
         }
 
@@ -81,9 +71,9 @@ namespace Shesha.Web.FormsDesigner.Services
         /// Gets all permissioned shesha forms with anonymous access
         /// </summary>
         /// <returns></returns>
-        public async Task<List<PermissionedObjectDto>> GetAnonymousFormsAsync()
+        public Task<List<PermissionedObjectDto>> GetAnonymousFormsAsync()
         {
-            return await _permissionedObjectManager.GetObjectsByAccessAsync(ShaPermissionedObjectsTypes.Form, RefListPermissionedAccess.AllowAnonymous);
+            return _permissionedObjectManager.GetObjectsByAccessAsync(ShaPermissionedObjectsTypes.Form, RefListPermissionedAccess.AllowAnonymous);
         }
 
         private async Task<bool> CheckFormPermissionsAsync(string? module, string name)
@@ -110,6 +100,32 @@ namespace Shesha.Web.FormsDesigner.Services
         protected override FormConfigurationDto MapToEntityDto(FormConfiguration entity)
         {
             return AsyncHelper.RunSync(() => MapToEntityDtoAsync(entity));
+        }
+
+        public override async Task<FormConfigurationDto> CreateAsync(CreateFormConfigurationRequest input)
+        {
+            var module = await _moduleRepository.GetAsync(input.ModuleId);
+            module.EnsureEditable();
+
+            var folder = input.FolderId != null
+                ? await _folderRepository.GetAsync(input.FolderId.Value)
+                : null;
+
+            var formInput = new CreateFormInput
+            {
+                Module = module,
+                Folder = folder,
+                Name = input.Name,
+                Description = input.Description,
+                Label = input.Label,
+                Markup = input.Markup,
+                ModelType = input.ModelType,
+                GenerationLogicExtensionJson = input.GenerationLogicExtensionJson,
+                TemplateId = input.TemplateId,
+            };
+
+            var form = await _formManager.CreateFormAsync(formInput);
+            return await MapToEntityDtoAsync(form);
         }
         
         protected async Task<FormConfigurationDto> MapToEntityDtoAsync(FormConfiguration entity)
@@ -154,7 +170,6 @@ namespace Shesha.Web.FormsDesigner.Services
             return result;
         }
 
-
         /// <summary>
         /// Get current form configuration by name
         /// </summary>
@@ -164,12 +179,10 @@ namespace Shesha.Web.FormsDesigner.Services
         [AllowAnonymous]
         public async Task<FormConfigurationDto> GetByNameAsync(GetFormByFullNameInput input)
         {
-            var mode = _cfRuntime.ViewMode;
-
             // check cache
             if (!string.IsNullOrWhiteSpace(input.Md5))
             {
-                var cachedMd5 = await _clientSideCache.GetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode);
+                var cachedMd5 = await _clientSideCache.GetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name);
                 if (input.Md5 == cachedMd5)
                     throw new ContentNotModifiedException("Form not changed");
             }
@@ -180,37 +193,6 @@ namespace Shesha.Web.FormsDesigner.Services
             var query = Repository.GetAll().Where(f => f.Module == moduleEntity &&
                 f.Name == input.Name);
 
-            if (input.Version.HasValue)
-                query = query.Where(f => f.VersionNo == input.Version.Value);
-            else {
-                switch (mode)
-                {
-                    case ConfigurationItemViewMode.Live:
-                        query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
-                        break;
-                    case ConfigurationItemViewMode.Ready:
-                        {
-                            var statuses = new ConfigurationItemVersionStatus[] {
-                            ConfigurationItemVersionStatus.Live,
-                            ConfigurationItemVersionStatus.Ready
-                        };
-
-                            query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
-                            break;
-                        }
-                    case ConfigurationItemViewMode.Latest:
-                        {
-                            var statuses = new ConfigurationItemVersionStatus[] {
-                            ConfigurationItemVersionStatus.Live,
-                            ConfigurationItemVersionStatus.Ready,
-                            ConfigurationItemVersionStatus.Draft
-                        };
-                            query = query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
-                            break;
-                        }
-                }
-            }
-
             var form = await AsyncQueryableExecuter.FirstOrDefaultAsync(query);
 
             if (form == null)
@@ -218,13 +200,11 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var dto = await MapToEntityDtoAsync(form);
 
-            dto.CacheMd5 = GetMd5(dto);
-            await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode, dto.CacheMd5);
+            //await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, dto.CacheMd5);
 
             if (!await CheckFormPermissionsAsync(form.Module?.Name, form.Name))
             {
                 dto.Markup = null;
-                dto.CacheMd5 = "";
             }
 
             return dto;
@@ -243,15 +223,13 @@ namespace Shesha.Web.FormsDesigner.Services
             var form = await Repository.GetAsync(input.Id);
 
             var dto = await MapToEntityDtoAsync(form);
-            dto.CacheMd5 = GetMd5(dto);
 
             // add MD5 to request
-            await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, input.Id, dto.CacheMd5);
+            //await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, input.Id, dto.CacheMd5);
 
             if (!await CheckFormPermissionsAsync(form.Module?.Name, form.Name))
             {
                 dto.Markup = null;
-                dto.CacheMd5 = "";
             }
 
             return dto;
@@ -273,7 +251,10 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             // todo: check rights
             var form = await Repository.GetAsync(input.Id);
+
             form.Markup = input.Markup;
+            await Repository.UpdateAsync(form);
+
             await Repository.UpdateAsync(form);
 
             if (input.Access > RefListPermissionedAccess.Inherited)
@@ -294,121 +275,6 @@ namespace Shesha.Web.FormsDesigner.Services
         }
 
         /// <summary>
-        /// Update form status
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [HttpPut]
-        public async Task UpdateStatusAsync(UpdateConfigurationStatusInput input)
-        {
-            // todo: check rights
-
-            var validationResults = new List<ValidationResult>();
-            if (string.IsNullOrWhiteSpace(input.Filter))
-                validationResults.Add(new ValidationResult("Filter is mandatory", new string[] { nameof(input.Filter) }));
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            var forms = await GetAllFilteredAsync(input.Filter);
-
-            foreach (var form in forms)
-            {
-                await _formManager.UpdateStatusAsync(form, input.Status);
-            }
-        }
-
-        /// <summary>
-        /// Publish All forms
-        /// </summary>
-        /// <returns></returns>
-        [HttpPut]
-        public async Task PublishAllAsync()
-        {
-            CheckCreatePermission();
-
-            var forms = await _formManager.GetAllAsync();
-
-            var draftOrReadyForms = forms
-                .Where(x => x.VersionStatus == ConfigurationItemVersionStatus.Draft || x.VersionStatus == ConfigurationItemVersionStatus.Ready)
-                .ToList();
-
-            // Update the status of each form to Live
-            foreach (var form in draftOrReadyForms)
-            {
-                await _formManager.UpdateStatusAsync(form, ConfigurationItemVersionStatus.Live);
-            }
-        }
-
-        /// <summary>
-        /// Create new form configuration
-        /// </summary>
-        public override async Task<FormConfigurationDto> CreateAsync(CreateFormConfigurationDto input)
-        {
-            CheckCreatePermission();
-
-            var form = await _formManager.CreateAsync(input);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            return await MapToEntityDtoAsync(form);
-        }
-
-        /// <summary>
-        /// Create new version of form configuration
-        /// </summary>
-        /// <exception cref="AbpValidationException"></exception>
-        [HttpPost]
-        public async Task<FormConfigurationDto> CreateNewVersionAsync(CreateNewVersionInput input) 
-        {
-            CheckCreatePermission();
-
-            var item = await Repository.GetAsync(input.Id);
-
-            var validationResults = new List<ValidationResult>();
-
-            if (item.VersionStatus != ConfigurationItemVersionStatus.Live &&
-                item.VersionStatus != ConfigurationItemVersionStatus.Cancelled)
-                validationResults.Add(new ValidationResult($"Creation of new version allowed only for items with '{ConfigurationItemVersionStatus.Live}' or '{ConfigurationItemVersionStatus.Cancelled}' status"));
-
-            if (!item.IsLast)
-                validationResults.Add(new ValidationResult($"Creation of new version allowed only for last version of form"));
-
-            if (validationResults.Any())
-                throw new AbpValidationException("Failed to create new version", validationResults);
-
-            var newVersion = await _formManager.CreateNewVersionAsync(item);
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            return await MapToEntityDtoAsync(newVersion);
-        }
-
-        /// <summary>
-        /// Cancel version
-        /// </summary>
-        /// <exception cref="AbpValidationException"></exception>
-        [HttpPost]
-        public async Task<FormConfigurationDto> CancelVersionAsync(CancelVersionInput input)
-        {
-            CheckCreatePermission();
-
-            var item = await Repository.GetAsync(input.Id);
-
-            var validationResults = new List<ValidationResult>();
-
-            if (item.VersionStatus != ConfigurationItemVersionStatus.Ready)
-                validationResults.Add(new ValidationResult($"This operation is allowed only for items with '{ConfigurationItemVersionStatus.Ready}' status"));
-
-            if (!item.IsLast)
-                validationResults.Add(new ValidationResult($"This operation is allowed only for last version of form"));
-
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            await _formManager.CancelVersoinAsync(item);
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            return await MapToEntityDtoAsync(item);
-        }
-
-        /// <summary>
         /// Get form in JSON format
         /// </summary>
         /// <param name="id"></param>
@@ -417,8 +283,9 @@ namespace Shesha.Web.FormsDesigner.Services
         public async Task<FileContentResult> GetJsonAsync(Guid id)
         {
             var item = await Repository.GetAsync(id);
-            var bytes = Encoding.UTF8.GetBytes(item.Markup ?? "");
             
+            var bytes = Encoding.UTF8.GetBytes(item.Markup ?? "");
+
             return new ShaFileContentResult(bytes, "application/json") { FileDownloadName = $"{item.FullName}.json" };
         }
 
@@ -432,8 +299,6 @@ namespace Shesha.Web.FormsDesigner.Services
             var item = await Repository.GetAsync(input.ItemId);
             
             var validationResults = new List<ValidationResult>();
-            if (item.VersionStatus != ConfigurationItemVersionStatus.Draft)
-                validationResults.Add(new ValidationResult($"Import JSON is allowed for Draft version only"));
 
             if (input.File == null || input.File.Length == 0)
                 validationResults.Add(new ValidationResult($"Please upload JSON file"));
@@ -484,83 +349,18 @@ namespace Shesha.Web.FormsDesigner.Services
             var entity = await GetEntityByIdAsync(input.Id);
 
             entity.Name = input.Name;
+
             entity.Label = input.Label;
             entity.Description = input.Description;
             entity.Markup = input.Markup;
             entity.ModelType = input.ModelType;
-
+            entity.ConfigurationForm =  new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!);
+            entity.GenerationLogicTypeName = input.GenerationLogicTypeName;
+            entity.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
+            entity.PlaceholderIcon = input.PlaceholderIcon;
             await CurrentUnitOfWork.SaveChangesAsync();
 
             return await MapToEntityDtoAsync(entity);
-        }
-
-        /// <summary>
-        /// Delete form
-        /// </summary>
-        public override async Task DeleteAsync(EntityDto<Guid> input)
-        {
-            CheckDeletePermission();
-
-            await _formManager.DeleteAllVersionsAsync(input.Id);
-        }
-
-        /// <summary>
-        /// Move form to another module
-        /// </summary>
-        [HttpPost]
-        public async Task MoveToModuleAsync(MoveToModuleInput input)
-        {
-            CheckPermission(MovePermissionName);
-
-            await _formManager.MoveToModuleAsync(input);
-        }
-
-        /// <summary>
-        /// Copy form
-        /// </summary>
-        [HttpPost]
-        public async Task<FormConfigurationDto> CopyAsync(CopyItemInput input)
-        {
-            CheckPermission(CopyPermissionName);
-
-            var form = await _formManager.CopyAsync(input);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            return await MapToEntityDtoAsync(form);
-        }
-
-        public async Task<List<object>> GetFormsWithNotImplementedAsync()
-        {
-            var configs = (await _entityConfigManager.GetMainDataListAsync()).Where(x => x.NotImplemented).ToList();
-            var list = new List<object>();
-
-            var forms = await Repository.GetAll().Where(x =>
-                    (int)x.VersionStatus < 4
-                    && !x.Name.Contains(".json")
-                    && x.Markup != null)
-                .Select(x => new { x.FullName, x.VersionNo, x.VersionStatus, x.Markup })
-                .ToListAsync();
-
-            foreach (var config in configs)
-            {
-                var className = $"\"{config.FullClassName}\"";
-                var typeShortAlias = $"\"{config.TypeShortAlias}\"";
-                var usetsa = !config.TypeShortAlias.IsNullOrWhiteSpace();
-                var formConfigs = forms.Where(x => x.Markup != null && x.Markup.Contains(className)).ToList();
-
-                list.AddRange(formConfigs.Select(x => {
-                    return new
-                    {
-                        className,
-                        typeShortAlias,
-                        x.FullName,
-                        x.VersionNo,
-                        x.VersionStatus
-                    };
-                }).ToList());
-            }
-            return list;
         }
 
         #region private methods

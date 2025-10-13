@@ -1,7 +1,7 @@
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { CellStyleFunc, IAnchoredColumnProps, ITableColumn } from '@/providers/dataTable/interfaces';
 import { FunctionExecutor, getFunctionExecutor } from '@/providers/form/utils';
-import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils';
+import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils/datatable';
 import { Cell } from 'react-table';
 
 export const getCellStyleAccessor = (columnItem: ITableColumn): CellStyleFunc => {
@@ -19,9 +19,9 @@ export const getCellStyleAccessor = (columnItem: ITableColumn): CellStyleFunc =>
 
   const cellStyleAccessor: CellStyleFunc = backgroundColorAccessor
     ? ({ row, value }) => {
-        const background = backgroundColorAccessor(row, value);
-        return { backgroundColor: background };
-      }
+      const background = backgroundColorAccessor(row, value);
+      return { backgroundColor: background };
+    }
     : undefined;
   return cellStyleAccessor;
 };
@@ -29,10 +29,10 @@ export const getCellStyleAccessor = (columnItem: ITableColumn): CellStyleFunc =>
 export const getAnchoredCellStyleAccessor = (
   row: Cell<any, any, any>[],
   cell: Cell<any>,
-  rowIndex: number
+  rowIndex: number,
 ): React.CSSProperties => {
   const anchored = getColumnAnchored((cell?.column as any)?.anchored);
-  
+
 
   const index = row.indexOf(cell);
 
@@ -45,15 +45,13 @@ export const getAnchoredCellStyleAccessor = (
     // use first row cell values to calculate the left shift
 
     if (anchored?.direction === 'right') {
-
       const totalColumns = row?.length;
 
       rightColumn.shadowPosition = totalColumns - calculateTotalColumnsOnFixed(row, 'right');
       rightColumn.shift = calculatePositionShift(row, index, totalColumns - 1)?.reduce(
         (acc, curr) => (acc as number) + curr,
-        0
+        0,
       );
-    
     } else if (anchored?.direction === 'left') {
       leftColumn.shadowPosition = calculateTotalColumnsOnFixed(row, 'left') - 1;
 
@@ -71,7 +69,7 @@ export const getAnchoredCellStyleAccessor = (
 
   const hasShadow = numOfFixed === index && anchored?.isFixed;
 
-  
+
   const fixedStyled: React.CSSProperties = {
     [direction]: anchored?.direction && shiftedBy,
     backgroundColor: isFixed ? background : 'unset',
@@ -79,5 +77,5 @@ export const getAnchoredCellStyleAccessor = (
     boxShadow: hasShadow ? (anchored?.direction === 'left' ? '5px 0 3px -2px #ccc' : '-5px 0 3px -2px #ccc') : 'unset',
   };
 
-  return {...fixedStyled};
+  return { ...fixedStyled };
 };

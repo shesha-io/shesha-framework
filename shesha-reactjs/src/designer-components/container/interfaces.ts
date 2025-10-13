@@ -1,142 +1,142 @@
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
-import { IConfigurableFormComponent, IInputStyles, OverflowType } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
 export type JustifyContent =
-  | 'center'
-  | 'start'
-  | 'end'
-  | 'flex-start'
-  | 'flex-end'
-  | 'left'
-  | 'right'
-  | 'normal'
-  | 'space-between'
-  | 'space-around'
-  | 'space-evenly'
-  | 'stretch'
-  | 'safe center'
-  | 'unsafe center'
-  | 'inherit'
-  | 'initial'
-  | 'revert'
-  | 'revert-layer'
-  | 'unset';
+  | 'center' |
+  'start' |
+  'end' |
+  'flex-start' |
+  'flex-end' |
+  'left' |
+  'right' |
+  'normal' |
+  'space-between' |
+  'space-around' |
+  'space-evenly' |
+  'stretch' |
+  'safe center' |
+  'unsafe center' |
+  'inherit' |
+  'initial' |
+  'revert' |
+  'revert-layer' |
+  'unset';
 
 export type JustifyItems =
-  | 'normal'
-  | 'stretch'
-  | 'center'
-  | 'start'
-  | 'end'
-  | 'flex-start'
-  | 'flex-end'
-  | 'self-start'
-  | 'self-end'
-  | 'left'
-  | 'right'
-  | 'baseline'
-  | 'first baseline'
-  | 'last baseline'
-  | 'safe center'
-  | 'unsafe center'
-  | 'legacy right'
-  | 'legacy left'
-  | 'legacy center'
-  | 'inherit'
-  | 'initial'
-  | 'revert'
-  | 'revert-layer'
-  | 'unset';
+  | 'normal' |
+  'stretch' |
+  'center' |
+  'start' |
+  'end' |
+  'flex-start' |
+  'flex-end' |
+  'self-start' |
+  'self-end' |
+  'left' |
+  'right' |
+  'baseline' |
+  'first baseline' |
+  'last baseline' |
+  'safe center' |
+  'unsafe center' |
+  'legacy right' |
+  'legacy left' |
+  'legacy center' |
+  'inherit' |
+  'initial' |
+  'revert' |
+  'revert-layer' |
+  'unset';
 
 export type FlexDirection =
-  | 'row'
-  | 'row-reverse'
-  | 'column'
-  | 'column-reverse'
-  | 'inherit'
-  | 'initial'
-  | 'revert'
-  | 'revert-layer'
-  | 'unset';
+  | 'row' |
+  'row-reverse' |
+  'column' |
+  'column-reverse' |
+  'inherit' |
+  'initial' |
+  'revert' |
+  'revert-layer' |
+  'unset';
 
 export type FlexWrap = 'nowrap' | 'wrap' | 'wrap-reverse' | 'inherit' | 'initial' | 'revert' | 'revert-layer' | 'unset';
 
 export type JustifySelf =
-  | 'auto'
-  | 'normal'
-  | 'stretch'
-  | 'center;'
-  | 'start'
-  | 'end'
-  | 'flex-start'
-  | 'flex-end; '
-  | 'self-start'
-  | 'self-end'
-  | 'left'
-  | 'right;'
-  | 'baseline'
-  | 'first baseline'
-  | 'last baseline'
-  | 'safe center'
-  | 'unsafe center'
-  | 'inherit'
-  | 'initial'
-  | 'revert'
-  | 'revert-layer'
-  | 'unset';
+  | 'auto' |
+  'normal' |
+  'stretch' |
+  'center;' |
+  'start' |
+  'end' |
+  'flex-start' |
+  'flex-end; ' |
+  'self-start' |
+  'self-end' |
+  'left' |
+  'right;' |
+  'baseline' |
+  'first baseline' |
+  'last baseline' |
+  'safe center' |
+  'unsafe center' |
+  'inherit' |
+  'initial' |
+  'revert' |
+  'revert-layer' |
+  'unset';
 
 export type TextJustify =
   // | 'none'
-  | 'auto'
-  | 'inter-word'
-  | 'inter-character'
-  | 'distribute'
-  | 'inherit'
-  | 'initial'
-  | 'revert'
-  | 'revert-layer'
-  | 'unset';
+  | 'auto' |
+  'inter-word' |
+  'inter-character' |
+  'distribute' |
+  'inherit' |
+  'initial' |
+  'revert' |
+  'revert-layer' |
+  'unset';
 
 export type AlignItems =
-  | 'normal'
-  | 'stretch'
-  | 'center'
-  | 'start'
-  | 'end'
-  | 'flex-start'
-  | 'flex-end'
-  | 'baseline'
-  | 'first baseline'
-  | 'last baseline'
-  | 'safe center'
-  | 'unsafe center'
-  | 'inherit'
-  | 'initial'
-  | 'revert'
-  | 'revert-layer'
-  | 'unset';
+  | 'normal' |
+  'stretch' |
+  'center' |
+  'start' |
+  'end' |
+  'flex-start' |
+  'flex-end' |
+  'baseline' |
+  'first baseline' |
+  'last baseline' |
+  'safe center' |
+  'unsafe center' |
+  'inherit' |
+  'initial' |
+  'revert' |
+  'revert-layer' |
+  'unset';
 
 export type AlignSelf =
-  | 'auto'
-  | 'normal'
-  | 'center'
-  | 'start'
-  | 'end'
-  | 'self-start'
-  | 'self-end'
-  | 'flex-start'
-  | 'flex-end'
-  | 'baseline'
-  | 'first baseline'
-  | 'last baseline'
-  | 'stretch'
-  | 'safe center'
-  | 'unsafe center'
-  | 'inherit'
-  | 'initial'
-  | 'revert'
-  | 'revert-layer'
-  | 'unset';
+  | 'auto' |
+  'normal' |
+  'center' |
+  'start' |
+  'end' |
+  'self-start' |
+  'self-end' |
+  'flex-start' |
+  'flex-end' |
+  'baseline' |
+  'first baseline' |
+  'last baseline' |
+  'stretch' |
+  'safe center' |
+  'unsafe center' |
+  'inherit' |
+  'initial' |
+  'revert' |
+  'revert-layer' |
+  'unset';
 
 export type ShadowStyleType = 'none' | 'above' | 'below';
 
@@ -165,7 +165,6 @@ export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
   borderColor?: string;
   borderStyle?: string;
   borderRadius?: string | number;
-  overflow?: OverflowType;
   shadowStyle?: string;
   style?: React.CSSProperties;
 }
@@ -185,4 +184,5 @@ export interface IContainerComponentProps extends IConfigurableFormComponent, Om
   desktop?: any;
   tablet?: any;
   mobile?: any;
+  showAdvanced?: boolean;
 }

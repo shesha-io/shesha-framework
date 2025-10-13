@@ -1,10 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
-import { useAppConfigurator, useAuth } from '@/providers';
+import { useAppConfigurator, useAuthOrUndefined } from '@/providers';
 import { IPersistedFormProps } from '@/providers/form/models';
 import { Button } from 'antd';
-import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramework/models';
 import { getFormFullName } from '@/utils/form';
-import StatusTag from '@/components/statusTag';
 import { CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { QuickEditDialog } from '../formDesigner/quickEdit/quickEditDialog';
 import { useStyles } from './styles/styles';
@@ -27,19 +25,18 @@ export interface FormInfoProps {
 }
 
 export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, children }) => {
-  
-  const { id, versionNo, versionStatus, name, module } = formProps;
+  const { id, name, module } = formProps;
   const { toggleShowInfoBlock, formInfoBlockVisible, softInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
 
-  const auth = useAuth(false);
+  const auth = useAuthOrUndefined();
 
   const [open, setOpen] = useState(false);
   const [panelShowing, setPanelShowing] = useState<boolean>(formInfoBlockVisible);
   const displayEditMode = formInfoBlockVisible && formProps?.id;
 
-  const onModalOpen = () => setOpen(true);
-  const onUpdated = () => {
+  const onModalOpen = (): void => setOpen(true);
+  const onUpdated = (): void => {
     if (onMarkupUpdated) {
       onMarkupUpdated();
     }
@@ -47,14 +44,15 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
   };
 
   useEffect(() => {
-    setPanelShowing(softInfoBlock);
+    if (displayEditMode)
+      setPanelShowing(softInfoBlock);
   }, [softInfoBlock]);
 
   if (!formProps?.id) {
     return <>{children}</>;
   }
 
-  if (auth?.state?.status !== 'ready'){
+  if (auth?.state?.status !== 'ready') {
     return <>{children}</>;
   }
 
@@ -71,9 +69,12 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
       className={classNames(styles.shaFormContainer, { [styles.shaEditMode]: displayEditMode })}
     >
 
-      <div className={`${styles.shaFormInfoCardParent}`} style={{
-        height: Boolean(displayEditMode) ? '40px' : '0px',
-      }}>
+      <div
+        className={`${styles.shaFormInfoCardParent}`}
+        style={{
+          height: Boolean(displayEditMode) ? '40px' : '0px',
+        }}
+      >
         <div
           className={`${styles.shaFormInfoCard}`}
           style={{
@@ -100,18 +101,13 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
 
             <p
               onClick={() => onModalOpen()}
-              title={`${getFormFullName(module, name)} v${versionNo}`}
-              className={styles.shaFormInfoCardTitle}>
-              {getFormFullName(module, name)} v{versionNo}
+              title={getFormFullName(module, name)}
+              className={styles.shaFormInfoCardTitle}
+            >
+              {getFormFullName(module, name)}
             </p>
 
             <div style={{ display: 'flex', alignItems: 'center', paddingRight: 5 }}>
-              <StatusTag
-                value={versionStatus}
-                mappings={CONFIGURATION_ITEM_STATUS_MAPPING}
-                color={null}
-                style={{ display: 'flex', marginRight: '5px', fontSize: '10px', height: '15px', justifyContent: 'center', alignItems: 'center' }}
-              />
               <CloseOutlined
                 onClick={() => toggleShowInfoBlock(false)}
                 title="Click to hide form info"

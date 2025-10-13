@@ -2,7 +2,7 @@ import { isEqual } from 'lodash';
 import { DependencyList, useMemo, useRef } from 'react';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 
-export function useDeepCompareMemo<T>(callback: () => T, dependencies: DependencyList) {
+export function useDeepCompareMemo<T>(callback: () => T, dependencies: DependencyList): T {
   return useMemo(callback, useDeepCompareMemoize(dependencies));
 }
 
@@ -13,7 +13,7 @@ export function useDeepCompareMemo<T>(callback: () => T, dependencies: Dependenc
  * @param dependencies
  * @returns
  */
-export function useDeepCompareMemoKeepReference<T>(callback: () => T, dependencies: DependencyList) {
+export function useDeepCompareMemoKeepReference<T>(callback: () => T, dependencies: DependencyList): T {
   const ref = useRef<T>();
 
   // note: we can't use existing `useDeepCompareMemoize` hook inside `useMemo` because React doesn't allow to use any hooks inside standard hooks

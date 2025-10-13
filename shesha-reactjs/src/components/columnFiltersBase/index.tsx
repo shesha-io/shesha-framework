@@ -26,7 +26,7 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
   currentFilter,
 }) => {
   const filterableColumns = getTableDataColumns(columns).filter((c) =>
-    Boolean(currentFilter.find((f) => f.columnId === c.id))
+    Boolean(currentFilter.find((f) => f.columnId === c.id)),
   );
 
   return (
@@ -43,19 +43,19 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
           entityReferenceTypeShortAlias,
         }) => {
           if (isFilterable) {
-            const onRemoveFilter = (idOfFilter: string) => {
+            const onRemoveFilter = (idOfFilter: string): void => {
               const newIds = currentFilter.filter((f) => f.columnId !== idOfFilter).map((f) => f.columnId);
 
               toggleColumnFilter(newIds);
             };
 
-            const onChangeFilterOption = (filterId: string, fOption: IndexColumnFilterOption) => {
+            const onChangeFilterOption = (filterId: string, fOption: IndexColumnFilterOption): void => {
               if (changeFilterOption) {
                 changeFilterOption(filterId, fOption);
               }
             };
 
-            const onChangeFilter = (filterId: string, fltr: ColumnFilter) => {
+            const onChangeFilter = (filterId: string, fltr: ColumnFilter): void => {
               if (changeFilter) {
                 changeFilter(filterId, fltr);
               }
@@ -84,7 +84,7 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
           }
 
           return null;
-        }
+        },
       )}
     </div>
   );

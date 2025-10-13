@@ -1,15 +1,17 @@
-import { ConfigurableForm, DataTypes, pickStyleFromModel, useDataTableStore, useFormState, useMetadataDispatcher } from '@/index';
-import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
+import { ConfigurableForm, DataTypes, pickStyleFromModel, StyleBoxValue, useDataTableStore, useFormState, useMetadataDispatcher } from '@/index';
+import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
 import { App, Flex, Form, Modal } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
 import KanbanColumn from './components/renderColumn';
 import { IKanbanProps } from './model';
 import { useKanbanActions } from './utils';
-import { addPx } from '@/designer-components/_settings/utils';
+import { addPx } from '@/utils/style';
+import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
+import { jsonSafeParse } from '@/utils/object';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, createFormId, items, componentName, editFormId, stylingBox } = props;
+  const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
 
   const { tableData, modelType } = useDataTableStore();
   const { message } = App.useApp();
@@ -28,7 +30,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { storeSettings } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
 
-  const styling = JSON.parse(stylingBox || '{}');
+  const styling = jsonSafeParse<StyleBoxValue>(props.columnStyles.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   useEffect(() => {
@@ -54,7 +56,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   }, [items]);
 
   useEffect(() => {
-    const initializeSettings = async () => {
+    const initializeSettings = async (): Promise<void> => {
       try {
         const resp = await fetchColumnState(componentName);
         if (!resp?.result) return;
@@ -84,7 +86,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     }
   }, [selectedItem, editForm]);
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     setIsModalVisible(false);
     form.resetFields();
     editForm.resetFields();
@@ -92,16 +94,16 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     setSelectedColumn(null);
   };
 
-  const handleEditClick = (item: any) => {
+  const handleEditClick = (item: any): void => {
     setSelectedItem(item);
     setIsModalVisible(true);
   };
 
-  const handleEdit = async () => {
+  const handleEdit = async (): Promise<void> => {
     const updatedItem = editForm.getFieldsValue();
     updatedItem.id = selectedItem.id;
 
-    updateKanban(updatedItem, urls.updateUrl)
+    await updateKanban(updatedItem, urls.updateUrl)
       .then((resp: any) => {
         if (resp.success) {
           const updatedTasks = tasks.map((task) => (task.id === selectedItem.id ? { ...task, ...resp.result } : task));
@@ -115,13 +117,13 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       });
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: string): void => {
     const updatedTasks = tasks.filter((task) => task.id !== id);
     setTasks(updatedTasks);
     deleteKanban(id, urls.deleteUrl);
   };
 
-  const handleCreate = () => {
+  const handleCreate = (): void => {
     const newValues = form.getFieldsValue();
     newValues[groupingProperty] = selectedColumn;
     createKanbanItem(newValues, urls.postUrl)
@@ -139,7 +141,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       });
   };
 
-  const handleCreateClick = (columnValue) => {
+  const handleCreateClick = (columnValue): void => {
     setSelectedColumn(columnValue);
     setSelectedItem(null);
     form.resetFields();
@@ -154,12 +156,14 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     }));
   }, [columns, tasks, groupingProperty, settings]);
 
+  const overflowStyle = getOverflowStyle(true, false);
+
   return (
     <>
-      {!items || items.length === 0 ? (
+      {!columns || columns.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
-        <Flex style={{...stylingBoxAsCSS, overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
+        <Flex style={{ ...stylingBoxAsCSS, ...overflowStyle, overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
           {memoizedFilteredTasks?.map(({ column, tasks: columnTasks }) => (
             <KanbanColumn
               props={props}
@@ -184,8 +188,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
         title={selectedItem ? 'Edit Item' : 'New Item'}
         open={isModalVisible}
         onOk={() =>
-          selectedItem ? editForm.validateFields().then(handleEdit) : form.validateFields().then(handleCreate)
-        }
+          selectedItem ? editForm.validateFields().then(handleEdit) : form.validateFields().then(handleCreate)}
         onCancel={closeModal}
         width={1000}
       >
@@ -198,7 +201,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
             mode="edit"
           />
         ) : (
-          <ConfigurableForm key={'new-item'} form={form} formId={createFormId} mode="edit" />
+          <ConfigurableForm key="new-item" form={form} formId={createFormId} mode="edit" />
         )}
       </Modal>
     </>

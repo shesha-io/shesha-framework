@@ -5,6 +5,7 @@ import { FormMarkup } from '@/providers/form/models';
 import GenericSettingsForm from '../genericSettingsForm';
 import { IConfigurableFormComponent } from '@/providers';
 import { useFormDesignerActions } from '@/providers/formDesigner';
+import { wrapDisplayName } from '@/utils/react';
 
 export interface IComponentPropertiesEditorProps {
   toolboxComponent: IToolboxComponent;
@@ -15,13 +16,14 @@ export interface IComponentPropertiesEditorProps {
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
   propertyFilter?: (name: string) => boolean;
   layoutSettings?: IFormLayoutSettings;
+  isInModal?: boolean;
 }
 
-const getDefaultFactory = (markup: FormMarkup): ISettingsFormFactory => {
+const getDefaultFactory = (markup: FormMarkup, isInModal?: boolean): ISettingsFormFactory => {
   const evaluatedMarkup = typeof markup === 'function'
     ? markup({})
     : markup;
-  return ({ readOnly, model, onSave, onCancel, onValuesChange, toolboxComponent, formRef, propertyFilter, layoutSettings }) => {
+  return wrapDisplayName(({ readOnly, model, onSave, onCancel, onValuesChange, toolboxComponent, formRef, propertyFilter, layoutSettings }) => {
     return (
       <GenericSettingsForm
         readOnly={readOnly}
@@ -34,13 +36,14 @@ const getDefaultFactory = (markup: FormMarkup): ISettingsFormFactory => {
         formRef={formRef}
         propertyFilter={propertyFilter}
         layoutSettings={layoutSettings}
+        isInModal={isInModal}
       />
     );
-  };
+  }, "ComponentDefaultSettings");
 };
 
 export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (props) => {
-  const { componentModel, readOnly, toolboxComponent } = props;
+  const { componentModel, readOnly, toolboxComponent, isInModal } = props;
 
   const { getCachedComponentEditor } = useFormDesignerActions();
 
@@ -48,26 +51,26 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
     return toolboxComponent?.settingsFormFactory
       ? toolboxComponent.settingsFormFactory
       : toolboxComponent?.settingsFormMarkup
-        ? getDefaultFactory(toolboxComponent.settingsFormMarkup)
+        ? getDefaultFactory(toolboxComponent.settingsFormMarkup, isInModal)
         : null;
   });
 
   const { autoSave, onSave, formRef, propertyFilter, layoutSettings } = props;
 
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       onSave(values);
     },
     // delay in ms
-    300
+    300,
   );
 
-  const onValuesChange = (_changedValues, values) => {
+  const onValuesChange = (_changedValues, values): void => {
     if (autoSave && !readOnly)
       debouncedSave(values);
   };
 
-  const onCancel = () => {
+  const onCancel = (): void => {
     // not used
   };
 
@@ -83,6 +86,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
         formRef={formRef}
         propertyFilter={propertyFilter}
         layoutSettings={layoutSettings}
+        isInModal={isInModal}
       />
     )
     : null;

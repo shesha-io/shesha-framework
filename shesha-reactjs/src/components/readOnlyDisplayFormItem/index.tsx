@@ -1,5 +1,3 @@
-import { Switch, Tag } from 'antd';
-import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { ValueRenderer } from '@/components/valueRenderer/index';
 import React, { FC, useMemo } from 'react';
 import { getMoment } from '@/utils/date';
@@ -7,6 +5,8 @@ import { ISelectOption } from '@/components/autocomplete';
 import QuickView, { GenericQuickView } from '@/components/quickView';
 import { IReadOnlyDisplayFormItemProps } from './models';
 import { useStyles } from './styles/styles';
+import ReflistTag from '../refListDropDown/reflistTag';
+import InputField from './inputField';
 
 type AutocompleteType = ISelectOption;
 
@@ -25,9 +25,15 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     quickviewDisplayPropertyName,
     quickviewGetEntityUrl,
     quickviewWidth,
+    style,
+    tagStyle,
+    showIcon,
+    solidColor,
+    showItemName,
   } = props;
 
-  const { styles } = useStyles();
+  const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
+
   const renderValue = useMemo(() => {
     if (render) {
       return typeof render === 'function' ? render() : render;
@@ -36,7 +42,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     if ((typeof value === 'undefined' || value === null) && (type === 'dropdown' || type === 'dropdownMultiple')) {
       return '';
 
-      //eliminating null values
+      // eliminating null values
     } else if ((typeof value === 'undefined' || value === null) && type === 'string') {
       return '';
     }
@@ -49,60 +55,96 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
       case 'dropdown':
         if (!Array.isArray(value)) {
           if (quickviewEnabled && quickviewFormPath) {
-            return quickviewFormPath && quickviewGetEntityUrl ? (
-              <QuickView
-                entityId={entityId}
-                formIdentifier={quickviewFormPath}
-                getEntityUrl={quickviewGetEntityUrl}
-                displayProperty={quickviewDisplayPropertyName}
-                width={quickviewWidth}
-              />
-            ) : (
-              <GenericQuickView
-                entityId={entityId}
-                className={className}
-                displayName={displayName}
-                displayProperty={quickviewDisplayPropertyName}
-                width={quickviewWidth}
-              />
-            );
+            return quickviewFormPath && quickviewGetEntityUrl
+              ? (
+                <QuickView
+                  entityId={entityId}
+                  formIdentifier={quickviewFormPath}
+                  getEntityUrl={quickviewGetEntityUrl}
+                  displayProperty={quickviewDisplayPropertyName}
+                  width={quickviewWidth}
+                />
+              )
+              : (
+                <GenericQuickView
+                  entityId={entityId}
+                  className={className}
+                  displayName={displayName}
+                  displayProperty={quickviewDisplayPropertyName}
+                  width={quickviewWidth}
+                />
+              );
           } else {
-            return displayName;
+            return dropdownDisplayMode === 'tags'
+              ? (
+                <ReflistTag
+                  value={value}
+                  color={value?.color}
+                  icon={value?.icon}
+                  showIcon={showIcon}
+                  tagStyle={tagStyle}
+                  description={value?.description}
+                  solidColor={solidColor}
+                  showItemName={showItemName}
+                  label={displayName}
+                />
+              )
+              : <InputField style={style} value={displayName ?? (typeof value === 'object' ? null : value)} />;
           }
         }
-
-        throw new Error(`Invalid data type passed. Expected IGuidNullableEntityReferenceDto but found ${typeof value}`);
+        return null;
 
       case 'dropdownMultiple': {
         if (Array.isArray(value)) {
           const values = (value as AutocompleteType[])?.map(({ label }) => label);
 
           return dropdownDisplayMode === 'raw'
-            ? values?.join(', ')
-            : values?.map((itemValue, index) => <Tag key={index}>{itemValue}</Tag>);
+            ? <InputField style={style} value={values?.join(', ')} />
+            : (
+              <div style={{ padding: '0px 4px', ...style, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, justifyContent: style?.textAlign }}>
+                {value?.map(({ label, color, icon, value, description }) => {
+                  return (
+                    <ReflistTag
+                      key={value}
+                      value={value}
+                      color={color}
+                      icon={icon}
+                      description={description}
+                      showIcon={showIcon}
+                      tagStyle={tagStyle}
+                      solidColor={solidColor}
+                      showItemName={showItemName}
+                      label={label}
+                    />
+                  );
+                })}
+              </div>
+            );
         }
 
         throw new Error(
-          `Invalid data type passed. Expected IGuidNullableEntityReferenceDto[] but found ${typeof value}`
+          `Invalid data type passed. Expected IGuidNullableEntityReferenceDto[] but found ${typeof value}`,
         );
       }
       case 'time': {
-        return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }}/>;
+        return <InputField style={style} value={<ValueRenderer value={value} meta={{ path: '', dataType: 'time', dataFormat: timeFormat }} />} />;
       }
       case 'datetime': {
-        return getMoment(value, dateFormat)?.format(dateFormat) || '';
+        return <InputField style={style} value={getMoment(value, dateFormat)?.format(dateFormat) || ''} />;
       }
-      case 'checkbox': {
-        return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled />;
-      }
-      case 'switch': {
-        return <Switch checked={checked} defaultChecked={defaultChecked} disabled />;
+      case 'textArea': {
+        return <div style={{ ...style, whiteSpace: 'pre-wrap', lineHeight: '1.2' }}>{value}</div>;
       }
 
       default:
         break;
     }
-    return Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+    return (
+      <InputField
+        style={style}
+        value={Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
+      />
+    );
   }, [value,
     type,
     dateFormat,
@@ -115,11 +157,11 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     quickviewFormPath,
     quickviewDisplayPropertyName,
     quickviewGetEntityUrl,
-    quickviewWidth
+    quickviewWidth,
   ]);
 
   return (
-    <span className={styles.readOnlyDisplayFormItem}>
+    <span className={styles.readOnlyDisplayFormItem} style={style}>
       {renderValue}
     </span>
   );

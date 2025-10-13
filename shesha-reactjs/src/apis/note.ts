@@ -20,7 +20,7 @@ export interface NoteDto {
   /**
    * Category of the note. Is used to split notes into groups
    */
-  category?: number | null;
+  category?: string;
   /**
    * Note importance (priority)
    */
@@ -49,7 +49,7 @@ export interface CreateNoteDto {
   /**
    * Category of the note. Is used to split notes into groups
    */
-  category?: number | null;
+  category?: string;
   /**
    * Note importance (priority)
    */
@@ -76,7 +76,7 @@ export interface NoteGetListQueryParams {
   /**
    * Category of the note. Is used to split notes into groups
    */
-  category?: number;
+  category?: string;
   /**
    * Set to true to get notes of all categories
    */
@@ -97,3 +97,4 @@ export const useNoteGetList = (props: UseNoteGetListProps) =>
   );
 
 export const useNoteCreate = () => useMutateForEndpoint({ url: `/api/services/app/Note/Create`, httpVerb: 'POST' });
+export const useNoteUpdate = () => useMutateForEndpoint({ url: `/api/services/app/Note/Update`, httpVerb: 'PUT' });

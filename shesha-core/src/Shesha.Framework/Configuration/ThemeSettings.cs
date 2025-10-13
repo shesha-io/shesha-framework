@@ -27,7 +27,15 @@
                         LayoutBackground = "#fafafa",
                         SidebarBackground = "#4d192b",
                         LabelSpan = 6,
-                        ComponentSpan = 18
+                        ComponentSpan = 18,
+                        MarginPadding = new MarginPaddingSettings()
+                        {
+                            FormFields = "",
+                            Layout = "",
+                            Grid = "",
+                            Standard = "",
+                            Inline = "",
+                        }
                     };
             }
         }
@@ -46,6 +54,15 @@
             public string? Secondary { get; set; }
         }
 
+        public class MarginPaddingSettings
+        {
+            public string? FormFields { get; set; }
+            public string? Layout { get; set; }
+            public string? Grid { get; set; }
+            public string? Standard { get; set; }
+            public string? Inline { get; set; }
+        }
+
         public ThemeSettings.ApplicationSettings? Application { get; set; }
         public string? Sidebar { get; set; }
         public string? LayoutBackground { get; set; }
@@ -53,5 +70,6 @@
         public string? SidebarBackground { get; set; }
         public int? LabelSpan { get; set; }
         public int? ComponentSpan { get; set; }
+        public ThemeSettings.MarginPaddingSettings? MarginPadding { get; set; }
     }
 }

@@ -5,7 +5,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import classNames from 'classnames';
 import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
-import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
+import { useConfigurableAction, useConfigurableActionDispatcher, useHttpClient } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 import { useStyles } from '@/components/dataList/styles/styles';
 import { useAvailableConstantsData } from '@/providers/form/utils';
@@ -28,7 +28,6 @@ export type OnSaveSuccessHandler = (
 ) => void;
 
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
-
   const {
     dataSourceInstance: dataSource,
     onListItemSave,
@@ -42,7 +41,15 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     readOnly,
     noDataText = "No Data",
     noDataSecondaryText = "No data is available for this list",
-    noDataIcon
+    noDataIcon,
+    allStyles,
+    showEditIcons,
+    onRowDeleteSuccessAction,
+    orientation = 'vertical',
+    onListItemClick,
+    onListItemHover,
+    onListItemSelect,
+    onSelectionChange,
   } = props;
   const {
     tableData,
@@ -53,21 +60,107 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     modelType,
     grouping,
     groupingColumns,
-    setRowData
+    setRowData,
   } = dataSource;
   const { styles } = useStyles();
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
-
+  const httpClient = useHttpClient();
   const allData = useAvailableConstantsData();
   const isDesignMode = allData.form?.formMode === 'designer';
+  const { executeAction } = useConfigurableActionDispatcher();
 
   const repository = getRepository();
 
   const onSelectRow = useCallback((index: number, row: any) => {
     if (row) {
       setSelectedRow(index, row);
+    } else {
+      // Handle deselection - clear the selection
+      setSelectedRow(null, null);
     }
   }, [setSelectedRow]);
+
+  // Event handlers for the new events
+  const handleListItemClick = useCallback((index: number, item: any) => {
+    if (onListItemClick) {
+      const evaluationContext = {
+        data: item,
+        index,
+        selectedItem: item,
+        selectedIndex: index,
+        formData: allData.data,
+        globalState: allData.globalState,
+        contexts: allData.contexts,
+        http: httpClient,
+        moment,
+      };
+      executeAction({
+        actionConfiguration: onListItemClick,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    }
+  }, [onListItemClick, allData, httpClient, executeAction]);
+
+  const handleListItemHover = useCallback((index: number, item: any) => {
+    if (onListItemHover) {
+      const evaluationContext = {
+        data: item,
+        index,
+        selectedItem: item,
+        selectedIndex: index,
+        formData: allData.data,
+        globalState: allData.globalState,
+        contexts: allData.contexts,
+        http: httpClient,
+        moment,
+      };
+      executeAction({
+        actionConfiguration: onListItemHover,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    }
+  }, [onListItemHover, allData, httpClient, executeAction]);
+
+  const handleListItemSelect = useCallback((index: number, item: any) => {
+    if (onListItemSelect) {
+      const evaluationContext = {
+        data: item,
+        index,
+        selectedItem: item,
+        selectedIndex: index,
+        formData: allData.data,
+        globalState: allData.globalState,
+        contexts: allData.contexts,
+        http: httpClient,
+        moment,
+      };
+      executeAction({
+        actionConfiguration: onListItemSelect,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    }
+  }, [onListItemSelect, allData, httpClient, executeAction]);
+
+  const handleSelectionChange = useCallback((selectedItems: any[], selectedIndices: number[]) => {
+    if (onSelectionChange) {
+      const evaluationContext = {
+        selectedItems,
+        selectedIndices,
+        selectedIds: selectedItems
+          .map((item) => item?.id)
+          .filter((id) => id !== undefined && id !== null),
+        formData: allData.data,
+        globalState: allData.globalState,
+        contexts: allData.contexts,
+        http: httpClient,
+        moment,
+      };
+      executeAction({
+        actionConfiguration: onSelectionChange,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    }
+  }, [onSelectionChange, allData, httpClient, executeAction]);
 
   const dataListRef = useRef<any>({});
 
@@ -83,18 +176,44 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         return Promise.resolve();
       },
     },
-    []
+    [],
   );
 
   const data = useDeepCompareMemo(() => {
     return isDesignMode
-      ? props.orientation === 'vertical'
+      ? orientation === 'vertical'
         ? [{}]
         : [{}, {}, {}, {}]
       : tableData;
-  }, [isDesignMode, tableData, props.orientation]);
+  }, [isDesignMode, tableData, orientation]);
 
   // http, moment, setFormData
+  const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
+    if (!onRowDeleteSuccessAction)
+      return () => {
+        /* nop*/
+      };
+    return (data, formApi, globalState, setGlobalState) => {
+      const evaluationContext = {
+        data,
+        formApi,
+        globalState,
+        setGlobalState,
+        http: httpClient,
+        moment,
+      };
+      try {
+        executeAction({
+          actionConfiguration: onRowDeleteSuccessAction,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing row delete success action:', error);
+      }
+    };
+  }, [onRowDeleteSuccessAction, httpClient]);
+
+
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onListItemSave) return (data) => Promise.resolve(data);
 
@@ -105,11 +224,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     };
   }, [onListItemSave]);
 
-  const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onListItemSaveSuccessAction)
       return () => {
-        //nop
+        // nop
       };
 
     return (data, form, contexts, globalState, setGlobalState) => {
@@ -141,7 +259,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
           : undefined;
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
-        setRowData(rowIndex, preparedData/*, response*/);
+        setRowData(rowIndex, preparedData/* , response*/);
         performOnRowSaveSuccess(preparedData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
         return response;
       });
@@ -175,11 +293,14 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         : undefined;
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
+      if (props.onRowDeleteSuccessAction) {
+        performOnRowDeleteSuccessAction(rowData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
+      }
       dataSource.refreshTable();
     });
   };
 
-  const canAction = (val: YesNoInherit) => {
+  const canAction = (val: YesNoInherit): boolean => {
     switch (val) {
       case 'yes':
         return true;
@@ -191,32 +312,35 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  if (isDesignMode
-    && (
-      !repository
-      || !props.formId && props.formSelectionMode === "name"
-      || !props.formType && props.formSelectionMode === "view"
-      || !props.formIdExpression && props.formSelectionMode === "expression"
+  if (isDesignMode &&
+    (
+      !repository ||
+      (!props.formId && props.formSelectionMode === "name") ||
+      (!props.formType && props.formSelectionMode === "view") ||
+      (!props.formIdExpression && props.formSelectionMode === "expression")
     )) return <NotConfiguredWarning />;
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
-  if (groupingColumns?.length > 0 && props.orientation === "wrap") {
-    return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.' />;
+  if (groupingColumns?.length > 0 && orientation === "wrap") {
+    return <EmptyState noDataText="Configuration Error" noDataSecondaryText="Wrap Orientation is not supported when Grouping is enabled." />;
   }
+
 
   return (
     <ConfigurableFormItem
       model={{ ...props, hideLabel: true }}
       className={classNames(
         styles.shaDatalistComponent,
-        { horizontal: props?.orientation === 'horizontal' && allData.form?.formMode !== 'designer' } //
+        { horizontal: props?.orientation === 'horizontal' && allData.form?.formMode !== 'designer' }, //
       )}
       wrapperCol={{ md: 24 }}
     >
 
       <DataList
         {...props}
+        onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
+        style={allStyles.fullStyle as string}
         createFormId={props.createFormId ?? props.formId}
         createFormType={props.createFormType ?? props.formType}
         canAddInline={canAction(canAddInline)}
@@ -231,8 +355,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         selectedRow={selectedRow}
         selectedRows={selectedRows}
         records={data}
+        showEditIcons={showEditIcons}
         grouping={grouping}
-        groupingMetadata={groupingColumns?.map(item => item.metadata) ?? []}
+        groupingMetadata={groupingColumns?.map((item) => item.metadata) ?? []}
         isFetchingTableData={isFetchingTableData}
         selectedIds={selectedIds}
         changeSelectedIds={changeSelectedIds}
@@ -240,7 +365,11 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         updateAction={updater}
         deleteAction={deleter}
         actionRef={dataListRef}
-        modalWidth={width}
+        modalWidth={width ?? '60%'}
+        onListItemClick={handleListItemClick}
+        onListItemHover={handleListItemHover}
+        onListItemSelect={handleListItemSelect}
+        onSelectionChange={handleSelectionChange}
       />
     </ConfigurableFormItem>
   );

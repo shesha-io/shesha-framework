@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import {
   ModelConfigurationDto,
   entityConfigDelete,
@@ -9,6 +9,7 @@ import {
 } from '@/apis/modelConfigurations';
 import { useSheshaApplication } from '@/providers';
 import {
+  cancelAction,
   changeModelIdAction,
   createNewAction,
   deleteErrorAction,
@@ -22,12 +23,14 @@ import {
   saveSuccessAction,
 } from './actions';
 import {
+  IModelConfiguratorActionsContext,
+  IModelConfiguratorStateContext,
   MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
   ModelConfiguratorActionsContext,
   ModelConfiguratorStateContext,
 } from './contexts';
-import { IModelConfiguratorInstance } from './interfaces';
 import modelReducer from './reducer';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface IModelConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -36,7 +39,6 @@ export interface IModelConfiguratorProviderPropsBase {
 export interface IModelConfiguratorProviderProps {
   id?: string;
   form: FormInstance;
-  configuratorRef?: MutableRefObject<IModelConfiguratorInstance | null>;
 }
 
 const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProviderProps>> = (props) => {
@@ -50,14 +52,14 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     form: props.form,
   });
 
-  const load = () => {
+  const load = (): void => {
     if (state.id) {
       dispatch(loadRequestAction());
 
       // { name: state.className, namespace: state.namespace }
       modelConfigurationsGetById({}, { id: state.id, base: backendUrl, headers: httpHeaders })
         .then((response) => {
-          if (response.success) {
+          if (isAjaxSuccessResponse(response)) {
             dispatch(loadSuccessAction(response.result));
           } else dispatch(loadErrorAction(response.error));
         })
@@ -68,27 +70,29 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     else
       console.error("Failed to fetch a model configuraiton by Id - Id not specified");*/
   };
-    
+
   useEffect(() => {
     load();
   }, [state.id]);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const changeModelId = (id: string) => {
+  const changeModelId = (id: string): void => {
     dispatch(changeModelIdAction(id));
   };
 
-  const createNew = (model: ModelConfigurationDto) => {
+  const createNew = (model: ModelConfigurationDto): void => {
     dispatch(createNewAction(model));
   };
 
-  const submit = () => {
+  const submit = (): void => {
     state.form.submit();
   };
 
   const prepareValues = (values: ModelConfigurationDto): ModelConfigurationDto => {
-    return { ...values, id: state.id };
+    return state.id
+      ? { ...values, id: state.id }
+      : { ...values, className: values.name, namespace: values.module };
   };
 
   const save = (values: ModelConfigurationDto): Promise<ModelConfigurationDto> =>
@@ -102,7 +106,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
 
       mutate(preparedValues, { base: backendUrl, headers: httpHeaders })
         .then((response) => {
-          if (response.success) {
+          if (isAjaxSuccessResponse(response)) {
             dispatch(saveSuccessAction(response.result));
             resolve(response.result);
           } else {
@@ -116,9 +120,13 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         });
     });
 
-  const getModelSettings = () => prepareValues(state.form.getFieldsValue());
+  const cancel = (): void => {
+    dispatch(cancelAction());
+  };
 
-  const savePromise: () => Promise<ModelConfigurationDto> = () =>
+  const getModelSettings = (): ModelConfigurationDto => prepareValues(state.form.getFieldsValue());
+
+  const saveForm: () => Promise<ModelConfigurationDto> = () =>
     new Promise<ModelConfigurationDto>((resolve, reject) => {
       state.form
         .validateFields()
@@ -131,11 +139,11 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         .catch((error) => reject(error));
     });
 
-  const deleteFunc = (values: ModelConfigurationDto): Promise<void> =>
+  const deleteFunc = (): Promise<void> =>
     new Promise<void>((resolve, reject) => {
       dispatch(deleteRequestAction());
 
-      entityConfigDelete({ base: backendUrl, queryParams: { id: values.id }, headers: httpHeaders })
+      entityConfigDelete({ base: backendUrl, queryParams: { id: state.modelConfiguration?.id }, headers: httpHeaders })
         .then(() => {
           dispatch(deleteSuccessAction());
           resolve();
@@ -146,22 +154,6 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         });
     });
 
-  const deletePromise: () => Promise<void> = () =>
-    new Promise<void>((resolve, reject) => {
-      deleteFunc(state.modelConfiguration)
-        .then(() => resolve())
-        .catch(() => reject());
-    });
-
-  if (props.configuratorRef) {
-    props.configuratorRef.current = {
-      save: savePromise,
-      changeModelId: changeModelId,
-      createNew: createNew,
-      delete: deletePromise,
-    };
-  }
-
   return (
     <ModelConfiguratorStateContext.Provider value={{ ...state }}>
       <ModelConfiguratorActionsContext.Provider
@@ -169,8 +161,12 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
           changeModelId,
           load,
           save,
+          saveForm,
           submit,
           getModelSettings,
+          cancel,
+          delete: deleteFunc,
+          createNew,
           /* NEW_ACTION_GOES_HERE */
         }}
       >
@@ -180,7 +176,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
   );
 };
 
-function useModelConfiguratorState() {
+function useModelConfiguratorState(): IModelConfiguratorStateContext {
   const context = useContext(ModelConfiguratorStateContext);
 
   if (context === undefined) {
@@ -190,7 +186,7 @@ function useModelConfiguratorState() {
   return context;
 }
 
-function useModelConfiguratorActions() {
+function useModelConfiguratorActions(): IModelConfiguratorActionsContext {
   const context = useContext(ModelConfiguratorActionsContext);
 
   if (context === undefined) {
@@ -200,7 +196,7 @@ function useModelConfiguratorActions() {
   return context;
 }
 
-function useModelConfigurator() {
+function useModelConfigurator(): IModelConfiguratorStateContext & IModelConfiguratorActionsContext {
   return { ...useModelConfiguratorState(), ...useModelConfiguratorActions() };
 }
 

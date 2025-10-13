@@ -21,13 +21,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="DynamicEntities\Resources\entityReference_DtoMode.json" />
-    <None Remove="DynamicEntities\Resources\entityReference_DtoMode.metadata.json" />
     <None Remove="DynamicEntities\Resources\flatModel.json" />
-    <None Remove="DynamicEntities\Resources\flatModel.metadata.json" />
     <None Remove="DynamicEntities\Resources\nested2Levels.json" />
-    <None Remove="DynamicEntities\Resources\nested2Levels.metadata.json" />
     <None Remove="DynamicEntities\Resources\nested3Levels.json" />
-    <None Remove="DynamicEntities\Resources\nested3Levels.metadata.json" />
     <None Remove="log4net.config" />
   </ItemGroup>
   <ItemGroup>
@@ -39,11 +35,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DynamicEntities\Resources\flatModel.json" />
-    <EmbeddedResource Include="DynamicEntities\Resources\flatModel.metadata.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\flatModel-metadata.json" />
     <EmbeddedResource Include="DynamicEntities\Resources\entityReference_DtoMode.json" />
-    <EmbeddedResource Include="DynamicEntities\Resources\entityReference_DtoMode.metadata.json" />
-    <EmbeddedResource Include="DynamicEntities\Resources\nested3Levels.metadata.json" />
-    <EmbeddedResource Include="DynamicEntities\Resources\nested2Levels.metadata.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\entityReference_DtoMode-metadata.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\nested3Levels-metadata.json" />
+    <EmbeddedResource Include="DynamicEntities\Resources\nested2Levels-metadata.json" />
     <EmbeddedResource Include="DynamicEntities\Resources\nested3Levels.json" />
     <EmbeddedResource Include="DynamicEntities\Resources\nested2Levels.json" />
   </ItemGroup>
@@ -53,6 +49,8 @@
     <ProjectReference Include="..\..\src\Shesha.Scheduler\Shesha.Scheduler.csproj" />
     <ProjectReference Include="..\..\src\Shesha.Web.Core\Shesha.Web.Core.csproj" />
     <ProjectReference Include="..\..\src\Shesha.Web.FormsDesigner\Shesha.Web.FormsDesigner.csproj" />
+    <ProjectReference Include="..\Shesha.Tests.ModuleA\Shesha.Tests.ModuleA.csproj" />
+    <ProjectReference Include="..\Shesha.Tests.ModuleB\Shesha.Tests.ModuleB.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Abp.Castle.Log4Net" Version="9.0.0" />
@@ -76,6 +74,9 @@
     <PackageReference Include="NSubstitute" Version="5.1.0" />
     <PackageReference Include="Shouldly" Version="4.2.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+    <PackageReference Include="Testcontainers" Version="4.4.0" />
+    <PackageReference Include="Testcontainers.MsSql" Version="4.4.0" />
+    <PackageReference Include="Testcontainers.PostgreSql" Version="4.4.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.extensibility.execution" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
@@ -87,6 +88,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="test-data\package-import.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

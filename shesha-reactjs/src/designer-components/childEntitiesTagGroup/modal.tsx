@@ -1,8 +1,7 @@
 import { Modal, Skeleton } from 'antd';
 import React, { FC } from 'react';
-import { useAppConfigurator, useDataContextManager } from '@/providers';
+import { useAppConfigurator, useDataContextManagerActions } from '@/providers';
 import { IFormMarkupResponse } from '@/providers/form/api';
-import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import ValidationErrors from '@/components/validationErrors';
 import SubForm from '../subForm/subForm';
 import { IChildEntitiesTagGroupProps } from './models';
@@ -29,21 +28,21 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
   modalWidth: width = '60%',
   open,
   onToggle,
-  onChange
+  onChange,
 }) => {
   const { formInfoBlockVisible } = useAppConfigurator();
-  const context = useDataContextManager().getDataContext(contextId);
+  const context = useDataContextManagerActions().getDataContext(contextId);
 
-  const onOk = () => {
+  const onOk = (): void => {
     onChange(context.getData());
     onToggle(false);
   };
 
-  const onCancel = () => {
+  const onCancel = (): void => {
     onToggle(false);
   };
 
-  const showFormInfo = !!formInfo && formInfoBlockVisible && !!ConfigurationItemVersionStatusMap?.[formInfo?.versionStatus];
+  const showFormInfo = formInfo && formInfoBlockVisible;
 
   return (
     <Modal

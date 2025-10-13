@@ -23,5 +23,5 @@ export default handleActions<ISidebarMenuStateContext, any>(
     },
   },
 
-  SIDEBAR_MENU_CONTEXT_INITIAL_STATE
+  SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
 );

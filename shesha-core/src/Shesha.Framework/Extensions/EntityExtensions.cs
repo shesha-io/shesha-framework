@@ -1,5 +1,4 @@
 ﻿using Abp.Auditing;
-using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
@@ -8,6 +7,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.EntityHistory;
+using Shesha.Orm;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
@@ -441,8 +441,26 @@ namespace Shesha.Extensions
         /// </summary>
         public static Type GetRealEntityType<TId>(this IEntity<TId> entity)
         {
-            var provider = IocManager.Instance.Resolve<IEntityTypeProvider>();
+            var provider = StaticContext.IocManager.Resolve<IEntityTypeProvider>();
             return provider.GetEntityType(entity);
-        }        
+        }
+
+        /// <summary>
+        /// Get dirty properties of the specified <paramref name="entity"/>
+        /// </summary>
+        public static List<DirtyPropertyInfo> GetDirtyProperties<T>(this IEntity<T> entity)
+        {
+            var informer = StaticContext.IocManager.Resolve<IEntityPersistanceInformer>();
+            return informer.GetDirtyProperties(entity);
+        }
+
+        /// <summary>
+        /// Returns true if the specified <paramref name="entity"/> is dirty (has any of changed properties)
+        /// </summary>
+        public static bool IsDirty<T>(this IEntity<T> entity) 
+        {
+            var informer = StaticContext.IocManager.Resolve<IEntityPersistanceInformer>();
+            return informer.IsDirty(entity);
+        }
     }
 }

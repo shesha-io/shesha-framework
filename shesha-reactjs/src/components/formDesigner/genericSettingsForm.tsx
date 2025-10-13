@@ -5,6 +5,7 @@ import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSett
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableForm } from '../configurableForm';
+import { sheshaStyles } from '@/styles';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;
@@ -17,6 +18,7 @@ export interface IProps<TModel extends IConfigurableFormComponent> {
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
   propertyFilter?: (name: string) => boolean;
   layoutSettings?: IFormLayoutSettings;
+  isInModal?: boolean;
 }
 
 function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
@@ -29,15 +31,16 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   formRef,
   propertyFilter,
   layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS,
-}: IProps<TModel>) {
+  isInModal,
+}: IProps<TModel>): JSX.Element {
   const [form] = Form.useForm();
 
-  const linkToModelMetadata = (metadata: IPropertyMetadata, settingsForm: ConfigurableFormInstance) => {
+  const linkToModelMetadata = (metadata: IPropertyMetadata, settingsForm: ConfigurableFormInstance): void => {
     const currentModel = form.getFieldValue([]) as TModel;
 
     const wrapper = toolboxComponent.linkToModelMetadata
-      ? m => linkComponentToModelMetadata(toolboxComponent, m, metadata)
-      : m => m;
+      ? (m) => linkComponentToModelMetadata(toolboxComponent, m, metadata)
+      : (m) => m;
 
     const newModel: TModel = wrapper({
       ...currentModel,
@@ -51,7 +54,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       form.setFieldsValue(newModel);
   };
 
-  const onFinishFailed = (errorInfo) => {
+  const onFinishFailed = (errorInfo): void => {
     console.error('onFinishFailed', errorInfo);
   };
 
@@ -63,11 +66,11 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
   return (
     <ConfigurableForm
-      formName='componentSettings'
+      formName={isInModal ? 'modalSettings' : 'componentSettings'}
       labelCol={layoutSettings?.labelCol}
       wrapperCol={layoutSettings?.wrapperCol}
       layout={layoutSettings?.layout}
-
+      className={sheshaStyles.verticalSettingsClass}
       mode={readOnly ? "readonly" : "edit"}
       form={form}
       onFinish={onSave}
@@ -76,7 +79,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       initialValues={model}
       onValuesChange={onValuesChange}
       actions={{
-        linkToModelMetadata
+        linkToModelMetadata,
       }}
       onFinishFailed={onFinishFailed}
       propertyFilter={propertyFilter}

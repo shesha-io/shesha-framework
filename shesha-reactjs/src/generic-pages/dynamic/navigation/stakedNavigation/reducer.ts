@@ -3,7 +3,7 @@ import { IStackedNavigationStateContext } from './contexts';
 
 export function stakedNavigationReducer(
   state: IStackedNavigationStateContext,
-  action: ReduxActions.Action<IStackedNavigationStateContext>
+  action: ReduxActions.Action<IStackedNavigationStateContext>,
 ): IStackedNavigationStateContext {
   const { type, payload } = action;
   //#endregion

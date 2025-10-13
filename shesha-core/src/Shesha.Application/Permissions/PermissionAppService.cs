@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Permissions.Dtos;
 using Shesha.Reflection;
@@ -117,20 +116,19 @@ namespace Shesha.Permissions
             var dbp = new PermissionDefinition()
             {
                 Name = permission.Name,
-                Label = permission.DisplayName,
-                Description = permission.Description,
-                Parent = permission.ParentName ?? permission.Parent?.Name,
                 Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
-                VersionNo = 1,
-                VersionStatus = ConfigurationItemVersionStatus.Live,
             };
+            
+            dbp.Parent = permission.ParentName ?? permission.Parent?.Name;
+            dbp.Label = permission.DisplayName;
+            dbp.Description = permission.Description;
 
             var res = await _shaPermissionManager.CreatePermissionAsync(dbp);
 
             return ObjectMapper.Map<PermissionDto>(res);
         }
 
-        [HttpPut, HttpPost] // ToDo: temporary - Allow HttpPost because permission can be created from edit mode
+        [HttpPut, HttpPost]
         public async Task<PermissionDto> UpdateAsync(PermissionDto permission)
         {
             if (permission.Id == emptyId)
@@ -142,13 +140,11 @@ namespace Shesha.Permissions
             var dbp = new PermissionDefinition()
             {
                 Name = permission.Name,
-                Label = permission.DisplayName,
-                Description = permission.Description,
-                Parent = permission.ParentName ?? permission.Parent?.Name,
                 Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
-                VersionNo = 1,
-                VersionStatus = ConfigurationItemVersionStatus.Live,
             };
+            dbp.Label = permission.DisplayName;
+            dbp.Description = permission.Description;
+            dbp.Parent = permission.ParentName ?? permission.Parent?.Name;
 
             var res = await _shaPermissionManager.EditPermissionAsync(permission.Id.NotNull(), dbp);
 
@@ -163,9 +159,9 @@ namespace Shesha.Permissions
         }
 
         [HttpDelete]
-        public async Task DeleteAsync(string name)
+        public Task DeleteAsync(string name)
         {
-            await _shaPermissionManager.DeletePermissionAsync(name);
+            return _shaPermissionManager.DeletePermissionAsync(name);
         }
 
         [HttpGet]
@@ -195,12 +191,12 @@ namespace Shesha.Permissions
         /// </summary>
         [HttpGet]
         [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
-        public async Task<bool> IsPermissionGrantedAsync(IsPermissionGrantedInput input) 
+        public Task<bool> IsPermissionGrantedAsync(IsPermissionGrantedInput input) 
         {
             if (input.PermissionedEntityId.IsNullOrEmpty() || input.PermissionedEntityClass.IsNullOrEmpty())
-                return await _permissionChecker.IsGrantedAsync(input.PermissionName);
+                return _permissionChecker.IsGrantedAsync(input.PermissionName);
 
-            return await _permissionChecker.IsGrantedAsync(
+            return _permissionChecker.IsGrantedAsync(
                 input.PermissionName,
                 new EntityReferenceDto<string>(input.PermissionedEntityId, "", input.PermissionedEntityClass)
             );

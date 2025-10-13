@@ -28,7 +28,8 @@ namespace Shesha.Notifications
             List<NotificationAttachmentDto>? attachments = null,
             string? cc = null,
             GenericEntityReference? triggeringEntity = null, 
-            NotificationChannelConfig? channel = null) where TData : NotificationData
+            NotificationChannelConfig? channel = null,
+            string? category = null) where TData : NotificationData
         {
             return Task.CompletedTask;
         }
@@ -42,7 +43,8 @@ namespace Shesha.Notifications
             List<NotificationAttachmentDto>? attachments = null,
             string? cc = null,
             GenericEntityReference? triggeringEntity = null, 
-            NotificationChannelConfig? channel = null) where TData : NotificationData
+            NotificationChannelConfig? channel = null,
+            string? category = null) where TData : NotificationData
         {
             return Task.CompletedTask;
         }

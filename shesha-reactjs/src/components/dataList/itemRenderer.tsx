@@ -37,7 +37,7 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
     itemIndex,
     itemId,
     data,
-    
+
     allowEdit,
     updater,
     allowDelete,
@@ -47,7 +47,7 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
     formSettings,
     allowChangeEditMode,
     autoSave,
-    isNewObject
+    isNewObject,
   } = props;
   const { styles } = useStyles();
   const itemListId = `${listId}_${!!itemId ? itemId.toString() : itemIndex}`;
@@ -58,34 +58,34 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
       <FormMarkupConverter markup={markup} formSettings={formSettings}>
         {(flatComponents) => {
           return (
-          <DataListCrudProvider
-            isNewObject={isNewObject}
-            data={data}
-            allowEdit={allowEdit}
-            updater={updater}
-            allowDelete={allowDelete}
-            deleter={deleter}
-            mode={editMode}
-            allowChangeMode={allowChangeEditMode}
-            autoSave={autoSave}
-            formFlatMarkup={flatComponents}
-            formSettings={formSettings}
-          >
-            <div className={styles.shaDatalistCell}>
+            <DataListCrudProvider
+              isNewObject={isNewObject}
+              data={data}
+              allowEdit={allowEdit}
+              updater={updater}
+              allowDelete={allowDelete}
+              deleter={deleter}
+              mode={editMode}
+              allowChangeMode={allowChangeEditMode}
+              autoSave={autoSave}
+              formFlatMarkup={flatComponents}
+              formSettings={formSettings}
+            >
+              <div className={styles.shaDatalistCell}>
 
-              <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
-                {/*add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
-                <FormItemProvider namePrefix='' labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
-                  <ComponentsContainer containerId={'root'}/>
-                </FormItemProvider>
-              </ComponentsContainerProvider>
-              <div className={styles.shaDatalistActions}>
-                <CrudActionButtons />
+                <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
+                  {/* add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
+                  <FormItemProvider namePrefix="" labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
+                    <ComponentsContainer containerId="root" />
+                  </FormItemProvider>
+                </ComponentsContainerProvider>
+                <div className={styles.shaDatalistActions}>
+                  <CrudActionButtons />
+                </div>
               </div>
-            </div>
-          </DataListCrudProvider>
+            </DataListCrudProvider>
           );
-       }}
+        }}
       </FormMarkupConverter>
     </div>
   );

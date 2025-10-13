@@ -1,48 +1,70 @@
-import React from 'react';
+import React, { ComponentType } from 'react';
 import FormItem from "../_settings/components/formItem";
 import { InputComponent } from '../inputComponent';
 import { ISettingsInputProps } from './interfaces';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { MetadataProvider, useFormData } from '@/providers';
-import { evaluateString } from '@/index';
+import { MetadataProvider, useSettingsComponents } from '@/providers';
+import { evaluateString, IToolboxComponent, useShaFormInstance } from '@/index';
+
+
+export interface ISettingsComponent extends IToolboxComponent {
+  settingsComponent?: React.FC<any>;
+  component?: ComponentType<any>;
+}
+
+export interface ISettingsComponentGroup {
+  name: string;
+  components: ISettingsComponent[];
+}
+
 
 export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, hideLabel, propertyName: property, type,
-    buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, tooltip, hidden, width,
-    size, inline, validate, modelType: modelTypeExpression, ...rest }) => {
-    const { data: formData } = useFormData();
+  buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, tooltip, hidden, width,
+  size, inline, validate, modelType, ...rest }) => {
+  const { formData } = useShaFormInstance();
+  const settingsComponents = useSettingsComponents();
 
-    const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
-    const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
+  const customComponent = settingsComponents.find((c) => c.type === type);
+  const CustomComponent = customComponent?.component;
 
-    return isHidden ? null :
-        <div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
-            <ConditionalWrap
-                condition={Boolean(modelType)}
-                wrap={content => <MetadataProvider modelType={modelType}>{content}</MetadataProvider>}
-            >
-                <FormItem
-                    name={property}
-                    hideLabel={hideLabel}
-                    label={label}
-                    tooltip={tooltip}
-                    required={validate?.required}
-                    layout='vertical'
-                    jsSetting={type === 'codeEditor' || rest.inputType === 'codeEditor' ? false : jsSetting}
-                    readOnly={readOnly}>
-                    {children || <InputComponent size={size ?? 'small'}
-                        label={label}
-                        type={rest.inputType || type}
-                        dropdownOptions={dropdownOptions}
-                        buttonGroupOptions={buttonGroupOptions}
-                        hasUnits={hasUnits} propertyName={property}
-                        tooltip={tooltip}
-                        readOnly={readOnly}
-                        modelType={modelType}
-                        {...rest} />
-                    }
-                </FormItem>
-            </ConditionalWrap>
-        </div>
-        ;
+  const evaluatedModelType = typeof modelType === 'string' ? evaluateString(modelType, { data: formData }) : modelType;
+  const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
 
+  return isHidden ? null
+    : (
+      <div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
+        <ConditionalWrap
+          condition={Boolean(modelType)}
+          wrap={(content) => <MetadataProvider modelType={evaluatedModelType}>{content}</MetadataProvider>}
+        >
+          <FormItem
+            name={property}
+            hideLabel={hideLabel}
+            label={label}
+            tooltip={tooltip}
+            required={validate?.required}
+            layout="vertical"
+            jsSetting={type === 'codeEditor' || rest.inputType === 'codeEditor' ? false : jsSetting}
+            readOnly={readOnly}
+          >
+            {children || CustomComponent ? <CustomComponent{...rest} /> : (
+              <InputComponent
+                size={size ?? 'small'}
+                label={label}
+                type={rest.inputType || type}
+                dropdownOptions={dropdownOptions}
+                buttonGroupOptions={buttonGroupOptions}
+                hasUnits={hasUnits}
+                propertyName={property}
+                tooltip={tooltip}
+                readOnly={readOnly}
+                modelType={evaluatedModelType}
+                {...rest}
+              />
+            )}
+          </FormItem>
+        </ConditionalWrap>
+      </div>
+    )
+  ;
 };

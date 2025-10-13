@@ -12,9 +12,11 @@ using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
@@ -315,7 +317,25 @@ namespace Shesha.Reflection
         {
             return property.PropertyType.IsEntityType()
                 ? !property.HasAttribute<RequiredMemberAttribute>()
-                : property.PropertyType.IsNullableType() || property.HasAttribute<NullableAttribute>();
+                : property.PropertyType.IsNullableType() || IsReferencePropertyNullable(property);
+        }
+
+        private static bool IsReferencePropertyNullable(PropertyInfo property)
+        {
+            /*
+            0: Not nullable - The property cannot be null (like string in a #nullable enable context)
+            1: Oblivious - The nullability context isn't specified (like pre-C# 8.0 code)
+            2: Nullable - The property is explicitly nullable (like string?)
+            */
+            const byte nullableFlag = 2;
+
+            var nullable = property.GetAttributeOrNull<NullableAttribute>();
+            if (nullable != null)
+                return nullable.NullableFlags.FirstOrDefault() == nullableFlag;
+
+            var context = property.DeclaringType?.GetAttributeOrNull<NullableContextAttribute>();
+
+            return context != null && context.Flag == nullableFlag;
         }
 
         /// <summary>
@@ -426,6 +446,17 @@ namespace Shesha.Reflection
                 description = displayAttribute?.GetDescription();
 
             return description;
+        }
+
+        /// <summary>
+        /// Returns user-friendly name of the class
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <returns></returns>
+        public static string GetFriendlyClassName(this object instance) 
+        { 
+            // TODO: use metadata and entity attribute
+            return instance.GetType().Name.ToFriendlyName();
         }
 
         /// <summary>
@@ -628,6 +659,12 @@ namespace Shesha.Reflection
             return propertiesWithoutHiddenOnes;
         }
 
+        /// <summary>
+        /// Get extension methods of the specified <paramref name="extendedType"/> declared in a specified <paramref name="assembly"/>
+        /// </summary>
+        /// <param name="assembly">Assembly to search extension methods in</param>
+        /// <param name="extendedType">Type to search extended methods for</param>
+        /// <returns></returns>
         public static List<MethodInfo> GetExtensionMethods(Assembly assembly, Type extendedType)
         {
             var isGenericTypeDefinition = extendedType.IsGenericType && extendedType.IsTypeDefinition;
@@ -678,6 +715,17 @@ namespace Shesha.Reflection
             if (source is TDestination dest)
                 return dest;
 
+            if (source != null && source.GetType().IsEntityType()) 
+            {
+                var strippers = StaticContext.IocManager.ResolveAll<IProxyStripper>();
+                foreach (var stripper in strippers)
+                {
+                    var stripped = stripper.Unproxy(source);
+                    if (stripped is TDestination unproxied)
+                        return unproxied;
+                }
+            }
+
             if (source is GenericEntityReference genericEntity && typeof(Entity<Guid>).IsAssignableFrom(typeof(TDestination))) {
                 var entity = (Entity<Guid>)genericEntity.NotNull();
                 return entity.ForceCastAs<TDestination>();
@@ -705,6 +753,7 @@ namespace Shesha.Reflection
                 : null;
         }
 
+        [DebuggerStepThrough]
         public static T NotNull<T>([NotNull]this T? value, string message = "Value must not be null")
         {
             return value ?? throw new Exception(message);
@@ -717,6 +766,7 @@ namespace Shesha.Reflection
         /// <param name="message"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        [DebuggerStepThrough]
         public static string NotNullOrWhiteSpace([NotNull] this string? value, string message = "String must not be null or empty")
         {
             return !string.IsNullOrWhiteSpace(value) 
@@ -732,6 +782,7 @@ namespace Shesha.Reflection
         /// <param name="types">Argument types</param>
         /// <returns></returns>
         /// <exception cref="MethodNotFoundException"></exception>
+        [DebuggerStepThrough]
         public static MethodInfo GetRequiredMethod(this Type type, string name, Type[] types)
         { 
             return type.GetMethod(name, types) ?? throw new MethodNotFoundException(type, name);
@@ -745,6 +796,7 @@ namespace Shesha.Reflection
         /// <param name="bindingAttr">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
         /// <returns></returns>
         /// <exception cref="MethodNotFoundException"></exception>
+        [DebuggerStepThrough]
         public static MethodInfo GetRequiredMethod(this Type type, string name, BindingFlags bindingAttr)
         {
             return type.GetMethod(name, bindingAttr) ?? throw new MethodNotFoundException(type, name);
@@ -757,6 +809,7 @@ namespace Shesha.Reflection
         /// <param name="name">Method name</param>
         /// <returns></returns>
         /// <exception cref="MethodNotFoundException"></exception>
+        [DebuggerStepThrough]
         public static MethodInfo GetRequiredMethod(this Type type, string name)
         {
             return type.GetMethod(name) ?? throw new MethodNotFoundException(type, name);
@@ -769,14 +822,47 @@ namespace Shesha.Reflection
         /// <param name="propertyName">Property name</param>
         /// <returns></returns>
         /// <exception cref="PropertyNotFoundException"></exception>
+        [DebuggerStepThrough]
         public static PropertyInfo GetRequiredProperty(this Type type, string propertyName) 
         {
             return type.GetProperty(propertyName) ?? throw new PropertyNotFoundException(type, propertyName);
         }
 
+        /// <summary>
+        /// Get field by name. Throws <see cref="FieldNotFoundException"/> if field not found
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        /// <exception cref="FieldNotFoundException"></exception>
+        [DebuggerStepThrough]
         public static FieldInfo GetRequiredField(this Type type, string fieldName)
         {
             return type.GetField(fieldName) ?? throw new FieldNotFoundException(type, fieldName);
+        }
+
+        public static PropertyInfo? GetClosestPropertyOrNull(this Type type, string propertyName)
+        {
+            return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                      .Where(p => p.Name == propertyName)
+                      .OrderByDescending(p => p.DeclaringType == type) // Prefer exact match
+                      .ThenByDescending(p => p.DeclaringType, new TypeInheritanceComparer())
+                      .FirstOrDefault();
+        }
+
+        // Helper comparer to sort types by inheritance depth
+        private class TypeInheritanceComparer : IComparer<Type?>
+        {
+            public int Compare(Type? x, Type? y)
+            {
+                if (x == y) return 0;
+                if (x == null) return -1;
+                if (y == null) return 1;
+                
+                return x.IsAssignableFrom(y)
+                    ? 1 // y is more derived
+                    :  -1;
+            }
         }
     }
 }

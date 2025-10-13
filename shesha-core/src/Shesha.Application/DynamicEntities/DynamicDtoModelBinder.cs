@@ -33,6 +33,7 @@ namespace Shesha.DynamicEntities
         private readonly ILogger _logger;
         private readonly MvcOptions? _options;
         private readonly IDynamicDtoTypeBuilder _dtoBuilder;
+        private IDynamicMappingSettings _defaultSettings = new DynamicMappingSettings();
 
         /// <summary>
         /// Creates a new <see cref="DynamicDtoModelBinder"/>.
@@ -52,6 +53,16 @@ namespace Shesha.DynamicEntities
             : this(formatters, readerFactory, loggerFactory, options: null, dynamicDtoTypeBuilder)
         {
         }
+
+        /// <summary>
+        /// Set default binding settings. 
+        /// Note: is used for unit tests only
+        /// </summary>
+        /// <param name="defaultSettings"></param>
+        public void SetDefaultSettings(IDynamicMappingSettings defaultSettings)
+        {
+            _defaultSettings = defaultSettings;
+        }        
 
         /// <summary>
         /// Creates a new <see cref="DynamicDtoModelBinder"/>.
@@ -104,7 +115,7 @@ namespace Shesha.DynamicEntities
             var bindingSettings = (defaultMetadata != null
                 ? defaultMetadata.Attributes.ParameterAttributes?.OfType<IDynamicMappingSettings>().FirstOrDefault()
                 : null)
-                ?? new DynamicMappingSettings();
+                ?? _defaultSettings;
 
             // Special logic for body, treat the model name as string.Empty for the top level
             // object, but allow an override via BinderModelName. The purpose of this is to try
@@ -233,7 +244,7 @@ namespace Shesha.DynamicEntities
                     if (model is IHasJObjectField modelDynamicDto)
                     {
                         // Add JObject only if not a DtoProxy
-                        modelDynamicDto._jObject = !bindingSettings.UseDynamicDtoProxy
+                        modelDynamicDto._jObject = !bindingSettings.UseDynamicDtoProxy && !string.IsNullOrWhiteSpace(body)
                             ? JObject.Parse(body)
                             : null;
                     }
@@ -329,7 +340,7 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private void FillPropertyNamesRecursive(JObject jsonObject, List<string> propertyNames, string prefix = "")
+        private void FillPropertyNamesRecursive(JObject? jsonObject, List<string> propertyNames, string prefix = "")
         {
             if (jsonObject == null)
                 return;
@@ -346,7 +357,9 @@ namespace Shesha.DynamicEntities
         {
             var propertyNames = new List<string>();
 
-            var jsonObject = JObject.Parse(body);
+            var jsonObject = !string.IsNullOrWhiteSpace(body)
+                ? JObject.Parse(body)
+                : null;
             FillPropertyNamesRecursive(jsonObject, propertyNames);
 
             return propertyNames;

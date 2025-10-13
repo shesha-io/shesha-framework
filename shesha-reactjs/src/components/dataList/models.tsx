@@ -1,5 +1,5 @@
 import { MutableRefObject } from 'react';
-import { FormIdentifier } from '@/interfaces';
+import { FormIdentifier, IStyleType } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
@@ -23,6 +23,7 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   isFetchingTableData?: boolean;
 
   selectedIds?: string[];
+  showEditIcons?: boolean;
 
   canDeleteInline?: boolean;
   canEditInline?: boolean;
@@ -38,9 +39,9 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   noDataIcon?: string;
 }
 
-export interface IDataListBaseProps {
+export interface IDataListBaseProps extends IStyleType {
   id: string;
-  
+
   dataSource?: string;
 
   formSelectionMode?: FormSelectionMode;
@@ -65,9 +66,11 @@ export interface IDataListBaseProps {
   cardHeight?: string;
   cardSpacing?: string;
   showBorder?: boolean;
+  gap?: number;
+  container?: IStyleType;
 
   dblClickActionConfiguration?: IConfigurableActionConfiguration;
-
+  onRowDeleteSuccessAction?: IConfigurableActionConfiguration;
   collapsible?: boolean;
   collapseByDefault?: boolean;
   groupStyle?: string;
@@ -96,6 +99,11 @@ interface IDataListActions {
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;
   updateAction?: (rowIndex: number, data: any) => Promise<any>;
   createAction?: (data: any) => Promise<any>;
+
+  onListItemClick?: (index: number, item: any) => void;
+  onListItemHover?: (index: number, item: any) => void;
+  onListItemSelect?: (index: number, item: any) => void;
+  onSelectionChange?: (selectedItems: any[], selectedIndices: number[]) => void;
 }
 
 export interface Row {

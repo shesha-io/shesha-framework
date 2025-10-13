@@ -4,6 +4,7 @@ using Abp.Json;
 using Shesha.Domain;
 using Shesha.EntityReferences;
 using Shesha.Reflection;
+using Shesha.Tests.Fixtures;
 using Shesha.Utilities;
 using Shouldly;
 using Stubble.Core.Builders;
@@ -13,19 +14,20 @@ using Xunit;
 
 namespace Shesha.Tests.Notifications
 {
+    [Collection(SqlServerCollection.Name)]
     public class TemplateDataEntitySerialization_Tests : SheshaNhTestBase
     {
         private readonly IRepository<Person, Guid> _personRepository;
 
-        public TemplateDataEntitySerialization_Tests()
+        public TemplateDataEntitySerialization_Tests(SqlServerFixture fixture) : base(fixture)
         {
             _personRepository = Resolve<IRepository<Person, Guid>>();
         }
 
         [Fact]
-        public async Task PersonSerialization_TestAsync() 
+        public Task PersonSerialization_TestAsync() 
         {
-            await WithUnitOfWorkAsync(async() => {
+            return WithUnitOfWorkAsync(async() => {
                 var author = await GetAuthorAsync();
                 var liveData = new SourceData {
                     Message = "Hi!",

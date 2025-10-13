@@ -1,7 +1,7 @@
 import { IConfigurableActionConfiguration } from '@/providers/configurableActionsDispatcher/index';
 import { ReactNode } from 'react';
 
-export type SidebarItemType = 'button' | 'divider' | 'group';
+export type SidebarItemType = 'button' | 'item' | 'divider' | 'group';
 export type ButtonActionType = 'navigate' | 'dialogue' | 'executeScript' | 'executeFormAction';
 
 export interface ISidebarMenuItemV0 {

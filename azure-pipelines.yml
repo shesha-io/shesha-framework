@@ -1,0 +1,68 @@
+variables:
+  - name: 'BuildParameters.configuration'
+    value: release
+
+# trigger:
+# - main
+
+pool:
+  name: Azure Pipelines
+stages:
+  - stage: build
+    jobs:
+      - job: UnitTests_1
+        displayName: 'Unit Tests'
+        pool:
+          name: Azure Pipelines
+          vmImage: ubuntu-22.04
+        steps:
+          - checkout: self
+          - task: NuGetToolInstaller@1
+            inputs:
+              versionSpec: '6.x'
+              checkLatest: true
+          - task: NuGetCommand@2
+            condition: ne(variables.CACHE_RESTORED, true)
+            displayName: Nuget Restore            
+            inputs:
+              command: 'restore'
+              feedsToUse: 'config'
+              restoreSolution: 'shesha-core/Shesha.sln'
+              nugetConfigPath: 'shesha-core/.nuget/NuGet.Azure.Config'
+          - task: UseDotNet@2
+            displayName: Use .NET Core sdk 8.x
+            retryCountOnTaskFailure: 3
+            inputs:
+              version: 8.x
+          - task: DotNetCoreCLI@2
+            displayName: dotnet build
+            inputs:
+              projects: shesha-core/Shesha.sln
+              arguments: --configuration $(BuildParameters.configuration)
+          - task: DockerInstaller@0
+            inputs:
+              dockerVersion: '20.10.11'
+          - script: |
+              docker --version
+              sudo systemctl start docker
+            displayName: 'Verify Docker'
+          - task: Docker@2
+            inputs:
+              containerRegistry: 'docker-images'
+              command: 'login'
+          - script: dotnet test Shesha.Tests.csproj --configuration $(buildConfiguration) --no-build --logger "trx;LogFileName=testresults.trx"
+            workingDirectory: 'shesha-core/test/Shesha.Tests'
+            displayName: 'Run tests with Testcontainers'
+            env:
+              DOCKER_HOST: 'unix:///var/run/docker.sock'
+              TESTCONTAINERS_RYUK_DISABLED: 'true'
+          - task: PublishTestResults@2
+            displayName: 'Publish test results'
+            inputs:
+              testResultsFormat: 'VSTest'
+              testResultsFiles: '**/*.trx'
+              failTaskOnFailedTests: true
+              failTaskOnFailureToPublishResults: true
+              failTaskOnMissingResultsFile: true
+              testRunTitle: 'Unit Tests'
+            condition: succeededOrFailed()

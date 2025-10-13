@@ -1,11 +1,10 @@
-﻿using Abp.TestBase;
-using Shesha.DynamicEntities;
+﻿using Shesha.DynamicEntities;
 using Shouldly;
 using Xunit;
 
 namespace Shesha.Tests.DynamicEntities
 {
-    public class DynamicDtoTypeBuildingContext_Tests : AbpIntegratedTestBase<SheshaTestModule>
+    public class DynamicDtoTypeBuildingContext_Tests
     {
         [Fact]
         public void NamePrefixSequence_Test()

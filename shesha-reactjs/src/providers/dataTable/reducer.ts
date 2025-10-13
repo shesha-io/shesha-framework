@@ -43,7 +43,7 @@ const getRowSelection = (rows: object[], selectedId: string): ISelectionProps =>
   if (!selectedId || !rows || rows.length === 0)
     return null;
 
-  const rowIndex = rows.findIndex(row => row["id"] === selectedId);
+  const rowIndex = rows.findIndex((row) => row["id"] === selectedId);
   return rowIndex > -1
     ? {
       row: rows[rowIndex],
@@ -59,7 +59,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetSelectedRow]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<ISelectionProps>
+      action: ReduxActions.Action<ISelectionProps>,
     ) => {
       const { payload } = action;
       const selectedRow = state?.selectedRow?.id === payload?.id ? null : payload;
@@ -68,7 +68,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetDraggingState]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<DragState>
+      action: ReduxActions.Action<DragState>,
     ) => {
       const { payload } = action;
       return {
@@ -81,7 +81,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetMultiSelectedRow]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<Row[] | Row>
+      action: ReduxActions.Action<Row[] | Row>,
     ) => {
       const { payload } = action;
       const { selectedRows: rows } = state;
@@ -138,7 +138,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.ChangeSelectedIds]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<string[]>
+      action: ReduxActions.Action<string[]>,
     ) => {
       const { payload } = action;
       return {
@@ -149,7 +149,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.ChangeDisplayColumn]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<string>
+      action: ReduxActions.Action<string>,
     ) => {
       const { payload } = action;
       return {
@@ -159,7 +159,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
     },
     [DataTableActionEnums.ChangePersistedFiltersToggle]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<boolean>
+      action: ReduxActions.Action<boolean>,
     ) => {
       const { payload } = action;
       return {
@@ -170,7 +170,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.ChangeSelectedStoredFilterIds]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<string[]>
+      action: ReduxActions.Action<string[]>,
     ) => {
       const { payload } = action;
 
@@ -182,7 +182,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.ApplyFilter]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<ITableFilter[]>
+      action: ReduxActions.Action<ITableFilter[]>,
     ) => {
       const { payload } = action;
       return {
@@ -195,7 +195,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.ToggleSaveFilterModal]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<boolean>
+      action: ReduxActions.Action<boolean>,
     ) => {
       const { payload } = action;
       return {
@@ -230,7 +230,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.FetchTableData]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<IGetListDataPayload>
+      action: ReduxActions.Action<IGetListDataPayload>,
     ) => {
       const { payload } = action;
 
@@ -239,7 +239,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         isFetchingTableData: true,
         // note: don't change standard sorting is it's not used to prevent re-renderings
         // standardSorting: isStandardSortingUsed(state) ? payload.sorting : state.standardSorting,
-        //userSorting
+        // userSorting
         currentPage: payload.currentPage,
       };
 
@@ -256,7 +256,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.FetchTableDataSuccess]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<ITableDataInternalResponse>
+      action: ReduxActions.Action<ITableDataInternalResponse>,
     ) => {
       const {
         payload: { rows, totalPages, totalRows, totalRowsBeforeFilter },
@@ -277,7 +277,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.FetchColumnsSuccess]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<IFetchColumnsSuccessSuccessPayload>
+      action: ReduxActions.Action<IFetchColumnsSuccessSuccessPayload>,
     ) => {
       const {
         payload: { columns, configurableColumns, userConfig },
@@ -324,7 +324,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.ToggleColumnFilter]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<string[]>
+      action: ReduxActions.Action<string[]>,
     ) => {
       const { payload: appliedFiltersColumnIds } = action;
 
@@ -350,7 +350,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.RemoveColumnFilter]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<string>
+      action: ReduxActions.Action<string>,
     ) => {
       const { payload: columnIdToRemove } = action;
 
@@ -366,7 +366,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.ToggleColumnVisibility]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<string>
+      action: ReduxActions.Action<string>,
     ) => {
       const { payload: columnIdToToggle } = action;
 
@@ -387,7 +387,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.ChangeFilterOption]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<IChangeFilterOptionPayload>
+      action: ReduxActions.Action<IChangeFilterOptionPayload>,
     ) => {
       const {
         payload: { filterColumnId, filterOptionValue },
@@ -408,7 +408,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.ChangeFilter]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<IChangeFilterAction>
+      action: ReduxActions.Action<IChangeFilterAction>,
     ) => {
       const {
         payload: { filterColumnId, filterValue },
@@ -429,7 +429,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetPredefinedFilters]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<ISetPredefinedFiltersPayload>
+      action: ReduxActions.Action<ISetPredefinedFiltersPayload>,
     ) => {
       const { predefinedFilters, userConfig } = action.payload;
 
@@ -441,7 +441,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       const selectedStoredFilterIds =
         (!Boolean(state.selectedStoredFilterIds) || state.selectedStoredFilterIds.length === 0) &&
-          predefinedFilters?.length > 0
+        predefinedFilters?.length > 0
           ? Boolean(uc) && uc.length > 0
             ? uc
             : [predefinedFilters[0].id]
@@ -456,7 +456,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetPermanentFilter]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<ISetPermanentFilterActionPayload>
+      action: ReduxActions.Action<ISetPermanentFilterActionPayload>,
     ) => {
       const { filter } = action.payload;
 
@@ -468,7 +468,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.RegisterConfigurableColumns]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<IRegisterConfigurableColumnsPayload>
+      action: ReduxActions.Action<IRegisterConfigurableColumnsPayload>,
     ) => {
       const { payload } = action;
 
@@ -490,7 +490,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
       const { payload } = action;
       return {
         ...state,
-        grouping: [...payload]
+        grouping: [...payload],
       };
     },
 
@@ -505,7 +505,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.ExportToExcelWarning]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<string>
+      action: ReduxActions.Action<string>,
     ) => {
       const { payload } = action;
 
@@ -517,7 +517,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetRowData]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<ISetRowDataPayload>
+      action: ReduxActions.Action<ISetRowDataPayload>,
     ) => {
       const {
         payload: { rowData, rowIndex },
@@ -535,7 +535,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetDataFetchingMode]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<DataFetchingMode>
+      action: ReduxActions.Action<DataFetchingMode>,
     ) => {
       const { payload } = action;
 
@@ -547,7 +547,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetSortingSettings]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<ISortingSettingsActionPayload>
+      action: ReduxActions.Action<ISortingSettingsActionPayload>,
     ) => {
       const { payload } = action;
 
@@ -562,7 +562,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetStandardSorting]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<IColumnSorting[]>
+      action: ReduxActions.Action<IColumnSorting[]>,
     ) => {
       const { payload } = action;
 
@@ -574,12 +574,12 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.FetchGroupingColumnsSuccess]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<IFetchGroupingColumnsSuccessPayload>
+      action: ReduxActions.Action<IFetchGroupingColumnsSuccessPayload>,
     ) => {
       const { payload } = action;
 
       const columns = payload.columns
-        .map<ITableDataColumn>(column => ({
+        .map<ITableDataColumn>((column) => ({
           columnType: 'data',
           propertyName: column.propertyName,
 
@@ -603,7 +603,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
           allowInherited: column.allowInherited,
           metadata: column.metadata,
         }))
-        .filter(c => c !== null);
+        .filter((c) => c !== null);
 
       return {
         ...state,
@@ -612,12 +612,12 @@ const reducer = handleActions<IDataTableStateContext, any>(
       };
     },
   },
-  DATA_TABLE_CONTEXT_INITIAL_STATE
+  DATA_TABLE_CONTEXT_INITIAL_STATE,
 );
 
 export function dataTableReducerInternal(
   incomingState: IDataTableStateContext,
-  action: ReduxActions.Action<any>
+  action: ReduxActions.Action<any>,
 ): IDataTableStateContext {
   const flaggedState = flagsReducer(incomingState, action) as IDataTableStateContext;
   const newState = reducer(flaggedState, action);

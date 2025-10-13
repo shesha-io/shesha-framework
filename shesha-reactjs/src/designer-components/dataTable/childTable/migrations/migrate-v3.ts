@@ -4,7 +4,7 @@ import { SettingsMigrationContext } from '@/interfaces/formDesigner';
 
 export const migrateV2toV3 = (
   props: IChildTableComponentProps,
-  _context: SettingsMigrationContext
+  _context: SettingsMigrationContext,
 ): IChildTableComponentProps => {
   const { filters } = props;
 

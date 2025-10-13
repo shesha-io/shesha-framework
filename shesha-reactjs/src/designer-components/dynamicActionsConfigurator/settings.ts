@@ -45,5 +45,6 @@ export const configurableActionsConfiguratorSettingsForm = new DesignerToolbarSe
     parentId: 'root',
     hidden: false,
     validate: {},
+    jsSetting: true,
   })
   .toJson();

@@ -3,6 +3,7 @@ import { IAnchoredDirection } from '@/providers/dataTable/interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';
 import React, { ReactNode, CSSProperties } from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 
 export interface IColumnWidth {
   id: React.Key;
@@ -79,14 +80,14 @@ export interface IReactTableProps extends ITableRowDragProps {
    */
   useMultiSelect?: boolean;
 
-    /**
-     * Whether the table's headers should be frozen and you scroll under them
-     */
+  /**
+   * Whether the table's headers should be frozen and you scroll under them
+   */
   freezeHeaders?: boolean;
 
-/**
- * Whether the table's columns should be frozen and you scroll under them on the left or right
- */
+  /**
+   * Whether the table's columns should be frozen and you scroll under them on the left or right
+   */
   anchored?: IAnchoredDirection;
 
   /**
@@ -121,7 +122,7 @@ export interface IReactTableProps extends ITableRowDragProps {
   onFetchData?: () => void;
   /**
    * Required if manualPagination is set to true
-   * If manualPagination is true, then this value used to determine the amount of pages available. 
+   * If manualPagination is true, then this value used to determine the amount of pages available.
    * This amount is then used to materialize the pageOptions and also compute the canNextPage values on the table instance.
    * Set to -1 if you don't know or don't want to present the number of pages available. canNextPage will return false if page data length is less than pageSize, otherwise true.
    */
@@ -158,6 +159,16 @@ export interface IReactTableProps extends ITableRowDragProps {
    * A callback for double-clicking the rows
    */
   onRowDoubleClick?: IConfigurableActionConfiguration | ((rowData: any, index?: number) => void);
+
+  /**
+   * A callback for clicking the rows
+   */
+  onRowClick?: (rowIndex: number, row: any) => void;
+
+  /**
+   * A callback for hovering over the rows
+   */
+  onRowHover?: (rowIndex: number, row: any) => void;
 
   /**
    * A callback for when ids are selected. Required if useMultiSelect is true
@@ -208,6 +219,14 @@ export interface IReactTableProps extends ITableRowDragProps {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+  showExpandedView?: boolean;
+
+  rowBackgroundColor?: string;
+  rowAlternateBackgroundColor?: string;
+  rowHoverBackgroundColor?: string;
+  rowSelectedBackgroundColor?: string;
+  borderRadius?: string;
+  border?: IBorderValue;
 
   canDeleteInline?: boolean;
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;

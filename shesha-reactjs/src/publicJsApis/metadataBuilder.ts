@@ -19,6 +19,7 @@ export interface IObjectMetadataBuilder {
   addString(path: string, label: string): this;
   addNumber(path: string, label: string): this;
   addDate(path: string, label: string): this;
+  addDateTime(path: string, label: string): this;
   addBoolean(path: string, label: string): this;
   addArray(path: string, label: string): this;
   addAny(path: string, label: string): this;
@@ -28,7 +29,7 @@ export interface IObjectMetadataBuilder {
   build(): IObjectMetadata;
 
   addObject(path: string, label: string, propertiesBuilder?: PropertiesBuilder<this>): this;
-  
+
   addMetadataBuilder(): this;
 }
 
@@ -40,9 +41,9 @@ export interface IMetadataBuilder<TObjectBuilder extends IObjectMetadataBuilder 
   entity(entityType: string): Promise<IObjectMetadata>;
   metadata(): IObjectMetadata;
 
-  anyObject(): IMetadata;  
+  anyObject(): IMetadata;
   string(): IMetadata;
   number(): IMetadata;
   date(): IMetadata;
-  boolean(): IMetadata; 
+  boolean(): IMetadata;
 }

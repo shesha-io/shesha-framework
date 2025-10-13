@@ -70,7 +70,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Comment
         /// </summary>
-        [StringLength(300)]
+        [MaxLength(300)]
         public virtual string Comment { get; set; }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Shesha.Domain
         /// <summary>
         /// MD5 hash of the imported file
         /// </summary>
-        [StringLength(50)]
+        [MaxLength(50)]
         public virtual string ImportedFileMD5 { get; set; }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Shesha.Domain
         /// </summary>
         public virtual RefListImportSourceType? SourceType { get; set; }
 
-        [StringLength(300)]
+        [MaxLength(300)]
         public virtual string LogFilePath { get; set; }
     }
 }

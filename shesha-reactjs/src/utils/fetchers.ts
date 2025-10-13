@@ -1,12 +1,14 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { requestHeaders } from './requestHeaders';
 import { buildUrl } from './url';
 import { HttpResponse } from '@/publicJsApis/httpClient';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { Key } from 'react';
 
-export function constructUrl<TQueryParams>(base: string, path: string, queryParams?: TQueryParams) {
-  let normalizedBase = Boolean(base) ? base : '';
+export function constructUrl<TQueryParams extends object = object>(base: string | undefined, path: string, queryParams?: TQueryParams): string {
+  let normalizedBase = !isNullOrWhiteSpace(base) ? base : '';
   normalizedBase = normalizedBase.endsWith('/') ? normalizedBase : `${normalizedBase}/`;
 
   let trimmedPath = Boolean(path) ? path : '';
@@ -54,9 +56,9 @@ export const get = <
   path: string,
   queryParams: TQueryParams,
   props: Omit<GetProps<TData, TError, TQueryParams, _TPathParams>, 'queryParams'>,
-  signal?: RequestInit['signal']
+  signal?: RequestInit['signal'],
 ): Promise<TData | null> => {
-  const url = constructUrl(props?.base, path, queryParams);
+  const url = constructUrl(props?.base, path, typeof (queryParams) === 'object' ? queryParams as object : undefined);
   const headers = {
     'content-type': 'application/json',
     ...(props?.headers || {}),
@@ -83,7 +85,7 @@ export interface MutateProps<
   data: TRequestBody | null;
   queryParams?: TQueryParams;
   signal?: RequestInit['signal'];
-  //options?: MutateRequestOptions<TQueryParams, TPathParams>
+  // options?: MutateRequestOptions<TQueryParams, TPathParams>
 }
 
 export const mutate = <
@@ -99,13 +101,13 @@ export const mutate = <
   method: string,
   path: string,
   data: TRequestBody,
-  props: Omit<MutateProps<TData, TError, TQueryParams, TRequestBody, _TPathParams>, 'data'>
+  props: Omit<MutateProps<TData, TError, TQueryParams, TRequestBody, _TPathParams>, 'data'>,
 ): Promise<TData | null> => {
   let fixedPath = path;
   if (method === 'DELETE' && typeof data === 'string') {
     fixedPath += `/${data}`;
   }
-  const url = constructUrl(props.base, fixedPath, props.queryParams);
+  const url = constructUrl(props.base, fixedPath, typeof (props.queryParams) === 'object' ? props.queryParams as object : undefined);
 
   const headers = {
     'content-type': 'application/json',
@@ -149,7 +151,7 @@ export const getFileNameFromResponse = (fileResponse: HttpResponse<any>): string
   return getFileNameFromContentDisposition(fileResponse.headers['content-disposition']);
 };
 
-export const unwrapAbpResponse = <TResponse extends any, TData extends any>(response: TResponse): TData | TResponse => {
+export const unwrapAbpResponse = <TData extends any, TResponse extends TData | IAjaxResponse<TData>>(response: TResponse): TData | TResponse => {
   if (!response) return response;
 
   const ajaxResponse = response as IAjaxResponse<TData>;
@@ -158,8 +160,17 @@ export const unwrapAbpResponse = <TResponse extends any, TData extends any>(resp
   return result;
 };
 
-export const axiosHttp = (baseURL: string, tokenName?: string) =>
+export const axiosHttp = (baseURL: string, tokenName?: string): AxiosInstance =>
   axios.create({
     baseURL,
     headers: requestHeaders(tokenName || DEFAULT_ACCESS_TOKEN_NAME, { addCustomHeaders: true }),
   });
+
+
+export interface IQueryParams {
+  [name: string]: Key;
+}
+export type FetcherOptions = {
+  path: string;
+  queryParams?: IQueryParams;
+};

@@ -1,7 +1,8 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 import { StoredFilesRendererBase } from '@/components/storedFilesRendererBase';
 import { useStoredFilesStore } from '@/providers/storedFiles';
 import { ButtonProps } from 'antd';
+import { IStoredFile } from '@/index';
 
 export interface IStoredFilesRendererProps {
   ownerId?: string;
@@ -9,10 +10,10 @@ export interface IStoredFilesRendererProps {
   isDragger?: boolean;
   uploadBtnProps?: ButtonProps;
   disabled?: boolean;
-  noFilesCaption?: ReactNode;
   accept?: string[];
   layout?: 'vertical' | 'horizontal' | 'grid';
   listType?: 'text' | 'thumbnail';
+  onFileListChanged?: (list: IStoredFile[]) => void;
 }
 
 export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
@@ -44,8 +45,8 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
       deleteFile={deleteFile}
       downloadZipFile={downloadZipFile}
       downloadFile={downloadFile}
-      isDownloadingFileListZip={isInProgress && isInProgress.dowloadZip}
-      isDownloadZipSucceeded={succeeded && succeeded.dowloadZip}
+      isDownloadingFileListZip={isInProgress?.downloadZip}
+      isDownloadZipSucceeded={succeeded?.downloadZip}
       isDragger={isDragger}
       uploadBtnProps={uploadBtnProps}
       disabled={disabled}

@@ -1,6 +1,6 @@
 import { FormIdentifier, IEntityReferenceDto } from "@/index";
 import { IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { Key, MutableRefObject, ReactNode } from "react";
+import { Key, ReactNode } from "react";
 import { GroupingItem, ISortingItem } from "@/providers/dataTable/interfaces";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 
@@ -37,6 +37,8 @@ export interface ISelectOption<TValue = any> {
   value: string | number;
   label: string | React.ReactNode;
   data: TValue;
+  color?: string;
+  icon?: string;
 }
 
 interface IQueryParamProp {
@@ -46,7 +48,7 @@ interface IQueryParamProp {
 }
 
 export interface IAutocompleteBaseProps {
-  disableRefresh?: MutableRefObject<boolean>;
+  disableRefresh?: (value) => void;
 
   uid: string;
   onChange?: (value: any) => void;
@@ -90,7 +92,7 @@ export interface IAutocompleteBaseProps {
   /** Get Entity details Url */
   quickviewGetEntityUrl?: string;
   /** Quickview form width */
-  quickviewWidth?: number;
+  quickviewWidth?: string | number;
 
   /** Not found content */
   notFoundContent?: ReactNode;
@@ -110,7 +112,7 @@ export interface IAutocompleteBaseProps {
   grouping?: GroupingItem;
   /** Size */
   size?: SizeType;
-  
+
   allowFreeText?: boolean;
   allowClear?: boolean;
 
@@ -126,6 +128,4 @@ export interface IAutocompleteBaseProps {
   typeShortAlias?: string;
 }
 
-export interface IAutocompleteProps extends Omit<IAutocompleteBaseProps, 'uid'>{
-  
-}
+export type IAutocompleteProps = Omit<IAutocompleteBaseProps, 'uid'>;

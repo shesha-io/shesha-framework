@@ -1,18 +1,14 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useCallback } from 'react';
 import CanvasReducer from './reducer';
-import { setCanvasWidthAction, setCanvasZoomAction, setDesignerDeviceAction, setScreenWidthAction } from './actions';
-import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasStateContext, IDeviceTypes } from './contexts';
+import { SetCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, SetConfigTreePanelSizeAction, setDesignerDeviceAction, setScreenWidthAction } from './actions';
+import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, IDeviceTypes } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { DataTypes, IObjectMetadata } from '@/index';
 import { canvasContextCode } from '@/publicJsApis';
 
-export interface ICanvasProviderProps {
-}
-
-const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
+const CanvasProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
     typeDefinitionLoader: () => {
       return Promise.resolve({
@@ -20,7 +16,7 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
         files: [{
           content: canvasContextCode,
           fileName: 'apis/CanvasContextApi.ts',
-        }]
+        }],
       });
     },
     properties: [
@@ -30,7 +26,7 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
       { path: 'physicalDevice', dataType: DataTypes.string },
       { path: 'activeDevice', dataType: DataTypes.string },
     ],
-    dataType: DataTypes.object
+    dataType: DataTypes.object,
   } as IObjectMetadata), []);
 
   const [state, dispatch] = useReducer(CanvasReducer, {
@@ -38,47 +34,59 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
   });
 
   useEffect(() => {
-    const handleResize = () => dispatch(setScreenWidthAction(window.innerWidth));
+    if (typeof window === 'undefined') return undefined;
+
+    const handleResize = (): void => dispatch(setScreenWidthAction(window.innerWidth));
     window.addEventListener('resize', handleResize);
     dispatch(setScreenWidthAction(window.innerWidth));
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const setDesignerDevice = (deviceType: IDeviceTypes) => {
-    dispatch(setDesignerDeviceAction( deviceType));
-  };
+  const setDesignerDevice = useCallback((deviceType: IDeviceTypes) => {
+    dispatch(setDesignerDeviceAction(deviceType));
+  }, []);
 
-  const setCanvasWidth = (width: number, deviceType: string) => {
+  const setCanvasWidth = useCallback((width: number, deviceType: string) => {
     dispatch(setCanvasWidthAction({ width, deviceType }));
-  };
-  const setCanvasZoom = (zoom: number) => {
+  }, []);
+
+  const setCanvasZoom = useCallback((zoom: number) => {
     dispatch(setCanvasZoomAction(zoom));
-  };
+  }, []);
+
+  const setCanvasAutoZoom = useCallback(() => {
+    dispatch(SetCanvasAutoZoomAction());
+  }, []);
+
+  const setConfigTreePanelSize = useCallback((size: number) => {
+    dispatch(SetConfigTreePanelSizeAction(size));
+  }, []);
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const actions ={
+  const actions = useMemo(() => ({
     setDesignerDevice,
     setCanvasWidth,
-    setCanvasZoom
+    setCanvasZoom,
+    setCanvasAutoZoom,
+    setConfigTreePanelSize,
     /* NEW_ACTION_GOES_HERE */
-  };
+  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setCanvasAutoZoom, setConfigTreePanelSize]);
 
-  const contextOnChangeData = (_, changedData: ICanvasStateContext) => {
+  const contextOnChangeData = useCallback((_data: any, changedData: ICanvasStateContext) => {
     if (!changedData)
       return;
 
     if (changedData.designerDevice !== undefined && changedData.designerDevice !== state.designerDevice) {
       setDesignerDevice(changedData.designerDevice);
-      return;
     }
-  };
+  }, [state.designerDevice, setDesignerDevice]);
 
   return (
     <DataContextBinder
-      id={'canvasContext'}
-      name={'canvasContext'}
-      description={`Canvas context`}
-      type='appLayer'
+      id="canvasContext"
+      name="canvasContext"
+      description="Canvas context"
+      type="appLayer"
       data={state}
       api={actions}
       onChangeData={contextOnChangeData}
@@ -93,7 +101,7 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
   );
 };
 
-function useCanvasState(require: boolean) {
+function useCanvasState(require: boolean): ICanvasStateContext | undefined {
   const context = useContext(CanvasStateContext);
 
   if (context === undefined && require) {
@@ -103,7 +111,7 @@ function useCanvasState(require: boolean) {
   return context;
 }
 
-function useCanvasActions(require: boolean) {
+function useCanvasActions(require: boolean): ICanvasActionsContext | undefined {
   const context = useContext(CanvasActionsContext);
 
   if (context === undefined && require) {
@@ -113,7 +121,7 @@ function useCanvasActions(require: boolean) {
   return context;
 }
 
-function useCanvas(require: boolean = true) {
+function useCanvas(require: boolean = true): ICanvasStateContext & ICanvasActionsContext | undefined {
   const actionsContext = useCanvasActions(require);
   const stateContext = useCanvasState(require);
 

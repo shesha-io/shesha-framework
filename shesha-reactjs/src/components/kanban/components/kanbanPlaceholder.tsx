@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Col, Row } from "antd";
 
-export const KanbanPlaceholder = () => {
+export const KanbanPlaceholder = (): JSX.Element => {
   const placeholderColumns = ["This", "Is", "A", "Placeholder"];
 
   return (

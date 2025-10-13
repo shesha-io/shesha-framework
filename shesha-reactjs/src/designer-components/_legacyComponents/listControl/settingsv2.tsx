@@ -23,13 +23,13 @@ export interface IListControlSettingsProps {
   onValuesChange?: (changedValues: any, values: IListItemsProps) => void;
 }
 
-interface IListSettingsState extends IListItemsProps {}
+type IListSettingsState = IListItemsProps;
 
 export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, onSave, model, onValuesChange }) => {
   const [state, setState] = useState<IListSettingsState>(model);
   const [form] = Form.useForm();
 
-  const handleValuesChange = (changedValues: IListItemsProps, values: IListItemsProps) => {
+  const handleValuesChange = (changedValues: IListItemsProps, values: IListItemsProps): void => {
     if (readOnly) return;
     const incomingState = { ...values };
 
@@ -205,8 +205,8 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
             <QueryBuilderRenderer
               readOnly={readOnly}
               propertyName="filters"
-              type={''}
-              id={''}
+              type=""
+              id=""
               label="Query builder"
             />
           </QueryBuilderWithModelType>

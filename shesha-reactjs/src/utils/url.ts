@@ -1,11 +1,21 @@
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import qs, { ParsedQs } from 'qs';
 
 const getCurrentQueryString = (): string => {
-  return typeof window !== 'undefined' ? window.location?.search ?? '' : '';
+  return isDefined(window) && isDefined(window.location)
+    ? window.location.search
+    : '';
 };
 
-export const normalizeUrl = (url: string): string => {
-  return url === '/' ? url : (url ?? '').endsWith('/') ? (url || '').substring(0, url.length - 1) : url;
+export const normalizeUrl = (url: string | null | undefined): string | undefined => {
+  if (isNullOrWhiteSpace(url))
+    return undefined;
+
+  return url === '/'
+    ? url
+    : url.endsWith('/')
+      ? url.substring(0, url.length - 1)
+      : url;
 };
 
 export const isSameUrls = (url1: string, url2: string): boolean => {
@@ -18,26 +28,31 @@ export const getUrlWithoutQueryParams = (url: string): string => {
   return idx > -1 ? url.substring(0, idx) : url;
 };
 
-export const getQueryString = (url: string) => {
+export const getQueryString = (url: string): string | undefined => {
   try {
-    const idx = url?.indexOf('?');
+    if (isNullOrWhiteSpace(url))
+      return undefined;
+    const idx = url.indexOf('?');
 
-    return typeof idx !== 'number' || idx === -1 ? undefined : url.substring(idx);
+    return idx === -1 ? undefined : url.substring(idx);
   } catch {
     return undefined;
   }
 };
 
 export type QueryStringParams = ParsedQs;
+type QueryStringParam = QueryStringParams[string];
 
 export const getQueryParams = (url?: string): QueryStringParams => {
   const effectiveUrl = url ? decodeURIComponent(url) : getCurrentQueryString();
   const queryString = getQueryString(effectiveUrl);
 
-  return qs.parse(queryString, { ignoreQueryPrefix: true });
+  return queryString
+    ? qs.parse(queryString, { ignoreQueryPrefix: true })
+    : {};
 };
 
-export const getQueryParam = (name: string, url?: string) => {
+export const getQueryParam = (name: string, url?: string): QueryStringParam => {
   const result = getQueryParams(url)[name];
 
   return result;
@@ -46,47 +61,42 @@ export const getQueryParam = (name: string, url?: string) => {
 export const setQueryParam = (url: string, key: string, value: string): string => {
   const urlObj = new URL(decodeURIComponent(url));
 
-  const urlSearchParams = new URLSearchParams(urlObj.search ?? '');
+  const urlSearchParams = new URLSearchParams(urlObj.search || '');
   const params = Object.fromEntries(urlSearchParams.entries());
   params[key] = encodeURIComponent(value);
 
-  return `${urlObj?.host}${urlObj?.pathname}?${qs.stringify(params)}`;
+  return `${urlObj.host}${urlObj.pathname}?${qs.stringify(params)}`;
 };
 
-export const isValidSubmitVerb = (submitVerb: string) => {
-  return ['POST', 'PUT', 'PATCH', 'DELETE']?.includes(submitVerb?.trim()?.toLocaleUpperCase());
+export const isValidSubmitVerb = (submitVerb: string): boolean => {
+  return !isNullOrWhiteSpace(submitVerb) && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(submitVerb.trim().toLocaleUpperCase());
 };
 
-export const joinUrlAndPath = (baseUrl: string, path: string) => {
-  const newBase = baseUrl?.endsWith('/') ? baseUrl : baseUrl?.substring(0, baseUrl?.length - 2); // Remove the end forward slash
-  const newPath = path?.startsWith('/') ? path : `/${path}`;
+export const joinUrlAndPath = (baseUrl: string, path: string): string => {
+  const newBase = baseUrl.endsWith('/') ? baseUrl : baseUrl.substring(0, baseUrl.length - 2); // Remove the end forward slash
+  const newPath = path.startsWith('/') ? path : `/${path}`;
 
   return `${newBase}${newPath}`;
 };
 
-export function removeURLParameter(url: string, parameter: string) {
+export function removeURLParameter(url: string, parameter: string): string {
   if (!url) return url;
-  //prefer to use l.search if you have a location/link object
-  const urlParts = url.split('?');
-  if (urlParts.length >= 2) {
-    const prefix = encodeURIComponent(parameter) + '=';
-    const pars = urlParts[1].split(/[&;]/g);
 
-    //reverse iteration as may be destructive
-    for (let i = pars.length; i-- > 0; ) {
-      //idiom for string.startsWith
-      if (pars[i].lastIndexOf(prefix, 0) !== -1) {
-        pars.splice(i, 1);
-      }
-    }
+  const [baseUrl, queryString = ''] = url.split('?');
+  if (queryString === '') return url;
 
-    return urlParts[0] + (pars.length > 0 ? '?' + pars.join('&') : '');
-  }
-  return url;
+  const parsed = qs.parse(queryString);
+  if (!(parameter in parsed))
+    return url;
+  delete parsed[parameter];
+  const newQueryString = qs.stringify(parsed);
+  return isNullOrWhiteSpace(newQueryString)
+    ? baseUrl
+    : baseUrl + '?' + newQueryString;
 }
 
 
-export const buildUrl = (url: string, queryParams?: Record<string, any>) => {
+export const buildUrl = (url: string, queryParams?: object): string => {
   const urlWithoutQuery = getUrlWithoutQueryParams(url);
   const urlQueryPatams = getQueryParams(url);
 

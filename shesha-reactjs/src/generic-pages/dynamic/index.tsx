@@ -1,6 +1,6 @@
 import { App } from 'antd';
 import classNames from 'classnames';
-import React, { Fragment, useMemo, useRef } from 'react';
+import React, { Fragment, useCallback, useMemo, useRef } from 'react';
 import { ConfigurableForm } from '@/components';
 import { ConfigurableFormInstance, PageWithLayout } from '@/interfaces';
 import { IDynamicPageProps } from './interfaces';
@@ -17,16 +17,16 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
     return { id };
   }, [id]);
 
-  const onSubmitted = () => {
+  const onSubmitted = useCallback(() => {
     message.success('Data saved successfully!');
     formRef?.current?.setFormMode('readonly');
-  };
+  }, [message, formRef.current]);
 
   return (
     <Fragment>
       <div id="modalContainerId" className={classNames('sha-dynamic-page')}>
         <ConfigurableForm
-          formName='dynamic-page-form'
+          formName="dynamic-page-form"
           mode={mode}
 
           className="sha-dynamic-page"
@@ -38,11 +38,6 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
 
           formRef={formRef}
           markupLoadingError={PageMarkupLoadingError}
-
-        // TODO: review and restore
-        // refetchData={() => refetchFormData()}
-        // refetcher={formWithData.refetcher}
-        // actions={{ onChangeId, onChangeFormData }}
         />
       </div>
     </Fragment>
@@ -51,7 +46,12 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
 
 export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   return (
-    <DataContextProvider id={SheshaCommonContexts.PageContext} name={SheshaCommonContexts.PageContext} type={'page'}>
+    <DataContextProvider
+      id={SheshaCommonContexts.PageContext}
+      name={SheshaCommonContexts.PageContext}
+      type="page"
+      webStorageType="sessionStorage"
+    >
       <DynamicPageInternal {...props} />
     </DataContextProvider>
   );

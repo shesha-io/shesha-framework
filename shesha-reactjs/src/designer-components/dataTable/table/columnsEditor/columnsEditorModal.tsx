@@ -19,12 +19,12 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
 
   const [localValue, setLocalValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value));
 
-  const onOk = () => {
+  const onOk = (): void => {
     onChange?.(deepCopyViaJson(localValue)); // make copy of localValue to re-render table
     hideModal();
   };
 
-  const onCancel = () => {
+  const onCancel = (): void => {
     hideModal();
     setLocalValue(deepCopyViaJson(value));
   };
@@ -37,7 +37,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
       title="Columns Configuration"
       onCancel={onCancel}
       onOk={onOk}
-      destroyOnClose={true}
+      destroyOnHidden={true}
     >
       <ColumnsConfigurator
         readOnly={readOnly}

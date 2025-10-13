@@ -1,72 +1,46 @@
-﻿using Abp.Auditing;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Constants;
 using Shesha.EntityHistory;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Core.ShaRole")]
+    /// <summary>
+    /// Role
+    /// </summary>
+    [Entity(FriendlyName = "Role", TypeShortAlias = "Shesha.Core.ShaRole")]
+    [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-role-create")]
+    [FixedView(ConfigurationItemsViews.Rename, SheshaFrameworkModule.ModuleName, "cs-item-rename")]
     [DisplayManyToManyAuditTrail(typeof(ShaRoleAppointedPerson), "Person", DisplayName = "Member")]
-    [JoinedProperty("Core_ShaRoles")]
+    [JoinedProperty("roles", Schema = "frwk")]
     [Prefix(UsePrefixes = false)]
     [DiscriminatorValue(ItemTypeName)]
-    public class ShaRole : ConfigurationItemBase
+    [SnakeCaseNaming]
+    public class ShaRole : ConfigurationItem
     {
         public const string ItemTypeName = "role";
-
-        public ShaRole()
-        {
-            Permissions = new List<ShaRolePermission>();
-        }
-
-        [StringLength(200)]
-        public virtual string NameSpace { get; set; }
-
-        [StringLength(500)]
-        [Audited]
-        public override string Name { get; set; }
-
-        [StringLength(2000)]
-        [Audited]
-        public override string? Description { get; set; }
-
-        [Obsolete]
-        public virtual int SortIndex { get; set; }
-
-        public virtual IList<ShaRolePermission> Permissions { get; set; }
-
-        // note: to be removed! todo: convert tu custom params
-        [Obsolete]
-        public virtual bool IsRegionSpecific { get; set; }
-
-        [Obsolete]
-        public virtual bool IsProcessConfigurationSpecific { get; set; }
-
-        [Display(Name = "Hard linked to application", Description = "If true, indicates that the application logic references the value or name of this role and should therefore not be changed.")]
-        public virtual bool HardLinkToApplication { get; protected set; }
-
-        [Obsolete]
-        public virtual bool CanAssignToMultiple { get; set; }
-        [Obsolete]
-        public virtual bool CanAssignToPerson { get; set; }
-        [Obsolete]
-        public virtual bool CanAssignToRole { get; set; }
-        [Obsolete]
-        public virtual bool CanAssignToOrganisationRoleLevel { get; set; }
-        [Obsolete]
-        public virtual bool CanAssignToUnit { get; set; }
-
-        public virtual void SetHardLinkToApplication(bool value) 
-        {
-            HardLinkToApplication = value;
-        }
 
         public override string ToString()
         {
             return Name;
         }
+
+        [MaxLength(200)]
+        public virtual string NameSpace { get; set; }
+
+        [InverseProperty("role_id")]
+        public virtual IList<ShaRolePermission> Permissions { get; set; } = new List<ShaRolePermission>();
+
+        [Display(Name = "Hard linked to application", Description = "If true, indicates that the application logic references the value or name of this role and should therefore not be changed.")]
+        public virtual bool HardLinkToApplication { get; protected set; }
+
+        public virtual void SetHardLinkToApplication(bool value)
+        {
+            HardLinkToApplication = value;
+        }
+
     }
 }

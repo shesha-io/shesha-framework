@@ -4,16 +4,13 @@ import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder
 import { ApplicationApi, IApplicationApi } from '../publicApi/applicationApi';
 import { useApplicationContextMetadata } from '../publicApi/metadata';
 import { useHttpClient } from '../publicApi/http/hooks';
-import { useAuth, useShaRouting } from '@/providers';
+import { useAuthOrUndefined, useShaRouting } from '@/providers';
 import { IUserProfileInfo } from '../publicApi/currentUser/api';
 import { useCacheProvider } from '@/hooks/useCache';
 import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/provider';
+import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
 import { IMetadataBuilder, IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { createNamedContext } from '@/utils/react';
-
-export interface IApplicationDataProviderProps {
-
-}
 
 export interface ApplicationPluginRegistration {
   name: string;
@@ -26,20 +23,29 @@ export interface IApplicationActionsContext {
   unregisterPlugin: (pluginName: string) => void;
   getPlugin: (pluginName: string) => ApplicationPluginRegistration;
 }
-export const ApplicationActionsContext = createNamedContext<IApplicationActionsContext>(undefined, "ApplicationActionsContext");
-export const ApplicationPublicApiContext = createNamedContext<IApplicationApi>(undefined, "ApplicationPublicApiContext");
+export const ApplicationActionsContext = createNamedContext<IApplicationActionsContext>(
+  undefined,
+  'ApplicationActionsContext',
+);
+export const ApplicationPublicApiContext = createNamedContext<IApplicationApi>(
+  undefined,
+  'ApplicationPublicApiContext',
+);
 
-export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProviderProps>> = ({ children }) => {
+export const ApplicationDataProvider: FC<PropsWithChildren> = ({ children }) => {
   const [plugins, setPlugins] = useState<ApplicationPluginRegistration[]>([]);
   const httpClient = useHttpClient();
   const cacheProvider = useCacheProvider();
   const metadataFetcher = useEntityMetadataFetcher();
+  const metadataDispatcher = useMetadataDispatcher();
   const shaRouter = useShaRouting();
 
   // inject fields from plugins
-  const [contextData] = useState<IApplicationApi>(() => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter));
+  const [contextData] = useState<IApplicationApi>(
+    () => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter, metadataDispatcher),
+  );
 
-  const { loginInfo } = useAuth(false) ?? {};
+  const { loginInfo } = useAuthOrUndefined() ?? {};
   useEffect(() => {
     const profile: IUserProfileInfo = loginInfo
       ? {
@@ -47,27 +53,34 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
         userName: loginInfo.userName,
         firstName: loginInfo.firstName,
         lastName: loginInfo.lastName,
-        personId: loginInfo.personId
+        personId: loginInfo.personId,
       }
       : undefined;
 
     contextData.user.setProfileInfo(profile);
+    contextData.user.setGrantedPermissions(loginInfo?.grantedPermissions ?? []);
   }, [loginInfo, contextData.user]);
 
-  const registerPlugin = useCallback((plugin: ApplicationPluginRegistration) => {
-    setPlugins(p => [...p, plugin]);
-    // register property
-    contextData.addPlugin({ name: plugin.name, data: plugin.data });
-  }, [setPlugins]);
+  const registerPlugin = useCallback(
+    (plugin: ApplicationPluginRegistration) => {
+      setPlugins((p) => [...p, plugin]);
+      // register property
+      contextData.addPlugin({ name: plugin.name, data: plugin.data });
+    },
+    [setPlugins],
+  );
 
-  const unregisterPlugin = useCallback((pluginName: string) => {
-    setPlugins(p => p.filter(p => p.name !== pluginName));
-  }, [setPlugins]);
+  const unregisterPlugin = useCallback(
+    (pluginName: string) => {
+      setPlugins((p) => p.filter((p) => p.name !== pluginName));
+    },
+    [setPlugins],
+  );
 
   const contextMetadata = useApplicationContextMetadata({ plugins }); // inject meta from plugins
 
-  const getPlugin = (name: string) => {
-    return plugins.find(p => p.name === name);
+  const getPlugin = (name: string): ApplicationPluginRegistration => {
+    return plugins.find((p) => p.name === name);
   };
 
   return (
@@ -76,9 +89,8 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
         <DataContextBinder
           id={SheshaCommonContexts.ApplicationContext}
           name={SheshaCommonContexts.ApplicationContext}
-          description={'Application context'}
-          type={'root'}
-
+          description="Application context"
+          type="root"
           metadata={contextMetadata}
           data={contextData}
         >
@@ -99,7 +111,7 @@ export const useApplicationActions = (): IApplicationActionsContext => {
   return context;
 };
 
-export const useApplicationPlugin = (plugin: ApplicationPluginRegistration) => {
+export const useApplicationPlugin = (plugin: ApplicationPluginRegistration): void => {
   const { registerPlugin, unregisterPlugin } = useApplicationActions();
   useEffect(() => {
     registerPlugin(plugin);

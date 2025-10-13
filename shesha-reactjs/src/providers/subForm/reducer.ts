@@ -6,14 +6,12 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
   {
     [SubFormActionEnums.SetMarkupWithSettings]: (
       state: ISubFormStateContext,
-      action: ReduxActions.Action<ISubFormStateContext>
+      action: ReduxActions.Action<ISubFormStateContext>,
     ) => {
       const { payload } = action;
       const {
         components,
         formSettings,
-        versionNo,
-        versionStatus,
         description,
         hasFetchedConfig,
         id,
@@ -31,8 +29,6 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
         hasFetchedConfig,
         components,
         formSettings,
-        versionNo,
-        versionStatus,
         description,
         allComponents,
         componentRelations,
@@ -50,7 +46,7 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
 
     [SubFormActionEnums.FetchDataSuccess]: (
       state: ISubFormStateContext,
-      action: ReduxActions.Action<IFetchDataSuccessPayload>
+      action: ReduxActions.Action<IFetchDataSuccessPayload>,
     ) => {
       const { errors, loading } = state;
       return {
@@ -63,7 +59,7 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
 
     [SubFormActionEnums.FetchDataError]: (
       state: ISubFormStateContext,
-      action: ReduxActions.Action<IFetchDataErrorPayload>
+      action: ReduxActions.Action<IFetchDataErrorPayload>,
     ) => {
       const { errors, loading } = state;
       const { payload } = action;
@@ -75,5 +71,5 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
       };
     },
   },
-  SUB_FORM_CONTEXT_INITIAL_STATE
+  SUB_FORM_CONTEXT_INITIAL_STATE,
 );

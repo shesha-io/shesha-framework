@@ -1,8 +1,8 @@
-import { DesignerToolbarSettings } from "@/index";
+import { DesignerToolbarSettings, FormMarkupWithSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const commonTabId = nanoid();
   const searchableTabsId = nanoid();
   const appearanceId = nanoid();
@@ -26,32 +26,31 @@ export const getSettings = (data: any) => {
             title: 'Common',
             id: commonTabId,
             components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
+              .addSettingsInputRow({
                 id: nanoid(),
-                inputType: 'switch',
-                propertyName: 'block',
-                parentId: 'root',
-                label: 'Block',
-                defaultValue: false,
-              }).toJson()
-            ]
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityId
-              })
-              .toJson()
-            ]
+                parentId: commonTabId,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'switch',
+                    propertyName: 'hidden',
+                    label: 'Hide',
+                    defaultValue: false,
+                    parentId: 'root',
+                    jsSetting: true,
+                  },
+                  {
+                    id: nanoid(),
+                    type: 'switch',
+                    propertyName: 'block',
+                    parentId: 'root',
+                    label: 'Block',
+                    defaultValue: false,
+                    jsSetting: true,
+                  },
+                ],
+              }).toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -70,7 +69,7 @@ export const getSettings = (data: any) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
+                    _value: "",
                   },
                   components: [
                     ...new DesignerToolbarSettings()
@@ -89,7 +88,6 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
                               inline: true,
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
                                   type: 'textField',
@@ -99,7 +97,7 @@ export const getSettings = (data: any) => {
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
                                   tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
-                                  defaultValue: '360px'
+                                  defaultValue: '360px',
                                 },
                                 {
                                   type: 'textField',
@@ -120,27 +118,44 @@ export const getSettings = (data: any) => {
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
                                   defaultValue: '100%',
-                                }
-                              ]
+                                },
+                              ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .toJson(),
-                  ]
+                  ],
                 })
-                .toJson()
-            ]
-          }
-        ]
+                .toJson(),
+            ],
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                jsSetting: true,
+                size: 'small',
+                parentId: securityId,
+              })
+              .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { ConfigProvider, Pagination } from 'antd';
+import { Pagination, Select } from 'antd';
 import { useMedia } from 'react-use';
 import { useStyles } from './style';
 
@@ -46,19 +46,19 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
   style,
 }) => {
   const isWider = useMedia('(min-width: 1202px)');
-  const {styles} = useStyles({style});
+  const { styles } = useStyles({ style });
 
-  const onPageNumberChange = (page: number, pageSize?: number) => {
+  const onPageNumberChange = (page: number, pageSize?: number): void => {
     setCurrentPage(page);
     changePageSize(pageSize);
   };
 
-  const onShowSizeChange = (current: number, size?: number) => {
+  const onShowSizeChange = (current: number, size?: number): void => {
     changePageSize(size);
     setCurrentPage(current);
   };
 
-  const showTotal = (total: number, range: number[]) => {
+  const showTotal = (total: number, range: number[]): string | null => {
     if (showTotalItems) {
       return total > 0 ? `${range[0]}-${range[1]} of ${total} items` : '0 items found';
     }
@@ -73,16 +73,7 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
   if (!isWider) return null;
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Pagination: {
-            colorText: style?.color,
-            fontWeightStrong: style?.fontWeight,
-          },
-        },
-      }}
-    >
+    <div className={styles.pagerContainer}>
       <Pagination
         className={styles.pager}
         style={style}
@@ -91,14 +82,25 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
         pageSizeOptions={(pageSizeOptions || []).map((s) => `${s}`)}
         current={currentPage}
         pageSize={selectedPageSize}
-        showSizeChanger={showSizeChanger}
+        showSizeChanger={false}
         onChange={onPageNumberChange}
         onShowSizeChange={onShowSizeChange}
         showLessItems
         disabled={disabled}
         showTotal={showTotal} // TODO: add `filtered from xxx` here if needed
       />
-    </ConfigProvider>
+      {showSizeChanger && (
+        <Select
+          size="small"
+          className={styles.dropdown}
+          style={{ width: 100, ...style }}
+          classNames={{ popup: { root: styles.popup } }}
+          options={pageSizeOptions.map((s) => ({ label: `${s} / page`, value: s }))}
+          value={selectedPageSize}
+          onChange={(value) => onShowSizeChange(currentPage, value)}
+        />
+      )}
+    </div>
   );
 };
 

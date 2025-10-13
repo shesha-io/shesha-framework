@@ -29,7 +29,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Serialized Json of the notification data
         /// </summary>
-        [StringLength(int.MaxValue)]
+        [MaxLength(int.MaxValue)]
         public virtual string NotificationData { get; set; }
         /// <summary>
         /// 
@@ -43,5 +43,10 @@ namespace Shesha.Domain
         /// 
         /// </summary>
         public virtual NotificationTopic NotificationTopic { get; set; }
+
+        /// <summary>
+        /// Notification category (any string reference that can be used for analysys)
+        /// </summary>
+        public virtual string Category { get; set; } = string.Empty;
     }
 }

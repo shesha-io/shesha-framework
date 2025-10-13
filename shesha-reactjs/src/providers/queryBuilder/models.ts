@@ -1,7 +1,7 @@
 import { FieldOrGroup, FieldSettings } from '@react-awesome-query-builder/antd';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 
-//Fields
+// Fields
 
 export interface CustomFieldSettings {
   typeShortAlias?: string;
@@ -26,7 +26,7 @@ export interface IHasQueryBuilderConfig extends IProperty {
 }
 
 export const propertyHasQBConfig = (property: IProperty): property is IHasQueryBuilderConfig => {
-  return property && typeof((property as IHasQueryBuilderConfig).convert) === 'function';
+  return property && typeof ((property as IHasQueryBuilderConfig).convert) === 'function';
 };
 
 export interface IHasCustomQBSettings {
@@ -34,12 +34,12 @@ export interface IHasCustomQBSettings {
 }
 
 export interface IPropertyMetadataWithQBSettings extends IPropertyMetadata, IHasCustomQBSettings {
-  
+
 }
 export interface IPropertyWithCustomQBSettings extends IProperty, IHasCustomQBSettings {
 
 }
 
-export const hasCustomQBSettings = (property: any): property is IHasCustomQBSettings => {
-  return property && typeof((property as IPropertyMetadataWithQBSettings).toQueryBuilderField) === 'function';
+export const hasCustomQBSettings = (property: unknown): property is IHasCustomQBSettings => {
+  return property && typeof ((property as IPropertyMetadataWithQBSettings).toQueryBuilderField) === 'function';
 };

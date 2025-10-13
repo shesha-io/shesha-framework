@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState, useRef, ChangeEvent, CSSProperties } from 'react';
+import React, { FC, useEffect, useMemo, useState, useRef, ChangeEvent, CSSProperties, ReactElement } from 'react';
 import classNames from 'classnames';
 import {
   useResizeColumns,
@@ -11,7 +11,7 @@ import {
   Column,
 } from 'react-table';
 import { LoadingOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Spin, Tooltip } from 'antd';
+import { App, Spin, Tooltip } from 'antd';
 import _ from 'lodash';
 import { IReactTableProps, OnRowsReorderedArgs } from './interfaces';
 import { nanoid } from '@/utils/uuid';
@@ -19,14 +19,20 @@ import { useDeepCompareEffect, usePrevious } from 'react-use';
 import { RowDragHandle, SortableRow, TableRow } from './tableRow';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { IndeterminateCheckbox } from './indeterminateCheckbox';
-import { getColumnAnchored, getPlainValue } from '@/utils';
+import { getPlainValue } from '@/utils';
+import { getColumnAnchored } from '@/utils/datatable';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstance } from '@/providers/index';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
 import { EmptyState } from '..';
+import { ErrorDetails } from '@/utils/configurationFramework/actions';
+import axios from 'axios';
+import { isAxiosResponse } from '@/interfaces/ajaxResponse';
+import { getBorderStyle } from '@/designer-components/_settings/utils/index';
 
 interface IReactTableState {
   allRows: any[];
@@ -48,6 +54,8 @@ export const ReactTable: FC<IReactTableProps> = ({
   onFetchData,
   onSelectRow,
   onRowDoubleClick,
+  onRowClick,
+  onRowHover,
   onResizedChange,
   onSelectedIdsChanged,
   onMultiRowSelect,
@@ -79,18 +87,36 @@ export const ReactTable: FC<IReactTableProps> = ({
   noDataSecondaryText = "No data is available for this table",
   noDataIcon,
   onRowsRendering,
-  onRowsReordered
+  onRowsReordered,
+  showExpandedView,
+
+  rowBackgroundColor,
+  rowAlternateBackgroundColor,
+  rowHoverBackgroundColor,
+  rowSelectedBackgroundColor,
+  border,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
     allColumns: columns,
   });
+  const { notification } = App.useApp();
+
+  const [activeCell, setActiveCell] = useState();
+  const [allowExpandedView, setAllowExpandedView] = useState<Boolean>(false);
+  const [isCellContentOverflowing, setIsCellContentOverflowing] = useState<Boolean>(false);
   const { styles } = useStyles();
-  const { styles: mainStyles } = useMainStyles();
+  const { styles: mainStyles } = useMainStyles({
+    rowBackgroundColor,
+    rowAlternateBackgroundColor,
+    rowHoverBackgroundColor,
+    rowSelectedBackgroundColor,
+    border,
+  });
 
   const { setDragState } = useDataTableStore();
 
-  const shaForm = useShaFormInstance();
+  const shaForm = useShaFormInstance(false);
 
   const { allColumns, allRows } = componentState;
 
@@ -101,7 +127,7 @@ export const ReactTable: FC<IReactTableProps> = ({
       width: 150, // width is used for both the flex-basis and flex-grow
       // maxWidth: 200, // maxWidth is only used as a limit for resizing
     }),
-    []
+    [],
   );
 
   const onChangeHeader = (callback: (...args: any) => void, rows: Row<any>[] | Row) => (e: ChangeEvent) => {
@@ -127,7 +153,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     if (useMultiSelect) {
       localColumns.unshift({
         id: 'selection',
-        //isVisible: true,
+        // isVisible: true,
         disableResizing: true,
         minWidth: 37,
         width: 37,
@@ -136,14 +162,14 @@ export const ReactTable: FC<IReactTableProps> = ({
         // The header can use the table's getToggleAllRowsSelectedProps method
         // to render a checkbox
         Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => (
-          <span>
+          <span className={styles.shaSpanCenterVertically}>
             <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
           </span>
         ),
         // The cell can use the individual row's getToggleRowSelectedProps method
         // to the render a checkbox
         Cell: ({ row }) => (
-          <span>
+          <span className={styles.shaSpanCenterVertically}>
             <IndeterminateCheckbox
               {...row.getToggleRowSelectedProps()}
               onChange={onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
@@ -177,7 +203,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     });
   }, [allColumns, allowReordering, useMultiSelect]);
 
-  const getColumnAccessor = (cid) => {
+  const getColumnAccessor = (cid): string => {
     const column = columns.find((c) => c.id === cid);
     return column ? column.accessor.toString() : '';
   };
@@ -248,7 +274,7 @@ export const ReactTable: FC<IReactTableProps> = ({
           }
         });
       }
-    }
+    },
   );
 
   const { pageIndex, pageSize, selectedRowIds, sortBy } = state;
@@ -277,7 +303,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   }, [selectedRowIds]);
 
-  const onSetList = (newState: ItemInterface[], _sortable, _store) => {
+  const onSetList = (newState: ItemInterface[], _sortable, _store): void => {
     if (!onRowsReordered) {
       console.error('Datatable: re-ordering logic is not specified');
       return;
@@ -299,7 +325,17 @@ export const ReactTable: FC<IReactTableProps> = ({
             setComponentState((prev) => ({ ...prev, allRows: orderedItems }));
           },
         };
-        onRowsReordered(payload);
+
+        onRowsReordered(payload).catch((error) => {
+          const unwrappedError = axios.isAxiosError(error) && isAxiosResponse(error.response) && error.response.data?.error
+            ? error.response.data.error
+            : error;
+          notification.error({
+            message: 'Sorry! An error occurred.',
+            icon: null,
+            description: <ErrorDetails showDetails error={unwrappedError} />,
+          });
+        });
       }
     }
   };
@@ -311,9 +347,9 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   }, [onFetchData, pageIndex, pageSize, sortBy]);
 
-  const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
+  const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
 
-  const handleSelectRow = (row: Row<object>) => {
+  const handleSelectRow = (row: Row<object>): void => {
     if (!omitClick && !(canEditInline || canDeleteInline)) {
       onSelectRow(row?.index, row?.original);
     }
@@ -326,15 +362,18 @@ export const ReactTable: FC<IReactTableProps> = ({
   }, [state?.columnResizing]);
 
   const { executeAction } = useConfigurableActionDispatcher();
+  const allData = useAvailableConstantsData();
   const performOnRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick)
       return () => {
-        /*nop*/
+        /* nop*/
       };
 
-    return (data,) => {
+    return (data) => {
       const evaluationContext = {
+        ...allData,
         data,
+        selectedRow: data?.original,
       };
 
       executeAction({
@@ -342,19 +381,19 @@ export const ReactTable: FC<IReactTableProps> = ({
         argumentsEvaluationContext: evaluationContext,
       });
     };
-  }, [onRowDoubleClick]);
+  }, [onRowDoubleClick, allData]);
 
-  const handleDoubleClickRow = (row, index) => {
-    if (typeof onRowDoubleClick === 'object'){
+  const handleDoubleClickRow = (row, index): void => {
+    if (typeof onRowDoubleClick === 'object') {
       performOnRowDoubleClick(row);
     } else if (typeof onRowDoubleClick === 'function') {
       onRowDoubleClick(row?.original, index);
     }
   };
-  
+
   const Row = useMemo(() => (allowReordering ? SortableRow : TableRow), [allowReordering]);
 
-  const renderNewRowEditor = () => (
+  const renderNewRowEditor = (): JSX.Element => (
     <NewTableRowEditor
       columns={tableColumns}
       creater={createAction}
@@ -378,15 +417,112 @@ export const ReactTable: FC<IReactTableProps> = ({
     return result;
   }, [containerStyle, minHeight, maxHeight]);
 
-  const renderRow = (row: Row<any>, rowIndex: number) => {
+  const renderExpandedContentView = (cellRef): JSX.Element => {
+    const cellRect = cellRef?.current?.getBoundingClientRect();
+
+    const getSmartPosition = (): { top: number; left: number } => {
+      if (!cellRect) return { top: 0, left: 0 };
+
+      const viewport = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      };
+
+      const popup = {
+        width: Math.max(cellRect.width, 80),
+        height: 60,
+      };
+
+      const offset = 20;
+      const margin = 10;
+      const bottomOffset = 5;
+
+      let top = cellRect.top + offset;
+      let left = cellRect.left + offset;
+
+      if (left + popup.width + margin > viewport.width) {
+        left = cellRect.right - popup.width - offset;
+      }
+
+      if (left < margin) {
+        left = margin;
+      }
+
+      if (top + popup.height + margin > viewport.height) {
+        top = cellRect.top - popup.height - bottomOffset;
+      }
+
+      if (top < margin) {
+        top = margin;
+      }
+
+      return { top, left };
+    };
+
+    const position = getSmartPosition();
+
+    return (
+      <div
+        onMouseEnter={(event) => {
+          event.stopPropagation();
+        }}
+        onMouseLeave={(event) => {
+          event.stopPropagation();
+          setAllowExpandedView(false);
+          setActiveCell(null);
+          setIsCellContentOverflowing(false);
+        }}
+        style={{
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          opacity: allowExpandedView && isCellContentOverflowing ? 1 : 0,
+          transform: allowExpandedView && isCellContentOverflowing ? 'scale(1)' : 'scale(0.95)',
+          visibility: allowExpandedView && isCellContentOverflowing ? 'visible' : 'hidden',
+          position: 'fixed',
+          minWidth: 160,
+          maxWidth: Math.min(cellRect?.width || 200, window.innerWidth - 40),
+          width: cellRect?.width,
+          borderRadius: 8,
+          padding: activeCell !== null && allowExpandedView && 10,
+          top: `${position.top}px`,
+          left: `${position.left}px`,
+          zIndex: 50,
+          transformOrigin: 'center',
+          pointerEvents: activeCell !== null && allowExpandedView ? 'auto' : 'none',
+        }}
+      >
+        <div
+          style={{
+            maxHeight: 300,
+            overflowY: "auto",
+            backgroundColor: "white",
+            padding: 8,
+            border: "1px solid rgba(0,0,0,0.15)",
+            borderRadius: 4,
+            boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
+            display: "inline-block",
+            whiteSpace: "pre-wrap",
+            maxWidth: "80vw",
+            wordBreak: "break-word",
+          }}
+        >
+          {cellRef?.current?.innerText}
+        </div>
+      </div>
+    );
+  };
+
+  const renderRow = (row: Row<any>, rowIndex: number): JSX.Element => {
     const id = row.original?.id;
     return (
       <Row
         key={id ?? rowIndex}
         prepareRow={prepareRow}
         onClick={handleSelectRow}
-        onDoubleClick={()=>handleDoubleClickRow(row, rowIndex)}
+        onDoubleClick={() => handleDoubleClickRow(row, rowIndex)}
+        onRowClick={onRowClick ? () => onRowClick(rowIndex, row.original) : undefined}
+        onRowHover={onRowHover ? () => onRowHover(rowIndex, row.original) : undefined}
         row={row}
+        showExpandedView={showExpandedView}
         index={rowIndex}
         selectedRowIndex={selectedRowIndex}
         allowEdit={canEditInline}
@@ -398,15 +534,28 @@ export const ReactTable: FC<IReactTableProps> = ({
         inlineSaveMode={inlineSaveMode}
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
+        onMouseOver={(activeCell, isContentOverflowing) => {
+          setActiveCell(activeCell);
+          setIsCellContentOverflowing(isContentOverflowing && activeCell?.current?.innerText);
+          if (activeCell && isContentOverflowing) {
+            setAllowExpandedView(true);
+          }
+        }}
+        onMouseLeave={() => {
+          setActiveCell(null);
+          setAllowExpandedView(false);
+          setIsCellContentOverflowing(false);
+        }}
       />
     );
   };
 
-  const renderRows = () => {
+  const renderRows = (): ReactElement | ReactElement[] => {
     return onRowsRendering
       ? onRowsRendering({ rows: rows, defaultRender: renderRow })
       : rows.map((row, rowIndex) => renderRow(row, rowIndex));
   };
+
   const fixedHeadersStyle: React.CSSProperties = freezeHeaders
     ? { position: 'sticky', top: 0, zIndex: 15, background: 'white', opacity: 1 }
     : null;
@@ -414,12 +563,12 @@ export const ReactTable: FC<IReactTableProps> = ({
   return (
     <Spin
       spinning={loading}
-      indicator={
+      indicator={(
         <span style={{ display: 'flex', alignItems: 'center' }}>
           <LoadingOutlined style={{ fontSize: 24 }} spin />
           <span style={{ marginLeft: 12, fontSize: 14, color: 'black' }}>loading...</span>
         </span>
-      }
+      )}
     >
       <div className={mainStyles.shaReactTable} style={containerStyleFinal}>
         <div {...getTableProps()} className={styles.shaTable} style={tableStyle}>
@@ -453,7 +602,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                         rightColumn.shadowPosition =
                           headerGroup?.headers?.length -
                           headerGroup?.headers?.filter(
-                            (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'right'
+                            (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'right',
                           ).length;
                       } else if (anchored?.direction === 'left') {
                         leftColumn.shift = (
@@ -466,7 +615,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
                         leftColumn.shadowPosition =
                           headerGroup?.headers?.filter(
-                            (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'left'
+                            (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'left',
                           ).length - 1;
                       }
                     }
@@ -530,6 +679,7 @@ export const ReactTable: FC<IReactTableProps> = ({
               height: scrollBodyHorizontally ? height || 250 : 'unset',
               overflowY: scrollBodyHorizontally ? 'auto' : 'unset',
               overflowX: 'unset',
+              ...(rows?.length <= 3 && data?.length <= 3 ? {} : getBorderStyle(border, {})),
             }}
             {...getTableBodyProps()}
           >
@@ -559,6 +709,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                   handle=".row-handle"
                   scroll={true}
                   bubbleScroll={true}
+                  style={rows?.length <= 3 && data?.length <= 3 ? {} : getBorderStyle(border, {})}
                   className={styles.shaSortable}
                 >
                   {children}
@@ -569,6 +720,7 @@ export const ReactTable: FC<IReactTableProps> = ({
             </ConditionalWrap>
           </div>
           {canAddInline && newRowCapturePosition === 'bottom' && renderNewRowEditor()}
+          {renderExpandedContentView(activeCell)}
         </div>
       </div>
     </Spin>

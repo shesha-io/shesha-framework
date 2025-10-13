@@ -22,5 +22,10 @@ namespace Shesha.Services
             #pragma warning restore 612, 618
             return type;
         }
+
+        public T Unproxy<T>(T entity) where T : class
+        {
+            return entity;
+        }
     }
 }

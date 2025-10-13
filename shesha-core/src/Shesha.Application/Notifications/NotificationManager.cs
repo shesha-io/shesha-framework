@@ -1,23 +1,15 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Abp.UI;
 using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Models;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
-using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Notifications.Configuration;
-using Shesha.Notifications.Dto;
 using Shesha.Notifications.MessageParticipants;
-using Shesha.Reflection;
-using Shesha.Validations;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,13 +23,10 @@ namespace Shesha.Notifications
         private readonly INotificationSettings _notificationSettings;
 
         public NotificationManager(
-            IRepository<NotificationTypeConfig, Guid> repository,
-            IRepository<Module, Guid> moduleRepository,
-            IUnitOfWorkManager unitOfWorkManager,
             IRepository<NotificationChannelConfig, Guid> notificationChannelRepository,
             IRepository<UserNotificationPreference, Guid> userNotificationPreference,
             IRepository<NotificationTemplate, Guid> templateRepository,
-            INotificationSettings notificationSettings) : base(repository, moduleRepository, unitOfWorkManager)
+            INotificationSettings notificationSettings) : base()
         {
             _notificationChannelRepository = notificationChannelRepository;
             _userNotificationPreference = userNotificationPreference;
@@ -97,9 +86,7 @@ namespace Shesha.Notifications
                 return new();
 
             // TODO: check versioned query
-            var liveChannels = _notificationChannelRepository
-                .GetAll()
-                .Where(channel => channel.IsLast && channel.VersionStatus == ConfigurationItemVersionStatus.Live);
+            var liveChannels = _notificationChannelRepository.GetAll();
 
             var result = selectedNotifications
                 .SelectMany(identifier => liveChannels
@@ -109,62 +96,16 @@ namespace Shesha.Notifications
             return result;
         }
 
-        public override Task<IConfigurationItemDto> MapToDtoAsync(NotificationTypeConfig item)
+        protected override async Task CopyItemPropertiesAsync(NotificationTypeConfig source, NotificationTypeConfig destination)
         {
-            
-            var dto = ObjectMapper.Map<NotificationTypeConfigDto>(item);
-            return Task.FromResult<IConfigurationItemDto>(dto);
-        }
+            destination.Disable = source.Disable;
+            destination.CanOptOut = source.CanOptOut;
+            destination.Category = source.Category;
+            destination.OverrideChannels = source.OverrideChannels;
+            destination.IsTimeSensitive = source.IsTimeSensitive;
+            destination.AllowAttachments = source.AllowAttachments;
 
-        public override async Task<NotificationTypeConfig> CopyAsync(NotificationTypeConfig src, CopyItemInput input)
-        {
-            // todo: validate input
-            var module = await ModuleRepository.FirstOrDefaultAsync(input.ModuleId);
-
-            var validationResults = new List<ValidationResult>();
-
-            // todo: review validation messages, add localization support
-            if (src == null)
-                validationResults.Add(new ValidationResult("Please select notification type to copy", new List<string> { nameof(input.ItemId) }));
-            if (module == null)
-                validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
-            if (string.IsNullOrWhiteSpace(input.Name))
-                validationResults.Add(new ValidationResult("Name is mandatory", new List<string> { nameof(input.Name) }));
-
-            if (module != null && !string.IsNullOrWhiteSpace(input.Name))
-            {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
-                if (alreadyExist)
-                    validationResults.Add(new ValidationResult(
-                        module != null
-                            ? $"Notification Type with name `{input.Name}` already exists in module `{module.Name}`"
-                            : $"Notification Type with name `{input.Name}` already exists"
-                        )
-                    );
-            }
-
-            validationResults.ThrowValidationExceptionIfAny(L);
-
-            var newCopy = new NotificationTypeConfig();
-            newCopy.Name = input.Name;
-            newCopy.Module = module;
-            newCopy.Description = input.Description;
-            newCopy.Label = input.Label;
-
-            newCopy.VersionNo = 1;
-            newCopy.VersionStatus = ConfigurationItemVersionStatus.Draft;
-            newCopy.Origin = newCopy;
-
-            // notification specific props
-            newCopy.CopyNotificationSpecificPropsFrom(src.NotNull());
-
-            newCopy.Normalize();
-
-            await Repository.InsertAsync(newCopy);
-
-            await CopyTemplatesAsync(src, newCopy);
-
-            return newCopy;
+            await CopyTemplatesAsync(source, destination);
         }
 
         private async Task CopyTemplatesAsync(NotificationTypeConfig source, NotificationTypeConfig destination)
@@ -178,39 +119,6 @@ namespace Shesha.Notifications
 
                 await _templateRepository.InsertAsync(dstItem);
             }
-        }        
-
-        public async Task<NotificationTypeConfig> CreateNewVersionWithoutDetailsAsync(NotificationTypeConfig src)
-        {
-            var newVersion = new NotificationTypeConfig();
-            newVersion.Origin = src.Origin;
-            newVersion.Name = src.Name;
-            newVersion.Module = src.Module;
-            newVersion.Description = src.Description;
-            newVersion.Label = src.Label;
-            newVersion.TenantId = src.TenantId;
-
-            newVersion.ParentVersion = src; // set parent version
-            newVersion.VersionNo = src.VersionNo + 1; // version + 1
-            newVersion.VersionStatus = ConfigurationItemVersionStatus.Draft; // draft
-
-            // notification specific props
-            newVersion.CopyNotificationSpecificPropsFrom(src);
-
-            newVersion.Normalize();
-
-            await Repository.InsertAsync(newVersion);
-
-            return newVersion;
-        }
-
-        public override async Task<NotificationTypeConfig> CreateNewVersionAsync(NotificationTypeConfig src)
-        {
-            var newVersion = await CreateNewVersionWithoutDetailsAsync(src);
-
-            await CopyTemplatesAsync(src, newVersion);
-
-            return newVersion;
         }
     }
 }

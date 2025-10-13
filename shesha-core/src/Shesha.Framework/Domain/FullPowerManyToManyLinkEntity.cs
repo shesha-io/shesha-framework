@@ -16,13 +16,13 @@ namespace Shesha.Domain
         /// <summary>
         /// Entity ID. ID is intentionally bigger because in some cases an owner ID is set to a data table ID string
         /// </summary>
-        [StringLength(40)]
+        [MaxLength(40)]
         public virtual string EntityId { get; set; }
 
         /// <summary>
         /// Entity type alias
         /// </summary>
-        [StringLength(100)]
+        [MaxLength(100)]
         public virtual string EntityType { get; set; }
 
         /// <summary>

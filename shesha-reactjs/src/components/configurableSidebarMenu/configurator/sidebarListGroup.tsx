@@ -5,7 +5,7 @@ import ShaIcon, { IconType } from '@/components/shaIcon';
 import { ISidebarGroup, ISidebarMenuItem } from '@/interfaces/sidebar';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { ItemChangeDetails } from '@/components/listEditor';
-import { useActualContextData } from '@/hooks/useActualContextData';
+import { useActualContextData } from '@/hooks';
 
 export interface IContainerRenderArgs {
   id?: string;
@@ -35,7 +35,7 @@ export const SidebarListGroup: FC<ISidebarMenuGroupProps> = ({ item, onChange, c
         items: item.childItems || [],
         onChange: (newItems, changeDetails) => {
           onChange({ ...item, childItems: [...newItems] }, changeDetails);
-        }
+        },
       })}
     </>
   );

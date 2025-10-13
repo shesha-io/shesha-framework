@@ -4,20 +4,21 @@ import { IEntityTypesMap } from "./models";
 type ClassNamesMap = Map<string, IEntityTypeIndentifier>;
 
 export class EntityTypesMap implements IEntityTypesMap {
-    #namesMap: ClassNamesMap;
-    constructor(){
-        this.#namesMap = new Map();
-    }
+  #namesMap: ClassNamesMap;
 
-    register = (className: string, accessor: IEntityTypeIndentifier) => {
-        this.#namesMap.set(className, accessor);
-    };
+  constructor() {
+    this.#namesMap = new Map();
+  }
 
-    resolve = (className: string): IEntityTypeIndentifier => {
-        return this.#namesMap.get(className)!;
-    };
+  register = (className: string, accessor: IEntityTypeIndentifier): void => {
+    this.#namesMap.set(className, accessor);
+  };
 
-    clear = () => {
-        this.#namesMap.clear();
-    };
+  resolve = (className: string): IEntityTypeIndentifier | undefined => {
+    return this.#namesMap.get(className);
+  };
+
+  clear = (): void => {
+    this.#namesMap.clear();
+  };
 }

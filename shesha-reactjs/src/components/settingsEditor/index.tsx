@@ -1,5 +1,5 @@
-import React from 'react';
-import { FC } from 'react';
+import React, { FC } from 'react';
+
 import SettingsMenu from './settingsMenu';
 import { SettingsEditorProvider } from './provider';
 import SettingEditor from './settingEditor';
@@ -9,11 +9,7 @@ import { SizableColumns } from '../sizableColumns';
 import classNames from 'classnames';
 import AppSelector from './appSelector';
 
-export interface ISettingsEditorProps {
-
-}
-
-export const SettingsEditor: FC<ISettingsEditorProps> = () => {
+export const SettingsEditor: FC = () => {
   const { styles } = useStyles();
   return (
     <SettingsEditorProvider>

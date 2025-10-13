@@ -1,7 +1,7 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useMemo, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
 import { setThemeAction } from './actions';
-import { IConfigurableTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
+import { IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
 import { uiReducer } from './reducer';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
@@ -23,18 +23,28 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     iconPrefixCls: iconPrefixCls,
   });
 
+  const applicationTheme = useRef<IConfigurableTheme>();
+
   const settings = useSettings();
   const application = useSheshaApplication();
   application.registerInitialization('theme', async () => {
     // load theme settings
     const theme = await settings.getSetting({ module: 'Shesha', name: 'Shesha.ThemeSettings' }) as IConfigurableTheme;
     dispatch(setThemeAction(theme));
+    applicationTheme.current = theme;
   });
 
-  const changeTheme = (theme: IConfigurableTheme) => {
+  const changeTheme = useCallback((theme: IConfigurableTheme, isApplication: boolean = false) => {
     // save theme to the state
     dispatch(setThemeAction(theme));
-  };
+    if (isApplication)
+      applicationTheme.current = theme;
+  }, [dispatch, applicationTheme]);
+
+  const resetToApplicationTheme = useCallback(() => {
+    // save theme to the state
+    dispatch(setThemeAction(applicationTheme.current));
+  }, [dispatch]);
 
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme?.application;
@@ -54,6 +64,11 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     const result: ThemeConfig = {
       cssVar: true,
       token: { ...themeDefaults, ...theme },
+      components: {
+        Menu: {
+          itemHeight: 'clamp(40px, 40px, 100%)' as any,
+        },
+      },
     };
     return result;
   }, [state.theme]);
@@ -63,12 +78,16 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       <UiActionsContext.Provider
         value={{
           changeTheme,
+          resetToApplicationTheme,
         }}
       >
         <ConfigProvider
           prefixCls={prefixCls}
           iconPrefixCls={iconPrefixCls}
-          theme={themeConfig}
+          theme={{
+            ...themeConfig,
+            token: { ...themeConfig.token },
+          }}
           form={{
             // override required mark position
             requiredMark: defaultRequiredMark,
@@ -83,7 +102,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   );
 };
 
-function useThemeState() {
+function useThemeState(): IThemeStateContext | undefined {
   const context = useContext(UiStateContext);
 
   if (context === undefined) {
@@ -92,7 +111,7 @@ function useThemeState() {
   return context;
 }
 
-function useThemeActions() {
+function useThemeActions(): IThemeActionsContext | undefined {
   const context = useContext(UiActionsContext);
 
   if (context === undefined) {
@@ -102,7 +121,7 @@ function useThemeActions() {
   return context;
 }
 
-function useTheme() {
+function useTheme(): IThemeStateContext & IThemeActionsContext | undefined {
   return { ...useThemeState(), ...useThemeActions() };
 }
 

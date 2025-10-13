@@ -2,12 +2,12 @@ import React, { FC, Fragment } from 'react';
 import { Alert, AlertProps } from 'antd';
 import classNames from 'classnames';
 import { IErrorInfo, isErrorInfo, isHasErrorInfo } from '@/interfaces/errorInfo';
-import { IAjaxResponseBase, isAjaxResponseBase, isAxiosResponse } from '@/interfaces/ajaxResponse';
+import { IAjaxResponseBase, isAxiosResponse, isAjaxErrorResponse, IAjaxErrorResponse } from '@/interfaces/ajaxResponse';
 import { useStyles } from './styles/styles';
 import { AxiosResponse } from 'axios';
 
 export interface IValidationErrorsProps extends AlertProps {
-  error: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error;
+  error: string | IErrorInfo | IAjaxErrorResponse | AxiosResponse<IAjaxResponseBase> | Error | unknown;
   renderMode?: 'alert' | 'raw';
   defaultMessage?: string;
 }
@@ -27,12 +27,12 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   const { styles } = useStyles();
   if (!error) return null;
 
-  const renderValidationErrors = (props: AlertProps) => {
+  const renderValidationErrors = (props: AlertProps): JSX.Element => {
     const widthStyle = props.style?.width && props.style?.marginLeft && props.style?.marginRight
       ? {
         width: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
         maxWidth: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
-        minWidth: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`
+        minWidth: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
       }
       : {};
 
@@ -69,9 +69,9 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   const errorObj =
     error instanceof Error
       ? ({ message: error.message } as IErrorInfo)
-      : isAxiosResponse(error) && isAjaxResponseBase(error.data)
+      : isAxiosResponse(error) && isAjaxErrorResponse(error.data)
         ? error.data.error
-        : isAjaxResponseBase(error)
+        : isAjaxErrorResponse(error)
           ? error.error
           : isHasErrorInfo(error)
             ? error.errorInfo
@@ -84,15 +84,11 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   if (validationErrors?.length) {
     const violations = <ul>{validationErrors?.map((e, i) => <li key={i}>{e.message}</li>)}</ul>;
 
-    return renderValidationErrors({ message: defaultMessage, description: violations, ...rest });
-  }
-
-  if (message) {
-    return renderValidationErrors({ message, ...rest });
+    return renderValidationErrors({ message: message || defaultMessage, description: violations, ...rest });
   }
 
   if (details) {
-    return renderValidationErrors({ message: details, ...rest });
+    return renderValidationErrors({ message: message || defaultMessage, description: details, ...rest });
   }
 
   return renderValidationErrors({ message: DEFAULT_ERROR_MSG, ...rest });

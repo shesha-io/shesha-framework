@@ -25,7 +25,7 @@ export const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'Li
 const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = (props) => {
   const { readOnly } = props;
 
-  const { model, values, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
+  const { values, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
 
   const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
@@ -33,7 +33,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
     formTypes.map((i) => {
       return { value: i };
-    })
+    }),
   );
 
   return (
@@ -43,8 +43,10 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={model}
           onValuesChange={onValuesChange}
+          componentName={values.componentName}
+          propertyName={values.propertyName}
+          contextName={values.context}
         />
 
         <SettingsFormItem name="label" label="Label" jsSetting>
@@ -112,7 +114,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           </SettingsFormItem>
         )}
 
-        <SettingsFormItem name="entityReferenceType" initialValue={'Quickview'} label="Entity Reference Type">
+        <SettingsFormItem name="entityReferenceType" initialValue="Quickview" label="Entity Reference Type">
           <Select disabled={readOnly}>
             <Select.Option value="Quickview">Quickview</Select.Option>
             <Select.Option value="NavigateLink">Navigate Link</Select.Option>
@@ -120,7 +122,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           </Select>
         </SettingsFormItem>
 
-        <SettingsFormItem name="formSelectionMode" initialValue={'name'} label="Form selection mode">
+        <SettingsFormItem name="formSelectionMode" initialValue="name" label="Form selection mode">
           <Select disabled={readOnly}>
             <Select.Option value="name">Name</Select.Option>
             <Select.Option value="dynamic">Dynamic</Select.Option>
@@ -136,14 +138,13 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
                 setFormTypesOptions(
                   (t
                     ? formTypes.filter((f) => {
-                        return f.toLowerCase().includes(t.toLowerCase());
-                      })
+                      return f.toLowerCase().includes(t.toLowerCase());
+                    })
                     : formTypes
                   ).map((i) => {
                     return { value: i };
-                  })
-                )
-              }
+                  }),
+                )}
             />
           </SettingsFormItem>
         )}
@@ -184,7 +185,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
 
           {values?.showModalFooter ||
             (values?.footerButtons === 'default' && (
-              <SettingsFormItem name="submitHttpVerb" initialValue={'POST'} label="Submit Http Verb" jsSetting>
+              <SettingsFormItem name="submitHttpVerb" initialValue="POST" label="Submit Http Verb" jsSetting>
                 <Select disabled={readOnly}>
                   <Select.Option value="POST">POST</Select.Option>
                   <Select.Option value="PUT">PUT</Select.Option>

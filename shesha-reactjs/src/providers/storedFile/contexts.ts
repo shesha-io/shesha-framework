@@ -4,30 +4,30 @@ import { StoredFileGetQueryParams } from '@/apis/storedFile';
 import { createNamedContext } from '@/utils/react';
 
 export type IFlagProgressFlags =
-  | 'downloadFile'
-  | 'uploadFile'
-  | 'deleteFile'
-  | 'dowloadZip'
-  | 'fetchFileInfo' 
-  | 'getStoredFile'
+  'downloadFile' |
+  'uploadFile' |
+  'deleteFile' |
+  'dowloadZip' |
+  'fetchFileInfo' |
+  'getStoredFile'
   /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
 export type IFlagSucceededFlags =
-  | 'downloadFile'
-  | 'uploadFile'
-  | 'deleteFile'
-  | 'dowloadZip'
-  | 'fetchFileInfo' 
-  | 'getStoredFile'
+  'downloadFile' |
+  'uploadFile' |
+  'deleteFile' |
+  'dowloadZip' |
+  'fetchFileInfo' |
+  'getStoredFile'
   /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
 export type IFlagErrorFlags =
-  | 'downloadFile'
-  | 'uploadFile'
-  | 'deleteFile'
-  | 'dowloadZip'
-  | 'fetchFileInfo' 
-  | 'getStoredFile'
+  'downloadFile' |
+  'uploadFile' |
+  'deleteFile' |
+  'dowloadZip' |
+  'fetchFileInfo' |
+  'getStoredFile'
   /* NEW_ERROR_FLAG_GOES_HERE */;
-export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
+export type IFlagActionedFlags = '__DEFAULT__';
 
 // Pick<UploadFile, "uid" | "status" | "name" | "size" | "type">
 export interface IStoredFile extends UploadFile {
@@ -45,7 +45,7 @@ interface IRequestFilePayload {
   // fileId?: string;
 }
 
-export interface IUploadFilePayload extends IRequestFilePayload {}
+export type IUploadFilePayload = IRequestFilePayload;
 
 export interface IDownloadFilePayload {
   fileId: string;
@@ -67,9 +67,9 @@ export interface IStoredFileActionsContext
   deleteFile: () => void;
   fetchFileInfo: () => void;
   fetchFileInfoError: () => void;
-  getStoredFile: (payload: StoredFileGetQueryParams) => Promise<string | unknown>;
+  getStoredFile: (payload: StoredFileGetQueryParams) => Promise<string>;
 
-  //fetchFileInfoError: () => void;
+  // fetchFileInfoError: () => void;
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }
 

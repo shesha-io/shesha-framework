@@ -1,4 +1,4 @@
-import { Type, Config, BasicConfig, AntdConfig, Funcs, BasicFuncs, CoreTypes, ValueSource } from '@react-awesome-query-builder/antd';
+import { Type, Config, BasicConfig, AntdConfig, Funcs, BasicFuncs, CoreTypes, ValueSource, DateTimeWidget } from '@react-awesome-query-builder/antd';
 import EntityAutocompleteWidget from './widgets/entityAutocomplete';
 import RefListDropdownWidget from './widgets/refListDropDown';
 import moment from 'moment';
@@ -17,9 +17,9 @@ import { FieldWidget } from './widgets/field';
 interface TypeModifier extends Partial<Type> {
   operators?: string[];
 };
-const modifyType = (types: CoreTypes, typeName: string, modifier: TypeModifier) => {
+const modifyType = (types: CoreTypes, typeName: string, modifier: TypeModifier): void => {
   const type: Type = types[typeName];
-  if (type){
+  if (type) {
     types[typeName] = { ...type, ...modifier };
   }
 };
@@ -35,31 +35,41 @@ const standardSourceTypes: ValueSource[] = ['value', 'field', 'func'];
 const types = {
   ...standardTypes,
   // non standard types
-  entityReference: EntityReferenceType,
-  refList: RefListType,
-  specification: SpecificationType,
+  "entityReference": EntityReferenceType,
+  "refList": RefListType,
+  "specification": SpecificationType,
   "strict-boolean": StrictBoolean,
-  guid: GuidType,
+  "guid": GuidType,
+  "javascript": {
+    ...standardTypes.text,
+    defaultWidget: 'javascript',
+    widgets: {
+      javascript: {
+        widgetProps: {},
+        opProps: {},
+      },
+    },
+  },
 };
 
 const typeModifiers: IDictionary<TypeModifier> = {
-  'boolean': {
-    valueSources: standardSourceTypes,  
+  boolean: {
+    valueSources: standardSourceTypes,
   },
-  'date': {
-    valueSources: standardSourceTypes,  
+  date: {
+    valueSources: standardSourceTypes,
   },
-  'datetime': {
-    valueSources: standardSourceTypes,  
+  datetime: {
+    valueSources: standardSourceTypes,
   },
-  'time': {
-    valueSources: standardSourceTypes,  
+  time: {
+    valueSources: standardSourceTypes,
   },
-  'number': {
-    valueSources: standardSourceTypes,  
+  number: {
+    valueSources: standardSourceTypes,
   },
-  'text': {
-    valueSources: standardSourceTypes,  
+  text: {
+    valueSources: standardSourceTypes,
     operators: [
       'equal',
       'not_equal',
@@ -69,12 +79,21 @@ const typeModifiers: IDictionary<TypeModifier> = {
       'not_like',
       'starts_with',
       'ends_with',
-    ]
+    ],
+  },
+  javascript: {
+    valueSources: ['value'],
+    operators: [
+      'equal',
+      'not_equal',
+      'is_empty',
+      'is_not_empty',
+    ],
   },
 };
 
-for(const typeName in typeModifiers){
-  if (typeModifiers.hasOwnProperty(typeName)){
+for (const typeName in typeModifiers) {
+  if (typeModifiers.hasOwnProperty(typeName)) {
     modifyType(types, typeName, typeModifiers[typeName]);
   }
 };
@@ -104,23 +123,26 @@ const operators = {
   },
 };
 
+const customDatetimeWidget: DateTimeWidget<Config> = {
+  ...standardWidgets.datetime,
+  timeFormat: 'HH:mm',
+  jsonLogic: (val, _, wgtDef): string => {
+    return moment(val, (wgtDef as DateTimeWidget<Config>).valueFormat).format();
+  },
+};
+const custonDateWidget: DateTimeWidget<Config> = {
+  ...standardWidgets.date,
+  jsonLogic: (val, _, wgtDef): string => {
+    return moment(val, (wgtDef as DateTimeWidget<Config>).valueFormat).format();
+  },
+};
+
 const widgets = {
   ...standardWidgets,
   entityAutocomplete: EntityAutocompleteWidget,
   refListDropdown: RefListDropdownWidget,
-  datetime: {
-    ...standardWidgets.datetime,
-    timeFormat: 'HH:mm',
-    jsonLogic: (val, _, wgtDef) => {
-      return moment(val, wgtDef.valueFormat).format();
-    },
-  },
-  date: {
-    ...standardWidgets.date,
-    jsonLogic: (val, _, wgtDef) => {
-      return moment(val, wgtDef.valueFormat).format();
-    },
-  },
+  datetime: customDatetimeWidget,
+  date: custonDateWidget,
   specification: SpecificationWidget,
   javascript: JavaScriptWidget,
   field: FieldWidget,
@@ -128,16 +150,15 @@ const widgets = {
 
 const evaluateTypes = ['boolean', 'date', 'datetime', 'time', 'number', 'text', 'entityReference', 'refList'];
 const evaluateFunctions = {};
-evaluateTypes.forEach(type => {
+evaluateTypes.forEach((type) => {
   evaluateFunctions[`evaluate_${type}`.toUpperCase()] = getEvaluateFunc(type);
 });
 
 const knownFuncNames = ['NOW', 'LOWER', 'NOW', 'UPPER', 'RELATIVE_DATETIME'];
 const knownFuncs: Funcs = {};
-knownFuncNames.forEach(funcName => {
-  
+knownFuncNames.forEach((funcName) => {
   if (Object.hasOwn(BasicFuncs, funcName))
-  //if (BasicFuncs.hasOwnProperty(funcName))
+  // if (BasicFuncs.hasOwnProperty(funcName))
     knownFuncs[funcName] = BasicFuncs[funcName];
 });
 
@@ -152,5 +173,5 @@ export const config: Config = {
   types,
   funcs,
   operators,
-  widgets, 
+  widgets,
 };

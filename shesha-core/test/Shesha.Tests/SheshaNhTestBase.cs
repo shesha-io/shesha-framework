@@ -5,27 +5,25 @@ using Abp.Domain.Uow;
 using Abp.Modules;
 using Abp.MultiTenancy;
 using Abp.Runtime.Session;
-using Abp.TestBase;
 using NHibernate;
 using NHibernate.Linq;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.MultiTenancy;
 using Shesha.NHibernate.UoW;
-using Shesha.Services;
+using Shesha.Tests.Fixtures;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Tests
 {
-    public abstract class SheshaNhTestBase<TStartupModule> : AbpIntegratedTestBase<TStartupModule> where TStartupModule : AbpModule
+    public abstract class SheshaNhTestBase<TStartupModule> : ShaIntegratedTestBase<TStartupModule> where TStartupModule : AbpModule
     {
-        protected SheshaNhTestBase(): base()
+        protected SheshaNhTestBase(IDatabaseFixture fixture) : base(fixture)
         {
             LoginAsHostAdmin();
 
-            StaticContext.SetIocManager(LocalIocManager);
             EntityHelper.RefreshStore(LocalIocManager);
         }
 
@@ -176,20 +174,20 @@ namespace Shesha.Tests
         /// Gets current user if <see cref="IAbpSession.UserId"/> is not null.
         /// Throws exception if it's null.
         /// </summary>
-        protected async Task<User> GetCurrentUserAsync()
+        protected Task<User> GetCurrentUserAsync()
         {
             var userId = AbpSession.GetUserId();
-            return await UsingDbSession(session => session.Query<User>().SingleAsync(u => u.Id == userId));
+            return UsingDbSession(session => session.Query<User>().SingleAsync(u => u.Id == userId));
         }
 
         /// <summary>
         /// Gets current tenant if <see cref="IAbpSession.TenantId"/> is not null.
         /// Throws exception if there is no current tenant.
         /// </summary>
-        protected async Task<Tenant> GetCurrentTenantAsync()
+        protected Task<Tenant> GetCurrentTenantAsync()
         {
             var tenantId = AbpSession.GetTenantId();
-            return await UsingDbSession(session => session.Query<Tenant>().SingleAsync(t => t.Id == tenantId));
+            return UsingDbSession(session => session.Query<Tenant>().SingleAsync(t => t.Id == tenantId));
         }
 
         protected void UsingNhSession(Action<ISession> action)
@@ -228,6 +226,8 @@ namespace Shesha.Tests
 
     public abstract class SheshaNhTestBase : SheshaNhTestBase<SheshaTestModule>
     {
-
+        protected SheshaNhTestBase(IDatabaseFixture fixture) : base(fixture)
+        {
+        }
     }
 }

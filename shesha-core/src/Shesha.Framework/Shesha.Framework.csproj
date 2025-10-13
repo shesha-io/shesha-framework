@@ -24,18 +24,67 @@
 
     <ItemGroup>
         <Compile Remove="Domain\Specifications\**" />
+        <Compile Remove="Migrations\ConfigurationStudio\Scripts\**" />
         <Compile Remove="Migrations\PostgreSql\Scripts\**" />
         <Compile Remove="Services\ApplicationParts\**" />
         <EmbeddedResource Remove="Domain\Specifications\**" />
+        <EmbeddedResource Remove="Migrations\ConfigurationStudio\Scripts\**" />
         <EmbeddedResource Remove="Migrations\PostgreSql\Scripts\**" />
         <EmbeddedResource Remove="Services\ApplicationParts\**" />
         <None Remove="Domain\Specifications\**" />
+        <None Remove="Migrations\ConfigurationStudio\Scripts\**" />
         <None Remove="Migrations\PostgreSql\Scripts\**" />
         <None Remove="Services\ApplicationParts\**" />
         <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
     <ItemGroup>
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\Revisions2Json.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\00-copy front_end_apps.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\01-copy modules.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\02-configuration_items.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\03-configuration_item_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\04_0-entity_configs.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\04_1-entity_config_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\05-form_configuration_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\06-notification_channel_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\07-permission_definition_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\08-reference_list_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\09-setting_config_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\10-notification_type_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\11-role_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\12-fill revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\13-remove old workflow tables.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\14-copy reflist_items.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\15-copy setting_values.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\16-copy entity_properties.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\17-copy entity_property_values.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\18-copy role_appointments.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\19-copy role_permissions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\20-copy permissioned_objects.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\00-copy front_end_apps.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\01-copy modules.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\02-configuration_items.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\03-configuration_item_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\04_0-entity_configs.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\04_1-entity_config_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\05-form_configuration_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\06-notification_channel_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\07-permission_definition_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\08-reference_list_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\09-setting_config_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\10-notification_type_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\11-role_revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\12-fill revisions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\13-remove old workflow tables.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\14-copy reflist_items.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\15-copy setting_values.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\16-copy entity_properties.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\17-copy entity_property_values.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\18-copy role_appointments.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\19-copy role_permissions.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsMsSql\20-copy permissioned_objects.sql" />
+        <None Remove="Migrations\ConfigurationStudio\ScriptsPostgreSql\Revisions2Json.sql" />
         <None Remove="Migrations\PostgreSql\InitialScripts\Core_AddEntityHistoryEvents.sql" />
         <None Remove="Migrations\PostgreSql\InitialScripts\Core_AddSingleEntityHistoryEvent.sql" />
         <None Remove="Migrations\PostgreSql\InitialScripts\Core_DistanceTo.sql" />
@@ -72,6 +121,52 @@
     </ItemGroup>
 
     <ItemGroup>
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\Revisions2Json.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\00-copy front_end_apps.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\01-copy modules.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\02-configuration_items.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\03-configuration_item_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\04_0-entity_configs.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\04_1-entity_config_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\05-form_configuration_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\06-notification_channel_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\07-permission_definition_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\08-reference_list_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\09-setting_config_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\10-notification_type_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\11-role_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\12-fill revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\13-remove old workflow tables.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\14-copy reflist_items.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\15-copy setting_values.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\16-copy entity_properties.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\17-copy entity_property_values.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\18-copy role_appointments.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\19-copy role_permissions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\20-copy permissioned_objects.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\00-copy front_end_apps.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\01-copy modules.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\02-configuration_items.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\03-configuration_item_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\04_0-entity_configs.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\04_1-entity_config_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\05-form_configuration_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\06-notification_channel_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\07-permission_definition_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\08-reference_list_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\09-setting_config_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\10-notification_type_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\11-role_revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\12-fill revisions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\13-remove old workflow tables.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\14-copy reflist_items.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\15-copy setting_values.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\16-copy entity_properties.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\17-copy entity_property_values.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\18-copy role_appointments.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\19-copy role_permissions.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsMsSql\20-copy permissioned_objects.sql" />
+        <EmbeddedResource Include="Migrations\ConfigurationStudio\ScriptsPostgreSql\Revisions2Json.sql" />
         <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_AddEntityHistoryEvents.sql" />
         <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_AddSingleEntityHistoryEvent.sql" />
         <EmbeddedResource Include="Migrations\PostgreSql\InitialScripts\Core_DistanceTo.sql" />
@@ -118,7 +213,7 @@
     </PackageReference>
         <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
         <PackageReference Include="ConcurrentHashSet" Version="1.3.0" />
-        <PackageReference Include="Cronos" Version="0.7.1" />
+        <PackageReference Include="Cronos" Version="0.9.0" />
         <PackageReference Include="EasyNetQ" Version="7.7.0" />
         <PackageReference Include="FluentMigrator" Version="5.0.0" />
         <PackageReference Include="FluentValidation" Version="11.8.1" />

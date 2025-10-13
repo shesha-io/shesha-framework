@@ -18,7 +18,6 @@ export { useFormDesignerComponents } from './form/hooks';
 export * from './formContext';
 export * from './formItem';
 export * from './globalState';
-export * from './listItem';
 export * from './mainMenu';
 export * from './metadata';
 export * from './metadataDispatcher';
@@ -45,5 +44,6 @@ export * from './dataContextProvider';
 export * from './canvas';
 export * from './sourceFileManager/sourcesFolderProvider';
 export * from './chartData';
+export * from './sheshaApplication/hooks/useSettingsComponents';
 
 export { useApplicationContextData, useApplicationContextMetadata };

@@ -3,6 +3,7 @@ using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
 using NetTopologySuite.Geometries;
+using Newtonsoft.Json.Linq;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -12,7 +13,6 @@ using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -39,7 +39,8 @@ namespace Shesha.Metadata
         /// inheritedDoc
         public List<PropertyMetadataDto> GetProperties(Type containerType, MetadataContext? context = null)
         {
-            context ??= new MetadataContext(containerType);
+            if (containerType == typeof(JObject))
+                return new List<PropertyMetadataDto>();
 
             var flags = BindingFlags.Public | BindingFlags.Instance;
 
@@ -47,11 +48,20 @@ namespace Shesha.Metadata
             if (containerType.IsEntityType())
                 allProps = allProps.Where(p => MappingHelper.IsPersistentProperty(p) || p.CanRead && p.HasAttribute<NotMappedAttribute>()).ToList();
 
-            if (containerType.IsEntityType()) {
+            if (containerType.IsEntityType())
+            {
                 var allPropsOld = allProps.Where(p => MappingHelper.IsPersistentProperty(p)).ToList();
-            }                
+            }
 
-            var allPropsMetadata = allProps.Select(p => GetPropertyMetadata(p, context)).ToList();
+            var allPropsMetadata = allProps.Select(p => {
+                // Create new context for each top level properties (avoid infinity loop inside of one proeprty)
+                if (context == null)
+                {
+                    var newContext = new MetadataContext(containerType);
+                    return GetPropertyMetadata(p, newContext);
+                }
+                return GetPropertyMetadata(p, context);
+            }).ToList();
 
             var result = allPropsMetadata
                 .OrderBy(e => e.Path)
@@ -60,7 +70,7 @@ namespace Shesha.Metadata
             return result;
         }
 
-        private double? GetMin(PropertyInfo property) 
+        private double? GetMin(PropertyInfo property)
         {
             var value = property.GetAttributeOrNull<RangeAttribute>()?.Minimum;
             return value != null
@@ -87,6 +97,7 @@ namespace Shesha.Metadata
                 : property.ReflectedType.IsEntityType()
                     ? property.ReflectedType
                     : null;
+
             var entityConfig = ownerType != null
                 ? _entityConfigurationStore.Get(ownerType)
                 : null;
@@ -96,6 +107,10 @@ namespace Shesha.Metadata
             var cascadeAttribute = property.GetAttributeOrNull<CascadeUpdateRulesAttribute>()
                 ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>();
 
+            if (property.DeclaringType != null && property.DeclaringType.Name.Contains("ReferenceListItem")) 
+            { 
+            }
+
             var result = new PropertyMetadataDto
             {
                 Path = path,
@@ -103,7 +118,7 @@ namespace Shesha.Metadata
                 Description = ReflectionHelper.GetDescription(property),
                 IsVisible = property.GetAttributeOrNull<BrowsableAttribute>()?.Browsable ?? true,
                 Required = property.HasAttribute<RequiredAttribute>(),
-                Readonly = !property.CanWrite 
+                Readonly = !property.CanWrite
                     || property.HasAttribute<ReadonlyPropertyAttribute>()
                     || (property.GetAttributeOrNull<ReadOnlyAttribute>()?.IsReadOnly ?? false),
                 Min = GetMin(property),
@@ -114,7 +129,7 @@ namespace Shesha.Metadata
                     ?? property.GetAttributeOrNull<MaxLengthAttribute>()?.Length,
                 Audited = property.IsAuditedProperty(),
                 RegExp = property.GetAttributeOrNull<RegularExpressionAttribute>()?.Pattern,
-                ValidationMessage = property.GetAttributeOrNull<RangeAttribute>()?.ErrorMessage 
+                ValidationMessage = property.GetAttributeOrNull<RangeAttribute>()?.ErrorMessage
                     ?? property.GetAttributeOrNull<StringLengthAttribute>()?.ErrorMessage
                     ?? property.GetAttributeOrNull<RegularExpressionAttribute>()?.ErrorMessage,
                 CascadeCreate = cascadeAttribute?.CanCreate,
@@ -139,6 +154,11 @@ namespace Shesha.Metadata
             if (dataType.DataType == DataTypes.Array)
             {
                 result.ItemsType = GetItemsType(property, context);
+                if (result.ItemsType != null && result.DataFormat == ArrayFormats.MultivalueReferenceList)
+                {
+                    result.ItemsType.ReferenceListModule = epc?.ReferenceListModule;
+                    result.ItemsType.ReferenceListName = epc?.ReferenceListName;
+                }
 
                 var entityType = result.DataFormat == DataTypes.EntityReference
                     ? result.ItemsType
@@ -146,21 +166,21 @@ namespace Shesha.Metadata
                 result.EntityType = entityType?.EntityType;
                 result.EntityModule = entityType?.EntityModule;
             }
-            else
-                if (!context.ProcessedTypes.Contains(property.PropertyType) && property.PropertyType.IsNotAnyEntityAndSystemType())
-                {
-                    result.Properties = GetProperties(property.PropertyType, context);
-                }
+            else if (!context.ProcessedTypes.Contains(property.PropertyType) && property.PropertyType.IsNotAnyEntityAndSystemType())
+            {
+                // Need to add to ProcessedTypes only after condition
+                context.ProcessedTypes.Add(property.PropertyType);
 
-            context.ProcessedTypes.Add(property.PropertyType);
+                result.Properties = GetProperties(property.PropertyType, context);
+            }
 
             return result;
         }
 
-        private void FillEntityRelatedProperties(PropertyMetadataDto propertyDto, Type propertyType, DataTypeInfo dataType) 
+        private void FillEntityRelatedProperties(PropertyMetadataDto propertyDto, Type propertyType, DataTypeInfo dataType)
         {
-            var isEntity = propertyType.IsEntityType();
             var propType = propertyType.StripCastleProxyType();
+            var isEntity = propType.IsEntityType();
             var isJsonEntity = propType.IsJsonEntityType();
 
             // todo: review and move handling of other types to separate methods
@@ -168,16 +188,14 @@ namespace Shesha.Metadata
                     ? _entityConfigurationStore.Get(propType)?.SafeTypeShortAlias ?? propType.FullName
                     : isJsonEntity
                         ? propType.FullName
-                        : dataType.DataType == DataTypes.Array
-                            ? dataType.ObjectType
-                            : null;
+                        : dataType.ObjectType;
 
             if (isEntity || isJsonEntity)
             {
                 var moduleInfo = propType.GetConfigurableModuleInfo();
                 if (moduleInfo != null)
                 {
-                    propertyDto.EntityModule= moduleInfo.Name;
+                    propertyDto.EntityModule = moduleInfo.Name;
                     propertyDto.ModuleAccessor = moduleInfo.GetModuleAccessor();
                 }
                 propertyDto.TypeAccessor = propType.GetTypeAccessor();
@@ -186,18 +204,17 @@ namespace Shesha.Metadata
 
         private PropertyMetadataDto? GetItemsType(PropertyInfo property, MetadataContext context)
         {
-            if (property.IsMultiValueReferenceListProperty()) 
+            if (property.IsMultiValueReferenceListProperty())
             {
                 return new PropertyMetadataDto
                 {
                     Path = "value",
-                    DataType = DataTypes.Number,
-                    DataFormat = NumberFormats.Int64,
+                    DataType = DataTypes.ReferenceListItem,
                 };
             }
 
             var propType = ReflectionHelper.GetUnderlyingTypeIfNullable(property.PropertyType);
-            if (IsList(propType))
+            if (propType.IsListType())
             {
                 var paramType = propType.GetGenericArguments()[0];
                 var dataType = GetDataTypeByPropertyType(paramType, null);
@@ -205,36 +222,39 @@ namespace Shesha.Metadata
                 if (dataType == null)
                     return null; // skip unsupported types
 
-                if (dataType.DataType == DataTypes.Object && property.PropertyType.IsNotAnyEntityAndSystemType())
+                if (dataType.DataType == DataTypes.Object && paramType.IsNotAnyEntityAndSystemType())
                 {
-                    return new PropertyMetadataDto
-                    {
-                        Path = property.Name,
-                        DataType = DataTypes.Object,
-                        Properties = GetProperties(property.PropertyType, context)
-                    };
-                }
-                else
-                {
-                    if (dataType.DataType == DataTypes.EntityReference)
-                    {
-                        var prop = new PropertyMetadataDto
-                        {
-                            Path = property.Name,
-                            DataType = dataType.DataType,
-                            DataFormat = dataType.DataFormat,
-
-                        };
-                        FillEntityRelatedProperties(prop, paramType, dataType);
-                        return prop;
-                    }
-                    return new PropertyMetadataDto
+                    var prop = new PropertyMetadataDto
                     {
                         Path = property.Name,
                         DataType = dataType.DataType,
                         DataFormat = dataType.DataFormat,
                     };
+                    if (!context.ProcessedTypes.Contains(paramType) && paramType.IsNotAnyEntityAndSystemType())
+                    {
+                        context.ProcessedTypes.Add(paramType);
+                        prop.Properties = GetProperties(paramType, context);
+                    }
+                    return prop;
                 }
+                else if (dataType.DataType == DataTypes.EntityReference)
+                {
+                    var prop = new PropertyMetadataDto
+                    {
+                        Path = property.Name,
+                        DataType = dataType.DataType,
+                        DataFormat = dataType.DataFormat,
+
+                    };
+                    FillEntityRelatedProperties(prop, paramType, dataType);
+                    return prop;
+                }
+                return new PropertyMetadataDto
+                {
+                    Path = property.Name,
+                    DataType = dataType.DataType,
+                    DataFormat = dataType.DataFormat,
+                };
             }
 
             return null;
@@ -264,7 +284,7 @@ namespace Shesha.Metadata
                 ;
         }
 
-        private bool IsInterfaceProperty(PropertyInfo property, Type @interface, string name) 
+        private bool IsInterfaceProperty(PropertyInfo property, Type @interface, string name)
         {
             if (property.Name != name)
                 return false;
@@ -276,7 +296,7 @@ namespace Shesha.Metadata
                 : property.DeclaringType.NotNull().GetInterfaces().Contains(@interface);
         }
 
-        private string? GetStringFormat([CanBeNull]MemberInfo? propInfo) 
+        private string? GetStringFormat([CanBeNull] MemberInfo? propInfo)
         {
             if (propInfo == null)
                 return null;
@@ -299,7 +319,7 @@ namespace Shesha.Metadata
                     return StringFormats.PhoneNumber;
                 case DataType.Url:
                     return StringFormats.Url;
-                default: 
+                default:
                     return StringFormats.Singleline;
             }
         }
@@ -344,10 +364,13 @@ namespace Shesha.Metadata
                 return new DataTypeInfo(DataTypes.Boolean);
 
             if (propInfo != null && propInfo.IsMultiValueReferenceListProperty())
-                return new DataTypeInfo(DataTypes.Array, ArrayFormats.ReferenceListItem);
+                return new DataTypeInfo(DataTypes.Array, ArrayFormats.MultivalueReferenceList);
 
             if (propInfo != null && propInfo.IsReferenceListProperty())
                 return new DataTypeInfo(DataTypes.ReferenceListItem);
+
+            if (propType == typeof(StoredFile))
+                return new DataTypeInfo(DataTypes.File);
 
             if (propType.IsEntityType() || propType.IsEntityReferenceType())
                 return new DataTypeInfo(DataTypes.EntityReference);
@@ -368,41 +391,37 @@ namespace Shesha.Metadata
             if (propType == typeof(double) || propType == typeof(decimal))
                 return new DataTypeInfo(DataTypes.Number, NumberFormats.Double);
 
-            if (IsList(propType))
+            if (propType.IsListType())
             {
                 var paramType = GetListElementType(propType).NotNull();
 
                 var elementDataType = GetDataTypeByPropertyType(paramType, null);
-                
+
                 return new DataTypeInfo(DataTypes.Array, elementDataType?.DataType, elementDataType?.DataFormat);
-            } else
+            }
+            else
                 if (propType.IsClass)
-                {
-                    if (propType.IsJsonEntityType())
-                        return new DataTypeInfo(DataTypes.ObjectReference, propType.FullName);
-                    else
-                        return new DataTypeInfo(DataTypes.Object, propType.FullName);
-                }
+            {
+                if (propType.IsJsonEntityType())
+                    return new DataTypeInfo(DataTypes.Object, ObjectFormats.Interface, propType.FullName);
+                else
+                    return new DataTypeInfo(DataTypes.Object, ObjectFormats.Object, propType.FullName);
+            }
             return null;
         }
 
-        public static bool IsList(Type type) 
+        public static Type? GetListElementType(Type type)
         {
-            return type.ImplementsGenericInterface(typeof(IList<>)) ||
-                type.ImplementsGenericInterface(typeof(ICollection<>)) ||
-                type.ImplementsGenericInterface(typeof(IEnumerable<>)) ||
-                type.GetInterface(nameof(IEnumerable)) != null;
-        }
-
-        public static Type? GetListElementType(Type type) 
-        {
-            if (!IsList(type))
+            if (!type.IsListType())
                 return null;
 
             var genericArgs = type.GetGenericArguments();
-            return genericArgs.Any()
+            var t = genericArgs.Any()
                 ? type.GetGenericArguments()[0]
                 : type.GetElementType();
+            if (t == null)
+                return null;
+            return t;
         }
-   }
+    }
 }

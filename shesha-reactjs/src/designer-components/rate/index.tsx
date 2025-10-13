@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import classNames from 'classnames';
 import React from 'react';
-import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
+import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { getSettings } from './settingsForm';
-import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IconType } from '@/components/shaIcon';
 import { IToolboxComponent } from '@/interfaces';
 import { LikeOutlined, StarFilled } from '@ant-design/icons';
@@ -35,41 +35,43 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   icon: <LikeOutlined />,
   isInput: true,
   isOutput: true,
-  Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
-
-    const { allowClear, icon, count, tooltips, className, style, readOnly } = model;
-
-    if (model.hidden) return null;
-
+  calculateModel: (model, allData) => ({
+    eventHandlers: getAllEventHandlers(model, allData),
+  }),
+  Factory: ({ model, calculatedModel }) => {
+    const { allowClear, icon, count, tooltips, className, readOnly } = model;
     const localCount = !_.isNaN(count) ? count : 5;
 
-    return (
-      <ConfigurableFormItem model={model}>
-        {(value,  onChange) => {
-          const customEvent =  customOnChangeValueEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]) => {
-            customEvent.onChange(args[0]);
-            if (typeof onChange === 'function') 
-              onChange(args);
-          };
-          
-          return <Rate
-            allowClear={allowClear}
-            //allowHalf={allowHalf}
-            character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
-            disabled={readOnly}
-            count={localCount ?? 5}
-            tooltips={tooltips}
-            className={classNames(className, 'sha-rate')}
-            style={getStyle(style, allData.data)} // Temporary. Make it configurable
-            {...customEvent}
-            value={value}
-            onChange={onChangeInternal}
-          />;
-        }}
-      </ConfigurableFormItem>
-    );
+    return model.hidden
+      ? null
+      : (
+        <ConfigurableFormItem model={model}>
+          {(value, onChange) => {
+            const customEvent = calculatedModel.eventHandlers;
+            const onChangeInternal = (value: number): void => {
+              customEvent.onChange({ value });
+              if (typeof onChange === 'function') onChange(value);
+            };
+
+            return (
+              <Rate
+                allowClear={allowClear}
+                // allowHalf={allowHalf}
+                character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
+                disabled={readOnly}
+                count={localCount ?? 5}
+                tooltips={tooltips}
+                className={classNames(className, 'sha-rate')}
+                style={model.allStyles.fullStyle}
+                {...customEvent}
+                value={value}
+                onChange={onChangeInternal}
+              />
+            );
+          }}
+        </ConfigurableFormItem>
+      )
+    ;
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
@@ -77,13 +79,12 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     .add<IRateProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRateProps>(1, (prev) => migrateVisibility(prev))
     .add<IRateProps>(2, (prev) => migrateReadOnly(prev))
-    .add<IRateProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IRateProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IRateProps>(4, (prev) => {
       prev.hideLabel = true;
       if (!prev.icon) prev.icon = 'StarFilled';
       return prev;
-    })
-  ,
+    }),
 };
 
 export default RateComponent;

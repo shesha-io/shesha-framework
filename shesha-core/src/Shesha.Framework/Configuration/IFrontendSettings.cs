@@ -25,5 +25,12 @@ namespace Shesha.Configuration
         [Display(Name = "Default URL", Description = "This is the url the user should be redirected to if the user is not authenticated and does not specify a specific page", GroupName = "Frontend")]
         [Setting(SheshaSettingNames.DefaultUrl, isClientSpecific: true)]
         ISettingAccessor<string> DefaultUrl { get; }
+
+        /// <summary>
+        /// Public URL  
+        /// </summary>
+        [Display(Name = "Public URL", Description = "Is used in the notifications (especially emails) to open site links", GroupName = "Frontend")]
+        [Setting(SheshaSettingNames.PublicUrl, isClientSpecific: true)]
+        ISettingAccessor<string> PublicUrl { get; }
     }
 }

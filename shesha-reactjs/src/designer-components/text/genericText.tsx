@@ -1,13 +1,14 @@
 import classNames from 'classnames';
 import React, { CSSProperties, FC, PropsWithChildren, useEffect, useState } from 'react';
-import { ITextTypographyProps, ITypographyProps } from './models';
+import { ContentType, ITextTypographyProps, ITypographyProps } from './models';
 import { ParagraphProps } from 'antd/lib/typography/Paragraph';
-import { TextProps } from 'antd/lib/typography/Text';
 import { TitleProps } from 'antd/lib/typography/Title';
+import { BaseType } from 'antd/lib/typography/Base';
 import { useStyles } from './styles/styles';
 import { Typography } from 'antd';
+import { IConfigurableTheme, useTheme } from '@/providers';
 
-const { Paragraph, Text, Title } = Typography;
+const { Paragraph, Title } = Typography;
 
 type LevelType = 1 | 2 | 3 | 4 | 5;
 
@@ -15,6 +16,19 @@ interface IGenericTextProps
   extends Omit<ITextTypographyProps, 'style' | 'contentDisplay' | 'name' | 'id' | 'type' | 'content' | 'value'> {
   style?: CSSProperties;
 }
+
+const getColorByContentType = (contentType: ContentType, style: CSSProperties, theme: IConfigurableTheme): string | undefined => {
+  switch (contentType) {
+    case 'custom':
+      return style?.color;
+    case 'secondary':
+      return theme?.text?.secondary;
+    case '':
+      return theme?.text?.default;
+    default:
+      return undefined;
+  }
+};
 
 export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   children,
@@ -33,6 +47,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   const { styles } = useStyles();
   const [updateKey, setUpdateKey] = useState(0);
   // NOTE: to be replaced with a generic context implementation
+  const { theme } = useTheme();
 
   useEffect(() => {
     setUpdateKey((prev) => prev + 1);
@@ -48,6 +63,8 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     model.strong,
   ]);
 
+  const chosenType: BaseType | undefined = contentType === 'secondary' ? undefined : (contentType as BaseType);
+
   const baseProps: ITypographyProps = {
     code: model?.code,
     copyable: model?.copyable,
@@ -57,19 +74,18 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     underline: model?.underline,
     keyboard: model?.keyboard,
     italic: model?.italic,
-    type: contentType !== 'custom' && contentType !== 'info' && contentType !== 'primary' ? contentType : null,
+    type: chosenType,
     style: {
-      ...style,
-      color: contentType === 'custom' ? style.color : undefined,
-      fontSize: textType === 'title' ? undefined : style?.fontSize,
-      justifyContent: style.textAlign,
-    },
+      padding: 0,
+      margin: 0,
+      ...{
+        ...style,
+        color: getColorByContentType(contentType, style, theme),
+        fontSize: textType === 'title' ? undefined : style?.fontSize,
+        justifyContent: style?.textAlign,
+      } },
   };
 
-  const textProps: TextProps = {
-    ...baseProps,
-    strong: model?.strong,
-  };
   const paragraphProps: ParagraphProps = {
     ...baseProps,
     strong: model?.strong,
@@ -87,22 +103,22 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
 
   if (textType === 'span') {
     return (
-      <Text key={`text-${updateKey}`} {...textProps} className={className}>
+      <Paragraph key={`text-${updateKey}`} {...baseProps} className={className}>
         {children}
-      </Text>
+      </Paragraph>
     );
   }
 
   if (textType === 'paragraph') {
     return (
-      <Paragraph key={`paragraph-${updateKey}`} {...paragraphProps} className={className}>
+      <Paragraph key={`paragraph-${updateKey}`} style={{ margin: '0px' }} {...paragraphProps} className={className}>
         {children}
       </Paragraph>
     );
   }
 
   return (
-    <Title key={`title-${updateKey}`} {...titleProps} className={className}>
+    <Title key={`title-${updateKey}`} {...titleProps} style={{ ...titleProps.style, fontSize: '' }} className={className}>
       {children}
     </Title>
   );

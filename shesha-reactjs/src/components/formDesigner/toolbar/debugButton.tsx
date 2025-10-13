@@ -1,15 +1,11 @@
 import React, { FC } from 'react';
 import { BugOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { useFormDesignerState, useFormDesignerActions } from '@/providers/formDesigner';
+import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
 
-export interface IDebugButtonProps {
-
-}
-
-export const DebugButton: FC<IDebugButtonProps> = () => {
-  const { isDebug } = useFormDesignerState();
-  const { setDebugMode } = useFormDesignerActions();  
+export const DebugButton: FC = () => {
+  const isDebug = useFormDesignerStateSelector((x) => x.isDebug);
+  const { setDebugMode } = useFormDesignerActions();
 
   return (
     <Button
@@ -17,12 +13,10 @@ export const DebugButton: FC<IDebugButtonProps> = () => {
       onClick={() => {
         setDebugMode(!isDebug);
       }}
+      icon={<BugOutlined />}
       title="Debug"
       type="primary"
       ghost={!isDebug}
-      shape="circle"
-    >
-      <BugOutlined />
-    </Button>
+    />
   );
 };

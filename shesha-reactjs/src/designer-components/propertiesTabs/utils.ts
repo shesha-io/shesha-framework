@@ -1,187 +1,179 @@
-const evaluateString = (expression: string, data: any): any => {
-    try {
-        // Create a new function with 'data' as a parameter and the expression as the function body
-        const func = new Function('data', expression);
-        // Execute the function with the provided data
-        return func(data);
-    } catch (error) {
-        console.error('Error evaluating expression:', expression, error);
-        return null;
-    }
-};
+import { IComponentsContainer, IConfigurableFormComponent, IStyleType } from "@/providers";
+import { ICollapsiblePanelComponentProps, isCollapsiblePanel } from "../collapsiblePanel/interfaces";
+import { ISettingsInputRowProps, isSettingsInputRow } from "../settingsInputRow";
+import { isPropertyRouterComponent } from "../propertyRouter";
+import { isDefined } from "@/utils/nullables";
 
-const getHeaderStyles = (primaryColor) => (
-    {
-        "font": {
-            "color": "darkslategrey",
-            "size": 14,
-            "weight": "500",
-            "align": "left",
+export const getHeaderStyles = (primaryColor?: string): IStyleType => (
+  {
+    font: {
+      color: "darkslategray",
+      size: 14,
+      weight: "500",
+      align: "left",
+    },
+    background: {
+      type: "color",
+      color: "#fff",
+    },
+    dimensions: {
+      width: "auto",
+      height: "auto",
+      minHeight: "0",
+      maxHeight: "auto",
+      minWidth: "0",
+      maxWidth: "auto",
+    },
+    border: {
+      radiusType: "all",
+      borderType: "custom",
+      border: {
+        all: {},
+        top: {},
+        right: {},
+        bottom: {
+          width: "2px",
+          style: "solid",
+          color: primaryColor || "#d9d9d9",
         },
-        "background": {
-            "type": "color",
-            "color": "#fff"
-        },
-        "dimensions": {
-            "width": "auto",
-            "height": "auto",
-            "minHeight": "0",
-            "maxHeight": "auto",
-            "minWidth": "0",
-            "maxWidth": "auto"
-        },
-        "border": {
-            "radiusType": "all",
-            "borderType": "custom",
-            "border": {
-                "bottom": {
-                    "width": "2px",
-                    "style": "solid",
-                    "color": primaryColor
-                },
-            },
-            "radius": {
-                "all": 0
-            }
-        },
-        "stylingBox": "{\"paddingLeft\":\"0\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\"}"
-    }
+        left: {},
+      },
+      radius: {
+        all: '0',
+      },
+    },
+    stylingBox: "{\"paddingLeft\":\"0\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"0\"}",
+  }
 );
 
-export const filterDynamicComponents = (components, query, data, primaryColor) => {
-    if (!components || !Array.isArray(components)) return [];
+export const getBodyStyles = (): IStyleType => ({
+  border: {
+    radiusType: "all",
+    borderType: "all",
+    border: {
+      all: { width: '0px', style: 'none', color: '' },
+      top: {},
+      right: {},
+      bottom: {},
+      left: {},
+    },
+    radius: {
+      all: 0,
+    },
+  },
+});
 
-    const lowerCaseQuery = query.toLowerCase();
+const isComponent = (component: unknown): component is IConfigurableFormComponent => isDefined(component) && "id" in component && "type" in component;
+const isComponentsContainer = (component: IConfigurableFormComponent): component is IConfigurableFormComponent & IComponentsContainer => isComponent(component) && "components" in component && Array.isArray(component.components);
 
-    // Helper function to evaluate hidden property
-    const evaluateHidden = (hidden, directMatch, hasVisibleChildren) => {
-        return hidden || (!directMatch && !hasVisibleChildren);
-    };
+export const filterDynamicComponents = (components: IConfigurableFormComponent[], query: string, primaryColor?: string): IConfigurableFormComponent[] => {
+  if (!components || !Array.isArray(components)) return [];
 
-    // Helper function to check if text matches query
-    const matchesQuery = (text) => text?.toLowerCase().includes(lowerCaseQuery);
 
-    const filterResult = components.map(component => {
-        // Deep clone the component to avoid mutations
-        const c = { ...component };
+  const lowerCaseQuery = query.toLowerCase();
 
-        // Check if component matches query directly
-        const directMatch = (
-            matchesQuery(c.label) ||
-            matchesQuery(c.propertyName) ||
-            (c.propertyName && matchesQuery(c.propertyName.split('.').join(' ')))
-        );
+  // Helper function to evaluate hidden property
+  const evaluateHidden = (hidden: boolean, directMatch: boolean, hasVisibleChildren: boolean): boolean => {
+    return hidden || (!directMatch && !hasVisibleChildren);
+  };
 
-        // Handle propertyRouter
-        if (c.componentName === 'propertyRouter') {
-            const filteredComponents = filterDynamicComponents(c.components, query, data, primaryColor);
+  // Helper function to check if text
+  // matches query
 
-            return {
-                ...c,
-                hidden: filteredComponents.length < 1,
-                components: filteredComponents
-            };
-        }
+  const matchesQuery = (text): boolean => {
+    return text?.toLowerCase().includes(lowerCaseQuery);
+  };
 
-        // Handle collapsiblePanel
-        if (c.type === 'collapsiblePanel') {
-            const contentComponents = filterDynamicComponents(c.content?.components || [], query, data, primaryColor);
-            const hasVisibleChildren = contentComponents.length > 0;
+  const filterResult = components.map<IConfigurableFormComponent>((component) => {
+    // Deep clone the component to avoid mutations
+    const c = { ...component };
 
-            return {
-                ...c,
-                collapsible: c.collapsible ?? 'header',
-                content: {
-                    ...c.content,
-                    components: contentComponents
-                },
-                ghost: false,
-                collapsedByDefault: true,
-                headerStyles: getHeaderStyles(primaryColor),
-                border: {
-                    "hideBorder": false,
-                    "radiusType": "all",
-                    "borderType": "all",
-                    "border": {
-                        "all": {
-                            "width": "1px",
-                            "style": "none",
-                            "color": "#d9d9d9"
-                        },
-                    },
-                    "radius": {
-                        "all": 0
-                    }
-                },
-                "stylingBox": "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
-                "hidden": evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
-            };
-        }
+    // Check if component matches query directly
+    const directMatch = (
+      matchesQuery(c.label) ||
+      matchesQuery(c.propertyName) ||
+      (c.propertyName && matchesQuery(c.propertyName.split('.').join(' ')))
+    );
 
-        // Handle settingsInputRow
-        if (c.type === 'settingsInputRow') {
-            const filteredInputs = c.inputs?.filter(input =>
-                matchesQuery(input.label) ||
-                matchesQuery(input.propertyName) ||
-                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
-            ) || [];
+    // Handle propertyRouter
+    if (isPropertyRouterComponent(c)) {
+      const filteredComponents = filterDynamicComponents(c.components, query, primaryColor);
 
-            return {
-                ...c,
-                inputs: filteredInputs,
-                hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0)
-            };
-        }
+      return {
+        ...c,
+        hidden: filteredComponents.length < 1,
+        components: filteredComponents,
+      };
+    }
 
-        // Handle components with nested components
-        if (c.components) {
-            const filteredComponents = filterDynamicComponents(c.components, query, data, primaryColor);
-            const hasVisibleChildren = filteredComponents.length > 0;
+    // Handle collapsiblePanel
+    if (isCollapsiblePanel(c)) {
+      const contentComponents = filterDynamicComponents(c.content?.components || [], query, primaryColor);
+      const hasVisibleChildren = contentComponents.length > 0;
 
-            return {
-                ...c,
-                components: filteredComponents,
-                hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
-            };
-        }
+      return {
+        ...c,
+        collapsible: 'header',
+        content: {
+          ...c.content,
+          components: contentComponents,
+        },
+        ghost: false,
+        collapsedByDefault: false,
+        headerStyles: getHeaderStyles(primaryColor),
+        // TODO: review and convert styles. I relized that types are incompatible after conversion to typed version
+        // allStyles: getBodyStyles(),
+        border: getBodyStyles().border,
+        stylingBox: "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"0\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
+        hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren),
+      } satisfies ICollapsiblePanelComponentProps;
+    }
 
-        // Handle inputs array if present
-        if (c.inputs) {
-            const filteredInputs = c.inputs?.filter(input =>
-                matchesQuery(input.label) ||
-                matchesQuery(input.propertyName) ||
-                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
-            ) || [];
+    // Handle settingsInputRow
+    if (isSettingsInputRow(c)) {
+      const filteredInputs = c.inputs?.filter((input) =>
+        matchesQuery(input.label) ||
+        matchesQuery(input.propertyName) ||
+        (input.propertyName && matchesQuery(input.propertyName.split('.').join(' '))),
+      ) || [];
 
-            return {
-                ...c,
-                inputs: filteredInputs,
-                hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0)
-            };
-        }
+      return {
+        ...c,
+        inputs: filteredInputs,
+        hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0),
+      } satisfies ISettingsInputRowProps;
+    }
 
-        // Handle basic component
-        return {
-            ...c,
-            hidden: evaluateHidden(c.hidden, directMatch, false)
-        };
-    });
+    // Handle components with nested components
+    if (isComponentsContainer(c)) {
+      const filteredComponents = filterDynamicComponents(c.components, query, primaryColor);
+      const hasVisibleChildren = filteredComponents.length > 0;
 
-    // Filter out null components and handle visibility
-    return filterResult.filter(c => {
-        if (!c) return false;
+      return {
+        ...c,
+        components: filteredComponents,
+        hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren),
+      } satisfies IConfigurableFormComponent & IComponentsContainer;
+    }
 
-        // Evaluate final hidden state
-        const hasVisibleChildren = (
-            (c.components && c.components.length > 0) ||
-            (c.content?.components && c.content.components.length > 0) ||
-            (c.inputs && c.inputs.length > 0)
-        );
+    // Handle basic component
+    return {
+      ...c,
+      hidden: evaluateHidden(c.hidden, directMatch, false),
+    } satisfies IConfigurableFormComponent;
+  });
 
-        const isHidden = typeof c.hidden === 'string'
-            ? evaluateString(c.hidden, data)
-            : c.hidden;
+  // Filter out null components and handle visibility
+  return filterResult.filter((c) => {
+    if (!c) return false;
 
-        return !isHidden || hasVisibleChildren;
-    });
+    // Evaluate final hidden state
+    const hasVisibleChildren = (
+      (isComponentsContainer(c) && c.components.length > 0) ||
+      (isCollapsiblePanel(c) && c.content.components.length > 0) ||
+      (isSettingsInputRow(c) && c.inputs.length > 0)
+    );
+
+    return !c.hidden || hasVisibleChildren;
+  });
 };

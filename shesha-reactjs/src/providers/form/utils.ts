@@ -17,13 +17,6 @@ import { IPropertyMetadata, NestedProperties, isPropertiesArray, isPropertiesLoa
 import { Migrator } from '@/utils/fluentMigrator/migrator';
 import { getFullPath } from '@/utils/metadata/helpers';
 import { IAnyObject } from './../../interfaces/anyObject';
-import blankViewMarkup from './defaults/markups/blankView.json';
-import dashboardViewMarkup from './defaults/markups/dashboardView.json';
-import detailsViewMarkup from './defaults/markups/detailsView.json';
-import formViewMarkup from './defaults/markups/formView.json';
-import masterDetailsViewMarkup from './defaults/markups/masterDetailsView.json';
-import menuViewMarkup from './defaults/markups/menuView.json';
-import tableViewMarkup from './defaults/markups/tableView.json';
 import {
   ActionArguments,
   ActionParameters,
@@ -44,24 +37,28 @@ import {
   EditMode,
   ROOT_COMPONENT_KEY,
   SILENT_KEY,
-  ViewType,
   FormRawMarkup,
 } from './models';
-import { isPropertySettings, updateSettingsComponents } from '@/designer-components/_settings/utils';
+import { isPropertySettings, updateJsSettingsForComponents } from '@/designer-components/_settings/utils';
 import {
+  IDataContextManagerActionsContext,
   IDataContextManagerFullInstance,
   IDataContextsData,
   RootContexts,
-  useDataContextManager,
+  useDataContextManagerActionsOrUndefined,
+  useDataContextManagerOrUndefined,
 } from '@/providers/dataContextManager';
 import moment from 'moment';
 import FileSaver from 'file-saver';
 import { App } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
-import { ContextGetData, IDataContextFull, useDataContext } from '@/providers/dataContextProvider/contexts';
+import { IDataContextFull, useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
 import {
+  FormMode,
   HttpClientApi,
   IApplicationApi,
+  STYLE_BOX_CSS_POPERTIES,
+  StyleBoxValue,
   useDataTableState,
   useGlobalState,
   useHttpClient,
@@ -72,21 +69,22 @@ import { IParentProviderProps, useParent } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { toCamelCase } from '@/utils/string';
 import { IFormApi } from './formApi';
-import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
+import { makeObservableProxy, ObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IShaFormInstance } from './store/interfaces';
-import { useShaFormInstance } from './providers/shaFormProvider';
+import { useShaFormInstance, useShaFormDataUpdate } from './providers/shaFormProvider';
 import { QueryStringParams } from '@/utils/url';
-import { removeGhostKeys } from '@/utils/form';
-import { isEmpty } from 'lodash';
 import { TouchableProxy } from './touchableProxy';
+import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
+import { jsonSafeParse, unproxyValue } from '@/utils/object';
+import { isDefined } from '@/utils/nullables';
 
 /** Interface to get all avalilable data */
-export interface IApplicationContext<Value = any> {
+export interface IApplicationContext<Value extends object = object> {
   application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
   /** Form data */
-  data?: any;
+  data?: Value;
 
   form?: IFormApi<Value>;
   /** Contexts datas */
@@ -121,29 +119,37 @@ export interface IApplicationContext<Value = any> {
    * Parent form values. Is used for backward compatibility only
    */
   parentFormValues: any;
+
+  /**
+   * Function for testing
+   */
+  test?: any;
 }
 
-export type GetAvailableConstantsDataArgs = {
+export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
   topContextId?: string;
-  shaForm?: IShaFormInstance;
+  shaForm?: IShaFormInstance<TValues>;
   queryStringGetter?: () => QueryStringParams;
 };
 
 export type AvailableConstantsContext = {
   closestShaFormApi: IFormApi;
   selectedRow?: ISelectionProps;
-  dcm: IDataContextManagerFullInstance;
+  dcm: IDataContextManagerActionsContext;
   closestContextId: string;
   globalState: IAnyObject;
   setGlobalState: (payload: ISetStatePayload) => void;
   message: MessageInstance;
   httpClient: HttpClientApi;
+  test: any;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 
-export const toBase64 = file => new Promise<string>((resolve, reject) => {
+const AsyncFunction = Object.getPrototypeOf(async function () {
+  // nop
+}).constructor;
+
+export const toBase64 = (file: Blob): Promise<string> => new Promise<string>((resolve, reject) => {
   const reader = new FileReader();
   reader.readAsDataURL(file);
   reader.onload = () => resolve(reader.result as string);
@@ -152,7 +158,7 @@ export const toBase64 = file => new Promise<string>((resolve, reject) => {
 
 export function executeScript<TResult = any>(
   expression: string,
-  expressionArgs: IExpressionExecuterArguments
+  expressionArgs: IExpressionExecuterArguments,
 ): Promise<TResult> {
   return new Promise<TResult>((resolve, reject) => {
     if (!expression) reject('Expression must be defined');
@@ -193,42 +199,72 @@ export function executeScriptSync<TResult = any>(expression: string, context: IE
   }
 }
 
-export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
+const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
   const { globalState, setState: setGlobalState } = useGlobalState();
   // get closest data context Id
-  const closestContextId = useDataContext(false)?.id;
-  // get DataContext Manager
-  const dcm = useDataContextManager(false);
+  const closestContextId = useDataContextOrUndefined()?.id;
   // get selected row if exists
   const selectedRow = useDataTableState(false)?.selectedRow;
 
-  const parent = useParent(false);
-  const form = useShaFormInstance(false);
-
-  const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
   const httpClient = useHttpClient();
 
   const result: AvailableConstantsContext = {
-    closestShaFormApi,
+    closestShaFormApi: null,
     selectedRow,
-    dcm,
+    dcm: null,
     closestContextId,
     globalState,
     setGlobalState,
     httpClient,
     message,
+    // for testing purposes
+    test: {
+      getArguments: (args) => {
+        var fArgs = args.length === 1 ? args[0] : args;
+        return fArgs._propAccessors !== undefined
+          ? Array.from(fArgs._propAccessors, ([n, v]: [string, any]) => ({ n, v: v() && v()['getData'] ? v().getData() : v() }))
+          : Array.from(fArgs, (v: any) => (v && v['getData'] ? v.getData() : v));
+      },
+    },
   };
   return result;
 };
 
-export type WrapConstantsDataArgs = GetAvailableConstantsDataArgs & {
+export const useAvailableConstantsContextsNoRefresh = (): AvailableConstantsContext => {
+  const baseContext = useBaseAvailableConstantsContexts();
+  // get DataContext Manager
+  const dcm = useDataContextManagerActionsOrUndefined();
+
+  const parent = useParent(false);
+  const form = useShaFormInstance(false);
+  const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
+  baseContext.closestShaFormApi = closestShaFormApi;
+  baseContext.dcm = dcm;
+  return baseContext;
+};
+
+export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
+  const baseContext = useBaseAvailableConstantsContexts();
+  // get DataContext Manager
+  const dcm = useDataContextManagerOrUndefined();
+  useShaFormDataUpdate();
+
+  const parent = useParent(false);
+  const form = useShaFormInstance(false);
+  const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
+  baseContext.closestShaFormApi = closestShaFormApi;
+  baseContext.dcm = dcm;
+  return baseContext;
+};
+
+export type WrapConstantsDataArgs<TValues extends object = object> = GetAvailableConstantsDataArgs<TValues> & {
   fullContext: AvailableConstantsContext;
 };
 
 const EMPTY_DATA = {};
 
-export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesAccessors<IApplicationContext> => {
+export const wrapConstantsData = <TValues extends object = object>(args: WrapConstantsDataArgs<TValues>): ProxyPropertiesAccessors<IApplicationContext<TValues>> => {
   const { topContextId, shaForm, fullContext, queryStringGetter } = args;
   const { closestShaFormApi: closestShaForm,
     selectedRow,
@@ -237,16 +273,17 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     globalState,
     setGlobalState,
     httpClient,
-    message
+    message,
+    test,
   } = fullContext;
-  const shaFormInstance = shaForm?.getPublicFormApi() ?? closestShaForm;
+  const shaFormInstance = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues>;
 
-  const accessors: ProxyPropertiesAccessors<IApplicationContext> = {
+  const accessors: ProxyPropertiesAccessors<IApplicationContext<TValues>> = {
     application: () => {
       // get application context
       const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
       const applicationData = application?.getData();
-      return applicationData;
+      return applicationData as IApplicationApi;
     },
     contexts: () => {
       const tcId = topContextId || closestContextId;
@@ -266,32 +303,17 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     http: () => httpClient,
     message: () => message,
     fileSaver: () => FileSaver,
-    data: () => {
-      if (!shaFormInstance?.data || isEmpty(shaFormInstance.data))
-        return EMPTY_DATA;
-
-      const data = shaFormInstance.data;
-      return removeGhostKeys(data);
-    },
-    form: () => {
-      return shaFormInstance;
-    },
-    query: () => {
-      return queryStringGetter?.() ?? {};
-    },
-    initialValues: () => {
-      return shaFormInstance?.initialValues;
-    },
-    parentFormValues: () => {
-      return shaFormInstance?.parentFormValues;
-    },
+    data: () => (!shaFormInstance ? EMPTY_DATA : GetShaFormDataAccessor<TValues>(shaFormInstance)) as TValues,
+    form: () => shaFormInstance,
+    query: () => queryStringGetter?.() ?? {},
+    initialValues: () => shaFormInstance?.initialValues,
+    parentFormValues: () => shaFormInstance?.parentFormValues,
+    test: () => test,
   };
   return accessors;
 };
 
-export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = {}): IApplicationContext => {
-  const fullContext = useAvailableConstantsContexts();
-
+const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, args: GetAvailableConstantsDataArgs = {}, additionalData?: any): IApplicationContext => {
   const accessors = wrapConstantsData({ fullContext, ...args });
 
   const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
@@ -300,39 +322,66 @@ export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = 
   else
     contextProxyRef.current.refreshAccessors(accessors);
 
+  contextProxyRef.current.setAdditionalData(additionalData);
+
   return contextProxyRef.current;
 };
 
-export const useApplicationContextData = (): ContextGetData => {
-  const dcm = useDataContextManager(false);
-  const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
-  return application?.getData();
+/**
+ * Use this method if you need connect to Application data without re-rendeting if DataContextx changed
+ * @param args arguments
+ * @returns Application contexts
+ */
+export const useAvailableConstantsDataNoRefresh = (args: GetAvailableConstantsDataArgs = {}, additionalData?: object): IApplicationContext => {
+  const fullContext = useAvailableConstantsContextsNoRefresh();
+  var result = useWrapAvailableConstantsData(fullContext, args, additionalData);
+  return result;
+};
+
+/**
+ * Use this method if you need coonect to Application data re-rendeting if DataContexts changed
+ * @param args arguments
+ * @returns Application contexts
+ */
+export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = {}, additionalData?: object): IApplicationContext => {
+  const fullContext = useAvailableConstantsContexts();
+  var result = useWrapAvailableConstantsData(fullContext, args, additionalData);
+  return result;
+};
+
+export const useApplicationContextData = (): object | undefined => {
+  return useDataContextManagerActionsOrUndefined()
+    ?.getDataContext(SheshaCommonContexts.ApplicationContext)
+    ?.getData();
 };
 
 const getSettingValue = (
-  propertyName,
+  propertyName: string,
   value: any,
   allData: any,
   calcFunction: (setting: IPropertySetting, allData: any) => any,
-  parentReadOnly: boolean = undefined,
-  propertyFilter?: (name: string) => boolean,
-  processedObjects?: any[]
-) => {
+  parentReadOnly?: boolean,
+  propertyFilter?: (name: string, value: any) => boolean,
+  processedObjects?: any[],
+): unknown => {
   if (!processedObjects)
     processedObjects = [];
 
-  if (!value || typeof propertyFilter === 'function' && !propertyFilter(propertyName))
+  const unproxiedValue = unproxyValue(value);
+
+  if (!unproxiedValue || (typeof propertyFilter === 'function' && !propertyFilter(propertyName, value)))
     return value;
 
-  if (typeof value === 'object'
-    && processedObjects.indexOf(value) === -1 // skip already processed objects to avoid infinite loop
+  if (typeof unproxiedValue === 'object' &&
+    processedObjects.indexOf(unproxiedValue) === -1 // skip already processed objects to avoid infinite loop
   ) {
     // If array - update all items
-    if (Array.isArray(value)) {
-      const v = value.length === 0
-        ? value
-        : value.map((x) => {
-          /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
+    if (Array.isArray(unproxiedValue)) {
+      const v = unproxiedValue.length === 0
+        ? unproxiedValue
+        : unproxiedValue.map((x) => {
+          // TODO: review and enable rule
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
           return getActualModel(x, allData, parentReadOnly, propertyFilter, processedObjects);
         });
       processedObjects.push(v);
@@ -341,33 +390,36 @@ const getSettingValue = (
 
 
     // update setting value to actual
-    if (isPropertySettings(value)) {
-      const v = value._mode === 'code'
-        ? Boolean(value._code) ? calcFunction(value, allData) : undefined
-        : value._mode === 'value'
-          ? value._value
+    if (isPropertySettings(unproxiedValue)) {
+      const v = unproxiedValue._mode === 'code'
+        ? Boolean(unproxiedValue._code) ? calcFunction(unproxiedValue, allData) : undefined
+        : unproxiedValue._mode === 'value'
+          ? unproxiedValue._value
           : undefined;
-      processedObjects.push(v);
-      return v;
+      const upv = unproxyValue(v);
+      processedObjects.push(upv);
+      return upv;
     }
 
     // update nested objects
-    /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
-    const v = getActualModel(value, allData, parentReadOnly, propertyFilter, processedObjects);
+
+    // TODO: review and enable rule
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    const v = getActualModel(unproxiedValue, allData, parentReadOnly, propertyFilter, processedObjects);
     processedObjects.push(v);
     return v;
   }
   return value;
 };
 
-const getValue = (val: any, allData: any, calcValue: (setting: IPropertySetting, allData: any) => Function) => {
+const getValue = (val: any, allData: any, calcValue: (setting: IPropertySetting, allData: any) => unknown): unknown => {
   return getSettingValue('', val, allData, calcValue);
 };
 
-const calcValue = (setting: IPropertySetting, allData: any) => {
-  const getSettingValueInScript = (val: any) => getValue(val, allData, calcValue);
+const calcValue = (setting: IPropertySetting, allData: any): unknown => {
+  const getSettingValueInScript = (val: any): unknown => getValue(val, allData, calcValue);
   try {
-    if (allData.addAccessor && allData instanceof TouchableProxy) {
+    if (allData.addAccessor && (allData instanceof TouchableProxy || allData instanceof ObservableProxy)) {
       allData.addAccessor('staticValue', () => setting?._value);
       allData.addAccessor('getSettingValue', () => getSettingValueInScript);
     } else {
@@ -382,7 +434,7 @@ const calcValue = (setting: IPropertySetting, allData: any) => {
   }
 };
 
-export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean) => {
+export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean): boolean => {
   return (
     editMode === false || // check exact condition
     editMode === 'readOnly' ||
@@ -398,18 +450,18 @@ export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean) => 
  * @param allData - all form, contexts data and other data/objects/functions needed to calculate Actual Model
  * @returns - converted model
  */
-export const getActualModel = <T>(
+export const getActualModel = <T extends object = object>(
   model: T,
-  allData: any,
-  parentReadOnly: boolean = undefined,
-  propertyFilter?: (name: string) => boolean,
-  processedObjects?: any[]
+  allData: object,
+  parentReadOnly?: boolean,
+  propertyFilter?: (name: string, value: any) => boolean,
+  processedObjects?: any[],
 ): T => {
   if (!processedObjects)
     processedObjects = [];
 
   if (Array.isArray(model)) {
-    return getSettingValue('', model, allData, calcValue, parentReadOnly, propertyFilter, processedObjects);
+    return getSettingValue('', model, allData, calcValue, parentReadOnly, propertyFilter, processedObjects) as T;
   }
 
   if (typeof model !== 'object' || model === null || model === undefined)
@@ -418,10 +470,12 @@ export const getActualModel = <T>(
   const m = {} as T;
   for (var propName in model) {
     if (!model.hasOwnProperty(propName)) continue;
-    m[propName] = getSettingValue(propName, model[propName], allData, calcValue, parentReadOnly, propertyFilter, processedObjects);
+    m[propName] = getSettingValue(propName, model[propName], allData, calcValue, parentReadOnly, propertyFilter, processedObjects) as any;
   }
 
-  const readOnly = typeof parentReadOnly === 'undefined' ? allData?.formMode === 'readonly' : parentReadOnly;
+  const readOnly = typeof parentReadOnly === 'undefined'
+    ? "formMode" in allData ? allData?.formMode === 'readonly' : undefined // TODO: review type of allData and update condition
+    : parentReadOnly;
 
   // update ReadOnly if exists
   if (m.hasOwnProperty('editMode')) m['readOnly'] = getReadOnlyBool(m['editMode'], readOnly);
@@ -431,19 +485,24 @@ export const getActualModel = <T>(
 
 export const isCommonContext = (name: string): boolean => {
   const r = RootContexts;
-  return r.filter(i => i === name)?.length > 0;
+  return r.filter((i) => i === name)?.length > 0;
 };
 
-export const getParentReadOnly = (parent: IParentProviderProps, allData: any): boolean =>
-  allData.form?.formMode !== 'designer'
-  && (parent?.model?.readOnly as boolean ?? (parent?.formMode === 'readonly' || allData.form?.formMode === 'readonly'));
+export const getParentReadOnly = (parent: IParentProviderProps, allData: unknown): boolean => {
+  // TODO: review type of allData
+  const form = typeof allData === 'object' && "form" in allData ? allData.form : undefined;
+  const formMode: FormMode | undefined = isDefined(form) && "formMode" in form ? form.formMode as FormMode : undefined;
+  return formMode !== 'designer' &&
+    (parent?.model?.readOnly as boolean ?? (parent?.formMode === 'readonly' || formMode === 'readonly'));
+};
 
-export const getActualPropertyValue = <T>(model: T, allData: any, propertyName: string) => {
+// TODO: Alex, please review this. Purpose of the function is not clear from its name
+export const getActualPropertyValue = <T>(model: T, allData: unknown, propertyName: string): T => {
   return { ...model, [propertyName]: getSettingValue(propertyName, model[propertyName], allData, calcValue) } as T;
 };
 
-//const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
-export const updateModelToMoment = async (model: any, properties: NestedProperties): Promise<any> => {
+// const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
+export const updateModelToMoment = async (model: object, properties: NestedProperties): Promise<any> => {
   if (properties === null)
     return model;
   const newModel = { ...model };
@@ -454,8 +513,8 @@ export const updateModelToMoment = async (model: any, properties: NestedProperti
       : Promise.resolve([]);
   return await propsPromise.then(async (props: IPropertyMetadata[]) => {
     for (const key in newModel) {
-      if (newModel.hasOwnProperty(key)) {// regexp.test(newModel[key])) {
-        const prop = props.find(i => toCamelCase(i.path) === key);
+      if (newModel.hasOwnProperty(key)) { // regexp.test(newModel[key])) {
+        const prop = props.find((i) => toCamelCase(i.path) === key);
         if (prop && (prop.dataType === DataTypes.date || prop.dataType === DataTypes.dateTime))
           newModel[key] = newModel[key] ? moment(newModel[key]).utc(true) : newModel[key];
         if (prop && prop.dataType === DataTypes.entityReference && prop.properties?.length > 0) {
@@ -496,14 +555,14 @@ const getSubContainers = (component: IConfigurableFormComponent, componentRegist
  */
 export const componentsTreeToFlatStructure = (
   toolboxComponents: IToolboxComponents,
-  components: IConfigurableFormComponent[]
+  components: IConfigurableFormComponent[],
 ): IFlatComponentsStructure => {
   const result: IFlatComponentsStructure = {
     allComponents: {},
     componentRelations: {},
   };
 
-  const processComponent = (component: IConfigurableFormComponent, parentId?: string) => {
+  const processComponent = (component: IConfigurableFormComponent, parentId?: string): void => {
     // prepare component runtime
     result.allComponents[component.id] = {
       ...component,
@@ -544,18 +603,18 @@ export const upgradeComponent = (
   definition: IToolboxComponent,
   formSettings: IFormSettings,
   flatStructure: IFlatComponentsStructure,
-  isNew?: boolean
-) => {
+  isNew?: boolean,
+): IConfigurableFormComponent => {
   if (!definition.migrator) return componentModel;
 
-  const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent>();
+  const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent, SettingsMigrationContext>();
   const fluent = definition.migrator(migrator);
-  if (componentModel.version === undefined) componentModel.version = -1;
-  const model = fluent.migrator.upgrade(componentModel, {
+  const versionedModel = { ...componentModel, version: componentModel.version ?? -1 };
+  const model = fluent.migrator.upgrade(versionedModel, {
     isNew,
     formSettings,
     flatStructure,
-    componentId: componentModel.id,
+    componentId: versionedModel.id,
   });
   return model;
 };
@@ -564,8 +623,8 @@ export const upgradeComponents = (
   toolboxComponents: IToolboxComponents,
   formSettings: IFormSettings,
   flatStructure: IFlatComponentsStructure,
-  isNew?: boolean
-) => {
+  isNew?: boolean,
+): void => {
   const { allComponents } = flatStructure;
   for (const key in allComponents) {
     if (allComponents.hasOwnProperty(key)) {
@@ -581,7 +640,7 @@ export const upgradeComponents = (
 
 //#region Migration utils
 
-export const getClosestComponent = (componentId: string, context: SettingsMigrationContext, componentType: string) => {
+export const getClosestComponent = (componentId: string, context: SettingsMigrationContext, componentType: string): IConfigurableFormComponent | null => {
   let component = context.flatStructure.allComponents[componentId];
   do {
     component = component?.parentId ? context.flatStructure.allComponents[component.parentId] : null;
@@ -590,7 +649,7 @@ export const getClosestComponent = (componentId: string, context: SettingsMigrat
   return component?.type === componentType ? component : null;
 };
 
-export const getClosestTableId = (context: SettingsMigrationContext) => {
+export const getClosestTableId = (context: SettingsMigrationContext): string | null => {
   const table = getClosestComponent(context.componentId, context, 'datatableContext');
   return table ? table['uniqueStateId'] ?? table.propertyName : null;
 };
@@ -600,11 +659,11 @@ export const getClosestTableId = (context: SettingsMigrationContext) => {
 /** Convert flat components structure to a component tree */
 export const componentsFlatStructureToTree = (
   toolboxComponents: IToolboxComponents,
-  flat: IFlatComponentsStructure
+  flat: IFlatComponentsStructure,
 ): IConfigurableFormComponent[] => {
   const tree: IConfigurableFormComponent[] = [];
 
-  const processComponent = (container: IConfigurableFormComponent[], ownerId: string) => {
+  const processComponent = (container: IConfigurableFormComponent[], ownerId: string): void => {
     const componentIds = flat.componentRelations[ownerId];
 
     if (!componentIds) return;
@@ -615,7 +674,7 @@ export const componentsFlatStructureToTree = (
       : undefined;
     const staticContainerIds = [];
     if (ownerDefinition?.customContainerNames) {
-      ownerDefinition.customContainerNames.forEach(sc => {
+      ownerDefinition.customContainerNames.forEach((sc) => {
         const subContainer = ownerComponent[sc];
         if (subContainer) {
           // container with id
@@ -623,7 +682,7 @@ export const componentsFlatStructureToTree = (
             staticContainerIds.push(subContainer.id);
           // container without id (array of components)
           if (Array.isArray(subContainer))
-            subContainer.forEach(c => {
+            subContainer.forEach((c) => {
               if (c.id)
                 staticContainerIds.push(c.id);
             });
@@ -652,17 +711,19 @@ export const componentsFlatStructureToTree = (
 
         const customContainers = componentRegistration?.customContainerNames || [];
         customContainers.forEach((containerName) => {
-          const childContainers = component[containerName]
-            ? Array.isArray(component[containerName])
-              ? (component[containerName] as IComponentsContainer[])
-              : [component[containerName] as IComponentsContainer]
-            : undefined;
+          const processContainer = (container: IComponentsContainer): IComponentsContainer => {
+            const childComponents: IConfigurableFormComponent[] = [];
+            processComponent(childComponents, container.id);
+            return { ...container, components: childComponents };
+          };
+
+          const childContainers = component[containerName];
           if (childContainers) {
-            childContainers.forEach((c) => {
-              const childComponents: IConfigurableFormComponent[] = [];
-              processComponent(childComponents, c.id);
-              c.components = childComponents;
-            });
+            if (Array.isArray(childContainers)) {
+              component[containerName] = childContainers.map(processContainer);
+            } else {
+              component[containerName] = processContainer(childContainers);
+            }
           }
         });
       }
@@ -677,7 +738,7 @@ export const componentsFlatStructureToTree = (
 export const upgradeComponentsTree = (
   toolboxComponents: IToolboxComponents,
   formSettings: IFormSettings,
-  components: IConfigurableFormComponent[]
+  components: IConfigurableFormComponent[],
 ): IConfigurableFormComponent[] => {
   const flatStructure = componentsTreeToFlatStructure(toolboxComponents, components);
   upgradeComponents(toolboxComponents, formSettings, flatStructure);
@@ -686,13 +747,16 @@ export const upgradeComponentsTree = (
 
 class StaticMustacheTag {
   #value: string;
+
   constructor(value: string) {
     this.#value = value;
   }
-  toEscapedString() {
+
+  toEscapedString(): string {
     return `{{${this.#value}}}`;
   }
-  toString() {
+
+  toString(): string {
     return `{{{${this.#value}}}}`;
   }
 }
@@ -714,8 +778,7 @@ class StaticMustacheTag {
  * @param data - data to use to evaluate the string
  * @returns {string} evaluated string
  */
-export const evaluateString = (template: string = '', data: any, skipUnknownTags: boolean = false) => {
-
+export const evaluateString = (template: string = '', data: object, skipUnknownTags: boolean = false): string => {
   // store moment toString function to get ISO format of datetime
   var toString = moment.prototype.toString;
   moment.prototype.toString = function () {
@@ -723,17 +786,15 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
   };
 
   try {
-
     if (!template || typeof template !== 'string')
       return template;
 
-    const localData: IAnyObject = data ? { ...data } : undefined;
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
-      if (localData) {
-        //adding a function to the data object that will format datetime
-
-        localData.dateFormat = function () {
+      const view = {
+        ...data,
+        // adding a function to the data object that will format datetime
+        dateFormat: function () {
           return function (timestamp, render) {
             return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
               year: 'numeric',
@@ -741,10 +802,8 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
               day: 'numeric',
             });
           };
-        };
-      }
-
-      const view = localData ?? {};
+        },
+      };
 
       if (skipUnknownTags) {
         template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
@@ -811,7 +870,7 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
  * @param data - data to use to evaluate the string
  * @returns {string} evaluated string
  */
-export const evaluateComplexString = (expression: string, mappings: IMatchData[]) => {
+export const evaluateComplexString = (expression: string, mappings: IMatchData[]): string => {
   const matches = new Set([...expression?.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 
   let result = expression;
@@ -885,11 +944,11 @@ export interface IEvaluateComplexStringResult {
  * @returns {string} evaluated string
  */
 
-//newer versions
+// newer versions
 export const evaluateComplexStringWithResult = (
   expression: string,
   mappings: IMatchData[],
-  requireNonEmptyResult: boolean
+  requireNonEmptyResult: boolean,
 ): IEvaluateComplexStringResult => {
   const matches = new Set([...expression?.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 
@@ -930,7 +989,7 @@ export function executeExpression<TResult>(
   expression: string,
   expressionArgs: IExpressionExecuterArguments,
   defaultValue: TResult,
-  onFail: IExpressionExecuterFailedHandler<TResult>
+  onFail: IExpressionExecuterFailedHandler<TResult>,
 ): TResult {
   if (expression) {
     try {
@@ -962,18 +1021,17 @@ export type FunctionExecutor<TResult = any> = (...args: any) => TResult;
 export const getFunctionExecutor = <TResult = any>(
   expression: string,
   expressionArguments: FunctionArgument[]): FunctionExecutor<TResult> => {
-
   if (!expression) throw new Error('Expression must be defined');
 
-  const argumentsList = (expressionArguments ?? []).map(a => a.name).join(", ");
+  const argumentsList = (expressionArguments ?? []).map((a) => a.name).join(", ");
 
   const expressionExecuter = new Function(argumentsList, expression);
   return expressionExecuter as FunctionExecutor<TResult>;
 };
 
-const isComponentFiltered = (
+export const isComponentFiltered = (
   component: IConfigurableFormComponent,
-  propertyFilter?: (name: string) => boolean
+  propertyFilter?: (name: string) => boolean,
 ): boolean => {
   if (propertyFilter && component.propertyName) {
     const filteredOut = propertyFilter(component.propertyName);
@@ -987,7 +1045,7 @@ const isComponentFiltered = (
  */
 export const getFilteredComponentIds = (
   components: IComponentsDictionary,
-  propertyFilter?: (name: string) => boolean
+  propertyFilter?: (name: string) => boolean,
 ): string[] => {
   const visibleComponents: string[] = [];
   for (const key in components) {
@@ -1006,25 +1064,25 @@ export const getFilteredComponentIds = (
  *
  * @param expression field name in dot notation e.g. 'supplier.name' or 'fullName'
  */
-export const getFieldNameFromExpression = (expression: string) => {
+export const getFieldNameFromExpression = (expression: string): string | string[] | undefined => {
   if (!expression) return undefined;
 
   return expression.includes('.') ? expression.split('.') : expression;
 };
 
-export const getBoolean = (value: any) => {
+export const getBoolean = (value: unknown): boolean => {
   if (typeof value == 'boolean') {
     return value;
-  } else if (value?.toLowerCase() === 'true') {
+  } else if (typeof (value) === 'string' && value?.toLowerCase() === 'true') {
     return true;
   }
   return false;
 };
 
-export const hasBoolean = (value: any) => {
-  if (typeof value == 'boolean') {
+export const hasBoolean = (value: unknown): boolean => {
+  if (typeof value === 'boolean') {
     return true;
-  } else if (typeof value == 'string') {
+  } else if (typeof value === 'string') {
     if (value?.toLowerCase() === 'true') {
       return true;
     } else if (value?.toLowerCase() === 'false') {
@@ -1036,7 +1094,7 @@ export const hasBoolean = (value: any) => {
 /**
  * Return valudation rules for the specified form component
  */
-export const getValidationRules = (component: IConfigurableFormComponent, options?: IFormValidationRulesOptions) => {
+export const getValidationRules = (component: IConfigurableFormComponent, options?: IFormValidationRulesOptions): Rule[] => {
   const { validate } = component;
   const rules: Rule[] = [];
 
@@ -1049,13 +1107,13 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
         message: validate?.message || 'This field is required',
       });
 
-    if (validate.minValue)
+    if (validate.minValue !== undefined)
       rules.push({
         min: validate.minValue,
         type: 'number',
       });
 
-    if (validate.maxValue)
+    if (validate.maxValue !== undefined)
       rules.push({
         max: validate.maxValue,
         type: 'number',
@@ -1081,7 +1139,7 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
             rule,
             value,
             callback,
-            options?.formData
+            options?.getFormData ? options?.getFormData() : options?.formData,
           ),
       });
   }
@@ -1105,7 +1163,7 @@ const NESTED_ACCESSOR_REGEX = /((?<key>[\w]+)\.(?<accessor>[^\}]+))/;
  * @param data the data to use to evaluate the expression
  * @returns
  */
-export const evaluateStringLiteralExpression = (expression: string, data: any) => {
+export const evaluateStringLiteralExpression = (expression: string, data: object): string => {
   return expression.replace(/\$\{(.*?)\}/g, (_, token) => nestedProperty.get(data, token));
 };
 
@@ -1123,7 +1181,7 @@ export const evaluateStringLiteralExpression = (expression: string, data: any) =
  * @returns
  */
 
-export const evaluateExpression = (expression, data: any) => {
+export const evaluateExpression = (expression: string, data: object): string => {
   return expression.replace(/\{\{(.*?)\}\}/g, (_, token) => nestedProperty.get(data, token)) as string;
 };
 
@@ -1145,7 +1203,7 @@ export const removeZeroWidthCharsFromString = (value: string): string => {
   return value.replace(/[\u200B-\u200D\uFEFF]/g, '');
 };
 
-const evaluateValueInternal = (value: string, dictionary: any, isRoot: boolean) => {
+const evaluateValueInternal = (value: string, dictionary: any, isRoot: boolean): unknown => {
   if (!value) return value;
   if (!dictionary) return null;
 
@@ -1166,13 +1224,18 @@ const evaluateValueInternal = (value: string, dictionary: any, isRoot: boolean) 
   }
 };
 
-export const evaluateValue = (value: string, dictionary: any) => {
+export const evaluateValue = (value: string, dictionary: object): unknown => {
   return evaluateValueInternal(value, dictionary, true);
+};
+
+export const evaluateValueAsString = (value: string, dictionary: object): string | undefined => {
+  const evaluated = evaluateValue(value, dictionary);
+  return evaluated ? evaluated.toString() : undefined;
 };
 
 const TAGS_REGEX = /{(?<key>[\w]+)\.(?<accessor>[^\}]+)\}/;
 
-export const replaceTags = (value: string, dictionary: any) => {
+export const replaceTags = (value: string, dictionary: object): string | null => {
   if (!value) return value;
 
   const match = value.match(TAGS_REGEX);
@@ -1190,7 +1253,7 @@ export const replaceTags = (value: string, dictionary: any) => {
 
 export const findToolboxComponent = (
   availableComponents: IToolboxComponentGroup[],
-  predicate: (component: IToolboxComponent) => boolean
+  predicate: (component: IToolboxComponent) => boolean,
 ): IToolboxComponent => {
   if (availableComponents) {
     for (const group of availableComponents) {
@@ -1232,7 +1295,7 @@ export const validateForm = (rules: Rules, values: ValidateSource): Promise<void
 
 export const getFormValidationRules = (markup: FormMarkup): Rules => {
   const components = getComponentsFromMarkup(markup);
-  
+
   const rules: Rules = {};
   components?.forEach((component) => {
     rules[component.propertyName] = getValidationRules(component) as [];
@@ -1251,7 +1314,7 @@ export const validateConfigurableComponentSettings = (markup: FormMarkup, values
 export function linkComponentToModelMetadata<TModel extends IConfigurableFormComponent>(
   component: IToolboxComponent<TModel>,
   model: TModel,
-  metadata: IPropertyMetadata
+  metadata: IPropertyMetadata,
 ): TModel {
   let mappedModel = model;
 
@@ -1284,8 +1347,8 @@ export const processRecursive = (
   componentsRegistration: IToolboxComponentGroup[],
   parentId: string,
   component: IConfigurableFormComponent,
-  func: ProcessingFunc
-) => {
+  func: ProcessingFunc,
+): void => {
   func(component, parentId);
 
   const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c?.type === component?.type);
@@ -1318,7 +1381,7 @@ export const processRecursive = (
  */
 export const cloneComponents = (
   componentsRegistration: IToolboxComponentGroup[],
-  components: IConfigurableFormComponent[]
+  components: IConfigurableFormComponent[],
 ): IConfigurableFormComponent[] => {
   const result: IConfigurableFormComponent[] = [];
 
@@ -1344,40 +1407,23 @@ export const cloneComponents = (
   return result;
 };
 
-export const getDefaultFormMarkup = (type: ViewType = 'blank') => {
-  switch (type) {
-    case 'blank':
-      return blankViewMarkup;
-    case 'dashboard':
-      return dashboardViewMarkup;
-    case 'details':
-      return detailsViewMarkup;
-    case 'form':
-      return formViewMarkup;
-    case 'masterDetails':
-      return masterDetailsViewMarkup;
-    case 'menu':
-      return menuViewMarkup;
-    case 'table':
-      return tableViewMarkup;
-    default:
-      return blankViewMarkup;
-  }
-};
 export const createComponentModelForDataProperty = (
   components: IToolboxComponentGroup[],
   propertyMetadata: IPropertyMetadata,
   migrator?: (
     componentModel: IConfigurableFormComponent,
     toolboxComponent: IToolboxComponent<any>
-  ) => IConfigurableFormComponent
+  ) => IConfigurableFormComponent,
 ): IConfigurableFormComponent => {
-  const toolboxComponent = findToolboxComponent(
-    components,
-    (c) =>
-      Boolean(c.dataTypeSupported) &&
-      c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat })
-  );
+  let toolboxComponent = findToolboxComponent(components, (c) => c.type === propertyMetadata.formatting.defaultEditor);
+  toolboxComponent = toolboxComponent ||
+    findToolboxComponent(
+      components,
+      (c) =>
+        Boolean(c.dataTypeSupported) &&
+        c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat }),
+    );
+
   if (!Boolean(toolboxComponent)) return null;
 
   // find appropriate toolbox component
@@ -1394,7 +1440,7 @@ export const createComponentModelForDataProperty = (
     componentName: fullName,
     label: propertyMetadata.label,
     labelAlign: 'right',
-    //parentId: containerId,
+    // parentId: containerId,
     hidden: false,
     isDynamic: false,
     validate: {},
@@ -1413,7 +1459,7 @@ interface IKeyValue {
   value: string;
 }
 
-export const evaluateKeyValuesToObject = (arr: IKeyValue[], data: any): IAnyObject => {
+export const evaluateKeyValuesToObject = (arr: IKeyValue[], data: object): IAnyObject => {
   const queryParamObj: IAnyObject = {};
 
   if (arr?.length) {
@@ -1448,7 +1494,7 @@ const convertToKeyValues = (obj: IAnyObject): IKeyValue[] => {
 
 export const evaluateKeyValuesToObjectMatchedData = <T extends any>(
   obj: IKeyValue[] | IAnyObject,
-  matches: IMatchData[]
+  matches: IMatchData[],
 ): T => {
   const queryParamObj: IAnyObject = {};
 
@@ -1498,25 +1544,16 @@ export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: st
   return response;
 };
 
-export const pickStyleFromModel = (model: IConfigurableFormComponent, ...args: any[]): { [key: string]: any } => {
+export const pickStyleFromModel = (model: StyleBoxValue, ...args: any[]): CSSProperties => {
   let style = {};
 
-  if (!args.length) {
-    args = [
-      'paddingTop',
-      'paddingRight',
-      'paddingBottom',
-      'paddingLeft',
-      'marginTop',
-      'marginRight',
-      'marginBottom',
-      'marginLeft',
-    ];
-  }
+  const propsToCopy = !args.length
+    ? STYLE_BOX_CSS_POPERTIES
+    : args;
 
   if (model) {
-    args.forEach((arg) => {
-      if (model[arg]) style = { ...style, [arg]: `${model[arg]}px` };
+    propsToCopy.forEach((prop) => {
+      if (model[prop]) style = { ...style, [prop]: `${model[prop]}px` };
     });
   }
 
@@ -1528,36 +1565,36 @@ export const getStyle = (
   style: string,
   formData: any = {},
   globalState: any = {},
-  defaultStyle: object = emptyStyle
+  defaultStyle: object = emptyStyle,
 ): CSSProperties => {
   if (!style) return defaultStyle;
   // tslint:disable-next-line:function-constructor
   return new Function('data, globalState', style)(formData, globalState);
 };
 
-export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: string]: any }) => {
-  const styling = JSON.parse(model?.stylingBox || '{}');
+export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: string]: any }): CSSProperties => {
+  const styling = jsonSafeParse<StyleBoxValue>(model?.stylingBox || '{}');
   let style = pickStyleFromModel(styling);
 
   try {
-    return { ...style, ...(executeFunction(model?.style, args) || {}) };
+    return { ...style, ...(executeFunction<object>(model?.style, args) || {}) };
   } catch {
     return style;
   }
 };
 
-export const getString = (expression: string, formData: any = {}, globalState: any = {}): string => {
+export const getString = (expression: string, formData: any = {}, globalState: any = {}): string | null => {
   if (!expression) return null;
   return new Function('data, globalState', expression)(formData, globalState);
 };
-export const filterFormData = (data: any) => {
+export const filterFormData = <TData extends object = object>(data: TData): TData => {
   if (typeof data === 'object' && Object.getOwnPropertyNames(data || {}).length) {
     return Object.entries(data)
       .filter(([k]) => !k.startsWith(SILENT_KEY))
       .reduce((accum, [k, v]) => {
         accum[k] = v;
         return accum;
-      }, {});
+      }, {}) as TData;
   }
 
   return data;
@@ -1572,7 +1609,7 @@ export const filterFormData = (data: any) => {
 export const convertDotNotationPropertiesToGraphQL = (properties: string[]): string => {
   const tree = {};
 
-  const makeProp = (container: object, name: string) => {
+  const makeProp = (container: object, name: string): void => {
     let parts = name.split('.');
     let currentContainer = container;
 
@@ -1630,11 +1667,9 @@ export const isFormFullName = (formId: FormIdentifier): formId is FormFullName =
 };
 
 export const isSameFormIds = (id1: FormIdentifier, id2: FormIdentifier): boolean => {
-  return isFormRawId(id1) && isFormRawId(id2) && id1 === id2 ||
-    isFormFullName(id1) && isFormFullName(id2) && id1.module?.toLowerCase() === id2.module?.toLowerCase() && id1.name?.toLowerCase() === id2.name?.toLowerCase() && id1.version === id2.version;
+  return (isFormRawId(id1) && isFormRawId(id2) && id1 === id2) ||
+    (isFormFullName(id1) && isFormFullName(id2) && id1.module?.toLowerCase() === id2.module?.toLowerCase() && id1.name?.toLowerCase() === id2.name?.toLowerCase());
 };
-
-export const hasFormIdGotValue = (formId: FormIdentifier) => (typeof formId === 'string' ? !!formId : !!formId?.name);
 
 export const convertToMarkupWithSettings = (markup: FormMarkup, isSettingsForm?: boolean): FormMarkupWithSettings => {
   if (!markup) return null;
@@ -1685,7 +1720,7 @@ const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any
 
 export const recursiveEvaluator = <TArguments = ActionParametersDictionary>(
   argumentsConfiguration: TArguments,
-  evaluationContext: EvaluationContext
+  evaluationContext: EvaluationContext,
 ): Promise<TArguments> => {
   if (!Boolean(argumentsConfiguration)) return Promise.resolve(null);
 
@@ -1697,7 +1732,7 @@ export const recursiveEvaluator = <TArguments = ActionParametersDictionary>(
 
 export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDictionary>(
   argumentsConfiguration: TArguments,
-  evaluationData: GenericDictionary
+  evaluationData: GenericDictionary,
 ): Promise<TArguments> => {
   const evaluationContext: EvaluationContext = {
     contextData: evaluationData,
@@ -1712,7 +1747,7 @@ export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDic
  */
 export const getFormActionArguments = (
   params: ActionParameters,
-  evaluationContext: GenericDictionary
+  evaluationContext: GenericDictionary,
 ): Promise<ActionArguments> => {
   if (!Boolean(params)) return Promise.resolve({});
 
@@ -1750,7 +1785,7 @@ export const getFormActionArguments = (
   });
 };
 
-export const executeCustomExpression = (expression: string, returnBoolean = false, formData = {}, globalState = {}) => {
+export const executeCustomExpression = (expression: string, returnBoolean = false, formData = {}, globalState = {}): boolean => {
   if (!expression) {
     if (returnBoolean) {
       return true;
@@ -1768,7 +1803,7 @@ export const executeCustomExpression = (expression: string, returnBoolean = fals
   return typeof evaluated === 'boolean' ? evaluated : true;
 };
 
-export const executeCustomExpressionV2 = (expression: string, context: any, returnBoolean = false) => {
+export const executeCustomExpressionV2 = (expression: string, context: object, returnBoolean = false): boolean => {
   if (!expression) {
     if (returnBoolean) {
       return true;
@@ -1788,7 +1823,7 @@ export const executeCustomExpressionV2 = (expression: string, context: any, retu
 
 type ComponentByTypePredicate = (component: IConfigurableFormComponent) => boolean;
 
-export const getComponentNames = (components: IComponentsDictionary, predicate: ComponentByTypePredicate) => {
+export const getComponentNames = (components: IComponentsDictionary, predicate: ComponentByTypePredicate): string[] => {
   let componentNames: string[] = [];
 
   if (typeof predicate !== 'function') throw new Error('getComponentNames: predicate must be defined');
@@ -1816,7 +1851,7 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
 export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
   let components = getComponentsFromMarkup(markup);
   if (formSettings?.isSettingsForm)
-    components = updateSettingsComponents(designerComponents, components);
+    components = updateJsSettingsForComponents(designerComponents, components);
   const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
 
   // migrate components to last version

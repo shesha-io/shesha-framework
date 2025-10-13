@@ -68,9 +68,9 @@ const IconPicker: FC<IIconPickerProps> = ({
   readOnly = false,
   defaultValue,
   iconSize,
+  twoToneColor,
   ...props
 }) => {
-
   const { styles } = useStyles();
   const [localSelectedIcon, setLocalSelectedIcon] = useState<ShaIconTypes>(defaultValue);
   const [showModal, setShowModal] = useState(false);
@@ -85,20 +85,19 @@ const IconPicker: FC<IIconPickerProps> = ({
     onIconChange(<ShaIcon iconName={defaultValue} style={{ fontSize: 30 }} {...props} />, defaultValue);
   }, [defaultValue, value]);
 
-
-  const toggleModalVisibility = () => {
-    if (!readOnly) setShowModal(visible => !visible);
+  const toggleModalVisibility = (): void => {
+    if (!readOnly) setShowModal((visible) => !visible);
   };
 
-  const changeIconModes = (e: RadioChangeEvent) => {
+  const changeIconModes = (e: RadioChangeEvent): void => {
     const mode = e.target.value as IconModes;
 
     setSearchOption({ mode, group: ICON_MODE_GROUPS[mode] });
   };
 
-  const onSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(event?.target?.value);
+  const onSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => setSearchQuery(event?.target?.value);
 
-  const handleIconSelection = (selected: ShaIconTypes) => {
+  const handleIconSelection = (selected: ShaIconTypes): void => {
     if (readOnly) return;
     setLocalSelectedIcon(selected);
     toggleModalVisibility();
@@ -108,7 +107,7 @@ const IconPicker: FC<IIconPickerProps> = ({
     }
   };
 
-  const onClear = () => {
+  const onClear = (): void => {
     if (readOnly) return;
     setLocalSelectedIcon(null);
     toggleModalVisibility();
@@ -126,7 +125,7 @@ const IconPicker: FC<IIconPickerProps> = ({
 
       for (const key of objectKeys) {
         filteredGroup[key] = activeGroup[key].filter((groupItem: string) =>
-          groupItem?.toLowerCase()?.includes(searchQuery?.toLowerCase())
+          groupItem?.toLowerCase()?.includes(searchQuery?.toLowerCase()),
         );
       }
       return filteredGroup;
@@ -140,19 +139,26 @@ const IconPicker: FC<IIconPickerProps> = ({
       <div>
         <div
           onClick={toggleModalVisibility}
-          style={{ pointerEvents: readOnly ? "none" : "all" }}
-          className={classNames(styles.shaIconPickerSelectedIcon, { "sha-readonly": readOnly })}
+          style={{ pointerEvents: readOnly ? 'none' : 'all' }}
+          className={classNames(styles.shaIconPickerSelectedIcon, { 'sha-readonly': readOnly })}
         >
           {localSelectedIcon ? (
             <ShaIcon
               className={styles.shaIconPicker}
               iconName={localSelectedIcon}
               {...props}
-              style={{ fontSize: iconSize || 24 }}
+              style={{ fontSize: iconSize || 24, color: twoToneColor }}
               name={localSelectedIcon}
-              //title={localSelectedIcon} removed to avoid it conflicting with icon tooltip
             />
-          ) : <Button size={selectBtnSize} title={'Select icon'} disabled={readOnly} icon={<SelectOutlined style={{ margin: 0 }} size={iconSize || 24} />}></Button>}
+          ) : (
+            <Button
+              size={selectBtnSize}
+              title="Select icon"
+              disabled={readOnly}
+              icon={<SelectOutlined style={{ margin: 0 }} size={iconSize || 24} />}
+            >
+            </Button>
+          )}
         </div>
       </div>
       <Modal
@@ -161,14 +167,14 @@ const IconPicker: FC<IIconPickerProps> = ({
         open={showModal}
         width={950}
         title="Select Icon"
-        footer={
+        footer={(
           <div>
             <Button onClick={onClear} type="primary" danger>
               Clear
             </Button>
             <Button onClick={toggleModalVisibility}>Cancel</Button>
           </div>
-        }
+        )}
         className={styles.shaIconPickerModal}
       >
         <div className={styles.shaIconPickerSearch}>
@@ -183,7 +189,7 @@ const IconPicker: FC<IIconPickerProps> = ({
           </div>
         </div>
         <div className={styles.shaIconPickerIconList}>
-          {Object.keys(memoizedActiveGroup).map(groupKey => (
+          {Object.keys(memoizedActiveGroup).map((groupKey) => (
             <div className={styles.shaIconPickerIconListGroup} key={groupKey}>
               {memoizedActiveGroup[groupKey]?.length ? (
                 <div className={styles.shaIconPickerIconListGroupHeader}>

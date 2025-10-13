@@ -1,5 +1,3 @@
-export { ConfigurationFrameworkActions } from './utils/configurationFramework/actions';
-export { CONFIGURATION_ITEM_STATUS_MAPPING } from './utils/configurationFramework/models';
 export * from './components';
 export * from './formDesignerUtils';
 export * from './hocs';
@@ -17,6 +15,10 @@ export * from './components/formDesigner/components/utils';
 export { requestHeaders } from './utils/requestHeaders';
 export * from './providers/form/observableProxy';
 
+export * from './hooks/formComponentHooks';
+export * from './designer-components/_settings/utils/index';
+export * from './designer-components/_common-migrations/index';
+
 export { ConfigurableComponentRenderer } from './components/configurableComponentRenderer';
 
 export { DynamicPage } from './generic-pages/dynamic';
@@ -27,3 +29,5 @@ export { ConfigurableThemePage } from './generic-pages/settings/dynamic-theme';
 export { SettingsControl, type ISettingsControlProps } from './designer-components/_settings/settingsControl';
 export { useConstantsEvaluator } from './designer-components/codeEditor/hooks/useConstantsEvaluator';
 export { useResultTypeEvaluator } from './designer-components/codeEditor/hooks/useResultType';
+
+export { default as ConfigurationStudio } from './configuration-studio';

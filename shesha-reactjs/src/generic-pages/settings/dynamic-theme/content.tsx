@@ -20,31 +20,36 @@ export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ valu
   return (
     <Row gutter={16}>
       <Col xs={24} sm={24} md={8} lg={6} xl={6} xxl={6}>
-        <CollapsiblePanel collapsible="disabled"
-          header={
-            <Typography.Text type='secondary' className={styles.themeHeader}>Theme Parameters</Typography.Text>
-          }
+        <CollapsiblePanel
+          collapsible="disabled"
+          header={(
+            <Typography.Text type="secondary" className={styles.themeHeader}>
+              Theme Parameters
+            </Typography.Text>
+          )}
           className={styles.themeParameters}
         >
           <Alert type="info" message="You can modify the values by selecting the colour block" showIcon />
-          <ThemeParameters value={value} onChange={onChange} readonly={readonly}/>
+          <ThemeParameters value={value} onChange={onChange} readonly={readonly} />
         </CollapsiblePanel>
       </Col>
 
       <Col xs={24} sm={24} md={16} lg={18} xl={18} xxl={18}>
         <CollapsiblePanel
           className={styles.themeParameters}
-          header={
-            <Typography.Text type='secondary' className={styles.themeHeader}>Results</Typography.Text>
-          }
+          header={(
+            <Typography.Text type="secondary" className={styles.themeHeader}>
+              Results
+            </Typography.Text>
+          )}
         >
           <SectionSeparator title="Alerts" />
           <AlertsExample />
 
-          <SectionSeparator title="Forms" />
+          <SectionSeparator title="Forms" containerStyle={{ marginTop: '8px' }} />
           <FormExample />
 
-          <SectionSeparator title="Texts" />
+          <SectionSeparator title="Texts" containerStyle={{ marginTop: '8px' }} />
           <TextsExample />
         </CollapsiblePanel>
       </Col>

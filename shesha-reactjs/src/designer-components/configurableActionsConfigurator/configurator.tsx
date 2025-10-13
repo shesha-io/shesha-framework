@@ -7,7 +7,7 @@ import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { ActionSelect } from './actionSelect';
-import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/hooks';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { StyledLabel } from '../_settings/utils';
 import { SettingInput } from '../settingsInput/settingsInput';
@@ -36,7 +36,7 @@ const parseActionFullName = (fullName: string): IActionIdentifier => {
 const FORM_ARGUMENTS_FIELD = 'actionArguments';
 const ACTION_FULL_NAME_FIELD = 'actionFullName';
 
-export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = props => {
+export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = (props) => {
   const [form] = Form.useForm();
   const { formSettings } = useForm();
   const { value, onChange, readOnly = false, label = 'Action Name', description } = props;
@@ -53,7 +53,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
     const { actionName, actionOwner, ...restProps } = value;
     const result: IActionFormModel = {
       ...restProps,
-      actionFullName: getActionFullName(actionOwner, actionName)
+      actionFullName: getActionFullName(actionOwner, actionName),
     };
     return result;
   }, [value]);
@@ -67,7 +67,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
     return false;
   };
 
-  const onValuesChange = (changedValues, values) => {
+  const onValuesChange = (changedValues, values): void => {
     const actionChanged = hasChangedAction(changedValues);
     if (actionChanged) {
       form.setFieldValue(FORM_ARGUMENTS_FIELD, undefined);
@@ -105,18 +105,20 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 
   return (
     <div
-      style={props.level > 1 ? { paddingLeft: 10 } : {}} className="sha-action-props"
+      style={props.level > 1 ? { paddingLeft: 10 } : {}}
+      className="sha-action-props"
     >
       <Form
         component={false}
         form={form}
+        layout={formSettings.layout}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
         colon={formSettings.colon}
         onValuesChange={onValuesChange}
         initialValues={formValues}
       >
-        <FormItem name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description}>
+        <FormItem name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description} hideLabel={props.hideLabel}>
           <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
         </FormItem>
         {selectedAction && selectedAction.hasArguments && (
@@ -133,19 +135,19 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         )}
         {selectedAction && (
           <>
-            <SettingInput propertyName='handleSuccess' label='Handle Success' type='switch' id={nanoid()} />
+            <SettingInput propertyName="handleSuccess" label="Handle Success" type="switch" id={nanoid()} />
             {
               value?.handleSuccess && (
                 <Collapse defaultActiveKey={['1']}>
                   <Panel header={<StyledLabel label="On Success Handler" />} key="1">
                     <Form.Item name="onSuccess">
                       <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
-                    </Form.Item >
+                    </Form.Item>
                   </Panel>
                 </Collapse>
               )
             }
-            <SettingInput propertyName='handleFail' label='Handle Fail' type='switch' id={nanoid()} />
+            <SettingInput propertyName="handleFail" label="Handle Fail" type="switch" id={nanoid()} />
             {
               value?.handleFail && (
                 <Collapse defaultActiveKey={['1']}>
@@ -159,13 +161,14 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
             }
           </>
         )}
-      </Form >
+      </Form>
     </div>
   );
 };
 
 interface IConfigurableActionConfiguratorProps {
   label?: string;
+  hideLabel?: boolean;
   description?: string;
   editorConfig: IConfigurableActionConfiguratorComponentProps;
   value?: IConfigurableActionConfiguration;

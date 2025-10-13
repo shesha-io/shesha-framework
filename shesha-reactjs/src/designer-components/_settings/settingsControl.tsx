@@ -1,8 +1,7 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement, ReactNode, useEffect } from 'react';
 import { getPropertySettingsFromValue } from './utils';
 import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
 import { useStyles } from './styles/styles';
-import { isEqual } from 'lodash';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';
 import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '../codeEditor/interfaces';
@@ -12,7 +11,7 @@ import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
 import { Button } from 'antd';
 import { CodeOutlined, CodeFilled } from '@ant-design/icons';
 
-export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
+export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement | ReactNode;
 
 export interface ISettingsControlProps<Value = any> {
   propertyName: string;
@@ -42,17 +41,16 @@ export const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "message", description: "message framework", type: "object" },
 ];
 
-export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>) => {
-
+export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>): ReactElement => {
   const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression });
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
   const setting = getPropertySettingsFromValue(props.value);
   const { _mode: mode, _code: code } = setting;
 
-  const { styles } = useStyles(setting._code);
+  const { styles } = useStyles();
 
-  const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode) => {
+  const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode): void => {
     const newSetting = { ...value, _mode: (m ?? mode) };
     const newValue = !!newSetting._code || newSetting._mode === 'code' ? newSetting : value._value;
     if (props.onChange)
@@ -63,19 +61,17 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     onInternalChange({ ...setting, _mode: mode }, mode);
   }, [mode]);
 
-  const codeOnChange = (val: any) => {
+  const codeOnChange = (val: any): void => {
     const newValue = { ...setting, _code: val };
     onInternalChange(newValue);
   };
 
-  const valueOnChange = (val: any) => {
-    if (!isEqual(setting?._value, val)) {
-      const newValue = { ...setting, _value: val };
-      onInternalChange(newValue);
-    }
+  const valueOnChange = (val: any): void => {
+    const newValue = { ...setting, _value: val };
+    onInternalChange(newValue);
   };
 
-  const onSwitchMode = () => {
+  const onSwitchMode = (): void => {
     const newMode = mode === 'code' ? 'value' : 'code';
     onInternalChange(setting, newMode);
   };
@@ -114,18 +110,18 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
       <Button
         hidden={props.readOnly}
         className={`${styles.jsSwitch} inlineJS`}
-        type='text'
+        type="text"
         danger={mode === 'value' && !!code}
-        ghost
-        size='small'
+        size="small"
         icon={mode === 'code' && !!code ? <CodeFilled /> : !!code ? <CodeFilled /> : <CodeOutlined />}
-        color='lightslategrey'
         onClick={onSwitchMode}
       />
       {mode === 'code' && editor}
-      {mode === 'value' && <div className={styles.jsContent} style={{ marginLeft: 0 }}>
-        {props.children(setting?._value, valueOnChange, propertyName)}
-      </div>}
+      {mode === 'value' && (
+        <div className={styles.jsContent} style={{ marginLeft: 0 }}>
+          {props.children(setting?._value, valueOnChange, propertyName)}
+        </div>
+      )}
     </div>
   );
 };

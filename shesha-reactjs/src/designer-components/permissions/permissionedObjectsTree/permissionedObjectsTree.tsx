@@ -8,18 +8,18 @@ import PermissionedObjectsTree from '@/components/permissionedObjectsTree';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { IConfigurableActionConfiguration } from '@/index';
 
-export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFormComponent { 
+export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFormComponent {
   objectsType?: string;
   height?: string;
 
   /**
    * A callback for when the value of this component changes
    */
-   onChange?: any;
+  onChange?: any;
 
-   onSelectAction?: IConfigurableActionConfiguration;
+  onSelectAction?: IConfigurableActionConfiguration;
 
-   defaultAccess?: number;
+  defaultAccess?: number;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -31,7 +31,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionedObjectsTr
   icon: <ApartmentOutlined />,
   Factory: ({ model }) => {
     return (
-      <PermissionedObjectsTree {...model} formComponentId={model.id} formComponentName={model.componentName}/>
+      <PermissionedObjectsTree {...model} formComponentId={model.id} formComponentName={model.componentName} />
     );
   },
   initModel: (model: IPermissionedObjectsTreeComponentProps) => {
@@ -40,15 +40,14 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionedObjectsTr
     };
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model): IPermissionedObjectsTreeComponentProps => {
     return {
       ...model,
     };
   },
   migrator: (m) => m
-    .add<IPermissionedObjectsTreeComponentProps>(0, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-  ,
+    .add<IPermissionedObjectsTreeComponentProps>(0, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
 };
 
 export default PermissionedObjectsTreeComponent;

@@ -6,9 +6,7 @@ import { useDataTable } from '@/providers';
 import { getSafelyTrimmedString } from '@/utils';
 import { useStyles } from './styles/styles';
 
-export interface IDatatableColumnsSelectorProps {}
-
-export const DatatableColumnsSelector: FC<IDatatableColumnsSelectorProps> = () => {
+export const DatatableColumnsSelector: FC = () => {
   const { styles } = useStyles();
   const { columns, toggleColumnVisibility } = useDataTable();
 
@@ -16,7 +14,7 @@ export const DatatableColumnsSelector: FC<IDatatableColumnsSelectorProps> = () =
 
   const [columnFilter, setColumnFilter] = useState('');
 
-  const onColumnSearch = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  const onColumnSearch = ({ target: { value } }: ChangeEvent<HTMLInputElement>): void => {
     setColumnFilter(value ? value?.toLowerCase() : '');
   };
 
@@ -27,11 +25,11 @@ export const DatatableColumnsSelector: FC<IDatatableColumnsSelectorProps> = () =
       <div className={styles.columnNames}>
         {(columnFilter
           ? visibleColumns.filter(
-              ({ header }) =>
-                getSafelyTrimmedString(header)
-                  ?.toLowerCase()
-                  ?.includes(getSafelyTrimmedString(columnFilter)?.toLowerCase())
-            )
+            ({ header }) =>
+              getSafelyTrimmedString(header)
+                ?.toLowerCase()
+                ?.includes(getSafelyTrimmedString(columnFilter)?.toLowerCase()),
+          )
           : visibleColumns
         ).map(({ header, show, id }) => {
           return (

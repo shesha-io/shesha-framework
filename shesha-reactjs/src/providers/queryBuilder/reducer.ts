@@ -7,7 +7,7 @@ export default handleActions<IQueryBuilderStateContext, any>(
   {
     [QueryBuilderActionEnums.SetFields]: (
       state: IQueryBuilderStateContext,
-      action: ReduxActions.Action<IProperty[]>
+      action: ReduxActions.Action<IProperty[]>,
     ) => {
       const { payload } = action;
 
@@ -18,5 +18,5 @@ export default handleActions<IQueryBuilderStateContext, any>(
     },
   },
 
-  QUERY_BUILDER_CONTEXT_INITIAL_STATE
+  QUERY_BUILDER_CONTEXT_INITIAL_STATE,
 );

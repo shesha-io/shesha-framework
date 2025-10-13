@@ -6,15 +6,16 @@ import { IAddressCompomentProps } from './models';
 import { useGet } from '@/hooks';
 import { IOpenCageResponse } from '@/components/googlePlacesAutocomplete/models';
 import { customAddressEventHandler } from '@/components/formDesigner/components/utils';
-import { getStyle, useAvailableConstantsData } from '@/index';
+import { IStyleType, useAvailableConstantsData } from '@/index';
 
 interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
   value?: any;
   onChange?: (...args) => void;
+  font?: IStyleType['font'];
 }
 
 const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => {
-  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, readOnly, googleMapsApiKey, onFocusCustom, style } = model;
+  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, readOnly, googleMapsApiKey, onFocusCustom } = model;
 
   const { loading, error, refetch } = useGet<IOpenCageResponse>({
     base: 'https://api.opencagedata.com',
@@ -29,7 +30,6 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
     if (googleMapsApiKey && !window.google) {
       loadGooglePlaces(googleMapsApiKey, setGooglePlaceReady);
     }
-      
   }, [googleMapsApiKey, googlePlaceReady]);
 
   const onSelect = (selected: IAddressAndCoords): Promise<IOpenCageResponse | IAddressAndCoords> =>
@@ -47,11 +47,9 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
       }
     });
 
-  const disableGoogleEvent = (value: string) =>
+  const disableGoogleEvent = (value: string): boolean =>
     (value?.length || 0) < parseInt((minCharactersSearch as string) || '0', 10) - 1;
 
-  const styles = getStyle(style);
-  
   return (
     <Fragment>
       <ValidationErrors error={error} />
@@ -65,7 +63,8 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
         disabled={readOnly}
         disableGoogleEvent={disableGoogleEvent}
         searchOptions={getSearchOptions(model)}
-        style={styles}
+        style={model.allStyles.fullStyle}
+        font={model.font}
         {...customAddressEventHandler(model, allData, onChange, onSelect, onFocusCustom)}
       />
     </Fragment>

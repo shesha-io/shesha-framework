@@ -12,6 +12,9 @@ import {
 } from '@/providers/form/models';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
+import { IAjaxResponseBase, IApplicationContext, IErrorInfo } from '..';
+import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
+import { AxiosResponse } from 'axios';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -39,20 +42,30 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
   propertyFilter?: (name: string) => boolean;
   layoutSettings?: IFormLayoutSettings;
+  isInModal?: boolean;
 }
 
 export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISettingsFormFactoryArgs<TModel>>;
 
-export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> {
+export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
   model: TModel;
-  componentRef: MutableRefObject<any>;
-  form: FormInstance<any>;
   children?: JSX.Element;
+  calculatedModel?: TCalculatedModel;
+  shaApplication?: ISheshaApplicationInstance;
+
+  // for backward compatibility
+  form: FormInstance;
 }
 
-export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = FC<ComponentFactoryArguments<TModel>>;
+export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> = FC<ComponentFactoryArguments<TModel, TCalculatedModel>>;
 
-export interface IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent /*, TSettingsContext = any*/> {
+export type PropertyInclusionPredicate = (name: string) => boolean;
+
+export interface IEditorAdapter {
+  propertiesFilter: PropertyInclusionPredicate;
+}
+
+export interface IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
   /**
    * Type of the component. Must be unique in the project.
    */
@@ -88,7 +101,22 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
   /**
    * Component factory. Renders the component according to the passed model (props)
    */
-  Factory?: FormFactory<TModel>;
+  Factory?: FormFactory<TModel, TCalculatedModel>;
+  /**
+   * A Hook for calculating component-specific values (executed before calculateModel)
+   * @param model - component model
+   * @param allData - application context
+   * @returns - calculated model
+   */
+  useCalculateModel?: (model: TModel, allData: IApplicationContext) => TCalculatedModel;
+  /**
+   * A method for calculating component-specific values
+   * @param useCalculatedModel - model calculated in useCalculateModel method (Hook)
+   * @param model - component model
+   * @param allData - application context
+   * @returns - calculated model
+   */
+  calculateModel?: (model: TModel, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel;
   /**
    * @deprecated - use `migrator` instead
    * Fills the component properties with some default values. Fired when the user drops a component to the form
@@ -145,7 +173,9 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
   /**
    * Returns true if the property should be calculated for the actual model (calculated from JS code)
    */
-  actualModelPropertyFilter?: (name: string) => boolean;
+  actualModelPropertyFilter?: (name: string, value: any) => boolean;
+
+  editorAdapter?: IEditorAdapter;
 }
 
 export interface SettingsMigrationContext {
@@ -165,7 +195,7 @@ export type SettingsMigrator<TSettings> = (
 export interface IToolboxComponentGroup {
   name: string;
   visible?: boolean;
-  components: IToolboxComponent<any>[];
+  components?: IToolboxComponent<any>[];
 }
 
 export interface IToolboxComponents {
@@ -186,7 +216,7 @@ export interface IAsyncValidationError {
   message: string;
 }
 
-export interface IFormValidationErrors { }
+export type IFormValidationErrors = string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error;
 
 export { type ConfigurableFormInstance };
 

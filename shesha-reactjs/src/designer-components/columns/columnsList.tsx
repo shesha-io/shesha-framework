@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useContext, useState, Fragment } from 'react';
+import React, { FC, useEffect, useRef, useContext, useState, Fragment, CSSProperties } from 'react';
 import {
   DragDropContext,
   DropResult,
@@ -7,7 +7,6 @@ import {
   DraggableStateSnapshot,
   Droppable,
   DroppableProvided,
-  DroppableStateSnapshot,
 } from 'react-beautiful-dnd';
 
 import { IColumnProps } from './interfaces';
@@ -26,7 +25,7 @@ const EditableContext = createNamedContext(null, "EditableContext");
 
 const DragHandleContext = createNamedContext(null, "DragHandleContext");
 
-const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }) => {
+const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }): JSX.Element => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
   const form = useContext(EditableContext);
@@ -36,14 +35,14 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
     }
   }, [editing]);
 
-  const toggleEdit = () => {
+  const toggleEdit = (): void => {
     setEditing(!editing);
     form.setFieldsValue({
       [dataIndex]: record[dataIndex],
     });
   };
 
-  const save = async () => {
+  const save = async (): Promise<void> => {
     try {
       const values = await form.validateFields();
       toggleEdit();
@@ -88,7 +87,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   return <td {...restProps}>{childNode}</td>;
 };
 
-const getItemStyle = (draggableStyle: any, isDragging: boolean): {} => ({
+const getItemStyle = (draggableStyle: any, isDragging: boolean): CSSProperties => ({
   padding: '2px',
   userSelect: 'none',
   background: isDragging ? 'white' : 'inherit',
@@ -96,12 +95,12 @@ const getItemStyle = (draggableStyle: any, isDragging: boolean): {} => ({
   ...draggableStyle,
 });
 
-const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
+const DraggableBodyRowInner = ({ columns, className, style, ...restProps }): JSX.Element => {
   const [form] = Form.useForm();
 
   // function findIndex base on Table rowKey props and should always be a right array index
   const rowKey = restProps['data-row-key'];
-  const index = columns.findIndex(x => x.id === restProps['data-row-key']);
+  const index = columns.findIndex((x) => x.id === restProps['data-row-key']);
   return (
     <Draggable key={rowKey} draggableId={rowKey} index={index}>
       {(providedDraggable: DraggableProvided, snapshotDraggable: DraggableStateSnapshot) => (
@@ -123,7 +122,7 @@ const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
   );
 };
 
-const DragHandle = () => {
+const DragHandle = (): JSX.Element => {
   const dragHandleProps = useContext(DragHandleContext);
 
   return <MenuOutlined style={{ color: '#999' }} {...dragHandleProps} />;
@@ -132,12 +131,12 @@ const DragHandle = () => {
 export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
   const columns = value as IColumnProps[];
 
-  const handleDeleteTab = (key: string) => {
-    const newColumns = columns.filter(column => column.id !== key);
+  const handleDeleteTab = (key: string): void => {
+    const newColumns = columns.filter((column) => column.id !== key);
     onChange(newColumns);
   };
 
-  const handleAddColumn = () => {
+  const handleAddColumn = (): void => {
     const newColumn: IColumnProps = {
       id: nanoid(),
       flex: 6,
@@ -150,9 +149,9 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
     onChange(newColumns);
   };
 
-  const handleSaveCell = row => {
+  const handleSaveCell = (row): void => {
     const newData = [...columns];
-    const index = newData.findIndex(item => row.id === item.id);
+    const index = newData.findIndex((item) => row.id === item.id);
     const currentItem = newData[index];
     newData.splice(index, 1, { ...currentItem, ...row });
 
@@ -206,16 +205,16 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
           ) : null,
       }
       : null,
-  ].filter(c => Boolean(c));
+  ].filter((c) => Boolean(c));
 
-  const tableColumns = cols.map(col => {
+  const tableColumns = cols.map((col) => {
     if (!col.editable) {
       return col;
     }
 
     return {
       ...col,
-      onCell: record => ({
+      onCell: (record) => ({
         record,
         editable: col.editable,
         dataIndex: col.dataIndex,
@@ -225,12 +224,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
     };
   });
 
-  const getListStyle = (_isDraggingOver: boolean) => ({
-    //background: isDraggingOver ? "lightgrey" : "inherit",
-    //overflow: "scroll" as "scroll",
-  });
-
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = (result: DropResult): void => {
     const { source, destination } = result;
 
     if (!destination) {
@@ -256,35 +250,35 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const toggleModal = () => setShowDialog(prevVisible => !prevVisible);
+  const toggleModal = (): void => setShowDialog((prevVisible) => !prevVisible);
 
   return (
     <Fragment>
       <Button size="small" onClick={toggleModal}>{ readOnly ? 'View Columns' : 'Configure Columns' }</Button>
 
-      <Modal 
-        title={ readOnly ? 'View Columns' : 'Configure Columns' } 
-        open={showDialog} 
+      <Modal
+        title={readOnly ? 'View Columns' : 'Configure Columns'}
+        open={showDialog}
         width="650px"
-        
-        onOk={toggleModal} 
+
+        onOk={toggleModal}
         okButtonProps={{ hidden: readOnly }}
 
-        onCancel={toggleModal} 
+        onCancel={toggleModal}
         cancelText={readOnly ? 'Close' : undefined}
       >
         <Space direction="vertical" style={{ width: '100%' }}>
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId={'columns'}>
-              {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
-                <div ref={provided.innerRef} {...provided.droppableProps} style={getListStyle(snapshot.isDraggingOver)}>
+            <Droppable droppableId="columns">
+              {(provided: DroppableProvided) => (
+                <div ref={provided.innerRef} {...provided.droppableProps}>
                   <Table
                     scroll={{ x: 'mex-content' }}
                     bordered
                     pagination={false}
                     dataSource={columns}
                     columns={tableColumns}
-                    rowKey={r => r.id}
+                    rowKey={(r) => r.id}
                     components={{
                       body: {
                         row: ({ className, style, ...restProps }) => (

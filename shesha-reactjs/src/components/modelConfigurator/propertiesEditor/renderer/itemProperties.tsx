@@ -1,32 +1,32 @@
-import propertySettingsJson from './propertySettings.json';
 import React, {
   FC,
   ReactNode,
   useEffect,
-  useState
+  useState,
 } from 'react';
 import { ConfigurableForm } from '../../..';
 import { Empty } from 'antd';
-import { FormMarkup } from '@/providers/form/models';
 import { nanoid } from '@/utils/uuid';
 import { useDebouncedCallback } from 'use-debounce';
 import { usePropertiesEditor } from '../provider';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
+import { getSettings } from './propertySettings/propertySettings';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useFormDesignerComponents } from '@/providers/form/hooks';
 
-export interface IProps { }
-
-export const ToolbarItemProperties: FC<IProps> = () => {
+export const ToolbarItemProperties: FC = () => {
   const { selectedItemId, getItem, updateItem } = usePropertiesEditor();
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);
   const formRef = useShaFormRef();
+  const components = useFormDesignerComponents();
 
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       updateItem({ id: selectedItemId, settings: values });
     },
     // delay in ms
-    300
+    300,
   );
 
   useEffect(() => {
@@ -34,13 +34,20 @@ export const ToolbarItemProperties: FC<IProps> = () => {
     formRef.current?.setFieldsValue(values);
   }, [editor]);
 
-  const getEditor = () => {
+  // update form values since the property data can be changed in the provider
+  const currentItem = getItem(selectedItemId);
+  useDeepCompareEffect(() => {
+    if (selectedItemId)
+      formRef?.current?.setFieldsValue(currentItem);
+  }, [currentItem]);
+
+  const getEditor = (): ReactNode => {
     const emptyEditor = null;
     if (!selectedItemId) return emptyEditor;
 
     const componentModel = getItem(selectedItemId);
 
-    const markup = propertySettingsJson as FormMarkup;
+    const markup = getSettings(componentModel, components);// propertySettingsJson as FormMarkup;
 
     return (
       <div>

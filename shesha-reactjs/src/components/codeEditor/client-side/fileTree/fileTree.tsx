@@ -13,52 +13,52 @@ const { DirectoryTree } = Tree;
 type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree<FileTreeNode>>;
 
 export interface IFileTreeProps {
-    monaco: Monaco;
-    defaultSelection?: UriComponents;
-    onSelect?: (fileUri?: UriComponents) => void;
+  monaco: Monaco;
+  defaultSelection?: UriComponents;
+  onSelect?: (fileUri?: UriComponents) => void;
 }
 
 export const FileTree: FC<IFileTreeProps> = (props) => {
-    const { monaco } = props;
-    const treeNodes = useSourcesTreeNodes(monaco);
+  const { monaco } = props;
+  const treeNodes = useSourcesTreeNodes(monaco);
 
-    const onSelect: DirectoryTreeProps['onSelect'] = (_keys, info) => {
-        if (props.onSelect) {
-            props.onSelect(info?.node?.uri);
-        }
-    };
-    const getParentNodes = (uri: UriComponents): React.Key[] => {
-        const result: React.Key[] = [];
-        const node = treeNodes.map[uri.toString()];
-        if (!node)
-            return result;
+  const onSelect: DirectoryTreeProps['onSelect'] = (_keys, info) => {
+    if (props.onSelect) {
+      props.onSelect(info?.node?.uri);
+    }
+  };
+  const getParentNodes = (uri: UriComponents): React.Key[] => {
+    const result: React.Key[] = [];
+    const node = treeNodes.map[uri.toString()];
+    if (!node)
+      return result;
 
-        const getParentNode = (node: FileTreeNode): FileTreeNode => {
-            return node.parentId
-                ?  treeNodes.map[node.parentId]
-                : undefined;
-        };
-
-        let currentNode = getParentNode(node);
-        while(currentNode) {
-            result.push(currentNode.key);
-            currentNode = getParentNode(currentNode);
-        }
-        return result;
+    const getParentNode = (node: FileTreeNode): FileTreeNode => {
+      return node.parentId
+        ? treeNodes.map[node.parentId]
+        : undefined;
     };
 
-    return (
-        <>
-            <DirectoryTree<FileTreeNode>
-                //showLine={{ showLeafIcon: true }}
-                switcherIcon={<DownOutlined />}
-                blockNode={true}
-                onSelect={onSelect}
-                treeData={treeNodes.nodes}
-                defaultSelectedKeys={props.defaultSelection ? [props.defaultSelection.toString()] : undefined}
-                defaultExpandedKeys={props.defaultSelection ? getParentNodes(props.defaultSelection) : undefined}
-                icon={getNodeIcon}
-            />
-        </>
-    );
+    let currentNode = getParentNode(node);
+    while (currentNode) {
+      result.push(currentNode.key);
+      currentNode = getParentNode(currentNode);
+    }
+    return result;
+  };
+
+  return (
+    <>
+      <DirectoryTree<FileTreeNode>
+        // showLine={{ showLeafIcon: true }}
+        switcherIcon={<DownOutlined />}
+        blockNode={true}
+        onSelect={onSelect}
+        treeData={treeNodes.nodes}
+        defaultSelectedKeys={props.defaultSelection ? [props.defaultSelection.toString()] : undefined}
+        defaultExpandedKeys={props.defaultSelection ? getParentNodes(props.defaultSelection) : undefined}
+        icon={getNodeIcon}
+      />
+    </>
+  );
 };

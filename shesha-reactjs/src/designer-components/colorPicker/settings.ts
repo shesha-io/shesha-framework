@@ -89,9 +89,9 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Disable Alpha',
         })
-        .toJson()
-      ]
-    }
+        .toJson(),
+      ],
+    },
   })
   .addCollapsiblePanel({
     id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
@@ -113,8 +113,9 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           parentId: 'root',
           hidden: false,
           validate: {},
-        }).toJson()
-      ]
-    }
+          jsSetting: true,
+        }).toJson(),
+      ],
+    },
   })
   .toJson();

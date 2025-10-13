@@ -4,22 +4,35 @@ import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { usePropertiesEditor } from '../provider';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import { Item } from './item';
+import { ItemChangeDetails } from '@/components/listEditor';
+
+export interface IContainerRenderArgs {
+  index?: number[];
+  items: IModelItem[];
+  parent?: IModelItem;
+  disableDrag?: boolean;
+  onChange?: (items: IModelItem[], changeDetails: ItemChangeDetails) => void;
+}
+
+export type ContainerRenderer = (args: IContainerRenderArgs) => React.ReactNode;
 
 export interface IItemsContainerProps {
   index?: number[];
   items: IModelItem[];
+  parent?: IModelItem;
+  disableDrag?: boolean;
 }
 
-export const ItemsContainer: FC<IItemsContainerProps> = props => {
+export const ItemsContainer: FC<IItemsContainerProps> = (props) => {
   const { updateChildItems } = usePropertiesEditor();
   const { styles } = useStyles();
 
-  const onSetList = (newState: ItemInterface[]) => {
+  const onSetList = (newState: ItemInterface[]): void => {
     // temporary commented out, the behavoiur of the sortablejs differs sometimes
-    const listChanged = true; //!newState.some(item => item.chosen !== null && item.chosen !== undefined);
+    const listChanged = true; // !newState.some(item => item.chosen !== null && item.chosen !== undefined);
 
     if (listChanged && newState?.length) {
-      const newChilds = newState.map<IModelItem>(item => item as any);
+      const newChilds = newState.map<IModelItem>((item) => item as any);
       updateChildItems({ index: props.index, childs: newChilds });
     }
   };
@@ -27,6 +40,7 @@ export const ItemsContainer: FC<IItemsContainerProps> = props => {
   return (
     <ReactSortable
       list={props.items}
+      disabled={props.disableDrag}
       setList={onSetList}
       fallbackOnBody={true}
       swapThreshold={0.5}
@@ -46,10 +60,11 @@ export const ItemsContainer: FC<IItemsContainerProps> = props => {
         <Item
           itemProps={item}
           index={[...props.index, index]}
-          key={item?.id}
+          key={index.toString()}
+          parent={props.parent}
           containerRendering={(args) => (<ItemsContainer {...args} />)}
         />
-      )
+      ),
       )}
     </ReactSortable>
   );

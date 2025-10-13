@@ -3,32 +3,29 @@ import { CreateDataCell } from '@/components/dataTable/cell/dataCell';
 import { DataTableColumn } from '@/components/dataTable/interfaces';
 import { FormIdentifier, useMetadata } from '@/providers';
 import React, { FC } from 'react';
-import { Cell, ColumnInstance, HeaderPropGetter, TableCellProps, TableHeaderProps } from 'react-table';
+import { Cell, ColumnInstance, HeaderPropGetter } from 'react-table';
 import { toCamelCase } from '@/utils/string';
 import { asPropertiesArray } from '@/interfaces/metadata';
-import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils';
+import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils/datatable';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
 import { CreateFormCell, ICreateFormCellProps } from '../dataTable/cell/formCell/formCell';
 import { isFormFullName } from '@/index';
 
-const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
+const cellProps: HeaderPropGetter<object> = (props) => [
   props,
   {
     style: {
-      justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
-      alignItems: 'flex-start',
       display: 'flex',
+      height: '-webkit-fill-available !important',
     },
   },
 ];
 
-const cellProps: HeaderPropGetter<object> = (props, { column }) => getStyles(props, column.align);
-
 export interface INewRowCellProps {
   column: ColumnInstance;
-  row?: ColumnInstance<{}>[];
+  row?: ColumnInstance[];
   rowIndex?: number;
   parentFormId?: FormIdentifier;
 }
@@ -37,7 +34,7 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
   const columnConfig = (column as DataTableColumn)?.originalConfig;
 
   const metadata = useMetadata(false)?.metadata;
-  const propertyMeta = asPropertiesArray(metadata?.properties, undefined)?.find(({ path }) => toCamelCase(path) === column.id);
+  const propertyMeta = asPropertiesArray(metadata?.properties, []).find(({ path }) => toCamelCase(path) === column.id);
   const { styles } = useStyles();
   const { key, ...headerProps } = column.getHeaderProps(cellProps);
   const anchored = getColumnAnchored((column as any)?.anchored);
@@ -58,7 +55,7 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
 
       rightColumn.shift = calculatePositionShift(rowColumns, index, totalColumns - 1)?.reduce(
         (acc, curr) => (acc as number) + curr,
-        0
+        0,
       );
     } else if (anchored?.direction === 'left') {
       leftColumn.shadowPosition = calculateTotalColumnsOnFixed(rowColumns, 'left') - 1;
@@ -75,8 +72,7 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
 
   const fixedStyled: React.CSSProperties = {
     [direction]: anchored?.direction && shiftedBy,
-    backgroundColor: 'white',
-    borderBottom: '1px solid #f0f0f0',
+    height: '100%',
   };
 
   const numOfFixed = leftColumn.shadowPosition || rightColumn.shadowPosition;
@@ -97,16 +93,18 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) 
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,
         [anchored?.direction === 'right' ? styles.boxShadowRight : styles.boxShadowLeft]: hasShadow,
-      })}
+      }, styles.shaCrudCell)}
     >
       {columnConfig && columnConfig.columnType === 'data' && (
-        <CreateDataCell columnConfig={columnConfig} propertyMeta={propertyMeta} />
+        <div className={styles.shaCellParentFW}>
+          <CreateDataCell columnConfig={columnConfig} propertyMeta={propertyMeta} />
+        </div>
       )}
       {columnConfig && columnConfig.columnType === 'form' && (
         <CreateFormCell columnConfig={columnConfig} {...parentFormProps} />
       )}
       {columnConfig && columnConfig.columnType === 'crud-operations' && (
-        <CrudOperationsCell columnConfig={columnConfig} />
+        <CrudOperationsCell />
       )}
     </div>
   );

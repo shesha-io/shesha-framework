@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <!--<AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>-->
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>Boxfusion.SheshaFunctionalTests.Web.Host</AssemblyName>
     <OutputType>Exe</OutputType>

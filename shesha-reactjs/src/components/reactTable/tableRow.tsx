@@ -15,6 +15,8 @@ export interface ISortableRowProps {
   prepareRow: (row: Row<any>) => void;
   onClick: (row: Row<any>) => void;
   onDoubleClick: (row: Row<any>, index: number) => void;
+  onRowClick?: () => void;
+  onRowHover?: () => void;
   row: Row<any>;
   index: number;
   selectedRowIndex?: number;
@@ -27,6 +29,9 @@ export interface ISortableRowProps {
   inlineSaveMode?: InlineSaveMode;
   inlineEditorComponents?: IFlatComponentsStructure;
   inlineDisplayComponents?: IFlatComponentsStructure;
+  onMouseOver?: (cellRef?: any, isContentOverflowing?: boolean) => void;
+  onMouseLeave?: (event: React.MouseEvent<HTMLElement>) => void;
+  showExpandedView?: boolean;
 }
 
 interface RowDragHandleProps {
@@ -34,10 +39,10 @@ interface RowDragHandleProps {
 }
 export const RowDragHandle: FC<RowDragHandleProps> = () => {
   const { setDragState } = useDataTableStore();
-  const handleMouseDown = () => {
+  const handleMouseDown = (): void => {
     setDragState('started');
   };
-  const handleMouseUp = () => {
+  const handleMouseUp = (): void => {
     setDragState(null);
   };
   return (
@@ -53,6 +58,8 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     prepareRow,
     onClick,
     onDoubleClick,
+    onRowClick,
+    onRowHover,
     index,
     selectedRowIndex,
     updater,
@@ -64,18 +71,31 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     inlineSaveMode,
     inlineEditorComponents,
     inlineDisplayComponents,
+    onMouseOver,
+    showExpandedView,
   } = props;
 
   const { styles } = useStyles();
   const { dragState, setDragState } = useDataTableStore();
   const tableRef = useRef(null);
 
-  const handleRowClick = () => {
+  const handleRowClick = (): void => {
     onClick(row);
+    if (onRowClick) {
+      onRowClick();
+    }
   };
 
-  const handleRowDoubleClick = () => {
+  const handleRowDoubleClick = (): void => {
     onDoubleClick(row, index);
+  };
+
+  const handleRowMouseEnter = (): void => {
+    if (dragState === 'finished')
+      setDragState(null);
+    if (onRowHover) {
+      onRowHover();
+    }
   };
 
   prepareRow(row);
@@ -97,10 +117,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
       displayComponents={inlineDisplayComponents}
     >
       <div
-        onMouseEnter={() => {
-          if (dragState === 'finished')
-            setDragState(null);
-        }}
+        onMouseEnter={handleRowMouseEnter}
         ref={tableRef}
         onClick={handleRowClick}
         onDoubleClick={handleRowDoubleClick}
@@ -114,7 +131,18 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         key={rowId}
       >
         {row.cells.map((cell, cellIndex) => {
-          return <RowCell cell={cell} key={cellIndex} row={row.cells} rowIndex={index} />;
+          return (
+            <RowCell
+              showExpandedView={showExpandedView}
+              cell={cell}
+              getCellRef={(cellRef, isContentOverflowing) => {
+                onMouseOver(cellRef, isContentOverflowing);
+              }}
+              key={cellIndex}
+              row={row.cells}
+              rowIndex={index}
+            />
+          );
         })}
       </div>
     </CrudProvider>

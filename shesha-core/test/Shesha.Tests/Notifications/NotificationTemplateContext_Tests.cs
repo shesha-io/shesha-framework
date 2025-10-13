@@ -13,7 +13,7 @@ namespace Shesha.Tests.Notifications
     /// <summary>
     /// Temp test for debug only, to be removed
     /// </summary>
-    public class NotificationTemplateContext_Tests : SheshaNhTestBase
+    public class NotificationTemplateContext_Tests
     {
         [Fact]
         public async Task HelperVsStubblePlainTestAsync()

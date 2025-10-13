@@ -35,8 +35,21 @@ import { ISettingsInputRowProps } from '@/designer-components/settingsInputRow';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
 import { IRadioOption, ISettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { IImageFieldProps } from '@/designer-components/image/image';
+import { IKeyInformationBarProps } from '@/designer-components/keyInformationBar/interfaces';
+import { ITextTypographyProps } from '@/designer-components/text/models';
+import { IColumnsInputProps } from '@/designer-components/columns/interfaces';
+import { ITableContextComponentProps } from '@/designer-components/dataTable/tableContext/models';
+import { ITableComponentProps } from '@/designer-components/dataTable/table/models';
+import { IQuickSearchComponentProps } from '@/designer-components/dataTable/quickSearch/quickSearchComponent';
+import { IPagerComponentProps } from '@/designer-components/dataTable/pager/pagerComponent';
+import { ITableViewSelectorComponentProps } from '@/designer-components/dataTable/tableViewSelector/models';
+import { nanoid } from '@/utils/uuid';
+import { IDateFieldProps } from '@/designer-components/dateField/interfaces';
+import { ITimePickerProps } from '@/designer-components/timeField/models';
+import { IFileUploadProps } from '@/designer-components/fileUpload';
 
-interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
+interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'id' | 'hidden' | 'type'> {
+  id?: string;
   hidden?: boolean | IPropertySetting;
   jsSetting?: boolean;
   labelAlignOptions?: IRadioOption[];
@@ -47,6 +60,18 @@ type DropdownType = ToolbarSettingsProp & Omit<IDropdownComponentProps, 'hidden'
 type SectionSeparatorType = ToolbarSettingsProp & Omit<ISectionSeparatorComponentProps, 'hidden' | 'type'>;
 
 type TextFieldType = ToolbarSettingsProp & Omit<ITextFieldComponentProps, 'hidden' | 'type'>;
+
+type DatatableContextType = ToolbarSettingsProp & Omit<ITableContextComponentProps, 'hidden' | 'type'>;
+
+type DatatableType = ToolbarSettingsProp & Omit<ITableComponentProps, 'hidden' | 'type'>;
+
+type TabsType = ToolbarSettingsProp & Omit<ITabsComponentProps, 'hidden' | 'type'>;
+
+type TextType = ToolbarSettingsProp & Omit<ITextTypographyProps, 'hidden' | 'type'>;
+
+type KeyInformationBarType = ToolbarSettingsProp & Omit<IKeyInformationBarProps, 'hidden' | 'type'>;
+
+type TableViewSelectorType = ToolbarSettingsProp & Omit<ITableViewSelectorComponentProps, 'hidden' | 'type'>;
 
 type ContextPropertyAutocompleteType = ToolbarSettingsProp &
   Omit<IContextPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
@@ -69,6 +94,12 @@ type ReferenceListAutocompleteType = ToolbarSettingsProp & Omit<IReferenceListAu
 
 type CheckboxType = ToolbarSettingsProp & Omit<ICheckboxComponentProps, 'hidden' | 'type'>;
 
+type DateFieldType = ToolbarSettingsProp & Omit<IDateFieldProps, 'hidden' | 'type'>;
+
+type TimePickerType = ToolbarSettingsProp & Omit<ITimePickerProps, 'hidden' | 'type'>;
+
+type FileUploadType = ToolbarSettingsProp & Omit<IFileUploadProps, 'hidden' | 'type'>;
+
 type SwitchType = ToolbarSettingsProp & Omit<ISwitchComponentProps, 'hidden' | 'type'>;
 
 type NumberFieldType = ToolbarSettingsProp & Omit<INumberFieldComponentProps, 'hidden' | 'type'>;
@@ -77,9 +108,15 @@ type LabelValueEditorType = ToolbarSettingsProp & Omit<ILabelValueEditorComponen
 
 type QueryBuilderType = ToolbarSettingsProp & Omit<IQueryBuilderComponentProps, 'hidden' | 'type'>;
 
+type QuickSearchType = ToolbarSettingsProp & Omit<IQuickSearchComponentProps, 'hidden' | 'type'>;
+
+type TablePagerType = ToolbarSettingsProp & Omit<IPagerComponentProps, 'hidden' | 'type'>;
+
 type CodeEditorType = ToolbarSettingsProp & Omit<ICodeEditorComponentProps, 'hidden' | 'type'>;
 
 type ContainerType = ToolbarSettingsProp & Omit<IContainerComponentProps, 'hidden' | 'type'>;
+
+type ColumnType = ToolbarSettingsProp & Omit<IColumnsInputProps, 'hidden' | 'type'>;
 
 type ButtonGroupType = ToolbarSettingsProp & Omit<IButtonsProps, 'hidden' | 'type'>;
 
@@ -115,8 +152,9 @@ type SettingInputRowType = ToolbarSettingsProp & Omit<ISettingsInputRowProps, 'h
 
 type PropertyRouterType = ToolbarSettingsProp & Omit<IPropertyRouterProps, 'hidden' | 'type'>;
 
-export class DesignerToolbarSettings<T> {
+export class DesignerToolbarSettings<T extends object = object> {
   protected readonly form: IConfigurableFormComponent[];
+
   protected readonly data?: T;
 
   constructor();
@@ -126,190 +164,246 @@ export class DesignerToolbarSettings<T> {
     this.form = [];
   }
 
-  public addAlert(props: AlertType | ((data: T) => AlertType)) {
+  public addAlert(props: AlertType | ((data: T) => AlertType)): this {
     return this.addProperty(props, 'alert');
   }
 
-  public addButtons(props: ButtonGroupType | ((data: T) => ButtonGroupType)) {
+  public addButtons(props: ButtonGroupType | ((data: T) => ButtonGroupType)): this {
     return this.addProperty(props, 'buttons');
   }
 
   public addCollapsiblePanel(
-    props: ICollapsiblePanelPropsEditorType | ((data: T) => ICollapsiblePanelPropsEditorType)
-  ) {
-    return this.addProperty(props, 'collapsiblePanel');
+    props: ICollapsiblePanelPropsEditorType | ((data: T) => ICollapsiblePanelPropsEditorType),
+  ): this {
+    const obj = typeof props !== 'function' ? props : props(this.data);
+    obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
+    if (!obj.header)
+      obj.header = {
+        id: nanoid(),
+        components: [],
+      };
+    return this.addProperty(obj, 'collapsiblePanel');
   }
 
-  public addSearchableTabs(props: ITabsComponentPropsType | ((data: T) => ITabsComponentPropsType)) {
+  public addDatatableContext(props: DatatableContextType | ((data: T) => DatatableContextType)): this {
+    return this.addProperty(props, 'datatableContext');
+  }
+
+  public addQuickSearch(props: QuickSearchType | ((data: T) => QuickSearchType)): this {
+    return this.addProperty(props, 'datatable.quickSearch');
+  }
+
+  public addTablePager(props: TablePagerType | ((data: T) => TablePagerType)): this {
+    return this.addProperty(props, 'datatable.pager');
+  }
+
+  public addTableViewSelector(props: TableViewSelectorType | ((data: T) => TableViewSelectorType)): this {
+    return this.addProperty(props, 'tableViewSelector');
+  }
+
+  public addDatatable(props: DatatableType | ((data: T) => DatatableType)): this {
+    return this.addProperty(props, 'datatable');
+  }
+
+  public addText(props: TextType | ((data: T) => TextType)): this {
+    return this.addProperty(props, 'text');
+  }
+
+  public addSearchableTabs(props: ITabsComponentPropsType | ((data: T) => ITabsComponentPropsType)): this {
     return this.addProperty(props, 'searchableTabs');
   }
 
-  public addDropdown(props: DropdownType | ((data: T) => DropdownType)) {
+  public addTabs(props: TabsType | ((data: T) => TabsType)): this {
+    return this.addProperty(props, 'tabs');
+  }
+
+  public addColumns(props: ColumnType | ((data: T) => ColumnType)): this {
+    return this.addProperty(props, 'columns');
+  }
+
+  public addKeyInformationBar(props: KeyInformationBarType | ((data: T) => KeyInformationBarType)): this {
+    return this.addProperty(props, 'KeyInformationBar');
+  }
+
+  public addDropdown(props: DropdownType | ((data: T) => DropdownType)): this {
     return this.addProperty(props, 'dropdown');
   }
 
-  public addColumnsEditor(props: ColumnsEditorType | ((data: T) => ColumnsEditorType)) {
+  public addColumnsEditor(props: ColumnsEditorType | ((data: T) => ColumnsEditorType)): this {
     return this.addProperty(props, 'columnsEditorComponent');
   }
 
-  public addSectionSeparator(props: SectionSeparatorType | ((data: T) => SectionSeparatorType)) {
+  public addSectionSeparator(props: SectionSeparatorType | ((data: T) => SectionSeparatorType)): this {
     return this.addProperty(props, 'sectionSeparator');
   }
 
-  public addTextField(props: TextFieldType | ((data: T) => TextFieldType)) {
+  public addTextField(props: TextFieldType | ((data: T) => TextFieldType)): this {
     return this.addProperty(props, 'textField');
   }
 
   public addContextPropertyAutocomplete(
-    props: ContextPropertyAutocompleteType | ((data: T) => ContextPropertyAutocompleteType)
-  ) {
+    props: ContextPropertyAutocompleteType | ((data: T) => ContextPropertyAutocompleteType),
+  ): this {
     return this.addProperty(props, 'contextPropertyAutocomplete');
   }
 
-  public addPropertyAutocomplete(props: PropertyAutocompleteType | ((data: T) => PropertyAutocompleteType)) {
+  public addPropertyAutocomplete(props: PropertyAutocompleteType | ((data: T) => PropertyAutocompleteType)): this {
     return this.addProperty(props, 'propertyAutocomplete');
   }
 
-  public addColorPicker(props: ColorPickerType | ((data: T) => PropertyAutocompleteType)) {
+  public addColorPicker(props: ColorPickerType | ((data: T) => PropertyAutocompleteType)): this {
     return this.addProperty(props, 'colorPicker');
   }
 
-  public addImagePicker(props: ImagePickerType | ((data: T) => ImagePickerType)) {
+  public addImagePicker(props: ImagePickerType | ((data: T) => ImagePickerType)): this {
     return this.addProperty(props, 'imagePicker');
   }
 
-  public addTextArea(props: TextAreaType | ((data: T) => TextAreaType)) {
+  public addTextArea(props: TextAreaType | ((data: T) => TextAreaType)): this {
     return this.addProperty(props, 'textArea');
   }
 
-  public addIconPicker(props: IconPickerType | ((data: T) => IconPickerType)) {
+  public addIconPicker(props: IconPickerType | ((data: T) => IconPickerType)): this {
     return this.addProperty(props, 'iconPicker');
   }
 
-  public addAutocomplete(props: AutocompleteType | ((data: T) => AutocompleteType)) {
+  public addAutocomplete(props: AutocompleteType | ((data: T) => AutocompleteType)): this {
     return this.addProperty(props, 'autocomplete');
   }
 
-  public addEndpointsAutocomplete(props: EndpointsAutocompleteType | ((data: T) => EndpointsAutocompleteType)) {
+  public addEndpointsAutocomplete(props: EndpointsAutocompleteType | ((data: T) => EndpointsAutocompleteType)): this {
     return this.addProperty(props, 'endpointsAutocomplete');
   }
 
-  public addFormAutocomplete(props: FormAutocompleteType | ((data: T) => FormAutocompleteType)) {
+  public addFormAutocomplete(props: FormAutocompleteType | ((data: T) => FormAutocompleteType)): this {
     const model = typeof props !== 'function'
       ? props
       : props(this.data);
     return this.addProperty({ ...model, version: 2 }, 'formAutocomplete');
   }
 
-  public addRefListAutocomplete(props: ReferenceListAutocompleteType | ((data: T) => ReferenceListAutocompleteType)) {
+  public addRefListAutocomplete(props: ReferenceListAutocompleteType | ((data: T) => ReferenceListAutocompleteType)): this {
     const model = typeof props !== 'function'
       ? props
       : props(this.data);
     return this.addProperty({ ...model, version: 2 }, 'referenceListAutocomplete');
   }
 
-  public addCheckbox(props: CheckboxType | ((data: T) => CheckboxType)) {
+  public addCheckbox(props: CheckboxType | ((data: T) => CheckboxType)): this {
     return this.addProperty(props, 'checkbox');
   }
 
-  public addSwitch(props: SwitchType | ((data: T) => SwitchType)) {
+  public addDateField(props: DateFieldType | ((data: T) => DateFieldType)): this {
+    return this.addProperty(props, 'dateField');
+  }
+
+  public addTimePicker(props: TimePickerType | ((data: T) => TimePickerType)): this {
+    return this.addProperty(props, 'timePicker');
+  }
+
+  public addFileUpload(props: FileUploadType | ((data: T) => FileUploadType)): this {
+    return this.addProperty(props, 'fileUpload');
+  }
+
+  public addSwitch(props: SwitchType | ((data: T) => SwitchType)): this {
     return this.addProperty(props, 'switch');
   }
 
-  public addCodeEditor(props: CodeEditorType | ((data: T) => CodeEditorType)) {
+  public addCodeEditor(props: CodeEditorType | ((data: T) => CodeEditorType)): this {
     return this.addProperty(props, 'codeEditor');
   }
 
-  public addContainer(props: ContainerType | ((data: T) => ContainerType)) {
-    return this.addProperty(props, 'container');
+  public addContainer(props: ContainerType | ((data: T) => ContainerType)): this {
+    const obj = typeof props !== 'function' ? props : props(this.data);
+    obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
+    return this.addProperty(obj, 'container');
   }
 
-  public addNumberField(props: NumberFieldType | ((data: T) => NumberFieldType)) {
+  public addNumberField(props: NumberFieldType | ((data: T) => NumberFieldType)): this {
     return this.addProperty(props, 'numberField');
   }
 
-  public addLabelValueEditor(props: LabelValueEditorType | ((data: T) => LabelValueEditorType)) {
+  public addLabelValueEditor(props: LabelValueEditorType | ((data: T) => LabelValueEditorType)): this {
     return this.addProperty(props, 'labelValueEditor');
   }
 
-  public addQueryBuilder(props: QueryBuilderType | ((data: T) => QueryBuilderType)) {
+  public addQueryBuilder(props: QueryBuilderType | ((data: T) => QueryBuilderType)): this {
     return this.addProperty(props, 'queryBuilder');
   }
 
-  public addRadio(props: RadioType | ((data: T) => RadioType)) {
+  public addRadio(props: RadioType | ((data: T) => RadioType)): this {
     return this.addProperty(props, 'radio');
   }
 
   public addConfigurableActionConfigurator(
-    props: ConfigurableActionConfiguratorType | ((data: T) => ConfigurableActionConfiguratorType)
-  ) {
+    props: ConfigurableActionConfiguratorType | ((data: T) => ConfigurableActionConfiguratorType),
+  ): this {
     return this.addProperty(props, 'configurableActionConfigurator');
   }
 
-  public addEditableTagGroupProps(props: EditableTagGroupType | ((data: T) => EditableTagGroupType)) {
+  public addEditableTagGroupProps(props: EditableTagGroupType | ((data: T) => EditableTagGroupType)): this {
     return this.addProperty(props, 'editableTagGroup');
   }
 
-  public addPermissionAutocomplete(props: PermissionAutocompleteType | ((data: T) => PermissionAutocompleteType)) {
+  public addPermissionAutocomplete(props: PermissionAutocompleteType | ((data: T) => PermissionAutocompleteType)): this {
     return this.addProperty(props, 'permissionAutocomplete');
   }
 
-  public addEditMode(props: ReadOnlyModeType | ((data: T) => ReadOnlyModeType)) {
+  public addEditMode(props: ReadOnlyModeType | ((data: T) => ReadOnlyModeType)): this {
     return this.addProperty(props, 'editModeSelector');
   }
 
-  public addStyleBox(props: StyleBoxType | ((data: T) => StyleBoxType)) {
+  public addStyleBox(props: StyleBoxType | ((data: T) => StyleBoxType)): this {
     return this.addProperty(props, 'styleBox');
   }
 
-  public addLabelConfigurator(props: LabelStyleType | ((data: T) => LabelStyleType)) {
+  public addLabelConfigurator(props: LabelStyleType | ((data: T) => LabelStyleType)): this {
     return this.addProperty(props, 'labelConfigurator');
   }
 
-  public addSlider(props: SliderType | ((data: T) => SliderType)) {
+  public addSlider(props: SliderType | ((data: T) => SliderType)): this {
     return this.addProperty(props, 'slider');
   }
 
-  public addSettingsInput(props: SettingInputType | ((data: T) => SettingInputType)) {
+  public addSettingsInput(props: SettingInputType | ((data: T) => SettingInputType)): this {
     return this.addProperty(props, 'settingsInput');
   }
 
-  public addSettingsInputRow(props: SettingInputRowType | ((data: T) => SettingInputRowType)) {
-    return this.addProperty(props, 'settingsInputRow');
+  public addSettingsInputRow(props: Omit<SettingInputRowType, 'id'> & { id?: string } | ((data: T) => SettingInputRowType)): this {
+    const obj = typeof props !== 'function' ? props : props(this.data);
+    obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
+    obj.id = obj.id ?? nanoid();
+    return this.addProperty(obj, 'settingsInputRow');
   }
 
-  public addPropertyRouter(props: PropertyRouterType | ((data: T) => PropertyRouterType)) {
-    return this.addProperty(props, 'propertyRouter');
+  public addPropertyRouter(props: PropertyRouterType | ((data: T) => PropertyRouterType)): this {
+    const obj = typeof props !== 'function' ? props : props(this.data);
+    obj.isDynamic = obj.isDynamic === undefined ? true : obj.isDynamic;
+    return this.addProperty(obj, 'propertyRouter');
   }
 
-  private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {
+  private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string): this {
     const obj = typeof props !== 'function' ? props : props(this.data);
 
     this.form.push({
       ...obj,
+      id: obj.id ?? nanoid(),
       type,
       hidden: obj?.hidden as any,
       version: typeof (obj?.version) === 'number'
         ? obj?.version
-        : 'latest'
+        : 'latest',
     });
 
     return this;
   }
 
-  get settings() {
+  public toJson(): IConfigurableFormComponent[] {
     return this.form;
   }
 
-  get model() {
-    return this.model;
-  }
-
-  public toJson() {
-    return this.form;
-  }
-
-  public toJsonString() {
-    return JSON?.stringify(this.form);
+  public toJsonString(): string {
+    return JSON.stringify(this.form);
   }
 }
+

@@ -23,5 +23,14 @@ namespace Shesha.NHibernate
             #pragma warning restore 612, 618
             return type;
         }
+
+        public T Unproxy<T>(T entity) where T : class
+        {
+            if (entity is INHibernateProxy proxy)
+            {
+                return (T)proxy.HibernateLazyInitializer.GetImplementation();
+            }
+            return entity;
+        }
     }
 }

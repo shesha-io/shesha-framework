@@ -1,7 +1,6 @@
-﻿using System;
-using Abp.Application.Services.Dto;
-using Shesha.AutoMapper.Dto;
+﻿using Abp.Application.Services.Dto;
 using Shesha.Domain;
+using System;
 
 namespace Shesha.Services.ReferenceLists.Dto
 {
@@ -10,11 +9,25 @@ namespace Shesha.Services.ReferenceLists.Dto
     /// </summary>
     public class ReferenceListItemDto: EntityDto<Guid>
     {
+        /// <summary>
+        /// Item name
+        /// </summary>
         public string Item { get; set; }
+
+        /// <summary>
+        /// Item value
+        /// </summary>
         public Int64 ItemValue { get; set; }
+
+        /// <summary>
+        /// Item description
+        /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Order index
+        /// </summary>
         public Int64 OrderIndex { get; set; }
-        public EntityReferenceDto<Guid?> ReferenceList { get; set; }
 
         /// <summary>
         /// Color associated with the item
@@ -30,5 +43,22 @@ namespace Shesha.Services.ReferenceLists.Dto
         /// Short alias
         /// </summary>
         public string ShortAlias { get; set; }
+
+        public ReferenceListItemDto()
+        {
+            
+        }
+
+        public ReferenceListItemDto(ReferenceListItem item)
+        {
+            Id = item.Id;
+            Item = item.Item;
+            ItemValue = item.ItemValue;
+            Description = item.Description;
+            OrderIndex = item.OrderIndex;
+            Color = item.Color;
+            Icon = item.Icon;
+            ShortAlias = item.ShortAlias;
+        }
     }
 }

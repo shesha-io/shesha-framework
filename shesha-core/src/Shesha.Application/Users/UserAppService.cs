@@ -91,7 +91,7 @@ namespace Shesha.Users
 
             user.TenantId = AbpSession.TenantId;
             user.IsEmailConfirmed = true;
-            user.SupportedPasswordResetMethods = input.SupportedPasswordResetMethods.Sum();
+            user.SupportedPasswordResetMethods = input.SupportedPasswordResetMethods?.Sum();
 
             await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
 

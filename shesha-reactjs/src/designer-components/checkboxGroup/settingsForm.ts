@@ -1,11 +1,24 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
+import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
+  // Generate unique IDs for major components
+  const searchableTabsId = nanoid();
+  const commonTabId = nanoid();
+  const dataTabId = nanoid();
+  const validationTabId = nanoid();
+  const eventsTabId = nanoid();
+  const appearanceTabId = nanoid();
+  const securityTabId = nanoid();
+  const styleRouterId = nanoid();
+  const stylePanelId = nanoid();
+
   return {
     components: new DesignerToolbarSettings(data)
       .addSearchableTabs({
-        id: 'W_m7doMyCpCYwAYDfRh6I',
+        id: searchableTabsId,
         propertyName: 'settingsTabs',
         parentId: 'root',
         label: 'Settings',
@@ -16,14 +29,14 @@ export const getSettings = (data: any) => {
           {
             key: '1',
             title: 'Common',
-            id: 's4gmBg31azZC0UjZjpfTm',
+            id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addContextPropertyAutocomplete({
-                  id: '1c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                  id: nanoid(),
                   propertyName: 'propertyName',
                   label: 'Property Name',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  parentId: commonTabId,
                   styledLabel: true,
                   size: 'small',
                   validate: {
@@ -32,52 +45,32 @@ export const getSettings = (data: any) => {
                   jsSetting: true,
                 })
                 .addLabelConfigurator({
-                  id: '16d07439-4c18-468c-89e1-60c002ce96c5',
+                  id: nanoid(),
                   propertyName: 'hideLabel',
                   label: 'Label',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  parentId: commonTabId,
                   hideLabel: true,
                 })
                 .addSettingsInputRow({
-                  id: 'pwlceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: nanoid(),
+                  parentId: commonTabId,
                   inputs: [
                     {
                       type: 'textArea',
-                      id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
                       propertyName: 'description',
                       label: 'Tooltip',
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
-                .addSettingsInput({
-                  id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                  inputType: 'dropdown',
-                  propertyName: 'mode',
-                  label: 'Mode',
-                  size: 'small',
-                  jsSetting: true,
-                  dropdownOptions: [
-                    {
-                      label: 'Single',
-                      value: 'single',
-                    },
-                    {
-                      label: 'Multiple',
-                      value: 'multiple',
-                    },
-                  ],
                 })
                 .addSettingsInputRow({
-                  id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: nanoid(),
+                  parentId: commonTabId,
                   inputs: [
                     {
                       type: 'editModeSelector',
-                      id: 'editMode-s4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       defaultValue: 'inherited',
@@ -86,7 +79,7 @@ export const getSettings = (data: any) => {
                     },
                     {
                       type: 'switch',
-                      id: 'hidden-s4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
                       propertyName: 'hidden',
                       label: 'Hide',
                       jsSetting: true,
@@ -100,16 +93,36 @@ export const getSettings = (data: any) => {
           {
             key: '2',
             title: 'Data',
-            id: '6eBJvoll3xtLJxdvOAlnB',
+            id: dataTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  id: '52813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                  id: nanoid(),
+                  inputType: 'dropdown',
+                  propertyName: 'mode',
+                  label: 'Mode',
+                  size: 'small',
+                  jsSetting: true,
+                  parentId: dataTabId,
+                  dropdownOptions: [
+                    {
+                      label: 'Single',
+                      value: 'single',
+                    },
+                    {
+                      label: 'Multiple',
+                      value: 'multiple',
+                    },
+                  ],
+                })
+                .addSettingsInput({
+                  id: nanoid(),
                   inputType: 'dropdown',
                   propertyName: 'dataSourceType',
                   label: 'Data Source Type',
                   size: 'small',
                   jsSetting: true,
+                  parentId: dataTabId,
                   dropdownOptions: [
                     {
                       label: 'Values',
@@ -120,14 +133,14 @@ export const getSettings = (data: any) => {
                       value: 'referenceList',
                     },
                     {
-                      label: 'Api url',
+                      label: 'API URL',
                       value: 'url',
                     },
                   ],
                 })
                 .addSettingsInputRow({
-                  id: 'pwloeholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: nanoid(),
+                  parentId: dataTabId,
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "values";',
                     _mode: 'code',
@@ -135,23 +148,23 @@ export const getSettings = (data: any) => {
                   } as any,
                   inputs: [
                     {
-                      id: '582715b9-624b-4189-812c-6144cafb7405',
+                      id: nanoid(),
                       type: 'labelValueEditor',
                       propertyName: 'items',
-                      parentId: '1y9SNudmMM0Wd1Sc_YI1ng',
+                      parentId: dataTabId,
                       label: 'Items',
                       labelTitle: 'Label',
                       labelName: 'label',
                       valueTitle: 'Value',
                       valueName: 'value',
                       mode: 'dialog',
+                      jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
-                  id: 'referenceList-tooltips-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: nanoid(),
+                  parentId: dataTabId,
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "referenceList";',
                     _mode: 'code',
@@ -160,17 +173,16 @@ export const getSettings = (data: any) => {
                   inputs: [
                     {
                       type: 'referenceListAutocomplete',
-                      id: 'referenceList-s4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
                       propertyName: 'referenceListId',
                       label: 'Reference List',
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
-                  id: 'referenceList-tooltips-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  id: nanoid(),
+                  parentId: dataTabId,
                   hidden: {
                     _code: 'return  getSettingValue(data?.dataSourceType) !== "url";',
                     _mode: 'code',
@@ -179,20 +191,19 @@ export const getSettings = (data: any) => {
                   inputs: [
                     {
                       type: 'codeEditor',
-                      id: 'dataSourceUrl-s4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
                       propertyName: 'dataSourceUrl',
-                      label: 'Data Source Url',
+                      label: 'Data Source URL',
                       jsSetting: true,
                     },
                     {
                       type: 'codeEditor',
-                      id: 'reducerFunc-s4gmBg31azZC0UjZjpfTm',
+                      id: nanoid(),
                       propertyName: 'reducerFunc',
                       label: 'Reducer Function',
                       jsSetting: true,
                     },
                   ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .toJson(),
             ],
@@ -200,19 +211,18 @@ export const getSettings = (data: any) => {
           {
             key: '3',
             title: 'Validation',
-            id: '6eBJvoll3xtLJxdvOAlnB',
+            id: validationTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
+                  id: nanoid(),
                   propertyName: 'validate.required',
                   label: 'Required',
                   inputType: 'switch',
                   size: 'small',
                   layout: 'horizontal',
                   jsSetting: true,
-                  parentId: '6eBJvoll3xtLJxdvOAlnB',
+                  parentId: validationTabId,
                 })
                 .toJson(),
             ],
@@ -220,38 +230,35 @@ export const getSettings = (data: any) => {
           {
             key: '4',
             title: 'Events',
-            id: 'Cc47W08MWrKdhoGqFKMI2',
+            id: eventsTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: '3cef348b-6bba-4176-93f6-f3a8b21e33c9',
+                  id: nanoid(),
                   inputType: 'codeEditor',
                   propertyName: 'onChangeCustom',
                   label: 'On Change',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
-                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                  tooltip: 'Enter custom eventhandler on changing of event.',
+                  parentId: eventsTabId,
                 })
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
+                  id: nanoid(),
                   inputType: 'codeEditor',
                   propertyName: 'onFocusCustom',
                   label: 'On Focus',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
-                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                  tooltip: 'Enter custom eventhandler on focus of event.',
+                  parentId: eventsTabId,
                 })
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
+                  id: nanoid(),
                   inputType: 'codeEditor',
                   propertyName: 'onBlurCustom',
                   label: 'On Blur',
                   labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
-                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                  tooltip: 'Enter custom eventhandler on blur of event.',
+                  parentId: eventsTabId,
                 })
                 .toJson(),
             ],
@@ -259,16 +266,16 @@ export const getSettings = (data: any) => {
           {
             key: '5',
             title: 'Appearance',
-            id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+            id: appearanceTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addPropertyRouter({
-                  id: 'styleRouter',
+                  id: styleRouterId,
                   propertyName: 'propertyRouter1',
                   componentName: 'propertyRouter',
                   label: 'Property router1',
                   labelAlign: 'right',
-                  parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                  parentId: appearanceTabId,
                   hidden: false,
                   propertyRouteName: {
                     _mode: 'code',
@@ -278,12 +285,22 @@ export const getSettings = (data: any) => {
                   components: [
                     ...new DesignerToolbarSettings()
                       .addSettingsInput({
-                        id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                        id: nanoid(),
+                        parentId: styleRouterId,
+                        propertyName: 'enableStyleOnReadonly',
+                        label: 'Enable Style On Readonly',
+                        tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                        inputType: 'switch',
+                        jsSetting: true,
+                      })
+                      .addSettingsInput({
+                        id: nanoid(),
                         inputType: 'dropdown',
                         propertyName: 'direction',
                         label: 'Direction',
                         size: 'small',
                         jsSetting: true,
+                        parentId: styleRouterId,
                         defaultValue: 'horizontal',
                         dropdownOptions: [
                           {
@@ -297,28 +314,24 @@ export const getSettings = (data: any) => {
                         ],
                       })
                       .addCollapsiblePanel({
-                        id: 'customStyleCollapsiblePanel',
+                        id: nanoid(),
                         propertyName: 'customStyle',
                         label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
-                        parentId: 'styleRouter',
+                        parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
-                          id: 'stylePnl-M500-911MFR',
+                          id: nanoid(),
                           components: [
                             ...new DesignerToolbarSettings()
                               .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                id: 'custom-css-412c-8461-4c8d55e5c073',
+                                id: nanoid(),
                                 inputType: 'codeEditor',
                                 propertyName: 'style',
                                 hideLabel: false,
                                 label: 'Style',
+                                parentId: stylePanelId,
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
@@ -335,17 +348,17 @@ export const getSettings = (data: any) => {
           {
             key: '6',
             title: 'Security',
-            id: '6Vw9iiDw9d0MD_Rh5cbIn',
+            id: securityTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                  id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',
                   label: 'Permissions',
+                  jsSetting: true,
                   size: 'small',
-                  parentId: '6Vw9iiDw9d0MD_Rh5cbIn',
+                  parentId: securityTabId,
                 })
                 .toJson(),
             ],

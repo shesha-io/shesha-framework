@@ -6,6 +6,7 @@ namespace Shesha.Tests.CamelCase
     /// <summary>
     /// 
     /// </summary>
+    [Trait("RunOnPipeline", "yes")]
     public class CamelCase_Tests
     {
         /// <summary>

@@ -1,22 +1,20 @@
-﻿using Abp.Dependency;
+﻿using Abp;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.ObjectMapping;
 using Abp.Runtime.Caching;
+using Abp.Threading;
 using Shesha.AutoMapper.Dto;
-using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
-using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities;
 using Shesha.Extensions;
 using Shesha.Services.ReferenceLists.Cache;
 using Shesha.Services.ReferenceLists.Dto;
 using Shesha.Services.ReferenceLists.Exceptions;
-using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +29,6 @@ namespace Shesha.Services
         private readonly IRepository<ReferenceList, Guid> _listRepository;
         private readonly IRepository<ReferenceListItem, Guid> _itemsRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
         private readonly ITypedCache<Guid, List<ReferenceListItemDto>> _listItemsCache;
         
@@ -49,7 +46,6 @@ namespace Shesha.Services
             IRepository<ReferenceList, Guid> listRepository, 
             IRepository<ReferenceListItem, Guid> itemsRepository, 
             IUnitOfWorkManager unitOfWorkManager, 
-            IConfigurationFrameworkRuntime cfRuntime,
             IConfigurationItemClientSideCache clientSideCache,
             IReferenceListItemsCacheHolder listItemsCache,
             IReferenceListIdsCacheHolder listIdsCache
@@ -58,7 +54,6 @@ namespace Shesha.Services
             _listRepository = listRepository;
             _itemsRepository = itemsRepository;
             _unitOfWorkManager = unitOfWorkManager;
-            _cfRuntime = cfRuntime;
             _clientSideCache = clientSideCache;
             _listItemsCache = listItemsCache.Cache;
             _listIdsCache = listIdsCache.Cache;
@@ -90,7 +85,7 @@ namespace Shesha.Services
                 return null;
             
             // make sure that we have active session
-            using (_unitOfWorkManager.Current == null ? _unitOfWorkManager.Begin() : null)
+            using (ExistingOrNewUnitOfWork())
             {
                 var items = GetItems(refListId);
                 return items.FirstOrDefault(i => i.ItemValue == value)?.Item;
@@ -105,7 +100,7 @@ namespace Shesha.Services
 
             ValidateRefListId(refListId);
 
-            var values = Extensions.EntityExtensions.DecomposeIntoBitFlagComponents(value);
+            var values = EntityExtensions.DecomposeIntoBitFlagComponents(value);
             var selectedItems = GetItems(refListId)
                 .Where(i => values.Contains(i.ItemValue))
                 .ToList();
@@ -118,9 +113,9 @@ namespace Shesha.Services
         {
             var listId = await GetListIdAsync(refListId);
 
-            return await _listItemsCache.GetAsync(listId, async id => {
-                return await GetItemsAsync(id);
-            });
+            return listId != null 
+                ? await _listItemsCache.GetAsync(listId.Value, GetItemsAsync)
+                : new ();
         }
 
         /// inheritedDoc
@@ -128,9 +123,9 @@ namespace Shesha.Services
         {
             var listId = GetListId(refListId);
 
-            return _listItemsCache.Get(listId, id => {
-                return GetItems(id);
-            });
+            return listId != null
+                ? _listItemsCache.Get(listId.Value, GetItems)
+                : new ();
         }
 
         public List<ReferenceListItemDto> GetItems(Guid listId) 
@@ -140,18 +135,18 @@ namespace Shesha.Services
                 .OrderBy(e => e.OrderIndex).ThenBy(e => e.Item)
                 .ToList();
 
-            var itemDtos = items.Select(e => ObjectMapper.Map<ReferenceListItemDto>(e)).ToList();
+            var itemDtos = items.Select(e => new ReferenceListItemDto(e)).ToList();
             return itemDtos;
         }
 
-        public async Task<List<ReferenceListItemDto>> GetItemsAsync(Guid listId)
+        public async Task<List<ReferenceListItemDto>> GetItemsAsync(Guid refListId)
         {
             var items = await _itemsRepository.GetAll()
-                .Where(e => e.ReferenceList.Id == listId)
+                .Where(e => e.ReferenceList.Id == refListId)
                 .OrderBy(e => e.OrderIndex).ThenBy(e => e.Item)
                 .ToListAsync();
 
-            var itemDtos = items.Select(e => ObjectMapper.Map<ReferenceListItemDto>(e)).ToList();
+            var itemDtos = items.Select(e => new ReferenceListItemDto(e)).ToList();
             return itemDtos;
         }
 
@@ -159,39 +154,11 @@ namespace Shesha.Services
         {
             ValidateRefListId(refListId);
 
-            var mode = _cfRuntime.ViewMode;
-
             var mayBeLegacy = (refListId.Name ?? "").Contains(".");
             var anyModule = refListId.Module == null && mayBeLegacy;
 
             var query = _listRepository.GetAll().Where(f => (anyModule || f.Module != null && !f.Module.IsDeleted && f.Module.Name == refListId.Module) && f.Name == refListId.Name);
 
-            switch (mode)
-            {
-                case ConfigurationItemViewMode.Live:
-                    query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
-                    break;
-                case ConfigurationItemViewMode.Ready:
-                    {
-                        var statuses = new ConfigurationItemVersionStatus[] {
-                            ConfigurationItemVersionStatus.Live,
-                            ConfigurationItemVersionStatus.Ready
-                        };
-
-                        query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
-                        break;
-                    }
-                case ConfigurationItemViewMode.Latest:
-                    {
-                        var statuses = new ConfigurationItemVersionStatus[] {
-                            ConfigurationItemVersionStatus.Live,
-                            ConfigurationItemVersionStatus.Ready,
-                            ConfigurationItemVersionStatus.Draft
-                        };
-                        query = query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
-                        break;
-                    }
-            }
             return query;
         }
 
@@ -218,34 +185,33 @@ namespace Shesha.Services
 
         #region Cache
 
-        private string GetListIdCacheKey(ReferenceListIdentifier refListId, ConfigurationItemViewMode viewMode)
-        {
-            return $"{refListId.Module}/{refListId.Name}:{viewMode}".ToLower();
-        }
-
         private string GetListIdCacheKey(ReferenceListIdentifier refListId)
         {
-            return GetListIdCacheKey(refListId, _cfRuntime.ViewMode);
+            return $"{refListId.Module}/{refListId.Name}".ToLower();
         }
 
-        private async Task<Guid> GetListIdAsync(ReferenceListIdentifier refListId)
+        public async Task<Guid?> GetListIdAsync(ReferenceListIdentifier refListId)
         {
             var idCacheKey = GetListIdCacheKey(refListId);
-            var listId = await _listIdsCache.GetAsync(idCacheKey, async key => {
-                var list = await GetReferenceListAsync(refListId);
-                return list.Id;
+            return await _listIdsCache.GetAsync(idCacheKey, async key => {
+                using (ExistingOrNewUnitOfWork()) 
+                {
+                    var list = await GetReferenceListAsync(refListId);
+                    return list.Id;
+                }                    
             });
-            return listId;
         }
 
-        private Guid GetListId(ReferenceListIdentifier refListId)
+        public Guid? GetListId(ReferenceListIdentifier refListId)
         {
             var idCacheKey = GetListIdCacheKey(refListId);
-            var listId = _listIdsCache.Get(idCacheKey, key => {
-                var list = GetReferenceList(refListId);
-                return list.Id;
+            return _listIdsCache.Get(idCacheKey, key => {
+                using (ExistingOrNewUnitOfWork())
+                {
+                    var list = GetReferenceList(refListId);
+                    return list.Id;
+                }                    
             });
-            return listId;
         }
 
         #endregion
@@ -263,25 +229,22 @@ namespace Shesha.Services
             // clear items cache by Id
             _listItemsCache.Remove(refList.Id);
 
-            // clear ids cache by module, nameapce and name
-            var modes = Enum.GetValues(typeof(ConfigurationItemViewMode)).Cast<ConfigurationItemViewMode>().ToList();
             var refListId = refList.GetReferenceListIdentifier();
-            var keys = modes.Select(mode => GetListIdCacheKey(refListId, mode)).ToArray();
-            _listIdsCache.Remove(keys);
+            _listIdsCache.Remove(GetListIdCacheKey(refListId));
 
             // clear client-side cache
             AsyncHelper.RunSync(async () =>
             {
-                await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, refListId.Module, refListId.Name, _cfRuntime.ViewMode, null);
+                await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, refListId.Module, refListId.Name, null);
             });
         }
 
         /// <summary>
         /// Clear reference list cache
         /// </summary>
-        public async Task ClearCacheAsync()
+        public Task ClearCacheAsync()
         {
-            await _listItemsCache.ClearAsync();
+            return _listItemsCache.ClearAsync();
         }
 
         /// <summary>
@@ -328,6 +291,19 @@ namespace Shesha.Services
                 
                 uow.Complete();
             }
+        }
+
+        private IDisposable? ExistingOrNewUnitOfWork()
+        {
+            if (_unitOfWorkManager.Current != null)
+                return null;
+
+            var uow = _unitOfWorkManager.Begin();
+
+            return new DisposeAction(() => {
+                uow.Complete();
+                uow.Dispose();
+            });
         }
     }
 }

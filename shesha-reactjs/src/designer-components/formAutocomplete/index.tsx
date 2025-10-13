@@ -18,8 +18,8 @@ const FormAutocompleteComponent: IToolboxComponent<IFormAutocompleteComponentPro
   Factory: () => {
     throw new Error('Form Autocomplete component was removed');
   },
-  migrator: m => m
-    .add<IFormAutocompleteComponentProps>(0, prev => ({ ...prev, convertToFullId: true }))
+  migrator: (m) => m
+    .add<IFormAutocompleteComponentProps>(0, (prev) => ({ ...prev, convertToFullId: true }))
     .add<IFormAutocompleteComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IFormAutocompleteComponentProps>(2, (prev) => migrateReadOnly(prev))
     .add<IConfigurableItemAutocompleteComponentProps>(3, (prev) => {
@@ -27,14 +27,13 @@ const FormAutocompleteComponent: IToolboxComponent<IFormAutocompleteComponentPro
         ...prev,
         type: 'configurableItemAutocomplete',
         version: 0,
-        mode: 'single',        
-        entityType: 'Shesha.Core.FormConfiguration',        
+        mode: 'single',
+        entityType: 'Shesha.Core.FormConfiguration',
         filter: {
-          "==": [{ "var": "isTemplate" }, false]
-        }
+          "==": [{ var: "isTemplate" }, false],
+        },
       };
-    })
-  ,
+    }),
 };
 
 export default FormAutocompleteComponent;

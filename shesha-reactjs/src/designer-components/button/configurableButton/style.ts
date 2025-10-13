@@ -1,7 +1,7 @@
 import { createStyles } from "@/styles";
 
 export const useStyles = createStyles(({ css, cx }) => {
-    const configurableButton = cx("flex-container", css`
+  const configurableButton = cx("flex-container", css`
         .sha-toolbar-btn-configurable {
           display: flex;
           align-items: center;
@@ -12,10 +12,16 @@ export const useStyles = createStyles(({ css, cx }) => {
                 text-overflow: ellipsis;
                 white-space: nowrap;
         }
-       
     }
     `);
-    return {
-        configurableButton,
-    };
+
+  const disabled = css`
+        cursor: not-allowed;
+        pointer-events: none;
+    `;
+
+  return {
+    configurableButton,
+    disabled,
+  };
 });

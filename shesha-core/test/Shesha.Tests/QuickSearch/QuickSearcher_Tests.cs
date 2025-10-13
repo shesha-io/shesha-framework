@@ -2,8 +2,10 @@
 using Abp.Domain.Repositories;
 using Abp.Linq;
 using Abp.Runtime.Caching;
+using DocumentFormat.OpenXml.Wordprocessing;
 using FluentAssertions;
 using Moq;
+using NSubstitute;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -11,6 +13,7 @@ using Shesha.Domain.Enums;
 using Shesha.QuickSearch;
 using Shesha.QuickSearch.Cache;
 using Shesha.Services;
+using Shesha.Tests.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +25,14 @@ namespace Shesha.Tests.QuickSearch
     /// <summary>
     /// Tests for <see cref="QuickSearcher"/>
     /// </summary>
+    [Collection(SqlServerCollection.Name)]
     public class QuickSearcher_Tests : SheshaNhTestBase
     {
+        public QuickSearcher_Tests(SqlServerFixture fixture) : base(fixture)
+        {
+            
+        }
+
         [Fact]
         public void SearchPerson_TextFields_Convert_Test()
         {
@@ -91,7 +100,7 @@ namespace Shesha.Tests.QuickSearch
                 nameof(TestPerson.Title)
             });
 
-            var refListId = GetReflistId(new ReferenceListIdentifier(null, "Shesha.Core", "PersonTitles"));
+            var refListId = GetReflistRevisionId(new ReferenceListIdentifier(null, "Shesha.Core", "PersonTitles"));
             
             var expected = $@"ent => value(NHibernate.Linq.NhQueryable`1[Shesha.Domain.ReferenceListItem]).Any(entTitle => (((entTitle.ReferenceList.Id == {refListId}) AndAlso (Convert(ent.Title, Nullable`1) == Convert(entTitle.ItemValue, Nullable`1))) AndAlso entTitle.Item.Contains(""mrs"")))";
 
@@ -105,13 +114,25 @@ namespace Shesha.Tests.QuickSearch
             WithUnitOfWork(() =>
             {
                 var refList = refListHelper.GetReferenceList(refListId);
-                id = refList?.Id;
+                id = refList.Id;
+            });
+            return id;
+        }
+
+        private Guid? GetReflistRevisionId(ReferenceListIdentifier refListId)
+        {
+            var refListHelper = Resolve<IReferenceListHelper>();
+            Guid? id = null;
+            WithUnitOfWork(() =>
+            {
+                var refList = refListHelper.GetReferenceList(refListId);
+                id = refList.Id;
             });
             return id;
         }
 
         [Fact]
-        public async Task SearchTestPerson_RefList_Fetch_TestAsync()
+        public Task SearchTestPerson_RefList_Fetch_TestAsync()
         {
             var quickSearcher = Resolve<QuickSearcher>();
 
@@ -119,7 +140,7 @@ namespace Shesha.Tests.QuickSearch
                 nameof(TestPerson.Title)
             });
 
-            await TryFetchDataAsync<Person, Guid>(query => query.Where(expression), data => {
+            return TryFetchDataAsync<Person, Guid>(query => query.Where(expression), data => {
                 // check data
             });
         }
@@ -133,7 +154,9 @@ namespace Shesha.Tests.QuickSearch
                 nameof(TestOrganisation.ContactMethods)
             });
 
-            Assert.Equal(@"ent => value(NHibernate.Linq.NhQueryable`1[Shesha.Domain.ReferenceListItem]).Any(entContactMethods => ((((entContactMethods.ReferenceList.Configuration.Module.Name == ""Shesha"") AndAlso (entContactMethods.ReferenceList.Configuration.Name == ""Shesha.Core.PreferredContactMethod"")) AndAlso ((Convert(ent.ContactMethods, Nullable`1) & Convert(entContactMethods.ItemValue, Nullable`1)) > Convert(0, Nullable`1))) AndAlso entContactMethods.Item.Contains(""email"")))", expression.ToString());
+            var refListId = GetReflistRevisionId(new ReferenceListIdentifier("Shesha", "Shesha.Core", "PreferredContactMethod"));
+
+            Assert.Equal($@"ent => value(NHibernate.Linq.NhQueryable`1[Shesha.Domain.ReferenceListItem]).Any(entContactMethods => (((entContactMethods.ReferenceList.Id == {refListId}) AndAlso ((Convert(ent.ContactMethods, Nullable`1) & Convert(entContactMethods.ItemValue, Nullable`1)) > Convert(0, Nullable`1))) AndAlso entContactMethods.Item.Contains(""email"")))", expression.ToString());
         }
 
         [Fact]
@@ -153,10 +176,12 @@ namespace Shesha.Tests.QuickSearch
 
             var refList = new ReferenceList {
                 Id = Guid.NewGuid(),
-                Namespace = "Shesha.Core",
                 Name = "PreferredContactMethod",
-                Module = new Domain.ConfigurationItems.Module { Name = "Shesha" }
+                Module = new Domain.Module { Name = "Shesha" }
             };
+            refList.Id = Guid.NewGuid();
+            refList.Namespace = "Shesha.Core";
+
             var refListItems = new List<ReferenceListItem>();
             var enumValues = Enum.GetValues(typeof(TestContactMethod));
             foreach (var enumValue in enumValues)
@@ -165,7 +190,7 @@ namespace Shesha.Tests.QuickSearch
                 {
                     Id = Guid.NewGuid(),
                     ReferenceList = refList,
-                    Item = Enum.GetName(typeof(TestContactMethod), enumValue),
+                    Item = Enum.GetName(typeof(TestContactMethod), enumValue) ?? string.Empty,
                     ItemValue = (Int64)enumValue
                 });
             }
@@ -174,9 +199,11 @@ namespace Shesha.Tests.QuickSearch
             rliRepoMock.Setup(s => s.GetAll()).Returns(() => refListItems.AsQueryable());
 
             var refListHelperRepoMock = new Mock<IReferenceListHelper>();
-            refListHelperRepoMock.Setup(s => s.GetReferenceList(It.IsAny<ReferenceListIdentifier>())).Returns<ReferenceListIdentifier>((id) => {
-                return refList;
-            });
+
+            refListHelperRepoMock.Setup(s => s.GetReferenceList(It.IsAny<ReferenceListIdentifier>())).Returns(refList);
+            refListHelperRepoMock.Setup(s => s.GetListId(It.IsAny<ReferenceListIdentifier>())).Returns(refList.Id);
+
+            var refListRevisionId = refListHelperRepoMock.Object.GetListId(new ReferenceListIdentifier("Shesha", "Shesha.Core.PreferredContactMethod"));
 
             var quickSearchPropertiesCacheHolder = Resolve<IQuickSearchPropertiesCacheHolder>();
             var quickSearcher = new QuickSearcher(Resolve<IEntityConfigurationStore>(), rliRepoMock.Object, Resolve<ICacheManager>(), refListHelperRepoMock.Object, quickSearchPropertiesCacheHolder);
@@ -233,11 +260,10 @@ namespace Shesha.Tests.QuickSearch
 
     public class TestOrganisation : Entity<Guid>
     {
-        //[EntityDisplayName]
         public virtual string Name { get; set; }
         public virtual string Address { get; set; }
         
-        [MultiValueReferenceList("Shesha.Core", "PreferredContactMethod"/*, Module = "Shesha"*/)]
+        [MultiValueReferenceList("Shesha.Core", "PreferredContactMethod", Module = "Shesha")]
         public virtual Int64? ContactMethods { get; set; }
     }
 

@@ -15,7 +15,7 @@ namespace Shesha.Notifications.Distribution.NotificationChannels.Dto
         /// <summary>
         /// The maximum supported size for the message in characters
         /// </summary>
-        public int MaxMessageSize { get; set; }
+        public int? MaxMessageSize { get; set; }
         /// <summary>
         /// If true indicates that users may opt out of this notification
         /// </summary>

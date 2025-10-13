@@ -1,14 +1,15 @@
 import { CalendarOutlined } from '@ant-design/icons';
-import React, { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react';
+import React, { Fragment } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customDateEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
-import { getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IDateFieldProps } from './interfaces';
 import {
   DATE_TIME_FORMATS,
+  defaultStyles,
 } from './utils';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -16,14 +17,7 @@ import { DatePickerWrapper } from './datePickerWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from '../textField/utils';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
-import { useSheshaApplication } from '@/providers';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { removeUndefinedProps } from '@/utils/object';
+
 
 const DateField: IToolboxComponent<IDateFieldProps> = {
   type: 'dateField',
@@ -36,70 +30,18 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
 
-    const localStyle = getStyle(model.style, allData.data);
-
-    const dimensions = model?.dimensions;
-    const border = model?.border;
-    const font = model?.font;
-    const shadow = model?.shadow;
-    const background = model?.background;
-
-    const { backendUrl, httpHeaders } = useSheshaApplication();
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, localStyle), [border]);
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-
-    useEffect(() => {
-
-      const fetchStyles = async () => {
-        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-            .then((response) => {
-              return response.blob();
-            })
-            .then((blob) => {
-              return URL.createObjectURL(blob);
-            }) : '';
-
-        const style = await getBackgroundStyle(background, localStyle, storedImageUrl);
-        setBackgroundStyles(style);
-      };
-
-      fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
-
-
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    const additionalStyles: CSSProperties = removeUndefinedProps({
-      ...stylingBoxAsCSS,
-      ...dimensionsStyles,
-      ...borderStyles,
-      ...fontStyles,
-      ...backgroundStyles,
-      ...shadowStyles,
-    });
-
-    const finalStyle = removeUndefinedProps({ ...localStyle, ...additionalStyles });
-
-
     return (
       <Fragment>
         <ConfigurableFormItem model={model}>
           {(value, onChange) => {
             const customEvent = customDateEventHandler(model, allData);
-            const onChangeInternal = (...args: any[]) => {
+            const onChangeInternal = (...args: any[]): void => {
               customEvent.onChange(args[0], args[1]);
               if (typeof onChange === 'function')
                 onChange(...args);
             };
 
-            return <DatePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} additionalStyles={finalStyle} />;
+            return <DatePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
           }}
         </ConfigurableFormItem>
       </Fragment>
@@ -125,13 +67,13 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     .add<IDateFieldProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IDateFieldProps>(4, (prev) => ({
       ...prev,
-      showNow: Boolean(prev.showNow || prev['showToday'])
+      showNow: Boolean(prev.showNow || prev['showToday']),
     }))
     .add<IDateFieldProps>(5, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
         hideBorder: prev.hideBorder,
-        style: prev.style
+        style: prev.style,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
@@ -152,10 +94,8 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IDateFieldProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-  ,
+    .add<IDateFieldProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
-
     return {
       ...model,
       dateFormat: !!metadata.dataFormat ? metadata.dataFormat : model.dateFormat,

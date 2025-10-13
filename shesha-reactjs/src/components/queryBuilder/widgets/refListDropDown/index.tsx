@@ -8,11 +8,11 @@ const RefListDropdownWidget: RefListDropdownWidgetType = {
   ...BasicConfig.widgets.select,
   jsType: 'number',
   type: 'refList',
-  factory: props => {
+  factory: (props) => {
     const { fieldDefinition, value, setValue, readonly } = props;
     const customSettings = fieldDefinition.fieldSettings as CustomFieldSettings;
 
-    const onChange = v => {
+    const onChange = (v): void => {
       setValue(v);
     };
 

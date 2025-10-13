@@ -1,6 +1,7 @@
+import { FormRawMarkup } from '@/interfaces';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
-export const getSettings = () =>
+export const getSettings = (): FormRawMarkup =>
   new DesignerToolbarSettings()
     .addCollapsiblePanel({
       id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
@@ -52,7 +53,7 @@ export const getSettings = () =>
             settingsValidationErrors: [],
             templateSettings: {
               functionName: 'getAvailableConstants',
-              useAsyncDeclaration: true
+              useAsyncDeclaration: true,
             },
             availableConstantsExpression: async ({ metadataBuilder, data }) => {
               const { modelType } = data ?? {};
@@ -68,11 +69,12 @@ export const getSettings = () =>
               result.addMetadataBuilder();
               return result.build();
             },
-            resultTypeExpression: async ({ metadataBuilder }) => {
-              return metadataBuilder.metadata();
+            resultTypeExpression: ({ metadataBuilder }) => {
+              const meta = metadataBuilder.metadata();
+              return Promise.resolve(meta);
             },
             validate: {},
-            wrapInTemplate: true
+            wrapInTemplate: true,
           })
           .addCodeEditor({
             id: '0vdsTdr-zK',
@@ -86,21 +88,23 @@ export const getSettings = () =>
             settingsValidationErrors: [],
             templateSettings: {
               functionName: 'getResultType',
-              useAsyncDeclaration: true
+              useAsyncDeclaration: true,
             },
-            availableConstantsExpression: async ({ metadataBuilder }) => {
-              return metadataBuilder.object("constants")
+            availableConstantsExpression: ({ metadataBuilder }) => {
+              const meta = metadataBuilder.object("constants")
                 .addStandard(["shesha:metadataBuilder", "shesha:form", "shesha:formData"])
                 .build();
+              return Promise.resolve(meta);
             },
-            resultTypeExpression: async ({ metadataBuilder }) => {
-              return metadataBuilder.metadata();
+            resultTypeExpression: ({ metadataBuilder }) => {
+              const meta = metadataBuilder.metadata();
+              return Promise.resolve(meta);
             },
             validate: {},
-            wrapInTemplate: true
+            wrapInTemplate: true,
           })
-          .toJson()
-        ]
-      }
+          .toJson(),
+        ],
+      },
     })
     .toJson();

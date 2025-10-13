@@ -1,11 +1,11 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Divider, Form, Radio, Space, Tooltip, InputNumber } from 'antd';
+import { Form, Radio, Space, Tooltip, InputNumber } from 'antd';
 import React, { FC, useCallback } from 'react';
 import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { humanizeString } from '@/utils/string';
-import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, TEXT_PRESET_COLORS } from './presetColors';
+import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, SHESHA_COLORS, TEXT_PRESET_COLORS } from './presetColors';
 import { formItemLayout } from './form';
 
 interface IThemeConfig {
@@ -14,30 +14,30 @@ interface IThemeConfig {
   hint?: string;
 }
 
-export interface ThemeParametersProps { 
+export interface ThemeParametersProps {
   value?: IConfigurableTheme;
   onChange?: (theme: IConfigurableTheme) => void;
   readonly?: boolean;
 }
 
 const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly }) => {
-  //const { theme, changeTheme } = useTheme();
+  // const { theme, changeTheme } = useTheme();
 
-  const changeThemeInternal = (theme: IConfigurableTheme) => {
+  const changeThemeInternal = (theme: IConfigurableTheme): void => {
     if (onChange) onChange(theme);
   };
 
   const mergeThemeSection = (
     section: keyof IConfigurableTheme,
-    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
-  ) => {
+    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
+  ): IConfigurableTheme => {
     return { ...(theme[section] as unknown as Record<string, unknown>), ...(update as Record<string, unknown>) };
   };
 
   const updateTheme = (
     section: keyof IConfigurableTheme,
-    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
-  ) => {
+    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
+  ): void => {
     changeThemeInternal({
       ...theme,
       [section]: mergeThemeSection(section, update),
@@ -51,16 +51,17 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
       initialColor: string,
       onChange: (color: string) => void,
       presetColors?: string[],
-      hint?: string
+      hint?: string,
     ) => (
       <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
         <Space>
           <ColorPicker
             title={humanizeString(colorName)}
-            presets={[{ label: "Presets", defaultOpen: true, colors: presetColors ?? PRESET_COLORS }]}
+            presets={[{ label: 'Presets', defaultOpen: true, colors: presetColors ?? PRESET_COLORS }, { label: 'Shesha', defaultOpen: false, colors: SHESHA_COLORS }]}
             value={initialColor}
             onChange={onChange}
             readOnly={readonly}
+            allowClear={true}
           />
           <span>{humanizeString(colorName)} </span>
           <Show when={Boolean(hint)}>
@@ -73,7 +74,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
         </Space>
       </div>
     ),
-    [theme]
+    [theme],
   );
 
   const colorConfigs: IThemeConfig[] = [
@@ -93,12 +94,12 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
     <div style={{ marginTop: '10px' }}>
       <SectionSeparator title="Theme" />
 
-      <Space direction="vertical" align="start">
-        {colorConfigs.map((config, index) =>
-          renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], (hex) => config.onChange(hex))
-        )}
-
-        <Divider />
+      <Space direction="vertical" align="start" size={24}>
+        <Space direction="vertical" align="start">
+          {colorConfigs.map((config, index) =>
+            renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], (hex) => config.onChange(hex)),
+          )}
+        </Space>
 
         {/* Layout background Color */}
         {renderColor(
@@ -106,11 +107,11 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           'layoutBackground',
           theme?.layoutBackground,
           (hex) => changeThemeInternal({ ...theme, layoutBackground: hex }),
-          BACKGROUND_PRESET_COLORS
+          BACKGROUND_PRESET_COLORS,
         )}
       </Space>
 
-      <SectionSeparator title="Text" />
+      <SectionSeparator title="Text" containerStyle={{ marginTop: '8px' }} />
 
       <Space direction="vertical" align="start">
         {textConfigs.map((config, index) =>
@@ -120,12 +121,12 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             theme?.text?.[config.name],
             (hex) => config.onChange(hex),
             TEXT_PRESET_COLORS,
-            config?.hint
-          )
+            config?.hint,
+          ),
         )}
       </Space>
 
-      <SectionSeparator title="Sidebar" />
+      <SectionSeparator title="Sidebar" containerStyle={{ marginTop: '8px' }} />
 
       <Form>
         <Form.Item label="Theme">
@@ -146,22 +147,29 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
         </Form.Item>
       </Form>
 
-      <SectionSeparator title="Form Span Settings" />
-      <Form {...formItemLayout} fields={[
-        {
-          name: ["label"],
-          value: theme?.labelSpan,
-        },
-        {
-          name: ["component"],
-          value: theme?.componentSpan
-        }
-      ]}
+      <SectionSeparator title="Form Span Settings" containerStyle={{ marginTop: '8px' }} />
+      <Form
+        {...formItemLayout}
+        labelWrap={true}
+        layout="horizontal"
+        labelAlign="right"
+        labelCol={{ span: 14 }}
+        wrapperCol={{ span: 10 }}
+        fields={[
+          {
+            name: ['label'],
+            value: theme?.labelSpan,
+          },
+          {
+            name: ['component'],
+            value: theme?.componentSpan,
+          },
+        ]}
       >
-
-        <Form.Item label="Label" name={"label"}>
-          <InputNumber placeholder="Label Span"
-            style={{ width: "100%" }}
+        <Form.Item label="Label" name="label">
+          <InputNumber
+            placeholder="Label Span"
+            style={{ width: '100%' }}
             onChange={(value: number) => {
               changeThemeInternal({
                 ...theme,
@@ -172,9 +180,10 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           />
         </Form.Item>
 
-        <Form.Item label="Component" name={"component"}>
-          <InputNumber placeholder="Component Span"
-            style={{ width: "100%" }}
+        <Form.Item label="Component" name="component">
+          <InputNumber
+            placeholder="Component Span"
+            style={{ width: '100%' }}
             onChange={(value: number) => {
               changeThemeInternal({
                 ...theme,
@@ -185,7 +194,6 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           />
         </Form.Item>
       </Form>
-
     </div>
   );
 };

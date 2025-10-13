@@ -16,35 +16,35 @@ export enum ScheduledJobExecutionActionEnums {
 
 export const getExecutionLogRequestAction = createAction<IScheduledJobExecutionStateContext>(
   ScheduledJobExecutionActionEnums.GetExecutionLogRequest,
-  () => ({})
+  () => ({}),
 );
 export const getExecutionLogSuccessAction = createAction<IScheduledJobExecutionStateContext, IExecutionLogEvent[]>(
   ScheduledJobExecutionActionEnums.GetExecutionLogSuccess,
-  (executionLogEvents) => ({ executionLogEvents })
+  (executionLogEvents) => ({ executionLogEvents }),
 );
 export const getExecutionLogErrorAction = createAction<IScheduledJobExecutionStateContext>(
   ScheduledJobExecutionActionEnums.GetExecutionLogError,
-  () => ({})
+  () => ({}),
 );
 export const addExecutionLogEventAction = createAction<IScheduledJobExecutionStateContext, IExecutionLogEvent>(
   ScheduledJobExecutionActionEnums.AddExecutionLogEvent,
-  (eventToAdd) => ({ eventToAdd })
+  (eventToAdd) => ({ eventToAdd }),
 );
 export const setHubConnectionAction = createAction<IScheduledJobExecutionStateContext, HubConnection>(
   ScheduledJobExecutionActionEnums.SetHubConnection,
-  (hubConnection) => ({ hubConnection })
+  (hubConnection) => ({ hubConnection }),
 );
 
 export const downloadLogFileRequestAction = createAction<IScheduledJobExecutionStateContext>(
   ScheduledJobExecutionActionEnums.DownloadLogFileRequest,
-  () => ({})
+  () => ({}),
 );
 export const downloadLogFileSuccessAction = createAction<IScheduledJobExecutionStateContext>(
   ScheduledJobExecutionActionEnums.DownloadLogFileSuccess,
-  () => ({})
+  () => ({}),
 );
 export const downloadLogFileErrorAction = createAction<IScheduledJobExecutionStateContext>(
   ScheduledJobExecutionActionEnums.DownloadLogFileError,
-  () => ({})
+  () => ({}),
 );
 /* NEW_ACTION_GOES_HERE */

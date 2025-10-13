@@ -30,7 +30,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   const isRawUrl = imageSource === 'url' && Boolean(value);
   const isBase64 = imageSource === 'base64' && Boolean(value);
 
-  const fetchStoredFile = (url: string) => {
+  const fetchStoredFile = (url: string): void => {
     fetch(`${backendUrl}${url}`,
       { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
       .then((response) => {
@@ -52,7 +52,6 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   }, [isStoredFile, fileInfo]);
 
   const content = useMemo(() => {
-
     return isRawUrl
       ? value
       : isBase64
@@ -62,7 +61,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
           : null;
   }, [imageSource, value, fileUrl]);
 
-  const onRemove = () => {
+  const onRemove = (): void => {
     if (imageSource === 'base64') {
       if (onChange)
         onChange(null);
@@ -80,17 +79,17 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
           onChange(await toBase64(file));
       } else if (imageSource === 'storedFile') {
         uploadFile({ file: file }, () => {
-          //if (value)
-          //fetchStoredFile();
+          // if (value)
+          // fetchStoredFile();
         });
       }
     },
-    fileList: []
+    fileList: [],
   };
 
   return (
     <div style={{ position: 'relative', float: 'left' }}>
-      {content &&
+      {content && (
         <Image
           src={content}
           alt={props?.alt}
@@ -99,22 +98,22 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
           preview={allowPreview}
           style={styles}
         />
-      }
-      {!readOnly &&
+      )}
+      {!readOnly && (
         <>
           <div style={content ? { position: 'absolute', top: 'calc(50% - 50px)', left: 'calc(50% - 40px)' } : {}}>
             <Upload
               {...uploadProps}
             >
-              {content && <Tooltip title='Upload'><Button shape='circle' ghost icon={<UploadOutlined />} /></Tooltip>}
+              {content && <Tooltip title="Upload"><Button shape="circle" ghost icon={<UploadOutlined />} /></Tooltip>}
               {!content && <Button icon={<UploadOutlined />} type="link">(press to upload)</Button>}
             </Upload>
           </div>
           <div style={{ position: 'absolute', top: 'calc(50% - 50px)', left: 'calc(50% + 10px)' }}>
-            {content && <Tooltip title='Remove'><Button shape='circle' ghost icon={<DeleteOutlined />} onClick={onRemove} /></Tooltip>}
+            {content && <Tooltip title="Remove"><Button shape="circle" ghost icon={<DeleteOutlined />} onClick={onRemove} /></Tooltip>}
           </div>
         </>
-      }
+      )}
     </div>
   );
 };

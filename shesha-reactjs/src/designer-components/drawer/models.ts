@@ -1,10 +1,7 @@
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
-import { IBackgroundValue } from '../_settings/utils/background/interfaces';
-import { IBorderValue } from '../_settings/utils/border/interfaces';
-import { IShadowValue } from '../_settings/utils/shadow/interfaces';
-import { IFontValue } from '../_settings/utils/font/interfaces';
 import { IInputStyles } from '@/index';
+import { IBackgroundValue } from '../_settings/utils/background/interfaces';
 
 export interface IDrawerProps extends IConfigurableFormComponent {
   showFooter?: boolean;
@@ -23,8 +20,6 @@ export interface IDrawerProps extends IConfigurableFormComponent {
   placement?: 'top' | 'right' | 'bottom' | 'left';
   height?: string | number;
   width?: string | number;
-  background?: IBackgroundValue;
-  border?: IBorderValue;
   hideBorder?: boolean;
   stylingBox?: string;
   borderSize?: number;
@@ -33,19 +28,12 @@ export interface IDrawerProps extends IConfigurableFormComponent {
   fontColor?: string;
   backgroundColor?: string;
   fontSize?: number;
-  headerStyle?: string;
-  footerStyle?: string;
-  shadow?: IShadowValue;
-  headerShadow?: IShadowValue;
-  headerBackground?: IBackgroundValue;
-  font?: IFontValue;
-  footerShadow?: IShadowValue;
-  footerBackground?: IBackgroundValue;
+  headerStyles?: IDrawerProps;
+  footerStyles?: any;
+  background?: IBackgroundValue;
+
   desktop?: IInputStyles;
   tablet?: IInputStyles;
   mobile?: IInputStyles;
-
-
-
   components?: IConfigurableFormComponent[];
 }

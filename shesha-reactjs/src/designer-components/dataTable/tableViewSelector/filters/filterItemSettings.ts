@@ -20,6 +20,7 @@ export const filtersSettingsForm = new DesignerToolbarSettings()
     inputType: 'permissions',
     propertyName: 'permissions',
     label: 'Permissions',
+    jsSetting: true,
     size: 'small',
   })
   .toJson();

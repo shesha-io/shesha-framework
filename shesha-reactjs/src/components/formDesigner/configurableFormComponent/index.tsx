@@ -4,17 +4,17 @@ import FormComponent from '../formComponent';
 import React, {
   FC,
   MutableRefObject,
+  memo,
   useMemo,
-  useRef
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
-import { EditMode, IConfigurableFormComponent } from '@/providers';
+import { DataContextTopLevels, EditMode, IConfigurableFormComponent } from '@/providers';
 import {
   EditOutlined,
   EyeInvisibleOutlined,
   FunctionOutlined,
-  StopOutlined
+  StopOutlined,
 } from '@ant-design/icons';
 import { getActualPropertyValue, useAvailableConstantsData } from '@/providers/form/utils';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
@@ -28,16 +28,22 @@ import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
-  componentRef: MutableRefObject<any>;
+  selectedComponentId?: string;
+  readOnly?: boolean;
+  settingsPanelRef?: MutableRefObject<any>;
+  hidden?: boolean;
+  componentEditMode?: EditMode;
 }
-export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = ({ componentModel, componentRef }) => {
+const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerProps> = ({
+  componentModel,
+  selectedComponentId,
+  readOnly,
+  settingsPanelRef,
+  hidden,
+  componentEditMode,
+}) => {
   const { styles } = useStyles();
-  const allData = useAvailableConstantsData({ topContextId: 'all' });
-  const {
-    selectedComponentId,
-    readOnly,
-    settingsPanelRef,
-  } = useFormDesignerState();
+
   const getToolboxComponent = useFormDesignerComponentGetter();
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
@@ -45,9 +51,7 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   const invalidConfiguration = componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
 
   const hiddenFx = isPropertySettings(componentModel.hidden);
-  const hidden = getActualPropertyValue(componentModel, allData, 'hidden')?.hidden;
   const componentEditModeFx = isPropertySettings(componentModel.editMode);
-  const componentEditMode = getActualPropertyValue(componentModel, allData, 'editMode')?.editMode as EditMode;
 
   const actionText1 = (hiddenFx ? 'hidden' : '') + (hiddenFx && componentEditModeFx ? ' and ' : '') + (componentEditModeFx ? 'disabled' : '');
   const actionText2 = (hiddenFx ? 'showing' : '') + (hiddenFx && componentEditModeFx ? '/' : '') + (componentEditModeFx ? 'enabled' : '');
@@ -60,7 +64,7 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
 
     const createPortalInner = true
       ? createPortal
-      : a => a;
+      : (a) => a;
     const result = createPortalInner((
       <div
         onClick={(e) => e.stopPropagation()}
@@ -81,7 +85,7 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   return (
     <div
       className={classNames(styles.shaComponent, {
-        selected: isSelected,
+        "selected": isSelected,
         'has-config-errors': invalidConfiguration,
       })}
     >
@@ -112,9 +116,9 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
       <div>
-        <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly} >
+        <DragWrapper componentId={componentModel.id} readOnly={readOnly}>
           <div style={{ padding: '5px 3px' }}>
-            <FormComponent componentModel={componentModel} componentRef={componentRef} />
+            <FormComponent componentModel={componentModel} />
           </div>
         </DragWrapper>
       </div>
@@ -123,21 +127,33 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   );
 };
 
+const ConfigurableFormComponentDesignerMemo = memo(ConfigurableFormComponentDesignerInner);
+
+export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = (props) => {
+  const allData = useAvailableConstantsData({ topContextId: DataContextTopLevels.All });
+  const { selectedComponentId, readOnly, settingsPanelRef } = useFormDesignerState();
+  const hidden = getActualPropertyValue(props.componentModel, allData, 'hidden')?.hidden;
+  const componentEditMode = getActualPropertyValue(props.componentModel, allData, 'editMode')?.editMode as EditMode;
+
+  return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode }} />;
+};
+
 export interface IConfigurableFormComponentProps {
   id: string;
+  model?: IConfigurableFormComponent;
 }
 
-export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id }) => {
+export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id, model }) => {
   const isDrawing = useIsDrawingForm();
 
-  const componentRef = useRef(null);
-  const componentModel = ShaForm.useComponentModel(id);
+  const componentMarkupModel = ShaForm.useComponentModel(id);
+  const componentModel = model?.isDynamic ? model : componentMarkupModel;
 
   const ComponentRenderer = !isDrawing || componentModel?.isDynamic
     ? FormComponent
     : ConfigurableFormComponentDesigner;
 
   return (
-    <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
+    <ComponentRenderer componentModel={componentModel} />
   );
 };

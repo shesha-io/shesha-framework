@@ -5,6 +5,7 @@ using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
 using Shesha.Sms;
+using Shesha.Tests.Fixtures;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -13,8 +14,13 @@ using Xunit;
 
 namespace Shesha.Tests.Otp
 {
-    public class OtpManager_Tests: SheshaNhTestBase
+    [Collection(SqlServerCollection.Name)]
+    public class OtpManager_Tests : SheshaNhTestBase
     {
+        public OtpManager_Tests(SqlServerFixture fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public async Task SuccessOtp_TestAsync()
         {

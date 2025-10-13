@@ -7,11 +7,11 @@ import { useQueryBuilder } from '@/providers';
 export const QueryBuilder: FC<IQueryBuilderComponentProps> = (props) => {
   const queryBuilder = useQueryBuilder(false);
 
-  return queryBuilder ? (
-    <QueryBuilderRenderer {...props}></QueryBuilderRenderer>
+  return !props.modelType && queryBuilder ? (
+    <QueryBuilderRenderer {...props} />
   ) : (
     <QueryBuilderWithModelType modelType={props.modelType}>
-      <QueryBuilderRenderer {...props}></QueryBuilderRenderer>
+      <QueryBuilderRenderer {...props} />
     </QueryBuilderWithModelType>
   );
 };

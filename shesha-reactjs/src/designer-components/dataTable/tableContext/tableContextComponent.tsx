@@ -1,6 +1,6 @@
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
-import { LayoutOutlined } from '@ant-design/icons';
+import { DatabaseOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -13,10 +13,26 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   type: 'datatableContext',
   isInput: true,
   isOutput: true,
-  name: 'DataTable Context',
-  icon: <LayoutOutlined />,
+  name: 'Data Context',
+  icon: <DatabaseOutlined />,
   Factory: ({ model }) => {
     return model.hidden ? null : <TableContext {...model} />;
+  },
+  initModel: (model) => {
+    // Only set defaults for completely new components (when dragging from toolbox)
+    const isNewComponent = !model.sourceType && !model.entityType;
+
+    if (isNewComponent) {
+      return {
+        ...model,
+        sourceType: 'Entity',
+        entityType: 'Shesha.Domain.FormConfiguration',
+        dataFetchingMode: 'paging',
+        defaultPageSize: 10,
+      };
+    }
+
+    return model;
   },
   migrator: (m) =>
     m
@@ -27,8 +43,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
       .add<ITableContextComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc', allowReordering: 'no' }))
       .add<ITableContextComponentProps>(6, (prev) => migrateVisibility(prev))
-      .add<ITableContextComponentProps>(7, (prev) => ({ ...migrateFormApi.properties(prev) }))
-  ,
+      .add<ITableContextComponentProps>(7, (prev) => ({ ...migrateFormApi.properties(prev) })),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   getFieldsToFetch: (propertyName, rawModel) => {

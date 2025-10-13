@@ -1,29 +1,45 @@
-import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
-import { FilterOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { getSettings } from './settingsForm';
-import { AdvancedFilterButton } from './advancedFilterButton';
+import { migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { IButtonComponentProps } from '@/designer-components/button/interfaces';
-import { Show } from '@/components';
-import { Tooltip } from 'antd';
+import { IToolboxComponent } from '@/interfaces';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { FilterOutlined } from '@ant-design/icons';
+import React from 'react';
+import { AdvancedFilterButton } from './advancedFilterButton';
+import { getSettings } from './settingsForm';
+import { defaultStyles } from './utils';
+import { useDataTableStore } from '@/providers';
+import { Alert } from 'antd';
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'datatable.filter',
   isInput: false,
   name: 'Table Filter',
   icon: <FilterOutlined />,
-  Factory: ({ model }) =>
-    model.hidden ? null : (
-      <div>
-        <AdvancedFilterButton {...model} />
-        <Show when={Boolean(model.tooltip?.trim())}>
-          <Tooltip title={model.tooltip}>
-            <QuestionCircleOutlined className="tooltip-question-icon" size={14} color="gray" />
-          </Tooltip>
-        </Show>
-      </div>
-    ),
+  Factory: ({ model }) => {
+    const store = useDataTableStore(false);
+
+    const finalStyle = {
+      ...model.allStyles.dimensionsStyles,
+      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.borderStyles),
+      ...model.allStyles.fontStyles,
+      ...(['dashed', 'default'].includes(model.buttonType) && model.allStyles.backgroundStyles),
+      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.shadowStyles),
+      ...model.allStyles.stylingBoxAsCSS,
+      ...model.allStyles.jsStyle,
+    };
+    return store ? (
+      model.hidden ? null : (
+        <AdvancedFilterButton {...model} styles={finalStyle} />
+      )
+    ) : (
+      <Alert
+        className="sha-designer-warning"
+        message="Table filter must be used within a Data Table Context"
+        type="warning"
+      />
+    );
+  },
   initModel: (model) => {
     return {
       ...model,
@@ -31,8 +47,12 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
       label: '',
     };
   },
-  settingsFormMarkup: (context) => getSettings(context),
+  settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  migrator: (m) =>
+    m
+      .add<IButtonComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))
+      .add<IButtonComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
 
 export default AdvancedFilterButtonComponent;

@@ -1,6 +1,5 @@
 import { IFlatComponentsStructure, IFormActions, IFormSections, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
-import React, { FC } from 'react';
-import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
+import React, { ReactElement } from 'react';
 import { FormProvider } from '@/providers/form';
 import FormInfo from './formInfo';
 import { ConfigurableFormRenderer } from './configurableFormRenderer';
@@ -8,9 +7,10 @@ import { useAppConfigurator } from '@/providers/appConfigurator';
 import { IConfigurableFormRuntimeProps } from './models';
 import { FormFlatMarkupProvider } from '@/providers/form/providers/formMarkupProvider';
 import { ConditionalMetadataProvider } from '@/providers';
-import { useShaForm } from '@/providers/form/store/shaFormInstance';
+import { IShaFormInstance } from '@/index';
 
-export type IFormWithFlatMarkupProps = IConfigurableFormRuntimeProps & {
+export type IFormWithFlatMarkupProps<TValues extends object = object> = Omit<IConfigurableFormRuntimeProps<TValues>, 'shaForm'> & {
+  shaForm: IShaFormInstance<any>;
   formFlatMarkup: IFlatComponentsStructure;
   formSettings: IFormSettings;
   persistedFormProps?: IPersistedFormProps;
@@ -19,7 +19,7 @@ export type IFormWithFlatMarkupProps = IConfigurableFormRuntimeProps & {
   sections?: IFormSections;
 };
 
-export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
+export const FormWithFlatMarkup = <TValues extends object = object>(props: IFormWithFlatMarkupProps<TValues>): ReactElement => {
   const {
     mode,
     formRef,
@@ -27,22 +27,20 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
     propertyFilter,
     actions,
     sections,
-  } = props;
-
-  const {
     form,
+    formFlatMarkup,
+    formSettings,
+    persistedFormProps,
+    onMarkupUpdated,
+    shaForm,
   } = props;
 
-  const [shaForm] = useShaForm({ form: props.shaForm });
   const { formInfoBlockVisible } = useAppConfigurator();
-  const { formFlatMarkup, formSettings, persistedFormProps, onMarkupUpdated } = props;
-  if (!formFlatMarkup) return null;
 
-  const formStatusInfo = persistedFormProps?.versionStatus
-    ? ConfigurationItemVersionStatusMap[persistedFormProps.versionStatus]
-    : null;
+  if (!formFlatMarkup)
+    return null;
 
-  const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo;
+  const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible;
 
   return (
     <FormInfo visible={showFormInfo} formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated}>
@@ -60,10 +58,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
             actions={actions}
             sections={sections}
           >
-            <ConfigurableFormRenderer
-              shaForm={shaForm}
-              {...props}
-            />
+            <ConfigurableFormRenderer shaForm={shaForm} {...props} />
           </FormProvider>
         </FormFlatMarkupProvider>
       </ConditionalMetadataProvider>

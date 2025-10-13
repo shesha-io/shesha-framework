@@ -107,22 +107,26 @@ export const TEXT_JUSTIFY = [
 
 export const ALIGN_ITEMS = [
   { id: nanoid(), label: 'Normal', value: 'normal' },
-  { id: nanoid(), label: 'Stretch', value: 'stretch' },
   { id: nanoid(), label: 'Center', value: 'center' },
-  { id: nanoid(), label: 'Start', value: 'start' },
-  { id: nanoid(), label: 'End', value: 'end' },
-  { id: nanoid(), label: 'Flex start', value: 'flex-start' },
-  { id: nanoid(), label: 'Flex end', value: 'flex-end' },
   { id: nanoid(), label: 'Baseline', value: 'baseline' },
-  { id: nanoid(), label: 'First baseline', value: 'first baseline' },
-  { id: nanoid(), label: 'Last baseline', value: 'last baseline' },
-  { id: nanoid(), label: 'Safe center', value: 'safe center' },
-  { id: nanoid(), label: 'Unsafe center', value: 'unsafe center' },
   { id: nanoid(), label: 'Inherit', value: 'inherit' },
   { id: nanoid(), label: 'Initial', value: 'initial' },
   { id: nanoid(), label: 'Revert', value: 'revert' },
   { id: nanoid(), label: 'Revert layer', value: 'revert-layer' },
   { id: nanoid(), label: 'Unset', value: 'unset' },
+];
+
+export const ALIGN_ITEMS_GRID = [
+  { id: nanoid(), label: 'Stretch', value: 'stretch' },
+  { id: nanoid(), label: 'Start', value: 'start' },
+  { id: nanoid(), label: 'End', value: 'end' },
+  { id: nanoid(), label: 'First baseline', value: 'first baseline' },
+  { id: nanoid(), label: 'Last baseline', value: 'last baseline' },
+];
+
+export const ALIGN_ITEMS_FLEX = [
+  { id: nanoid(), label: 'Flex start', value: 'flex-start' },
+  { id: nanoid(), label: 'Flex end', value: 'flex-end' },
 ];
 
 export const ALIGN_SELF = [
@@ -164,18 +168,22 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     shadowStyle,
   } = prev || {};
 
-
   const isBelow = shadowStyle === 'below';
   const isAbove = shadowStyle === 'above';
 
   return {
+    background: {
+      type: 'color',
+      color: '',
+
+    },
     dimensions: {
       width,
       height,
       minHeight,
       maxHeight,
       minWidth,
-      maxWidth
+      maxWidth,
     },
     border: {
       radiusType: 'all',
@@ -183,22 +191,21 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       border: {
         all: { width: borderWidth, color: borderColor, style: borderStyle as any },
       },
-      radius: { all: borderRadius }
+      radius: { all: borderRadius },
     },
     shadow: {
       blurRadius: isBelow || isAbove ? 4 : 0,
-      color: 'rgba(0, 0, 0, 0.15)',
+      color: '#000000',
       offsetX: 0,
       offsetY: isAbove ? -2 : isBelow ? 2 : 0,
-      spreadRadius: 0
+      spreadRadius: 0,
     },
-    position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' },
-    display: prev?.display,
+    display: prev?.className === 'sha-index-table-control' || prev?.className === 'index-table-controls-right' ? 'flex' : prev?.display ?? null,
     direction: prev?.direction ?? "horizontal",
-    flexWrap: prev?.flexWrap ?? "wrap",
+    flexWrap: prev?.className === 'sha-index-table-control' || prev?.className === 'index-table-controls-right' ? 'nowrap' : prev?.flexWrap ?? "wrap",
     flexDirection: prev?.flexDirection ?? "row",
     justifyContent: prev?.justifyContent ?? "left",
-    alignItems: prev?.alignItems ?? "normal",
+    alignItems: prev?.className === 'index-table-controls-right' ? 'center' : prev?.alignItems ?? "normal",
     alignSelf: prev?.alignSelf ?? "normal",
     justifyItems: prev?.justifyItems ?? "normal",
     textJustify: prev?.textJustify ?? "auto",
@@ -206,6 +213,5 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     noDefaultStyling: prev?.noDefaultStyling ?? false,
     gridColumnsCount: prev?.gridColumnsCount ?? null,
     gap: prev?.gap ?? '8px',
-    overflow: prev?.overflow ?? 'auto'
   };
 };

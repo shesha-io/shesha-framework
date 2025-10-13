@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm, useFormData, useGlobalState } from '@/providers';
+import { FormMode } from '@/providers';
 import { getSettings } from './settingsForm';
 import ShaIcon from '@/components/shaIcon';
 import { IAlertComponentProps } from './interfaces';
@@ -16,36 +16,41 @@ import parse from 'html-react-parser';
 const defaultTextForPreview = {
   success: {
     text: 'Success Alert Preview Text',
-    description: 'This is a success alert preview text. More information here.'
+    description: 'This is a success alert preview text. More information here.',
   },
   info: {
     text: 'Info Alert Preview Text',
-    description: 'This is an info alert preview text. More information here.'
+    description: 'This is an info alert preview text. More information here.',
   },
   warning: {
     text: 'Warning Alert Preview Text',
-    description: 'This is a warning alert preview text. More information here.'
+    description: 'This is a warning alert preview text. More information here.',
   },
   error: {
     text: 'Error Alert Preview Text',
-    description: 'This is an error alert preview text. More information here.'
-  }
+    description: 'This is an error alert preview text. More information here.',
+  },
 };
 
-const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
+interface IAlertComponentCalulatedValues {
+  evaluatedMessage: string;
+  evaluatedDescription: string;
+  formMode: FormMode;
+}
+
+const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCalulatedValues> = {
   type: 'alert',
   isInput: false,
   name: 'Alert',
   icon: <ExclamationCircleOutlined />,
-  Factory: ({ model }) => {
-    const { data: formData } = useFormData();
-    const { globalState } = useGlobalState();
-    const { formMode } = useForm();
-
-    const { text, alertType, description, showIcon, closable, icon, style } = model;
-
-    var evaluatedMessage = evaluateString(text, { data: formData, globalState });
-    var evaluatedDescription = evaluateString(description, formData);
+  calculateModel: (model, allData) => ({
+    evaluatedMessage: evaluateString(model.text, { data: allData.data, globalState: allData.globalState }),
+    evaluatedDescription: evaluateString(model.description, allData.data),
+    formMode: allData.form.formMode,
+  }),
+  Factory: ({ model, calculatedModel }) => {
+    const { alertType, showIcon, closable, icon, style } = model;
+    let { evaluatedMessage, evaluatedDescription, formMode } = calculatedModel;
 
     if (model.hidden) return null;
 
@@ -59,15 +64,15 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
       }
     }
 
-    const renderContent = (content: string | React.ReactNode) => {
+    const renderContent = (content: string | React.ReactNode): ReactNode => {
       if (React.isValidElement(content)) {
         return React.cloneElement(content as React.ReactElement, {
           style: {
             ...(content as React.ReactElement).props?.style,
             padding: 0,
             margin: 0,
-            lineHeight: 'normal'
-          }
+            lineHeight: 'normal',
+          },
         });
       }
 
@@ -85,8 +90,8 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
               ...(parsedContent as React.ReactElement).props?.style,
               padding: 0,
               margin: 0,
-              lineHeight: 'normal'
-            }
+              lineHeight: 'normal',
+            },
           });
         }
         return parsedContent;
@@ -110,7 +115,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
         type={alertType}
         description={descriptionContent}
         showIcon={showIcon}
-        style={{ ...getStyle(style, formData), padding: '8px' }} // Temporary. Make it configurable
+        style={{ ...getStyle(style, {}), padding: '8px' }} // Temporary. Make it configurable
         closable={closable}
         icon={icon ? <ShaIcon iconName={icon as any} /> : null}
       />
@@ -123,8 +128,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   migrator: (m) => m
     .add<IAlertComponentProps>(0, (prev: IAlertComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAlertComponentProps>(1, (prev) => migrateVisibility(prev))
-    .add<IAlertComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-  ,
+    .add<IAlertComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };

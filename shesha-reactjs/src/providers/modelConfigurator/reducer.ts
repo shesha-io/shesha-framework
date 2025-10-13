@@ -7,10 +7,11 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
   {
     [ModelActionEnums.CreateNew]: (
       state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<ModelConfigurationDto>
+      action: ReduxActions.Action<ModelConfigurationDto>,
     ) => {
       return {
         ...state,
+        isCreateNew: true,
         modelConfiguration: action.payload,
         id: '',
       };
@@ -25,6 +26,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
       }
       return {
         ...state,
+        isCreateNew: false,
         modelConfiguration: {},
         id: action.payload,
       };
@@ -33,37 +35,49 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
     [ModelActionEnums.LoadRequest]: (state: IModelConfiguratorStateContext) => {
       return {
         ...state,
-        //id: payload
+        // id: payload
       };
     },
 
     [ModelActionEnums.LoadSuccess]: (
       state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<ModelConfigurationDto>
+      action: ReduxActions.Action<ModelConfigurationDto>,
     ) => {
       const { payload } = action;
 
       return {
         ...state,
+        isCreateNew: false,
         modelConfiguration: payload,
       };
     },
 
     [ModelActionEnums.SaveSuccess]: (
       state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<ModelConfigurationDto>
+      action: ReduxActions.Action<ModelConfigurationDto>,
     ) => {
       const { payload } = action;
 
       return {
         ...state,
+        isCreateNew: false,
         id: payload.id,
         modelConfiguration: { ...payload },
       };
     },
+
+    [ModelActionEnums.Cancel]: (
+      state: IModelConfiguratorStateContext,
+    ) => {
+      return {
+        ...state,
+        isCreateNew: false,
+      };
+    },
+
   },
 
-  MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE
+  MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
 );
 
 export default modelReducer;

@@ -1,10 +1,8 @@
-import { StorageProxy } from "@/providers/dataContextProvider/contexts/storageProxy";
-
 interface IAnyObject {
   [value: string]: any;
 }
 
-const removeUndefined = (input: IAnyObject) => {
+const removeUndefined = (input: IAnyObject): IAnyObject => {
   const newObj = {};
 
   Object.keys(input).forEach((key) => {
@@ -15,7 +13,7 @@ const removeUndefined = (input: IAnyObject) => {
   return newObj;
 };
 
-export const removeUndefinedProperties = (input: IAnyObject, nested = false) => {
+export const removeUndefinedProperties = (input: IAnyObject, nested = false): IAnyObject => {
   const obj = { ...input };
 
   if (nested) {
@@ -27,20 +25,3 @@ export const removeUndefinedProperties = (input: IAnyObject, nested = false) => 
   return obj;
 };
 
-const arrayMoveMutate = (array, from, to) => {
-  array.splice(to < 0 ? array.length + to : to, 0, array.splice(from, 1)[0]);
-};
-
-export const arrayMove = (array, from, to) => {
-  array = array.slice();
-  arrayMoveMutate(array, from, to);
-  return array;
-};
-
-export const isArray = (value: any): boolean => {
-  return Array.isArray(value) 
-    ? true
-    : value instanceof StorageProxy && Array.isArray(value.getData())
-      ? true
-      : false;
-};

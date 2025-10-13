@@ -1,6 +1,7 @@
+import { FormRawMarkup } from '@/index';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
-export const getSettings = (data: any) =>
+export const getSettings = (data: object): FormRawMarkup =>
   new DesignerToolbarSettings(data)
     .addCollapsiblePanel({
       id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
@@ -81,9 +82,9 @@ export const getSettings = (data: any) =>
             propertyName: 'editMode',
             label: "Edit mode",
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-          }).toJson()
-        ]
-      }
+          }).toJson(),
+        ],
+      },
     })
     .addCollapsiblePanel({
       id: '21114bf6-f76d-4139-a850-c99bf06c8b69',
@@ -165,25 +166,26 @@ export const getSettings = (data: any) =>
               },
               {
                 id: '8d1541db-2151-4568-b925-d8777cea7f0f',
-                "name": "setGlobalState",
-                "description": "Setting the global state of the application",
-                "type": "(payload: { key: string, data: any } ) => void"
-              }
+                name: "setGlobalState",
+                description: "Setting the global state of the application",
+                type: "(payload: { key: string, data: any } ) => void",
+              },
             ],
             wrapInTemplate: true,
             templateSettings: {
-              functionName: 'onChange'
+              functionName: 'onChange',
             },
-            availableConstantsExpression: async ({ metadataBuilder }) => {
-              return metadataBuilder
+            availableConstantsExpression: ({ metadataBuilder }) => {
+              const meta = metadataBuilder
                 .object("constants")
                 .addAllStandard()
                 .addObject("value", "Component current value", undefined)
                 .build();
+              return Promise.resolve(meta);
             },
-          }).toJson()
-        ]
-      }
+          }).toJson(),
+        ],
+      },
     })
     .addCollapsiblePanel({
       id: '31114bf6-f76d-4139-a850-c99bf06c8b69',
@@ -205,17 +207,18 @@ export const getSettings = (data: any) =>
             mode: 'dialog',
             wrapInTemplate: true,
             templateSettings: {
-              functionName: 'getStyle'
+              functionName: 'getStyle',
             },
-            availableConstantsExpression: async ({ metadataBuilder }) => {
-              return metadataBuilder
+            availableConstantsExpression: ({ metadataBuilder }) => {
+              const meta = metadataBuilder
                 .object("constants")
                 .addStandard(["shesha:formData", "shesha:globalState"])
                 .build();
+              return Promise.resolve(meta);
             },
-          }).toJson()
-        ]
-      }
+          }).toJson(),
+        ],
+      },
     })
     .addCollapsiblePanel({
       id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
@@ -237,8 +240,9 @@ export const getSettings = (data: any) =>
             parentId: 'root',
             hidden: false,
             validate: {},
-          }).toJson()
-        ]
-      }
+            jsSetting: true,
+          }).toJson(),
+        ],
+      },
     })
     .toJson();

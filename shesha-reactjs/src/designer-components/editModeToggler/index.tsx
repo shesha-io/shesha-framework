@@ -1,6 +1,5 @@
 import { Space } from 'antd';
 import React from 'react';
-import ConfigurationItemViewModeToggler from '@/components/appConfigurator/configurationItemViewModeToggler';
 import { AppEditModeToggler, IToolboxComponent, PERM_APP_CONFIGURATOR, ProtectedContent } from '@/index';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider';
@@ -20,8 +19,7 @@ const HeaderAppControl: IToolboxComponent = {
       <ParentProvider model={model}>
         <ProtectedContent permissionName={PERM_APP_CONFIGURATOR}>
           <Space className="sha-header-app-control">
-            <AppEditModeToggler {...model} />
-            <ConfigurationItemViewModeToggler />
+            <AppEditModeToggler />
           </Space>
         </ProtectedContent>
       </ParentProvider>

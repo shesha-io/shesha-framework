@@ -8,8 +8,6 @@ import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { getClassNameFromFullName } from '@/providers/metadataDispatcher/utils';
 import { useStyles } from './styles/styles';
 
-const { Panel } = Collapse;
-
 export interface IToolboxDataSourcesProps {
   dataSources: IDataSource[];
 }
@@ -23,7 +21,7 @@ const getVisibleProperties = (items: IPropertyMetadata[], searchText: string): I
   const result: IPropertyMetadata[] = [];
   if (!items) return result;
 
-  items.forEach(item => {
+  items.forEach((item) => {
     if (!item.isFrameworkRelated && item.isVisible) {
       const childItems = isPropertiesArray(item.properties) ? getVisibleProperties(item.properties, searchText) : [];
       const matched =
@@ -47,25 +45,25 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
   const { styles } = useStyles();
 
   const datasourcesWithVisible = useMemo<FilteredDataSource[]>(() => {
-    const dataSourcesX = dataSources.map<FilteredDataSource>(ds => ({
+    const dataSourcesX = dataSources.map<FilteredDataSource>((ds) => ({
       datasource: ds,
       visibleItems: getVisibleProperties(ds.items, searchText),
     }));
     return dataSourcesX;
-
   }, [searchText, dataSources]);
 
 
-  const onCollapseChange = (key: string | string[]) => {
+  const onCollapseChange = (key: string | string[]): void => {
     setOpenedKeys(Array.isArray(key) ? key : [key]);
   };
   return (
     <>
-      <SearchBox value={searchText} onChange={setSearchText} placeholder="Search data properties" />
-
-      {datasourcesWithVisible.length > 0 && (
-        <Collapse activeKey={openedKeys} onChange={onCollapseChange}>
-          {datasourcesWithVisible.map((ds, dsIndex) => {
+      <div className={styles.shaToolboxComponents}>
+        <SearchBox value={searchText} onChange={setSearchText} placeholder="Search data properties" />
+        <Collapse
+          activeKey={openedKeys}
+          onChange={onCollapseChange}
+          items={datasourcesWithVisible.map((ds, dsIndex) => {
             const visibleItems = ds.visibleItems;
             const shortName = getClassNameFromFullName(ds.datasource.name);
 
@@ -74,23 +72,23 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
                 {shortName}
               </Tooltip>
             );
-      
-            return visibleItems.length === 0 ? null : (
-              <Panel header={header} key={dsIndex.toString()} className={styles.shaToolboxPanel}>
-                <div className={styles.shaToolboxPanelItems} >
-                <DataSourceTree
-                  items={visibleItems}
-                  searchText={searchText}
-                  defaultExpandAll={(searchText ?? '') !== ''}
 
-                />
-                </div>
+            return visibleItems.length === 0
+              ? null
+              : {
+                key: dsIndex.toString(),
+                label: header,
+                children: (
+                  <DataSourceTree
+                    items={visibleItems}
+                    searchText={searchText}
+                    defaultExpandAll={(searchText ?? '') !== ''}
 
-              </Panel>
-            );
-          })}
-        </Collapse>
-      )}
+                  />
+                ) };
+          }).filter((item) => Boolean(item))}
+        />
+      </div>
 
       {datasourcesWithVisible.length === 0 && (
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />

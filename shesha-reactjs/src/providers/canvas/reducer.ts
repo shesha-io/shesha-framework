@@ -19,7 +19,7 @@ export default handleActions<ICanvasStateContext, any>(
 
       return {
         ...state,
-        designerWidth: getWidthByDeviceType(deviceType),
+        designerWidth: state.designerWidth ?? getWidthByDeviceType(deviceType),
         designerDevice: deviceType,
         activeDevice: getSmallerDevice(deviceType, state.physicalDevice),
       };
@@ -41,6 +41,19 @@ export default handleActions<ICanvasStateContext, any>(
         zoom: payload,
       };
     },
+    [CanvasConfigActionEnums.SetCanvasAutoZoom]: (state: ICanvasStateContext) => {
+      return {
+        ...state,
+        autoZoom: !state.autoZoom,
+      };
+    },
+    [CanvasConfigActionEnums.SetConfigTreePanelSize]: (state: ICanvasStateContext, action: ReduxActions.Action<number>) => {
+      const { payload } = action;
+      return {
+        ...state,
+        configTreePanelSize: payload,
+      };
+    },
   },
-  CANVAS_CONTEXT_INITIAL_STATE
+  CANVAS_CONTEXT_INITIAL_STATE,
 );

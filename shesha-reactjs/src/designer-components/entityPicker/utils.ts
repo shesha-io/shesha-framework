@@ -1,11 +1,12 @@
 import { IStyleType } from "@/index";
+import { IEntityPickerComponentProps } from ".";
 
-export const defaultStyles = (prev): IStyleType => {
+export const defaultStyles = (prev: IEntityPickerComponentProps): IStyleType => {
   const { size } = prev;
 
   return {
     border: { hideBorder: false, radiusType: 'all', borderType: 'all', border: { all: { width: '1px', style: 'solid', color: '#d9d9d9' } }, radius: { all: 8 } },
-    dimensions: { width: '100%', height: size === 'small' ? '22px' : size === 'large' ? '38px' : '30px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    dimensions: { width: '100%', height: size === 'small' ? '22px' : size === 'large' ? '38px' : 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     background: {
       type: 'color',
       color: '#fff',
@@ -29,7 +30,7 @@ export const defaultStyles = (prev): IStyleType => {
       offsetY: 0,
       color: '#000',
       blurRadius: 0,
-      spreadRadius: 0
+      spreadRadius: 0,
     },
   };
 };
@@ -64,42 +65,42 @@ export const EXPOSED_VARIABLES = [
     id: '5a367dfe-70e4-4521-96ba-bdee1336592b',
     name: "form",
     description: "Form instance",
-    type: "FormInstance"
+    type: "FormInstance",
   },
   {
     id: '5a367dfe-70e4-4521-96ba-bdee1336592c',
     name: "globalState",
     description: "The global state of the application",
-    type: "object"
+    type: "object",
   },
   {
     id: '5a367dfe-70e4-4521-96ba-bdee1336592d',
     name: "http",
     description: "axios instance used to make http requests",
-    type: "object"
+    type: "object",
   },
   {
     id: '5a367dfe-70e4-4521-96ba-bdee1336592e',
     name: "message",
     description: "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
-    type: "object"
+    type: "object",
   },
   {
     id: '5a367dfe-70e4-4521-96ba-bdee1336592f',
     name: "setFormData",
     description: "A function used to update the form data",
-    type: "({ values: object, mergeValues: boolean}) => void"
+    type: "({ values: object, mergeValues: boolean}) => void",
   },
   {
     id: '5a367dfe-70e4-4521-96ba-bdee1336592g',
     name: "setGlobalState",
     description: "Setting the global state of the application",
-    type: "(payload: { key: string, data: any } ) => void"
+    type: "(payload: { key: string, data: any } ) => void",
   },
   {
     id: '5a367dfe-70e4-4521-96ba-bdee1336592h',
     name: "option",
     description: "Meta data of component current value",
-    type: "object"
+    type: "object",
   },
 ];

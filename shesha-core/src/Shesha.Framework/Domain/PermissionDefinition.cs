@@ -2,10 +2,15 @@
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Framework.PermissionDefinition", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
-    [JoinedProperty("Frwk_PermissionDefinitions")]
+    [Entity(
+        FriendlyName = "Permission",
+        TypeShortAlias = "Shesha.Framework.PermissionDefinition", 
+        GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService
+    )]
+    [JoinedProperty("permission_definitions", Schema = "frwk")]
     [DiscriminatorValue(ItemTypeName)]
-    public class PermissionDefinition : ConfigurationItemBase
+    [SnakeCaseNaming]
+    public class PermissionDefinition : ConfigurationItem
     {
         public const string ItemTypeName = "permission-definition";
 

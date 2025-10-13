@@ -1,22 +1,18 @@
 import { LineHeightOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties } from 'react';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { ITextTypographyProps } from './models';
+import { ITextTypographyProps, FONT_SIZES } from './models';
 import TypographyComponent from './typography';
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { getStyle, isValidGuid, pickStyleFromModel, useSheshaApplication, ValidationErrors } from '@/index';
 import { removeUndefinedProps } from '@/utils/object';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from './utils';
+import { defaultStyles, remToPx } from './utils';
+
 
 const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   type: 'text',
@@ -26,51 +22,14 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   isInput: false,
   tooltip: 'Complete Typography component that combines Text, Paragraph and Title',
   Factory: ({ model }) => {
-    const { httpHeaders, backendUrl } = useSheshaApplication();
-    const data = model;
-    const font = model?.font;
-    const border = model?.border;
+    const { allStyles } = model;
     const shadow = model?.shadow;
-    const dimensions = model?.dimensions;
-    const background = model?.background;
-    const jsStyle = getStyle(model.style, data);
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-
-
-    useEffect(() => {
-      const fetchStyles = async () => {
-        const storedImageUrl =
-          background?.storedFile?.id && background?.type === 'storedFile'
-            ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`, {
-                headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
-              })
-                .then((response) => {
-                  return response.blob();
-                })
-                .then((blob) => {
-                  return URL.createObjectURL(blob);
-                })
-            : '';
-
-        const style = getBackgroundStyle(background, jsStyle, storedImageUrl);
-        setBackgroundStyles(style);
-      };
-
-      fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
-
-    if (
-      model?.background?.type === 'storedFile' &&
-      model?.background.storedFile?.id &&
-      !isValidGuid(model?.background.storedFile.id)
-    ) {
-      return <ValidationErrors error="The provided StoredFileId is invalid" />;
-    }
+    const jsStyle = allStyles?.jsStyle;
+    const stylingBoxAsCSS = allStyles?.stylingBoxAsCSS;
+    const dimensionsStyles = allStyles?.dimensionsStyles;
+    const borderStyles = allStyles?.borderStyles;
+    const fontStyles = allStyles?.fontStyles;
+    const backgroundStyles = allStyles?.backgroundStyles;
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...stylingBoxAsCSS,
@@ -106,6 +65,8 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
     underline: false,
     level: 1,
     textType: 'span',
+    content: 'Your text here...',
+    contentDisplay: 'content',
     ...model,
   }),
   migrator: (m) =>
@@ -117,7 +78,17 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
         backgroundColor: legacyColor2Hex(prev.backgroundColor),
       }))
       .add<ITextTypographyProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) })),
+      .add<ITextTypographyProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev.textType)) }))
+      .add<ITextTypographyProps>(4, (prev) => ({ ...prev, contentType: prev.contentType }))
+      .add<ITextTypographyProps>(5, (prev) => {
+        const fontSizeEntry = FONT_SIZES[prev.fontSize as keyof typeof FONT_SIZES];
+        const rem = fontSizeEntry ? fontSizeEntry.fontSize : prev.fontSize;
+        const px = remToPx(rem);
+        return {
+          ...prev,
+          desktop: { ...prev?.desktop, font: { ...prev?.desktop?.font, size: px } },
+        };
+      }),
 };
 
 export default TextComponent;

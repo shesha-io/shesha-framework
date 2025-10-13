@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Tag, Tooltip } from 'antd';
 import { QuestionCircleOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { getIconByDataType } from '@/utils/metadata';
+import { getIconTypeByDataType } from '@/utils/metadata';
 import ShaIcon from '@/components/shaIcon';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
@@ -10,10 +10,10 @@ export interface IProps extends IModelItem {
   index: number[];
 }
 
-export const EntityProperty: FC<IProps> = props => {
+export const EntityProperty: FC<IProps> = (props) => {
   const { styles } = useStyles();
 
-  const icon = getIconByDataType(props.dataType);
+  const icon = getIconTypeByDataType(props.dataType);
 
   return (
     <div>

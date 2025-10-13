@@ -2,6 +2,7 @@
 using Abp.AutoMapper;
 using Abp.Dependency;
 using Abp.Modules;
+using Abp.Reflection;
 using Abp.Web.Models;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -9,10 +10,12 @@ using Microsoft.Extensions.Configuration;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.Configuration.Email;
+using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Security;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Distribution;
+using Shesha.DynamicEntities.EntityTypeBuilder;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Locks;
@@ -42,6 +45,8 @@ namespace Shesha
             IsEditable = false,
 #endif
         };
+
+        public bool SkipAppWarmUp { get; set; }
 
         public SheshaFrameworkModule()
         {
@@ -104,6 +109,7 @@ namespace Shesha
                 .RegisterConfigurableItemImport<ReferenceList, IReferenceListImport, ReferenceListImport>();
 
             IocManager
+                .RegisterConfigurableItemManager<EntityConfig, IEntityConfigManager, EntityConfigManager>()
                 .RegisterConfigurableItemExport<EntityConfig, IEntityConfigExport, EntityConfigExport>()
                 .RegisterConfigurableItemImport<EntityConfig, IEntityConfigImport, EntityConfigImport>();
 
@@ -150,6 +156,7 @@ namespace Shesha
             IocManager.RegisterSettingAccessor<IFrontendSettings>(s => {
                 s.Theme.WithDefaultValue(ThemeSettings.Default);
                 s.MainMenu.WithDefaultValue(MainMenuSettings.Default);
+                s.PublicUrl.WithDefaultValue("http://localhost:3000");
             });
 
             IocManager.RegisterSettingAccessor<IEmailSettings>(s => {
@@ -164,10 +171,6 @@ namespace Shesha
 
         public override void PostInitialize()
         {
-            IocManager.Resolve<ShaPermissionManager>().Initialize();
-
-            var def = IocManager.Resolve<IPermissionDefinitionContext>();
-
             // register Shesha exception to error converter
             IocManager.Resolve<ErrorInfoBuilder>().AddExceptionConverter(IocManager.Resolve<ShaExceptionToErrorInfoConverter>());
 

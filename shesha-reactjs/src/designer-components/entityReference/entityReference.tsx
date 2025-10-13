@@ -1,28 +1,27 @@
-import React from 'react';
 import { EntityReference, IEntityReferenceProps } from '@/components/entityReference';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { LinkExternalOutlined } from '@/icons/linkExternalOutlined';
-import { IToolboxComponent } from '@/interfaces';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { ShaIconTypes } from '@/components/iconPicker';
 import {
-  migratePropertyName,
   migrateCustomFunctions,
+  migratePropertyName,
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
-import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import { LinkExternalOutlined } from '@/icons/linkExternalOutlined';
+import { IToolboxComponent } from '@/interfaces';
+import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { IConfigurableFormComponent } from '@/providers/form/models';
+import React from 'react';
 import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getSettings } from './settingsForm';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { removeUndefinedProps } from '@/utils/object';
-import { getStyle, pickStyleFromModel } from '@/index';
-import { ShaIconTypes } from '@/components/iconPicker';
+import { getSettings } from './settingsForm';
+import { defaultStyles } from './utils';
 
 export type IActionParameters = [{ key: string; value: string }];
 
-export interface IEntityReferenceControlProps extends IEntityReferenceProps, IConfigurableFormComponent {
+export interface IEntityReferenceControlProps extends Omit<IEntityReferenceProps, 'style'>, IConfigurableFormComponent {
   /** @deprecated Use iconName instead */
   icon?: string;
 }
@@ -34,96 +33,14 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
   isOutput: true,
   icon: <LinkExternalOutlined />,
   Factory: ({ model: passedModel }) => {
-    const { style, hidden, readOnly, ...model } = passedModel;
+    const { allStyles, hidden, readOnly, ...model } = passedModel;
 
     if (hidden) return null;
-
-    const jsStyle = getStyle(passedModel.style, passedModel);
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    var additionalStylesJS = removeUndefinedProps({
-      ...jsStyle,
-      ...stylingBoxAsCSS,
-    });
-    const paddingStyles = removeUndefinedProps({
-      paddingTop: additionalStylesJS.paddingTop,
-      paddingRight: additionalStylesJS.paddingRight,
-      paddingBottom: additionalStylesJS.paddingBottom,
-      paddingLeft: additionalStylesJS.paddingLeft,
-      padding: additionalStylesJS.padding,
-    });
-    additionalStylesJS = Object.keys(additionalStylesJS)
-      .filter((key) => !paddingStyles[key])
-      .reduce((obj, key) => {
-        obj[key] = additionalStylesJS[key];
-        return obj;
-      }, {});
-    const marginStyles = removeUndefinedProps({
-      marginTop: additionalStylesJS.marginTop,
-      marginRight: additionalStylesJS.marginRight,
-      marginBottom: additionalStylesJS.marginBottom,
-      marginLeft: additionalStylesJS.marginLeft,
-      margin: additionalStylesJS.margin,
-    });
-    additionalStylesJS = Object.keys(additionalStylesJS)
-      .filter((key) => !marginStyles[key])
-      .reduce((obj, key) => {
-        obj[key] = additionalStylesJS[key];
-        return obj;
-      }, {});
-    const borderStyles = removeUndefinedProps({
-      borderTop: additionalStylesJS.borderTop,
-      borderRight: additionalStylesJS.borderRight,
-      borderBottom: additionalStylesJS.borderBottom,
-      borderLeft: additionalStylesJS.borderLeft,
-      border: additionalStylesJS.border,
-      borderRadius: additionalStylesJS.borderRadius,
-      borderColor: additionalStylesJS.borderColor,
-      borderWidth: additionalStylesJS.borderWidth,
-      borderStyle: additionalStylesJS.borderStyle,
-    });
-    additionalStylesJS = Object.keys(additionalStylesJS)
-      .filter((key) => !borderStyles[key])
-      .reduce((obj, key) => {
-        obj[key] = additionalStylesJS[key];
-        return obj;
-      }, {});
-    const background = removeUndefinedProps({
-      backgroundColor: additionalStylesJS.backgroundColor,
-      background: additionalStylesJS.background,
-    });
-    additionalStylesJS = Object.keys(additionalStylesJS)
-      .filter((key) => !background[key])
-      .reduce((obj, key) => {
-        obj[key] = additionalStylesJS[key];
-        return obj;
-      }, {});
-
-    const additionStyles = JSON.stringify(additionalStylesJS);
-    const additionalStylesWithoutQuotes = additionStyles.replace(/"([^"]+)":/g, '$1:').replace(/'([^']+)':/g, '$1:');
-    const finalStyle = `return ${additionalStylesWithoutQuotes}`;
 
     return (
       <ConfigurableFormItem model={model}>
         {(value) => {
-          return (
-            <div
-              style={{
-                padding: 0,
-                margin: 0,
-                height: 'fit-content',
-                width: 'fit-content',
-                borderRadius: '5px',
-                ...paddingStyles,
-                ...marginStyles,
-                ...borderStyles,
-                ...background,
-              }}
-            >
-              <EntityReference {...model} value={value} style={finalStyle} />
-            </div>
-          );
+          return <EntityReference {...model} value={value} style={{ ...allStyles.fullStyle }} />;
         }}
       </ConfigurableFormItem>
     );
@@ -158,10 +75,37 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
         footerButtons: context.isNew ? 'default' : (prev.footerButtons ?? prev.showModalFooter) ? 'default' : 'none',
       }))
       .add<IEntityReferenceControlProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IEntityReferenceControlProps>(7, (prev) => ({ ...migratePrevStyles(prev) }))
+      .add<IEntityReferenceControlProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
       .add<IEntityReferenceControlProps>(8, (prev) => ({
         ...prev,
         iconName: (prev?.iconName as ShaIconTypes) ?? (prev?.icon as ShaIconTypes),
+      }))
+      .add<IEntityReferenceControlProps>(9, (prev) => ({
+        ...prev,
+        style: prev.style,
+        mobile: {
+          ...prev.mobile,
+          style: prev.style,
+        },
+        tablet: {
+          ...prev.tablet,
+          style: prev.style,
+        },
+        desktop: {
+          ...prev.desktop,
+          style: prev.style,
+        },
+      }))
+      .add<IEntityReferenceControlProps>(10, (prev) => ({
+        ...prev,
+        modalWidth: (prev.modalWidth as string) === 'custom' ? '80%' : prev.modalWidth,
+        quickviewWidth: (() => {
+          if (prev.quickviewWidth == null || prev.quickviewWidth === '') return undefined;
+          if (typeof prev.quickviewWidth === 'number') return `${prev.quickviewWidth}px`;
+          if (/^\d+$/.test(prev.quickviewWidth)) return `${prev.quickviewWidth}px`; // digit-only string
+          if (/^\d+(px|%)$/.test(prev.quickviewWidth)) return prev.quickviewWidth; // already valid
+          return prev.quickviewWidth; // keep keywords like 'auto', 'fit-content', etc.
+        })(),
       })),
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {

@@ -58,7 +58,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Owner of file
         /// </summary>
-        public GenericEntityReference Owner { get; set; }
+        public virtual GenericEntityReference Owner { get; set; }
 
         /// <summary>
         /// Creates new file for the specified owner

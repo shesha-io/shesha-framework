@@ -3,7 +3,7 @@ import { FlagsActionTypes } from '@/enums';
 import { IFlagsSetters, IFlagsState } from '@/interfaces';
 
 export function getFlagSetters<A extends string, B extends string, C extends string, D extends string>(
-  dispatch: (action: any) => void
+  dispatch: (action: any) => void,
 ): IFlagsSetters<A, B, C, D> {
   type IState = IFlagsState<A, B, C, D>;
   //#region Set flags
@@ -11,14 +11,14 @@ export function getFlagSetters<A extends string, B extends string, C extends str
     FlagsActionTypes.SetIsInProgressFlag,
     (key) => ({
       isInProgress: key,
-    })
+    }),
   );
 
   const setSucceededFlagAction = createAction<IState, { [key in B]?: boolean }>(
     FlagsActionTypes.SetSucceededFlag,
     (key) => ({
       succeeded: key,
-    })
+    }),
   );
 
   const setFailedFlagAction = createAction<IState, { [key in C]?: boolean }>(FlagsActionTypes.SetErrorFlag, (key) => ({
@@ -29,7 +29,7 @@ export function getFlagSetters<A extends string, B extends string, C extends str
     FlagsActionTypes.SetActionedFlag,
     (key) => ({
       actioned: key,
-    })
+    }),
   );
   //#endregion
 

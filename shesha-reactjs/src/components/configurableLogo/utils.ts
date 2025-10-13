@@ -1,1 +1,1 @@
-export const getImgSrc = (src: string) => (src ? src : '/images/app-logo.png');
+export const getImgSrc = (src: string): string => (src ? src : '/images/app-logo.png');

@@ -7,4 +7,5 @@ export const HEADER_CONFIGURATION: FormFullName = { name: 'header', module: 'She
 export const HEADER_PUB_PORTAL_CONFIGURATION: FormFullName = { name: 'header-public-portal', module: 'Shesha' };
 export const LOGIN_CONFIGURATION: FormFullName = { name: 'login', module: 'Shesha' };
 export const LOGIN_PUB_PORTAL_CONFIGURATION: FormFullName = { name: 'login-public-portal', module: 'Shesha' };
+export const FOOTER_CONFIGURATION: FormFullName = { name: 'footer-public-portal', module: 'Shesha' };
 //#endregion

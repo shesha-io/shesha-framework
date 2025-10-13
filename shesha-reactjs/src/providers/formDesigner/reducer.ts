@@ -5,6 +5,7 @@ import { IFormValidationErrors, IToolboxComponentGroup } from '@/interfaces';
 import { camelcaseDotNotation } from '@/utils/string';
 import undoable from '@/utils/undoable';
 import {
+  FormMode,
   IComponentRelations,
   IComponentsDictionary,
   IConfigurableFormComponent,
@@ -39,7 +40,7 @@ const addComponentToFlatStructure = (
   toolboxComponentGroups: IToolboxComponentGroup[],
   formComponents: IConfigurableFormComponent[],
   containerId: string,
-  index: number
+  index: number,
 ): IFlatComponentsStructure => {
   // build all components dictionary
   const allComponents = { ...formFlatMarkup.allComponents };
@@ -94,9 +95,19 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
           readOnly: payload,
         };
     },
+    [FormActionEnums.SetFormMode]: (state: IFormDesignerStateContext, action: ReduxActions.Action<FormMode>) => {
+      const { payload } = action;
+
+      return state.formMode === payload
+        ? state
+        : {
+          ...state,
+          formMode: payload,
+        };
+    },
     [FormActionEnums.SetFlatComponentsAction]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IFlatComponentsStructure>
+      action: ReduxActions.Action<IFlatComponentsStructure>,
     ) => {
       const { payload } = action;
 
@@ -108,25 +119,30 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.DataPropertyAdd]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IAddDataPropertyPayload>
+      action: ReduxActions.Action<IAddDataPropertyPayload>,
     ) => {
       const {
         payload: { propertyMetadata, index, containerId },
       } = action;
 
       const { formFlatMarkup, toolboxComponentGroups } = state;
+      const newFlatMarkup = {
+        ...formFlatMarkup,
+        allComponents: { ...formFlatMarkup.allComponents },
+        componentRelations: { ...formFlatMarkup.componentRelations },
+      };
       const formComponent = createComponentModelForDataProperty(state.toolboxComponentGroups, propertyMetadata,
         (fc, tc) => {
           return upgradeComponent(fc, tc, state.formSettings, {
             allComponents: formFlatMarkup.allComponents,
             componentRelations: formFlatMarkup.componentRelations,
           }, true);
-        }
+        },
       );
       if (!Boolean(formComponent)) return state;
 
       formComponent.parentId = containerId; // set parent
-      const newStructure = addComponentToFlatStructure(formFlatMarkup, toolboxComponentGroups, [formComponent], containerId, index);
+      const newStructure = addComponentToFlatStructure(newFlatMarkup, toolboxComponentGroups, [formComponent], containerId, index);
 
       return {
         ...state,
@@ -136,7 +152,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
     },
     [FormActionEnums.ComponentAdd]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IComponentAddPayload>
+      action: ReduxActions.Action<IComponentAddPayload>,
     ) => {
       const { payload } = action;
 
@@ -150,6 +166,11 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
       const { formFlatMarkup, toolboxComponentGroups } = state;
 
+      const newFlatMarkup = {
+        ...formFlatMarkup,
+        allComponents: { ...formFlatMarkup.allComponents },
+        componentRelations: { ...formFlatMarkup.componentRelations },
+      };
       let newComponents: IConfigurableFormComponent[] = [];
       if (toolboxComponent.isTemplate) {
         const allComponents = toolbarGroupsToComponents(state.toolboxComponentGroups);
@@ -157,8 +178,8 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
       } else {
         // create new component
         let count = 0;
-        for (const key in formFlatMarkup.allComponents) {
-          if (formFlatMarkup.allComponents[key].type === toolboxComponent.type) count++;
+        for (const key in newFlatMarkup.allComponents) {
+          if (newFlatMarkup.allComponents[key].type === toolboxComponent.type) count++;
         }
         const componentName = `${toolboxComponent.name}${count + 1}`;
 
@@ -174,26 +195,18 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
           isDynamic: false,
         };
         if (toolboxComponent.initModel) formComponent = toolboxComponent.initModel(formComponent);
+
         if (toolboxComponent.migrator) {
           formComponent = upgradeComponent(formComponent, toolboxComponent, state.formSettings, {
-            allComponents: formFlatMarkup.allComponents,
-            componentRelations: formFlatMarkup.componentRelations,
+            allComponents: newFlatMarkup.allComponents,
+            componentRelations: newFlatMarkup.componentRelations,
           }, true);
-
-          // run migrations if available
-          // TODO: convert components to clases and run migrations there to check types properly
-          /*
-          const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent>();
-          const fluent = toolboxComponent.migrator(migrator);
-          const model = fluent.migrator.upgrade(formComponent.version ?? -1, formComponent);
-          formComponent = model;
-          */
         }
 
         newComponents.push(formComponent);
       }
 
-      const newStructure = addComponentToFlatStructure(formFlatMarkup, toolboxComponentGroups, newComponents, containerId, index);
+      const newStructure = addComponentToFlatStructure(newFlatMarkup, toolboxComponentGroups, newComponents, containerId, index);
 
       return {
         ...state,
@@ -204,7 +217,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.ComponentDelete]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IComponentDeletePayload>
+      action: ReduxActions.Action<IComponentDeletePayload>,
     ) => {
       const { payload } = action;
 
@@ -236,21 +249,21 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.ComponentDuplicate]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IComponentDuplicatePayload>
+      action: ReduxActions.Action<IComponentDuplicatePayload>,
     ) => {
       const { payload } = action;
 
       const cloneComponent = (
         component: IConfigurableFormComponent,
         nestedComponents: IComponentsDictionary,
-        nestedRelations: IComponentRelations
+        nestedRelations: IComponentRelations,
       ): IConfigurableFormComponent => {
         const newId = nanoid();
         const clone = { ...component, id: newId };
 
         nestedComponents[clone.id] = clone;
 
-        const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, (c) => c.type === component.type);
+        const toolboxComponent = findToolboxComponent(state.toolboxComponentGroups, (c) => c?.type === component.type);
         const containers = toolboxComponent?.customContainerNames ?? [];
 
         const { formFlatMarkup } = state;
@@ -278,7 +291,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
             nestedRelations[clone.id] = [];
             const relations = nestedRelations[clone.id];
 
-            const cloneChild = (c) => {
+            const cloneChild = (c): IConfigurableFormComponent => {
               // child may be component or any object with id
               const childClone = cloneComponent(c, nestedComponents, nestedRelations);
               if (childClone.hasOwnProperty('parentId')) childClone.parentId = clone.id;
@@ -331,7 +344,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.ComponentUpdate]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IComponentUpdatePayload>
+      action: ReduxActions.Action<IComponentUpdatePayload>,
     ) => {
       const { payload } = action;
 
@@ -415,19 +428,19 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.SetValidationErrors]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IFormValidationErrors>
+      action: ReduxActions.Action<IFormValidationErrors>,
     ) => {
       const { payload } = action;
 
       return {
         ...state,
-        validationErrors: payload ? { ...payload } : null,
+        validationErrors: payload,
       };
     },
 
     [FormActionEnums.UpdateChildComponents]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IUpdateChildComponentsPayload>
+      action: ReduxActions.Action<IUpdateChildComponentsPayload>,
     ) => {
       const { payload } = action;
 
@@ -469,20 +482,31 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.SetSelectedComponent]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<ISetSelectedComponentPayload>
+      action: ReduxActions.Action<ISetSelectedComponentPayload>,
     ) => {
       const { payload } = action;
 
       return {
         ...state,
         selectedComponentId: payload.id,
-        selectedComponentRef: payload.componentRef,
+      };
+    },
+
+    [FormActionEnums.SetPreviousSelectedComponent]: (
+      state: IFormDesignerStateContext,
+      action: ReduxActions.Action<ISetSelectedComponentPayload>,
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        previousSelectedComponentId: payload.id,
       };
     },
 
     [FormActionEnums.ChangeMarkup]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IFlatComponentsStructure>
+      action: ReduxActions.Action<IFlatComponentsStructure>,
     ) => {
       const { payload } = action;
 
@@ -494,7 +518,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.UpdateFormSettings]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IFormSettings>
+      action: ReduxActions.Action<IFormSettings>,
     ) => {
       const { payload } = action;
 
@@ -506,7 +530,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.ComponentUpdateSettingsValidation]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IComponentUpdateSettingsValidationPayload>
+      action: ReduxActions.Action<IComponentUpdateSettingsValidationPayload>,
     ) => {
       const { payload } = action;
 
@@ -548,7 +572,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
 
     [FormActionEnums.UpdateToolboxComponentGroups]: (
       state: IFormDesignerStateContext,
-      action: ReduxActions.Action<IToolboxComponentGroup[]>
+      action: ReduxActions.Action<IToolboxComponentGroup[]>,
     ) => {
       const { payload } = action;
 
@@ -559,7 +583,7 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
     },
   },
 
-  FORM_DESIGNER_CONTEXT_INITIAL_STATE
+  FORM_DESIGNER_CONTEXT_INITIAL_STATE,
 );
 
 const undoableActions: string[] = [

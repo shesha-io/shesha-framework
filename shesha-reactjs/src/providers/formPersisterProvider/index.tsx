@@ -1,7 +1,7 @@
-import React, { FC, PropsWithChildren, useContext, useEffect } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect } from 'react';
 import { FormUpdateMarkupInput, formConfigurationUpdateMarkup } from '@/apis/formConfiguration';
 import useThunkReducer from '@/hooks/thunkReducer';
-import { useAppConfigurator, useSheshaApplication } from '@/providers';
+import { useSheshaApplication } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
   FormIdentifier,
@@ -12,6 +12,7 @@ import {
   loadErrorAction,
   loadRequestAction,
   loadSuccessAction,
+  resetAction,
   saveErrorAction,
   saveRequestAction,
   saveSuccessAction,
@@ -23,11 +24,13 @@ import {
   FormPersisterStateConsumer,
   FormPersisterStateContext,
   IFormPersisterActionsContext,
+  IFormPersisterContext,
   IFormPersisterStateContext,
   ILoadFormPayload,
 } from './contexts';
 import formReducer from './reducer';
 import { useFormManager } from '../formManager';
+import { toErrorInfo } from '@/interfaces';
 
 export interface IFormProviderProps {
   formId: FormIdentifier;
@@ -38,42 +41,41 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ chil
   const initial: IFormPersisterStateContext = {
     ...FORM_PERSISTER_CONTEXT_INITIAL_STATE,
     formId: formId,
-    skipCache: skipCache,
   };
 
   const [state, dispatch] = useThunkReducer(formReducer, initial);
 
   const { clearFormCache } = useConfigurationItemsLoader();
   const { getFormById } = useFormManager();
-  const { configurationItemMode } = useAppConfigurator();
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  const doFetchFormInfo = (payload: ILoadFormPayload) => {
+  const doFetchFormInfo = useCallback((formId: FormIdentifier, skipCache: boolean): void => {
     if (formId) {
       dispatch(loadRequestAction({ formId }));
 
-      getFormById({ formId, configurationItemMode: configurationItemMode, skipCache: payload.skipCache })
+      getFormById({ formId, skipCache: skipCache })
         .then((form) => {
           dispatch((dispatchThunk, _getState) => {
             dispatchThunk(loadSuccessAction(form));
           });
         })
         .catch((e) => {
-          dispatch(loadErrorAction(e));
+          dispatch(loadErrorAction(toErrorInfo(e)));
         });
-    }
-  };
+    } else
+      dispatch(resetAction());
+  }, [dispatch, getFormById]);
 
   useEffect(() => {
     if (!formId) return;
 
-    doFetchFormInfo({ skipCache: state.skipCache });
-  }, [formId]);
+    doFetchFormInfo(formId, skipCache);
+  }, [formId, skipCache, doFetchFormInfo]);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const loadForm = (payload: ILoadFormPayload) => {
-    doFetchFormInfo(payload);
+  const loadForm = (payload: ILoadFormPayload): void => {
+    doFetchFormInfo(formId, payload.skipCache);
   };
 
   const saveForm = async (payload: FormMarkupWithSettings): Promise<void> => {
@@ -97,12 +99,12 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ chil
         return Promise.resolve();
       })
       .catch((error) => {
-        dispatch(saveErrorAction(error));
+        dispatch(saveErrorAction(toErrorInfo(error)));
         return Promise.reject();
       });
   };
 
-  const updateFormSettings = (settings: IFormSettings) => {
+  const updateFormSettings = (settings: IFormSettings): void => {
     dispatch(updateFormSettingsAction(settings));
   };
 
@@ -122,7 +124,7 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ chil
   );
 };
 
-function useFormPersisterState(require: boolean = true) {
+function useFormPersisterState(require: boolean = true): IFormPersisterStateContext | undefined {
   const context = useContext(FormPersisterStateContext);
 
   if (require && context === undefined) {
@@ -132,7 +134,7 @@ function useFormPersisterState(require: boolean = true) {
   return context;
 }
 
-function useFormPersisterActions(require: boolean = true) {
+function useFormPersisterActions(require: boolean = true): IFormPersisterActionsContext | undefined {
   const context = useContext(FormPersisterActionsContext);
 
   if (require && context === undefined) {
@@ -142,7 +144,7 @@ function useFormPersisterActions(require: boolean = true) {
   return context;
 }
 
-function useFormPersister(require: boolean = true) {
+const useFormPersisterIfAvailable = (require: boolean = false): IFormPersisterContext | undefined => {
   const actionsContext = useFormPersisterActions(require);
   const stateContext = useFormPersisterState(require);
 
@@ -152,6 +154,8 @@ function useFormPersister(require: boolean = true) {
   return actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext }
     : undefined;
-}
+};
 
-export { FormPersisterStateConsumer as FormPersisterConsumer, FormPersisterProvider, useFormPersister };
+const useFormPersister = (): IFormPersisterContext => useFormPersisterIfAvailable(true)!;
+
+export { FormPersisterStateConsumer as FormPersisterConsumer, FormPersisterProvider, useFormPersister, useFormPersisterIfAvailable };

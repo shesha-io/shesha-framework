@@ -9,14 +9,14 @@ import { useStyles } from './styles/styles';
  * @param {any} data - The data to be checked
  * @return {boolean} Indicates whether the data is an instance of IPropertySetting
  */
-export const isPropertySettings = <Value = any,>(data: any): data is IPropertySetting<Value> => {
+export const isPropertySettings = <Value = any>(data: unknown): data is IPropertySetting<Value> => {
   if (!data || typeof data !== 'object') return false;
 
   const typed = data as IPropertySetting;
   return typed._mode === 'code' || typed._mode === 'value';
 };
 
-export const getPropertySettingsFromData = (data: any, propName: string): IPropertySetting => {
+export const getPropertySettingsFromData = (data: unknown, propName: string): IPropertySetting => {
   if (!propName || !data) return { _mode: 'value', _code: undefined, _value: undefined };
 
   const propNames = propName.split('.');
@@ -29,7 +29,7 @@ export const getPropertySettingsFromData = (data: any, propName: string): IPrope
   else return { _mode: 'value', _code: undefined, _value: val };
 };
 
-export const updateSettingsFromValues = <T,>(model: T, values: T): T => {
+export const updateSettingsFromValues = <T = unknown>(model: T, values: T): T => {
   const copy = { ...model };
   Object.keys(values).forEach((k) => {
     if (isPropertySettings(copy[k]) && !isPropertySettings(values[k])) copy[k]._value = values[k];
@@ -38,12 +38,12 @@ export const updateSettingsFromValues = <T,>(model: T, values: T): T => {
   return copy;
 };
 
-export const getValueFromPropertySettings = (value: any): any => {
+export const getValueFromPropertySettings = (value: unknown): any => {
   if (isPropertySettings(value)) return value._value;
   else return value;
 };
 
-export const getValuesFromSettings = <T,>(model: T): T => {
+export const getValuesFromSettings = <T = unknown>(model: T): T => {
   const copy = { ...model };
   Object.keys(copy).forEach((k) => {
     copy[k] = getValueFromPropertySettings(copy[k]);
@@ -51,7 +51,7 @@ export const getValuesFromSettings = <T,>(model: T): T => {
   return copy;
 };
 
-export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
+export const getPropertySettingsFromValue = (value: unknown): IPropertySetting => {
   if (!isPropertySettings(value) || !value) return { _mode: 'value', _code: undefined, _value: value };
   else return value;
 };
@@ -65,13 +65,12 @@ export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
  */
 export const updateSettingsComponents = (
   toolboxComponents: IToolboxComponents,
-  components: IConfigurableFormComponent[]
-) => {
-  const processComponent = (component: IConfigurableFormComponent) => {
+  components: IConfigurableFormComponent[],
+): IConfigurableFormComponent[] => {
+  const processComponent = (component: IConfigurableFormComponent): IConfigurableFormComponent => {
     const componentRegistration = toolboxComponents[component.type];
 
     const newComponent: IConfigurableFormComponent = { ...component, jsSetting: false };
-
     if ((componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting === true) {
       const oldComponent: IConfigurableFormComponent = { ...newComponent };
 
@@ -129,10 +128,44 @@ export const updateSettingsComponents = (
   });
 };
 
+export const updateJsSettingsForComponents = (
+  toolboxComponents: IToolboxComponents,
+  components: IConfigurableFormComponent[]): IConfigurableFormComponent[] => {
+  const processComponent = (component: IConfigurableFormComponent): IConfigurableFormComponent => {
+    const componentRegistration = toolboxComponents[component.type];
+    const newComponent: IConfigurableFormComponent = {
+      ...component,
+      jsSetting: (componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting === true,
+    };
+
+    // Check all child containers
+    // custom containers
+    const customContainerNames = componentRegistration?.customContainerNames || [];
+    customContainerNames.forEach((subContainer) => {
+      if (Array.isArray(component[subContainer]?.components) && component[subContainer]?.components.length > 0)
+        newComponent[subContainer].components = component[subContainer]?.components.map((c) => {
+          return processComponent(c);
+        });
+    });
+
+    // default container
+    if (Array.isArray(component['components']) && component['components'].length > 0)
+      newComponent['components'] = component['components'].map((c) => {
+        return processComponent(c);
+      });
+
+    return newComponent;
+  };
+
+  return components.map((c) => {
+    return processComponent(c);
+  });
+};
+
 export const updateSettingsComponentsDict = (
   toolboxComponents: IToolboxComponents,
-  components: IComponentsDictionary
-) => {
+  components: IComponentsDictionary,
+): IComponentsDictionary => {
   const comps: IConfigurableFormComponent[] = [];
 
   for (const key in components) {
@@ -151,35 +184,8 @@ export const updateSettingsComponentsDict = (
   return res;
 };
 
-export const addPx = (value) => {
-  return !value ? null : /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
-};
-
-export const StyledLabel = ({ label }: { label: string }) => {
+export const StyledLabel = ({ label }: { label: string }): JSX.Element => {
   const { styles } = useStyles();
 
   return <span className={styles.label}>{label}</span>;
-};
-
-export const getDimensionsStyles = (dimensions, additionalStyles) => {
-  return {
-    width: dimensions?.width
-      ? `calc(${addPx(dimensions.width)} - ${additionalStyles?.marginLeft || '0px'} - ${additionalStyles?.marginRight || '0px'})`
-      : undefined,
-    height: dimensions?.height
-      ? `calc(${addPx(dimensions.height)} - ${additionalStyles?.marginTop || '0px'} - ${additionalStyles?.marginBottom || '0px'})`
-      : undefined,
-    minWidth: dimensions?.minWidth
-      ? `calc(${addPx(dimensions.minWidth)} - ${additionalStyles?.marginLeft || '0px'} - ${additionalStyles?.marginRight || '0px'})`
-      : undefined,
-    minHeight: dimensions?.minHeight
-      ? `calc(${addPx(dimensions.minHeight)} - ${additionalStyles?.marginTop || '0px'} - ${additionalStyles?.marginBottom || '0px'})`
-      : undefined,
-    maxWidth: dimensions?.maxWidth
-      ? `calc(${addPx(dimensions.maxWidth)} - ${additionalStyles?.marginLeft || '0px'} - ${additionalStyles?.marginRight || '0px'})`
-      : undefined,
-    maxHeight: dimensions?.maxHeight
-      ? `calc(${addPx(dimensions.maxHeight)} - ${additionalStyles?.marginTop || '0px'} - ${additionalStyles?.marginBottom || '0px'})`
-      : undefined,
-  };
 };

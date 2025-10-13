@@ -3,7 +3,7 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
-using Abp.Reflection;
+using Abp.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shesha.AutoMapper.Dto;
@@ -12,6 +12,7 @@ using Shesha.DelayedUpdate;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.DynamicEntities.TypeFinder;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
@@ -38,26 +39,29 @@ namespace Shesha.DynamicEntities.Binder
     public class EntityModelBinder : IEntityModelBinder, ITransientDependency
     {
         private readonly IDynamicRepository _dynamicRepository;
+        private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IIocManager _iocManager;
-        private readonly ITypeFinder _typeFinder;
+        private readonly IShaTypeFinder _typeFinder;
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IObjectValidatorManager _objectValidatorManager;
         private readonly IModelConfigurationManager _modelConfigurationManager;
 
         public EntityModelBinder(
             IDynamicRepository dynamicRepository,
+            IRepository<EntityConfig, Guid> entityConfigRepository,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IHardcodeMetadataProvider metadataProvider,
             IIocManager iocManager,
-            ITypeFinder typeFinder,
+            IShaTypeFinder typeFinder,
             IEntityConfigurationStore entityConfigurationStore,
             IObjectValidatorManager propertyValidatorManager,
             ModelConfigurationManager modelConfigurationManager
             )
         {
             _dynamicRepository = dynamicRepository;
+            _entityConfigRepository = entityConfigRepository;
             _entityPropertyRepository = entityPropertyRepository;
             _metadataProvider = metadataProvider;
             _iocManager = iocManager;
@@ -87,6 +91,7 @@ namespace Shesha.DynamicEntities.Binder
                 || prop.Name == nameof(IHasClassNameField._className)
                 || prop.Name == nameof(IHasDisplayNameField._displayName)
                 || prop.Name == nameof(IHasDelayedUpdateField._delayedUpdate)
+                || prop.Name.StartsWith("_&@#GH0ST") // for backward compatiblity
             ;
         }
 
@@ -111,7 +116,7 @@ namespace Shesha.DynamicEntities.Binder
             if (!string.IsNullOrWhiteSpace(entityIdValue) && entityIdValue != Guid.Empty.ToString())
                 properties = properties.Where(p => p.Name != "Id").ToList();
 
-            var config = await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace, entityType.Name);
+            var config = await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(entityType.Namespace.NotNull(), entityType.Name);
 
             context.LocalValidationResult = new List<ValidationResult>();
 
@@ -138,9 +143,14 @@ namespace Shesha.DynamicEntities.Binder
                             await DeleteUnreferencedEntityAsync(childEntity, entity);
                         }
                     }
-                    else
-                        if (await ValidateAsync(entity, string.IsNullOrWhiteSpace(propertyName) ? mprop : $"{propertyName}.{mprop}", null, context))
-                        property.SetValue(entity, null);
+                    else {
+                        var emptyValue = property.PropertyType == typeof(string) && !property.IsNullable()
+                            ? string.Empty
+                            : null;
+
+                        if (await ValidateAsync(entity, string.IsNullOrWhiteSpace(propertyName) ? mprop : $"{propertyName}.{mprop}", emptyValue, context))
+                            property.SetValue(entity, emptyValue);
+                    }                        
                 }
             }
 
@@ -177,7 +187,7 @@ namespace Shesha.DynamicEntities.Binder
                         if (property.IsReadOnly())
                             continue;
 
-                        var propConfig = config.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == jName);
+                        var propConfig = config?.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == jName);
 
                         if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
                             continue;
@@ -213,7 +223,6 @@ namespace Shesha.DynamicEntities.Binder
                                 case DataTypes.Number:
                                 case DataTypes.Boolean:
                                 case DataTypes.Guid:
-                                case DataTypes.ReferenceListItem:
                                 case DataTypes.Time: // ToDo: Review parsing of time
                                                      //case DataTypes.Enum: // Enum binded as integer
                                     object? parsedValue = null;
@@ -230,15 +239,75 @@ namespace Shesha.DynamicEntities.Binder
                                         if (await ValidateAsync(entity, jFullName, value, context))
                                             property.SetValue(entity, value);
                                     break;
+                                case DataTypes.ReferenceListItem:
+                                    object? parsedRefListValue = null;
+                                    var refListValue = jproperty.Value is JObject
+                                        ? jproperty.Value["itemValue"]?.ToString()
+                                        : jproperty.Value.ToString();
+                                    result = Parser.TryParseToValueType(refListValue, property.PropertyType, out parsedRefListValue, isDateOnly: propType.DataType == DataTypes.Date);
+                                    if (result && dbValue?.ToString() != parsedRefListValue?.ToString())
+                                        if (await ValidateAsync(entity, jFullName, parsedRefListValue, context))
+                                            property.SetValue(entity, parsedRefListValue);
+                                    break;
                                 case DataTypes.Array:
                                     switch (propType.DataFormat)
                                     {
-                                        case ArrayFormats.EntityReference:
-                                        case ArrayFormats.Object:
-                                        case ArrayFormats.ObjectReference:
-                                        case ArrayFormats.String:
-                                        case ArrayFormats.Number:
-                                        case ArrayFormats.Boolean:
+                                        case ArrayFormats.MultivalueReferenceList:
+                                            string[] valComponents;
+                                            if (jproperty.Value is JArray jArray)
+                                            {
+                                                valComponents = jArray.Select(x => x.ToString()).ToArray();
+                                            }
+                                            else
+                                            {
+                                                var propertyValue = jproperty.Value.ToString();
+                                                // Removing the redundant ',' from the hidden element.
+                                                if (propertyValue.EndsWith(",")) propertyValue = propertyValue.Substring(0, propertyValue.Length - 1);
+                                                else if (propertyValue.StartsWith(",")) propertyValue = propertyValue.Substring(1, propertyValue.Length - 1);
+                                                else propertyValue.Replace(",,", ",");
+                                                valComponents = propertyValue.Split(',');
+                                            }
+                                            var totalVal = 0;
+                                            for (int i = 0; i < valComponents.Length; i++)
+                                            {
+                                                if (!string.IsNullOrEmpty(valComponents[i]))
+                                                {
+                                                    int val;
+                                                    if (!int.TryParse(valComponents[i], out val))
+                                                    {
+                                                        // Try parse enum
+                                                        var prop = !string.IsNullOrWhiteSpace(propertyName)
+                                                            ? entity.GetType().GetProperty(ExtractName(propertyName))
+                                                            : null;
+                                                        if (prop != null && prop.PropertyType.IsEnum)
+                                                        {
+                                                            var type = prop.PropertyType.GetUnderlyingTypeIfNullable();
+                                                            object enumVal;
+                                                            try
+                                                            {
+                                                                enumVal = Enum.Parse(type, valComponents[i], true);
+                                                            }
+                                                            catch (Exception)
+                                                            {
+                                                                context.LocalValidationResult.Add(new ValidationResult($"Value '{valComponents[i]}' of '{jproperty.Path}' is not valid."));
+                                                                break;
+                                                            }
+                                                            if (enumVal != null)
+                                                            {
+                                                                totalVal += (int)enumVal;
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                        totalVal += val;
+                                                }
+                                            }
+                                            object? refValue = null;
+                                            result = Parser.TryParseToValueType(totalVal.ToString(), property.PropertyType, out refValue);
+                                            if (result && (await ValidateAsync(entity, jFullName, refValue, context)))
+                                                property.SetValue(entity, refValue);
+                                            break;
+                                        default:
                                             if (property.PropertyType.IsGenericType && jproperty.Value is JArray jList)
                                             {
                                                 var paramType = property.PropertyType.GetGenericArguments()[0];
@@ -318,65 +387,9 @@ namespace Shesha.DynamicEntities.Binder
                                                 }
                                             }
                                             break;
-                                        case ArrayFormats.ReferenceListItem:
-                                            string[] valComponents;
-                                            if (jproperty.Value is JArray jArray)
-                                            {
-                                                valComponents = jArray.Select(x => x.ToString()).ToArray();
-                                            }
-                                            else
-                                            {
-                                                var propertyValue = jproperty.Value.ToString();
-                                                // Removing the redundant ',' from the hidden element.
-                                                if (propertyValue.EndsWith(",")) propertyValue = propertyValue.Substring(0, propertyValue.Length - 1);
-                                                else if (propertyValue.StartsWith(",")) propertyValue = propertyValue.Substring(1, propertyValue.Length - 1);
-                                                else propertyValue.Replace(",,", ",");
-                                                valComponents = propertyValue.Split(',');
-                                            }
-                                            var totalVal = 0;
-                                            for (int i = 0; i < valComponents.Length; i++)
-                                            {
-                                                if (!string.IsNullOrEmpty(valComponents[i]))
-                                                {
-                                                    int val;
-                                                    if (!int.TryParse(valComponents[i], out val))
-                                                    {
-                                                        // Try parse enum
-                                                        var prop = !string.IsNullOrWhiteSpace(propertyName)
-                                                            ? entity.GetType().GetProperty(ExtractName(propertyName))
-                                                            : null;
-                                                        if (prop != null && prop.PropertyType.IsEnum)
-                                                        {
-                                                            var type = prop.PropertyType.GetUnderlyingTypeIfNullable();
-                                                            object enumVal;
-                                                            try
-                                                            {
-                                                                enumVal = Enum.Parse(type, valComponents[i], true);
-                                                            }
-                                                            catch (Exception)
-                                                            {
-                                                                context.LocalValidationResult.Add(new ValidationResult($"Value of '{jproperty.Path}' is not valid."));
-                                                                break;
-                                                            }
-                                                            if (enumVal != null)
-                                                            {
-                                                                totalVal += (int)enumVal;
-                                                            }
-                                                        }
-                                                    }
-                                                    else
-                                                        totalVal += val;
-                                                }
-                                            }
-                                            object? refValue = null;
-                                            result = Parser.TryParseToValueType(totalVal.ToString(), property.PropertyType, out refValue);
-                                            if (result && (await ValidateAsync(entity, jFullName, refValue, context)))
-                                                property.SetValue(entity, refValue);
-                                            break;
                                     }
                                     break;
                                 case DataTypes.Object:
-                                case DataTypes.ObjectReference:
                                     if (isReadOnly)
                                         break;
                                     if (jproperty.Value is JObject jObject)
@@ -385,7 +398,7 @@ namespace Shesha.DynamicEntities.Binder
                                         var childObject = property.GetValue(entity);
                                         if (!jObject.IsNullOrEmpty())
                                         {
-                                            if (childObject != null)
+                                            if (childObject != null && !(childObject is JObject))
                                                 r = await BindPropertiesAsync(jObject, childObject, context, null, childFormFields);
                                             else
                                             {
@@ -402,6 +415,7 @@ namespace Shesha.DynamicEntities.Binder
                                     }
                                     break;
                                 case DataTypes.EntityReference:
+                                case DataTypes.File:
                                     await PerformEntityReferenceAsync(entity, property, propConfig, jproperty.Value, jproperty.Path, dbValue, childFormFields, context, value => property.SetValue(entity, value));
                                     break;
                                 default:
@@ -410,7 +424,7 @@ namespace Shesha.DynamicEntities.Binder
 
                             if (!result)
                             {
-                                context.LocalValidationResult.Add(new ValidationResult($"Value of '{jproperty.Path}' is not valid."));
+                                context.LocalValidationResult.Add(new ValidationResult($"Value '{jproperty.Value.ToJsonString()}' of '{jproperty.Path}' is not valid."));
                             }
                         }
                     }
@@ -424,9 +438,9 @@ namespace Shesha.DynamicEntities.Binder
                 {
                     context.LocalValidationResult.Add(new ValidationResult($"{ex.Message} for '{jproperty.Path}'"));
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    context.LocalValidationResult.Add(new ValidationResult($"Value of '{jproperty.Path}' is not valid."));
+                    context.LocalValidationResult.Add(new ValidationResult($"Value of '{jproperty.Path}' is not valid. {ex.Message}"));
                 }
             }
 
@@ -640,7 +654,11 @@ namespace Shesha.DynamicEntities.Binder
             // use properties binding to validate properties
             var unproxiedType = JsonEntityProxy.GetUnproxiedType(objectType);
             var newItem = Activator.CreateInstance(unproxiedType) ?? throw new Exception($"Failed to create instance of type '{unproxiedType.FullName}'");
-            var r = await BindPropertiesAsync(jobject, newItem, context, null, formFields);
+            var r = true;
+            if (objectType == typeof(JObject))
+                newItem = jobject;
+            else
+                r = await BindPropertiesAsync(jobject, newItem, context, null, formFields);
             return r ? newItem : null;
         }
 
@@ -655,7 +673,7 @@ namespace Shesha.DynamicEntities.Binder
             var props = entityType.GetProperties();
             var result = false;
 
-            var config = await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace, entityType.Name);
+            var config = await _modelConfigurationManager.GetCachedModelConfigurationAsync(entityType.Namespace.NotNull(), entityType.Name);
             foreach (var prop in props)
             {
                 var propConfig = config.Properties.FirstOrDefault(x => x.Name == prop.Name);
@@ -694,9 +712,11 @@ namespace Shesha.DynamicEntities.Binder
             var any = false;
             foreach (var reference in references)
             {
-                var refType = _typeFinder.Find(x => x.Namespace == reference.EntityConfig.Namespace
-                && (x.Name == reference.EntityConfig.ClassName || x.GetTypeShortAliasOrNull() == reference.EntityConfig.ClassName))
-                .FirstOrDefault();
+                var entityConfig = await _entityConfigRepository.GetAsync(reference.EntityConfig.Id);
+
+                var refType = _typeFinder.Find(x => x.Namespace == entityConfig.Namespace
+                    && (x.Name == entityConfig.ClassName || x.GetTypeShortAliasOrNull() == entityConfig.ClassName))
+                    .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
                 if (refType == null || !refType.IsEntityType() || string.IsNullOrWhiteSpace(reference.Name)) 
                     continue;

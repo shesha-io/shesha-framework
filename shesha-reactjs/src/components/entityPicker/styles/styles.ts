@@ -1,6 +1,7 @@
 import { createStyles, sheshaStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }: { style?: CSSProperties }) => {
   const pickerEllipsisBtnWidth = "45px";
 
   const pickerInputGroup = "picker-input-group";
@@ -11,18 +12,22 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const shaReactTable = "sha-react-table";
   const shaGlobalTableFilter = "sha-global-table-filter";
 
-
   const entityPickerContainer = cx("entity-picker-container", css`
+    width: ${style?.width || '100%'};
     .${pickerInputGroup} {
       .${pickerInputGroupInput} {
-        width: calc(100% - ${pickerEllipsisBtnWidth});
+        width: calc(100% + ${pickerEllipsisBtnWidth});
       }
-  
+        
       .${pickerInputGroupEllipsis} {
         width: ${pickerEllipsisBtnWidth};
-        border-left: 1px solid #d9d9d9;
       }
-    }
+    }  
+      .${pickerInputGroupEllipsis} {
+        &:hover {
+          border-color: ${token.colorPrimary} !important;
+        }
+      }
   
     .global-tablefilter {
       padding-right: unset !important;
@@ -43,6 +48,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       
         .${shaReactTable} {
           margin: unset;
+          overflow: auto;
+          ${sheshaStyles.thinScrollbars}
         }
       
         .${entityPickerModalPagerContainer} {
@@ -65,19 +72,46 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     `);
 
   const entitySelect = cx("entity-select", css`
-        &:hover: {
-                color: colorTextSecondary,
+        --ant-color-text: ${style?.color || '#000'} !important;
+        width: calc(100% - 32px) !important;
+        &:hover {
+                border-color: ${token.colorPrimary} !important;
               }
 
+        .ant-select-selector {
+          overflow: auto !important;
+          scrollbar-width: thin !important;
+          -ms-overflow-style: none !important;
+          &::-webkit-scrollbar {
+            width: 8px !important;
+          }
+        }
+
+        .ant-select-selection-overflow-item-suffix {
+          display: none !important;
+        };
+
         .ant-select-selector > ant-select-selection-search, ant-select-selection-placeholder {
-          all: inherit !important;
           border-right: 1px solid #d9d9d9;
           padding: 0 8px !important;
           * {
+            font-size: ${style?.fontSize || '14px'} !important;
+            font-weight: ${style?.fontWeight} !important;
+            color: ${style?.color || '#000'} !important;
+            font-family: ${style?.fontFamily || 'inherit'} !important;  
             border-top-right-radius: 0 !important;
             border-bottom-right-radius: 0 !important;
             }
           }
+
+          .ant-select-selection-item {
+            font-size: ${style?.fontSize || '14px'} !important;
+            font-weight: ${style?.fontWeight} !important;
+            color: ${style?.color || '#000'} !important;
+            font-family: ${style?.fontFamily || 'inherit'} !important;  
+            
+          }
+
       `);
 
   return {
@@ -87,6 +121,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     pickerInputGroupEllipsis,
     entityPickerModalPagerContainer,
     entityPickerModal,
-    entitySelect
+    entitySelect,
   };
 });
