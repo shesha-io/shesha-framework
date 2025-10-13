@@ -49,17 +49,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 Body = type.Description
             };
 
-            // Get attachments only if recipient is provided
-            var files = recipientPerson != null
-                ? await _storedFileService.GetAttachmentsAsync(recipientPerson)
-                : null;
-
-            var attachments = files?.Select(x => new NotificationAttachmentDto()
-            {
-                FileName = x.FileName,
-                StoredFileId = x.Id,
-            }).ToList();
-
             var senderPerson = await GetCurrentPersonAsync();
             if (senderPerson == null)
                 throw new InvalidOperationException("Current person could not be determined. Ensure the user is logged in.");
@@ -77,11 +66,12 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 recipient,                
                 data,
                 notification.Priority,
-                attachments,
+                notification.NotificationAttachments,
+                notification.Cc,
                 null,
                 channel
             );
-        }
+         }
         public async Task BulkPublishAsync(BulkNotificationDto notification)
         {
             if (notification.Type == null)
@@ -97,6 +87,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             {
                 Name = "Test Name",
             };
+
             // Get the current person
             var senderPerson = await GetCurrentPersonAsync();
             if (senderPerson == null)
@@ -115,6 +106,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         receiver,
                         data,
                         notification.Priority,
+                        notification.NotificationAttachments,
                         null,
                         null,
                         channel
@@ -135,6 +127,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         receiver,
                         data,
                         notification.Priority,
+                        notification.NotificationAttachments,
                         null,
                         null,
                         channel
