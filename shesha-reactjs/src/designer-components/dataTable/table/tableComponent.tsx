@@ -1,6 +1,5 @@
 import React from 'react';
 import { getSettings } from './tableSettings';
-import { Alert } from 'antd';
 import { IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ITableComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
@@ -18,6 +17,7 @@ import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
+import { StandaloneTable } from './standaloneTable';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -29,16 +29,16 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
 
     if (model.hidden)
       return null;
-    return store ? (
-      <TableWrapper {...model} />
-    )
-      : (
-        <Alert
-          className="sha-designer-warning"
-          message="Data Table must be used within a Data Table Context"
-          type="warning"
-        />
+
+    if (store) {
+      return <TableWrapper {...model} />;
+    } else {
+      // In designer mode, show standalone table with dummy data
+      // In runtime mode, show alert
+      return (
+        <StandaloneTable {...model} />
       );
+    }
   },
   initModel: (model: ITableComponentProps) => {
     return {
