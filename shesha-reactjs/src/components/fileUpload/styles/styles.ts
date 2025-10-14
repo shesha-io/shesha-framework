@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, primaryColor }) => {
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }) => {
   const {
     background = 'transparent',
     backgroundImage,
@@ -126,7 +126,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
       .ant-upload:not(.ant-upload-disabled) {
         .icon {
-          color: ${primaryColor || token.colorPrimary} !important;
+          color: ${color || token.colorPrimary} !important;
         }
       }
 
@@ -162,7 +162,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         }
         .ant-space {
           .anticon {
-            color: ${primaryColor} !important;
+            color: ${color} !important;
           }
         }
         ${listType !== 'thumbnail' && style?.jsStyle}
@@ -179,7 +179,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
       .ant-upload-list-text {
         ${commonTextStyles}
-        height: calc(var(--container-height) - 32px) !important;
         max-height: calc(var(--container-max-height) - calc(${fontSize} * 4)) !important;
         min-height: calc(var(--container-min-height) - 32px) !important;
         width: calc(var(--container-width) - 32px) !important;
@@ -194,7 +193,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       .${prefixCls}-upload {
 
         width: ${layout && !isDragger ? 'var(--thumbnail-width)' : '100%'} !important;
-        ${layout && !isDragger && 'height: var(--thumbnail-height) !important'};
+        height: ${layout && !isDragger ? 'var(--thumbnail-height)' : '100%'} !important;
         border-radius: ${borderRadius} !important;
         align-items: center;
 
@@ -210,7 +209,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       }
 
       .ant-btn {
-        color: ${primaryColor || token.colorPrimary} !important;
+        color: ${color || token.colorPrimary} !important;
         ${commonTextStyles}
         justify-content: ${layout ? 'center' : justifyContentValue} !important;
         align-items: center;

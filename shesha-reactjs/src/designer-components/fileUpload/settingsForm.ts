@@ -328,13 +328,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                   },
                                 ],
                               })
-                              .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'primaryColor',
-                                label: 'Primary Color',
-                                inputType: 'colorPicker',
-                                jsSetting: true,
-                              })
                               .toJson(),
                           ],
                         },

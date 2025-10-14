@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, primaryColor }) => {
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles }) => {
   const { background, backgroundImage, borderRadius: allRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
     borderBottomWidth, borderLeftWidth, borderLeftColor, borderLeftStyle, borderRightColor, borderRightStyle, borderColor, borderTopStyle, borderTopColor,
     borderTop, boxShadow, borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, backgroundColor, backgroundPosition,
@@ -70,7 +70,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     
     .ant-upload:not(.ant-upload-disabled) {
       .icon {
-        color: ${primaryColor ?? token.colorPrimary} !important;
+        color: ${color ?? token.colorPrimary} !important;
       };
     }
   
@@ -164,7 +164,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
   
     .ant-btn {
-      color: ${primaryColor ?? token.colorPrimary} !important;
+      color: ${color ?? token.colorPrimary} !important;
       padding: 0;
       * {
         font-size: ${fontSize ?? '14px'} !important;

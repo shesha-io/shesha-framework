@@ -36,7 +36,6 @@ export interface IFileUploadProps {
   borderRadius?: number;
   hideFileName?: boolean;
   styles?: any;
-  primaryColor?: string;
   type?: string;
 }
 
@@ -51,8 +50,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   isDragger = false,
   listType = 'text',
   hideFileName = false,
-  styles: stylesProp,
-  primaryColor,
+  styles: stylesProp
 }) => {
   const {
     fileInfo,
@@ -64,7 +62,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const props = {
     style: stylesProp,
-    primaryColor,
     model: {
       layout: listType === 'thumbnail' && !isDragger,
       isDragger,
