@@ -60,7 +60,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   hideFileName?: boolean;
   gap?: number;
   container?: IStyleType;
-  primaryColor?: string;
   allStyles?: IFormComponentStyles;
   enableStyleOnReadonly?: boolean;
   thumbnail?: IStyleType;
@@ -83,7 +82,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   validFileTypes = [],
   maxFileLength = 0,
   isDragger = false,
-  primaryColor,
   disabled,
   isStub = false,
   allowedFileTypes = [],
@@ -124,7 +122,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       isDragger,
       isStub,
     },
-    primaryColor,
   });
 
   const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
