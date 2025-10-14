@@ -50,7 +50,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   isDragger = false,
   listType = 'text',
   hideFileName = false,
-  styles: stylesProp
+  styles: stylesProp,
 }) => {
   const {
     fileInfo,
