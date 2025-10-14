@@ -220,7 +220,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       title={(
         <div
           style={{
-            width: typeof width === 'string' && /%$/.test(width as string) ? '100%' : (width as number | string),
+            width: typeof width === 'string' && /%$/.test(width) ? '100%' : (width as number | string),
             textOverflow: 'ellipsis',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
