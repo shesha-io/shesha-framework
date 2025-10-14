@@ -155,7 +155,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                   type: 'switch',
                   id: nanoid(),
                   propertyName: 'showCloseIcon',
-                  label: 'Show Close Button',
+                  label: 'Show Close Icon',
                   defaultValue: true,
                   jsSetting: true,
                 },
