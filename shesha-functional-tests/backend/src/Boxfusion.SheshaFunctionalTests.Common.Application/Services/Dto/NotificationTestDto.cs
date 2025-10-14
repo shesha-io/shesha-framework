@@ -31,6 +31,10 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
         /// <summary>
         /// 
         /// </summary>
+        public string? Cc { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public GenericEntityReference? TriggeringEntity { get; set; }
     }
 }
