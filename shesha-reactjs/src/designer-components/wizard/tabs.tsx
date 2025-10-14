@@ -94,7 +94,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                                 </Space>
                             )}
                         >
-                            {current > 0 && showBackButton && (
+                            {current > 0 && (currentStep?.showBackButton ?? showBackButton) && (
                                 <Button
                                     style={btnStyle('back')}
                                     onClick={back}
@@ -134,7 +134,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                                 </Button>
                             )}
 
-                            {current === visibleSteps.length - 1 && showDoneButton && (
+                            {current === visibleSteps.length - 1 && (currentStep?.showDoneButton ?? showDoneButton) && (
                                 <Button
                                     type="primary"
                                     style={btnStyle('next')}

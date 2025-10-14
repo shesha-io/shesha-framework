@@ -68,6 +68,8 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               nextButtonText: 'Next',
               backButtonText: 'Back',
               doneButtonText: 'Done',
+              showBackButton: true,
+              showDoneButton: true,
               key: 'step1',
               components: [],
               itemType: 'item',
@@ -103,10 +105,18 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev))
       .add<IWizardComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
-      .add<IWizardComponentProps>(7, (prev) => ({ 
+      .add<IWizardComponentProps>(7, (prev) => ({
         ...prev,
         showBackButton: prev.showBackButton ?? true,
         showDoneButton: prev.showDoneButton ?? true
+      }))
+      .add<IWizardComponentProps>(8, (prev) => ({
+        ...prev,
+        steps: prev.steps?.map(step => ({
+          ...step,
+          showBackButton: step.showBackButton ?? true,
+          showDoneButton: step.showDoneButton ?? true
+        })) ?? []
       }))
   ,
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
