@@ -37,7 +37,7 @@ export interface IQuickViewProps extends PropsWithChildren {
   initialFormData?: any;
 
   /** Form arguments passed to ConfigurableForm for data loading (e.g., {id: entityId}) */
-  formArguments?: any;
+  formArguments?: Record<string, unknown>;
 
   popoverProps?: PopoverProps;
 
@@ -104,6 +104,9 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       // When using formArguments, let the form handle loading via its data loader
       // But only after we have the formIdentifier
       setLoadingState('success');
+    } else if (formArguments && formIdentifier === null) {
+      // Dynamic form id resolution failed
+      setLoadingState('error');
     } else if (!formArguments && !formData && entityId && formMarkup) {
       // Fallback to manual data fetching for backward compatibility
       const getUrl = getEntityUrl ?? formMarkup?.formSettings?.getUrl;
