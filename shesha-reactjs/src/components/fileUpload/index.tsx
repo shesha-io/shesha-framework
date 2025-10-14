@@ -208,7 +208,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
                     isImageType(file.type) ? onPreview : () => downloadFile({ fileId: file.id, fileName: file.name })
                   }
                 >
-                  {listType !== 'thumbnail' && getFileIcon(file?.type)} {`${file.name} (${filesize(file.size)})`}
+                  {listType !== 'thumbnail' && getFileIcon(file?.type)} {`${file.name} (${filesize(file?.size || 0)})`}
                 </a>
               )}
               {showTextControls && fileControls(theme.application.primaryColor)}

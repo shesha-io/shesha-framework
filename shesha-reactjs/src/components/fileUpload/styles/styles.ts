@@ -88,12 +88,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       --ant-button-content-font-size: ${fontSize} !important;
       --ant-button-font-weight: ${fontWeight} !important;
       --ant-font-family: ${fontFamily} !important;
-      height: ${height ?? '54px'} !important;
-      width: ${width ?? '54px'} !important;
-      max-height: ${maxHeight ?? 'auto'} !important;
-      min-height: ${minHeight} !important;
-      max-width: ${maxWidth} !important;
-      min-width: ${minWidth} !important;
+      height: ${layout ? (height ?? '54px') : '100%'} !important;
+      width: ${layout ? (width ?? '54px') : '100%'} !important;
+      max-height: ${layout ? (maxHeight ?? 'auto') : '100%'} !important;
+      min-height: ${layout ? (minHeight) : '100%'} !important;
+      max-width: ${layout ? (maxWidth) : '100%'} !important;
+      min-width: ${layout ? (minWidth) : '100%'} !important;
 
       .ant-upload-select-picture-card {
         width: var(--thumbnail-width) !important;
@@ -212,7 +212,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       .ant-btn {
         color: ${primaryColor || token.colorPrimary} !important;
         ${commonTextStyles}
-        justify-content: ${justifyContentValue} !important;
+        justify-content: ${layout ? 'center' : justifyContentValue} !important;
+        align-items: center;
         padding: 0;
         * {
           ${commonTextStyles}
