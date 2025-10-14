@@ -11,10 +11,10 @@ export const DeviceOptions: FC = () => {
     <CustomDropdown
       placeholder="Select a device"
       optionFilterProp="label"
-      defaultValue="1024px"
+      defaultValue={`${window.screen.availWidth}px`}
       style={{ width: '120px' }}
       size="small"
-      customTooltip='Add a custom screen size e.g "1440px".'
+      customTooltip='Add a custom screen size e.g "1024px".'
       popupMatchSelectWidth={false}
       onChange={(val) => {
         const value = parseInt(val, 10);

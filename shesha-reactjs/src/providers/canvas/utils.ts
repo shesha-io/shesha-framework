@@ -54,6 +54,8 @@ export function widthRelativeToCanvas(width: string | number, canvasWidth: strin
   return trimmed;
 }
 
+export const defaultDesignerWidth = (window?.screen?.availWidth ?? 1024) + 'px';
+
 
 export interface IAutoZoomParams {
   currentZoom: number;
@@ -69,7 +71,7 @@ export const DEFAULT_OPTIONS = {
   sizes: [25, 50, 25],
   configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
   gutter: 4,
-  designerWidth: '1024px',
+  designerWidth: defaultDesignerWidth,
 };
 
 const valueToPercent = (value: number): number => value / 100;
@@ -94,7 +96,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     const vwValue = parseFloat(designerWidth.replace('vw', ''));
     canvasWidth = (vwValue / 100) * windowWidth;
   } else {
-    canvasWidth = parseFloat(designerWidth) || 1024;
+    canvasWidth = parseFloat(designerWidth);
   }
 
   const optimalZoom = (availableWidth / canvasWidth) * 100;
@@ -216,4 +218,7 @@ export const screenSizeOptions = [
   {
     label: 'Desktop 1920', value: '1920px', icon: DesktopOutlined,
   },
+  {
+    label: 'Default', value: defaultDesignerWidth, icon: DesktopOutlined,
+  }
 ];
