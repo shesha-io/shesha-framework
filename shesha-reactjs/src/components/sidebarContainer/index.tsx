@@ -35,6 +35,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const { zoom, setCanvasZoom, designerWidth, autoZoom, configTreePanelSize } = useCanvas();
 
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
+  const [windowSize, setWindowSize] = useState({ width: designerWidth });
 
   const handleDragSizesChange = useCallback((sizes: number[]) => {
     setCurrentSizes(sizes);
@@ -53,6 +54,16 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     autoZoom,
   );
 
+  // Track window resize
+  useEffect(() => {
+    const handleResize = (): void => {
+      setWindowSize({ width: (window?.innerWidth ?? 1024) + 'px' });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   useEffect(() => {
     if (canZoom) {
       if (autoZoom) {
@@ -65,7 +76,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         setCanvasZoom(newZoom);
       }
     }
-  }, [canZoom, autoZoom, designerWidth, currentSizes, configTreePanelSize, zoom]);
+  }, [canZoom, autoZoom, windowSize.width, designerWidth, currentSizes, configTreePanelSize, zoom, setCanvasZoom]);
 
   useEffect(() => {
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
