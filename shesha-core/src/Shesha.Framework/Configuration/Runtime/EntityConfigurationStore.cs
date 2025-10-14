@@ -1,16 +1,11 @@
 ﻿using Abp.Dependency;
-using Abp.Events.Bus.Entities;
-using Abp.Events.Bus.Handlers;
 using Abp.Reflection;
-using Abp.Threading;
 using Shesha.Configuration.MappingMetadata;
 using Shesha.Configuration.Runtime.Exceptions;
-using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.EntityTypeBuilder;
 using Shesha.Extensions;
 using Shesha.Reflection;
-using Shesha.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -75,14 +70,14 @@ namespace Shesha.Configuration.Runtime
                 _mappingMetadataProvider.ResetMapping();
         }
 
-        public void InitializeDynamic()
+        public async Task InitializeDynamicAsync()
         {
             var userEntityTypes = _dynamicEntityTypeBuilder.GenerateTypes(this);
             foreach (var entityType in userEntityTypes)
                 _entityByClassName.Add(entityType.GetRequiredFullName(), entityType);
             
             _mappingMetadataProvider.ResetMapping();
-            AsyncHelper.RunSync(async () => await _dynamicEntityUpdateHandler.ProcessAsync());
+            await _dynamicEntityUpdateHandler.ProcessAsync();
         }
 
         public string? GetEntityTypeAlias(Type entityType)
@@ -144,13 +139,13 @@ namespace Shesha.Configuration.Runtime
             config.ApplicationServiceType = applicationServiceType;
         }
 
-        public void ReInitialize()
+        public async Task ReInitializeAsync()
         {
             _entityByTypeShortAlias.Clear();
             _entityByClassName.Clear();
             _entityConfigurations.Clear();
             InitializeHardcoded(false);
-            InitializeDynamic();
+            await InitializeDynamicAsync();
         }
 
 
