@@ -140,11 +140,12 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   }, [entityType]);
 
   useEffect(() => {
-    // fetch data only for NavigateLink and Dialog mode. Quickview will fetch data later
-    if (!fetched && props.entityReferenceType !== 'Quickview' && entityId) {
+    // Fetch minimal data needed for display text
+    // Quickview needs display text for the button/trigger, but the form will handle comprehensive data loading
+    if (!fetched && entityId && (!props.value || typeof props.value !== 'object')) {
       const queryParams = {
         id: entityId,
-        properties: `id ${props.displayProperty ? props.displayProperty : ''}`,
+        properties: `id ${props.displayProperty ? props.displayProperty : ''} _displayName`,
       };
       const fetcher = props.getEntityUrl
         ? get(props.getEntityUrl, queryParams, { base: backendUrl, headers: httpHeaders })
@@ -152,20 +153,31 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
       fetcher
         .then((resp) => {
-          setDisplayText(resp.result[props.displayProperty] ?? displayText ?? 'No Display Name');
+          const result = resp.result;
+          const displayValue = result[props.displayProperty] || result._displayName || displayText || 'No Display Name';
+          setDisplayText(displayValue);
           setFetched(true);
         })
         .catch((reason) => {
           notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> });
+          setFetched(true); // Set fetched to true even on error to prevent infinite loading
         });
+    } else if (!fetched) {
+      // For cases where no data fetch is needed, set fetched to true immediately
+      setFetched(true);
     }
-  }, [fetched, entityId, props.entityReferenceType, props.getEntityUrl, entityType, backendUrl, displayText, httpHeaders, notification, props.displayProperty]);
+  }, [fetched, entityId, props.getEntityUrl, entityType, backendUrl, displayText, httpHeaders, notification, props.displayProperty, props.value]);
 
   useEffect(() => {
     setFetched(false);
-    if (props?.value?._displayName) setDisplayText(props?.value?._displayName);
-    else setDisplayText(!props?.value ? props?.placeholder : '');
-  }, [entityId, entityType, props?.placeholder, props?.value]);
+    // Try to get display text from existing value object
+    if (props?.value && typeof props?.value === 'object') {
+      const displayValue = props.value[props.displayProperty] || props.value._displayName || '';
+      setDisplayText(displayValue);
+    } else {
+      setDisplayText(!props?.value ? (props?.placeholder || '') : '');
+    }
+  }, [entityId, entityType, props?.placeholder, props?.value, props.displayProperty]);
 
   useEffect(() => {
     if (props.formIdentifier) {
@@ -227,7 +239,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   }, [props.displayType, props.iconName, props.style, props.textTitle, displayText]);
 
   const content = useMemo(() => {
-    if (!(fetched || props.entityReferenceType === 'Quickview'))
+    // Show loading state for all modes when data is not yet fetched
+    if (!fetched)
       return (
         <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
           <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={typeof displayText === 'string' ? displayText : undefined}>
@@ -267,6 +280,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           width={addPx(props.quickviewWidth)}
           formIdentifier={formIdentifier}
           formType={formType}
+          // Pass formArguments with entity ID to enable form's data loader (same algorithm as dialog mode)
+          formArguments={{ id: entityId }}
           disabled={props.disabled}
           style={props.style}
           displayType={props.displayType}
