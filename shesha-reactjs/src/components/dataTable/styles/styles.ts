@@ -3,15 +3,6 @@ import { createStyles } from '@/styles';
 export const useStyles = createStyles(({ css, cx }) => {
   const shaMultiEntityCell = cx("sha-form-cell", css`
       white-space: normal;
-      color: inherit;
-
-      /* Apply inherited color to all text elements */
-      *,
-      span,
-      div,
-      p {
-        color: inherit !important;
-      }
     `);
 
   // Common base styles for form and data cells
@@ -79,26 +70,6 @@ export const useStyles = createStyles(({ css, cx }) => {
     `;
 
   const shaFormCell = cx("sha-form-cell", shaCellBase, css`
-      /* Inherit color from parent table */
-      color: inherit;
-
-      /* Apply inherited color to all text elements */
-      *,
-      .ant-input,
-      .ant-input-disabled,
-      .ant-select-selection-item,
-      .ant-picker-input > input,
-      .ant-input-number-input,
-      .ant-checkbox-wrapper,
-      .ant-radio-wrapper,
-      span,
-      div,
-      p,
-      label,
-      .ant-form-item-label > label {
-        color: inherit !important;
-      }
-
       .ant-form-item-control {
         flex-direction: column;
         display: flex;
@@ -122,25 +93,6 @@ export const useStyles = createStyles(({ css, cx }) => {
     `);
 
   const shaDataCell = cx("sha-data-cell", shaCellBase, css`
-      /* Inherit color from parent table */
-      color: inherit;
-
-      /* Apply inherited color to all text elements */
-      *,
-      .ant-input,
-      .ant-input-disabled,
-      .ant-select-selection-item,
-      .ant-picker-input > input,
-      .ant-input-number-input,
-      .ant-checkbox-wrapper,
-      .ant-radio-wrapper,
-      span,
-      div,
-      p,
-      label {
-        color: inherit !important;
-      }
-
       /* Ensure the flex container doesn't overflow */
       > div {
         width: 100%;
