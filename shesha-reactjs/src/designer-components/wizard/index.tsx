@@ -29,8 +29,11 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   },
   initModel: (model) => ({
     ...model,
-    showBackButton: model.showBackButton ?? true,
-    showDoneButton: model.showDoneButton ?? true,
+    steps: model.steps?.map((step) => ({
+      ...step,
+      showBackButton: step?.showBackButton ?? true,
+      showDoneButton: step?.showDoneButton ?? true,
+    })) ?? [],
   }),
   migrator: (m) =>
     m
