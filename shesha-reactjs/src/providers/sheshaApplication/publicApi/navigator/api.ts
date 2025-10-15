@@ -26,7 +26,7 @@ export class NavigatorApi implements INavigatorApi {
 
   navigateToUrl = (url: string, queryParameters?: Record<string, string>): void => {
     const finalUrl = buildUrl(url, queryParameters);
-    this.#shaRouter.goingToRoute(finalUrl);
+    void this.#shaRouter.goingToRoute(finalUrl);
   };
 
   navigateToForm = (formId: FormIdentifier, args?: Record<string, string>): void => {
