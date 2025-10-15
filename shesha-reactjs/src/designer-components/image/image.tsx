@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { App, Button, Image, Tooltip, Upload, UploadProps } from 'antd';
 import { toBase64, useSheshaApplication, useStoredFile } from '@/index';
+import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 
 export type ImageSourceType = 'url' | 'storedFile' | 'base64';
@@ -75,13 +76,9 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
     accept: props.allowedFileTypes?.join(','),
     showUploadList: false,
     beforeUpload: async (file) => {
-      if (allowedFileTypes && allowedFileTypes.length > 0) {
-        const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-        const isAllowed = allowedFileTypes.some((type) => fileExt === type.toLowerCase());
-        if (!isAllowed) {
-          message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
-          return Upload.LIST_IGNORE;
-        }
+      if (!isFileTypeAllowed(file.name, allowedFileTypes)) {
+        message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
+        return Upload.LIST_IGNORE;
       }
 
       if (imageSource === 'base64') {

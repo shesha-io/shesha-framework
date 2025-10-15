@@ -15,6 +15,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { useSheshaApplication, useStoredFile, useTheme } from '@/providers';
+import { isFileTypeAllowed } from '@/utils/fileValidation';
 import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { useStyles } from './styles/styles';
@@ -225,13 +226,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
     style: !isDragger && stylesProp,
     customRequest: onCustomRequest,
     beforeUpload: (file) => {
-      if (allowedFileTypes && allowedFileTypes.length > 0) {
-        const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-        const isAllowed = allowedFileTypes.some((type) => fileExt === type.toLowerCase());
-        if (!isAllowed) {
-          message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
-          return false;
-        }
+      if (!isFileTypeAllowed(file.name, allowedFileTypes)) {
+        message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
+        return false;
       }
       return true;
     },
@@ -337,14 +334,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) {
-            if (allowedFileTypes && allowedFileTypes.length > 0) {
-              const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-              const isAllowed = allowedFileTypes.some((type) => fileExt === type.toLowerCase());
-              if (!isAllowed) {
-                message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
-                e.target.value = '';
-                return;
-              }
+            if (!isFileTypeAllowed(file.name, allowedFileTypes)) {
+              message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
+              e.target.value = '';
+              return;
             }
             uploadFile({ file }, callback);
           }

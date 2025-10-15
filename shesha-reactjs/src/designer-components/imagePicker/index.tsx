@@ -6,6 +6,7 @@ import { useStyles } from './style';
 import { IToolboxComponent } from '@/interfaces';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { toBase64, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { IFileUploadProps } from '../fileUpload';
 import { getSettings } from './settings';
 
@@ -70,13 +71,9 @@ export const ImagePicker = ({ onChange, value, readOnly, allowedFileTypes }: IIm
         onRemove={handleRemove}
         onChange={handleChange}
         beforeUpload={(file) => {
-          if (allowedFileTypes && allowedFileTypes.length > 0) {
-            const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-            const isAllowed = allowedFileTypes.some((type) => fileExt === type.toLowerCase());
-            if (!isAllowed) {
-              message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
-              return Upload.LIST_IGNORE;
-            }
+          if (!isFileTypeAllowed(file.name, allowedFileTypes)) {
+            message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
+            return Upload.LIST_IGNORE;
           }
           return false;
         }}
