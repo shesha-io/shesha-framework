@@ -5,7 +5,6 @@ import Button from '@/designer-components/button/button';
 import ButtonGroup from '@/designer-components/button/buttonGroup/buttonGroupComponent';
 import Buttons from '@/designer-components/button/buttonGroup/buttonsComponent';
 import CheckboxGroup from '@/designer-components/checkboxGroup/checkboxGroup';
-import ChildEntitiesTagGroup from '@/designer-components/childEntitiesTagGroup';
 import CodeEditor from '@/designer-components/codeEditor';
 import ColorPickerComponent from '@/designer-components/colorPicker';
 import Columns from '@/designer-components/columns/columns';
@@ -174,7 +173,6 @@ export const getToolboxComponents = (
         FileUpload,
         AttachmentsEditor,
         Notes,
-        ChildEntitiesTagGroup,
       ],
     },
     {

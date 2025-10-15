@@ -32,3 +32,10 @@ export const defaultStyles = (): IStyleType => {
         },
     };
 };
+
+export const filterObjFromKeys = (value: object, keys: string[] = []) =>
+  keys.length > 0
+    ? Object.entries(value || {})
+      .filter(([key]) => keys.includes(key))
+      .reduce((acc, [key, value]) => ({ ...acc, ...{ [key]: value } }), {})
+    : value;

@@ -13,7 +13,7 @@ import { ItemType } from "antd/es/menu/interface";
 import React from "react";
 import Editor from "./modal";
 import { getSettings } from "./settings";
-import { filterObjFromKeys } from "../childEntitiesTagGroup/utils";
+import { filterObjFromKeys, defaultStyles } from "./utils";
 import { ILayoutColor } from "@/components/menu/model";
 import { IConfigurableComponentContext } from "@/providers/configurableComponent/contexts";
 import { RebaseEditOutlined } from "./icons";
@@ -21,7 +21,6 @@ import LayoutMenu from "@/components/menu";
 import { MenuUnfoldOutlined } from "@ant-design/icons";
 import { useFormComponentStyles } from "@/hooks/formComponentHooks";
 import { migratePrevStyles } from "../_common-migrations/migrateStyles";
-import { defaultStyles } from "./utils";
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   items?: ItemType[];
