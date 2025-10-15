@@ -81,7 +81,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
   const newFilteredTabs = tabs
     .map((tab: any, index: number) => {
-      const filteredComponents = tab.children ?? filterDynamicComponents(tab.components, searchQuery, token.colorPrimary);
+      const filteredComponents = tab.children ?? filterDynamicComponents(tab.components, searchQuery);
 
       const visibleComponents = Array.isArray(filteredComponents)
         ? filteredComponents.filter((comp) => isComponentHidden(comp))

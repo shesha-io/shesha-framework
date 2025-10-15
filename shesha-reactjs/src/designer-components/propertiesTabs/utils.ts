@@ -66,7 +66,7 @@ export const getBodyStyles = (): IStyleType => ({
 const isComponent = (component: unknown): component is IConfigurableFormComponent => isDefined(component) && "id" in component && "type" in component;
 const isComponentsContainer = (component: IConfigurableFormComponent): component is IConfigurableFormComponent & IComponentsContainer => isComponent(component) && "components" in component && Array.isArray(component.components);
 
-export const filterDynamicComponents = (components: IConfigurableFormComponent[], query: string, primaryColor?: string): IConfigurableFormComponent[] => {
+export const filterDynamicComponents = (components: IConfigurableFormComponent[], query: string): IConfigurableFormComponent[] => {
   if (!components || !Array.isArray(components)) return [];
 
 
@@ -97,7 +97,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
 
     // Handle propertyRouter
     if (isPropertyRouterComponent(c)) {
-      const filteredComponents = filterDynamicComponents(c.components, query, primaryColor);
+      const filteredComponents = filterDynamicComponents(c.components, query);
 
       return {
         ...c,
@@ -108,7 +108,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
 
     // Handle collapsiblePanel
     if (isCollapsiblePanel(c)) {
-      const contentComponents = filterDynamicComponents(c.content?.components || [], query, primaryColor);
+      const contentComponents = filterDynamicComponents(c.content?.components || [], query);
       const hasVisibleChildren = contentComponents.length > 0;
 
       return {
@@ -146,7 +146,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
 
     // Handle components with nested components
     if (isComponentsContainer(c)) {
-      const filteredComponents = filterDynamicComponents(c.components, query, primaryColor);
+      const filteredComponents = filterDynamicComponents(c.components, query);
       const hasVisibleChildren = filteredComponents.length > 0;
 
       return {
