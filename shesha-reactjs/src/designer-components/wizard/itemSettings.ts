@@ -233,22 +233,33 @@ export const getItemSettings = () => {
                     inputs: [
                       {
                         id: nanoid(),
+                        type: 'switch',
+                        propertyName: 'showBackButton',
+                        label: 'Show Back Button',
+                        labelAlign: 'right',
+                        parentId: backButtonContentId,
+                        jsSetting: true,
+                        defaultValue: true,
+                      },
+                      {
+                        id: nanoid(),
                         type: 'textField',
                         propertyName: 'backButtonText',
                         label: 'Text',
                         labelAlign: 'right',
                         parentId: backButtonContentId,
                         jsSetting: true,
-                      },
-                      {
-                        id: nanoid(),
-                        type: 'codeEditor',
-                        propertyName: 'backButtonCustomEnabled',
-                        label: 'Custom Enabled',
-                        description: 'Write the code that returns whether this button is enabled',
-                        labelAlign: 'right',
-                        parentId: backButtonContentId,
-                      }]
+                      }
+                    ]
+                  })
+                  .addSettingsInput({
+                    id: nanoid(),
+                    inputType: 'codeEditor',
+                    propertyName: 'backButtonCustomEnabled',
+                    label: 'Custom Enabled',
+                    description: 'Write the code that returns whether this button is enabled',
+                    labelAlign: 'right',
+                    parentId: backButtonContentId,
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
@@ -293,23 +304,33 @@ export const getItemSettings = () => {
                     inputs: [
                       {
                         id: nanoid(),
+                        type: 'switch',
+                        propertyName: 'showDoneButton',
+                        label: 'Show Done Button',
+                        labelAlign: 'right',
+                        parentId: doneButtonContentId,
+                        jsSetting: true,
+                        defaultValue: true,
+                      },
+                      {
+                        id: nanoid(),
                         type: 'textField',
                         propertyName: 'doneButtonText',
                         label: 'Text',
                         labelAlign: 'right',
                         parentId: doneButtonContentId,
                         jsSetting: true,
-                      },
-                      {
-                        id: nanoid(),
-                        type: 'codeEditor',
-                        propertyName: 'doneButtonCustomEnabled',
-                        label: 'Custom Enabled',
-                        description: 'Write the code that returns whether this button is enabled',
-                        labelAlign: 'right',
-                        parentId: doneButtonContentId,
                       }
                     ]
+                  })
+                  .addSettingsInput({
+                    id: nanoid(),
+                    inputType: 'codeEditor',
+                    propertyName: 'doneButtonCustomEnabled',
+                    label: 'Custom Enabled',
+                    description: 'Write the code that returns whether this button is enabled',
+                    labelAlign: 'right',
+                    parentId: doneButtonContentId,
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
