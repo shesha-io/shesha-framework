@@ -37,7 +37,7 @@ const RadioGroup: FC<IRadioProps> = (model) => {
     <Radio.Group
       className="sha-radio-group"
       disabled={model.readOnly}
-      value={value ? `${value}` : undefined}
+      value={value != null ? `${value}` : undefined}
       onBlur={model.onBlur}
       onFocus={model.onFocus}
       onChange={onChange}
