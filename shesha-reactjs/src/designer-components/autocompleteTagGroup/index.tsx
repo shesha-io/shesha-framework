@@ -32,7 +32,6 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
         {(value, onChange) => (
           <AutocompleteTagGroup
             value={value}
-            defaultValue={model?.defaultValue}
             onChange={onChange}
             autocompleteUrl={model?.autocompleteUrl}
             readOnly={model?.readOnly}
