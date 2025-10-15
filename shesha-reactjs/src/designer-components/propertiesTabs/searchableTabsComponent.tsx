@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Tabs, Input, Empty, theme } from 'antd';
+import { Tabs, Input, Empty } from 'antd';
 import ParentProvider from '@/providers/parentProvider';
 import { ComponentsContainer } from '@/components';
 import { useStyles } from './style';
@@ -19,7 +19,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const [activeTabKey, setActiveTabKey] = useState('1');
   const searchRefs = useRef(new Map());
   const { styles } = useStyles();
-  const { token } = theme.useToken();
 
   const formState = useFormState(false);
   const formActions = useFormActions(false);
