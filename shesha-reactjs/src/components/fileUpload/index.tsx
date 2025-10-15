@@ -227,7 +227,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     beforeUpload: (file) => {
       if (allowedFileTypes && allowedFileTypes.length > 0) {
         const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-        const isAllowed = allowedFileTypes.some(type => fileExt === type.toLowerCase());
+        const isAllowed = allowedFileTypes.some((type) => fileExt === type.toLowerCase());
         if (!isAllowed) {
           message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
           return false;
@@ -339,7 +339,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
           if (file) {
             if (allowedFileTypes && allowedFileTypes.length > 0) {
               const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-              const isAllowed = allowedFileTypes.some(type => fileExt === type.toLowerCase());
+              const isAllowed = allowedFileTypes.some((type) => fileExt === type.toLowerCase());
               if (!isAllowed) {
                 message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
                 e.target.value = '';

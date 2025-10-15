@@ -72,7 +72,7 @@ export const ImagePicker = ({ onChange, value, readOnly, allowedFileTypes }: IIm
         beforeUpload={(file) => {
           if (allowedFileTypes && allowedFileTypes.length > 0) {
             const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-            const isAllowed = allowedFileTypes.some(type => fileExt === type.toLowerCase());
+            const isAllowed = allowedFileTypes.some((type) => fileExt === type.toLowerCase());
             if (!isAllowed) {
               message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
               return Upload.LIST_IGNORE;
