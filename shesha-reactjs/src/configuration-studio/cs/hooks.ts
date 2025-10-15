@@ -93,7 +93,7 @@ export const useCsTabs = (): UseCsTabsResponse => {
     docs: cs.docs,
     activeDocId: cs.activeDocId,
     activeDocument: cs.activeDocument,
-    navigateToDocument: cs.navigateToDocument,
+    navigateToDocument: cs.navigateToDocumentAsync,
     closeDoc: cs.closeDocAsync,
     closeMultipleDocs: cs.closeMultipleDocsAsync,
     renderedDocs: cs.renderedDocs,

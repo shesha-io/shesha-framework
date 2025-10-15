@@ -72,7 +72,7 @@ export class ShaRouter implements IShaRouter {
       case 'form': {
         const formUrl = this.getFormUrl(request.formId);
         return this._prepareUrl(formUrl, request.queryParameters);
-      };
+      }
       default: return undefined;
     }
   };

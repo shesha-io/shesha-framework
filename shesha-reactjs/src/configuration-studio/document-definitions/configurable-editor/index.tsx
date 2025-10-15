@@ -3,12 +3,12 @@ import { FormFullName } from '@/interfaces';
 import { useShaFormInstance } from '@/providers';
 import React, { FC, useMemo } from 'react';
 
-export interface IConfigurabeleEditorProps {
+export interface IConfigurableEditorProps {
   itemId: string;
   formId: FormFullName;
 }
 
-export const ConfigurableEditor: FC<IConfigurabeleEditorProps> = (props) => {
+export const ConfigurableEditor: FC<IConfigurableEditorProps> = (props) => {
   const { formId, itemId } = props;
 
   const formArguments = useMemo(() => {

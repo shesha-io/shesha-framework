@@ -148,7 +148,7 @@ export interface IConfigurationStudio {
   activeDocId: string | undefined;
   activeDocument: IDocumentInstance | undefined;
 
-  navigateToDocument: (docId: string) => void;
+  navigateToDocumentAsync: (docId: string) => void;
   activateDocById: (docId: string | undefined) => void;
   openDocumentByIdAsync: (docId: string) => Promise<void>;
   closeDocAsync: (docId?: string) => void;
@@ -406,14 +406,14 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.shaRouter.router.push(this.rootPath);
   };
 
-  navigateToDocument = (docId: string): void => {
+  navigateToDocumentAsync = async (docId: string): Promise<void> => {
     const currentDocId = this.getDocIdFromRoute();
 
     if (currentDocId === docId)
       return;
 
     const url = this.getDocumentUrl(docId);
-    this.shaRouter.goingToRoute(url);
+    await this.shaRouter.goingToRoute(url);
   };
 
   openDocumentByIdAsync = async (docId: string): Promise<void> => {
@@ -455,7 +455,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     await this.doSelectTreeNodeAsync(node);
 
     if (isDefined(node))
-      this.navigateToDocument(node.id);
+      await this.navigateToDocumentAsync(node.id);
   };
 
   //#region documents
@@ -636,7 +636,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
         ? this.docs[indexToSwitch]
         : undefined;
       if (docToSwitchTo)
-        this.navigateToDocument(docToSwitchTo.itemId);
+        await this.navigateToDocumentAsync(docToSwitchTo.itemId);
       else {
         this.navigateToRoot();
         await this.clearDocumentSelectionAsync();
@@ -1063,7 +1063,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       : undefined;
   };
 
-  navigateAfterInit = (): void => {
+  navigateAfterInitAsync = async (): Promise<void> => {
     // get id of the document from the router and open tab
     const docId = this.getDocIdFromRoute();
     if (docId) {
@@ -1073,8 +1073,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       // if docId is not provided - check opened tabs and select first one
       const doc = this.docs.at(0);
       if (doc) {
-        // await this.activateDocById(doc.itemId);
-        this.navigateToDocument(doc.itemId);
+        await this.navigateToDocumentAsync(doc.itemId);
       } else {
         // open home page
         // await this.openDocById('home');
@@ -1087,7 +1086,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
     await this.loadItemTypesAsync();
     await this.loadTreeAndDocsAsync();
-    this.navigateAfterInit();
+    await this.navigateAfterInitAsync();
 
     this.log('CS: initialization - done');
   };
