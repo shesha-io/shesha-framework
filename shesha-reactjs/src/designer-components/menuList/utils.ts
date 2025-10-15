@@ -33,7 +33,7 @@ export const defaultStyles = (): IStyleType => {
   };
 };
 
-export const filterObjFromKeys = (value: object, keys: string[] = []) =>
+export const filterObjFromKeys = (value: object, keys: string[] = []): object =>
   keys.length > 0
     ? Object.entries(value || {})
       .filter(([key]) => keys.includes(key))
