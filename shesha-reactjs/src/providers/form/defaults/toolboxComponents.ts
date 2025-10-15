@@ -21,7 +21,6 @@ import NotificationAutocompleteComponent from '@/designer-components/notificatio
 import IconPicker from '@/designer-components/iconPicker';
 import ImagePickerComponent from '@/designer-components/imagePicker';
 import Image from '@/designer-components/image';
-import ImageAnnotationComponent from '@/designer-components/imageAnnotation';
 import KeyInformationBarComponent from '@/designer-components/keyInformationBar';
 import Paragraph from '@/designer-components/_legacyComponents/paragraph';
 import Title from '@/designer-components/_legacyComponents/title';
@@ -156,7 +155,6 @@ export const getToolboxComponents = (
         IconPicker,
         HtmlRender,
         Image,
-        ImageAnnotationComponent,
         RichTextEditor,
         Markdown,
         PasswordCombo,
