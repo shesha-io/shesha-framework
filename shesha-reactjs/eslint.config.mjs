@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import jsdoc from "eslint-plugin-jsdoc";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import stylistic from "@stylistic/eslint-plugin";
@@ -8,15 +9,43 @@ import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
+import { importX, createNodeResolver } from 'eslint-plugin-import-x'
+import memoryTracePlugin from "./src/eslint-plugins/eslint-plugin-memory-monitor.js";
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const isLightBuild = process.env.SHA_LIGHT_BUILD === "1" ? true : false;
+console.log(`Light build is: ${Boolean(isLightBuild) ? "🔛 ON" : "📴 OFF"}`);
+
+const strictFolders = isLightBuild
+    ? []
+    : [
+        "src/configuration-studio",
+        //"src/utils",
+
+        "src/providers/referenceListDispatcher",
+        "src/providers/metadataDispatcher",
+        "src/providers/metadata",
+        "src/providers/configurationItemsLoader",
+        "src/providers/formPersisterProvider",
+        "src/providers/formMarkupConverter",
+        "src/providers/formManager",
+        "src/providers/configurableActionsDispatcher",
+        "src/providers/auth",
+        "src/providers/appConfigurator",
+        "src/providers/dataContextManager",
+        "src/providers/dataContextProvider",
+        //"src/providers/sheshaApplication",        
+    ];
+
 const stylisticOverrides = {
+    ...stylistic.configs.recommended.rules,
     "@stylistic/brace-style": ["error", "1tbs", { "allowSingleLine": false }],
     "@stylistic/jsx-indent-props": [
         'error',
-        4
+        2
         // - 'first' - align with first prop (VS Code-like)
         // - 2 - 2 space indentation (most common)
         // - 4 - 4 space indentation  
@@ -37,10 +66,8 @@ const stylisticOverrides = {
             requireLast: false,
         },
     }],
-    "@stylistic/indent": "off",
-    "@stylistic/indent-binary-ops": "off",
-    /* todo: review after development of a standard and integration with auto-formatter
-    "@stylistic/indent": ["error", 2],
+    //"@stylistic/indent-binary-ops": "off",
+    /*
     "@stylistic/indent-binary-ops": ["error", 2],
     */
     "@stylistic/jsx-quotes": ["error", "prefer-double"],
@@ -54,26 +81,25 @@ const stylisticOverrides = {
     "@stylistic/padded-blocks": ["error", "never"],
     "@stylistic/no-multiple-empty-lines": "error",
     "@stylistic/lines-between-class-members": ["error", "always"],
+    "indent": "off",
+    "@stylistic/indent": ["error", 2, {
+        "SwitchCase": 1,
+    }],
+    "@stylistic/space-infix-ops": "error",
+    "@stylistic/multiline-ternary": "off",
 };
 
 const legacyTypescriptOverrides = {
     "@typescript-eslint/dot-notation": "off",
 
-    "@typescript-eslint/explicit-function-return-type": ["off", {
-        allowExpressions: false,
-        allowTypedFunctionExpressions: false,
-        allowHigherOrderFunctions: false,
-        allowDirectConstAssertionInArrowFunctions: true,
-        allowConciseArrowFunctionExpressionsStartingWithVoid: true,
+
+    "@typescript-eslint/explicit-function-return-type": ["error", {
+        "allowExpressions": true,
+        "allowHigherOrderFunctions": true,
+        "allowDirectConstAssertionInArrowFunctions": true
     }],
 
-    "@typescript-eslint/explicit-module-boundary-types": ["off", {
-        allowArgumentsExplicitlyTypedAsAny: true,
-        allowDirectConstAssertionInArrowFunctions: true,
-        allowHigherOrderFunctions: false,
-        allowTypedFunctionExpressions: false,
-    }],
-
+    "@typescript-eslint/explicit-module-boundary-types": "error",
     "@typescript-eslint/indent": "off",
 
     "@typescript-eslint/naming-convention": ["error", {
@@ -104,6 +130,7 @@ const legacyTypescriptOverrides = {
         propertyDeclaration: true,
         variableDeclaration: true,
     }],
+    "@typescript-eslint/no-empty-object-type": "error",
     // TODO: activate and review code
     // "@typescript-eslint/no-explicit-any": "error",
     // "@typescript-eslint/no-unsafe-call": "error",
@@ -117,8 +144,7 @@ const typescriptOverrides = {
         varsIgnorePattern: "^_",
         argsIgnorePattern: "^_",
         ignoreRestSiblings: true,
-    }],
-
+    }],    
     "@typescript-eslint/explicit-module-boundary-types": "error",
     "@typescript-eslint/explicit-function-return-type": [
         "error",
@@ -136,10 +162,13 @@ const typescriptOverrides = {
     "@typescript-eslint/no-unsafe-assignment": "error",
     "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
     "@typescript-eslint/no-unnecessary-condition": "error",
-    "@typescript-eslint/strict-boolean-expressions": "error",
+    //todo: enable after first part of fixes 
+    // "@typescript-eslint/strict-boolean-expressions": "error",
 };
 
 const baseTsConfig = {
+    ...importX.flatConfigs.recommended,
+    ...importX.flatConfigs.typescript,
     files: [
         "src/**/*.ts",
         "src/**/*.tsx",
@@ -149,11 +178,13 @@ const baseTsConfig = {
         "**/__tests__/**/*",
     ],
     plugins: {
+        "memory-monitor": memoryTracePlugin,
         jsdoc,
         "react": reactPlugin,
         "react-hooks": hooksPlugin,
         "@typescript-eslint": typescriptEslint,
         "@stylistic": stylistic,
+        "import-x": importX,
     },
 
     languageOptions: {
@@ -162,11 +193,11 @@ const baseTsConfig = {
         },
 
         parser: tsParser,
-        ecmaVersion: 5,
+        ecmaVersion: "latest",
         sourceType: "module",
 
         parserOptions: {
-            project: "tsconfig.json",
+            projectService: true, // Enable project service
             tsconfigRootDir: __dirname,
         },
     },
@@ -210,20 +241,38 @@ const baseTsConfig = {
             linkAttribute: "to",
         }],
 
-        "import/resolver": {
-            node: {
-                extensions: [".js", ".jsx", ".json"],
-            },
-        },
-
-        "import/extensions": [".js", ".mjs", ".jsx"],
-        "import/core-modules": [],
-        "import/ignore": ["node_modules", "\\.(coffee|scss|css|less|hbs|svg|json)$"],
+        'import-x/resolver-next': [
+            createTypeScriptImportResolver(
+                {
+                    alwaysTryTypes: true,
+                    project: [
+                        'tsconfig.json',
+                    ],
+                    tsconfigRootDir: __dirname,
+                }
+            ),
+            createNodeResolver(
+                {
+                    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+                }
+            ),
+        ],
     },
 
     rules: {
+        "no-restricted-globals": [
+            "error",
+            {
+                "name": "module",
+                "message": "Avoid using module global, use ES6 modules instead"
+            }
+        ],
+        "memory-monitor/track-memory": "off",
         ...hooksPlugin.configs.recommended.rules,
         ...reactPlugin.configs.recommended.rules,
+        ...importX.flatConfigs.recommended.rules,
+        ...importX.flatConfigs.typescript.rules,
+
         "react/prop-types": ["off"],
         "require-await": "error",
         "no-restricted-imports": ["error", {
@@ -264,7 +313,7 @@ const baseTsConfig = {
         "guard-for-in": "error",
         "id-denylist": "off",
         "id-match": "off",
-        indent: "off",
+        "indent": "off",
         "jsdoc/check-alignment": "error",
         "jsdoc/check-indentation": "off",
 
@@ -317,6 +366,10 @@ const baseTsConfig = {
         "spaced-comment": ["off", "always", {
             markers: ["/"],
         }],
+        "import-x/no-cycle": ["error", { maxDepth: Infinity }],
+        "import-x/no-duplicates": "error",
+        "import-x/no-self-import": "error",
+        "import-x/no-unresolved": "error",
     }
 };
 
@@ -325,11 +378,12 @@ const makeStrictConfig = (path) => {
         ...baseTsConfig,
         files: [
             `${path}/**/*.ts`,
+            `${path}/**/*.tsx`,
         ],
         languageOptions: {
             ...baseTsConfig.languageOptions,
             parserOptions: {
-                project: `${path}/tsconfig.json`,
+                projectService: true, // Enable project service
                 tsconfigRootDir: __dirname,
             },
         },
@@ -337,7 +391,6 @@ const makeStrictConfig = (path) => {
             ...baseTsConfig.rules,
             ...typescriptEslint.configs.recommended.rules,
             ...typescriptOverrides,
-            ...stylistic.configs.recommended.rules,
             ...stylisticOverrides,
 
             "react-hooks/exhaustive-deps": "error",
@@ -345,12 +398,6 @@ const makeStrictConfig = (path) => {
         },
     };
 }
-const csConfig = makeStrictConfig("src/configuration-studio");
-
-const strictFolders = [
-    "src/configuration-studio",
-    //"src/providers"
-];
 
 export default [
     {
@@ -363,37 +410,30 @@ export default [
         rules: {
             ...baseTsConfig.rules,
             ...legacyTypescriptOverrides,
+            ...stylisticOverrides,
         }
     },
     ...strictFolders.map(f => makeStrictConfig(f)),
-    // {
-    //     ...csConfig,
-    //     files: [
-    //         "src/configuration-studio/**/*.ts",
-    //     ],
-    //     rules: {
-    //         ...csConfig.rules,
-    //         //'@stylistic/indent': ['error', 2],
-    //     }
-    // },
-    // {
-    //     ...csConfig,
-    //     files: [
-    //         "src/configuration-studio/**/*.tsx",
-    //     ],
-    //     rules: {
-    //         ...csConfig.rules,
-    //         //'@stylistic/indent': ['error', 4],
-    //     }
-    // },
     {
         files: ['**/*.js', '**/*.mjs'],
+        ignores: [
+            "dist/**",
+            ".next/**",
+            "src/rollup-plugins/**",
+            "server.js",
+        ],
         ...js.configs.recommended,
         languageOptions: {
             sourceType: 'module',
             ecmaVersion: 'latest',
         },
+        plugins: {
+            'import-x': importX,
+        },
         rules: {
+            ...importX.flatConfigs.recommended.rules,
+            "import-x/no-cycle": ["error", { maxDepth: Infinity }],
+            "no-console": "error",
             '@typescript-eslint/no-var-requires': 'off', // Allow require() in JS files
         }
     },

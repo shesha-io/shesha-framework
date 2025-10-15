@@ -1,10 +1,9 @@
 import { createStyles } from 'antd-style';
 
 export const useStyles = createStyles(({ css, cx }) => {
-
-    const themeParameters = cx(
-        'theme-parameters',
-        css`
+  const themeParameters = cx(
+    'theme-parameters',
+    css`
       height: 100%;
       overflow-y: auto;
       scrollbar-width: none;
@@ -12,19 +11,19 @@ export const useStyles = createStyles(({ css, cx }) => {
       &::-webkit-scrollbar {
         display: none;
       }
-    `
-    );
+    `,
+  );
 
-    const themeHeader = cx(
-        'theme-parameters',
-        css`
+  const themeHeader = cx(
+    'theme-parameters',
+    css`
     font-size: 18px;
     font-weight: 700;
-    `
-    );
+    `,
+  );
 
-    return {
-        themeParameters,
-        themeHeader
-    };
+  return {
+    themeParameters,
+    themeHeader,
+  };
 });

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Spin } from 'antd';
 import { getDataProperty, getFormatContent } from '@/utils/metadata';
+import { IPropertyMetadata } from '@/interfaces/metadata';
 
 export const formItemLayout = {
   labelCol: {
@@ -15,7 +16,7 @@ export const formItemLayout = {
   },
 };
 
-export const loadingBox = (cx: (className: string) => string, styles: { innerEntityReferenceSpanBoxStyle: string; spin: string; inlineBlock: string }) => (
+export const loadingBox = (cx: (className: string) => string, styles: { innerEntityReferenceSpanBoxStyle: string; spin: string; inlineBlock: string }): ReactNode => (
   <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>
     <Spin size="small" className={cx(styles.spin)} />
     <span className={cx(styles.inlineBlock)}>Loading...</span>
@@ -24,7 +25,7 @@ export const loadingBox = (cx: (className: string) => string, styles: { innerEnt
 
 export const innerEntityReferenceButtonBoxStyle = {
   backgroundColor: 'transparent',
-  whiteSpace:  'nowrap',
+  whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   width: '100%',
@@ -34,9 +35,9 @@ export const innerEntityReferenceButtonBoxStyle = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
-};  
+};
 
-export const compareValueToProperty = (key: string, value: string, properties: Array<{ [key in string]: any }>) => {
+export const compareValueToProperty = (key: string, value: string, properties: IPropertyMetadata[]): [key: string, value: string] => {
   const dataType = getDataProperty(properties, key, 'dataType');
   const dataFormat = getDataProperty(properties, key, 'dataFormat');
 
@@ -45,8 +46,8 @@ export const compareValueToProperty = (key: string, value: string, properties: A
 
 export const getQuickViewInitialValues = (
   data: { [key in string]: any },
-  properties: Array<{ [key in string]: any }>
-) =>
+  properties: IPropertyMetadata[],
+): { [key in string]: ReactNode } =>
   Object.entries(data || {})
     .map(([key, value]) => compareValueToProperty(key, value, properties))
     .reduce((acc, [key, value]) => ({ ...acc, ...{ [key]: value } }), {});

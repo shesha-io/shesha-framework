@@ -1,4 +1,4 @@
-import { DataTypes, DesignerToolbarSettings, EditMode, IEntityMetadata } from "@/index";
+import { DataTypes, DesignerToolbarSettings, EditMode, IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
@@ -11,6 +11,8 @@ import { isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
  */
 export class FormMetadataHelper {
   private _metadataDispatcher: IMetadataDispatcher;
+
+  private _modelType: string | null = null;
 
   /**
    * Creates an instance of FormMetadataHelper.
@@ -30,42 +32,43 @@ export class FormMetadataHelper {
     if (!modelType?.trim()) {
       throw new Error('Model type is required and cannot be empty');
     }
-    
+
     try {
-      const metadata = await this._metadataDispatcher.getMetadata({ 
-        modelType: modelType, 
-        dataType: DataTypes.entityReference 
+      // Store the model type for use in other methods
+      this._modelType = modelType;
+      const metadata = await this._metadataDispatcher.getMetadata({
+        modelType: modelType,
+        dataType: DataTypes.entityReference,
       });
-      
+
       if (!metadata) {
         throw new Error(`No metadata found for model type: ${modelType}`);
       }
-      
+
       return metadata as IEntityMetadata;
-      
     } catch (error) {
       console.error(`Error fetching metadata for model type ${modelType}:`, error);
       throw new Error(`Unable to fetch metadata for model type: ${modelType}: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
-  
+
   /**
    * Fetches entity metadata and extracts non-framework properties in a single operation.
    * @param modelType The type of model to fetch metadata for.
    * @returns A promise that resolves to an object containing entity metadata and non-framework properties.
    * @throws Error if the model type is empty or if the request fails.
    */
-  public async fetchEntityMetadataWithPropertiesAsync(modelType: string): Promise<{ entity: IEntityMetadata, nonFrameworkProperties: PropertyMetadataDto[] }> {
+  public async fetchEntityMetadataWithPropertiesAsync(modelType: string): Promise<{ entity: IEntityMetadata; nonFrameworkProperties: PropertyMetadataDto[] }> {
     const entity = await this.fetchEntityMetadataAsync(modelType);
     const nonFrameworkProperties = await this.extractNonFrameworkProperties(entity);
-    
+
     return { entity, nonFrameworkProperties };
   };
 
   /**
    * Creates a PropertyMetadataDto with safe non-null values from a property metadata object.
    * Ensures that all string properties have default values and won't cause type errors.
-   * 
+   *
    * @param prop The original property metadata object
    * @returns A PropertyMetadataDto with non-null string values
    */
@@ -88,25 +91,25 @@ export class FormMetadataHelper {
       referenceListModule: prop.referenceListModule || "",
       isFrameworkRelated: !!prop.isFrameworkRelated,
       isNullable: !!prop.isNullable,
-      isVisible: prop.isVisible !== false // default to true if not explicitly false
+      isVisible: prop.isVisible !== false, // default to true if not explicitly false
     };
   }
-  
+
   /**
    * Safely extracts non-framework properties from an entity metadata object.
    * Handles different types of property structures (array, loader function, or null/undefined).
    * Ensures all returned properties have non-null string values to prevent type errors.
-   * 
+   *
    * @param entity The entity metadata to extract properties from
    * @returns Array of non-framework properties as PropertyMetadataDto with safe non-null values
    */
   public async extractNonFrameworkProperties(entity: IEntityMetadata): Promise<PropertyMetadataDto[]> {
     const nonFrameworkProperties: PropertyMetadataDto[] = [];
-    
+
     if (isPropertiesArray(entity.properties)) {
       // Handle case when properties is an array
       const propertiesArray = entity.properties;
-      
+
       // Filter out framework-related properties and add to our collection with safe values
       for (const prop of propertiesArray) {
         if (!prop.isFrameworkRelated) {
@@ -117,7 +120,7 @@ export class FormMetadataHelper {
       // Handle case when properties is a loader function
       try {
         const loadedProperties = await entity.properties();
-        
+
         // Filter out framework-related properties and add to our collection with safe values
         for (const prop of loadedProperties) {
           if (!prop.isFrameworkRelated) {
@@ -137,7 +140,7 @@ export class FormMetadataHelper {
 
     return nonFrameworkProperties;
   };
-  
+
   /**
    * Adds configuration fields to a form builder for a given property.
    * Determines the appropriate form field type based on the property metadata and adds it to the builder.
@@ -147,7 +150,7 @@ export class FormMetadataHelper {
    * @param isReadOnly Whether the field should be read-only (default: false).
    * @throws Error if required metadata is missing for certain property types.
    */
-  public getConfigFields(property: PropertyMetadataDto, builder: DesignerToolbarSettings<{}>, isReadOnly: boolean = false): void {
+  public getConfigFields(property: PropertyMetadataDto, builder: DesignerToolbarSettings, isReadOnly: boolean = false): void {
     const commonProps = {
       id: nanoid(),
       propertyName: toCamelCase(property.path || ""),
@@ -156,7 +159,7 @@ export class FormMetadataHelper {
       hideLabel: isReadOnly,
       hidden: false,
       hideBorder: isReadOnly,
-      componentName: toCamelCase(property.path || "")
+      componentName: toCamelCase(property.path || ""),
     };
 
     switch (property.dataType) {
@@ -195,10 +198,20 @@ export class FormMetadataHelper {
         builder.addDropdown({
           ...commonProps,
           dataSourceType: 'referenceList',
+          border: {
+            hideBorder: false,
+            radiusType: 'all',
+            borderType: 'all',
+            border: {
+              all: { width: 1, style: 'solid', color: '#d9d9d9' },
+            },
+            radius: { all: 8 },
+          },
           referenceListName: property.referenceListName,
-          referenceListId:{
+          referenceListId: {
             module: property.referenceListModule,
-            name: property.referenceListName},
+            name: property.referenceListName,
+          },
         });
         break;
 
@@ -206,6 +219,25 @@ export class FormMetadataHelper {
         builder.addCheckbox(commonProps);
         break;
 
+      case DataTypes.date:
+      case DataTypes.dateTime:
+        builder.addDateField(commonProps);
+        break;
+
+      case DataTypes.time:
+        builder.addTimePicker(commonProps);
+        break;
+
+      case DataTypes.file:
+        builder.addFileUpload({
+          ...commonProps,
+          font: {
+            size: 14,
+          },
+          ownerId: '{data.id}',
+          ownerType: this._modelType || '',
+        });
+        break;
       default:
         break;
     }

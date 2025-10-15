@@ -28,9 +28,9 @@ const findItemById = (items: IModelItem[], id: string): IModelItem => {
   return null;
 };
 
-function removeIdDeep(list: IModelItem[], idToRemove: string) {
-  const filtered = list.filter(entry => entry.id !== idToRemove);
-  return filtered.map(entry => {
+function removeIdDeep(list: IModelItem[], idToRemove: string): IModelItem[] {
+  const filtered = list.filter((entry) => entry.id !== idToRemove);
+  return filtered.map((entry) => {
     if (!entry.properties) return entry;
     return { ...entry, properties: removeIdDeep(entry.properties, idToRemove) };
   });
@@ -40,7 +40,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
   {
     [ModelActionEnums.AddItem]: (
       state: IPropertiesEditorStateContext,
-      action: ReduxActions.Action<IAddItemPayload | null>
+      action: ReduxActions.Action<IAddItemPayload | null>,
     ) => {
       const { payload } = action;
 
@@ -48,7 +48,8 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
         name: `NewProperty`,
         label: `New Property`,
         id: payload.item?.id ?? '00000000-0000-0000-0000-000000000000', // Guid.Empty
-        source: MetadataSourceType.UserDefined
+        source: MetadataSourceType.UserDefined,
+        dataType: 'string',
       };
 
       const newItems = [...state.items];
@@ -70,7 +71,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 
     [ModelActionEnums.DeleteItem]: (
       state: IPropertiesEditorStateContext,
-      action: ReduxActions.Action<string>
+      action: ReduxActions.Action<string>,
     ) => {
       const { payload } = action;
 
@@ -85,7 +86,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 
     [ModelActionEnums.SelectItem]: (
       state: IPropertiesEditorStateContext,
-      action: ReduxActions.Action<string>
+      action: ReduxActions.Action<string>,
     ) => {
       const { payload } = action;
 
@@ -97,24 +98,24 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 
     [ModelActionEnums.UpdateItem]: (
       state: IPropertiesEditorStateContext,
-      action: ReduxActions.Action<IUpdateItemSettingsPayload>
+      action: ReduxActions.Action<IUpdateItemSettingsPayload>,
     ) => {
       const { payload } = action;
 
       const newItems = [...state.items];
-      
+
       const position = getItemPositionById(newItems, payload.id);
       if (!position) return state;
 
       const newArray = position.ownerArray;
-      const prevItem = {...newArray[position.index]};
-      const prevItemsTypeIndex = prevItem.properties?.findIndex(p => p.isItemsType);
-      const prevItemsType = prevItemsTypeIndex !== undefined ? {...prevItem.properties[prevItemsTypeIndex]} : null;
+      const prevItem = { ...newArray[position.index] };
+      const prevItemsTypeIndex = prevItem.properties?.findIndex((p) => p.isItemsType);
+      const prevItemsType = prevItemsTypeIndex !== undefined ? { ...prevItem.properties[prevItemsTypeIndex] } : null;
       const newItem = { ...prevItem, ...payload.settings };
 
 
-      const itemsTypeIndex = newItem.properties?.findIndex(p => p.isItemsType);
-      let itemsType = itemsTypeIndex !== undefined ? {...newItem.properties[itemsTypeIndex]} : null;
+      const itemsTypeIndex = newItem.properties?.findIndex((p) => p.isItemsType);
+      let itemsType: IModelItem = itemsTypeIndex !== undefined ? { ...newItem.properties[itemsTypeIndex] } : null;
 
       if (newItem.dataType !== prevItem.dataType) {
         newItem.dataFormat = undefined;
@@ -123,23 +124,24 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
       if (newItem.dataType === DataTypes.array) {
         if (!itemsType) {
           // create itemsType
-          itemsType = 
-            newItem.properties?.find(p => p.isItemsType) ?? 
+          itemsType =
+            newItem.properties?.find((p) => p.isItemsType) ??
             {
               name: newItem.name,
               label: `List items type`,
               id: nanoid(),
               source: MetadataSourceType.UserDefined,
               isItemsType: true,
-            };
+              dataType: '',
+            } satisfies IModelItem;
           newItem.itemsType = itemsType;
           newItem.properties = [...(newItem.properties ?? []), itemsType];
         } else {
-          // update 
-          itemsType = {...itemsType, ...payload.settings.itemsType, name: newItem.name, entityType: newItem.entityType};
+          // update
+          itemsType = { ...itemsType, ...payload.settings.itemsType, name: newItem.name, entityType: newItem.entityType };
 
           if (payload.settings.dataFormat !== prevItem.dataFormat) {
-            switch (payload.settings.dataFormat){
+            switch (payload.settings.dataFormat) {
               case ArrayFormats.simple:
                 itemsType.dataType = undefined;
                 itemsType.dataFormat = undefined;
@@ -184,7 +186,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 
     [ModelActionEnums.UpdateChildItems]: (
       state: IPropertiesEditorStateContext,
-      action: ReduxActions.Action<IUpdateChildItemsPayload>
+      action: ReduxActions.Action<IUpdateChildItemsPayload>,
     ) => {
       const {
         payload: { index, childs: childIds },
@@ -205,7 +207,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
       // search for a parent item
       const lastArr = blockIndex.reduce((arr, i) => (
 
-        //arr[i]['properties']
+        // arr[i]['properties']
 
         // ToDo: AS - remove aftrer implementation
 
@@ -219,7 +221,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
       const item = lastArr[lastIndex];
 
       // and set a list of childs
-      //lastArr[lastIndex]['properties'] = childIds;
+      // lastArr[lastIndex]['properties'] = childIds;
 
       // ToDo: AS - remove aftrer implementation
       if (item.dataType === DataTypes.array && item.dataFormat === DataTypes.object) {
@@ -236,7 +238,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
     },
   },
 
-  PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE
+  PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
 );
 
 export default modelReducer;

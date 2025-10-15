@@ -122,6 +122,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
     pickerInputGroupEllipsis,
     entityPickerModalPagerContainer,
     entityPickerModal,
-    entitySelect
+    entitySelect,
   };
 });

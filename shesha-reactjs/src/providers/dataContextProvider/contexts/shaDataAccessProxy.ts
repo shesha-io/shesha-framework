@@ -1,147 +1,176 @@
 import { GHOST_PAYLOAD_KEY } from "@/utils/form";
 import { IFormApi } from "../../form/formApi";
-import { getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
+import { getValueByPropertyName, hasProperty, safeGetProperty } from "@/utils/object";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { FieldValueGetter, FieldValueSetter, Path } from '@/utils/dotnotation';
+import { ContextSetData, ContextSetFieldValue } from "../contexts";
 
-export interface IShaDataAccessor {
-  setFieldValue: (name: string, value: any) => void;
-  getFieldValue: (name: string) => any;
-  getData: () => any;
-  setData: (data: any) => void;
+export interface IHasGetAccessorValue {
+  getAccessorValue: () => unknown;
+};
+
+export interface IShaDataAccessor<TData extends object> extends IHasGetAccessorValue {
+  setFieldValue: ContextSetFieldValue<TData>;
+  setData: ContextSetData<TData>;
+  getFieldValue: FieldValueGetter<TData>;
+  getData: () => TData;
 }
 
-export const CreateDataAccessor = (getData: () => any, setData: (data: any) => void, setFieldValue: (propertyName: string, value: any) => void, propertyName?: string) => {
-  const data = getValueByPropertyName(getData(), propertyName);
-  const property = (Array.isArray(data))
-      ? new ShaArrayAccessProxy(getData, setData, setFieldValue, propertyName)
-      : new ShaObjectAccessProxy(getData, setData, setFieldValue, propertyName);
+export type IShaDataWrapper<TData extends object> = TData & IShaDataAccessor<TData>;
 
-  return new Proxy(property, {
-      get(target, name) {
-          const propertyName = name.toString();
+export interface IHasDataAccessor<TData extends object> extends IHasGetAccessorValue {
+  readonly accessor: IShaDataAccessor<TData>;
+}
 
-          if (typeof name === 'symbol') {
-              const accessorData = target.getAccessorValue();
-              const objSymbol = accessorData[name];
-              if (objSymbol && typeof objSymbol === 'function')
-                  return objSymbol.bind(accessorData);
+export type IShaDataAccessorWithNested<TData extends object> = IShaDataAccessor<TData> & IHasDataAccessor<TData>;
+
+export const CreateDataAccessor = <TData extends object = object>(
+  getData: () => TData,
+  setData: ContextSetData<TData>,
+  setFieldValue: ContextSetFieldValue<TData>,
+  propertyName?: Path<TData>,
+): IShaDataAccessor<TData> => {
+  const data = getValueByPropertyName(getData(), isDefined(propertyName) ? propertyName : '');
+  const property: IShaDataAccessorWithNested<TData> = (Array.isArray(data))
+    ? new ShaArrayAccessProxy<TData>(getData, setData, setFieldValue, propertyName)
+    : new ShaObjectAccessProxy<TData>(getData, setData, setFieldValue, propertyName);
+
+  return new Proxy<IShaDataAccessorWithNested<TData>>(property, {
+    get(target, name) {
+      const propertyName = name.toString();
+
+      if (typeof name === 'symbol') {
+        const accessorData = target.getAccessorValue();
+        if (isDefined(accessorData)) {
+          const objSymbol = safeGetProperty(accessorData, name) as unknown;
+          if (isDefined(objSymbol) && typeof objSymbol === 'function') {
+            return objSymbol.bind(accessorData);
           }
+        }
+      }
 
-          if (propertyName.includes(GHOST_PAYLOAD_KEY))
-              return undefined;
-
-          if (propertyName === 'hasOwnProperty')
-              return (prop: string | symbol) => prop ? propertyName in target.accessor : false;
-
-          if (propertyName in target.accessor)
-              return typeof target.accessor[propertyName] === 'function'
-                  ? target.accessor[propertyName].bind(target.accessor)
-                  : target.accessor[propertyName];
-
-          return target.accessor.getFieldValue(propertyName);
-      },
-      set(target, name, newValue, _receiver) {
-          const propertyName = name.toString();
-          target.setFieldValue(propertyName, newValue);
-          return true;
-      },
-      has(target, prop) {
-        const propertyName = prop.toString();
-        const data = target.getAccessorValue();
-        return !propertyName.includes(GHOST_PAYLOAD_KEY) && data && propertyName in data;
-      },
-      ownKeys(target) {
-        const data = target.getAccessorValue();
-        return data ? Reflect.ownKeys(data) : [];
-      },
-      getOwnPropertyDescriptor(target, prop) {
-        const propertyName = prop.toString();
-        const data = target.getAccessorValue();
-        if (data && propertyName in data)
-            return { enumerable: true, configurable: true, writable: true };
+      if (propertyName.includes(GHOST_PAYLOAD_KEY))
         return undefined;
-      },
+
+      if (propertyName === 'hasOwnProperty')
+        return (prop: string | symbol) => prop ? propertyName in target.accessor : false;
+
+      if (hasProperty(target.accessor, propertyName))
+        return typeof target.accessor[propertyName] === 'function'
+          ? target.accessor[propertyName].bind(target.accessor)
+          : target.accessor[propertyName];
+
+      return target.accessor.getFieldValue(propertyName as Path<TData>);
+    },
+    set(target, name, newValue, _receiver) {
+      const propertyName = name.toString();
+      target.setFieldValue(propertyName as Path<TData>, newValue as never);
+      return true;
+    },
+    has(target, prop) {
+      const propertyName = prop.toString();
+      const data = target.getAccessorValue();
+      return !propertyName.includes(GHOST_PAYLOAD_KEY) && isDefined(data) && propertyName in data;
+    },
+    ownKeys(target) {
+      const data = target.getAccessorValue();
+      return data && typeof (data) === 'object'
+        ? Reflect.ownKeys(data)
+        : [];
+    },
+    getOwnPropertyDescriptor(target, prop) {
+      const propertyName = prop.toString();
+      const data = target.getAccessorValue();
+      if (isDefined(data) && propertyName in data)
+        return { enumerable: true, configurable: true, writable: true };
+      return undefined;
+    },
   });
 };
 
 
-export class ShaObjectAccessProxy implements IShaDataAccessor {
-  readonly accessor: ShaDataAccessor;
+export class ShaObjectAccessProxy<TData extends object = object> implements IShaDataAccessor<TData>, IHasDataAccessor<TData> {
+  readonly accessor: ShaDataAccessor<TData>;
 
-  setFieldValue = (name: string, value: any) => this.accessor.setFieldValue(name, value);
+  setFieldValue: ContextSetFieldValue<TData> = (name, value, refreshContext) => this.accessor.setFieldValue(name, value, refreshContext);
 
-  getFieldValue = (name: string) => this.accessor.getFieldValue(name);
+  setData: ContextSetData<TData> = (data: TData, refreshContext): void => this.accessor.setData(data, refreshContext);
 
-  getData = () => this.accessor.getData();
+  getFieldValue: FieldValueGetter<TData> = (name) => this.accessor.getFieldValue(name);
 
-  setData = (data: any) => this.accessor.setData(data);
+  getData = (): TData => this.accessor.getData();
 
-  getAccessorValue = () => this.accessor.getAccessorValue();
+  getAccessorValue = (): unknown => this.accessor.getAccessorValue();
 
-  constructor(getData: () => any, setData: (data: any) => void, setFieldValue: (propertyName: string, value: any) => void, propertyName?: string) {
-    this.accessor = new ShaDataAccessor(getData, setData, setFieldValue, propertyName);
+  constructor(getData: () => TData, setData: (data: TData) => void, setFieldValue: FieldValueSetter<TData>, propertyName?: Path<TData>) {
+    this.accessor = new ShaDataAccessor<TData>(getData, setData, setFieldValue, propertyName);
   }
 }
 
-export class ShaArrayAccessProxy extends Array implements IShaDataAccessor {
-  readonly accessor: ShaDataAccessor;
+export class ShaArrayAccessProxy<TData extends object = Array<unknown>> extends Array implements IShaDataAccessor<TData>, IHasDataAccessor<TData> {
+  readonly accessor: IShaDataAccessor<TData>;
 
-  setFieldValue = (name: string, value: any) => this.accessor.setFieldValue(name, value);
+  setFieldValue: ContextSetFieldValue<TData> = (name, value, refreshContext) => this.accessor.setFieldValue(name, value, refreshContext);
 
-  getFieldValue = (name: string) => this.accessor.getFieldValue(name);
+  setData: ContextSetData<TData> = (data: TData, refreshContext): void => this.accessor.setData(data, refreshContext);
 
-  getData = () => this.accessor.getData();
+  getFieldValue: FieldValueGetter<TData> = (name) => this.accessor.getFieldValue(name);
 
-  setData = (data: any) => this.accessor.setData(data);
+  getData = (): TData => this.accessor.getData();
 
-  getAccessorValue = () => this.accessor.getAccessorValue();
+  getAccessorValue = (): unknown => this.accessor.getAccessorValue();
 
-  constructor(getData: () => any, setData: (data: any) => void, setFieldValue: (propertyName: string, value: any) => void, propertyName?: string) {
+  constructor(getData: () => TData, setData: (data: TData) => void, setFieldValue: FieldValueSetter<TData>, propertyName?: Path<TData>) {
     super();
-    this.accessor = new ShaDataAccessor(getData, setData, setFieldValue, propertyName);
+    this.accessor = new ShaDataAccessor<TData>(getData, setData, setFieldValue, propertyName);
   }
 }
 
-export class ShaDataAccessor implements IShaDataAccessor {
-  readonly getData: () => any;
+export class ShaDataAccessor<TData extends object = object> implements IShaDataAccessor<TData> {
+  readonly getData: () => TData;
 
-  readonly setData: (data: any) => void;
+  readonly setData: ContextSetData<TData>;
 
-  readonly _setFieldValue: (propertyName: string, value: any) => void;
+  readonly _setFieldValue: ContextSetFieldValue<TData>;
 
-  readonly propertyName: string;
+  readonly propertyName: Path<TData> | undefined;
 
-  getFullPropertyName(propertyName: string): string {
-    return this.propertyName ? `${this.propertyName}.${propertyName}` : propertyName;
+  getFullPropertyName(propertyName: Path<TData>): Path<TData> {
+    const prefix = this.propertyName?.toString();
+    const result = !isNullOrWhiteSpace(prefix)
+      ? `${prefix}.${propertyName.toString()}`
+      : propertyName.toString();
+    return result as Path<TData>;
   }
 
-  getAccessorValue(): any {
-    return getValueByPropertyName(this.getData(), this.propertyName);
+  getAccessorValue(): unknown {
+    return getValueByPropertyName(this.getData(), this.propertyName ?? "");
   }
 
-  getFieldValue(propertyName: string): any {
+  getFieldValue: FieldValueGetter<TData> = (propertyName) => {
     const propName = this.getFullPropertyName(propertyName);
     const propValue = getValueByPropertyName(this.getData(), propName);
 
     if (propValue === undefined)
-        return undefined;
+      return undefined;
     if (propValue === null)
-        return null;
+      return null;
 
     if (typeof propValue === 'function')
-        return propValue.bind(this.getAccessorValue());
+      return propValue.bind(this.getAccessorValue());
 
-    if (typeof propValue === 'object' && propValue) {
-        return CreateDataAccessor(this.getData, this.setData, this._setFieldValue, propName);// new ShaDataAccessor(this.getData, this.setData, this._setFieldValue, propName);
+    if (typeof propValue === 'object' && isDefined(propValue)) {
+      return CreateDataAccessor(this.getData, this.setData, this._setFieldValue, propName as Path<TData>);
     }
 
     return propValue;
-  }
+  };
 
-  setFieldValue(propertyName: string, value: any) {
-    this._setFieldValue(this.getFullPropertyName(propertyName), value);
-  }
+  setFieldValue: ContextSetFieldValue<TData> = (propertyName, value, refreshContext) => {
+    this._setFieldValue(this.getFullPropertyName(propertyName), value, refreshContext);
+  };
 
-  constructor(getData: () => any, setData: (data: any) => void, setFieldValue: (propertyName: string, value: any) => void, propertyName?: string) {
+  constructor(getData: () => TData, setData: (data: TData) => void, setFieldValue: FieldValueSetter<TData>, propertyName?: Path<TData>) {
     this.getData = getData;
     this.setData = setData;
     this._setFieldValue = setFieldValue;
@@ -149,20 +178,6 @@ export class ShaDataAccessor implements IShaDataAccessor {
   }
 }
 
-export function GetShaFormDataAccessor(shaInstance: IFormApi): IShaDataAccessor {
-  return CreateDataAccessor(() => shaInstance.getFormData(), shaInstance.setFieldsValue, shaInstance.setFieldValue);
-};
-
-
-export function GetShaContextDataAccessor(onChange: () => void): IShaDataAccessor {
-  let data = {};
-  const setFieldValue = (propertyName: string, value: any) => {
-    setValueByPropertyName(data, propertyName, value);
-    if (onChange) onChange();
-  };
-  const setData = (inputData: any) => {
-    data = inputData;
-    if (onChange) onChange();
-  };
-  return CreateDataAccessor(() => data, setData, setFieldValue);
+export const GetShaFormDataAccessor = <TValues extends object = object>(shaInstance: IFormApi<TValues>): IShaDataAccessor<TValues> => {
+  return CreateDataAccessor(() => shaInstance.getFormData(), shaInstance.setFieldsValue, shaInstance.setFieldValue) as IShaDataAccessor<TValues>;
 };

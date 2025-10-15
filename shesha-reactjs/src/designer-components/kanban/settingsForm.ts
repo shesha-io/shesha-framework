@@ -5,8 +5,9 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: IKanbanProps) => {
+export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
   // Generate unique IDs for top-level components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -29,7 +30,7 @@ export const getSettings = (data: IKanbanProps) => {
   // Generate IDs for background panels
   const bgStylePanelId = nanoid();
   const bgStyleContentId = nanoid();
-  //const bgStyleRowId = nanoid();
+  // const bgStyleRowId = nanoid();
 
   // Generate IDs for shadow panels
   const shadowStylePanelId = nanoid();
@@ -503,7 +504,7 @@ export const getSettings = (data: IKanbanProps) => {
                                             propertyName: "background.position",
                                             dropdownOptions: positionOptions,
                                           },
-                                        ]
+                                        ],
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),
@@ -776,7 +777,7 @@ export const getSettings = (data: IKanbanProps) => {
                                         propertyName: 'columnStyles.background.type',
                                         inputType: 'radio',
                                         tooltip: 'Select a type of background',
-                                        buttonGroupOptions: backgroundTypeOptions
+                                        buttonGroupOptions: backgroundTypeOptions,
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),

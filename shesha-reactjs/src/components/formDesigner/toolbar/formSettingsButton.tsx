@@ -3,29 +3,33 @@ import { Button } from 'antd';
 import { FormSettingsEditor } from '../formSettingsEditor';
 import { SettingOutlined } from '@ant-design/icons';
 import { useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { SizeType } from 'antd/es/config-provider/SizeContext';
 
 export interface IFormSettingsButtonProps {
-    buttonText?: string;
+  buttonText?: string;
+  size?: SizeType;
 }
 
-export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText }) => {
-    const [settingsVisible, setSettingsVisible] = useState(false);
-    const readOnly = useFormDesignerStateSelector(x => x.readOnly);
+export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText, size }) => {
+  const [settingsVisible, setSettingsVisible] = useState(false);
+  const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
 
-    const onSettingsClick = () => {
-      setSettingsVisible(true);
-    };
-  
-    return (
-        <>
-            <Button icon={<SettingOutlined />} title="Settings" size='small' onClick={onSettingsClick}/>
-            <FormSettingsEditor
-                readOnly={readOnly}
-                isVisible={settingsVisible}
-                close={() => {
-                    setSettingsVisible(false);
-                }}
-            />
-        </>
-    );
+  const onSettingsClick = (): void => {
+    setSettingsVisible(true);
+  };
+
+  return (
+    <>
+      <Button icon={<SettingOutlined />} size={size} onClick={onSettingsClick} title="Form Settings">
+        { buttonText !== undefined ? buttonText : "Settings" }
+      </Button>
+      <FormSettingsEditor
+        readOnly={readOnly}
+        isVisible={settingsVisible}
+        close={() => {
+          setSettingsVisible(false);
+        }}
+      />
+    </>
+  );
 };

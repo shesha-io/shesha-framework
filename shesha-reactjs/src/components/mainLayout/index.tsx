@@ -109,7 +109,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     let timeoutId: NodeJS.Timeout;
     let lastHeight = 0;
 
-    const updateHeaderHeight = () => {
+    const updateHeaderHeight = (): void => {
       const headerElement = document.querySelector('.ant-layout-header');
       if (headerElement) {
         const actualHeight = headerElement.getBoundingClientRect().height;
@@ -122,7 +122,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     };
 
     // Debounced update function
-    const debouncedUpdate = () => {
+    const debouncedUpdate = (): void => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(updateHeaderHeight, 16); // ~60fps
     };
@@ -133,7 +133,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     // Set up ResizeObserver to watch for header height changes
     const headerElement = document.querySelector('.ant-layout-header');
     let resizeObserver: ResizeObserver | undefined;
-    
+
     if (headerElement) {
       resizeObserver = new ResizeObserver((entries) => {
         for (const entry of entries) {
@@ -154,9 +154,9 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     if (headerElement) {
       mutationObserver.observe(headerElement, {
         childList: true, // Only direct children changes
-        subtree: false,  // Don't observe deep changes
+        subtree: false, // Don't observe deep changes
         attributes: true,
-        attributeFilter: ['style'] // Only style changes
+        attributeFilter: ['style'], // Only style changes
       });
     }
 
@@ -175,12 +175,12 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     return fixHeading && ((Boolean(title) && showHeading) || Boolean(heading));
   }, [heading, title, showHeading, fixHeading]);
 
-  const onCollapse = (value: boolean) => {
+  const onCollapse = (value: boolean): void => {
     setGlobalVariables({ isSideBarExpanded: !value });
     setCollapsed(value);
   };
 
-  const renderPageControls = () => {
+  const renderPageControls = (): ReactNode => {
     if (!headerControls && !reference) return null;
 
     return (

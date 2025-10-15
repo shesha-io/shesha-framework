@@ -6,7 +6,7 @@ export interface UseLoginUrlArgs {
   unauthorizedRedirectUrl: string;
 }
 
-export const useLoginUrl = ({ homePageUrl, unauthorizedRedirectUrl }: UseLoginUrlArgs) => {
+export const useLoginUrl = ({ homePageUrl, unauthorizedRedirectUrl }: UseLoginUrlArgs): string => {
   const { router } = useShaRouting();
 
   const redirectUrl =

@@ -7,7 +7,7 @@ import { IStyleType, StoredFileProvider, useFormData, useGlobalState, useSheshaA
 import { useForm } from '@/providers/form';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import {
-  evaluateValue,
+  evaluateValueAsString,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import {
@@ -18,9 +18,8 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { containerDefaultStyles, defaultStyles } from './utils';
+import { defaultStyles } from './utils';
 import { listType } from '../attachmentsEditor/attachmentsEditor';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IStyleType {
   ownerId: string;
@@ -34,7 +33,6 @@ export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IForm
   listType?: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
-  thumbnail?: IStyleType;
   borderRadius?: number;
   hideFileName?: boolean;
 }
@@ -49,18 +47,15 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
 
-    const { dimensionsStyles } = useFormComponentStyles(model?.thumbnail);
-
-    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
+    const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) || model.listType === 'text' ? {
       ...model.allStyles.fontStyles,
-      ...dimensionsStyles,
-    } : {...model.allStyles.fullStyle};
-
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle;
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-    const ownerId = evaluateValue(model.ownerId, { data, globalState });
+    const ownerId = evaluateValueAsString(model.ownerId, { data, globalState });
 
     const enabled = !model.readOnly;
 
@@ -144,11 +139,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
         desktop: { ...defaultStyles() },
         mobile: { ...defaultStyles() },
         tablet: { ...defaultStyles() },
-      }))
-      .add<IFileUploadProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
-      .add<IFileUploadProps>(8, (prev) => {
-        return { ...prev, desktop: { ...prev.desktop.container, thumbnail: prev.desktop }, mobile: { ...prev.mobile.container, thumbnail: prev.mobile }, tablet: { ...prev.tablet.container, thumbnail: prev.tablet } };
-      }),
+      })),
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
 };

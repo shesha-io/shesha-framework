@@ -1,5 +1,5 @@
 import { DatePicker } from '@/components/antd';
-import moment, { isMoment } from 'moment';
+import moment, { isMoment, Moment } from 'moment';
 import React, { FC, useMemo, useRef } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useForm, useGlobalState, useMetadata } from '@/providers';
@@ -51,16 +51,16 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     ...allStyles.dimensionsStyles,
   } : allStyles.fullStyle;
 
-  const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
+  const dateFormat = props?.dateFormat || getDataProperty(properties, name, 'dataFormat') || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
-  const fullStyles = { ...allStyles?.fullStyle, width: '100%'};
+  const fullStyles = { ...allStyles?.fullStyle || {} };
   const { styles } = useStyles({ fullStyles });
 
   const { formData } = useForm();
 
   const pickerFormat = getFormat(props, properties);
 
-  const convertValue = (localValue: any) => {
+  const convertValue = (localValue: any): string => {
     const newValue = isMoment(localValue) ? localValue : getMoment(localValue, pickerFormat);
     const val =
       picker === 'week'
@@ -74,19 +74,12 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
               : !showTime
                 ? newValue.startOf('day')
                 : newValue;
-      
+
     const finalMoment = resolveToUTC ? val.clone().utc() : val.clone().local();
-    
-    if (resolveToUTC) {
-      // Always store UTC in ISO
-      return finalMoment.toISOString();
-    } else {
-      // Return ISO-like string in *local* time
-      return finalMoment.format(pickerFormat);
-    }
+    return resolveToUTC ? finalMoment.toISOString() : finalMoment.format('YYYY-MM-DDTHH:mm:ss.SSS');
   };
 
-  const handleDatePickerChange = (localValue: any | null, dateString: string) => {
+  const handleDatePickerChange = (localValue: any | null, dateString: string): void => {
     if (!dateString?.trim()) {
       (onChange as TimePickerChangeEvent)(null, '');
       return;
@@ -96,7 +89,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     (onChange as TimePickerChangeEvent)(newValue, dateString);
   };
 
-  const handleRangePicker = (values: any[], formatString: [string, string]) => {
+  const handleRangePicker = (values: any[], formatString: [string, string]): void => {
     if (formatString?.includes('')) {
       (onChange as RangePickerChangeEvent)(null, null);
       return;
@@ -109,10 +102,10 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const prevDatePartRef = useRef(null);
 
 
-  const handleCalendarDatePickerChange = (dates) => {
-    if (!dates) return;
+  const handleCalendarDatePickerChange = (dates: Moment | Moment[]): void => {
+    if (!dates || Array.isArray(dates)) return;
 
-    const getDatePart = (date) => date.format('YYYY-MM-DD');
+    const getDatePart = (date: Moment): string => date.format('YYYY-MM-DD');
 
     const newDatePart = getDatePart(dates);
     const prevDatePart = prevDatePartRef.current;
@@ -142,16 +135,15 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const defaultMomentValue = useMemo(() => getRangeMoment(defaultValue, pickerFormat), [defaultValue, pickerFormat]);
 
 
-
   const prevStartDatePartRef = useRef(null);
   const prevEndDatePartRef = useRef(null);
 
-  const handleCalendarRangeChange = (dates) => {
+  const handleCalendarRangeChange = (dates: Moment[]): void => {
     if (!dates) return;
 
     const [start, end] = dates;
 
-    const getDatePart = (date) => date?.format('YYYY-MM-DD');
+    const getDatePart = (date: Moment | undefined): string => date?.format('YYYY-MM-DD');
 
     const startDatePart = getDatePart(start);
     const endDatePart = getDatePart(end);
@@ -159,7 +151,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     let newStart = start;
     let newEnd = end;
 
-    /*start and end date parts are used to determine if the user has changed the date part of the date
+    /* start and end date parts are used to determine if the user has changed the date part of the date
     if the date part has changed, we override the time with the current system time
     if the date part has not changed, we keep the time as it is */
     if (start) {
@@ -195,32 +187,32 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       [
         newStart?.format(pickerFormat),
         newEnd?.format(pickerFormat),
-      ]
+      ],
     );
   };
 
   if (range) {
     return (
-      <div style={{marginRight: 1}} >
-      <RangePicker
-        onCalendarChange={(dates) => {
-          if (dates && showTime && !defaultToMidnight) handleCalendarRangeChange(dates);
-        }}
-        className="sha-range-picker"
-        disabledDate={(e) => disabledDate(props, e, formData, globalState)}
-        disabledTime={disabledTime(props, formData, globalState)}
-        onChange={handleRangePicker}
-        format={pickerFormat}
-        value={rangeMomentValue}
-        defaultValue={defaultMomentValue}
-        {...rest}
-        picker={picker}
-        showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
-        disabled={readOnly}
-        style={allStyles.fullStyle}
-        allowClear
-        variant={hideBorder ? 'borderless' : undefined}
-      />
+      <div style={{ marginRight: 1 }}>
+        <RangePicker
+          onCalendarChange={(dates) => {
+            if (dates && showTime && !defaultToMidnight) handleCalendarRangeChange(dates);
+          }}
+          className="sha-range-picker"
+          disabledDate={(e) => disabledDate(props, e, formData, globalState)}
+          disabledTime={disabledTime(props, formData, globalState)}
+          onChange={handleRangePicker}
+          format={pickerFormat}
+          value={rangeMomentValue}
+          defaultValue={defaultMomentValue}
+          {...rest}
+          picker={picker}
+          showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
+          disabled={readOnly}
+          style={allStyles.fullStyle}
+          allowClear
+          variant={hideBorder ? 'borderless' : undefined}
+        />
       </div>
     );
   }
@@ -231,25 +223,25 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   }
 
   return (
-    <div style={{marginRight: 1}} >
-    <DatePicker
-      className={styles.dateField}
-      disabledDate={(e) => disabledDate(props, e, formData, globalState)}
-      disabledTime={disabledTime(props, formData, globalState)}
-      onChange={handleDatePickerChange}
-      variant={hideBorder ? 'borderless' : undefined}
-      showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
-      showNow={showNow}
-      picker={picker}
-      format={pickerFormat}
-      style={{...allStyles.fullStyle, width: '100%'}}
-      onCalendarChange={(dates) => {
-        if (dates && showTime && !defaultToMidnight) handleCalendarDatePickerChange(dates);
-      }}
-      {...rest}
-      value={momentValue}
-      allowClear
-    />
+    <div style={{ marginRight: 1 }}>
+      <DatePicker
+        className={styles.dateField}
+        disabledDate={(e) => disabledDate(props, e, formData, globalState)}
+        disabledTime={disabledTime(props, formData, globalState)}
+        onChange={handleDatePickerChange}
+        variant={hideBorder ? 'borderless' : undefined}
+        showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
+        showNow={showNow}
+        picker={picker}
+        format={pickerFormat}
+        style={allStyles.fullStyle}
+        onCalendarChange={(dates) => {
+          if (dates && showTime && !defaultToMidnight) handleCalendarDatePickerChange(dates);
+        }}
+        {...rest}
+        value={momentValue}
+        allowClear
+      />
     </div>
   );
 };

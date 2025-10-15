@@ -1,8 +1,7 @@
 import { Radio, Space } from 'antd';
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 import { useGet } from '@/hooks';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getDataSourceList, IRadioProps } from './utils';
 
 const RadioGroup: FC<IRadioProps> = (model) => {
@@ -37,12 +36,12 @@ const RadioGroup: FC<IRadioProps> = (model) => {
 
   const options = useMemo(
     () => getDataSourceList(model.dataSourceType, items, refListItems?.items, reducedData) || [],
-    [model.dataSourceType, items, refListItems?.items, reducedData]
+    [model.dataSourceType, items, refListItems?.items, reducedData],
   );
 
   const val = value ? `${value}` : defaultValue;
 
-  const renderCheckGroup = () => (
+  const renderCheckGroup = (): ReactElement => (
     <Radio.Group
       className="sha-radio-group"
       disabled={model.readOnly}
@@ -62,10 +61,6 @@ const RadioGroup: FC<IRadioProps> = (model) => {
       </Space>
     </Radio.Group>
   );
-
-  if (model.readOnly) {
-    return <ReadOnlyDisplayFormItem type="radiogroup" disabled={model.readOnly} render={renderCheckGroup} style={model.style} />;
-  }
 
   return renderCheckGroup();
 };

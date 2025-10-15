@@ -27,7 +27,7 @@ import {
 } from './interfaces';
 
 // Filters should read properties as camelCase ?:(
-export const hasDynamicFilter = (filters: IStoredFilter[]) => {
+export const hasDynamicFilter = (filters: IStoredFilter[]): boolean => {
   if (filters?.length === 0) return false;
 
   const found = filters?.find(({ expression }) => {
@@ -64,7 +64,7 @@ export const ADVANCEDFILTER_DATE_FORMAT = 'DD/MM/YYYY';
 export const ADVANCEDFILTER_DATETIME_FORMAT = 'DD/MM/YYYY HH:mm';
 export const ADVANCEDFILTER_TIME_FORMAT = 'HH:mm';
 
-export const getMoment = (value: any, format: string): Moment => {
+export const getMoment = (value: unknown, format: string): Moment => {
   if (value === null || value === undefined) return undefined;
 
   if (isMoment(value)) return value;
@@ -72,7 +72,7 @@ export const getMoment = (value: any, format: string): Moment => {
   return moment(value as string, format).isValid() ? moment.utc(value as string, format) : undefined;
 };
 
-export const getDuration = (value: any): Duration => {
+export const getDuration = (value: unknown): Duration => {
   if (value === null || value === undefined) return undefined;
 
   if (isDuration(value)) return value;
@@ -164,26 +164,10 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
   return filterItems;
 };
 
-export const getIncomingSelectedStoredFilterIds = (filters: IStoredFilter[], id: string) => {
-  const fallback = filters?.length ? [filters[0]?.id] : [];
-
-  try {
-    if (id && localStorage.getItem(id)) {
-      const filter = (JSON.parse(localStorage.getItem(id)) as IDataTableUserConfig)?.selectedFilterIds;
-
-      return filter?.length ? filter : fallback;
-    }
-
-    return fallback;
-  } catch {
-    return fallback;
-  }
-};
-
 export const prepareColumn = (
   column: IConfigurableColumnsProps,
   columns: DataTableColumnDto[],
-  userConfig: IDataTableUserConfig
+  userConfig: IDataTableUserConfig,
 ): ITableColumn => {
   const userColumnId = isDataColumnProps(column) ? column.propertyName : column.id;
   const userColumn = userConfig?.columns?.find((c) => c.id === userColumnId);

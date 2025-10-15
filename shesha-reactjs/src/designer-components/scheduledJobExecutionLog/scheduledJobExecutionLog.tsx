@@ -10,7 +10,7 @@ import ScheduledJobExecution from './scheduledJobExecution';
 import settingsFormJson from './settingsForm.json';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 
-export interface IScheduledJobExecutionLogProps extends IConfigurableFormComponent {}
+export type IScheduledJobExecutionLogProps = IConfigurableFormComponent;
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -39,18 +39,17 @@ const ScheduledJobExecutionLog: IToolboxComponent<IScheduledJobExecutionLogProps
       </ConfigurableFormItem>
     );
   },
-  initModel: model => {
+  initModel: (model) => {
     return {
       ...model,
       label: 'ScheduledJobExecutionLog',
     };
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IConfigurableFormComponent>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IConfigurableFormComponent>(1, (prev) => migrateReadOnly(prev))
-  ,
+    .add<IConfigurableFormComponent>(1, (prev) => migrateReadOnly(prev)),
 };
 
 export default ScheduledJobExecutionLog;

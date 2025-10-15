@@ -1,8 +1,9 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -70,7 +71,7 @@ export const getSettings = (data: any) => {
                     label: 'Hide',
                     jsSetting: true,
                     layout: 'horizontal',
-                  }
+                  },
                   ],
                 })
                 .toJson(),
@@ -94,7 +95,7 @@ export const getSettings = (data: any) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
+                    _value: "",
                   },
                   components: [
                     ...new DesignerToolbarSettings()
@@ -116,15 +117,15 @@ export const getSettings = (data: any) => {
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
-                      .toJson()
-                  ]
+                      .toJson(),
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: '4',

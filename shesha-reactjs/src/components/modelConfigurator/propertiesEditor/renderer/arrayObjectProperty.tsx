@@ -18,16 +18,16 @@ export interface IProps {
   onChange?: (newValue: IModelItem, changeDetails: ItemChangeDetails) => void;
 }
 
-export const ArrayObjectProperty: FC<IProps> = props => {
+export const ArrayObjectProperty: FC<IProps> = (props) => {
   const { addItem } = usePropertiesEditor();
   const { styles } = useStyles();
 
-  const onAddChildClick = () => {
+  const onAddChildClick = (): void => {
     if (props.data.properties[0])
       addItem(props.data.properties[0].id);
   };
 
-  const itemsType = props.data.properties?.find(p => p.isItemsType);
+  const itemsType = props.data.properties?.find((p) => p.isItemsType);
 
   return (
     <PropertyWrapper {...props.data} index={props.index}>
@@ -38,7 +38,7 @@ export const ArrayObjectProperty: FC<IProps> = props => {
           <QuestionCircleOutlined className={styles.shaHelpIcon} />
         </Tooltip>
       )}
-      { 
+      {
         props.data.source === MetadataSourceType.UserDefined && !props.data.inheritedFromId &&
         <Button icon={<PlusOutlined color="red" />} onClick={onAddChildClick} size="small">Add child</Button>
       }
@@ -50,8 +50,8 @@ export const ArrayObjectProperty: FC<IProps> = props => {
           disableDrag: true,
           onChange: (newItems, changeDetails) => {
             if (props.onChange)
-              props.onChange({...props.data, properties: [...newItems]}, changeDetails);
-          }
+              props.onChange({ ...props.data, properties: [...newItems] }, changeDetails);
+          },
         })}
       </div>
     </PropertyWrapper>

@@ -1,22 +1,22 @@
 import { createStyles } from "@/styles";
 
 export const useStyles = createStyles(({ css, cx, token }) => {
-    const shaActionButtons = "sha-action-buttons";
-    const sidebarContainerMainArea = "sidebar-container-main-area";
-    const shaToolbarConfiguratorAlert = "sha-toolbar-configurator-alert";
-    const shaToolbarConfiguratorBodyTabs = "sha-toolbar-configurator-body-tabs";
-    const shaToolbarItemDragHandle = "sha-toolbar-item-drag-handle";
-    const shaToolbarItem = "sha-toolbar-item";
-    const shaToolbarItemControls = "sha-toolbar-item-controls";
-    const shaToolbarItemHeader = "sha-toolbar-item-header";
-    const shaToolbarGroupHeader = "sha-toolbar-group-header";
-    const shaToolbarGroupContainer = "sha-toolbar-group-container";
-    const shaToolbarItemGhost = "sha-toolbar-item-ghost";
-    const shaTooltipIcon = "sha-tooltip-icon";
-    const shaToolbarItemName = "sha-toolbar-item-name";
-    const shaHelpIcon = "sha-help-icon";
+  const shaActionButtons = "sha-action-buttons";
+  const sidebarContainerMainArea = "sidebar-container-main-area";
+  const shaToolbarConfiguratorAlert = "sha-toolbar-configurator-alert";
+  const shaToolbarConfiguratorBodyTabs = "sha-toolbar-configurator-body-tabs";
+  const shaToolbarItemDragHandle = "sha-toolbar-item-drag-handle";
+  const shaToolbarItem = "sha-toolbar-item";
+  const shaToolbarItemControls = "sha-toolbar-item-controls";
+  const shaToolbarItemHeader = "sha-toolbar-item-header";
+  const shaToolbarGroupHeader = "sha-toolbar-group-header";
+  const shaToolbarGroupContainer = "sha-toolbar-group-container";
+  const shaToolbarItemGhost = "sha-toolbar-item-ghost";
+  const shaTooltipIcon = "sha-tooltip-icon";
+  const shaToolbarItemName = "sha-toolbar-item-name";
+  const shaHelpIcon = "sha-help-icon";
 
-   const  shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
+  const shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
     .${shaActionButtons} {
         margin: 8px 0;
         .ant-btn {
@@ -115,21 +115,21 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     }
 `);
 
-   return {
-        shaToolbarConfigurator,
-        shaActionButtons,
-        sidebarContainerMainArea,
-        shaToolbarConfiguratorAlert,
-        shaToolbarConfiguratorBodyTabs,
-        shaToolbarItemDragHandle,
-        shaToolbarItem,
-        shaToolbarItemControls,
-        shaToolbarItemHeader,
-        shaToolbarGroupHeader,
-        shaToolbarGroupContainer,
-        shaToolbarItemGhost,
-        shaTooltipIcon,
-        shaToolbarItemName,
-        shaHelpIcon,
-   };
+  return {
+    shaToolbarConfigurator,
+    shaActionButtons,
+    sidebarContainerMainArea,
+    shaToolbarConfiguratorAlert,
+    shaToolbarConfiguratorBodyTabs,
+    shaToolbarItemDragHandle,
+    shaToolbarItem,
+    shaToolbarItemControls,
+    shaToolbarItemHeader,
+    shaToolbarGroupHeader,
+    shaToolbarGroupContainer,
+    shaToolbarItemGhost,
+    shaTooltipIcon,
+    shaToolbarItemName,
+    shaHelpIcon,
+  };
 });

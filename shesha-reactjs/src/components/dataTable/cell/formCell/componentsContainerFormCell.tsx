@@ -28,19 +28,19 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
   return (
     <div style={containerStyle}>
       {components?.map((model) => {
-          return (
-            <FormComponent
-              componentModel={{
-                ...model,
-                context: model.context,
-                isDynamic: true,
-                readOnly: readOnly === true ? true : model?.readOnly,
-                customEnabled: '',
-              }}
-              key={model?.id}
-            />
-          );
-        })}
+        return (
+          <FormComponent
+            componentModel={{
+              ...model,
+              context: model.context,
+              isDynamic: true,
+              readOnly: readOnly === true ? true : model?.readOnly,
+              customEnabled: '',
+            }}
+            key={model?.id}
+          />
+        );
+      })}
     </div>
   );
 };

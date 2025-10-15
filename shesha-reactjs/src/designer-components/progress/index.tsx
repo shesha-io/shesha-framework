@@ -6,7 +6,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { LineOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { ProgressProps } from 'antd';
-import { ProgressType } from 'antd/lib/progress/progress';
+import { ProgressType, SuccessProps } from 'antd/lib/progress/progress';
 import { ProgressWrapper } from './progressWrapper';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -32,12 +32,12 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
   icon: <LineOutlined />,
   isInput: true,
   isOutput: true,
-    initModel: (model) => {
-      return {
-        ...model,
-        hideLabel: true,
-      };
-    },
+  initModel: (model) => {
+    return {
+      ...model,
+      hideLabel: true,
+    };
+  },
   Factory: ({ model }) => {
     const {
       progressType,
@@ -59,21 +59,21 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       hidden,
       gapDegree,
       style,
-      allStyles
+      allStyles,
     } = model;
 
     if (hidden) return null;
 
     const styles = getStyle(style);
     const finalStyle = allStyles?.fullStyle || styles;
-    
 
-    const getEvaluatedSuccessColor = () => {
+
+    const getEvaluatedSuccessColor = (): SuccessProps => {
       // tslint:disable-next-line:function-constructor
       return new Function(success)();
     };
 
-    const getEvaluatedStrokeValue = () => {
+    const getEvaluatedStrokeValue = (): string => {
       let color: string = strokeColor;
       let isLineOrCircle = false;
 
@@ -95,7 +95,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       }
     };
 
-    const getEvaluatedFormat = (incomingPercent?: number, incomingSuccessPercent?: number) => {
+    const getEvaluatedFormat = (incomingPercent?: number, incomingSuccessPercent?: number): React.ReactNode => {
       // tslint:disable-next-line:function-constructor
       return new Function('percent, successPercent', format)(incomingPercent, incomingSuccessPercent);
     };
@@ -120,17 +120,18 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               success={getEvaluatedSuccessColor()}
               defaultValue={defaultValue}
               gapDegree={gapDegree}
-              style={{...styles, width: '100%'}}
-            />);
+              style={finalStyle}
+            />
+          );
         }}
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IProgressProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<IProgressProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<IProgressProps>(2, (prev) => {
       const styles: IInputStyles = {
         stylingBox: prev.stylingBox,
@@ -138,8 +139,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IProgressProps>(3, (prev) => ({ ...migratePrevStyles(prev, {}) }))
-  ,
+    .add<IProgressProps>(3, (prev) => ({ ...migratePrevStyles(prev, {}) })),
 };
 
 export default ProgressComponent;

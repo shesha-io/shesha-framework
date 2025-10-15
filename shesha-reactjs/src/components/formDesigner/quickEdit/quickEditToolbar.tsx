@@ -1,5 +1,5 @@
 import { useFormDesignerStateSelector } from '@/providers/formDesigner';
-import { App } from 'antd';
+import { App, Space } from 'antd';
 import React, { FC } from 'react';
 import { DebugButton } from '../toolbar/debugButton';
 import { FormSettingsButton } from '../toolbar/formSettingsButton';
@@ -10,37 +10,39 @@ import { UndoRedoButtons } from '../toolbar/undoRedoButtons';
 import { CanvasConfig } from '../toolbar/canvasConfig';
 
 export interface IQuickEditToolbarProps {
-    onUpdated: () => void;
-    renderSource: "modal" | "designer-page";
+  onUpdated: () => void;
+  renderSource: "modal" | "designer-page";
 }
 
 export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, renderSource }) => {
-    const readOnly = useFormDesignerStateSelector(x => x.readOnly);
-    const { message } = App.useApp();
+  const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
+  const { message } = App.useApp();
 
-    const onSaved = () => {
-        message.success('Form saved successfully');
+  const onSaved = (): void => {
+    message.success('Form saved successfully');
 
-        if (onUpdated)
-            onUpdated();
-    };
+    if (onUpdated)
+      onUpdated();
+  };
 
-    return (
-        <div className="sha-designer-toolbar">
-            <div className="sha-designer-toolbar-left">
-                {!readOnly && (
-                    <SaveMenu onSaved={onSaved}/>
-                )}
-            </div>
-            <CanvasConfig/>
-            <div className="sha-designer-toolbar-right" style={{marginRight: renderSource === "modal" ? "30px" : "auto"}}>
-                <FormSettingsButton />
-                <OpenOnNewPageButton />
-                <PreviewButton />
-                <DebugButton />
+  return (
+    <div className="sha-designer-toolbar">
+      <Space direction="horizontal" size={20}>
+        <CanvasConfig />
+        <div className="sha-designer-toolbar-right" style={{ marginRight: renderSource === "modal" ? "30px" : "auto" }}>
+          <FormSettingsButton buttonText="" size="small" />
+          <OpenOnNewPageButton />
+          <PreviewButton size="small" />
+          <DebugButton />
 
-                {!readOnly && (<UndoRedoButtons />)}
-            </div>
+          {!readOnly && (<UndoRedoButtons size="small" />)}
         </div>
-    );
+      </Space>
+      <div className="sha-designer-toolbar-left">
+        {!readOnly && (
+          <SaveMenu onSaved={onSaved} />
+        )}
+      </div>
+    </div>
+  );
 };

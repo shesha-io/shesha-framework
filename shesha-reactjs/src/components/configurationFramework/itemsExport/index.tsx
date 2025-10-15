@@ -1,7 +1,7 @@
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import React, { MutableRefObject, useMemo, useState } from 'react';
-import { FC } from 'react';
+import React, { MutableRefObject, useMemo, useState, FC } from 'react';
+
 import {
   Button,
   Card,
@@ -51,11 +51,11 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
     const loop = (data: TreeNode[]): TreeNode[] => {
       const result: TreeNode[] = [];
-      data.forEach(node => {
+      data.forEach((node) => {
         if (isConfigItemTreeNode(node)) {
-          const filterPassed = mode === 'all'
-            || mode === 'updated' && node.flags.isUpdated
-            || mode === 'updated-by-me' && node.flags.isUpdatedByMe;
+          const filterPassed = mode === 'all' ||
+            (mode === 'updated' && node.flags.isUpdated) ||
+            (mode === 'updated-by-me' && node.flags.isUpdatedByMe);
           if (filterPassed) {
             if (quickSearch) {
               const newTitle = getTitleWithHighlight(node, quickSearch);
@@ -77,14 +77,13 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
     const newNodes = loop(treeNodes);
     return newNodes;
-
   }, [treeNodes, filterState]);
 
-  const getExportFilter = () => {
+  const getExportFilter = (): object => {
     return { in: [{ var: 'id' }, checkedIds] };
   };
 
-  const exportExecuter = () => {
+  const exportExecuter = (): Promise<void> => {
     const filter = getExportFilter();
     const exportUrl = `${backendUrl}/api/services/app/ConfigurationStudio/ExportPackage`;
 
@@ -96,7 +95,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
       data: {
         filter: JSON.stringify(filter),
         exportDependencies: exportDependencies,
-        //versionSelectionMode: itemSelectionMode,
+        // versionSelectionMode: itemSelectionMode,
       },
       responseType: 'blob', // important
       headers: httpHeaders,
@@ -120,11 +119,11 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
       exportInProgress: exportInProgress,
     };
 
-  const onRefreshClick = () => {
+  const onRefreshClick = (): void => {
     refreshTree();
   };
 
-  const onCheck = (checkedIds: string[]) => {
+  const onCheck = (checkedIds: string[]): void => {
     setCheckedIds(checkedIds);
   };
 

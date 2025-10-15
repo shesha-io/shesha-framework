@@ -17,8 +17,8 @@ interface PageProps {
 }
 
 const DynamicPageInternal: FC<PageProps> = (props) => {
-  //const params = use(props.params);
-  //const searchParams = use(props.searchParams);
+  // const params = use(props.params);
+  // const searchParams = use(props.searchParams);
   const { params, searchParams } = props;
 
   // possible values of path:
@@ -38,12 +38,12 @@ const DynamicPageInternal: FC<PageProps> = (props) => {
     return notFound();
 
   const formId: FormIdentifier = {
-    module: moduleName, 
-    name: formName
+    module: moduleName,
+    name: formName,
   };
 
   return (
-    <DynamicPage {...searchParams} formId={ formId }/>
+    <DynamicPage {...searchParams} formId={formId} />
   );
 };
 

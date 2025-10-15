@@ -1,5 +1,4 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const leftSidebarWidth = "550px";
@@ -17,29 +16,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const sidebarBodyContent = "sidebar-body-content";
   const sidebarContainerLeft = "sidebar-container-left";
   const sidebarContainerRight = "sidebar-container-right";
+  const canvasWrapper = "canvas-wrapper";
+  const designerCanvas = "designer-canvas";
 
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
-      overflow: hidden;
+      overflow-x: hidden;
 
-      .${sidebarContainerMainAreaBody} {
+      .${sidebarContainerMainAreaBody}{
         overflow: auto;
-        margin: 0 auto;
-        background: #fff;
+        height: 100%;
 
-         > div {
-          height: -webkit-fill-available;
-            .ant-spin-nested-loading {
-              height: 100%;
-              .ant-spin-container {
-                height: 100%;
-
-              > form {
-                  height: 100%;
-                }
-              }
-            }
-         }
       }
     
       .${sidebarContainerHeader} {
@@ -52,7 +39,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         display: flex;
         position: relative;
         width: 100%;
-        height: 85vh;
+        min-height: 100%;
     
         .${sidebarContainerLeft},
         .${sidebarContainerRight} {
@@ -177,16 +164,34 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           }
         }
     
+        .${canvasWrapper} {
+          height: calc(100vh - 120px);
+          overflow: scroll;
+        }
+        
+        [data-sha-c-type="datatable"] {
+          .${canvasWrapper} {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          overflow: auto;
+        }
+        }
+
         .${sidebarContainerMainArea} {
-         width: 100%;
-         position: sticky;
-          overflow-x: auto;
-    
+          width: 100%;
+
           &::not(.no-padding) {
             padding: ${sheshaStyles.paddingLG}px;
           }
         }
-      }    
+
+        .${designerCanvas} {
+          margin: 0 auto;
+          height: 100%;
+          transform-origin: top left;
+        }
+      }
     `);
 
   return {
@@ -203,5 +208,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     sidebarBodyContent,
     sidebarContainerLeft,
     sidebarContainerRight,
+    designerCanvas,
+    canvasWrapper,
   };
 });

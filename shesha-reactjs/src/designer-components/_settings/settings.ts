@@ -1,6 +1,7 @@
+import { FormRawMarkup } from '@/interfaces';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
-export const getSettings = () =>
+export const getSettings = (): FormRawMarkup =>
   new DesignerToolbarSettings()
     .addCollapsiblePanel({
       id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
@@ -52,7 +53,7 @@ export const getSettings = () =>
             settingsValidationErrors: [],
             templateSettings: {
               functionName: 'getAvailableConstants',
-              useAsyncDeclaration: true
+              useAsyncDeclaration: true,
             },
             availableConstantsExpression: async ({ metadataBuilder, data }) => {
               const { modelType } = data ?? {};
@@ -73,7 +74,7 @@ export const getSettings = () =>
               return Promise.resolve(meta);
             },
             validate: {},
-            wrapInTemplate: true
+            wrapInTemplate: true,
           })
           .addCodeEditor({
             id: '0vdsTdr-zK',
@@ -87,7 +88,7 @@ export const getSettings = () =>
             settingsValidationErrors: [],
             templateSettings: {
               functionName: 'getResultType',
-              useAsyncDeclaration: true
+              useAsyncDeclaration: true,
             },
             availableConstantsExpression: ({ metadataBuilder }) => {
               const meta = metadataBuilder.object("constants")
@@ -100,10 +101,10 @@ export const getSettings = () =>
               return Promise.resolve(meta);
             },
             validate: {},
-            wrapInTemplate: true
+            wrapInTemplate: true,
           })
-          .toJson()
-        ]
-      }
+          .toJson(),
+        ],
+      },
     })
     .toJson();

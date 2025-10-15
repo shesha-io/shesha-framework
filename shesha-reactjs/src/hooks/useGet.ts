@@ -19,7 +19,7 @@ interface IQueryParams {
   [key: string]: any;
 }
 
-export interface UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams> {
+export interface UseGetProps<TData, TQueryParams, TPathParams> {
   /**
    * The path at which to request data,
    * typically composed by parent Gets or the RestfulProvider.
@@ -52,19 +52,19 @@ export interface UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams> {
   headers?: IHttpHeadersDictionary;
 }
 
-type RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams> = Partial<
-  Omit<UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams>, 'lazy'>
+type RefetchOptions<TData, TQueryParams, TPathParams> = Partial<
+  Omit<UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams>, 'lazy'>
 >;
 
-export interface UseGetReturn<TData, TError, TQueryParams = {}, TPathParams = unknown> extends GetState<TData, TError> {
+export interface UseGetReturn<TData, TError, TQueryParams = IQueryParams, TPathParams = unknown> extends GetState<TData, TError> {
   /**
    * Refetch
    */
-  refetch: (options?: RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams> & { signal?: AbortSignal }) => Promise<TData | null>;
+  refetch: (options?: RefetchOptions<TData, /* TError,*/ TQueryParams, TPathParams> & { signal?: AbortSignal }) => Promise<TData | null>;
 }
 
 export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>(
-  props: UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams>
+  props: UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams>,
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams> => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
@@ -76,7 +76,7 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
   });
 
   const refetch = useDeepCompareCallback(
-    (options?: RefetchOptions<TData, /*TError,*/ TQueryParams, TPathParams> & { signal?: AbortSignal }): Promise<TData | null> => {
+    (options?: RefetchOptions<TData, /* TError,*/ TQueryParams, TPathParams> & { signal?: AbortSignal }): Promise<TData | null> => {
       setState((prev) => ({ ...prev, loading: true }));
 
       const finalOptions = { ...props, ...options, httpHeaders: httpHeaders };
@@ -99,7 +99,7 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
           throw error;
         });
     },
-    [props.lazy, props.path, props.base, props.resolve, props.queryParams, props.pathParams, backendUrl, httpHeaders]
+    [props.lazy, props.path, props.base, props.resolve, props.queryParams, props.pathParams, backendUrl, httpHeaders],
   );
 
   useDeepCompareEffect(() => {
@@ -113,17 +113,17 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
 };
 
 export function useGet<TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>(
-  path: UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams>['path'],
-  props: Omit<UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams>, 'path'>
+  path: UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams>['path'],
+  props: Omit<UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams>, 'path'>
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams>;
 
 // eslint-disable-next-line no-redeclare
 export function useGet<TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>(
-  props: UseGetProps<TData, /*TError,*/ TQueryParams, TPathParams>
+  props: UseGetProps<TData, /* TError,*/ TQueryParams, TPathParams>
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams>;
 
 // eslint-disable-next-line no-redeclare
-export function useGet<TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>() {
+export function useGet<TData = any, TError = any, TQueryParams = IQueryParams, TPathParams = unknown>(): UseGetReturn<TData, TError, TQueryParams, TPathParams> {
   const props: UseGetProps<TData, TQueryParams, TPathParams> =
     typeof arguments[0] === 'object' ? arguments[0] : { ...arguments[1], path: arguments[0] };
   const { path } = props;

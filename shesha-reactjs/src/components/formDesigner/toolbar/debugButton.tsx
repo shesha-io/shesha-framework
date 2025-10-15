@@ -3,13 +3,9 @@ import { BugOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
 
-export interface IDebugButtonProps {
-
-}
-
-export const DebugButton: FC<IDebugButtonProps> = () => {
-  const isDebug = useFormDesignerStateSelector(x => x.isDebug);
-  const { setDebugMode } = useFormDesignerActions();  
+export const DebugButton: FC = () => {
+  const isDebug = useFormDesignerStateSelector((x) => x.isDebug);
+  const { setDebugMode } = useFormDesignerActions();
 
   return (
     <Button
@@ -22,6 +18,7 @@ export const DebugButton: FC<IDebugButtonProps> = () => {
       type="primary"
       size='small'
       ghost={!isDebug}
+      size="small"
     />
   );
 };

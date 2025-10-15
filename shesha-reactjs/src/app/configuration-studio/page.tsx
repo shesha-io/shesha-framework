@@ -4,10 +4,10 @@ import React from 'react';
 import { PageWithLayout } from '@/interfaces';
 import ConfigurationStudio from '@/configuration-studio';
 
-const Page: PageWithLayout<{}> = () => {
-    return (
-        <ConfigurationStudio />
-    );
+const Page: PageWithLayout = () => {
+  return (
+    <ConfigurationStudio />
+  );
 };
 
 export default Page;

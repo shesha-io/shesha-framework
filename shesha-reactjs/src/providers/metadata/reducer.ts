@@ -1,25 +1,16 @@
-import { handleActions } from 'redux-actions';
-import { MetadataActionEnums } from './actions';
-import { IMetadataStateContext, ISetMetadataPayload, METADATA_CONTEXT_INITIAL_STATE } from './contexts';
+import { createReducer } from '@reduxjs/toolkit';
+import { setMetadataAction } from './actions';
+import { METADATA_CONTEXT_INITIAL_STATE } from './contexts';
 
-const reducer = handleActions<IMetadataStateContext, any>(
-  {
-    [MetadataActionEnums.SetMetadata]: (
-      state: IMetadataStateContext,
-      action: ReduxActions.Action<ISetMetadataPayload>
-    ) => {
+const reducer = createReducer(METADATA_CONTEXT_INITIAL_STATE, (builder) => {
+  builder
+    .addCase(setMetadataAction, (state, action) => {
       const { payload } = action;
 
-      return {
-        ...state,
-        modelType: !!payload.modelType ? payload.modelType : state.modelType,
-        dataType: !!payload.dataType ? payload.dataType : state.dataType,
-        metadata: { ...payload.metadata },
-      };
-    },
-  },
-
-  METADATA_CONTEXT_INITIAL_STATE
-);
+      state.modelType = payload.modelType;
+      state.dataType = payload.dataType;
+      state.metadata = { ...payload.metadata };
+    });
+});
 
 export default reducer;

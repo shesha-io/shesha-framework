@@ -21,15 +21,17 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalula
   isOutput: true,
   calculateModel: (model, allData) => ({
     getContent: (value: any) => model.renderer
-      ? executeScriptSync(model.renderer, addContextData(allData, {value})) || '<div><div/>'
-      : '<div><div/>'
+      ? executeScriptSync(model.renderer, addContextData(allData, { value })) || '<div><div/>'
+      : '<div><div/>',
   }),
   Factory: ({ model, calculatedModel }) => {
-    return <div style={model.allStyles.fullStyle}>
-      <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
-        {value => parse(calculatedModel.getContent(value))}
-      </ConfigurableFormItem>
-    </div>;
+    return (
+      <div style={model.allStyles.fullStyle}>
+        <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
+          {(value) => parse(calculatedModel.getContent(value))}
+        </ConfigurableFormItem>
+      </div>
+    );
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
@@ -37,8 +39,7 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalula
     .add<IHtmlComponentProps>(1, (prev: IHtmlComponentProps) => ({
       ...migrateFormApi.properties(prev),
       renderer: migrateFormApi.withoutFormData(prev.renderer),
-    }))
-  ,
+    })),
 };
 
 export default HtmlComponent;

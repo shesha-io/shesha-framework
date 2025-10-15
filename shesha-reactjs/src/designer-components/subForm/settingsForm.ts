@@ -2,8 +2,9 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { ISubFormComponentProps } from '.';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: ISubFormComponentProps) => {
+export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -37,14 +38,14 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 label: "Property Name",
                 size: "small",
                 validate: {
-                  required: true
+                  required: true,
                 },
                 styledLabel: true,
                 jsSetting: true,
 
               })
 
-              //hide label by default
+              // hide label by default
               .addLabelConfigurator({
                 id: nanoid(),
                 propertyName: 'hideLabel',
@@ -63,7 +64,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     parentId: commonTabId,
                     label: "Edit Mode",
                     jsSetting: true,
-                    defaultValue: 'inherited'
+                    defaultValue: 'inherited',
                   },
                   {
                     type: 'switch',
@@ -71,11 +72,11 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     propertyName: 'hidden',
                     label: 'Hide',
                     jsSetting: true,
-                  }
-                ]
+                  },
+                ],
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'data',
@@ -93,7 +94,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 defaultValue: 'name',
                 dropdownOptions: [
                   { label: "Name", value: "name" },
-                  { label: "Dynamic", value: "dynamic" }
+                  { label: "Dynamic", value: "dynamic" },
                 ],
               })
               .addSettingsInputRow({
@@ -106,8 +107,8 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     propertyName: "formType",
                     label: "Form Type",
                     jsSetting: true,
-                    dropdownOptions: formTypes.map(value => ({ label: value, value }))
-                  }
+                    dropdownOptions: formTypes.map((value) => ({ label: value, value })),
+                  },
                 ],
                 hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
               })
@@ -120,8 +121,8 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     type: "formAutocomplete",
                     propertyName: "formId",
                     label: "Form",
-                    jsSetting: true
-                  }
+                    jsSetting: true,
+                  },
                 ],
                 hidden: { _code: 'return getSettingValue(data?.formSelectionMode) === "dynamic";', _mode: 'code', _value: false } as any,
               })
@@ -135,7 +136,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 defaultValue: 'form',
                 dropdownOptions: [
                   { label: "Form", value: "form" },
-                  { label: "API", value: "api" }
+                  { label: "API", value: "api" },
                 ],
               })
               .addSettingsInputRow({
@@ -151,10 +152,10 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     tooltip: "The API mode to use to fetch data",
                     dropdownOptions: [
                       { label: "Entity name", value: "entityName" },
-                      { label: "URL", value: "url" }
+                      { label: "URL", value: "url" },
                     ],
                     jsSetting: true,
-                  }
+                  },
                 ],
                 hidden: { _code: 'return getSettingValue(data?.dataSource) === "form";', _mode: 'code', _value: false } as any,
               })
@@ -170,7 +171,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     dataSourceType: "url",
                     dataSourceUrl: "/api/services/app/Metadata/TypeAutocomplete",
                     jsSetting: true,
-                  }
+                  },
                 ],
                 hidden: { _code: 'return getSettingValue(data?.dataSource) === "form" || getSettingValue(data?.apiMode) !== "entityName";', _mode: 'code', _value: false } as any,
               })
@@ -188,7 +189,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     jsSetting: true,
                     mode: "inline",
                     wrapInTemplate: false,
-                  }
+                  },
                 ],
                 hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
               })
@@ -219,11 +220,11 @@ export const getSettings = (data: ISubFormComponentProps) => {
                         name: 'queryParams',
                         description: 'Query parameters',
                         type: 'object',
-                      }
+                      },
                     ],
                     wrapInTemplate: true,
                     templateSettings: {
-                      functionName: 'getQueryParams'
+                      functionName: 'getQueryParams',
                     },
                   },
                   {
@@ -252,13 +253,13 @@ export const getSettings = (data: ISubFormComponentProps) => {
                         name: 'queryParams',
                         description: 'Query parameters',
                         type: 'object',
-                      }
+                      },
                     ],
                     wrapInTemplate: true,
                     templateSettings: {
-                      functionName: 'getGetUrl'
+                      functionName: 'getGetUrl',
                     },
-                  }
+                  },
                 ],
               })
 
@@ -292,11 +293,11 @@ export const getSettings = (data: ISubFormComponentProps) => {
                         name: 'queryParams',
                         description: 'Query parameters',
                         type: 'object',
-                      }
+                      },
                     ],
                     wrapInTemplate: true,
                     templateSettings: {
-                      functionName: 'getPostUrl'
+                      functionName: 'getPostUrl',
                     },
                   },
                   {
@@ -325,13 +326,13 @@ export const getSettings = (data: ISubFormComponentProps) => {
                         name: 'queryParams',
                         description: 'Query parameters',
                         type: 'object',
-                      }
+                      },
                     ],
                     wrapInTemplate: true,
                     templateSettings: {
-                      functionName: 'getPutUrl'
+                      functionName: 'getPutUrl',
                     },
-                  }
+                  },
                 ],
               })
               .addSettingsInput({
@@ -343,8 +344,8 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 tooltip: "A unique identifier used to maintain component state across sessions. Enable this if you need to preserve the component's state when the page reloads.",
                 jsSetting: true,
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'events',
@@ -385,11 +386,11 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     name: 'publish',
                     description: 'Event publisher',
                     type: 'function',
-                  }
+                  },
                 ],
                 wrapInTemplate: true,
                 templateSettings: {
-                  functionName: 'onCreated'
+                  functionName: 'onCreated',
                 },
               })
               .addSettingsInput({
@@ -426,15 +427,15 @@ export const getSettings = (data: ISubFormComponentProps) => {
                     name: 'publish',
                     description: 'Event publisher',
                     type: 'function',
-                  }
+                  },
                 ],
                 wrapInTemplate: true,
                 templateSettings: {
-                  functionName: 'onUpdated'
+                  functionName: 'onUpdated',
                 },
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -452,7 +453,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 propertyRouteName: {
                   _mode: "code",
                   _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
-                  _value: ""
+                  _value: "",
                 },
                 components: [
                   ...new DesignerToolbarSettings()
@@ -470,7 +471,7 @@ export const getSettings = (data: ISubFormComponentProps) => {
                         components: [...new DesignerToolbarSettings()
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: commonTabId,       
+                            parentId: commonTabId,
                             inputs: [
                               {
                                 id: nanoid(),
@@ -495,18 +496,18 @@ export const getSettings = (data: ISubFormComponentProps) => {
                                 max: 24,
                                 defaultValue: 8,
                                 step: 1,
-                              }
-                            ]
+                              },
+                            ],
                           })
-                          .toJson()
-                        ]
-                      }
+                          .toJson(),
+                        ],
+                      },
                     })
-                    .toJson()
-                ]
+                    .toJson(),
+                ],
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'security',
@@ -521,19 +522,19 @@ export const getSettings = (data: ISubFormComponentProps) => {
                 label: 'Permissions',
                 tooltip: "Enter a list of permissions that should be associated with this component",
                 parentId: securityTabId,
-                jsSetting: true
+                jsSetting: true,
               })
-              .toJson()
-            ]
-          }
-        ]
+              .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

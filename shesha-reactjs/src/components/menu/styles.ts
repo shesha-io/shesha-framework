@@ -36,8 +36,8 @@ export const useStyles = createStyles(
       styleOnHover,
       styleOnSelected,
       width,
-      fontStyles
-    }: IStyleProps
+      fontStyles,
+    }: IStyleProps,
   ) => {
     const menuContainer = css`
       display: flex;
@@ -64,10 +64,10 @@ export const useStyles = createStyles(
 
     const menuWrapperScroll = isScrolling
       ? {
-          display: "flex",
-          width: `calc(${width} + 80px)`,
-          overflow: "scroll",
-        }
+        display: "flex",
+        width: `calc(${width} + 80px)`,
+        overflow: "scroll",
+      }
       : undefined;
 
     const shaMenu = cx(
@@ -158,7 +158,7 @@ export const useStyles = createStyles(
         ::-webkit-scrollbar {
           display: none;
         }
-      `
+      `,
     );
 
     const shaHamburgerItem = css`
@@ -211,7 +211,7 @@ export const useStyles = createStyles(
       scrollButtons,
       scrollButton,
     };
-  }
+  },
 );
 
 export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGlobalStyle`

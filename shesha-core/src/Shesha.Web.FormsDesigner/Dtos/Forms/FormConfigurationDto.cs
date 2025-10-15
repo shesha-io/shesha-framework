@@ -59,11 +59,6 @@ namespace Shesha.Web.FormsDesigner.Dtos
         public List<string>? Permissions { get; set; }
 
         /// <summary>
-        /// Cache MD5, is used for client-side caching
-        /// </summary>
-        public string? CacheMd5 { get; set; }
-
-        /// <summary>
         /// 
         /// </summary>
         public virtual Guid? TemplateId { get; set; }

@@ -2,10 +2,10 @@ import ConditionalWrap from '@/components/conditionalWrapper';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import settingsFormJson from './settingsForm.json';
-import { evaluateString } from '@/providers/form/utils';
+import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { IPropertyAutocompleteComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { MetadataProvider } from '@/providers';
@@ -30,7 +30,7 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
     return (
       <ConditionalWrap
         condition={Boolean(modelType)}
-        wrap={content => <MetadataProvider modelType={modelType}>{content}</MetadataProvider>}
+        wrap={(content) => <MetadataProvider modelType={modelType}>{content}</MetadataProvider>}
       >
         <ConfigurableFormItem model={model}>
           {(value, onChange) => {
@@ -53,7 +53,7 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IPropertyAutocompleteComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IPropertyAutocompleteComponentProps>(1, (prev) => migrateReadOnly(prev))
@@ -64,7 +64,6 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
       } else {
         return { ...prev };
       }
-    })
-  ,
+    }),
 };
 

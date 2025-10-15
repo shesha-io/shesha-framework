@@ -11,14 +11,12 @@ import { useStyles } from './styles/styles';
 
 type PanelType = CollapseProps['items'][number];
 
-export interface IToolboxComponentsProps { }
-
-export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
+export const ToolboxComponents: FC = () => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaDesigner.toolbox.components.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaDesigner.toolbox.components.search', '');
   const { styles } = useStyles();
 
-  const toolboxComponentGroups = useFormDesignerStateSelector(state => state.toolboxComponentGroups);
+  const toolboxComponentGroups = useFormDesignerStateSelector((state) => state.toolboxComponentGroups);
   const { startDraggingNewItem, endDraggingNewItem } = useFormDesignerActions();
 
   const filteredGroups = useMemo<IToolboxComponentGroup[]>(() => {
@@ -28,22 +26,22 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
 
     toolboxComponentGroups.forEach((group) => {
       const filteredComponents = group.components.filter((c) =>
-        c.name?.toLowerCase().includes(searchText?.toLowerCase())
+        c.name?.toLowerCase().includes(searchText?.toLowerCase()),
       );
       if (filteredComponents.length > 0) result.push({ ...group, components: filteredComponents });
     });
     return result;
   }, [toolboxComponentGroups, searchText]);
 
-  const onCollapseChange = (key: string | string[]) => {
+  const onCollapseChange = (key: string | string[]): void => {
     setOpenedKeys(Array.isArray(key) ? key : [key]);
   };
 
-  const onDragStart = () => {
+  const onDragStart = (): void => {
     startDraggingNewItem();
   };
 
-  const onDragEnd = (_evt) => {
+  const onDragEnd = (_evt): void => {
     endDraggingNewItem();
   };
 
@@ -96,10 +94,10 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
                 );
               })}
             </ReactSortable>
-          )
+          ),
         };
     })
-    .filter(item => Boolean(item));
+    .filter((item) => Boolean(item));
 
   return (
     <div className={styles.shaToolboxComponents}>

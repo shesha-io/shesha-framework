@@ -25,7 +25,7 @@ export const chartDataReducer = handleActions(
       ...state,
       ...action.payload,
     }),
-    
+
     [ChartDataActionsEnum.CleanData]: () => ({
       ...INITIAL_STATE,
     }),

@@ -20,7 +20,7 @@ export const useMutate = <TData = any, TResponse = any>(): IUseMutateResponse<TD
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const [state, setState] = useState<IMutateState>({ error: null, loading: false });
 
-  const mutate = (endpoint: IApiEndpoint, data?: TData) => {
+  const mutate = (endpoint: IApiEndpoint, data?: TData): Promise<TResponse> => {
     if (!endpoint) {
       setState((prev) => ({ ...prev, loading: false, error: ENDPOINT_NOT_SPECIFIED_ERROR }));
       return Promise.reject(ENDPOINT_NOT_SPECIFIED_ERROR);
@@ -75,11 +75,11 @@ export interface IApiEndpointWithPathParams<TData> {
 }
 
 export const useMutateForEndpoint = <TData = any, TResponse = any>(
-  endpoint: IApiEndpointWithPathParams<TData>
+  endpoint: IApiEndpointWithPathParams<TData>,
 ): IUseMutateResponseFixedEndpoint<TData, TResponse> => {
   const response = useMutate<TData, TResponse>();
 
-  const mutate = (data?: TData) => {
+  const mutate = (data?: TData): Promise<TResponse> => {
     const url = typeof endpoint.url === 'string' ? endpoint.url : endpoint.url(data);
     return response.mutate({ url, httpVerb: endpoint.httpVerb }, data);
   };

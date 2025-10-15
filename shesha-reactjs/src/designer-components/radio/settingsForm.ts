@@ -1,8 +1,9 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -272,7 +273,7 @@ export const getSettings = (data: any) => {
                         label: 'Enable Style On Readonly',
                         tooltip: 'Removes all visual styling except typography when the component becomes read-only',
                         inputType: 'switch',
-                        jsSetting: true
+                        jsSetting: true,
                       })
                       .addSettingsInput({
                         id: nanoid(),

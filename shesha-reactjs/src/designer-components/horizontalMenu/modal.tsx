@@ -7,7 +7,13 @@ const EmptySidebarProps: ISideBarMenuProps = {
   items: [],
 };
 
-export const Editor = ({ settings, onCancel, onSave }) => (
+type EditorProps = {
+  settings: ISideBarMenuProps | typeof EmptySidebarProps;
+  onCancel: () => void;
+  onSave: () => void;
+};
+
+export const Editor = ({ settings, onCancel, onSave }: EditorProps): JSX.Element => (
   <ComponentSettingsModal
     title="Sidebar Menu Configuration"
     settings={settings ?? EmptySidebarProps}

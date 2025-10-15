@@ -2,19 +2,20 @@ import { FormSettingsButton } from '@/components/formDesigner/toolbar/formSettin
 import { PreviewButton } from '@/components/formDesigner/toolbar/previewButton';
 import { SaveButton } from '@/components/formDesigner/toolbar/saveButton';
 import { UndoRedoButtons } from '@/components/formDesigner/toolbar/undoRedoButtons';
+import { Space } from 'antd';
 import React, { FC } from 'react';
 
 export interface IFormToolbarProps {
-    readOnly?: boolean;
+  readOnly?: boolean;
 }
 
 export const FormToolbar: FC<IFormToolbarProps> = ({ readOnly = false }) => {
-    return (
-        <div>
-            <FormSettingsButton buttonText="" />
-            <SaveButton size="small" type="link" />
-            {!readOnly && (<UndoRedoButtons size="small" />)}
-            <PreviewButton size="small" />
-        </div>
-    );
+  return (
+    <Space direction="horizontal" size={5}>
+      <FormSettingsButton buttonText="" size="small" />
+      {!readOnly && (<UndoRedoButtons size="small" />)}
+      <PreviewButton size="small" />
+      <SaveButton size="small" type="primary" />
+    </Space>
+  );
 };

@@ -4,7 +4,7 @@ import { useDataListCrud } from '@/providers/dataListCrudContext/index';
 import ActionButton, { IActionButtonProps } from '../actionButton/index';
 import { useStyles } from './styles/styles';
 
-export const CrudActionButtons = () => {
+export const CrudActionButtons = (): JSX.Element => {
   const {
     mode,
     switchMode,
@@ -25,11 +25,11 @@ export const CrudActionButtons = () => {
 
   const { styles } = useStyles();
 
-  const onEditClick = () => {
+  const onEditClick = (): void => {
     switchMode('update');
   };
 
-  const onSaveUpdateClick = async () => {
+  const onSaveUpdateClick = async (): Promise<void> => {
     try {
       await performUpdate();
       switchMode('read');
@@ -38,7 +38,7 @@ export const CrudActionButtons = () => {
     }
   };
 
-  const onSaveCreateClick = async () => {
+  const onSaveCreateClick = async (): Promise<void> => {
     try {
       await performCreate();
       await reset();
@@ -47,12 +47,12 @@ export const CrudActionButtons = () => {
     }
   };
 
-  const onCancelEditClick = async () => {
+  const onCancelEditClick = async (): Promise<void> => {
     await reset();
     switchMode('read');
   };
 
-  const onDeleteClick = () => {
+  const onDeleteClick = (): void => {
     performDelete();
   };
 
@@ -78,7 +78,7 @@ export const CrudActionButtons = () => {
           onSaveUpdateClick();
         },
         icon: <SaveOutlined />,
-        isVisible: /*!autoSave &&*/ allowEdit && mode === 'update',
+        isVisible: /* !autoSave &&*/ allowEdit && mode === 'update',
         loading: isSaving,
         error: saveError,
       },
@@ -88,7 +88,7 @@ export const CrudActionButtons = () => {
           onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
-        isVisible: /*!autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
+        isVisible: /* !autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
       },
       {
         title: 'Reset',
@@ -96,7 +96,7 @@ export const CrudActionButtons = () => {
           onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
-        isVisible: /*!autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
+        isVisible: /* !autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
       },
       {
         title: 'Delete',
@@ -126,7 +126,7 @@ export const CrudActionButtons = () => {
   return (
     <div className={styles.shaDatalistComponentItemCheckbox}>
       {buttons.map((btn, idx) => (
-        <ActionButton {...btn} key={idx} type='default' shape='circle' />
+        <ActionButton {...btn} key={idx} type="default" shape="circle" />
       ))}
     </div>
   );

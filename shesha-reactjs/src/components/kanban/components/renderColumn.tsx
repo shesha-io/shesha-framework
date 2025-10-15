@@ -52,7 +52,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
     setIsCollapsed(collapse);
   }, [collapse]);
   // Update user settings and persist to backend
-  const toggleFold = async () => {
+  const toggleFold = async (): Promise<void> => {
     try {
       const newCollapseState = !isCollapsed;
       setIsCollapsed(newCollapseState);
@@ -120,10 +120,10 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
         });
       });
     },
-    [allData, executeAction]
+    [allData, executeAction],
   );
 
-  const handleUpdate = async (evt: any) => {
+  const handleUpdate = async (evt: any): Promise<void> => {
     const taskId = evt.item.dataset.id;
     const newColumnValue = evt.to.firstChild.dataset.value;
     const draggedTask = tasks.find((task) => task.id === taskId);
@@ -134,7 +134,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
         to: { dataset: { columnId: targetColumn.id, targetColumn: targetColumn } },
         dragged: { dataset: { id: taskId, value: draggedTask[props.groupingProperty] } },
       },
-      targetColumn
+      targetColumn,
     );
 
     if (!canUpdate) {
@@ -248,7 +248,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
                         key={selectedItem ? selectedItem.id : 'new-item'}
                         initialValues={t}
                         formId={props.modalFormId}
-                        mode={'readonly'}
+                        mode="readonly"
                         className={styles.taskContainer}
                       />
                       {props.kanbanReadonly || props.readonly || !(props.allowDelete || props.allowEdit) ? null : (

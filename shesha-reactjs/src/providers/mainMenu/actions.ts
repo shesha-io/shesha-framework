@@ -10,12 +10,12 @@ export enum MainMenuActionEnums {
 
 export const setLoadedMenuAction = createAction<IConfigurableMainMenu, IConfigurableMainMenu>(
   MainMenuActionEnums.SetLoadedMenu,
-  (p) => p
+  (p) => p,
 );
 
 export const setItemsAction = createAction<ISidebarMenuItem[], ISidebarMenuItem[]>(
   MainMenuActionEnums.SetItems,
-  (p) => p
+  (p) => p,
 );
 
 /* NEW_ACTION_GOES_HERE */

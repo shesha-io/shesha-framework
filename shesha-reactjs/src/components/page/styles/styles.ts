@@ -1,5 +1,5 @@
-import { createGlobalStyle, css } from "@/styles";
-import { sheshaStyles } from '@/styles';
+import { createGlobalStyle, css, sheshaStyles } from "@/styles";
+
 
 const flexCenterAlignedSpaceBetween = css`
 display: flex;

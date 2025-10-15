@@ -18,7 +18,7 @@ export const RefListItemsListInner: FC<Omit<IFiltersListProps, 'items'>> = ({ sh
   const { items, selectItem } = useRefListItemGroupConfigurator();
 
 
-  const onConfigClick = (localSelectedId: string) => {
+  const onConfigClick = (localSelectedId: string): void => {
     selectItem(localSelectedId);
 
     showModal();
@@ -50,7 +50,7 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
     onChange(items);
   }, [items]);
 
-  const updateFilters = () => {
+  const updateFilters = (): void => {
     if (typeof onChange === 'function') onChange(items);
     hideModal();
   };
@@ -74,12 +74,11 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
 export const RefListItemSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal, 'visible' | 'hideModal'>> = (
   props,
 ) => {
-  
   const [modalVisible, setModalVisible] = useState(false);
 
-  const showModal = () => setModalVisible(true);
+  const showModal = (): void => setModalVisible(true);
 
-  const hideModal = () => setModalVisible(false);
+  const hideModal = (): void => setModalVisible(false);
 
   const items = (props.value as IRefListItemFormModel[]) || [];
 

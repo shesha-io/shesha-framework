@@ -17,11 +17,10 @@ const ThemeEditorComponent: IToolboxComponent<any> = {
   isInput: true,
   isOutput: true,
   Factory: () => {
-
     useShaFormDataUpdate();
 
-    const {applicationKey = null} = useSheshaApplication();
-    const {selectedApplication = null, settingSelection, editorMode, setEditor, saveSettingValue} = useSettingsEditor(false) ?? {};
+    const { applicationKey = null } = useSheshaApplication();
+    const { selectedApplication = null, settingSelection, editorMode, setEditor, saveSettingValue } = useSettingsEditor(false) ?? {};
     const { theme, changeTheme, resetToApplicationTheme } = useTheme();
     const form = useShaFormInstance();
     const initialValues = useRef(theme);
@@ -35,15 +34,15 @@ const ThemeEditorComponent: IToolboxComponent<any> = {
             name: settingSelection.setting.name,
             module: settingSelection.setting.module,
             appKey: selectedApplication?.appKey,
-        };
+          };
 
-        return saveSettingValue(settingId, localTheme.current)
-          .then(() => {
-            initialValues.current = localTheme.current;
-          })
-          .catch((error) => {
-            throw error;
-          });
+          return saveSettingValue(settingId, localTheme.current)
+            .then(() => {
+              initialValues.current = localTheme.current;
+            })
+            .catch((error) => {
+              throw error;
+            });
         },
         cancel() {
           changeTheme(initialValues.current);
@@ -55,20 +54,20 @@ const ThemeEditorComponent: IToolboxComponent<any> = {
         resetToApplicationTheme();
       };
     }, []);
-  
+
     useEffect(() => {
       if (form.formData) {
         changeTheme(form.formData);
         localTheme.current = form.formData;
       }
     }, [form.formData]);
-  
-    const onChangeInternal = (changedValue: IConfigurableTheme) => {
-      form.setFormData({values: changedValue, mergeValues: true});
+
+    const onChangeInternal = (changedValue: IConfigurableTheme): void => {
+      form.setFormData({ values: changedValue, mergeValues: true });
     };
-  
+
     return (
-      <ConfigurableThemeContent value={form.formData} onChange={onChangeInternal} readonly={editorMode === 'readonly'}/>
+      <ConfigurableThemeContent value={form.formData} onChange={onChangeInternal} readonly={editorMode === 'readonly'} />
     );
   },
   settingsFormMarkup: settingsForm,

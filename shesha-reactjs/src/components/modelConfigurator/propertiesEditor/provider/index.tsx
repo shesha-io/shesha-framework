@@ -7,6 +7,8 @@ import {
   PropertiesEditorActionsContext,
   PropertiesEditorStateContext,
   PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
+  IPropertiesEditorStateContext,
+  IPropertiesEditorActionsContext,
 } from './contexts';
 import {
   addItemAction,
@@ -27,58 +29,49 @@ export interface IPropertiesEditorProviderProps {
   onChange?: (items: IModelItem[]) => void;
 }
 
-const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderProps>> = props => {
+const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderProps>> = (props) => {
   const { children } = props;
   const selRef = useRef(null);
   const [state, dispatch] = useThunkReducer(modelReducer, {
     ...PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
-    items: props.items?.filter(x => !x.isFrameworkRelated) || [],
+    items: props.items?.filter((x) => !x.isFrameworkRelated) || [],
     onChange: props.onChange,
     selectedItemRef: selRef,
   });
-  /*
-  const dispatchDeferred = (action: Action<any>) => {
-    return new Promise<void>((resolve) => {
-      dispatch((dispatch, _getState) => {
-        dispatch(action);
-        resolve();
-      });
-    });
-  }
-  */
 
-  const dispatchAndFire = (action: Action<any>) => {
+  const dispatchAndFire = (action: Action<any>): void => {
     dispatch((dispatchThunk, getState) => {
       dispatchThunk(action);
       if (props.onChange) {
         const updatedItems = getState()?.items;
         props.onChange(updatedItems);
-      }        
+      }
     });
   };
 
-  const addItem = (parentId?: string) => {
-    //return dispatchDeferred
+  const addItem = (parentId?: string): Promise<IModelItem> => {
+    // return dispatchDeferred
     return new Promise<IModelItem>((resolve) => {
       const item: IModelItem = {
         id: nanoid(),
+        dataType: '',
       };
       dispatchAndFire(addItemAction({ parentId, item }));
       resolve(item);
     });
   };
 
-  const deleteItem = (uid: string) => {
+  const deleteItem = (uid: string): void => {
     dispatchAndFire(deleteItemAction(uid));
   };
 
-  const selectItem = (uid: string) => {
+  const selectItem = (uid: string): void => {
     if (state.selectedItemId !== uid) {
       dispatch(selectItemAction(uid));
     }
   };
 
-  const updateChildItems = (payload: IUpdateChildItemsPayload) => {
+  const updateChildItems = (payload: IUpdateChildItemsPayload): void => {
     dispatchAndFire(updateChildItemsAction(payload));
   };
 
@@ -86,7 +79,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
     return getItemById(state.items, uid);
   };
 
-  const updateItem = (payload: IUpdateItemSettingsPayload) => {
+  const updateItem = (payload: IUpdateItemSettingsPayload): void => {
     dispatchAndFire(updateItemAction(payload));
   };
 
@@ -111,7 +104,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
   );
 };
 
-function usePropertiesEditorState() {
+function usePropertiesEditorState(): IPropertiesEditorStateContext {
   const context = useContext(PropertiesEditorStateContext);
 
   if (context === undefined) {
@@ -121,7 +114,7 @@ function usePropertiesEditorState() {
   return context;
 }
 
-function usePropertiesEditorActions() {
+function usePropertiesEditorActions(): IPropertiesEditorActionsContext {
   const context = useContext(PropertiesEditorActionsContext);
 
   if (context === undefined) {
@@ -131,7 +124,7 @@ function usePropertiesEditorActions() {
   return context;
 }
 
-function usePropertiesEditor() {
+function usePropertiesEditor(): IPropertiesEditorStateContext & IPropertiesEditorActionsContext {
   return { ...usePropertiesEditorState(), ...usePropertiesEditorActions() };
 }
 

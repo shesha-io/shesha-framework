@@ -19,22 +19,22 @@ export interface IProps {
   onChange?: (newValue: IModelItem, changeDetails: ItemChangeDetails) => void;
 }
 
-export const ComplexProperty: FC<IProps> = props => {
+export const ComplexProperty: FC<IProps> = (props) => {
   const { addItem } = usePropertiesEditor();
   const { styles } = useStyles();
 
   const icon = getIconTypeByDataType(props.data.dataType);
 
-  const onAddChildClick = () => {
+  const onAddChildClick = (): void => {
     addItem(props.data.id);
   };
 
-  const label = props.data.isItemsType 
+  const label = props.data.isItemsType
     ? <>Array items type</>
     : <>{props.data.name} {props.data.label && <>({props.data.label})</>}</>;
 
   // skip array items type property
-  const properties = props.data.properties?.filter(p => !p.isItemsType) || [];
+  const properties = props.data.properties?.filter((p) => !p.isItemsType) || [];
 
   return (
     <PropertyWrapper {...props.data} index={props.index}>
@@ -57,8 +57,8 @@ export const ComplexProperty: FC<IProps> = props => {
           parent: props.data,
           onChange: (newItems, changeDetails) => {
             if (props.onChange)
-              props.onChange({...props.data, properties: [...newItems]}, changeDetails);
-          }
+              props.onChange({ ...props.data, properties: [...newItems] }, changeDetails);
+          },
         })}
       </div>
     </PropertyWrapper>

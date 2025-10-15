@@ -1,27 +1,27 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
-    const csHeader = "sha-cs-header";
-    const csHeaderLeft = "sha-cs-header-left";
-    const csHeaderCenter = "sha-cs-header-center";
-    const csHeaderRight = "sha-cs-header-right";
+  const csHeader = "sha-cs-header";
+  const csHeaderLeft = "sha-cs-header-left";
+  const csHeaderCenter = "sha-cs-header-center";
+  const csHeaderRight = "sha-cs-header-right";
 
-    const csContent = "sha-cs-content";
+  const csContent = "sha-cs-content";
 
-    const csLogo = "sha-cs-logo";
-    const csTreeArea = "sha-cs-tree-area";
-    const csWorkArea = "sha-cs-work-area";
-    const csNavPanelSpinner = "sha-cs-tree-spinner";
-    const csNavPanelContent = "sha-cs-nav-content";
-    const csNavPanelHeader = 'sha-cs-nav-content-hd';
-    const csNavPanelTree = 'sha-cs-nav-content-tree';
-    const csQuickInfoIcons = 'sha-cs-quick-info-icons';
-    const csDocTabs = 'sha-cs-doc-tabs';
-    const csDocEditor = 'sha-cs-doc-editor';
+  const csLogo = "sha-cs-logo";
+  const csTreeArea = "sha-cs-tree-area";
+  const csWorkArea = "sha-cs-work-area";
+  const csNavPanelSpinner = "sha-cs-tree-spinner";
+  const csNavPanelContent = "sha-cs-nav-content";
+  const csNavPanelHeader = 'sha-cs-nav-content-hd';
+  const csNavPanelTree = 'sha-cs-nav-content-tree';
+  const csQuickInfoIcons = 'sha-cs-quick-info-icons';
+  const csDocTabs = 'sha-cs-doc-tabs';
+  const csDocEditor = 'sha-cs-doc-editor';
 
-    const headerHeight = 60;
+  const headerHeight = 60;
 
-    const configStudio = cx("sha-config-studio", css`
+  const configStudio = cx("sha-config-studio", css`
         .${csHeader} {
             height: ${headerHeight}px;
             padding: 0;
@@ -91,31 +91,32 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                     height: 100%;
                     >.ant-tabs-content{
                         height: 100%;
+                        overflow: hidden;
                     }
                 }
             }
             .${csDocEditor}{
-                padding: 0 10px;
+                padding: 0;
             }
         }
   `);
 
-    return {
-        csLogo,
-        configStudio,
-        csHeader,
-        csHeaderLeft,
-        csHeaderCenter,
-        csHeaderRight,
-        csContent,
-        csTreeArea,
-        csWorkArea,
-        csNavPanelSpinner,
-        csNavPanelContent,
-        csNavPanelHeader,
-        csNavPanelTree,
-        csQuickInfoIcons,
-        csDocTabs,
-        csDocEditor,
-    };
+  return {
+    csLogo,
+    configStudio,
+    csHeader,
+    csHeaderLeft,
+    csHeaderCenter,
+    csHeaderRight,
+    csContent,
+    csTreeArea,
+    csWorkArea,
+    csNavPanelSpinner,
+    csNavPanelContent,
+    csNavPanelHeader,
+    csNavPanelTree,
+    csQuickInfoIcons,
+    csDocTabs,
+    csDocEditor,
+  };
 });

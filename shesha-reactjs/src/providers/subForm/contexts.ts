@@ -3,8 +3,7 @@ import { IConfigurableFormComponent, IFlatComponentsStructure } from '@/interfac
 import { IFormSettings, IPersistedFormProps } from '../form/models';
 import { createNamedContext } from '@/utils/react';
 
-export interface IPersistedFormPayload
-  extends Pick<IPersistedFormProps, 'id' | 'versionNo' | 'versionStatus' | 'description' | 'module' | 'name'> { }
+export type IPersistedFormPayload = Pick<IPersistedFormProps, 'id' | 'description' | 'module' | 'name'>;
 
 export interface IFetchDataSuccessPayload {
   entityId: string;

@@ -11,7 +11,7 @@ import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IDictionary, IEditorAdapter, PropertyInclusionPredicate } from '@/interfaces';
 import AutocompleteComponent from '@/designer-components/autocomplete/autocomplete';
 
-export const updateModelExcludeFiltered = (model: any, updatedModel: any, filter: PropertyInclusionPredicate) => {
+export const updateModelExcludeFiltered = (model: object, updatedModel: object, filter: PropertyInclusionPredicate): any => {
   Object.keys(updatedModel).forEach((key) => {
     if (!filter(key)) {
       model[key] = updatedModel[key];
@@ -36,19 +36,19 @@ const allBaseProperties = [...labelProperties, ...bindingProperties, ...visibili
 export const editorAdapters: IDictionary<IEditorAdapter> = {
   [HtmlComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
-      ...allBaseProperties
+      ...allBaseProperties,
     ]),
   },
   [DropdownComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,
-      //'referenceListId',
-      //'dataSourceType',
-      //'valueFormat',
+      // 'referenceListId',
+      // 'dataSourceType',
+      // 'valueFormat',
       'incomeCustomJs',
       'outcomeCustomJs',
       'labelCustomJs',
-      //'values',
+      // 'values',
     ]),
   },
   [AutocompleteComponent.type]: {
@@ -64,7 +64,7 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'tooltip',
       'customSourceUrl',
       'disableSearch',
-      'required'
+      'required',
     ]),
   },
   [CheckboxComponent.type]: {

@@ -10,11 +10,9 @@ import { useStyles } from '../styles/styles';
 import { CanvasConfig } from './canvasConfig';
 import { CustomActions } from './customActions';
 
-export interface IProps { }
-
-export const FormDesignerToolbar: FC<IProps> = () => {
-  const readOnly = useFormDesignerStateSelector(x => x.readOnly);
-  const formSettings = useFormDesignerStateSelector(x => x.formSettings);
+export const FormDesignerToolbar: FC = () => {
+  const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
+  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
   const { styles } = useStyles();
 
   const { anyOfPermissionsGranted } = useSheshaApplication();
@@ -23,7 +21,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
 
   return (
     <div className={styles.shaDesignerToolbar}>
-      {isGranted &&
+      {isGranted && (
         <>
           <div className={styles.shaDesignerToolbarLeft}>
             {!readOnly && (
@@ -31,18 +29,18 @@ export const FormDesignerToolbar: FC<IProps> = () => {
             )}
           </div>
           <div className={styles.shaDesignerToolbarCenter}>
-            <CanvasConfig/>
+            <CanvasConfig />
           </div>
           <div className={styles.shaDesignerToolbarRight}>
-            <FormSettingsButton />
-            <PreviewButton />
+            <FormSettingsButton buttonText="" size="small" />
+            <PreviewButton size="small" />
             <DebugButton />
 
-            {!readOnly && (<UndoRedoButtons />)}
+            {!readOnly && (<UndoRedoButtons size="small" />)}
             <CustomActions />
           </div>
         </>
-      }
+      )}
     </div>
   );
 };

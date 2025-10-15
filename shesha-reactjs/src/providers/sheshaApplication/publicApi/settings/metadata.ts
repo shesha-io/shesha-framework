@@ -9,7 +9,7 @@ import { StringBuilder } from "@/utils/metadata/stringBuilder";
 type SettingItemType = 'module' | 'category' | 'setting';
 
 export interface ISettingPropertyMetadata extends IPropertyMetadata {
-    settingItemType: SettingItemType;
+  settingItemType: SettingItemType;
 }
 
 /**
@@ -19,49 +19,49 @@ export interface ISettingPropertyMetadata extends IPropertyMetadata {
  * @return {IPropertyMetadata[]} the array of property metadata
  */
 const settingsConfigurationToProperties = (settings: SettingConfigurationDto[]): ISettingPropertyMetadata[] => {
-    const result: ISettingPropertyMetadata[] = [];
-    settings.forEach((setting) => {
-        let moduleProp = result.find((m) => m.path === setting.module.accessor);
-        if (!moduleProp) {
-            moduleProp = {
-                path: setting.module.accessor,
-                label: setting.module.name,
-                dataType: DataTypes.object,
-                properties: [],
-                settingItemType: 'module',
-            };
-            result.push(moduleProp);
-        }
-        if (!isPropertiesArray(moduleProp.properties))
-            throw new Error("Something went wrong. Expected array of properties");
+  const result: ISettingPropertyMetadata[] = [];
+  settings.forEach((setting) => {
+    let moduleProp = result.find((m) => m.path === setting.module.accessor);
+    if (!moduleProp) {
+      moduleProp = {
+        path: setting.module.accessor,
+        label: setting.module.name,
+        dataType: DataTypes.object,
+        properties: [],
+        settingItemType: 'module',
+      };
+      result.push(moduleProp);
+    }
+    if (!isPropertiesArray(moduleProp.properties))
+      throw new Error("Something went wrong. Expected array of properties");
 
-        let categoryProp = moduleProp.properties.find((p) => p.path === setting.category.accessor) as ISettingPropertyMetadata;
-        if (!categoryProp) {
-            categoryProp = {
-                path: setting.category.accessor,
-                label: setting.category.name,
-                dataType: DataTypes.object,
-                properties: [],
-                settingItemType: 'category',
-            };
-            moduleProp.properties.push(categoryProp);
-        }
+    let categoryProp = moduleProp.properties.find((p) => p.path === setting.category.accessor) as ISettingPropertyMetadata;
+    if (!categoryProp) {
+      categoryProp = {
+        path: setting.category.accessor,
+        label: setting.category.name,
+        dataType: DataTypes.object,
+        properties: [],
+        settingItemType: 'category',
+      };
+      moduleProp.properties.push(categoryProp);
+    }
 
-        const settingMetadata: ISettingPropertyMetadata = {
-            path: setting.accessor,
-            label: setting.name,
-            description: setting.description,
-            dataType: setting.dataType?.dataType,
-            dataFormat: setting.dataType?.dataFormat,
-            settingItemType: 'setting',
-        };
-        if (!isPropertiesArray(categoryProp.properties))
-            throw new Error("Something went wrong. Expected array of properties");
+    const settingMetadata: ISettingPropertyMetadata = {
+      path: setting.accessor,
+      label: setting.name,
+      description: setting.description,
+      dataType: setting.dataType?.dataType,
+      dataFormat: setting.dataType?.dataFormat,
+      settingItemType: 'setting',
+    };
+    if (!isPropertiesArray(categoryProp.properties))
+      throw new Error("Something went wrong. Expected array of properties");
 
-        categoryProp.properties.push(settingMetadata);
-    });
+    categoryProp.properties.push(settingMetadata);
+  });
 
-    return result;
+  return result;
 };
 
 /**
@@ -71,7 +71,7 @@ const settingsConfigurationToProperties = (settings: SettingConfigurationDto[]):
  * @return {Promise<IPropertyMetadata[]>} a promise of an array of property metadata
  */
 export const fetchSettingsApiAsMetadataProperties = (httpClient: HttpClientApi): Promise<IPropertyMetadata[]> => {
-    return SettingsManager.fetchConfigurationsAsync(httpClient).then((res) => settingsConfigurationToProperties(res));
+  return SettingsManager.fetchConfigurationsAsync(httpClient).then((res) => settingsConfigurationToProperties(res));
 };
 
 /**
@@ -81,70 +81,70 @@ export const fetchSettingsApiAsMetadataProperties = (httpClient: HttpClientApi):
  * @return {TypeDefinition} the generated TypeDefinition
  */
 const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto[]): TypeDefinition => {
-    const apiFile: SourceFile = {
-        fileName: "apis/applicationSettingsApi.d.ts",
-        content: "",
-    };
-    const result: TypeDefinition = {
-        typeName: "ApplicationSettingsApi",
-        files: [apiFile],
-    };
-    const content = [
-        "/**",
-        " * Setting Accessor",
-        " */",
-        "interface ApplicationSettingAccessor<TValue = any> {",
-        "   getValueAsync(): Promise<TValue>;",
-        "   setValueAsync(value: TValue): Promise<void>;",
-        "}",
-        "",
-        "/**",
-        " * Application Settings API",
-        " */",
-        `export interface ${result.typeName} {`,
-    ];
+  const apiFile: SourceFile = {
+    fileName: "apis/applicationSettingsApi.d.ts",
+    content: "",
+  };
+  const result: TypeDefinition = {
+    typeName: "ApplicationSettingsApi",
+    files: [apiFile],
+  };
+  const content = [
+    "/**",
+    " * Setting Accessor",
+    " */",
+    "interface ApplicationSettingAccessor<TValue = any> {",
+    "   getValueAsync(): Promise<TValue>;",
+    "   setValueAsync(value: TValue): Promise<void>;",
+    "}",
+    "",
+    "/**",
+    " * Application Settings API",
+    " */",
+    `export interface ${result.typeName} {`,
+  ];
 
-    const writeObject = (sb: StringBuilder, property: ISettingPropertyMetadata) => {
-        if (property.description)
-            sb.append(`/** ${property.description} */`);
+  const writeObject = (sb: StringBuilder, property: ISettingPropertyMetadata): void => {
+    if (property.description)
+      sb.append(`/** ${property.description} */`);
 
-        sb.append(`${property.path}: {`);
+    sb.append(`${property.path}: {`);
 
-        if (!isPropertiesArray(property.properties))
-            throw new Error("Something went wrong. Settings should be an array of properties");
-
-        sb.incIndent();
-        property.properties.forEach((prop) => {
-            if ((prop as ISettingPropertyMetadata).settingItemType === 'setting') {
-                if (prop.description)
-                    sb.append(`/** ${prop.description} */`);
-                sb.append(`${prop.path}: ApplicationSettingAccessor<${prop.dataType}>;`);
-            } else
-                if (prop.dataType === DataTypes.object) {
-                    writeObject(sb, prop as ISettingPropertyMetadata);
-                }
-        });
-        sb.decIndent();
-        sb.append("}");
-    };
-
-    const sb = new StringBuilder();
-    sb.appendLines(content);
-
-    const properties = settingsConfigurationToProperties(settings);
+    if (!isPropertiesArray(property.properties))
+      throw new Error("Something went wrong. Settings should be an array of properties");
 
     sb.incIndent();
-    properties.forEach((property) => {
-        writeObject(sb, property);
+    property.properties.forEach((prop) => {
+      if ((prop as ISettingPropertyMetadata).settingItemType === 'setting') {
+        if (prop.description)
+          sb.append(`/** ${prop.description} */`);
+        sb.append(`${prop.path}: ApplicationSettingAccessor<${prop.dataType}>;`);
+      } else
+        if (prop.dataType === DataTypes.object) {
+          writeObject(sb, prop as ISettingPropertyMetadata);
+        }
     });
     sb.decIndent();
-
-
     sb.append("}");
+  };
 
-    apiFile.content = sb.build();
+  const sb = new StringBuilder();
+  sb.appendLines(content);
 
-    return result;
+  const properties = settingsConfigurationToProperties(settings);
+
+  sb.incIndent();
+  properties.forEach((property) => {
+    writeObject(sb, property);
+  });
+  sb.decIndent();
+
+
+  sb.append("}");
+
+  apiFile.content = sb.build();
+
+  return result;
 };
 
 /**
@@ -154,7 +154,7 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
  * @return {Promise<TypeDefinition>} A Promise that resolves to the TypeDefinition for the Settings API.
  */
 const fetchSettingsApiTypeDefinition = (httpClient: HttpClientApi): Promise<TypeDefinition> => {
-    return SettingsManager.fetchConfigurationsAsync(httpClient).then((res) => settingsConfigurationToTypeDefinition(res));
+  return SettingsManager.fetchConfigurationsAsync(httpClient).then((res) => settingsConfigurationToTypeDefinition(res));
 };
 
 /**
@@ -165,5 +165,5 @@ const fetchSettingsApiTypeDefinition = (httpClient: HttpClientApi): Promise<Type
  * @return {MetadataBuilder} The MetadataBuilder with the settings API properties set.
  */
 export const getSettingsApiProperties = (builder: IObjectMetadataBuilder, httpClient: HttpClientApi): IObjectMetadataBuilder => builder
-    .setPropertiesLoader(() => fetchSettingsApiAsMetadataProperties(httpClient))
-    .setTypeDefinition(() => fetchSettingsApiTypeDefinition(httpClient));
+  .setPropertiesLoader(() => fetchSettingsApiAsMetadataProperties(httpClient))
+  .setTypeDefinition(() => fetchSettingsApiTypeDefinition(httpClient));

@@ -5,6 +5,7 @@ import {
   IConfigurableFormComponent,
   IFormComponentStyles,
   IStyleType,
+  StyleBoxValue,
   executeScriptSync,
   getActualModel,
   getParentReadOnly,
@@ -13,9 +14,8 @@ import {
   useAvailableConstantsContextsNoRefresh,
   useCanvas,
   useDeepCompareMemo,
-  useShaFormInstance,
   useSheshaApplication,
-  wrapConstantsData
+  wrapConstantsData,
 } from "..";
 import { TouchableProxy, makeTouchableProxy } from "@/providers/form/touchableProxy";
 import { useParent } from "@/providers/parentProvider";
@@ -29,13 +29,13 @@ import { jsonSafeParse, removeUndefinedProps } from "@/utils/object";
 import { getDimensionsStyle } from "@/designer-components/_settings/utils/dimensions/utils";
 import { getOverflowStyle } from "@/designer-components/_settings/utils/overflow/util";
 
-export function useActualContextData<T = any>(
+export function useActualContextData<T extends object = object>(
   model: T,
   parentReadonly?: boolean,
-  additionalData?: any,
+  additionalData?: object,
   propertyFilter?: (name: string, value: any) => boolean,
   executor?: (data: any, context: any) => any,
-) {
+): T {
   const parent = useParent(false);
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext, topContextId: DataContextTopLevels.All });
@@ -86,7 +86,7 @@ export function useCalculatedModel<T = any>(
   model: T,
   useCalculateModel: (model: T, allData: IApplicationContext) => T = (_model, _allData) => ({} as T),
   calculateModel?: (model: T, allData: IApplicationContext, useCalculatedModel?: T) => T,
-) {
+): T {
   const fullContext = useAvailableConstantsContextsNoRefresh();
   const accessors = wrapConstantsData({ fullContext, topContextId: DataContextTopLevels.All });
 
@@ -120,7 +120,7 @@ export function useCalculatedModel<T = any>(
   return calculatedModelRef.current;
 }
 
-export function useActualContextExecution<T = any>(code: string, additionalData?: any, defaultValue?: T) {
+export function useActualContextExecution<T = any>(code: string, additionalData?: object, defaultValue?: T): T {
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext });
 
@@ -149,7 +149,7 @@ export function useActualContextExecution<T = any>(code: string, additionalData?
   return actualDataRef.current;
 }
 
-export function useActualContextExecutionExecutor<T = any>(executor: (context: any) => any, additionalData?: any) {
+export function useActualContextExecutionExecutor<T = any>(executor: (context: any) => any, additionalData?: object): T {
   const fullContext = useAvailableConstantsContextsNoRefresh();
   const accessors = wrapConstantsData({ fullContext });
 
@@ -175,26 +175,14 @@ export function useActualContextExecutionExecutor<T = any>(executor: (context: a
   return actualDataRef.current;
 };
 
-export const useFormComponentStyles = <TModel,>(
+export const useFormComponentStyles = <TModel>(
   model: TModel & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>,
-  isInput?: boolean
 ): IFormComponentStyles => {
   const app = useSheshaApplication();
-  const shaForm = useShaFormInstance();
-  const jsStyle = useActualContextExecution(model?.style, null, {}); // use default style if empty or error
+  const jsStyle = useActualContextExecution(model.style, null, {}); // use default style if empty or error
   const { designerWidth } = useCanvas();
 
-  const formItemMargin = shaForm?.settings?.formItemMargin || {};
-
-  const {
-    dimensions,
-    border,
-    font,
-    shadow,
-    background,
-    stylingBox,
-    overflow
-  } = model || {};
+  const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 
   const [backgroundStyles, setBackgroundStyles] = useState(
     background?.storedFile?.id && background?.type === 'storedFile'
@@ -204,17 +192,17 @@ export const useFormComponentStyles = <TModel,>(
         backgroundPosition: background?.position,
         backgroundRepeat: background?.repeat,
       }
-      : getBackgroundStyle(background, jsStyle)
+      : getBackgroundStyle(background, jsStyle),
   );
 
-  const styligBox = jsonSafeParse(stylingBox || '{}');
+  const styligBox = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
 
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, styligBox, designerWidth), [dimensions, stylingBox, designerWidth]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-  const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox, formItemMargin, isInput), [stylingBox]);
+  const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox), [stylingBox]);
   const overflowStyles = useMemo(() => getOverflowStyle(overflow, false), [overflow]);
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth), [dimensions, stylingBox, designerWidth]);
 
   useDeepCompareEffect(() => {
     if (background?.storedFile?.id && background?.type === 'storedFile') {
@@ -257,7 +245,7 @@ export const useFormComponentStyles = <TModel,>(
     overflowStyles,
     jsStyle,
     appearanceStyle,
-    fullStyle
+    fullStyle,
   }), [stylingBoxAsCSS, dimensionsStyles, borderStyles, fontStyles, backgroundStyles, shadowStyles, overflowStyles, jsStyle, appearanceStyle, fullStyle]);
 
   return allStyles;

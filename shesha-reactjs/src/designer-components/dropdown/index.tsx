@@ -31,10 +31,10 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
   isHidden: false,
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
-  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList,
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
   calculateModel: (model, allData) => ({
     eventHandlers: customDropDownEventHandler(model, allData),
-    //quick fix not to default to empty string or null while working with multi-mode
+    // quick fix not to default to empty string or null while working with multi-mode
     defaultValue: Array.isArray(model.defaultValue)
       ? model.defaultValue
       : model.defaultValue
@@ -42,36 +42,37 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
         : undefined,
   }),
   Factory: ({ model, calculatedModel }) => {
-
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
     const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
 
-    const finalStyle = model.enableStyleOnReadonly && model.readOnly ? 
-    { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles } :
-     { ...model.allStyles.fullStyle, width: '100%', height: '100%', overflow: 'hidden' 
+    const finalStyle = model.enableStyleOnReadonly && model.readOnly
+      ? { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles }
+      : { ...model.allStyles.fullStyle, width: '100%', height: '100%', overflow: 'hidden',
 
-     };
+      };
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
         {(value, onChange) => {
           const customEvent = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]) => {
+          const onChangeInternal = (...args: any[]): void => {
             customEvent.onChange(args[0], args[1]);
             if (typeof onChange === 'function')
               onChange(...args);
           };
 
-          return <Dropdown
-            {...model}
-            style={finalStyle}
-            {...customEvent}
-            defaultValue={calculatedModel.defaultValue}
-            value={value}
-            size={model?.size}
-            tagStyle={{ ...tagStyle, alignContent: 'center', justifyContent: tagStyle.textAlign }}
-            onChange={onChangeInternal}
-          />;
+          return (
+            <Dropdown
+              {...model}
+              style={finalStyle}
+              {...customEvent}
+              defaultValue={calculatedModel.defaultValue}
+              value={value}
+              size={model?.size}
+              tagStyle={{ ...tagStyle, alignContent: 'center', justifyContent: tagStyle.textAlign }}
+              onChange={onChangeInternal}
+            />
+          );
         }}
       </ConfigurableFormItem>
     );
@@ -101,7 +102,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
         : prev['useRawValue'] === true
           ? 'simple'
           : 'listItem',
-      editMode: prev?.editMode ?? 'inherited'
+      editMode: prev?.editMode ?? 'inherited',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IDropdownComponentProps>(7, (prev) => {
@@ -142,7 +143,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
         displayStyle: prev.displayStyle ?? 'text',
         desktop: { ...prev.desktop, tag: { ...initTagStyle } },
         tablet: { ...prev.tablet, tag: { ...initTagStyle } },
-        mobile: { ...prev.mobile, tag: { ...initTagStyle } }
+        mobile: { ...prev.mobile, tag: { ...initTagStyle } },
       };
     }),
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {

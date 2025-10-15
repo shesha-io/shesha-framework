@@ -7,28 +7,29 @@ import { IModalWithConfigurableFormProps, IModalWithContentProps } from '@/provi
 import { useDynamicModals } from '@/providers';
 import { useMedia } from 'react-use';
 import ConditionalWrap from '../conditionalWrapper';
+import { useStyles } from './styles';
 
 export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isVisible: boolean;
   isSubmitted?: boolean;
   onCancel?: () => void;
   onOk?: () => void;
-  showCloseIcon?: boolean; 
+  showCloseIcon?: boolean;
 }
 export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
   const { id, title, isVisible, width, isSubmitted, onCancel, onOk, content, footer, onClose, showCloseIcon } = props;
 
   const { removeModal } = useDynamicModals();
   const isSmall = useMedia('(max-width: 480px)');
+  const { styles } = useStyles();
 
-  const hideForm = () => {
+  const hideForm = (): void => {
     if (onClose) onClose();
     if (Boolean(onCancel)) {
       onCancel();
     } else {
       removeModal(id);
     }
-
   };
 
   return (
@@ -40,7 +41,9 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       onCancel={hideForm}
       footer={footer}
       destroyOnHidden
-      width={isSmall ? '90%' : width}
+      width={isSmall ? '90%' : width ?? '80vw'}
+      centered
+      classNames={{ body: styles.dynamicModalBody }}
       maskClosable={false}
       closable={showCloseIcon ?? true} // Add this line - default to true for backward compatibility
       okButtonProps={{ disabled: isSubmitted, loading: isSubmitted }}
@@ -70,7 +73,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     buttons = [],
     footerButtons = 'default',
     wrapper,
-    showCloseIcon, 
+    showCloseIcon,
   } = props;
 
   const [form] = Form.useForm();
@@ -80,11 +83,11 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   // `showModalFooter` for now is for backward compatibility
   const showDefaultSubmitButtons = showModalFooter || footerButtons === 'default';
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     removeModal(id);
   };
 
-  const onSubmitted = (_values: any, response: any) => {
+  const onSubmitted = (_values: any, response: any): void => {
     if (props.onSubmitted) {
       props.onSubmitted(response);
     }
@@ -94,14 +97,14 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     form.resetFields();
   };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     closeModal();
     if (onCancel) {
       onCancel();
     }
   };
 
-  const onOk = () => {
+  const onOk = (): void => {
     if (showDefaultSubmitButtons) {
       form?.submit();
       form?.validateFields().then(() => {
@@ -125,7 +128,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     parentFormValues: parentFormValues,
     isActionsOwner: true,
     formName: id,
-    //logEnabled: true,
+    // logEnabled: true,
   };
 
   return (
@@ -139,8 +142,8 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
       onOk={onOk}
       onCancel={handleCancel}
       footer={showDefaultSubmitButtons ? undefined : null}
-      showCloseIcon={showCloseIcon} 
-      content={
+      showCloseIcon={showCloseIcon}
+      content={(
         <ConfigurableForm {...formProps}>
           <ConditionalWrap
             condition={Boolean(wrapper)}
@@ -148,12 +151,12 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
           >
             <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
+                <ButtonGroup items={buttons || []} id="" size="middle" isInline noStyles form={form} />
               </div>
             </Show>
           </ConditionalWrap>
         </ConfigurableForm>
-      }
+      )}
     />
   );
 };

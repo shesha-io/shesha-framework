@@ -35,7 +35,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
     const { namePrefix } = useFormItem();
 
     if (model.hidden && formMode !== 'designer') return null;
-    
+
     const name = namePrefix ? [namePrefix, model?.propertyName]?.join('.') : model?.propertyName;
 
     const rerenderKey = `${model?.label || ''}-${model?.hideLabel || false}-${model?.labelCol || 0}`;
@@ -54,8 +54,8 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
     );
   },
   // settingsFormMarkup: alertSettingsForm,
-  migrator: m => m
-    .add<ISubFormComponentProps>(0, prev => ({ ...prev, apiMode: prev['apiMode'] ?? 'entityName' }))
+  migrator: (m) => m
+    .add<ISubFormComponentProps>(0, (prev) => ({ ...prev, apiMode: prev['apiMode'] ?? 'entityName' }))
     .add<ISubFormComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISubFormComponentProps>(2, (prev) => migrateReadOnly(prev))
     .add<ISubFormComponentProps>(3, (prev) => ({
@@ -63,9 +63,9 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       onCreated: migrateFormApi.withoutFormData(prev?.onCreated),
       onUpdated: migrateFormApi.withoutFormData(prev?.onUpdated),
     }))
-    .add<ISubFormComponentProps>(4, prev => ({ ...prev, hideLabel: true })),
+    .add<ISubFormComponentProps>(4, (prev) => ({ ...prev, hideLabel: true })),
   settingsFormMarkup: (props) => getSettings(props),
-  initModel: model => {
+  initModel: (model) => {
     const customProps: ISubFormComponentProps = {
       ...model,
       dataSource: 'form',

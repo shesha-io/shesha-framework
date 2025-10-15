@@ -17,10 +17,10 @@ import FormCell from './formCell/formCell';
 import { wrapDisplayName } from '@/utils/react';
 import { RendererCell } from './rendererCell';
 
-export const getCellRenderer = <D extends object = {}, V = any>(
+export const getCellRenderer = <D extends object = object, V = any>(
   column: ITableColumn,
   propertyMeta?: IPropertyMetadata,
-  shaForm?: IShaFormInstance
+  shaForm?: IShaFormInstance,
 ): Renderer<CellProps<D, V>> | undefined => {
   if (isDataColumn(column)) {
     // TODO: move to the column settings and use pre-=processor that adds a metadata to the column settings
@@ -33,8 +33,7 @@ export const getCellRenderer = <D extends object = {}, V = any>(
   }
 
   if (isCrudOperationsColumn(column)) {
-    const baseProps = { columnConfig: column };
-    return wrapDisplayName(() => <CrudOperationsCell {...baseProps} />, "CrudOperationsCell");
+    return wrapDisplayName(() => <CrudOperationsCell />, "CrudOperationsCell");
   }
 
   if (isFormColumn(column)) {

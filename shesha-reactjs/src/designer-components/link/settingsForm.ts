@@ -2,8 +2,9 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 import { FormLayout } from 'antd/es/form/Form';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();

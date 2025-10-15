@@ -31,8 +31,8 @@ const PasswordConfirmPasswordInputs: FC<IPasswordConfirmPasswordInputsProps> = (
   passwordName = 'password',
   confirmPasswordName = 'confirmPassword',
 }) => {
-  const handlePasswordChange = (e: ChangeEvent) => setPassword(e.target.value);
-  const handleConfirmPasswordChange = (e: ChangeEvent) => setConfirmPassword(e.target.value);
+  const handlePasswordChange = (e: ChangeEvent): void => setPassword(e.target.value);
+  const handleConfirmPasswordChange = (e: ChangeEvent): void => setConfirmPassword(e.target.value);
 
   return (
     <>

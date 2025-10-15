@@ -1,17 +1,13 @@
 import {
-  IConfigurableActionArguments,
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
 } from '@/interfaces/configurableAction';
-import { GenericDictionary } from '../form/models';
+import { ActionParametersDictionary, GenericDictionary } from '../form/models';
 import { IConfigurableActionGroupDictionary } from './models';
 import { IApplicationApi } from '../sheshaApplication/publicApi';
 import { IFormApi } from '../form/formApi';
 import { createNamedContext } from '@/utils/react';
-
-export interface IConfigurableActionDispatcherStateContext {
-}
 
 export interface IGetConfigurableActionPayload {
   owner: string;
@@ -23,25 +19,25 @@ export interface IArgumentsEvaluationContext extends GenericDictionary {
   application?: IApplicationApi;
 }
 
-export interface IExecuteActionPayload {
+export interface IExecuteActionPayload<TResponse = unknown> {
   actionConfiguration: IConfigurableActionConfiguration;
   argumentsEvaluationContext: IArgumentsEvaluationContext;
-  success?: (actionResponse: any) => void;
-  fail?: (error: any) => void;
+  success?: ((actionResponse: TResponse) => void) | undefined;
+  fail?: ((error: unknown) => void) | undefined;
 }
 
-export interface IPrepareActionArgumentsPayload<TArguments = any> {
+export interface IPrepareActionArgumentsPayload<TArguments extends ActionParametersDictionary = ActionParametersDictionary> {
   actionConfiguration: IConfigurableActionConfiguration<TArguments>;
   argumentsEvaluationContext: IArgumentsEvaluationContext;
 }
 
-export interface IRegisterActionPayload<TArguments = IConfigurableActionArguments, TReponse = any>
+export interface IRegisterActionPayload<TArguments extends object = object, TReponse = unknown>
   extends IConfigurableActionDescriptor<TArguments, TReponse> {
   isPermament?: boolean;
 }
 
 export interface RegisterActionType {
-  <TArguments = IConfigurableActionArguments, TResponse = any>(
+  <TArguments extends object = object, TResponse = unknown>(
     arg: IRegisterActionPayload<TArguments, TResponse>
   ): void;
 }
@@ -51,24 +47,15 @@ export type ConfigurableActionExecuter = (payload: IExecuteActionPayload) => Pro
 export type ActionDynamicContextEvaluationHook = (actionConfig: IConfigurableActionConfiguration) => GenericDictionary;
 
 export interface IConfigurableActionDispatcherActionsContext {
-  getConfigurableAction: (payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor;
-  getConfigurableActionOrNull: (payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor | null;
+  getConfigurableAction: <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor<TArguments>;
+  getConfigurableActionOrNull: <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IGetConfigurableActionPayload) => IConfigurableActionDescriptor<TArguments> | null;
   getActions: () => IConfigurableActionGroupDictionary;
   registerAction: RegisterActionType;
   unregisterAction: (actionIdentifier: IConfigurableActionIdentifier) => void;
-  prepareArguments: <TArguments = any>(payload: IPrepareActionArgumentsPayload<TArguments>) => Promise<TArguments>;
+  prepareArguments: <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IPrepareActionArgumentsPayload<TArguments>) => Promise<TArguments>;
 
   executeAction: ConfigurableActionExecuter;
   useActionDynamicContext: ActionDynamicContextEvaluationHook;
 }
 
-/** initial state */
-export const CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE: IConfigurableActionDispatcherStateContext = {
-};
-
-export const ConfigurableActionDispatcherStateContext = createNamedContext<IConfigurableActionDispatcherStateContext>(
-  CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE,
-  "ConfigurableActionDispatcherStateContext"
-);
-
-export const ConfigurableActionDispatcherActionsContext = createNamedContext<IConfigurableActionDispatcherActionsContext>(undefined, "ConfigurableActionDispatcherActionsContext");
+export const ConfigurableActionDispatcherActionsContext = createNamedContext<IConfigurableActionDispatcherActionsContext | undefined>(undefined, "ConfigurableActionDispatcherActionsContext");

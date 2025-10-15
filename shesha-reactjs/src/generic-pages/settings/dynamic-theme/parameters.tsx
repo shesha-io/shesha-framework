@@ -21,23 +21,23 @@ export interface ThemeParametersProps {
 }
 
 const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly }) => {
-  //const { theme, changeTheme } = useTheme();
+  // const { theme, changeTheme } = useTheme();
 
-  const changeThemeInternal = (theme: IConfigurableTheme) => {
+  const changeThemeInternal = (theme: IConfigurableTheme): void => {
     if (onChange) onChange(theme);
   };
 
   const mergeThemeSection = (
     section: keyof IConfigurableTheme,
-    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
-  ) => {
+    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
+  ): IConfigurableTheme => {
     return { ...(theme[section] as unknown as Record<string, unknown>), ...(update as Record<string, unknown>) };
   };
 
   const updateTheme = (
     section: keyof IConfigurableTheme,
-    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
-  ) => {
+    update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>,
+  ): void => {
     changeThemeInternal({
       ...theme,
       [section]: mergeThemeSection(section, update),
@@ -51,7 +51,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
       initialColor: string,
       onChange: (color: string) => void,
       presetColors?: string[],
-      hint?: string
+      hint?: string,
     ) => (
       <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
         <Space>
@@ -74,7 +74,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
         </Space>
       </div>
     ),
-    [theme]
+    [theme],
   );
 
   const colorConfigs: IThemeConfig[] = [
@@ -97,17 +97,17 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
       <Space direction="vertical" align="start" size={24}>
         <Space direction="vertical" align="start">
           {colorConfigs.map((config, index) =>
-            renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], (hex) => config.onChange(hex))
+            renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], (hex) => config.onChange(hex)),
           )}
         </Space>
-        
+
         {/* Layout background Color */}
         {renderColor(
           'layoutBackground',
           'layoutBackground',
           theme?.layoutBackground,
           (hex) => changeThemeInternal({ ...theme, layoutBackground: hex }),
-          BACKGROUND_PRESET_COLORS
+          BACKGROUND_PRESET_COLORS,
         )}
       </Space>
 
@@ -121,8 +121,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
             theme?.text?.[config.name],
             (hex) => config.onChange(hex),
             TEXT_PRESET_COLORS,
-            config?.hint
-          )
+            config?.hint,
+          ),
         )}
       </Space>
 
@@ -166,7 +166,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           },
         ]}
       >
-        <Form.Item label="Label" name={'label'}>
+        <Form.Item label="Label" name="label">
           <InputNumber
             placeholder="Label Span"
             style={{ width: '100%' }}
@@ -180,7 +180,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
           />
         </Form.Item>
 
-        <Form.Item label="Component" name={'component'}>
+        <Form.Item label="Component" name="component">
           <InputNumber
             placeholder="Component Span"
             style={{ width: '100%' }}

@@ -1,7 +1,7 @@
 import { IChartProps } from "@/designer-components/charts/model";
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from "react";
 import { CleanDataAction, SetAxisPropertyLabelAction, SetControlPropsAction, SetDataAction, SetIsLoadedAction, SetUrlTypeDataAction, SetValuePropertyLabelAction } from "./actions";
-import { ChartDataActionsContext, ChartDataStateContext, INITIAL_STATE } from "./context";
+import { ChartDataActionsContext, ChartDataStateContext, IChartDataAtionsContext, IChartDataContext, INITIAL_STATE } from "./context";
 import { chartDataReducer } from "./reducer";
 
 interface IChartDataProviderProps {
@@ -11,7 +11,7 @@ interface IChartDataProviderProps {
 const ChartDataProvider: FC<PropsWithChildren<IChartDataProviderProps>> = ({ children, model }) => {
   const [state, dispatch] = useReducer(chartDataReducer, { ...INITIAL_STATE, ...model });
 
-  const setControlProps = (controlProps: IChartProps) => {
+  const setControlProps = (controlProps: IChartProps): void => {
     dispatch(SetControlPropsAction(controlProps));
   };
 
@@ -19,27 +19,27 @@ const ChartDataProvider: FC<PropsWithChildren<IChartDataProviderProps>> = ({ chi
     dispatch(SetControlPropsAction(model));
   }, [model]);
 
-  const setData = (data: object[]) => {
+  const setData = (data: object[]): void => {
     dispatch(SetDataAction(data));
   };
 
-  const setIsLoaded = (isLoaded: boolean) => {
+  const setIsLoaded = (isLoaded: boolean): void => {
     dispatch(SetIsLoadedAction(isLoaded));
   };
 
-  const setUrlTypeData = (urlTypeData: object) => {
+  const setUrlTypeData = (urlTypeData: object): void => {
     dispatch(SetUrlTypeDataAction(urlTypeData));
   };
 
-  const cleanData = () => {
+  const cleanData = (): void => {
     dispatch(CleanDataAction());
   };
 
-  const setAxisPropertyLabel = (axisPropertyLabel: string) => {
+  const setAxisPropertyLabel = (axisPropertyLabel: string): void => {
     dispatch(SetAxisPropertyLabelAction(axisPropertyLabel));
   };
 
-  const setValuePropertyLabel = (valuePropertyLabel: string) => {
+  const setValuePropertyLabel = (valuePropertyLabel: string): void => {
     dispatch(SetValuePropertyLabelAction(valuePropertyLabel));
   };
 
@@ -52,15 +52,16 @@ const ChartDataProvider: FC<PropsWithChildren<IChartDataProviderProps>> = ({ chi
         setUrlTypeData,
         cleanData,
         setAxisPropertyLabel,
-        setValuePropertyLabel
-      }}>
+        setValuePropertyLabel,
+      }}
+      >
         {children}
       </ChartDataActionsContext.Provider>
     </ChartDataStateContext.Provider>
   );
 };
 
-export const useChartDataStateContext = () => {
+export const useChartDataStateContext = (): IChartDataContext => {
   const context = useContext(ChartDataStateContext);
   if (!context) {
     throw new Error("useChartDataStateContext must be used within a ChartDataProvider");
@@ -68,7 +69,7 @@ export const useChartDataStateContext = () => {
   return context;
 };
 
-export const useChartDataActionsContext = () => {
+export const useChartDataActionsContext = (): IChartDataAtionsContext => {
   const context = useContext(ChartDataActionsContext);
   if (!context) {
     throw new Error("useChartDataActionsContext must be used within a ChartDataProvider");

@@ -4,23 +4,19 @@ import { getFormFullName } from '@/utils/form';
 import { Space } from 'antd';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 
+export const DesignerTitle: FC = ({ }) => {
+  const { formProps } = useFormPersister();
+  const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
+  const title = formProps?.label ? `${formProps.label} (${fullName})` : fullName;
 
-export interface IDesignerTitleProps {
-}
-
-export const DesignerTitle: FC<IDesignerTitleProps> = ({ }) => {
-    const { formProps } = useFormPersister();
-    const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
-    const title = formProps?.label ? `${formProps.label} (${fullName})` : fullName;
-
-    return (
-        <Space>
-            {title && (
-                <p style={{ margin: 'unset' }}>
-                    {title} v{formProps.versionNo}
-                </p>
-            )}
-            <HelpTextPopover content={formProps.description}></HelpTextPopover>
-        </Space>
-    );
+  return (
+    <Space>
+      {title && (
+        <p style={{ margin: 'unset' }}>
+          {title}
+        </p>
+      )}
+      <HelpTextPopover content={formProps.description}></HelpTextPopover>
+    </Space>
+  );
 };

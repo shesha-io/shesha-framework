@@ -5,7 +5,7 @@ import {
   getDefaultModel,
   getFormItemProps,
   getInputProps,
-  IPasswordComponentProps
+  IPasswordComponentProps,
 } from './utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IToolboxComponent } from '@/interfaces';
@@ -68,12 +68,12 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
       const styles: IInputStyles = {
         size: prev.size,
         hideBorder: prev.hideBorder,
-        style: prev.style
+        style: prev.style,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IPasswordComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()), editMode: 'inherited' }))
+    .add<IPasswordComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()), editMode: 'inherited' })),
 };
 
 export default PasswordComboComponent;

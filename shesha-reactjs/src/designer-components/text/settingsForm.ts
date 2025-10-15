@@ -5,8 +5,9 @@ import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/util
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -419,10 +420,10 @@ export const getSettings = (data: any) => {
                                     hideLabel: true,
                                     width: 60,
                                     dropdownOptions: textAlignOptions,
-                                  }
+                                  },
                                 ],
                               })
-                               .addSettingsInputRow({
+                              .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
                                 inputs: [

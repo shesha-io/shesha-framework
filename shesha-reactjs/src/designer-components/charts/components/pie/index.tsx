@@ -45,10 +45,10 @@ ChartJS.register(
   LineElement,
   PointElement,
   LinearScale,
-  Legend
+  Legend,
 );
 
-const PieChart = ({ data }: IPieChartProps) => {
+const PieChart = ({ data }: IPieChartProps): JSX.Element => {
   const { showLegend, showTitle, legendPosition, isDoughnut, strokeColor, strokeWidth, dataMode, titleFont, legendFont } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
@@ -75,8 +75,8 @@ const PieChart = ({ data }: IPieChartProps) => {
         top: 10,
         bottom: 10,
         left: 10,
-        right: 10
-      }
+        right: 10,
+      },
     },
     transitions: {
       active: {
@@ -102,7 +102,7 @@ const PieChart = ({ data }: IPieChartProps) => {
           font: createFontConfig(legendFont, 12, '400'),
           color: legendFont?.color || '#000000',
           usePointStyle: true, // Use point style for better visual consistency
-          generateLabels: function(chart) {
+          generateLabels: function (chart) {
             const data = chart.data;
             if (data.labels.length && data.datasets.length) {
               return data.labels.map((label, i) => {
@@ -114,12 +114,12 @@ const PieChart = ({ data }: IPieChartProps) => {
                   lineWidth: dataset.borderWidth,
                   pointStyle: 'circle',
                   hidden: false,
-                  index: i
+                  index: i,
                 };
               });
             }
             return [];
-          }
+          },
         },
       },
       title: {

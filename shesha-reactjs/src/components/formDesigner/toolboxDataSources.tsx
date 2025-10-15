@@ -21,7 +21,7 @@ const getVisibleProperties = (items: IPropertyMetadata[], searchText: string): I
   const result: IPropertyMetadata[] = [];
   if (!items) return result;
 
-  items.forEach(item => {
+  items.forEach((item) => {
     if (!item.isFrameworkRelated && item.isVisible) {
       const childItems = isPropertiesArray(item.properties) ? getVisibleProperties(item.properties, searchText) : [];
       const matched =
@@ -45,24 +45,23 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
   const { styles } = useStyles();
 
   const datasourcesWithVisible = useMemo<FilteredDataSource[]>(() => {
-    const dataSourcesX = dataSources.map<FilteredDataSource>(ds => ({
+    const dataSourcesX = dataSources.map<FilteredDataSource>((ds) => ({
       datasource: ds,
       visibleItems: getVisibleProperties(ds.items, searchText),
     }));
     return dataSourcesX;
-
   }, [searchText, dataSources]);
 
 
-  const onCollapseChange = (key: string | string[]) => {
+  const onCollapseChange = (key: string | string[]): void => {
     setOpenedKeys(Array.isArray(key) ? key : [key]);
   };
   return (
     <>
       <div className={styles.shaToolboxComponents}>
         <SearchBox value={searchText} onChange={setSearchText} placeholder="Search data properties" />
-        <Collapse 
-          activeKey={openedKeys} 
+        <Collapse
+          activeKey={openedKeys}
           onChange={onCollapseChange}
           items={datasourcesWithVisible.map((ds, dsIndex) => {
             const visibleItems = ds.visibleItems;
@@ -73,9 +72,9 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
                 {shortName}
               </Tooltip>
             );
-      
-            return visibleItems.length === 0 
-              ? null 
+
+            return visibleItems.length === 0
+              ? null
               : {
                 key: dsIndex.toString(),
                 label: header,
@@ -86,9 +85,8 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
                     defaultExpandAll={(searchText ?? '') !== ''}
 
                   />
-              )};
-          }).filter(item => Boolean(item))
-          }
+                ) };
+          }).filter((item) => Boolean(item))}
         />
       </div>
 

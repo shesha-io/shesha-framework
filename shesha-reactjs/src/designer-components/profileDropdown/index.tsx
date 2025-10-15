@@ -103,7 +103,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
 
     const accountMenuItems = getAccountMenuItems(accountDropdownListItems, logoutUser);
 
-    const onDynamicItemEvaluated = () => {
+    const onDynamicItemEvaluated = (): void => {
       setNumResolved((prev) => prev + 1);
     };
 

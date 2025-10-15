@@ -5,68 +5,68 @@ import { ShaFormDataUpdateContext, ShaFormInstanceContext } from "../providers/c
 import { ShaFormSubscriptionType } from "../store/shaFormInstance";
 
 export interface IShaFormProviderProps {
-    shaForm: IShaFormInstance;
+  shaForm: IShaFormInstance;
 }
 
 const ShaFormProvider: FC<PropsWithChildren<IShaFormProviderProps>> = ({ children, shaForm }) => {
-    const [state, setState] = React.useState({});
+  const [state, setState] = React.useState({});
 
-    // force update context on change form data
-    useEffect(() => {
-      shaForm.updateData = () => setState({}); 
-    }, []);
+  // force update context on change form data
+  useEffect(() => {
+    shaForm.updateData = () => setState({});
+  }, []);
 
-    return (
-        <ShaFormInstanceContext.Provider value={shaForm}>
-            <ShaFormDataUpdateContext.Provider value={state}>
-                {children}
-            </ShaFormDataUpdateContext.Provider>
-        </ShaFormInstanceContext.Provider>
-    );
+  return (
+    <ShaFormInstanceContext.Provider value={shaForm}>
+      <ShaFormDataUpdateContext.Provider value={state}>
+        {children}
+      </ShaFormDataUpdateContext.Provider>
+    </ShaFormInstanceContext.Provider>
+  );
 };
 
 const FormProviderWithDelayedUpdates: FC<PropsWithChildren<IShaFormProviderProps>> = ({ children, ...props }) => {
-    return (
-        <DelayedUpdateProvider>
-            <ShaFormProvider {...props}>
-                {children}
-            </ShaFormProvider>
-        </DelayedUpdateProvider>
-    );
+  return (
+    <DelayedUpdateProvider>
+      <ShaFormProvider {...props}>
+        {children}
+      </ShaFormProvider>
+    </DelayedUpdateProvider>
+  );
 };
 
-const useShaFormRef = (): MutableRefObject<IShaFormInstance> => {
-    return useRef<IShaFormInstance>();
+const useShaFormRef = <Values extends object = object>(): MutableRefObject<IShaFormInstance<Values>> => {
+  return useRef<IShaFormInstance<Values>>();
 };
 
 const useShaFormDataUpdate = (): object => useContext(ShaFormDataUpdateContext);
 
 const useShaFormInstance = (required: boolean = true): IShaFormInstance => {
-    const context = useContext(ShaFormInstanceContext);
+  const context = useContext(ShaFormInstanceContext);
 
-    if (required && context === undefined) {
-        throw new Error('useShaFormInstance must be used within a ShaFormProvider');
-    }
+  if (required && context === undefined) {
+    throw new Error('useShaFormInstance must be used within a ShaFormProvider');
+  }
 
-    return context;
+  return context;
 };
 
-const useShaFormSubscription = (subscriptionType: ShaFormSubscriptionType) => {
-    const shaForm = useShaFormInstance();
-    const [dummy, forceUpdate] = useState({});
-    useEffect(() => {
-        // Subscribe to changes
-        const unsubscribe = shaForm.subscribe(subscriptionType, () => forceUpdate({}));
-        return unsubscribe; // Cleanup on unmount
-    }, [shaForm, subscriptionType]);
+const useShaFormSubscription = (subscriptionType: ShaFormSubscriptionType): object => {
+  const shaForm = useShaFormInstance();
+  const [dummy, forceUpdate] = useState({});
+  useEffect(() => {
+    // Subscribe to changes
+    const unsubscribe = shaForm.subscribe(subscriptionType, () => forceUpdate({}));
+    return unsubscribe; // Cleanup on unmount
+  }, [shaForm, subscriptionType]);
 
-    return dummy;
+  return dummy;
 };
 
 export {
-    FormProviderWithDelayedUpdates as ShaFormProvider,
-    useShaFormInstance,
-    useShaFormDataUpdate,
-    useShaFormRef,
-    useShaFormSubscription,
+  FormProviderWithDelayedUpdates as ShaFormProvider,
+  useShaFormInstance,
+  useShaFormDataUpdate,
+  useShaFormRef,
+  useShaFormSubscription,
 };

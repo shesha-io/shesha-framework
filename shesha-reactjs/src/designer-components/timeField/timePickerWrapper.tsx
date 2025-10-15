@@ -31,7 +31,7 @@ const getTotalSeconds = (value: Moment): number => {
   const timeOnly = moment.duration({
     hours: value.hours(),
     minutes: value.minutes(),
-    seconds: value.seconds()
+    seconds: value.seconds(),
   });
   return timeOnly.asSeconds();
 };
@@ -62,26 +62,28 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   const minuteStepLocal = getNumericValue(minuteStep);
   const secondStepLocal = getNumericValue(secondStep);
 
-  //Should be a factors? if not shouldn't we delete the toolTips
+  // Should be a factors? if not shouldn't we delete the toolTips
   const steps: TimeSteps = {
     hourStep: 1 <= hourStepLocal && hourStepLocal <= 23 ? hourStepLocal as TimeSteps['hourStep'] : 1, // value should be in range 1..23
     minuteStep: 1 <= minuteStepLocal && minuteStepLocal <= 59 ? minuteStepLocal as TimeSteps['minuteStep'] : 1, // value should be in range 1..59
     secondStep: 1 <= secondStepLocal && secondStepLocal <= 59 ? secondStepLocal as TimeSteps['secondStep'] : 1, // value should be in range 1..59
   };
 
-  const getRangePickerValues = (value: string | [string, string]) =>
-    Array.isArray(value) && value?.length === 2 ? value?.map((v) => getMoment(v, format)) : [null, null];
+  const getRangePickerValues = (value: string | [string, string]): [Moment | null, Moment | null] =>
+    Array.isArray(value) && value.length === 2
+      ? [value[0] && getMoment(value[0], format), value[1] && getMoment(value[1], format)]
+      : [null, null];
 
-  const handleTimePickerChange = (newValue: Moment, timeString: string) => {
+  const handleTimePickerChange = (newValue: Moment, timeString: string): void => {
     if (onChange) {
       const seconds = getTotalSeconds(newValue);
       (onChange as TimePickerChangeEvent)(seconds, timeString);
     }
   };
 
-  const handleRangePicker = (values: Moment[], timeString: [string, string]) => {
+  const handleRangePicker = (values: Moment[], timeString: [string, string]): void => {
     if (onChange) {
-      const seconds = values?.map(value => getTotalSeconds(value));
+      const seconds = values?.map((value) => getTotalSeconds(value));
 
       (onChange as RangePickerChangeEvent)(seconds, timeString);
     }

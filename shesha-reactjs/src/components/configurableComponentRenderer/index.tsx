@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useState } from 'react';
+import React, { FC, PropsWithChildren, ReactElement, useState } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { ISettingsEditor } from '@/components/configurableComponent';
@@ -44,18 +44,18 @@ const BlockOverlay: FC<PropsWithChildren<IBlockOverlayProps>> = ({ onClick, chil
   );
 };
 
-export const ConfigurableComponentRenderer = <TSettings extends any>({
+export const ConfigurableComponentRenderer = <TSettings extends object>({
   children,
   canConfigure = true,
   onStartEdit,
   contextAccessor,
   settingsEditor,
-}: IConfigurableComponentRendererProps<TSettings>) => {
+}: IConfigurableComponentRendererProps<TSettings>): ReactElement => {
   const [editorIsVisible, setEditorIsVisible] = useState(false);
   const { mode } = useAppConfigurator();
   const { save, settings } = contextAccessor();
-  const {styles} = useStyles();
-  const {formInfoBlockVisible} = useAppConfigurator();
+  const { styles } = useStyles();
+  const { formInfoBlockVisible } = useAppConfigurator();
 
   if (!children) return null;
 
@@ -76,21 +76,22 @@ export const ConfigurableComponentRenderer = <TSettings extends any>({
     settings,
   };
 
-  const onOverlayClick = () => {
+
+  const onOverlayClick = (): void => {
     if (onStartEdit) onStartEdit();
     else setEditorIsVisible(true);
   };
 
-  const onCancel = () => {
+  const onCancel = (): void => {
     setEditorIsVisible(false);
   };
 
-  const onSave = (model: TSettings) => {
+  const onSave = (model: TSettings): void => {
     save(model)
       .then(() => {
         setEditorIsVisible(false);
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
       });
   };
@@ -100,7 +101,7 @@ export const ConfigurableComponentRenderer = <TSettings extends any>({
       {children(componentState, ({ children: overlayChildren }) => (
         <BlockOverlay visible={formInfoBlockVisible === true} onClick={onOverlayClick}>
           <div className={styles.shaSidebarEditModeContainer}>
-          {overlayChildren}
+            {overlayChildren}
           </div>
         </BlockOverlay>
       ))}

@@ -4,7 +4,7 @@ import { INote, INotesStateContext } from './contexts';
 
 export function notesReducer(
   incomingState: INotesStateContext,
-  action: ReduxActions.Action<INotesStateContext>
+  action: ReduxActions.Action<INotesStateContext>,
 ): INotesStateContext {
   //#region Register flags reducer
   const state = flagsReducer(incomingState, action) as INotesStateContext;
@@ -22,7 +22,7 @@ export function notesReducer(
     case NotesActionEnums.DeleteNotesRequest:
     case NotesActionEnums.DeleteNotesError:
     case NotesActionEnums.SetSettings:
-      /* NEW_ACTION_ENUM_GOES_HERE */
+    /* NEW_ACTION_ENUM_GOES_HERE */
 
       return {
         ...state,

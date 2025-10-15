@@ -31,7 +31,7 @@ export const UndoableActionCreators = {
 
 export default function undoable<State>(
   reducer: Reducer<State, Action>,
-  options: IUndoableOptions
+  options: IUndoableOptions,
 ): Reducer<StateWithHistory<State>, Action> {
   const includeAction = options.includeAction ?? (() => true);
 
@@ -42,7 +42,7 @@ export default function undoable<State>(
   let initialState: State = undefined;
 
   // Return a reducer that handles undo and redo
-  return function (state /*= initialState*/, action) {
+  return function (state /* = initialState*/, action) {
     const { past, present, future } = state;
 
     if (initialState === undefined) {
@@ -80,26 +80,26 @@ export default function undoable<State>(
           _latestUnfiltered: next,
         };
       default:
-        // Delegate handling the action to the passed reducer
+      // Delegate handling the action to the passed reducer
         const newPresent = reducer(present, action);
         if (present === newPresent) {
           return state;
         }
 
         if (includeAction(action.type)) {
-          // `state._latestUnfiltered` is not available during the recording of the first undoable action
+        // `state._latestUnfiltered` is not available during the recording of the first undoable action
           const lastSavedState = state._latestUnfiltered ?? initialState;
           return {
             past: lastSavedState ? applyLimit([...past, lastSavedState], options.limit) : [],
             present: newPresent,
-            future: state.future.length === 0  ? state.future : [],
+            future: state.future.length === 0 ? state.future : [],
             _latestUnfiltered: newPresent,
           };
         } else
           return {
             past: state.past,
             present: newPresent,
-            future: state.future.length === 0  ? state.future : [],
+            future: state.future.length === 0 ? state.future : [],
             _latestUnfiltered: state._latestUnfiltered,
           };
     }

@@ -7,9 +7,9 @@ import FormComponentDateDisplay from './formComponentDateDisplay';
 import FormComponentNumberDisplay from './formComponentNumberDisplay';
 import FormComponentBoolDisplay from './formComponentBoolDisplay';
 
-export interface IFormComponentProps extends IFormComponent {}
+export type IFormComponentProps = IFormComponent;
 
-export const FormComponent: FC<IFormComponentProps> = props => {
+export const FormComponent: FC<IFormComponentProps> = (props) => {
   const {
     label,
     dataType: { name },
@@ -17,7 +17,7 @@ export const FormComponent: FC<IFormComponentProps> = props => {
     info,
   } = props;
 
-  const renderDisplay = () => {
+  const renderDisplay = (): JSX.Element => {
     switch (name) {
       case 'string':
         return <FormComponentStringDisplay {...props} />;
@@ -33,7 +33,7 @@ export const FormComponent: FC<IFormComponentProps> = props => {
     return <span />;
   };
 
-  const renderLabel = () =>
+  const renderLabel = (): JSX.Element =>
     !info ? (
       <>{label}</>
     ) : (

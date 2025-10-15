@@ -15,10 +15,9 @@ const ComponentError: FC<IComponentErrorProps> = ({
   type = 'warning',
   message,
 }) => {
-
   const { styles } = useStyles();
 
-  const errortip = (errors: IModelValidation) => <ul>{errors.errors.map((error, index) => <li key={index}>{error.error}</li>)}</ul>;
+  const errortip = (errors: IModelValidation): JSX.Element => <ul>{errors.errors.map((error, index) => <li key={index}>{error.error}</li>)}</ul>;
 
   const tooltipClassName = type === 'info'
     ? styles.cmoponentErrorInfo
@@ -35,8 +34,8 @@ const ComponentError: FC<IComponentErrorProps> = ({
       : type === 'error'
         ? styles.cmoponentErrorTextError
         : '';
-    
-  const messageText = !message 
+
+  const messageText = !message
     ? `'${errors.componentType}' has configuration issue(s)`
     : message;
 
@@ -46,7 +45,7 @@ const ComponentError: FC<IComponentErrorProps> = ({
       type={type}
       message={<strong>{messageText}</strong>}
       action={Boolean(resetErrorBoundary) && <Button type="link" onClick={resetErrorBoundary}>Try again</Button>}
-      showIcon={true} 
+      showIcon={true}
     />
   );
 

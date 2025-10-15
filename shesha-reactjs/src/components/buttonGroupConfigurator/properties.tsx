@@ -17,11 +17,11 @@ export interface IButtonGroupPropertiesProps {
 
 export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, onChange, readOnly }) => {
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       onChange?.({ ...item, ...values });
     },
     // delay in ms
-    300
+    300,
   );
 
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
@@ -38,7 +38,7 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>
         <ConfigurableForm
-          //key={selectedItemId} // rerender for each item to initialize all controls
+          // key={selectedItemId} // rerender for each item to initialize all controls
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}
           mode={readOnly ? 'readonly' : 'edit'}

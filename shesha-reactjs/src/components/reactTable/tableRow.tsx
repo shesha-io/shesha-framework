@@ -39,10 +39,10 @@ interface RowDragHandleProps {
 }
 export const RowDragHandle: FC<RowDragHandleProps> = () => {
   const { setDragState } = useDataTableStore();
-  const handleMouseDown = () => {
+  const handleMouseDown = (): void => {
     setDragState('started');
   };
-  const handleMouseUp = () => {
+  const handleMouseUp = (): void => {
     setDragState(null);
   };
   return (
@@ -79,18 +79,18 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   const { dragState, setDragState } = useDataTableStore();
   const tableRef = useRef(null);
 
-  const handleRowClick = () => {
+  const handleRowClick = (): void => {
     onClick(row);
     if (onRowClick) {
       onRowClick();
     }
   };
 
-  const handleRowDoubleClick = () => {
+  const handleRowDoubleClick = (): void => {
     onDoubleClick(row, index);
   };
 
-  const handleRowMouseEnter = () => {
+  const handleRowMouseEnter = (): void => {
     if (dragState === 'finished')
       setDragState(null);
     if (onRowHover) {
@@ -101,7 +101,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   prepareRow(row);
 
   const rowId = row.original.id ?? row.id;
-  
+
   return (
     <CrudProvider
       isNewObject={false}
@@ -131,9 +131,18 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         key={rowId}
       >
         {row.cells.map((cell, cellIndex) => {
-          return <RowCell showExpandedView={showExpandedView} cell={cell} getCellRef={(cellRef, isContentOverflowing) => {
-            onMouseOver(cellRef, isContentOverflowing);
-          }} key={cellIndex} row={row.cells} rowIndex={index} />;
+          return (
+            <RowCell
+              showExpandedView={showExpandedView}
+              cell={cell}
+              getCellRef={(cellRef, isContentOverflowing) => {
+                onMouseOver(cellRef, isContentOverflowing);
+              }}
+              key={cellIndex}
+              row={row.cells}
+              rowIndex={index}
+            />
+          );
         })}
       </div>
     </CrudProvider>

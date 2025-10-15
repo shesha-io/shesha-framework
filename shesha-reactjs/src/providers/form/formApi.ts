@@ -7,6 +7,7 @@ import { IEntityEndpoints } from "../sheshaApplication/publicApi/entities/entity
 import { IShaFormInstance } from "./store/interfaces";
 import { IDelayedUpdateGroup } from "../delayedUpdateProvider/models";
 import { AxiosResponse } from "axios";
+import { FieldValueSetter } from "@/utils/dotnotation";
 
 export interface IFormSettings {
   modelType?: string;
@@ -27,7 +28,7 @@ type PublicFormSettings = Pick<IFormSettings, 'modelType'>;
 /**
  * Form instance API
  */
-export interface IFormApi<Values = any> {
+export interface IFormApi<Values extends object = object> {
   /**
    * Add deferred update data to `data` object
    * @param data model data object for updating
@@ -39,7 +40,7 @@ export interface IFormApi<Values = any> {
    * @param name field name
    * @param value field value
    */
-  setFieldValue: (name: string, value: any) => void;
+  setFieldValue: FieldValueSetter<Values>;
   /**
    * Set fields value
    * @param values
@@ -79,7 +80,7 @@ export interface IFormApi<Values = any> {
   defaultApiEndpoints: IEntityEndpoints;
   /** Form arguments passed by caller */
   formArguments?: any;
-  readonly initialValues?: Values;
+  readonly initialValues?: Partial<Values>;
   readonly parentFormValues?: any;
 };
 
@@ -101,31 +102,31 @@ class PublicFormApiWrapper implements IFormApi {
     return delayedUpdateData;
   };
 
-  setFieldValue = (name: string, value: any) => {
+  setFieldValue = (name: string, value: any): void => {
     this.#form?.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });
   };
 
-  setFieldsValue = (values: any) => {
+  setFieldsValue = (values: any): void => {
     this.#form?.setFormData({ values, mergeValues: true });
   };
 
-  clearFieldsValue = () => {
+  clearFieldsValue = (): void => {
     this.#form?.setFormData({ values: {}, mergeValues: false });
   };
 
-  submit = () => {
+  submit = (): void => {
     this.#form?.form?.submit();
   };
 
-  setFormData = (payload: ISetFormDataPayload) => {
+  setFormData = (payload: ISetFormDataPayload): void => {
     this.#form?.setFormData(payload);
   };
 
-  getFormData = () => {
+  getFormData = (): any => {
     return this.#form?.formData;
   };
 
-  setValidationErrors = (payload: IFormValidationErrors) => {
+  setValidationErrors = (payload: IFormValidationErrors): void => {
     this.#form?.shaForm?.setValidationErrors(payload);
   };
 

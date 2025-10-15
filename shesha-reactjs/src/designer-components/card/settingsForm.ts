@@ -3,9 +3,10 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { FormMarkupWithSettings } from '@/interfaces';
 
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   // Generate unique IDs for major components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -39,7 +40,7 @@ export const getSettings = (data: any) => {
                   validate: {
                     required: true,
                   },
-                  jsSetting: false
+                  jsSetting: false,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -93,7 +94,7 @@ export const getSettings = (data: any) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
+                    _value: "",
                   },
                   components: [
                     ...new DesignerToolbarSettings()
@@ -112,16 +113,16 @@ export const getSettings = (data: any) => {
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              components: getBorderInputs() as any
+                              components: getBorderInputs() as any,
                             })
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              components: getCornerInputs() as any
+                              components: getCornerInputs() as any,
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -168,7 +169,7 @@ export const getSettings = (data: any) => {
                                   propertyName: "background.gradient.colors",
                                   label: "Colors",
                                   jsSetting: false,
-                                }
+                                },
                                 ],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                 hideLabel: true,
@@ -207,9 +208,9 @@ export const getSettings = (data: any) => {
                                     id: nanoid(),
                                     jsSetting: false,
                                     propertyName: "background.storedFile.id",
-                                    label: "File ID"
-                                  }
-                                ]
+                                    label: "File ID",
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -235,7 +236,7 @@ export const getSettings = (data: any) => {
                                     propertyName: "background.position",
                                     dropdownOptions: positionOptions,
                                   },
-                                ]
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -251,9 +252,9 @@ export const getSettings = (data: any) => {
                                 }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
-                              .toJson()
+                              .toJson(),
                           ],
-                        }
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -321,9 +322,9 @@ export const getSettings = (data: any) => {
                                 },
                               ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -341,9 +342,9 @@ export const getSettings = (data: any) => {
                               hideLabel: true,
                               propertyName: 'stylingBox',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -369,15 +370,15 @@ export const getSettings = (data: any) => {
                               propertyName: 'className',
                               label: 'Custom CSS Class',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
-                      .toJson()
-                  ]
+                      .toJson(),
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: '4',

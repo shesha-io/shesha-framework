@@ -33,9 +33,11 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   isOutput: true,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
-    const { formMode } = useForm();
     const { allStyles } = model;
     const { width, height, minWidth, minHeight, maxWidth, maxHeight } = allStyles?.dimensionsStyles;
+
+    const { formMode } = useForm();
+
 
     const config = useDeepCompareMemoKeepReference<PartialRichTextEditorConfig>(() => {
       const typedConfig: PartialRichTextEditorConfig = {
@@ -52,8 +54,6 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         placeholder: model?.placeholder ?? '',
         readonly: model?.readOnly,
         style: getStyle(model?.style, formData),
-        ...(!model.autoHeight && { height, minHeight, maxHeight }),
-        ...(!model.autoWidth && { width, minWidth, maxWidth }),
         defaultActionOnPaste: 'insert_as_html',
         enter: model?.enter || 'br',
         editHTMLDocumentMode: false,

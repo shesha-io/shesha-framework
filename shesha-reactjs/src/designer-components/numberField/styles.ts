@@ -78,7 +78,7 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
           color: ${color} !important;
         }
       }
-`
+`,
   );
   return {
     numberField,

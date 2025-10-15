@@ -6,8 +6,8 @@ import React, {
   PropsWithChildren,
   useContext,
   useEffect,
-  useReducer
-  } from 'react';
+  useReducer,
+} from 'react';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { STORED_FILES_DELAYED_UPDATE } from '@/providers/delayedUpdateProvider/models';
 import { storedFilesReducer as storedFileReducer } from './reducer';
@@ -40,12 +40,15 @@ import {
 import {
   IDownloadFilePayload,
   IStoredFile,
+  IStoredFileActionsContext,
+  IStoredFileStateContext,
   IUploadFilePayload,
   STORED_FILE_CONTEXT_INITIAL_STATE,
   StoredFileActionsContext,
   StoredFileStateContext,
 } from './contexts';
 import { App } from 'antd';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface IStoredFileProviderPropsBase {
   baseUrl?: string;
@@ -115,7 +118,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
 
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
-  const doFetchFileInfo = () => {
+  const doFetchFileInfo = (): void => {
     if (
       state.fileInfo?.id !== undefined &&
       state.fileInfo?.id === newFileId
@@ -125,8 +128,8 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     if (newFileId)
       fileFetcher.refetch({ queryParams: { id: newFileId } });
     else
-    if (ownerId && ownerType && propertyName)
-      propertyFetcher.refetch({ queryParams: { ownerId, ownerType, propertyName, fileCategory } });
+      if (ownerId && ownerType && propertyName)
+        propertyFetcher.refetch({ queryParams: { ownerId, ownerType, propertyName, fileCategory } });
   };
 
   useEffect(() => {
@@ -137,15 +140,15 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     if (uploadMode === 'sync' && value) {
       const fileInfo: IStoredFile = value
         ? {
-            //id: value.uid,
-            uid: value.uid,
-            url: null,
-            status: 'done',
-            name: value.name,
-            size: value.size,
-            type: value.type,
-            originFileObj: null,
-          }
+          // id: value.uid,
+          uid: value.uid,
+          url: null,
+          status: 'done',
+          name: value.name,
+          size: value.size,
+          type: value.type,
+          originFileObj: null,
+        }
         : null;
 
       dispatch(fetchFileInfoSuccessAction(fileInfo));
@@ -157,8 +160,8 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
 
   useEffect(() => {
     if (!isFetchingFileInfo && uploadMode === 'async') {
-      if (fetchingFileInfoResponse) {
-        const fetchedFile = fetchingFileInfoResponse?.result;
+      if (isAjaxSuccessResponse(fetchingFileInfoResponse)) {
+        const fetchedFile = fetchingFileInfoResponse.result;
         if (fetchedFile) {
           const fileInfo: IStoredFile = {
             id: fetchedFile.id,
@@ -181,7 +184,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     }
   }, [isFetchingFileInfo, fetchingFileInfoResponse, fetchingFileInfoError]);
 
-  const downloadFileAsync = (payload: IDownloadFilePayload) => {
+  const downloadFileAsync = (payload: IDownloadFilePayload): void => {
     dispatch(downloadFileRequestAction());
 
     const url = `${baseUrl}/api/StoredFile/Download?${qs.stringify({
@@ -203,29 +206,29 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
       });
   };
 
-  const downloadFileSync = (_payload: IDownloadFilePayload) => {
+  const downloadFileSync = (_payload: IDownloadFilePayload): void => {
     if (value) FileSaver.saveAs(new Blob([value]), value.name);
   };
 
-  const downloadFile = (payload: IDownloadFilePayload) => {
+  const downloadFile = (payload: IDownloadFilePayload): void => {
     if (uploadMode === 'async') downloadFileAsync(payload);
     if (uploadMode === 'sync') downloadFileSync(payload);
   };
 
-  const downloadFileSuccess = () => {
+  const downloadFileSuccess = (): void => {
     dispatch(downloadFileSuccessAction());
   };
 
-  const downloadFileError = () => {
+  const downloadFileError = (): void => {
     dispatch(downloadFileErrorAction());
   };
 
-  const uploadFileAsync = (payload: IUploadFilePayload, callback?: (...args: any) => any) => {
+  const uploadFileAsync = (payload: IUploadFilePayload, callback?: (...args: any) => any): void => {
     const formData = new FormData();
 
     const { file } = payload;
 
-    const appendIfDefined = (itemName, itemValue) => {
+    const appendIfDefined = (itemName, itemValue): void => {
       if (itemValue) formData.append(itemName, itemValue);
     };
 
@@ -254,7 +257,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     ) {
       console.error('File component is not configured');
       dispatch(
-        uploadFileErrorAction({ ...newFile, uid: '-1', status: 'error', error: 'File component is not configured' })
+        uploadFileErrorAction({ ...newFile, uid: '-1', status: 'error', error: 'File component is not configured' }),
       );
       return;
     }
@@ -284,30 +287,30 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
   };
 
   // @ts-ignore
-  const uploadFileSync = (payload: IUploadFilePayload, callback?: (...args: any) => any) => {
+  const uploadFileSync = (payload: IUploadFilePayload, callback?: (...args: any) => any): void => {
     if (typeof onChange === 'function') {
       onChange(payload.file);
       if (typeof callback === 'function') callback();
     }
   };
 
-  const uploadFile = (payload: IUploadFilePayload, callback?: (...args: any) => any) => {
-    if (uploadMode === 'async') return uploadFileAsync(payload, callback);
-    if (uploadMode === 'sync') return uploadFileSync(payload, callback);
+  const uploadFile = (payload: IUploadFilePayload, callback?: (...args: any) => any): void => {
+    if (uploadMode === 'async') uploadFileAsync(payload, callback);
+    if (uploadMode === 'sync') uploadFileSync(payload, callback);
   };
 
   const { mutate: deleteFileHttp } = useMutate();
 
   //#region delete file
-  const deleteFileSuccess = () => {
+  const deleteFileSuccess = (): void => {
     dispatch(deleteFileSuccessAction());
   };
 
-  const deleteFileError = () => {
+  const deleteFileError = (): void => {
     dispatch(deleteFileErrorAction());
   };
 
-  const deleteFileAsync = () => {
+  const deleteFileAsync = (): void => {
     dispatch(deleteFileRequestAction());
 
     const deleteFileInput: StoredFileDeleteQueryParams = {
@@ -327,26 +330,26 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
       .catch(() => deleteFileError());
   };
 
-  const deleteFileSync = () => {
+  const deleteFileSync = (): void => {
     if (typeof onChange === 'function') onChange(null);
   };
 
-  const deleteFile = () => {
+  const deleteFile = (): void => {
     if (uploadMode === 'async') deleteFileAsync();
     else deleteFileSync();
   };
 
   //#endregion
 
-  const fetchFileInfo = () => {
+  const fetchFileInfo = (): void => {
     dispatch(fetchFileInfoRequestAction());
   };
 
-  const fetchFileInfoError = () => {
+  const fetchFileInfoError = (): void => {
     dispatch(fetchFileInfoErrorAction());
   };
 
-  const getStoredFile = (payload: StoredFileGetQueryParams) => {
+  const getStoredFile = (payload: StoredFileGetQueryParams): Promise<string> => {
     return new Promise((resolve) => {
       dispatch(fileViewRequestAction());
       const url = `${baseUrl}/api/StoredFile/Base64String?${qs.stringify({
@@ -392,7 +395,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
   );
 };
 
-function useStoredFileState(required: boolean = true) {
+function useStoredFileState(required: boolean = true): IStoredFileStateContext | undefined {
   const context = useContext(StoredFileStateContext);
 
   if (context === undefined && required) {
@@ -402,7 +405,7 @@ function useStoredFileState(required: boolean = true) {
   return context;
 }
 
-function useStoredFileActions(required: boolean = true) {
+function useStoredFileActions(required: boolean = true): IStoredFileActionsContext | undefined {
   const context = useContext(StoredFileActionsContext);
 
   if (context === undefined && required) {
@@ -412,7 +415,7 @@ function useStoredFileActions(required: boolean = true) {
   return context;
 }
 
-function useStoredFile(required: boolean = true) {
+function useStoredFile(required: boolean = true): IStoredFileStateContext & IStoredFileActionsContext | undefined {
   return { ...useStoredFileState(required), ...useStoredFileActions(required) };
 }
 

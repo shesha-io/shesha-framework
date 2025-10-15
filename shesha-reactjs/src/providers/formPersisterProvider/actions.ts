@@ -1,10 +1,11 @@
-import { createAction } from 'redux-actions';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IFlatComponentsStructure, IFormSettings } from '../form/models';
 import { ILoadRequestPayload } from './contexts';
 import { UpToDateForm } from '../formManager/interfaces';
+import { createAction } from '@reduxjs/toolkit';
 
 export enum FormPersisterActionEnums {
+  Reset = 'RESET',
   SaveRequest = 'SAVE_REQUEST',
   SaveSuccess = 'SAVE_SUCCESS',
   SaveError = 'SAVE_ERROR',
@@ -17,25 +18,14 @@ export enum FormPersisterActionEnums {
   UpdateFormSettings = 'UPDATE_FORM_SETTINGS',
 }
 
-export const loadRequestAction = createAction<ILoadRequestPayload, ILoadRequestPayload>(
-  FormPersisterActionEnums.LoadRequest,
-  (p) => p
-);
-export const loadSuccessAction = createAction<UpToDateForm, UpToDateForm>(
-  FormPersisterActionEnums.LoadSuccess,
-  (p) => p
-);
-export const loadErrorAction = createAction<IErrorInfo, IErrorInfo>(FormPersisterActionEnums.LoadError, (p) => p);
-export const changeMarkupAction = createAction<IFlatComponentsStructure, IFlatComponentsStructure>(
-  FormPersisterActionEnums.ChangeMarkup,
-  (p) => p
-);
+export const resetAction = createAction(FormPersisterActionEnums.Reset);
+export const loadRequestAction = createAction<ILoadRequestPayload>(FormPersisterActionEnums.LoadRequest);
+export const loadSuccessAction = createAction<UpToDateForm>(FormPersisterActionEnums.LoadSuccess);
+export const loadErrorAction = createAction<IErrorInfo>(FormPersisterActionEnums.LoadError);
+export const changeMarkupAction = createAction<IFlatComponentsStructure>(FormPersisterActionEnums.ChangeMarkup);
 
-export const saveRequestAction = createAction(FormPersisterActionEnums.SaveRequest, () => ({}));
-export const saveSuccessAction = createAction(FormPersisterActionEnums.SaveSuccess, () => ({}));
-export const saveErrorAction = createAction<IErrorInfo, IErrorInfo>(FormPersisterActionEnums.SaveError, (p) => p);
+export const saveRequestAction = createAction(FormPersisterActionEnums.SaveRequest);
+export const saveSuccessAction = createAction(FormPersisterActionEnums.SaveSuccess);
+export const saveErrorAction = createAction<IErrorInfo>(FormPersisterActionEnums.SaveError);
 
-export const updateFormSettingsAction = createAction<IFormSettings, IFormSettings>(
-  FormPersisterActionEnums.UpdateFormSettings,
-  (p) => p
-);
+export const updateFormSettingsAction = createAction<IFormSettings>(FormPersisterActionEnums.UpdateFormSettings);

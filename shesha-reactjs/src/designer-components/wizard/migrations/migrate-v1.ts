@@ -12,7 +12,7 @@ const getActionConfig = (
   eventName: string,
   customEventName: string,
   uniqueStateId: string,
-  context: SettingsMigrationContext
+  context: SettingsMigrationContext,
 ): IConfigurableActionConfiguration => {
   if (!action) return undefined;
 
@@ -138,7 +138,7 @@ export interface IWizardComponentPropsV1 extends Omit<IConfigurableFormComponent
   steps: IWizardStepPropsV1[];
   wizardType?: 'default' | 'navigation';
   visibility?: 'Yes' | 'No' | 'Removed';
-  //uniqueStateId?: string;
+  // uniqueStateId?: string;
   permissions?: string[];
   hidden?: boolean;
   customVisibility?: string;
@@ -156,11 +156,11 @@ export interface IWizardComponentPropsV1 extends Omit<IConfigurableFormComponent
 
 export const migrateV0toV1 = (
   props: IWizardComponentPropsV0,
-  context: SettingsMigrationContext
+  context: SettingsMigrationContext,
 ): IWizardComponentPropsV1 => {
   const { tabs, ...restProps } = props;
 
-  const steps = tabs?.map<IWizardStepProps>(tab => {
+  const steps = tabs?.map<IWizardStepProps>((tab) => {
     const {
       cancelButtonAction,
       nextButtonAction,
@@ -197,7 +197,7 @@ export const migrateV0toV1 = (
         cancelEventName,
         cancelCustomEventNameToDispatch,
         cancelUniqueStateId,
-        context
+        context,
       ),
       nextButtonActionConfiguration: getActionConfig(
         nextButtonAction,
@@ -205,7 +205,7 @@ export const migrateV0toV1 = (
         nextEventName,
         nextCustomEventNameToDispatch,
         nextUniqueStateId,
-        context
+        context,
       ),
       backButtonActionConfiguration: getActionConfig(
         backButtonAction,
@@ -213,7 +213,7 @@ export const migrateV0toV1 = (
         backEventName,
         backCustomEventNameToDispatch,
         backUniqueStateId,
-        context
+        context,
       ),
       doneButtonActionConfiguration: getActionConfig(
         doneButtonAction,
@@ -221,7 +221,7 @@ export const migrateV0toV1 = (
         doneEventName,
         doneCustomEventNameToDispatch,
         doneUniqueStateId,
-        context
+        context,
       ),
     };
     return step;

@@ -4,8 +4,9 @@ import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/ut
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { repeatOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();

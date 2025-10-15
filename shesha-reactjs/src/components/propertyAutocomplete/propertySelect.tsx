@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react';
 import { BulbOutlined, BulbTwoTone } from '@ant-design/icons';
 import { DataTypes } from '@/interfaces/dataTypes';
@@ -16,7 +16,7 @@ import {
   IPropertyMetadata,
   isEntityMetadata,
   ISpecification,
-  metadataHasNestedProperties
+  metadataHasNestedProperties,
 } from '@/interfaces/metadata';
 import { Select, Tooltip } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
@@ -55,7 +55,7 @@ interface IAutocompleteState {
   prefix: string;
 }
 
-const getFullPath = (path: string, prefix: string) => {
+const getFullPath = (path: string, prefix: string): string => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
 };
 
@@ -95,7 +95,7 @@ const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: 
 
     return {
       value: value,
-      label: label
+      label: label,
     };
   }
 
@@ -108,7 +108,7 @@ const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: 
     return {
       value: value,
       label: label,
-      disabled: isSelectable ? !isSelectable(item) : undefined
+      disabled: isSelectable ? !isSelectable(item) : undefined,
     };
   }
 
@@ -116,7 +116,7 @@ const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: 
 };
 
 const propertyItems2options = (properties: IPropertyItem[], prefix: string, isSelectable: PropertyPredicate): IOption[] => {
-  return properties.filter(p => !(p.itemType === 'property' && (p as IPropertyMetadata).dataType === DataTypes.array)).map(p => propertyItem2option(p, prefix, isSelectable));
+  return properties.filter((p) => !(p.itemType === 'property' && (p as IPropertyMetadata).dataType === DataTypes.array)).map((p) => propertyItem2option(p, prefix, isSelectable));
 };
 
 const modelMetadata2Properties = (modelMetadata?: IModelMetadata): IPropertyItem[] => {
@@ -124,28 +124,26 @@ const modelMetadata2Properties = (modelMetadata?: IModelMetadata): IPropertyItem
     return [];
 
   const properties = metadataHasNestedProperties(modelMetadata)
-    ? asPropertiesArray(modelMetadata.properties, []).map<IPropertyItem>(p => ({ ...p, itemType: 'property' }))
+    ? asPropertiesArray(modelMetadata.properties, []).map<IPropertyItem>((p) => ({ ...p, itemType: 'property' }))
     : [];
 
   const specifications = isEntityMetadata(modelMetadata)
-    ? (modelMetadata.specifications ?? []).map<IPropertyItem>(p => ({ ...p, itemType: 'specification' }))
+    ? (modelMetadata.specifications ?? []).map<IPropertyItem>((p) => ({ ...p, itemType: 'specification' }))
     : [];
 
   return [...properties, ...specifications];
 };
 
 export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isPropertySelectable, isPropertyVisible, ...props }) => {
-
   const { fetchContainer } = useQueryBuilder();
 
   const initialProperties = [];
 
   const [state, setState] = useState<IAutocompleteState>({ options: propertyItems2options(initialProperties, null, isPropertySelectable), propertyItems: initialProperties, prefix: null });
 
-  const setProperties = (properties: IPropertyItem[], prefix: string) => {
-
+  const setProperties = (properties: IPropertyItem[], prefix: string): void => {
     const filteredProperties = isPropertyVisible
-      ? properties.filter(p => isPropertyVisible(p))
+      ? properties.filter((p) => isPropertyVisible(p))
       : properties;
 
     setState({
@@ -155,7 +153,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
     });
   };
 
-  const getPrefixFromString = (value: string) => {
+  const getPrefixFromString = (value: string): string | null => {
     if (!value)
       return null;
 
@@ -163,7 +161,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
 
     if (state.propertyItems && state.propertyItems.length > 0 && lastIdx > -1) {
       // Check specifications, specification name may contain namespace and it shouldn't be recognized as a container
-      const spec = state.propertyItems.find(s => isSpecification(s) && s.name === value);
+      const spec = state.propertyItems.find((s) => isSpecification(s) && s.name === value);
       if (spec)
         return null;
     }
@@ -190,7 +188,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
 
     if (firstLoad || containerPath !== state.prefix) {
       // fetch container if changed
-      fetchContainer(containerPath).then(m => {
+      fetchContainer(containerPath).then((m) => {
         const propertyItems = modelMetadata2Properties(m);
         setProperties(propertyItems, containerPath);
       });
@@ -198,10 +196,10 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
   }, [containerPath]);
 
   const getPropertyItem = (path: string): IPropertyItem => {
-    return state.propertyItems.find(p => getPropertyItemIdentifier(p, containerPath) === path);
+    return state.propertyItems.find((p) => getPropertyItemIdentifier(p, containerPath) === path);
   };
 
-  const onSelect = (data: string) => {
+  const onSelect = (data: string): void => {
     if (props.onChange) props.onChange(data);
     if (props.onSelect) {
       const property = getPropertyItem(data);
@@ -209,9 +207,9 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
     }
   };
 
-  const onSearch = (data: string) => {
+  const onSearch = (data: string): void => {
     const filteredOptions: IOption[] = [];
-    state.propertyItems.forEach(p => {
+    state.propertyItems.forEach((p) => {
       const fullPath = p.itemType === 'property'
         ? getFullPath((p as IPropertyMetadata).path, containerPath)
         : (p as ISpecification).friendlyName;
@@ -222,13 +220,13 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
       }
     });
 
-    setState(s => ({ propertyItems: state.propertyItems, options: filteredOptions, prefix: s.prefix }));
+    setState((s) => ({ propertyItems: state.propertyItems, options: filteredOptions, prefix: s.prefix }));
 
     if (props.onChange)
       props.onChange(data);
   };
 
-  const onClear = () => {
+  const onClear = (): void => {
     props.onChange?.(null);
   };
 

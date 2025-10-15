@@ -7,8 +7,8 @@ import {
   IFetchConfigurationsErrorPayload,
   IFetchConfigurationsSuccessPayload,
   ISettingSelection,
-  SaveStatus
-  } from './contexts';
+  SaveStatus,
+} from './contexts';
 
 export enum SettingsEditorActionEnums {
   /* NEW_ACTION_TYPE_GOES_HERE */
@@ -29,51 +29,51 @@ export enum SettingsEditorActionEnums {
 
 export const fetchConfigurationsAction = createAction<void, void>(
   SettingsEditorActionEnums.FetchConfigurations,
-  p => p
+  (p) => p,
 );
 export const fetchConfigurationsSuccessAction = createAction<IFetchConfigurationsSuccessPayload, IFetchConfigurationsSuccessPayload>(
   SettingsEditorActionEnums.FetchConfigurationsSuccess,
-  p => p
+  (p) => p,
 );
 export const fetchConfigurationsErrorAction = createAction<IFetchConfigurationsErrorPayload, IFetchConfigurationsErrorPayload>(
   SettingsEditorActionEnums.FetchConfigurationsError,
-  p => p
+  (p) => p,
 );
 
 export const fetchApplicationsAction = createAction<void, void>(
   SettingsEditorActionEnums.FetchApplications,
-  p => p
+  (p) => p,
 );
 export const fetchApplicationsSuccessAction = createAction<IFetchApplicationsSuccessPayload, IFetchApplicationsSuccessPayload>(
   SettingsEditorActionEnums.FetchApplicationsSuccess,
-  p => p
+  (p) => p,
 );
 export const fetchApplicationsErrorAction = createAction<IFetchApplicationsErrorPayload, IFetchApplicationsErrorPayload>(
   SettingsEditorActionEnums.FetchApplicationsError,
-  p => p
+  (p) => p,
 );
 
 export const selectSettingAction = createAction<ISettingSelection, ISettingSelection>(
   SettingsEditorActionEnums.SelectSetting,
-  p => p
+  (p) => p,
 );
 
 export const selectApplicationAction = createAction<ISettingSelection, ISettingSelection>(
   SettingsEditorActionEnums.SelectApplication,
-  p => p
+  (p) => p,
 );
 
 export const setEditorModeAction = createAction<FormMode, FormMode>(
   SettingsEditorActionEnums.SetEditorMode,
-  p => p
+  (p) => p,
 );
 
 export const setEditorBridgeAction = createAction<IEditorBridge, IEditorBridge>(
   SettingsEditorActionEnums.SetEditorBridge,
-  p => p
+  (p) => p,
 );
 
 export const setSaveStatusAction = createAction<SaveStatus, SaveStatus>(
   SettingsEditorActionEnums.setSaveStatus,
-  p => p
+  (p) => p,
 );

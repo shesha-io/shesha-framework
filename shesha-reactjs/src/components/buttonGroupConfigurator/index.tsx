@@ -30,17 +30,17 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
 
   const [localValue, setLocalValue] = useState<ButtonGroupItemProps[]>(deepCopyViaJson(value));
 
-  const openModal = () => {
+  const openModal = (): void => {
     setLocalValue(deepCopyViaJson(value));
     setShowModal(true);
   };
 
-  const onOkClick = () => {
+  const onOkClick = (): void => {
     onChange?.(localValue);
     setShowModal(false);
   };
 
-  const onCancelClick = () => {
+  const onCancelClick = (): void => {
     setShowModal(false);
   };
 

@@ -15,10 +15,10 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { Option } from 'antd/lib/mentions';
 import { useForm } from '@/providers';
 import { useFormDesignerState } from '@/providers/formDesigner';
-import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
-interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
+type IEntityReferenceSettingsState = IAddressCompomentProps;
 
 const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({ readOnly }) => {
   const { values, model, onValuesChange } = useSettingsForm<IAddressCompomentProps>();
@@ -30,7 +30,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
     standardConstants: [],
     onBuild: (builder) => {
       builder.addAllStandard().addObject("event", "Event callback when user input", undefined);
-    }
+    },
   });
 
   return (
@@ -40,7 +40,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          onValuesChange={onValuesChange} 
+          onValuesChange={onValuesChange}
           componentName={values.componentName}
           propertyName={values.propertyName}
           contextName={values.context}
@@ -195,7 +195,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
             exposedVariables={EXPOSED_VARIABLES}
             wrapInTemplate={true}
             templateSettings={{
-              functionName: 'onChange'
+              functionName: 'onChange',
             }}
             availableConstants={onChangeOrSelectConstants}
           />
@@ -215,7 +215,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
             exposedVariables={EXPOSED_VARIABLES}
             wrapInTemplate={true}
             templateSettings={{
-              functionName: 'onSelect'
+              functionName: 'onSelect',
             }}
             availableConstants={onChangeOrSelectConstants}
           />
@@ -226,7 +226,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
-      
+
       <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting

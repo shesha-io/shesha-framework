@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useState } from 'react';
+import React, { CSSProperties, FC, ReactNode, useState } from 'react';
 import { ColorPicker as AntdColorPicker } from 'antd';
 import { ColorValueType } from 'antd/es/color-picker/interface';
 import { AggregationColor } from 'antd/es/color-picker/color';
@@ -24,7 +24,7 @@ export interface IColorPickerProps {
   defaultValue?: ColorValueType;
 }
 
-const formatColor = (color: AggregationColor, format: ColorFormat) => {
+const formatColor = (color: AggregationColor, format: ColorFormat): string | null => {
   if (!color)
     return null;
 
@@ -36,33 +36,33 @@ const formatColor = (color: AggregationColor, format: ColorFormat) => {
 };
 
 /**
- * 
- * @param theme 
+ *
+ * @param theme
  * @returns a (object) map of theme colors with keys as `primary`, `success`, `warning`, `error`, `info`, `processing`
  */
-export const readThemeColor = (theme: IConfigurableTheme) => ({
-  'primary': theme.application?.primaryColor,
-  'success': theme.application?.successColor,
-  'warning': theme.application?.warningColor,
-  'error': theme.application?.errorColor,
-  'info': theme.application?.infoColor,
-  'processing': theme.application?.processingColor,
-  'primaryTextColor': theme?.text?.default,
-  'secondaryTextColor': theme?.text?.secondary
+export const readThemeColor = (theme: IConfigurableTheme): Record<string, string> => ({
+  primary: theme.application?.primaryColor,
+  success: theme.application?.successColor,
+  warning: theme.application?.warningColor,
+  error: theme.application?.errorColor,
+  info: theme.application?.infoColor,
+  processing: theme.application?.processingColor,
+  primaryTextColor: theme?.text?.default,
+  secondaryTextColor: theme?.text?.secondary,
 });
 
-export const ColorPicker: FC<IColorPickerProps> = ({ 
-  value, 
-  onChange, 
-  title, 
-  presets, 
-  showText, 
-  allowClear, 
-  disabledAlpha, 
-  readOnly, 
-  size, 
-  style, 
-  defaultValue 
+export const ColorPicker: FC<IColorPickerProps> = ({
+  value,
+  onChange,
+  title,
+  presets,
+  showText,
+  allowClear,
+  disabledAlpha,
+  readOnly,
+  size,
+  style,
+  defaultValue,
 }) => {
   const [format, setFormat] = useState<ColorFormat>('hex');
   const { theme } = useTheme();
@@ -72,15 +72,15 @@ export const ColorPicker: FC<IColorPickerProps> = ({
     onChange(formattedValue);
   };
 
-  const handleClear = () => {
+  const handleClear = (): void => {
     onChange(null);
   };
 
-  const onPanelClick = (event: React.MouseEvent<HTMLElement>) => {
+  const onPanelClick = (event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();
   };
 
-  const panelRender = (panel: React.ReactNode) => (
+  const panelRender = (panel: React.ReactNode): ReactNode => (
     <div onClick={onPanelClick}>
       {title && (
         <div
@@ -108,7 +108,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({
     transform: 'scale(1)',
     transformOrigin: 'center center',
     overflow: 'visible',
-    alignItems: 'start'
+    alignItems: 'start',
   };
 
   const wrapperStyle: CSSProperties = {
@@ -139,7 +139,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({
     <div style={wrapperStyle}>
       <div style={scaleContainerStyle}>
         <AntdColorPicker
-          trigger='click'
+          trigger="click"
           format={format}
           onFormatChange={setFormat}
           disabledAlpha={disabledAlpha}

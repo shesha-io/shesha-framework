@@ -11,6 +11,7 @@ import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
 import ChartLoader from './components/chartLoader';
+import { EntityData, IAbpWrappedGetEntityListResponse } from '@/interfaces/gql';
 
 const chartInnerStyle = {
   width: '100%',
@@ -21,7 +22,7 @@ const chartInnerStyle = {
   justifyContent: 'center',
   padding: 0,
   margin: 0,
-  overflow: 'hidden'
+  overflow: 'hidden',
 };
 
 const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = React.memo(({ evaluatedFilters }) => {
@@ -50,7 +51,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsLoaded, setAxisPropertyLabel, setValuePropertyLabel } = useChartDataActionsContext();
-    // Optimize state initialization with lazy initial state
+  // Optimize state initialization with lazy initial state
   const [metadataProcessed, setMetadataProcessed] = useState(false);
   const isFetchingRef = useRef(false);
   const [faultyProperties, setFaultyProperties] = useState<string[]>([]);
@@ -68,7 +69,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
 
     return {
       hasMissingProperties: missingProperties.length > 0,
-      descriptionMessage: `Please make sure that you've configured the following properties correctly: ${[...new Set(missingProperties)].join(', ')}.`
+      descriptionMessage: `Please make sure that you've configured the following properties correctly: ${[...new Set(missingProperties)].join(', ')}.`,
     };
   }, [entityType, chartType, valueProperty, axisProperty]);
 
@@ -84,10 +85,10 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     padding: '16px',
     margin: 0,
     boxSizing: 'border-box' as const,
-    overflow: 'hidden'
+    overflow: 'hidden',
   }), [state]);
 
-  const processAndUpdateData = (items: {}[], refListMap: Map<string, Map<number, string>>) => {
+  const processAndUpdateData = (items: EntityData[], refListMap: Map<string, Map<number, string>>): void => {
     // Process all items efficiently
     let processedItems = processItems(items, refListMap);
 
@@ -131,7 +132,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     const refListMap = new Map<string, Map<number, string>>();
 
     // Function to validate and fetch data
-    const validateAndFetchData = async () => {
+    const validateAndFetchData = async (): Promise<IAbpWrappedGetEntityListResponse> => {
       // Check if maxResultCount is explicitly set and validate it
       if (maxResultCount !== undefined && maxResultCount !== -1) {
         if (maxResultCount > 10000) {
@@ -160,7 +161,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
 
       // Pre-filter reference list properties and create lookup maps
       const refListProperties = (metaData.properties as Array<IRefListPropertyMetadata>).filter(
-        (metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item' && (metaItem.path.toLowerCase() === axisProperty.toLowerCase() || metaItem.path.toLowerCase() === groupingProperty?.toLowerCase())
+        (metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item' && (metaItem.path.toLowerCase() === axisProperty.toLowerCase() || metaItem.path.toLowerCase() === groupingProperty?.toLowerCase()),
       );
 
       const refListPromises = refListProperties.map(async (metaItem: IRefListPropertyMetadata) => {
@@ -200,7 +201,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
         orderBy,
         orderDirection,
         0,
-        maxResultCount ?? -1
+        maxResultCount ?? -1,
       );
 
       return refetch({ ...params, signal: newController.signal });
@@ -209,8 +210,8 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     // Execute the validation and fetch process
     validateAndFetchData()
       .then((response) => {
-        if (!response?.result) {
-          throw new Error(response?.error ?? 'Invalid response structure, please check the properties (axisProperty, valueProperty, ..., filters) used in the chart to make sure they are valid for the chosen entity type and try again.');
+        if (!response || !response.result) {
+          throw new Error(response.error?.message ?? 'Invalid response structure, please check the properties (axisProperty, valueProperty, ..., filters) used in the chart to make sure they are valid for the chosen entity type and try again.');
         }
         const items = response.result.items ?? [];
 
@@ -284,7 +285,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     setValuePropertyLabel,
     setMetadataProcessed,
     setError,
-    setFaultyProperties
+    setFaultyProperties,
   ]);
 
   useEffect(() => {
@@ -406,12 +407,12 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
         showIcon
         message={message}
         description={error}
-        type={"error"}
-        action={
+        type="error"
+        action={(
           <Button color="danger" size="small" onClick={retryFetch}>
             Retry
           </Button>
-        }
+        )}
       />
     );
   }, [error, retryFetch]);
@@ -420,19 +421,21 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
   const loaderComponent = useMemo(() => {
     return (
       <div className={cx(styles.loadingContainer)}>
-        <ChartLoader chartType={chartType} handleCancelClick={() => {
-          if (isFetchingRef.current && currentControllerRef.current) {
-            isFetchingRef.current = false;
-            setError('Request cancelled by user');
-            setIsLoaded(true);
-            setMetadataProcessed(false);
-            try {
-              currentControllerRef.current.abort('Request cancelled by user');
-            } catch {
-              // Ignore abort errors during user cancellation - this is expected behavior
+        <ChartLoader
+          chartType={chartType}
+          handleCancelClick={() => {
+            if (isFetchingRef.current && currentControllerRef.current) {
+              isFetchingRef.current = false;
+              setError('Request cancelled by user');
+              setIsLoaded(true);
+              setMetadataProcessed(false);
+              try {
+                currentControllerRef.current.abort('Request cancelled by user');
+              } catch {
+                // Ignore abort errors during user cancellation - this is expected behavior
+              }
             }
-          }
-        }}
+          }}
         />
         <div className={cx(styles.loadingText)}>Fetching data...</div>
       </div>

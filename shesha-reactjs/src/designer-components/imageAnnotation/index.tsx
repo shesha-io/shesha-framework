@@ -34,8 +34,8 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
     }
 
     return (
-      <ConfigurableFormItem model={model} >
-        {(value, onChange) => <ImageAnnotationControl model={model} value={value} onChange={onChange}/>}
+      <ConfigurableFormItem model={model}>
+        {(value, onChange) => <ImageAnnotationControl model={model} value={value} onChange={onChange} />}
       </ConfigurableFormItem>
     );
   },
@@ -43,16 +43,15 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
     .add<IImageProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IImageProps)
     .add<IImageProps>(1, (prev) => migrateVisibility(prev))
     .add<IImageProps>(2, (prev) => migrateReadOnly(prev))
-    .add<IImageProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
-  ,
-  initModel: model => {
+    .add<IImageProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) })),
+  initModel: (model) => {
     const customModel: IImageProps = {
       ...model,
     };
     return customModel;
   },
   settingsFormMarkup: AnnotationSettingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(AnnotationSettingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(AnnotationSettingsForm, model),
 };
 
 export default ImageAnnotationComponent;

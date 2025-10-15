@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 import { IInputDirection, IValue } from '../interfaces';
 
-export const getStyleClassName = (type: keyof IValue, direction: keyof IInputDirection) =>
+export const getStyleClassName = (type: keyof IValue, direction: keyof IInputDirection): string =>
   `${type.substring(0, 4)}-${direction}`;
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {

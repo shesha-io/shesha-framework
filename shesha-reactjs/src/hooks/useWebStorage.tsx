@@ -4,7 +4,7 @@ export function useWebStorage<T>(
   storage: 'localStorage' | 'sessionStorage',
   key: string,
   initialValue: T,
-  ignoredKeys?: string[]
+  ignoredKeys?: string[],
 ): [T, (v: T) => void] {
   // State to store our value
   // Pass initial state function to useState so logic is only executed once
@@ -23,7 +23,7 @@ export function useWebStorage<T>(
 
   // Return a wrapped version of useState's setter function that ...
   // ... persists the new value to 'localStorage' | 'sessionStorage'.
-  const setValue = (value: T) => {
+  const setValue = (value: T): void => {
     try {
       // Allow value to be a function so we have same API as useState
       const valueToStore = value instanceof Function ? value(storedValue) : value;

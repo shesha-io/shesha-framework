@@ -1,6 +1,7 @@
+import { FormRawMarkup } from '@/index';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
-export const getSettings = (data: any) =>
+export const getSettings = (data: object): FormRawMarkup =>
   new DesignerToolbarSettings(data)
     .addCollapsiblePanel({
       id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
@@ -20,7 +21,7 @@ export const getSettings = (data: any) =>
             parentId: 'root',
             label: 'Component name',
             validate: { required: true },
-            jsSetting: false
+            jsSetting: false,
           })
           .addDropdown({
             id: 'f6c3d710-8d98-47fc-9fe2-7c6312e9a03c',
@@ -84,9 +85,9 @@ export const getSettings = (data: any) =>
             label: 'hide',
             parentId: 'root',
           })
-          .toJson()
-        ]
-      }
+          .toJson(),
+        ],
+      },
     })
     .addCollapsiblePanel({
       id: '22224bf6-f76d-4139-a850-c99bf06c8b69',
@@ -107,9 +108,9 @@ export const getSettings = (data: any) =>
             parentId: 'root',
             mode: 'dialog',
           })
-          .toJson()
-        ]
-      }
+          .toJson(),
+        ],
+      },
     })
     .addCollapsiblePanel({
       id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
@@ -132,11 +133,10 @@ export const getSettings = (data: any) =>
             hidden: false,
             validate: {},
             jsSetting: true,
-          }).toJson()
-        ]
-      }
+          }).toJson(),
+        ],
+      },
     })
     .toJson();
-
 
 

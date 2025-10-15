@@ -1,5 +1,5 @@
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { FormIdentifier, FormMarkup } from '../../form/models';
-import { ButtonGroupItemProps } from '@/index';
 import { ModalFooterButtons } from '../models';
 import closeDialogArgumentsJson from './close-dialog-arguments.json';
 import { getSettings, showDialogComponents } from './show-dialog-arguments';

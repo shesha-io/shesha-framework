@@ -10,5 +10,5 @@ export interface ISetNavigatorPayload {
 }
 export const setCurrentNavigatorAction = createAction<IStackedNavigationStateContext, string>(
   StackedNavigationActionEnums.SetCurrentNavigator,
-  (navigator) => ({ navigator })
+  (navigator) => ({ navigator }),
 );

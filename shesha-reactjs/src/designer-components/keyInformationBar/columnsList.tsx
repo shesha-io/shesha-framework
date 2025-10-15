@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useContext, useState, Fragment } from 'react';
+import React, { FC, useEffect, useRef, useContext, useState, Fragment, ReactElement, CSSProperties } from 'react';
 import {
   DragDropContext,
   DropResult,
@@ -27,13 +27,13 @@ export interface IProps {
 const EditableContext = React.createContext(null);
 const DragHandleContext = React.createContext(null);
 
-const tooltip = () => (
+const tooltip = (): ReactElement => (
   <Tooltip title={strings.tooltip}>
-    {<QuestionCircleOutlined className='tooltip-question-icon' size={14} color='gray' />}
+    <QuestionCircleOutlined className="tooltip-question-icon" size={14} color="gray" />
   </Tooltip>
 );
 
-const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, isDropdown, ...restProps }) => {
+const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, isDropdown, ...restProps }): ReactElement => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
   const form = useContext(EditableContext);
@@ -43,14 +43,14 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
     }
   }, [editing]);
 
-  const toggleEdit = () => {
+  const toggleEdit = (): void => {
     setEditing(!editing);
     form.setFieldsValue({
       [dataIndex]: record[dataIndex],
     });
   };
 
-  const save = async () => {
+  const save = async (): Promise<void> => {
     try {
       const values = await form.validateFields();
       toggleEdit();
@@ -68,12 +68,17 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   const textAlignValues = ['start', 'end', 'center', 'inherit'];
   const flexDirectionValues = ['row', 'column', 'row-reverse', 'column-reverse'];
 
-  const Dropdown = (ref, values) =>
-  (<Select ref={ref} onSelect={save} onBlur={save}>
-    {values.map((value, i) => <Option key={i} value={value}>{value.split('-').map(word => {
-      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-    }).join(' ')}</Option>)}
-  </Select>);
+  const Dropdown = (ref, values): ReactElement =>
+    (
+      <Select ref={ref} onSelect={save} onBlur={save}>
+        {values.map((value, i) => (
+          <Option key={i} value={value}>{value.split('-').map((word) => {
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+          }).join(' ')}
+          </Option>
+        ))}
+      </Select>
+    );
 
   if (editable) {
     childNode = editing ? (
@@ -89,9 +94,9 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
           },
         ]}
       >
-        {dataIndex === "textAlign" ?
-          Dropdown(inputRef, textAlignValues) : dataIndex === "flexDirection" ?
-            Dropdown(inputRef, flexDirectionValues) : <Input ref={inputRef} onPressEnter={save} onBlur={save} />}
+        {dataIndex === "textAlign"
+          ? Dropdown(inputRef, textAlignValues) : dataIndex === "flexDirection"
+            ? Dropdown(inputRef, flexDirectionValues) : <Input ref={inputRef} onPressEnter={save} onBlur={save} />}
       </Form.Item>
     ) : (
       <div
@@ -109,7 +114,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   return <td {...restProps}>{childNode}</td>;
 };
 
-const getItemStyle = (draggableStyle: any, isDragging: boolean): {} => ({
+const getItemStyle = (draggableStyle: any, isDragging: boolean): CSSProperties => ({
   padding: '2px',
   userSelect: 'none',
   background: isDragging ? 'white' : 'inherit',
@@ -117,12 +122,12 @@ const getItemStyle = (draggableStyle: any, isDragging: boolean): {} => ({
   ...draggableStyle,
 });
 
-const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
+const DraggableBodyRowInner = ({ columns, className, style, ...restProps }): ReactElement => {
   const [form] = Form.useForm();
 
   // function findIndex base on Table rowKey props and should always be a right array index
   const rowKey = restProps['data-row-key'];
-  const index = columns.findIndex(x => x.id === restProps['data-row-key']);
+  const index = columns.findIndex((x) => x.id === restProps['data-row-key']);
   return (
     <Draggable key={rowKey} draggableId={rowKey} index={index}>
       {(providedDraggable: DraggableProvided, snapshotDraggable: DraggableStateSnapshot) => (
@@ -144,7 +149,7 @@ const DraggableBodyRowInner = ({ columns, className, style, ...restProps }) => {
   );
 };
 
-const DragHandle = () => {
+const DragHandle = (): ReactElement => {
   const dragHandleProps = useContext(DragHandleContext);
 
   return <MenuOutlined style={{ color: '#999' }} {...dragHandleProps} />;
@@ -154,12 +159,12 @@ const DragHandle = () => {
 export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => {
   const columns = value as KeyInfomationBarItemProps[];
 
-  const handleDeleteTab = (key: string) => {
-    const newColumns = columns.filter(column => column.id !== key);
+  const handleDeleteTab = (key: string): void => {
+    const newColumns = columns.filter((column) => column.id !== key);
     onChange(newColumns);
   };
 
-  const handleAddColumn = () => {
+  const handleAddColumn = (): void => {
     const newColumn: KeyInfomationBarItemProps = {
       id: nanoid(),
       width: 200,
@@ -172,9 +177,9 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => 
     onChange(newColumns);
   };
 
-  const handleSaveCell = row => {
+  const handleSaveCell = (row): void => {
     const newData = [...columns];
-    const index = newData.findIndex(item => row.id === item.id);
+    const index = newData.findIndex((item) => row.id === item.id);
     const currentItem = newData[index];
     newData.splice(index, 1, { ...currentItem, ...row });
 
@@ -225,21 +230,21 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => 
         render: (_, record) =>
           columns.length >= 1 ? (
             <Popconfirm title="Are you sure want to delete this column?" onConfirm={() => handleDeleteTab(record.id)}>
-              <a><DeleteFilled color='red' /></a>
+              <a><DeleteFilled color="red" /></a>
             </Popconfirm>
           ) : null,
       }
       : null,
-  ].filter(c => Boolean(c));
+  ].filter((c) => Boolean(c));
 
-  const tableColumns = cols.map(col => {
+  const tableColumns = cols.map((col) => {
     if (!col.editable) {
       return col;
     }
 
     return {
       ...col,
-      onCell: record => ({
+      onCell: (record) => ({
         record,
         editable: col.editable,
         dataIndex: col.dataIndex,
@@ -249,12 +254,12 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => 
     };
   });
 
-  const getListStyle = (_isDraggingOver: boolean) => ({
+  const getListStyle = (_isDraggingOver: boolean): Pick<CSSProperties, 'background' | 'overflow'> => ({
     background: _isDraggingOver ? "lightgrey" : "inherit",
     overflow: "scroll" as "scroll",
   });
 
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = (result: DropResult): void => {
     const { source, destination } = result;
 
     if (!destination) {
@@ -280,7 +285,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => 
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const toggleModal = () => setShowDialog(prevVisible => !prevVisible);
+  const toggleModal = (): void => setShowDialog((prevVisible) => !prevVisible);
 
   return (
     <Fragment>
@@ -299,16 +304,16 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => 
       >
         <Space direction="vertical" style={{ width: '100%' }}>
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId={'columns'}>
+            <Droppable droppableId="columns">
               {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
-                <div ref={provided.innerRef} {...provided.droppableProps} style={{ ...getListStyle(snapshot.isDraggingOver), overflow: "hidden" }} >
+                <div ref={provided.innerRef} {...provided.droppableProps} style={{ ...getListStyle(snapshot.isDraggingOver), overflow: "hidden" }}>
                   <Table
                     style={{ overflow: "hidden" }}
                     bordered
                     pagination={false}
                     dataSource={columns}
                     columns={tableColumns}
-                    rowKey={r => r.id}
+                    rowKey={(r) => r.id}
                     components={{
                       body: {
                         row: ({ className, style, ...restProps }) => (

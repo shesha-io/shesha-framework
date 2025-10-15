@@ -109,7 +109,7 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
     .toJson();
 };
 
-export const useExecuteScriptAction = () => {
+export const useExecuteScriptAction = (): void => {
   useConfigurableAction<IExecuteScriptArguments>(
     {
       isPermament: true,
@@ -125,6 +125,6 @@ export const useExecuteScriptAction = () => {
         return executeScript(actionArgs.expression, context);
       },
     },
-    []
+    [],
   );
 };

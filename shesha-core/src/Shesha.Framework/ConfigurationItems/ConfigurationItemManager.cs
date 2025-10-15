@@ -1,5 +1,6 @@
 ﻿using Abp;
 using Abp.Domain.Repositories;
+using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Exceptions;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
@@ -7,6 +8,7 @@ using Shesha.Dto;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Reflection;
+using Shesha.Utilities;
 using Shesha.Validations;
 using System;
 using System.Linq;
@@ -127,8 +129,6 @@ namespace Shesha.ConfigurationItems
             var dto = new ConfigurationItemDto
             {
                 Id = item.Id,
-                ModuleId = item.Module?.Id,
-                OriginId = item.Origin?.Id,
                 Module = item.Module?.Name,
                 Name = item.Name,
                 Label = item.Label,
@@ -195,7 +195,7 @@ namespace Shesha.ConfigurationItems
             if (actualItem == null)
                 throw new ConfigurationItemNotFoundException(Discriminator, module, name, null);
 
-            return await Repository.GetAsync(actualItem.ItemId);
+            return await GetAsync(actualItem.ItemId);
         }
 
         public virtual async Task<TItem> CreateItemAsync(CreateItemInput input) 
@@ -294,6 +294,23 @@ namespace Shesha.ConfigurationItems
             dstRevision.ConfigHash = srcRevision.ConfigHash;
 
             return Task.CompletedTask;
+        }
+
+        public virtual Task<bool> CurrentUserHasAccessToAsync(string module, string name)
+        {
+            return Task.FromResult(true);
+        }
+
+        public virtual Task<string> GetCacheMD5Async(IConfigurationItemDto dto)
+        {
+            var json = JsonConvert.SerializeObject(dto);
+            var md5 = json.ToMd5Fingerprint();
+            return Task.FromResult(md5);
+        }
+
+        public async Task<ConfigurationItem> GetAsync(Guid id)
+        {
+            return await Repository.GetAsync(id);
         }
     }
 }

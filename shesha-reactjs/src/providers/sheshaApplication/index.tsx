@@ -123,8 +123,9 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                         <DataContextProvider
                                           id={SheshaCommonContexts.AppContext}
                                           name={SheshaCommonContexts.AppContext}
-                                          description={'Application data store context'}
-                                          type={'app'}
+                                          description="Application data store context"
+                                          type="app"
+                                          webStorageType="localStorage"
                                         >
                                           <FormDataLoadersProvider>
                                             <FormDataSubmittersProvider>
@@ -148,7 +149,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                                         status="500"
                                                         title="500"
                                                         subTitle={error?.message || 'Sorry, something went wrong.'}
-                                                        //extra={<Button type="primary">Back Home</Button>}
+                                                        // extra={<Button type="primary">Back Home</Button>}
                                                       />
                                                     )}
                                                   </DynamicModalProvider>

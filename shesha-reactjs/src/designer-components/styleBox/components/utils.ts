@@ -7,16 +7,16 @@ export const getStyleChangeValue = (
   direction: keyof IInputDirection,
   value: string,
   prevVal: string,
-) => {
-  const v = jsonSafeParse(prevVal || '{}');
+): string => {
+  const v = jsonSafeParse<object>(prevVal || '{}');
 
   return JSON.stringify({
     ...(v || {}),
-    [`${type}${capitalizeFirstLetter(direction)}`]: value,
+    [`${type}${capitalizeFirstLetter(direction)}`]: value.replace(/\b0+/g, ''),
   });
 };
 
-export const getStyleValue = (type: keyof IValue, direction: keyof IInputDirection, value: string, defaultMargin?:string) => {
+export const getStyleValue = (type: keyof IValue, direction: keyof IInputDirection, value: string): number => {
   const v = jsonSafeParse(value || '{}') as IValue;
-  return (v || {})[`${type}${capitalizeFirstLetter(direction)}`] || defaultMargin || '';
+  return (v || {})[`${type}${capitalizeFirstLetter(direction)}`] || 0;
 };

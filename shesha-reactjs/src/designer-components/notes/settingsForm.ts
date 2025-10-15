@@ -1,8 +1,8 @@
-import { DesignerToolbarSettings } from "@/index";
+import { DesignerToolbarSettings, FormMarkupWithSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -39,8 +39,8 @@ export const getSettings = (data: any) => {
                       label: 'Component Name',
                       jsSetting: false,
                       validate: {
-                        required: true
-                      }
+                        required: true,
+                      },
                     },
                     {
                       id: nanoid(),
@@ -49,8 +49,8 @@ export const getSettings = (data: any) => {
                       type: 'textField',
                       tooltip: 'This is used to group notes into categories',
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -61,9 +61,9 @@ export const getSettings = (data: any) => {
                       id: nanoid(),
                       propertyName: 'showCharCount',
                       label: 'Show Chars Count',
-                      jsSetting: true
-                    }
-                  ]
+                      jsSetting: true,
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -74,9 +74,9 @@ export const getSettings = (data: any) => {
                       id: nanoid(),
                       propertyName: 'autoSize',
                       label: 'Auto Size',
-                      jsSetting: true
-                    }
-                  ]
+                      jsSetting: true,
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -96,9 +96,9 @@ export const getSettings = (data: any) => {
                       id: nanoid(),
                       propertyName: 'hidden',
                       label: 'Hide',
-                      jsSetting: true
-                    }
-                  ]
+                      jsSetting: true,
+                    },
+                  ],
                 }).addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
@@ -108,19 +108,19 @@ export const getSettings = (data: any) => {
                       id: nanoid(),
                       propertyName: 'allowEdit',
                       label: 'Allow Edit',
-                      jsSetting: true
+                      jsSetting: true,
                     },
                     {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'allowDelete',
                       label: 'Allow Delete',
-                      jsSetting: true
-                    }
-                  ]
+                      jsSetting: true,
+                    },
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'data',
@@ -144,10 +144,10 @@ export const getSettings = (data: any) => {
                       mode: 'single',
                       jsSetting: true,
                       validate: {
-                        required: true
-                      }
-                    }
-                  ]
+                        required: true,
+                      },
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -160,8 +160,8 @@ export const getSettings = (data: any) => {
                       label: 'Owner ID',
                       jsSetting: true,
                       validate: {
-                        required: true
-                      }
+                        required: true,
+                      },
                     },
                     {
                       id: nanoid(),
@@ -169,11 +169,11 @@ export const getSettings = (data: any) => {
                       label: 'Category',
                       type: 'textField',
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'events',
@@ -189,7 +189,7 @@ export const getSettings = (data: any) => {
                   labelAlign: 'right',
                   parentId: eventsTabId,
                   tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
-                  exposedVariables: [` { name: 'createdNotes', description: 'Created note', type: 'array' },`]
+                  exposedVariables: [` { name: 'createdNotes', description: 'Created note', type: 'array' },`],
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -199,7 +199,7 @@ export const getSettings = (data: any) => {
                   labelAlign: 'right',
                   parentId: eventsTabId,
                   tooltip: 'Triggered after successfully updating a note',
-                  exposedVariables: [` { name: 'note', description: 'Updated note', type: 'object' },`]
+                  exposedVariables: [` { name: 'note', description: 'Updated note', type: 'object' },`],
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -209,10 +209,10 @@ export const getSettings = (data: any) => {
                   labelAlign: 'right',
                   parentId: eventsTabId,
                   tooltip: 'Triggered after successfully deleting a note',
-                  exposedVariables: [` { name: 'note', description: 'delete note', type: 'object' },`]
+                  exposedVariables: [` { name: 'note', description: 'delete note', type: 'object' },`],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'validation',
@@ -230,7 +230,7 @@ export const getSettings = (data: any) => {
                       propertyName: 'minLength',
                       label: 'Min Length',
                       min: 0,
-                      jsSetting: true
+                      jsSetting: true,
                     },
                     {
                       type: 'numberField',
@@ -238,12 +238,12 @@ export const getSettings = (data: any) => {
                       propertyName: 'maxLength',
                       label: 'Max Length',
                       min: 0,
-                      jsSetting: true
-                    }
-                  ]
+                      jsSetting: true,
+                    },
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -265,13 +265,13 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                       dropdownOptions: [
                         { value: 'left', label: 'Left' },
-                        { value: 'right', label: 'Right' }
-                      ]
-                    }
-                  ]
+                        { value: 'right', label: 'Right' },
+                      ],
+                    },
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'security',
@@ -286,19 +286,19 @@ export const getSettings = (data: any) => {
                   label: 'Permissions',
                   parentId: securityTabId,
                   validate: {},
-                  jsSetting: true
+                  jsSetting: true,
                 })
-                .toJson()
-            ]
-          }
-        ]
+                .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       layout: 'vertical' as FormLayout,
       colon: false,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

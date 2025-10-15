@@ -46,7 +46,7 @@ export const SCHEDULED_JOB_EXECUTION_CONTEXT_INITIAL_STATE: IScheduledJobExecuti
 
 export const ScheduledJobExecutionStateContext = createNamedContext<IScheduledJobExecutionStateContext>(
   SCHEDULED_JOB_EXECUTION_CONTEXT_INITIAL_STATE,
-  "ScheduledJobExecutionStateContext"
+  "ScheduledJobExecutionStateContext",
 );
 
 export const ScheduledJobExecutionActionsContext = createNamedContext<IScheduledJobExecutionActionsContext>(undefined, "ScheduledJobExecutionActionsContext");

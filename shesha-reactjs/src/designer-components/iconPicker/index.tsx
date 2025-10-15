@@ -6,8 +6,8 @@ import { IIconPickerComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { useAvailableConstantsData } from '@/providers/form/utils';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';

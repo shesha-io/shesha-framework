@@ -1,8 +1,8 @@
-import { DesignerToolbarSettings } from '@/index';
+import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -275,7 +275,7 @@ export const getSettings = (data: any) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false
+                              _value: false,
                             } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                             width: '100%',
@@ -351,7 +351,7 @@ export const getSettings = (data: any) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false
+                              _value: false,
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
@@ -431,7 +431,7 @@ export const getSettings = (data: any) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false
+                              _value: false,
                             } as any,
                             validate: {},
                             settingsValidationErrors: [],
@@ -471,7 +471,7 @@ export const getSettings = (data: any) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false
+                              _value: false,
                             } as any,
                           },
                         ],
@@ -515,7 +515,7 @@ export const getSettings = (data: any) => {
                             jsSetting: true,
                           },
                         ],
-                      })                      
+                      })
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
@@ -565,7 +565,7 @@ export const getSettings = (data: any) => {
                   size: 'small',
                   parentId: securityTabId,
                 })
-      
+
                 .toJson(),
             ],
           },

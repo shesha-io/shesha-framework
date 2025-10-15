@@ -1,8 +1,8 @@
 import { getAccessToken, removeAccessToken, saveUserToken } from '@/utils/auth';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '../sheshaApplication/contexts';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
-import { IEntityReferenceDto, IErrorInfo, ILoginForm } from '@/interfaces';
-import { HttpClientApi } from '@/publicJsApis/httpClient';
+import { IEntityReferenceDto, IErrorInfo, ILoginForm, toErrorInfo } from '@/interfaces';
+import { HttpClientApi, HttpResponse } from '@/publicJsApis/httpClient';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, UserLoginInfoDto } from '@/apis/session';
 import { getQueryParam, isSameUrls, removeURLParameter } from '@/utils/url';
@@ -11,7 +11,7 @@ import React from 'react';
 import { IAccessToken, IHttpHeaders } from '@/interfaces/accessToken';
 import { getLocalizationOrDefault } from '@/utils/localization';
 import { getTenantId } from '@/utils/multitenancy';
-import { HttpResponse } from '@/publicJsApis/httpClient';
+
 import {
   ASPNET_CORE_CULTURE,
   AuthenticationState,
@@ -23,10 +23,18 @@ import {
   URLS,
 } from './models';
 import { ISettingsActionsContext } from '../settings/contexts';
+import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 type RerenderTrigger = () => void;
 
 const RETURN_URL_KEY = 'returnUrl';
+
+const enum AuthenticateResultType {
+  Success = 0,
+  Redirect = 1,
+  RedirectNoAuth = 2,
+};
 
 export interface AuthenticatorArgs {
   httpClient: HttpClientApi;
@@ -38,7 +46,7 @@ export interface AuthenticatorArgs {
   /**
    * A callback for when the request headers are changed
    */
-  onSetRequestHeaders?: (headers: IHttpHeaders) => void;
+  onSetRequestHeaders?: ((headers: IHttpHeaders) => void) | undefined;
 }
 
 export class Authenticator implements IAuthenticator {
@@ -50,7 +58,7 @@ export class Authenticator implements IAuthenticator {
 
   #rerender: RerenderTrigger;
 
-  #onSetRequestHeaders: (headers: IHttpHeaders) => void;
+  #onSetRequestHeaders: ((headers: IHttpHeaders) => void) | undefined;
 
   #tokenName: string;
 
@@ -58,16 +66,16 @@ export class Authenticator implements IAuthenticator {
 
   #homePageUrl: string;
 
-  #loginInfo: GetCurrentLoginInfoOutput;
+  #loginInfo: GetCurrentLoginInfoOutput | undefined;
 
   state: AuthenticationState;
 
-  get loginInfo() {
+  get loginInfo(): UserLoginInfoDto | undefined {
     return this.#loginInfo?.user;
   }
 
-  get isLoggedIn() {
-    return this.state.status === 'ready' && this.#loginInfo?.user !== null;
+  get isLoggedIn(): boolean {
+    return this.state.status === 'ready' && isDefined(this.#loginInfo?.user);
   }
 
   constructor(args: AuthenticatorArgs, forceRootUpdate: RerenderTrigger) {
@@ -83,11 +91,11 @@ export class Authenticator implements IAuthenticator {
     this.#onSetRequestHeaders = args.onSetRequestHeaders;
   }
 
-  applyRouter = (router: IRouter) => {
+  applyRouter = (router: IRouter): void => {
     this.#router = router;
   };
 
-  #redirect = (url: string) => {
+  #redirect = (url: string): void => {
     this.#router.push(url);
   };
 
@@ -101,7 +109,7 @@ export class Authenticator implements IAuthenticator {
 
     const tenantId = getTenantId();
     if (tenantId) {
-      headers['Abp.TenantId'] = getTenantId().toString();
+      headers['Abp.TenantId'] = tenantId.toString();
     }
 
     return headers;
@@ -111,42 +119,40 @@ export class Authenticator implements IAuthenticator {
     return getAccessToken(this.#tokenName);
   };
 
-  #saveUserToken = (token: IAccessToken) => {
+  #saveUserToken = (token: IAccessToken): void => {
     saveUserToken(token, this.#tokenName);
   };
 
-  #clearAccessToken = () => {
+  #clearAccessToken = (): void => {
     removeAccessToken(this.#tokenName);
   };
 
   #checkRegistrationCompletion = (
-    response: AuthenticateResultModelAjaxResponse
-  ): Promise<AuthenticateResultModelAjaxResponse> => {
-    return new Promise((resolve, reject) => {
-      if (response?.result?.resultType === 2) {
-        if (Boolean(response?.result?.redirectUrl)) {
-          this.#redirect(`/no-auth/${response.result.url}`);
-          reject(new Error('Redirecting to another page.'));
-        }
-        if (Boolean(response?.result?.redirectModule) && Boolean(response?.result?.redirectForm)) {
-          this.#redirect(
-            `/no-auth/${response.result.redirectModule}/${response.result.redirectForm}?user=${response.result.userId}`
-          );
-          reject(new Error('Redirecting to another form.'));
-        }
-      } else if (response?.result?.resultType === 1) {
-        if (Boolean(response?.result?.redirectUrl)) {
-          this.#redirect(response.result.redirectUrl);
-          reject(new Error('Redirecting to another page.'));
-        }
-        if (Boolean(response?.result?.redirectModule) && Boolean(response?.result?.redirectForm)) {
-          this.#redirect(`/dynamic/${response.result.redirectModule}/${response.result.redirectForm}`);
-          reject(new Error('Redirecting to another form.'));
-        }
-      } else {
-        resolve(response);
+    response: AuthenticateResultModelAjaxResponse,
+  ): void => {
+    const result = extractAjaxResponse(response);
+
+    if (result.resultType === AuthenticateResultType.RedirectNoAuth) {
+      if (result.redirectUrl) {
+        this.#redirect(`/no-auth/${result.redirectUrl}`);
+        throw new Error('Redirecting to another page.');
       }
-    });
+      if (result.redirectModule && result.redirectForm) {
+        this.#redirect(
+          `/no-auth/${result.redirectModule}/${result.redirectForm}?user=${result.userId}`,
+        );
+        throw new Error('Redirecting to another form.');
+      }
+    } else if (result.resultType === AuthenticateResultType.Redirect) {
+      if (result.redirectUrl) {
+        this.#redirect(result.redirectUrl);
+        throw new Error('Redirecting to another page.');
+      }
+      if (result.redirectModule && result.redirectForm) {
+        this.#redirect(`/dynamic/${result.redirectModule}/${result.redirectForm}`);
+        throw new Error('Redirecting to another form.');
+      }
+    }
   };
 
   #loginUserHttp = async (loginFormData: ILoginForm): Promise<void> => {
@@ -156,9 +162,12 @@ export class Authenticator implements IAuthenticator {
     >(URLS.LOGIN, loginFormData);
     const { data: response } = httpResponse;
 
-    await this.#checkRegistrationCompletion(response); // Check if registration completion redirect is needed
+    this.#checkRegistrationCompletion(response); // Check if registration completion redirect is needed
 
-    const token = response.success && response.result ? (response.result as IAccessToken) : null;
+    const token = isAjaxSuccessResponse(response)
+      ? response.result
+      : null;
+
     if (token && token.accessToken) {
       // save token to the localStorage
       this.#saveUserToken(token);
@@ -172,17 +181,16 @@ export class Authenticator implements IAuthenticator {
     const headers = this.#getHttpHeaders();
     const httpResponse = await this.#httpClient.get<void, HttpResponse<GetCurrentLoginInfoOutputAjaxResponse>>(
       URLS.GET_CURRENT_LOGIN_INFO,
-      { headers: headers }
+      { headers: headers },
     );
-    const { data: response } = httpResponse;
-    if (!response.success || !response.result) throw new Error('Failed to get user profile', { cause: response.error });
+    const response = extractAjaxResponse(httpResponse.data, 'Failed to get user profile');
 
     this.#onSetRequestHeaders?.(headers);
 
-    return response.result;
+    return response;
   };
 
-  #updateState = (status: AuthenticationStatus, hint?: string, error?: IErrorInfo) => {
+  #updateState = (status: AuthenticationStatus, hint?: string, error?: IErrorInfo): void => {
     this.state = { status, hint, error };
     this.#rerender();
   };
@@ -191,27 +199,28 @@ export class Authenticator implements IAuthenticator {
     return url ? removeURLParameter(url, RETURN_URL_KEY) : url;
   };
 
-  #getRedirectUrl = (currentPath: string, userLogin: UserLoginInfoDto): string => {
+  #getRedirectUrl = (currentPath: string, userLogin: UserLoginInfoDto): string | undefined => {
     const currentUrlWithoutReturn = this.#stripReturnUrl(currentPath);
 
     if (isSameUrls(currentUrlWithoutReturn, this.#unauthorizedRedirectUrl)) {
       const returnUrlParam = this.#router.query[RETURN_URL_KEY];
       const returnUrl = returnUrlParam ? decodeURIComponent(returnUrlParam.toString()) : undefined;
 
-      const redirects: string[] = [returnUrl, userLogin.homeUrl, this.#homePageUrl, DEFAULT_HOME_PAGE];
-      const redirectUrl = redirects.find((r) => Boolean(r?.trim())); // skip all null/undefined and empty strings
+      const redirects = [returnUrl, userLogin.homeUrl, this.#homePageUrl, DEFAULT_HOME_PAGE];
+      const redirectUrl = redirects.find((r) => !isNullOrWhiteSpace(r)); // skip all null/undefined and empty strings
       return redirectUrl;
-    } else return undefined;
+    } else
+      return undefined;
   };
 
   loginUserAsync = async (loginFormData: ILoginForm): Promise<LoginUserResponse> => {
-    this.#updateState('inprogress', 'Logging in...', null);
+    this.#updateState('inprogress', 'Logging in...');
 
     try {
       // call login endpoint
       await this.#loginUserHttp(loginFormData);
     } catch (error) {
-      this.#updateState('failed', ERROR_MESSAGES.LOGIN, error);
+      this.#updateState('failed', ERROR_MESSAGES.LOGIN, toErrorInfo(error));
       throw error;
     }
 
@@ -221,7 +230,10 @@ export class Authenticator implements IAuthenticator {
       const userProfile = await this.#fetchUserInfoHttp();
       this.#loginInfo = userProfile;
 
-      this.#updateState('ready', null, null);
+      if (!userProfile.user)
+        throw new Error(ERROR_MESSAGES.USER_PROFILE_IS_UNAVAILABLE);
+
+      this.#updateState('ready');
 
       const redirectUrl = this.#getRedirectUrl(this.#router.fullPath, userProfile.user);
 
@@ -230,7 +242,7 @@ export class Authenticator implements IAuthenticator {
         url: redirectUrl ?? this.#router.fullPath,
       };
     } catch (error) {
-      this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, error);
+      this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, toErrorInfo(error));
       throw error;
     }
   };
@@ -243,7 +255,7 @@ export class Authenticator implements IAuthenticator {
     await this.#logoutUserHttp();
     this.#clearAccessToken();
 
-    this.#updateState('waiting', null, null);
+    this.#updateState('waiting');
 
     this.#redirect(this.#unauthorizedRedirectUrl);
   };
@@ -280,13 +292,13 @@ export class Authenticator implements IAuthenticator {
         const userProfile = await this.#fetchUserInfoHttp();
         if (userProfile.user) {
           this.#loginInfo = userProfile;
-          this.#updateState('ready', null, null);
+          this.#updateState('ready');
         } else {
-          this.#updateState('waiting', null, null);
+          this.#updateState('waiting');
           this.#router.push(await getRedirectUrlAsync());
         }
       } catch (error) {
-        this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, error);
+        this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, toErrorInfo(error));
         this.#router.push(await getRedirectUrlAsync());
       }
     } else this.#router.push(await getRedirectUrlAsync());
@@ -296,7 +308,7 @@ export class Authenticator implements IAuthenticator {
     const loginInfo = this.loginInfo;
     if (!loginInfo) return false;
 
-    if (!permissions || permissions.length === 0) return true;
+    if (!isDefined(permissions) || permissions.length === 0) return true;
 
     const granted = loginInfo.grantedPermissions || [];
 
@@ -307,28 +319,32 @@ export class Authenticator implements IAuthenticator {
           (!gp.permissionedEntity ||
             gp.permissionedEntity.length === 0 ||
             gp.permissionedEntity.some((pe) =>
-              permissionedEntities?.some((ppe) => pe?.id === ppe?.id && ppe?._className === pe?._className)
-            ))
-      )
+              permissionedEntities?.some((ppe) => pe.id === ppe.id && ppe._className === pe._className),
+            )),
+      ),
     );
   };
 }
 
-export const useAuthenticatorInstance = (args: AuthenticatorArgs): IAuthenticator[] => {
-  const authenticatorRef = React.useRef<Authenticator>();
+export const useAuthenticatorInstance = (args: AuthenticatorArgs): [IAuthenticator] => {
+  const authenticatorRef = React.useRef<IAuthenticator>();
   const [, forceUpdate] = React.useState({});
 
   if (!authenticatorRef.current) {
-    const forceReRender = () => {
+    const forceReRender = (): void => {
       forceUpdate({});
     };
 
     const instance = new Authenticator(args, forceReRender);
 
-    authenticatorRef.current = instance;
+    authenticatorRef.current = instance as IAuthenticator;
   } else {
     authenticatorRef.current.applyRouter(args.router);
   }
 
-  return [authenticatorRef.current];
+  const authenticator = authenticatorRef.current;
+  if (!isDefined(authenticator))
+    throw new Error("Failed to create authenticator");
+
+  return [authenticator];
 };

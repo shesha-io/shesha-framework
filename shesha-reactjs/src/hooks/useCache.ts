@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 type LocalForage = ReturnType<typeof localForage.createInstance>;
 type StoragesDictionary = IDictionary<LocalForage>;
 
-export const useCache = (name: string) => {
+export const useCache = (name: string): ICache => {
   const [storage, setStorage] = useState(() => {
     return localForage.createInstance({ name: name });
   });

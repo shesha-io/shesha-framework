@@ -23,16 +23,16 @@ export interface IItemsContainerProps {
   disableDrag?: boolean;
 }
 
-export const ItemsContainer: FC<IItemsContainerProps> = props => {
+export const ItemsContainer: FC<IItemsContainerProps> = (props) => {
   const { updateChildItems } = usePropertiesEditor();
   const { styles } = useStyles();
 
-  const onSetList = (newState: ItemInterface[]) => {
+  const onSetList = (newState: ItemInterface[]): void => {
     // temporary commented out, the behavoiur of the sortablejs differs sometimes
-    const listChanged = true; //!newState.some(item => item.chosen !== null && item.chosen !== undefined);
+    const listChanged = true; // !newState.some(item => item.chosen !== null && item.chosen !== undefined);
 
     if (listChanged && newState?.length) {
-      const newChilds = newState.map<IModelItem>(item => item as any);
+      const newChilds = newState.map<IModelItem>((item) => item as any);
       updateChildItems({ index: props.index, childs: newChilds });
     }
   };
@@ -64,7 +64,7 @@ export const ItemsContainer: FC<IItemsContainerProps> = props => {
           parent={props.parent}
           containerRendering={(args) => (<ItemsContainer {...args} />)}
         />
-      )
+      ),
       )}
     </ReactSortable>
   );

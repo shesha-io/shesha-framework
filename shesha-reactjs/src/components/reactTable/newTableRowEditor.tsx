@@ -1,7 +1,7 @@
 import { FormIdentifier, IFlatComponentsStructure } from '@/interfaces';
 import { CrudProvider } from '@/providers/crudContext';
-import React from 'react';
-import { FC } from 'react';
+import React, { FC } from 'react';
+
 import { ColumnInstance, HeaderGroup } from 'react-table';
 import { NewRowCell } from './newRowCell';
 
@@ -16,8 +16,8 @@ export interface INewRowEditorProps {
 
 export const NewTableRowEditor: FC<INewRowEditorProps> = (props) => {
   const { creater, columns, headerGroups, onInitData, components, parentFormId } = props;
- 
-  const {key, ...headerGroupProps} = headerGroups.length > 0 ? headerGroups[0].getHeaderGroupProps() : {key: ''};
+
+  const { key, ...headerGroupProps } = headerGroups.length > 0 ? headerGroups[0].getHeaderGroupProps() : { key: '' };
 
   return (
     <div className="tbody" style={{ overflowX: 'unset' }}>

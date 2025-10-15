@@ -53,7 +53,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
     borderWidth: addPx(borderWidth),
     borderColor: borderColor,
     borderStyle: borderStyle,
-    borderRadius: addPx(borderRadius)
+    borderRadius: addPx(borderRadius),
   };
 
   const prevStyles = migratePrevStyles(model, initialValues());

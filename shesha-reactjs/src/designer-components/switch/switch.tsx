@@ -1,6 +1,5 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IToolboxComponent } from '@/interfaces';
@@ -9,7 +8,7 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SwitcherOutlined } from '@ant-design/icons';
 import { Switch } from 'antd';
 import { SwitchChangeEventHandler, SwitchSize } from 'antd/lib/switch';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ISwitchComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
@@ -27,6 +26,12 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
   canBeJsSetting: true,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
+    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
+
+
     return (
       <ConfigurableFormItem model={model} valuePropName="checked">
         {(value, onChange) => {
@@ -36,18 +41,18 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
             if (typeof onChange === 'function') onChange(checked);
           };
 
-          return model.readOnly ? (
-            <ReadOnlyDisplayFormItem type="switch" disabled={model.readOnly} checked={value} />
-          ) : (
+
+          return (
             <Switch
               className="sha-switch"
               disabled={model.readOnly}
-              style={model.allStyles.fullStyle}
+              style={finalStyle}
               size={model.size as SwitchSize}
               checked={value}
               defaultChecked={model.defaultChecked}
               defaultValue={model.defaultValue}
-              onChange={onChangeInternal} />
+              onChange={onChangeInternal}
+            />
           );
         }}
       </ConfigurableFormItem>
@@ -69,12 +74,11 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
     .add<ISwitchComponentProps>(6, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
-        style: prev.style
+        style: prev.style,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-    })
-  ,
+    }),
 };
 
 export default SwitchComponent;

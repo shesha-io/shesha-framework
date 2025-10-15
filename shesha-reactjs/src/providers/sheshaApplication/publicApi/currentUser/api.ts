@@ -2,6 +2,7 @@ import qs from 'qs';
 import { HttpClientApi } from '@/publicJsApis/httpClient';
 import { IAjaxResponse, IEntityReferenceDto } from '@/interfaces';
 import { GrantedPermissionDto } from '@/apis/session';
+import { isAjaxErrorResponse } from '@/interfaces/ajaxResponse';
 
 const URLS = {
   IS_PERMISSION_GRANTED: '/api/services/app/Permission/IsPermissionGranted',
@@ -44,27 +45,27 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
   #grantedPermissions: GrantedPermissionDto[];
 
   //#region profile data
-  get isLoggedIn() {
+  get isLoggedIn(): boolean {
     return Boolean(this.#profileInfo);
   }
 
-  get id() {
+  get id(): string | undefined {
     return this.#profileInfo?.id;
   }
 
-  get userName() {
+  get userName(): string | undefined {
     return this.#profileInfo?.userName;
   }
 
-  get firstName() {
+  get firstName(): string | undefined {
     return this.#profileInfo?.firstName;
   }
 
-  get lastName() {
+  get lastName(): string | undefined {
     return this.#profileInfo?.lastName;
   }
 
-  get personId() {
+  get personId(): string | undefined {
     return this.#profileInfo?.personId;
   }
   //#endregion
@@ -73,7 +74,7 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
     this.#httpClient = httpClient;
   }
 
-  setProfileInfo(profileInfo: IUserProfileInfo) {
+  setProfileInfo(profileInfo: IUserProfileInfo): void {
     this.#profileInfo = profileInfo;
   }
 
@@ -87,12 +88,12 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
     if (this.#grantedPermissions) {
       return permissionedEntity
         ? this.#grantedPermissions.some(
-            (p) =>
-              p.permission === permissionName &&
-              p.permissionedEntity?.some(
-                (e) => e.id === permissionedEntity.id && e._className === permissionedEntity._className
-              )
-          )
+          (p) =>
+            p.permission === permissionName &&
+            p.permissionedEntity?.some(
+              (e) => e.id === permissionedEntity.id && e._className === permissionedEntity._className,
+            ),
+        )
         : this.#grantedPermissions.some((p) => p.permission === permissionName);
     }
 
@@ -118,19 +119,20 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
       .then((response) => (response.data?.success ? response.data.result : false));
   }
 
-  getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any> {
+  getUserSettingValueAsync = <TValue = unknown>(name: string, module: string, defaultValue?: TValue, dataType?: string): Promise<any> => {
     return this.#httpClient
       .post<IAjaxResponse<void>>(URLS.GET_USER_SETTING_VALUE, { name, module, defaultValue, dataType })
       .then((res) => {
         return res.data.success ? res.data.result : undefined;
       });
-  }
+  };
 
-  updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void> {
+  updateUserSettingValueAsync = <TValue = unknown>(name: string, module: string, value: TValue, dataType?: string): Promise<void> => {
     return this.#httpClient
       .post<IAjaxResponse<void>>(URLS.UPDATE_USER_SETTING_VALUE, { name, module, value, dataType })
       .then((res) => {
-        if (!res.data.success) throw new Error('Failed to update setting value: ' + res.data.error.message);
+        if (isAjaxErrorResponse(res.data))
+          throw new Error('Failed to update setting value: ' + res.data.error.message);
       });
-  }
+  };
 }

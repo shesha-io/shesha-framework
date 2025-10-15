@@ -3,7 +3,7 @@ import React, {
   FC,
   MutableRefObject,
   useRef,
-  useState
+  useState,
 } from 'react';
 import { Button, App } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
@@ -14,7 +14,7 @@ import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { ValidationErrors } from '@/components';
 import _ from 'lodash';
-import { isDefined } from '@/configuration-studio/types';
+import { isDefined } from '@/utils/nullables';
 
 const actionsOwner = 'Configuration Items';
 
@@ -28,7 +28,7 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
   const { notification } = App.useApp();
   const { hideModal, exporterRef } = props;
 
-  const onExport = () => {
+  const onExport = (): void => {
     setInProgress(true);
 
     if (!isDefined(exporterRef.current))
@@ -48,13 +48,13 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
 
   return (
     <>
-      <Button type='default' onClick={hideModal}>Cancel</Button>
-      <Button type='primary' icon={<ExportOutlined />} onClick={onExport} loading={inProgress}>Export</Button>
+      <Button type="default" onClick={hideModal}>Cancel</Button>
+      <Button type="primary" icon={<ExportOutlined />} onClick={onExport} loading={inProgress}>Export</Button>
     </>
   );
 };
 
-export const useConfigurationItemsExportAction = () => {
+export const useConfigurationItemsExportAction = (): void => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
   const exporterRef = useRef<IExportInterface>();
@@ -68,13 +68,12 @@ export const useConfigurationItemsExportAction = () => {
       const modalId = nanoid();
 
       return new Promise((resolve, reject) => {
-
-        const hideModal = () => {
+        const hideModal = (): void => {
           reject();
           removeModal(modalId);
         };
 
-        const onExported = () => {
+        const onExported = (): void => {
           removeModal(modalId);
           resolve(true);
         };
@@ -94,7 +93,7 @@ export const useConfigurationItemsExportAction = () => {
             }
           },
           content: <ConfigurationItemsExport onExported={onExported} exportRef={exporterRef} />,
-          footer: <ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />
+          footer: <ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />,
         };
         createModal({ ...modalProps });
       });

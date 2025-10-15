@@ -6,8 +6,7 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import DynamicView from './dynamicView';
 import { getSettings } from './settings';
 
-export interface DynamicViewComponentProps extends IConfigurableFormComponent {
-}
+export type DynamicViewComponentProps = IConfigurableFormComponent;
 
 /** @deprecated */
 const DynamicViewComponent: IToolboxComponent<DynamicViewComponentProps> = {
@@ -20,8 +19,8 @@ const DynamicViewComponent: IToolboxComponent<DynamicViewComponentProps> = {
       <DynamicView {...model} />
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default DynamicViewComponent;

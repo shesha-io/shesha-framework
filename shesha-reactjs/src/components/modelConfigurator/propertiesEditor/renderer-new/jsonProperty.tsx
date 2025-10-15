@@ -9,7 +9,7 @@ export interface IProps extends IModelItem {
   index: number[];
 }
 
-export const JsonProperty: FC<IProps> = props => {
+export const JsonProperty: FC<IProps> = (props) => {
   const { styles } = useStyles();
 
   return (

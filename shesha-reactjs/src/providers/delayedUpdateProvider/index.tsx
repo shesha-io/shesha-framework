@@ -3,14 +3,14 @@ import {
   DelayedUpdateProviderActionsContext,
   DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE,
   IDelayedUpdateStateContext,
+  IDelayedUpdateActionContext,
 } from './context';
+import { IDelayedUpdateGroup } from './models';
 
-interface IDelayedUpdateProps {}
-
-const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ children }) => {
+const DelayedUpdateProvider: FC<PropsWithChildren> = ({ children }) => {
   const state = useRef<IDelayedUpdateStateContext>(DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE);
 
-  const addItem = (groupName: string, id: any, data?: any) => {
+  const addItem = (groupName: string, id: any, data?: any): void => {
     const group = state.current.groups?.find((x) => x.name === groupName);
     if (Boolean(group)) {
       const item = group.items?.find((x) => x.id === id);
@@ -20,16 +20,16 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
             ...state.current.groups.map((gr) => {
               return gr.name === groupName
                 ? {
-                    name: groupName,
-                    items: [...gr.items.map((it) => it.id === id ? { id, data } : it),
-                    ],
-                  }
+                  name: groupName,
+                  items: [...gr.items.map((it) => it.id === id ? { id, data } : it),
+                  ],
+                }
                 : gr;
             }),
           ],
         };
       } else {
-        state.current ={
+        state.current = {
           groups: [
             ...state.current.groups.map((gr) => gr.name === groupName ? { ...gr, items: [...gr.items, { id, data }] } : gr),
           ],
@@ -40,7 +40,7 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
     }
   };
 
-  const removeItem = (groupName: string, id: any) => {
+  const removeItem = (groupName: string, id: any): void => {
     const group = state.current.groups.find((x) => x.name === groupName);
     if (Boolean(group)) {
       const item = group.items.find((x) => x.id === id);
@@ -58,7 +58,7 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
     }
   };
 
-  const getPayload = () => {
+  const getPayload = (): IDelayedUpdateGroup[] | undefined => {
     const obj = [...state.current.groups?.filter((g) => g.items?.length > 0)];
     return obj.length > 0 ? obj : undefined;
   };
@@ -76,7 +76,7 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
   );
 };
 
-const useDelayedUpdate = (require: boolean = true) => {
+const useDelayedUpdate = (require: boolean = true): IDelayedUpdateActionContext | undefined => {
   const actionsContext = useContext(DelayedUpdateProviderActionsContext);
 
   if (actionsContext === undefined && require) {

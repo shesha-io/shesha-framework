@@ -11,33 +11,33 @@ import { IProperty, hasCustomQBSettings, IPropertyWithCustomQBSettings } from ".
  * @returns
  */
 export const propertyMetadata2QbProperty = (property: IPropertyMetadata): IProperty => {
-    const base: IProperty = {
-        label: property.label,
-        propertyName: property.path,
-        visible: property.isVisible,
-        dataType: property.dataType,
-        fieldSettings: {
-            typeShortAlias: isEntityReferencePropertyMetadata(property) ? property.entityType : undefined,
-            referenceListName: property.referenceListName,
-            referenceListModule: property.referenceListModule,
-            allowInherited: true,
-            propertyMetadata: property,
-        },
-    };
+  const base: IProperty = {
+    label: property.label,
+    propertyName: property.path,
+    visible: property.isVisible,
+    dataType: property.dataType,
+    fieldSettings: {
+      typeShortAlias: isEntityReferencePropertyMetadata(property) ? property.entityType : undefined,
+      referenceListName: property.referenceListName,
+      referenceListModule: property.referenceListModule,
+      allowInherited: true,
+      propertyMetadata: property,
+    },
+  };
 
-    return !hasCustomQBSettings(property)
-        ? base
-        : {
-            ...base,
-            toQueryBuilderField: hasCustomQBSettings(property) ? property.toQueryBuilderField : undefined,
-        } as IPropertyWithCustomQBSettings;
+  return !hasCustomQBSettings(property)
+    ? base
+    : {
+      ...base,
+      toQueryBuilderField: hasCustomQBSettings(property) ? property.toQueryBuilderField : undefined,
+    } as IPropertyWithCustomQBSettings;
 };
 
-export const getPropertyFullPath = (path: string, prefix: string) => {
+export const getPropertyFullPath = (path: string, prefix: string): string => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
 };
 
-export const useMetadataFields = () => {
+export const useMetadataFields = (): IProperty[] | null => {
   const metadata = useMetadata(false);
 
   const fields = useMemo<IProperty[]>(() => {

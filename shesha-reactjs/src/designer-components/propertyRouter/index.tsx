@@ -20,14 +20,18 @@ const PropertyRouterComponent: IToolboxComponent<IPropertyRouterComponent> = {
   Factory: ({ model }) => {
     return model.hidden
       ? null
-      : <ParentProvider model={model}>
-        <FormItemProvider namePrefix={model.propertyRouteName}>
-          <ComponentsContainer containerId={model.id} dynamicComponents={model?.isDynamic ? model?.components : []}/>
-        </FormItemProvider>
-      </ParentProvider>;
+      : (
+        <ParentProvider model={model}>
+          <FormItemProvider namePrefix={model.propertyRouteName}>
+            <ComponentsContainer containerId={model.id} dynamicComponents={model?.isDynamic ? model?.components : []} />
+          </FormItemProvider>
+        </ParentProvider>
+      );
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
+
+export const isPropertyRouterComponent = (component: IConfigurableFormComponent): component is IPropertyRouterComponent => component.type === PropertyRouterComponent.type;
 
 export default PropertyRouterComponent;

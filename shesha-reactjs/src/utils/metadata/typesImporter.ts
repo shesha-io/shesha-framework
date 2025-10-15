@@ -6,36 +6,36 @@ import { TypeImport } from "@/interfaces/metadata";
 export const DTS_EXTENSION = '.d.ts';
 
 export class TypesImporter {
-    readonly #imports: Map<string, Set<string>> = new Map<string, Set<string>>();
+  readonly #imports: Map<string, Set<string>> = new Map<string, Set<string>>();
 
-    import(type: TypeAndLocation){
-        if (!type.filePath)
-            return;
+  import(type: TypeAndLocation): void {
+    if (!type.filePath)
+      return;
 
-        const fileImport = this.#imports.get(type.filePath);
+    const fileImport = this.#imports.get(type.filePath);
 
-        if (!fileImport)
-            this.#imports.set(type.filePath, new Set([type.typeName]));
-        else
-            fileImport.add(type.typeName);
-    }
+    if (!fileImport)
+      this.#imports.set(type.filePath, new Set([type.typeName]));
+    else
+      fileImport.add(type.typeName);
+  }
 
-    importAll(types?: TypeImport[]) {
-        if (types)
-            types.forEach(type => this.import(type));
-    }    
+  importAll(types?: TypeImport[]): void {
+    if (types)
+      types.forEach((type) => this.import(type));
+  }
 
-    static cleanupFileNameForImport = (path: string) => {
-        return path.endsWith(DTS_EXTENSION) 
-            ? path.startsWith('.') 
-                ? path
-                : trimSuffix(path, DTS_EXTENSION)
-            : trimSuffix(path, ".ts");
-    };
+  static cleanupFileNameForImport = (path: string): string => {
+    return path.endsWith(DTS_EXTENSION)
+      ? path.startsWith('.')
+        ? path
+        : trimSuffix(path, DTS_EXTENSION)
+      : trimSuffix(path, ".ts");
+  };
 
-    generateImports(){
-        return Array.from(this.#imports.entries())
-            .map(([filePath, types]) => `import { ${Array.from(types).join(', ')} } from '${TypesImporter.cleanupFileNameForImport(filePath)}';`)
-            .join(EOL);
-    }
+  generateImports(): string {
+    return Array.from(this.#imports.entries())
+      .map(([filePath, types]) => `import { ${Array.from(types).join(', ')} } from '${TypesImporter.cleanupFileNameForImport(filePath)}';`)
+      .join(EOL);
+  }
 }

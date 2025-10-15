@@ -1,6 +1,6 @@
 import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
-import React, { CSSProperties, FC, ReactNode, useState , useRef, useEffect} from 'react';
-import { IApplicationContext} from '@/providers/form/utils';
+import React, { CSSProperties, FC, ReactNode, useState, useRef, useEffect } from 'react';
+import { IApplicationContext } from '@/providers/form/utils';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 import { Tooltip } from 'antd';
@@ -39,14 +39,14 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     selectBtnSize,
     fullStyles,
     iconSize,
-    value
+    value,
   } = props;
 
-    const [finalValue, setFinalValue] = useState(null);
+  const [finalValue, setFinalValue] = useState(null);
   const hasSaved = useRef(false);
 
 
-  const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes) => {
+  const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes): void => {
     if (onChange) onChange(iconName);
   };
 
@@ -74,7 +74,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
           style={{
             ...fullStyles,
             fontSize: 20,
-            background: 'transparent', //icon should not have background and take the background of the parent like container
+            background: 'transparent', // icon should not have background and take the background of the parent like container
             borderWidth: '0px',
             borderColor: 'transparent',
           }}
@@ -88,7 +88,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
               iconSize ?? fontSize
             }
             readOnly={readOnly}
-            style={{...style,   background: 'transparent'}}
+            style={{ ...style, background: 'transparent' }}
             color={props.color}
             twoToneColor={color}
           />

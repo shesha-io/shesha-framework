@@ -40,7 +40,7 @@ const SpaceComponent: IToolboxComponent<ISpaceProps> = {
       <ComponentsContainer
         containerId={model.id}
         direction={model?.direction}
-        render={components => (
+        render={(components) => (
           <Space {...props} style={{ marginLeft, marginRight }}>
             {components}
           </Space>
@@ -49,8 +49,8 @@ const SpaceComponent: IToolboxComponent<ISpaceProps> = {
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  initModel: model => ({
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  initModel: (model) => ({
     direction: 'horizontal',
     size: 'small',
     wrap: false,
@@ -58,8 +58,7 @@ const SpaceComponent: IToolboxComponent<ISpaceProps> = {
   }),
   migrator: (m) => m
     .add<ISpaceProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<ISpaceProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
-  ,
+    .add<ISpaceProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) })),
 };
 
 export default SpaceComponent;

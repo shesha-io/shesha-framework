@@ -1,10 +1,10 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
+
 import qb_compact_styles from './css/compact_styles.css';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-    const shaQueryBuilderBtns = "sha-query-builder-btns";
-    const shaQueryBuilder = cx("sha-query-builder", css`
+  const shaQueryBuilderBtns = "sha-query-builder-btns";
+  const shaQueryBuilder = cx("sha-query-builder", css`
         ${qb_compact_styles}
 
         background-image: white !important;
@@ -43,8 +43,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         }
     `);
 
-    return {
-        shaQueryBuilder,
-        shaQueryBuilderBtns,
-    };
+  return {
+    shaQueryBuilder,
+    shaQueryBuilderBtns,
+  };
 });

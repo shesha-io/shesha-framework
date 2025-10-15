@@ -10,7 +10,7 @@ import {
   Checkbox,
   Input,
   InputNumber,
-  Select
+  Select,
 } from 'antd';
 import { ConfigurableActionConfigurator } from '@/designer-components/configurableActionsConfigurator/configurator';
 import { IDataListComponentProps } from './model';
@@ -18,7 +18,7 @@ import { InlineEditMode, InlineSaveMode } from '@/components/dataList/models';
 import { ISettingsFormFactoryArgs, YesNoInherit } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
-import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
@@ -35,13 +35,13 @@ const yesNoInheritOptions: ITypedOption<YesNoInherit>[] = [
 ];
 const inlineEditModes: ITypedOption<InlineEditMode>[] = [
   { label: 'One by one', value: 'one-by-one' },
-  { label: 'All at once', value: 'all-at-once' }
+  { label: 'All at once', value: 'all-at-once' },
 ];
 const inlineSaveModes: ITypedOption<InlineSaveMode>[] = [
   { label: 'Auto', value: 'auto' },
-  { label: 'Manual', value: 'manual' }
+  { label: 'Manual', value: 'manual' },
 ];
-/*const rowCapturePositions: ITypedOption<NewListItemCapturePosition>[] = [
+/* const rowCapturePositions: ITypedOption<NewListItemCapturePosition>[] = [
   { label: 'Top', value: 'top' },
   { label: 'Bottom', value: 'bottom' }
 ];*/
@@ -76,7 +76,7 @@ const NEW_ROW_EXPOSED_VARIABLES = [
     name: 'moment',
     description: 'The moment.js object',
     type: 'object',
-  }
+  },
 ];
 
 const ROW_SAVE_EXPOSED_VARIABLES = [
@@ -115,7 +115,7 @@ const ROW_SAVE_EXPOSED_VARIABLES = [
     name: 'moment',
     description: 'The moment.js object',
     type: 'object',
-  }
+  },
 ];
 
 const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
@@ -154,7 +154,7 @@ const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
     name: 'moment',
     description: 'The moment.js object',
     type: 'object',
-  }
+  },
 ];
 
 const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = (props) => {
@@ -162,15 +162,15 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
   const { model } = useSettingsForm<IDataListComponentProps>();
 
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
-    formTypes.map(i => {
+    formTypes.map((i) => {
       return { value: i };
-    })
+    }),
   );
 
   const getGroupStyleConstants = useAvailableConstantsMetadata({
     standardConstants: [
-      SheshaConstants.globalState, SheshaConstants.formData
-    ]
+      SheshaConstants.globalState, SheshaConstants.formData,
+    ],
   });
 
   const initNewRowConstants = useAvailableConstantsMetadata({
@@ -179,8 +179,8 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       SheshaConstants.form,
       SheshaConstants.http,
       SheshaConstants.moment,
-      SheshaConstants.contexts
-    ]
+      SheshaConstants.contexts,
+    ],
   });
   const onListItemSaveConstants = useAvailableConstantsMetadata({
     standardConstants: [
@@ -188,11 +188,11 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       SheshaConstants.form,
       SheshaConstants.http,
       SheshaConstants.moment,
-      SheshaConstants.contexts
+      SheshaConstants.contexts,
     ],
     onBuild: (builder) => {
       builder.addObject("data", "Current list item data", undefined);
-    }
+    },
   });
 
   const formIdExpressionConstants = useAvailableConstantsMetadata({
@@ -203,12 +203,12 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       SheshaConstants.http,
       SheshaConstants.moment,
       SheshaConstants.message,
-      SheshaConstants.contexts
+      SheshaConstants.contexts,
     ],
     onBuild: (builder) => {
       builder.addObject("item", "List item", undefined);
-      builder.addObject("selectedListItem", "Selected list item of nearest table (null if not available)", undefined);      
-    }
+      builder.addObject("selectedListItem", "Selected list item of nearest table (null if not available)", undefined);
+    },
   });
 
   return (
@@ -227,50 +227,49 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       </SettingsFormItem>
 
       <SettingsFormItem name="selectionMode" label="Selection mode" jsSetting>
-        <Select disabled={readOnly} defaultValue={'none'}>
-          <Select.Option key='1' value='none'>None</Select.Option>
-          <Select.Option key='2' value='single'>Single</Select.Option>
-          <Select.Option key='3' value='multiple'>Multiple</Select.Option>
+        <Select disabled={readOnly} defaultValue="none">
+          <Select.Option key="1" value="none">None</Select.Option>
+          <Select.Option key="2" value="single">Single</Select.Option>
+          <Select.Option key="3" value="multiple">Multiple</Select.Option>
         </Select>
       </SettingsFormItem>
 
       <SettingsCollapsiblePanel header="Render">
         <SettingsFormItem name="formSelectionMode" label="Form selection mode">
-          <Select disabled={readOnly} defaultValue={'none'}>
-            <Select.Option key='name' value='name'>Named form</Select.Option>
-            <Select.Option key='view' value='view'>View type</Select.Option>
-            <Select.Option key='expression' value='expression'>Expression</Select.Option>
+          <Select disabled={readOnly} defaultValue="none">
+            <Select.Option key="name" value="name">Named form</Select.Option>
+            <Select.Option key="view" value="view">View type</Select.Option>
+            <Select.Option key="expression" value="expression">Expression</Select.Option>
           </Select>
         </SettingsFormItem>
 
-        {model.formSelectionMode === 'name' &&
+        {model.formSelectionMode === 'name' && (
           <SettingsFormItem name="formId" label="Form">
             <FormAutocomplete readOnly={readOnly} />
           </SettingsFormItem>
-        }
+        )}
 
-        {model.formSelectionMode === 'view' &&
+        {model.formSelectionMode === 'view' && (
           <SettingsFormItem name="formType" label="Form type" jsSetting>
             <AutoComplete
               disabled={readOnly}
               options={formTypesOptions}
-              onSearch={t =>
+              onSearch={(t) =>
                 setFormTypesOptions(
                   (t
-                    ? formTypes.filter(f => {
+                    ? formTypes.filter((f) => {
                       return f.toLowerCase().includes(t.toLowerCase());
                     })
                     : formTypes
-                  ).map(i => {
+                  ).map((i) => {
                     return { value: i };
-                  })
-                )
-              }
+                  }),
+                )}
             />
           </SettingsFormItem>
-        }
+        )}
 
-        {model.formSelectionMode === 'expression' &&
+        {model.formSelectionMode === 'expression' && (
           <SettingsFormItem name="formIdExpression" label="Form identifier expression">
             <CodeEditor
               readOnly={readOnly}
@@ -298,7 +297,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
               availableConstants={formIdExpressionConstants}
             />
           </SettingsFormItem>
-        }
+        )}
 
         <SettingsFormItem name="orientation" label="Orientation" jsSetting>
           <Select disabled={readOnly} defaultValue="vertical">
@@ -327,30 +326,29 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </Show>
 
         <Show when={model?.orientation === 'wrap'}>
-            <SettingsFormItem name="cardMinWidth" label="Card Minimum Width" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly}/>
-            </SettingsFormItem>
-         
-            <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly}/>
-            </SettingsFormItem>
-          
-            <SettingsFormItem name="cardHeight" label="Card Height" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly}/>
-            </SettingsFormItem>
-      
-            <SettingsFormItem name="cardSpacing" label="Card Spacing" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly}/>
-            </SettingsFormItem>
+          <SettingsFormItem name="cardMinWidth" label="Card Minimum Width" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
 
-            <SettingsFormItem name="showBorder" label="Show Border" valuePropName='checked' jsSetting>
-              <Checkbox disabled={readOnly} />
-            </SettingsFormItem>
-          </Show>
+          <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
 
-          
+          <SettingsFormItem name="cardHeight" label="Card Height" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
 
-        <SettingsFormItem name="hidden" label="Hidden" valuePropName='checked' jsSetting>
+          <SettingsFormItem name="cardSpacing" label="Card Spacing" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
+
+          <SettingsFormItem name="showBorder" label="Show Border" valuePropName="checked" jsSetting>
+            <Checkbox disabled={readOnly} />
+          </SettingsFormItem>
+        </Show>
+
+
+        <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
@@ -373,55 +371,54 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
 
-        {model.formSelectionMode !== 'view' && model.canAddInline !== 'no' &&
-          <SettingsFormItem name="createFormId" label="Create form" jsSetting >
+        {model.formSelectionMode !== 'view' && model.canAddInline !== 'no' && (
+          <SettingsFormItem name="createFormId" label="Create form" jsSetting>
             <FormAutocomplete readOnly={readOnly} />
           </SettingsFormItem>
-        }
+        )}
 
-        {model.formSelectionMode === 'view' && model.canAddInline !== 'no' &&
+        {model.formSelectionMode === 'view' && model.canAddInline !== 'no' && (
           <SettingsFormItem name="createFormType" label="Create form type" jsSetting>
             <AutoComplete
               disabled={readOnly}
               options={formTypesOptions}
-              onSearch={t =>
+              onSearch={(t) =>
                 setFormTypesOptions(
                   (t
-                    ? formTypes.filter(f => {
+                    ? formTypes.filter((f) => {
                       return f.toLowerCase().includes(t.toLowerCase());
                     })
                     : formTypes
-                  ).map(i => {
+                  ).map((i) => {
                     return { value: i };
-                  })
-                )
-              }
+                  }),
+                )}
             />
           </SettingsFormItem>
-        }
-        {model.canAddInline !== 'no' &&
+        )}
+        {model.canAddInline !== 'no' && (
           <SettingsFormItem name="modalWidth" label="Dialog Width (%)">
             <Select disabled={readOnly} allowClear>
-              <Select.Option key={1} value='40%'>Small</Select.Option>
-              <Select.Option key={2} value='60%'>Medium</Select.Option>
-              <Select.Option key={3} value='80%'>Large</Select.Option>
+              <Select.Option key={1} value="40%">Small</Select.Option>
+              <Select.Option key={2} value="60%">Medium</Select.Option>
+              <Select.Option key={3} value="80%">Large</Select.Option>
               <Select.Option key={4} value="custom">Custom</Select.Option>
             </Select>
           </SettingsFormItem>
-        }
-        {model.canAddInline !== 'no' && model.modalWidth === 'custom' &&
+        )}
+        {model.canAddInline !== 'no' && model.modalWidth === 'custom' && (
           <SettingsFormItem name="widthUnits" label="Units">
             <Select disabled={readOnly} allowClear>
-              <Select.Option key={1} value='%'>Percentage (%)</Select.Option>
-              <Select.Option key={2} value='px'>Pixels (px)</Select.Option>
+              <Select.Option key={1} value="%">Percentage (%)</Select.Option>
+              <Select.Option key={2} value="px">Pixels (px)</Select.Option>
             </Select>
           </SettingsFormItem>
-        }
-        {model.canAddInline !== 'no' && model.modalWidth === 'custom' && !!model.widthUnits &&
+        )}
+        {model.canAddInline !== 'no' && model.modalWidth === 'custom' && !!model.widthUnits && (
           <SettingsFormItem name="customWidth" label="Enter Custom Width">
             <InputNumber disabled={readOnly} />
           </SettingsFormItem>
-        }
+        )}
         <SettingsFormItem name="customCreateUrl" label="Custom create url" hidden={model.canAddInline === 'no'}>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
@@ -467,7 +464,9 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           />
         </SettingsFormItem>
         <SettingsFormItem
-          name="onListItemSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}
+          name="onListItemSaveSuccessAction"
+          labelCol={{ span: 0 }}
+          wrapperCol={{ span: 24 }}
           hidden={model.canAddInline === 'no' && model.canEditInline === 'no'}
         >
           <ConfigurableActionConfigurator
@@ -486,48 +485,47 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <Show when={model.orientation === "vertical" || model.orientation === "horizontal" }>
+      <Show when={model.orientation === "vertical" || model.orientation === "horizontal"}>
         <SettingsCollapsiblePanel header="Grouping">
-        <SettingsFormItem name="collapsible" label="Collapsible" valuePropName='checked' jsSetting>
-          <Checkbox disabled={readOnly} />
-        </SettingsFormItem>
+          <SettingsFormItem name="collapsible" label="Collapsible" valuePropName="checked" jsSetting>
+            <Checkbox disabled={readOnly} />
+          </SettingsFormItem>
 
-        <SettingsFormItem name="collapseByDefault" label="Collapse by default" valuePropName='checked' jsSetting>
-          <Checkbox disabled={readOnly} />
-        </SettingsFormItem>
+          <SettingsFormItem name="collapseByDefault" label="Collapse by default" valuePropName="checked" jsSetting>
+            <Checkbox disabled={readOnly} />
+          </SettingsFormItem>
 
-        <SettingsFormItem name="groupStyle" label="Style of group headers">
-          <CodeEditor
-            readOnly={readOnly}
-            mode="dialog"
-            propertyName="groupStyle"
-            label="Style of group headers"
-            exposedVariables={[
-              { name: "data", description: "Selected form values", type: "object" },
-            ]}
-            wrapInTemplate={true}
-            templateSettings={{
-              functionName: 'getGroupHeadersStyle',
-            }}
-            availableConstants={getGroupStyleConstants}
-          />
-        </SettingsFormItem>
+          <SettingsFormItem name="groupStyle" label="Style of group headers">
+            <CodeEditor
+              readOnly={readOnly}
+              mode="dialog"
+              propertyName="groupStyle"
+              label="Style of group headers"
+              exposedVariables={[
+                { name: "data", description: "Selected form values", type: "object" },
+              ]}
+              wrapInTemplate={true}
+              templateSettings={{
+                functionName: 'getGroupHeadersStyle',
+              }}
+              availableConstants={getGroupStyleConstants}
+            />
+          </SettingsFormItem>
         </SettingsCollapsiblePanel>
       </Show>
 
-      <SettingsCollapsiblePanel header='Empty List'>
+      <SettingsCollapsiblePanel header="Empty List">
         <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
-          <Input defaultValue={"No Data"} readOnly={readOnly} />
+          <Input defaultValue="No Data" readOnly={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="noDataSecondaryText" label="Secondary Text" jsSetting>
-          <Input defaultValue={"No data is available for this data list"} readOnly={readOnly} />
+          <Input defaultValue="No data is available for this data list" readOnly={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="noDataIcon" label="Icon">
           {(value, onChange) =>
-            <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} />
-          }
+            <IconPicker label="Icon Picker" value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} />}
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 

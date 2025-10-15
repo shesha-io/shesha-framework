@@ -36,13 +36,13 @@ export const PasswordCombo: FC<IProps> = ({
   formProps,
   passwordLength,
   style,
-  repeatPropertyName
+  repeatPropertyName,
 }) => {
   const [state, setState] = useState<IState>(INIT_STATE);
   const { newPassword, repeatPassword } = state;
 
-  const setNewPassword = (newPassword: string) => setState(s => ({ ...s, newPassword }));
-  const setRepeatPassword = (repeatPassword: string) => setState(s => ({ ...s, repeatPassword }));
+  const setNewPassword = (newPassword: string): void => setState((s) => ({ ...s, newPassword }));
+  const setRepeatPassword = (repeatPassword: string): void => setState((s) => ({ ...s, repeatPassword }));
 
   return (
     <PasswordInputCombo
@@ -58,7 +58,7 @@ export const PasswordCombo: FC<IProps> = ({
       formProps={formProps}
       passwordLength={passwordLength}
       errorMessage={errorMessage}
-      isPasswordOk={_e => { /*nop*/ }}
+      isPasswordOk={(_e) => { /* nop*/ }}
       style={style}
       repeatPropertyName={repeatPropertyName}
     />

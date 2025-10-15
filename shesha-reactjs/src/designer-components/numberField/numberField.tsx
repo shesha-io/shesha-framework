@@ -89,23 +89,25 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
       <ConfigurableFormItem model={model} initialValue={calculatedModel.defaultValue}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (val: number | string | null) => {
+          const onChangeInternal = (val: number | string | null): void => {
             const newValue = val !== undefined && val !== null && model.highPrecision
-              ? parseInt(val + '', 10)
+              ? (typeof val === 'string' ? parseFloat(val) : val)
               : val;
             customEvents.onChange(newValue);
             onChange(newValue);
           };
           return model.readOnly
-            ? <ReadOnlyDisplayFormItem type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName))} style={finalStyle} />
-            : <InputNumber
-              type='number'
-              value={value ?? model?.defaultValue}
-              {...inputProps}
-              style={{ ...model.allStyles.fullStyle, width: '100%' }}
-              className={styles.numberField}
-              onChange={onChangeInternal}
-            />;
+            ? <ReadOnlyDisplayFormItem type="number" value={getNumberFormat(value, getDataProperty(properties, model.propertyName, 'dataFormat'))} style={finalStyle} />
+            : (
+              <InputNumber
+                type="number"
+                value={value ?? model?.defaultValue}
+                {...inputProps}
+                style={{ ...model.allStyles.fullStyle }}
+                className={styles.numberField}
+                onChange={onChangeInternal}
+              />
+            );
         }}
       </ConfigurableFormItem>
     );

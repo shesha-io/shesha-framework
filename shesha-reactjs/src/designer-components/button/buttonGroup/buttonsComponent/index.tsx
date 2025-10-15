@@ -15,7 +15,7 @@ const ButtonsComponent: IToolboxComponent<IButtonsComponentProps> = {
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>
-        <ButtonGroupConfigurator title="Configure Buttons" readOnly={model.readOnly}/>
+        <ButtonGroupConfigurator title="Configure Buttons" readOnly={model.readOnly} />
       </ConfigurableFormItem>
     );
   },

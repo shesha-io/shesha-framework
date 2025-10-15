@@ -1,5 +1,5 @@
 import { Form } from 'antd';
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import React, { FC, ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { getSettings } from './refListItemsSettingsForm';
 import { useRefListItemGroupConfigurator } from '../provider';
@@ -7,9 +7,7 @@ import { ConfigurableFormInstance, FormMarkup } from '@/interfaces';
 import { getComponentModel } from '../provider/utils';
 import { ConfigurableForm } from '@/components/configurableForm';
 
-export interface IRefListItemPropertiesProps {}
-
-export const RefListItemProperties: FC<IRefListItemPropertiesProps> = () => {
+export const RefListItemProperties: FC = () => {
   const { selectedItemId, getItem, updateItem, readOnly } = useRefListItemGroupConfigurator();
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);
@@ -35,7 +33,7 @@ export const RefListItemProperties: FC<IRefListItemPropertiesProps> = () => {
     }
   }, [selectedItemId]);
 
-  const getEditor = () => {
+  const getEditor = (): ReactElement => {
     if (!selectedItemId) return null;
 
     const componentModel = getComponentModel(getItem(selectedItemId));

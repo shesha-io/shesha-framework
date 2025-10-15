@@ -1,9 +1,13 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Entities;
 using Abp.Runtime.Session;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
+using Shesha.Dto.Interfaces;
 using Shesha.Permissions;
+using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Models;
 using System;
 using System.Collections.Generic;
@@ -91,6 +95,33 @@ namespace Shesha.Web.FormsDesigner.Services
                 GetFormPermissionedObjectName(duplicate.Module?.Name, duplicate.Name),
                 ShaPermissionedObjectsTypes.Form
             );
+        }
+
+        public override async Task<IConfigurationItemDto> MapToDtoAsync(FormConfiguration item)
+        {
+            var dto = new FormConfigurationDto {
+                Id = item.Id,
+                ModuleId = item.Module?.Id,
+                OriginId = item.Origin?.Id,
+                Module = item.Module?.Name,
+                Name = item.Name,
+                Label = item.Label,
+                Description = item.Description,
+                //
+                Markup = item.Markup,
+                ModelType = item.ModelType,
+            };
+            var permission = await _permissionedObjectManager.GetOrNullAsync(
+                GetFormPermissionedObjectName(item.Module?.Name, item.Name),
+                ShaPermissionedObjectsTypes.Form
+            );
+            if (permission != null && permission.Access > RefListPermissionedAccess.Inherited)
+            {
+                dto.Access = permission.Access;
+                dto.Permissions = permission.Permissions;
+            }
+
+            return dto;
         }
     }
 }

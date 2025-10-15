@@ -1,101 +1,99 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
-import { getFormDesignerBackgroundSvg } from '../utils/svgConstants';
-
+import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
+import { createStyles, sheshaStyles } from '@/styles';
 
 const designerClassNames = {
-    componentDragHandle: "sha-component-drag-handle",
-    componentPropertiesActions: "component-properties-actions",
-    designerWorkArea: "sha-designer-work-area",
-    hasConfigErrors: "has-config-errors",
-    mainArea: "sha-designer-main-area",
-    previewBorderTop10: "preview-form-border-top-10",
-    shaComponent: "sha-component",
-    shaComponentControls: "sha-component-controls",
-    shaComponentGhost: "sha-component-ghost",
-    shaComponentIndicator: "sha-component-indicator",
-    shaComponentSearch: "sha-component-search",
-    shaComponentTitle: "sha-component-title",
-    shaComponentValidationIcon: "sha-component-validation-icon",
-    shaComponentsContainer: "sha-components-container",
-    shaComponentsContainerInner: "sha-components-container-inner",
-    shaDatasourceTree: "sha-datasource-tree",
-    shaDesignerCanvasConfig: "sha-designer-canvas-config",
-    shaDesignerHeader: "sha-designer-header",
-    shaDesignerHeaderRight: "sha-designer-header-right",
-    shaDesignerToolbar: "sha-designer-toolbar",
-    shaToolboxComponents: "sha-toolbox-components",
-    shaDesignerToolbarLeft: "sha-designer-toolbar-left",
-    shaDesignerToolbarRight: "sha-designer-toolbar-right",
-    shaDesignerToolbarCenter: "sha-designer-toolbar-center",
-    shaDesignerToolbox: "sha-designer-toolbox",
-    shaDesignerWarning: "sha-designer-warning",
-    shaDragging: "sha-dragging",
-    shaDropHint: "sha-drop-hint",
-    shaForm: "sha-form",
-    shaHelpIcon: "sha-help-icon",
-    shaToolboxComponent: "sha-toolbox-component",
-    shaToolboxPanelComponents: "sha-toolbox-panel-components",
-    shaToolboxPanel: "sha-toolbox-panel",
-    shaToolboxPanelItems: "sha-toolbox-panel-items",
-    sidebarContainerMainAreaBody: "sidebar-container-main-area-body",
-    sidebarHeaderTitle: "sidebar-header-title",
-    siteTreeSearchValue: "site-tree-search-value",
-    formName: "form-name",
-    formTitle: "form-title",
-    formNameParent: "form-name-parent",
+  componentDragHandle: "sha-component-drag-handle",
+  componentPropertiesActions: "component-properties-actions",
+  designerWorkArea: "sha-designer-work-area",
+  hasConfigErrors: "has-config-errors",
+  mainArea: "sha-designer-main-area",
+  previewBorderTop10: "preview-form-border-top-10",
+  shaComponent: "sha-component",
+  shaComponentControls: "sha-component-controls",
+  shaComponentGhost: "sha-component-ghost",
+  shaComponentIndicator: "sha-component-indicator",
+  shaComponentSearch: "sha-component-search",
+  shaComponentTitle: "sha-component-title",
+  shaComponentValidationIcon: "sha-component-validation-icon",
+  shaComponentsContainer: "sha-components-container",
+  shaComponentsContainerInner: "sha-components-container-inner",
+  shaDatasourceTree: "sha-datasource-tree",
+  shaDesignerCanvasConfig: "sha-designer-canvas-config",
+  shaDesignerHeader: "sha-designer-header",
+  shaDesignerHeaderRight: "sha-designer-header-right",
+  shaDesignerToolbar: "sha-designer-toolbar",
+  shaToolboxComponents: "sha-toolbox-components",
+  shaDesignerToolbarLeft: "sha-designer-toolbar-left",
+  shaDesignerToolbarRight: "sha-designer-toolbar-right",
+  shaDesignerToolbarCenter: "sha-designer-toolbar-center",
+  shaDesignerToolbox: "sha-designer-toolbox",
+  shaDesignerWarning: "sha-designer-warning",
+  shaDragging: "sha-dragging",
+  shaDropHint: "sha-drop-hint",
+  shaForm: "sha-form",
+  shaHelpIcon: "sha-help-icon",
+  shaToolboxComponent: "sha-toolbox-component",
+  shaToolboxPanelComponents: "sha-toolbox-panel-components",
+  shaToolboxPanel: "sha-toolbox-panel",
+  shaToolboxPanelItems: "sha-toolbox-panel-items",
+  sidebarContainerMainAreaBody: "sidebar-container-main-area-body",
+  sidebarHeaderTitle: "sidebar-header-title",
+  siteTreeSearchValue: "site-tree-search-value",
+  formName: "form-name",
+  formTitle: "form-title",
+  formNameParent: "form-name-parent",
+  toolbarWrapper: "form-toolbar-wrapper",
 };
 const useStylesResponse = {
-    styles: designerClassNames,
+  styles: designerClassNames,
 };
-export const useStyles = () => {
-    return useStylesResponse;
+export const useStyles = (): typeof useStylesResponse => {
+  return useStylesResponse;
 };
 
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
-    const {
-        shaHelpIcon,
-        shaDragging,
-        componentDragHandle,
-        sidebarContainerMainAreaBody,
-        shaDesignerToolbar,
-        shaToolboxComponents,
-        shaDesignerToolbarLeft,
-        shaDesignerToolbarRight,
-        shaDesignerToolbarCenter,
-        shaDesignerCanvasConfig,
-        shaDesignerToolbox,
-        sidebarHeaderTitle,
-        shaDesignerHeader,
-        shaComponentGhost,
-        shaComponent,
-        shaToolboxComponent,
-        shaToolboxPanelComponents,
-        shaComponentTitle,
-        shaComponentSearch,
-        shaToolboxPanel,
-        shaToolboxPanelItems,
-        shaDatasourceTree,
-        shaComponentIndicator,
-        shaComponentsContainer,
-        shaDropHint,
-        designerWorkArea,
-        componentPropertiesActions,
-        shaComponentControls,
-        siteTreeSearchValue,
-        shaDesignerWarning,
-        hasConfigErrors,
-        shaComponentValidationIcon,
-        shaDesignerHeaderRight,
-        shaForm,
-        formName,
-        formTitle,
-        formNameParent,
-        shaComponentsContainerInner
-        //mainArea,
-    } = useStyles().styles;
+  const {
+    shaHelpIcon,
+    shaDragging,
+    componentDragHandle,
+    sidebarContainerMainAreaBody,
+    shaDesignerToolbar,
+    shaToolboxComponents,
+    shaDesignerToolbarLeft,
+    shaDesignerToolbarRight,
+    shaDesignerToolbarCenter,
+    shaDesignerCanvasConfig,
+    shaDesignerToolbox,
+    sidebarHeaderTitle,
+    shaDesignerHeader,
+    shaComponentGhost,
+    shaComponent,
+    shaToolboxComponent,
+    shaToolboxPanelComponents,
+    shaComponentTitle,
+    shaComponentSearch,
+    shaToolboxPanel,
+    shaToolboxPanelItems,
+    shaDatasourceTree,
+    shaComponentIndicator,
+    shaComponentsContainer,
+    shaDropHint,
+    designerWorkArea,
+    componentPropertiesActions,
+    shaComponentControls,
+    siteTreeSearchValue,
+    shaDesignerWarning,
+    hasConfigErrors,
+    shaComponentValidationIcon,
+    shaDesignerHeaderRight,
+    shaForm,
+    formName,
+    formTitle,
+    formNameParent,
+    // mainArea,
+  } = useStyles().styles;
 
-    const quickEditModal = cx("sha-designer-modal", css`
+  const quickEditModal = cx("sha-designer-modal", css`
         .${prefixCls}-modal {
             overflow-y: hidden;
         }
@@ -113,9 +111,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
     `);
 
-    const formDesignerClassName = "sha-form-designer";
-    const designerPage = "sha-designer-page";
-    /*
+  const formDesignerClassName = "sha-form-designer";
+  const designerPage = "sha-designer-page";
+  /*
     const flexColumns = `
         display: flex;
         flex-direction: column;
@@ -127,7 +125,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     const flexFitHorizontal = 'flex-grow: 1;';
     const designerPage = cx("sha-designer-page", css`
         ${flexColumns}
-        
+
         .${formDesignerClassName} {
             ${flexFitHorizontal}
             ${flexColumns}
@@ -141,7 +139,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
    `);
     */
-    const formDesigner = cx(formDesignerClassName, css`
+  const formDesigner = cx(formDesignerClassName, css`
         .${shaHelpIcon} {
             cursor: help;
             font-size: 14px;
@@ -173,14 +171,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             overflow-y: auto; 
             overflow-x: hidden; 
             margin-bottom: 1rem;
-
-            span {
-            font-size: 12px;
-            }
         }
         .${shaDesignerToolbar} {
             background: white;
-            padding: 8px 12px;
+            padding: 8px 12px 0px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -209,6 +203,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
+                margin-top: -10px;
             }
 
             .${shaDesignerToolbarLeft} {
@@ -222,7 +217,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             .${shaDesignerToolbarRight} {
                 float: right;
                 .${prefixCls}-btn {
-                margin-left: 2px;
+                    margin-left: 2px;
+                    border-radius: 4px;
                 }
             }
 
@@ -231,10 +227,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-
-                .ant-input-number-suffix {
-                 margin-inline-end: 0px;
-                }
             }
             .${shaDesignerCanvasConfig} {
                 display: flex;
@@ -245,6 +237,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .radio-group {
                     display: flex;
                     flex-direction: row;
+                    justify-content: center;
                     .radio-button {
                         display: flex;
                         justify-content: center;
@@ -377,34 +370,65 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         
-        .${designerWorkArea} {
+        .${designerWorkArea}{
             background-color: white;
-            > .${shaComponentsContainer} {
+            height: 100%;
+            .${shaComponentsContainer} {
                 border-radius: 2px;
-                height: 100%;
 
                 .${shaDropHint} {
                     margin: 0;
                     text-align: center;
                     color: darkgray;
                     padding: 10px;
+                    height: 55px;
                 }
 
-                > .${shaDropHint} {
-                    display: none;
-                }
-            
                 .${shaComponent} {
                     min-height: 30px;
                 }
 
+                /* Improve dropzone visibility during drag operations */
+                &.sha-components-container-inner {
+                    min-height: 20px;
+                    transition: background-color 0.2s ease, border 0.2s ease;
+
+                    &:empty {
+                        min-height: 40px;
+                        border: 2px dashed transparent;
+                        border-radius: 4px;
+                    }
+                }
+            }
+
+            /* Enhanced visual feedback when dragging */
+            &.${shaDragging} {
+                .${shaComponentsContainer} {
+                    &.sha-components-container-inner:empty {
+                        border-color: ${token.colorPrimary}40;
+                        background-color: ${token.colorPrimaryBg}20;
+                    }
+
+                    &.sha-components-container-inner:hover {
+                        border-color: ${token.colorPrimary};
+                        background-color: ${token.colorPrimaryBg}40;
+                    }
+                }
+            }
+
+            > div {
+             height: 100%;
+             .sha-drop-hint {
+                display: none;
+             }
                 > div:not(.sha-drop-hint) {
+                    min-height: 100vh;
                     height: 100%;
                 }
                     
-                > .${shaComponentsContainerInner}:empty {
+                > .sha-components-container-inner:not(:has(.sha-component)) {
                     background: url("${getFormDesignerBackgroundSvg()}");
-                    background-size: clamp(100px, 25vw, 200px);
+                    background-size: 25vw;
                     background-repeat: no-repeat;
                     background-position: 50% 50%;
                 }
@@ -508,9 +532,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
     `);
 
-    return {
-        designerPage,
-        formDesigner,
-        quickEditModal,
-    };
+  return {
+    designerPage,
+    formDesigner,
+    quickEditModal,
+  };
 });

@@ -8,7 +8,6 @@ import { confirmPasswordValidations, isSamePassword, passwordValidations } from 
 const { Password } = Input;
 
 type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
-type EventSetType = 'value' | 'event';
 
 interface IProps {
   readonly newPassword: string;
@@ -17,7 +16,6 @@ interface IProps {
   readonly setRepeatPassword: (value: string | ChangeEvent) => void;
   readonly isPasswordOk: (value: boolean) => void;
   readonly errorMessage?: string;
-  readonly eventSetType?: EventSetType;
   readonly passwordLength?: number;
 
   readonly inputProps?: InputProps;
@@ -39,7 +37,6 @@ const PasswordInputCombo: FC<IProps> = ({
   setRepeatPassword,
   isPasswordOk,
   errorMessage,
-  eventSetType = 'value',
   passwordLength = 4,
   inputProps,
   placeholder,
@@ -48,17 +45,15 @@ const PasswordInputCombo: FC<IProps> = ({
   formItemProps,
   formItemConfirmProps,
   style,
-  repeatPropertyName
+  repeatPropertyName,
 }) => {
   useEffect(() => isPasswordOk(isSamePassword(newPassword, repeatPassword, passwordLength)), [
     newPassword,
     repeatPassword,
   ]);
 
-  const getValue = (e: ChangeEvent) => (eventSetType === 'event' ? e : e.target.value);
-
-  const onPasswordChange = (e: ChangeEvent) => setNewPassword(getValue(e));
-  const onConfirmPasswordChange = (e: ChangeEvent) => setRepeatPassword(getValue(e));
+  const onPasswordChange = (e: ChangeEvent): void => setNewPassword(e.target.value);
+  const onConfirmPasswordChange = (e: ChangeEvent): void => setRepeatPassword(e.target.value);
 
   return (
     <PasswordComboWrapper formProps={formProps}>

@@ -4,18 +4,16 @@ import { SaveOutlined } from '@ant-design/icons';
 import { useModelConfigurator } from '@/providers';
 import { useStyles } from '../styles/styles';
 
-export interface IProps { }
-
-export const ModelConfiguratorToolbar: FC<IProps> = () => {
+export const ModelConfiguratorToolbar: FC = () => {
   const { styles } = useStyles();
   const configurator = useModelConfigurator();
 
-  const onSaveClick = () => {
+  const onSaveClick = (): void => {
     configurator.saveForm()
-    .catch((_error) => {
+      .catch((_error) => {
       // ToDo: AS - handle error
-      //if (!error?.errorFields) message.error('Failed to save configuration');
-    });
+      // if (!error?.errorFields) message.error('Failed to save configuration');
+      });
   };
 
   return (

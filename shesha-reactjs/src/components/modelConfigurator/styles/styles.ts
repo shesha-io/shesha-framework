@@ -106,7 +106,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         display: flex;
         justify-content: space-between;
       }
-    `
+    `,
   );
   return {
     shaModelConfiguratorForm,

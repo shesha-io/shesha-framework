@@ -1,6 +1,7 @@
 import { DataTypes } from '@/interfaces/dataTypes';
 import { evaluateComplexStringWithResult, IEvaluateComplexStringResult, IMatchData } from '@/providers/form/utils';
 import { executeFunction } from '@/utils';
+import { isDefined } from './nullables';
 
 export type EvaluationType = 'mustache' | 'javascript';
 export interface IEvaluateNodeArgs {
@@ -17,7 +18,7 @@ export interface IEvaluateJsonLogicNode {
 }
 
 type NodeCallback = (operator: string, args: object[]) => void;
-const processRecursive = (jsonLogic: object, callback: NodeCallback) => {
+const processRecursive = (jsonLogic: object, callback: NodeCallback): void => {
   if (!jsonLogic) return;
   for (const operator in jsonLogic) {
     if (!jsonLogic.hasOwnProperty(operator)) continue;
@@ -90,10 +91,10 @@ interface NestedNodeParsingResult {
 }
 
 const evaluateJavaScriptAsync = async (evaluationNode: IEvaluateNode, options: IJsonLogicConversionOptions): Promise<NestedNodeParsingResult> => {
-  const expressionArguments = options.mappings.reduce((acc, current) => ({...acc, [current.match]: current.data}), {});
+  const expressionArguments = options.mappings.reduce((acc, current) => ({ ...acc, [current.match]: current.data }), {});
 
   const executionResult = executeFunction(evaluationNode.evaluate.expression, expressionArguments);
-  
+
   const promise = Promise.resolve(executionResult);
   const unwrappedResult = await promise;
 
@@ -106,10 +107,10 @@ const evaluateJavaScriptAsync = async (evaluationNode: IEvaluateNode, options: I
 
 // Synchronous version of evaluateJavaScriptAsync
 const evaluateJavaScriptSync = (evaluationNode: IEvaluateNode, options: IJsonLogicConversionOptionsSync): NestedNodeParsingResult => {
-  const expressionArguments = options.mappings.reduce((acc, current) => ({...acc, [current.match]: current.data}), {});
+  const expressionArguments = options.mappings.reduce((acc, current) => ({ ...acc, [current.match]: current.data }), {});
 
   const executionResult = executeFunction(evaluationNode.evaluate.expression, expressionArguments);
-  
+
   const unwrappedResult = executionResult;
 
   const parsingResult: NestedNodeParsingResult = {
@@ -125,7 +126,7 @@ const evaluateMustacheAsync = async (evaluationNode: IEvaluateNode, allArgs: any
   const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(
     evaluationNode.evaluate.expression,
     mappings,
-    evaluationNode.evaluate.required
+    evaluationNode.evaluate.required,
   );
 
   let convertedResult: any = result;
@@ -151,7 +152,7 @@ const evaluateMustacheAsync = async (evaluationNode: IEvaluateNode, allArgs: any
       }
       case DataTypes.boolean: {
         convertedResult = typeof convertedResult === 'string' ? convertedResult?.toLowerCase() === 'true' : Boolean(convertedResult);
-          break;
+        break;
       }
     }
   }
@@ -166,7 +167,7 @@ const evaluateMustacheAsync = async (evaluationNode: IEvaluateNode, allArgs: any
 
   return {
     hasOptionalNonEvaluatedExpressions: (convertedResult === '' || convertedResult === null) && !evaluationNode.evaluate.required,
-    value: convertedResult
+    value: convertedResult,
   };
 };
 
@@ -177,7 +178,7 @@ const evaluateMustacheSync = (evaluationNode: IEvaluateNode, allArgs: any[], opt
   const { result, success, unevaluatedExpressions } = evaluateComplexStringWithResult(
     evaluationNode.evaluate.expression,
     mappings,
-    evaluationNode.evaluate.required
+    evaluationNode.evaluate.required,
   );
 
   let convertedResult: any = result;
@@ -203,7 +204,7 @@ const evaluateMustacheSync = (evaluationNode: IEvaluateNode, allArgs: any[], opt
       }
       case DataTypes.boolean: {
         convertedResult = typeof convertedResult === 'string' ? convertedResult?.toLowerCase() === 'true' : Boolean(convertedResult);
-          break;
+        break;
       }
     }
   }
@@ -218,31 +219,34 @@ const evaluateMustacheSync = (evaluationNode: IEvaluateNode, allArgs: any[], opt
 
   return {
     hasOptionalNonEvaluatedExpressions: (convertedResult === '' || convertedResult === null) && !evaluationNode.evaluate.required,
-    value: convertedResult
+    value: convertedResult,
   };
 };
 
-export const getEvaluationNodeFromJsonLogicNode = (node: any): IEvaluateNode => {
-  const { evaluate } = node ?? {};
-  const args = evaluate && Array.isArray(evaluate) && evaluate.length === 1
-    ? evaluate[0]
-    : undefined;
+export const getEvaluationNodeFromJsonLogicNode = (node: object): IEvaluateNode | undefined => {
+  if (isDefined(node) && "evaluate" in node) {
+    const { evaluate } = node;
+    const args = evaluate && Array.isArray(evaluate) && evaluate.length === 1
+      ? evaluate[0]
+      : undefined;
 
-  const typedArgs = args as IEvaluateNodeArgs;
-  const result: IEvaluateNode = typeof(typedArgs?.expression) === 'string'
-    ? {
-      evaluate: {
-        ...typedArgs,
-        type: (args as IEvaluateNodeArgs).type ?? 'mustache' /* fallback to legacy */,
+    const typedArgs = args as IEvaluateNodeArgs;
+    const result: IEvaluateNode = typeof (typedArgs?.expression) === 'string'
+      ? {
+        evaluate: {
+          ...typedArgs,
+          type: (args as IEvaluateNodeArgs).type ?? 'mustache' /* fallback to legacy */,
+        },
       }
-    }
-    : undefined;
-  return result;
+      : undefined;
+    return result;
+  } else
+    return undefined;
 };
 
 export const convertJsonLogicNode = async (
   jsonLogic: object,
-  options: IJsonLogicConversionOptions
+  options: IJsonLogicConversionOptions,
 ): Promise<object> => {
   if (!jsonLogic) return null;
 
@@ -251,7 +255,7 @@ export const convertJsonLogicNode = async (
   const parseNestedNodeAsync = async (
     node: object,
     allArgs: any[],
-    nestedOptions: IJsonLogicConversionOptions
+    nestedOptions: IJsonLogicConversionOptions,
   ): Promise<NestedNodeParsingResult> => {
     // special handling for evaluation nodes
     const evaluationNode = getEvaluationNodeFromJsonLogicNode(node);
@@ -261,13 +265,13 @@ export const convertJsonLogicNode = async (
 
       if (evaluationNode.evaluate.type === 'javascript')
         return await evaluateJavaScriptAsync(evaluationNode, options);
-      
+
       throw new Error(`Expressions of type '${evaluationNode.evaluate.type}' are not supported`);
     } else {
       const value = await convertJsonLogicNode(node, nestedOptions);
       return {
         hasOptionalNonEvaluatedExpressions: false,
-        value
+        value,
       };
     }
   };
@@ -293,9 +297,9 @@ export const convertJsonLogicNode = async (
 
           const evaluationResult = argumentEvaluator(operatorName, args, argIdx);
           return evaluationResult.handled ? evaluationResult.value : arg;
-        })
+        }),
       );
-      convertedArgs = convertedArgs.filter(a => a !== undefined);
+      convertedArgs = convertedArgs.filter((a) => a !== undefined);
     } else {
       // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
       if (typeof args === 'object') {
@@ -326,7 +330,7 @@ export const convertJsonLogicNode = async (
 // Synchronous version of convertJsonLogicNode
 export const convertJsonLogicNodeSync = (
   jsonLogic: object,
-  options: IJsonLogicConversionOptionsSync
+  options: IJsonLogicConversionOptionsSync,
 ): object => {
   if (!jsonLogic) return null;
 
@@ -335,7 +339,7 @@ export const convertJsonLogicNodeSync = (
   const parseNestedNodeSync = (
     node: object,
     allArgs: any[],
-    nestedOptions: IJsonLogicConversionOptionsSync
+    nestedOptions: IJsonLogicConversionOptionsSync,
   ): NestedNodeParsingResult => {
     // special handling for evaluation nodes
     const evaluationNode = getEvaluationNodeFromJsonLogicNode(node);
@@ -345,13 +349,13 @@ export const convertJsonLogicNodeSync = (
 
       if (evaluationNode.evaluate.type === 'javascript')
         return evaluateJavaScriptSync(evaluationNode, options);
-      
+
       throw new Error(`Expressions of type '${evaluationNode.evaluate.type}' are not supported`);
     } else {
       const value = convertJsonLogicNodeSync(node, nestedOptions);
       return {
         hasOptionalNonEvaluatedExpressions: false,
-        value
+        value,
       };
     }
   };
@@ -377,7 +381,7 @@ export const convertJsonLogicNodeSync = (
         const evaluationResult = argumentEvaluator(operatorName, args, argIdx);
         return evaluationResult.handled ? evaluationResult.value : arg;
       });
-      convertedArgs = convertedArgs.filter(a => a !== undefined);
+      convertedArgs = convertedArgs.filter((a) => a !== undefined);
     } else {
       // note: single arguments may be presented as objects, example: {"!!": {"var": "user.userName"}}
       if (typeof args === 'object') {
@@ -414,9 +418,12 @@ export interface IMustacheEvaluateNode {
   evaluate: IMustacheEvaluateNodeArgs[];
 }
 
-export const isLegacyMustacheEvaluationNode = (node: any): node is IMustacheEvaluateNode => {
-  const { evaluate } = node ?? {};
-  const expressionType = (evaluate as IEvaluateNodeArgs)?.type;
+export const isLegacyMustacheEvaluationNode = (node: object): node is IMustacheEvaluateNode => {
+  if ("evaluate" in node) {
+    const { evaluate } = node ?? {};
+    const expressionType = (evaluate as IEvaluateNodeArgs)?.type;
 
-  return evaluate && !expressionType;
+    return evaluate && !expressionType;
+  } else
+    return false;
 };

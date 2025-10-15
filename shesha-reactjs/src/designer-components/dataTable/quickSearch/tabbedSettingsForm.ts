@@ -1,8 +1,8 @@
-import { DesignerToolbarSettings } from "@/index";
+import { DesignerToolbarSettings, FormMarkupWithSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const commonTabId = nanoid();
   const searchableTabsId = nanoid();
   const appearanceId = nanoid();
@@ -48,9 +48,9 @@ export const getSettings = (data: any) => {
                     defaultValue: false,
                     jsSetting: true,
                   },
-                ]
-              }).toJson()
-            ]
+                ],
+              }).toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -69,7 +69,7 @@ export const getSettings = (data: any) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
+                    _value: "",
                   },
                   components: [
                     ...new DesignerToolbarSettings()
@@ -97,7 +97,7 @@ export const getSettings = (data: any) => {
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
                                   tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
-                                  defaultValue: '360px'
+                                  defaultValue: '360px',
                                 },
                                 {
                                   type: 'textField',
@@ -118,18 +118,18 @@ export const getSettings = (data: any) => {
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
                                   defaultValue: '100%',
-                                }
-                              ]
+                                },
+                              ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .toJson(),
-                  ]
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'security',
@@ -143,19 +143,19 @@ export const getSettings = (data: any) => {
                 label: 'Permissions',
                 jsSetting: true,
                 size: 'small',
-                parentId: securityId
+                parentId: securityId,
               })
-              .toJson()
-            ]
-          }
-        ]
+              .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

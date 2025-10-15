@@ -14,7 +14,7 @@ export interface INoteSettings {
   allCategories?: boolean;
 }
 
-export interface INote extends NoteDto {}
+export type INote = NoteDto;
 
 export interface ICreateNotePayload {
   ownerId?: string;

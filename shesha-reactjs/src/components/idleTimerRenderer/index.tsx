@@ -5,8 +5,8 @@ import {
   getTimeFormat,
   MIN_TIME,
   ONE_SECOND,
-  SIXTY
-  } from './util';
+  SIXTY,
+} from './util';
 import { IdleTimerComponent } from 'react-idle-timer';
 import { ISettingIdentifier } from '@/providers/settings/models';
 import { Modal, Progress } from 'antd';
@@ -14,8 +14,6 @@ import { useAuth } from '@/providers/auth';
 import { useInterval } from 'react-use';
 import { useSettingValue } from '@/providers/settings';
 import { useStyles } from './styles/styles';
-
-export interface IIdleTimerRendererProps { }
 
 interface IIdleTimerState {
   readonly isIdle: boolean;
@@ -29,7 +27,7 @@ const INIT_STATE: IIdleTimerState = {
 
 const autoLogoffTimeoutSettingId: ISettingIdentifier = { name: 'Shesha.Security.AutoLogoffTimeout', module: 'Shesha' };
 
-export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> = ({ children }) => {
+export const IdleTimerRenderer: FC<PropsWithChildren> = ({ children }) => {
   const { styles } = useStyles();
   const { value: autoLogoffTimeout } = useSettingValue<number>(autoLogoffTimeoutSettingId);
   const timeoutSeconds = autoLogoffTimeout ?? 0;
@@ -43,19 +41,19 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const timeout = getTimeFormat(timeoutSeconds);
   const visible = isIdle && isTimeoutSet;
 
-  const onAction = (_event: Event) => {
-    /*nop*/
+  const onAction = (_event: Event): void => {
+    /* nop*/
   };
 
-  const onActive = (_event: Event) => {
-    /*nop*/
+  const onActive = (_event: Event): void => {
+    /* nop*/
   };
 
-  const onIdle = (_event: Event) => setState(s => ({ ...s, isIdle: true }));
+  const onIdle = (_event: Event): void => setState((s) => ({ ...s, isIdle: true }));
 
-  const logout = () => logoutUser().then(() => setState(INIT_STATE));
+  const logout = (): Promise<void> => logoutUser().then(() => setState(INIT_STATE));
 
-  const doCountdown = () => {
+  const doCountdown = (): void => {
     if (!rt) {
       logout();
     } else {
@@ -69,9 +67,11 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
     }
   }, ONE_SECOND);
 
-  const onOk = () => logout();
+  const onOk = (): void => {
+    logout();
+  };
 
-  const onCancel = () => setState(s => ({ ...s, isIdle: false, remainingTime: SIXTY }));
+  const onCancel = (): void => setState((s) => ({ ...s, isIdle: false, remainingTime: SIXTY }));
 
   if (!isTimeoutSet) {
     return <>{children}</>;

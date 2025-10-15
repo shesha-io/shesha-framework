@@ -2,12 +2,18 @@ import { FormFullName } from "@/providers";
 import { DataTypes, ObjectFormats } from "./dataTypes";
 import { IDictionary } from "./shesha";
 import { DataTypeInfo } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { isDefined } from "@/utils/nullables";
 
 export interface IMemberType {
-  dataType?: string | null;
+  dataType: string;
   dataFormat?: string | null;
   baseType?: IMemberType;
 }
+
+export const isIMemberType = (value: object): value is IMemberType => {
+  const typed = value as IMemberType;
+  return typed && typeof typed.dataType === 'string' && isDefined(typed.dataType);
+};
 
 export interface SourceFile {
   fileName: string;
@@ -25,8 +31,8 @@ export interface TypeImport {
 };
 
 export interface GenericTypeDeclaration {
-  /** 
-   * Final type declaration constructed taking into account all modifiers and generic types. 
+  /**
+   * Final type declaration constructed taking into account all modifiers and generic types.
    * @example
    * { typeName: 'Date', typeDeclaration: 'Nullable<Date>' }
    */
@@ -57,21 +63,28 @@ export interface IHasTypeDefinition {
   typeDefinitionLoader: TypeDefinitionLoader;
 }
 
+export const hasTypeDefinition = (value: object): value is IHasTypeDefinition => value && "typeDefinitionLoader" in value && typeof value.typeDefinitionLoader === 'function';
+
 export interface IMetadata extends Partial<IHasTypeDefinition> {
   dataType: string;
-  name?: string;
-  description?: string;
+  name?: string | null;
+  description?: string | null;
 }
 
 export interface IMemberMetadata extends IMemberType, Partial<IHasTypeDefinition> {
-  path?: string | null; // TODO: check usages, replace with `name` and move to a common ancestor with IMetadata
+  path: string; // TODO: check usages, replace with `name` and move to a common ancestor with IMetadata
   label?: string | null;
   description?: string | null;
 }
 
+export const isIMemberMetadata = (value: object): value is IMemberMetadata => value && isIMemberType(value) && "path" in value && typeof (value.path) === 'string';
+// DataTypeInfo
+
 export interface IHasItemsType {
   itemsType: IMemberType;
 }
+
+export const isIHasItemsType = (value: object): value is IHasItemsType => value && "itemsType" in value && typeof (value.itemsType) === 'object' && isIMemberType(value.itemsType);
 
 export interface IHasChildPropertiesMetadata {
   properties: IPropertyMetadata[];
@@ -83,14 +96,17 @@ export interface ModelTypeIdentifier {
 }
 
 export interface IHasEntityType {
-  entityType: string | null; // TODO: split this property into two different (for objects and for entities) or rename existing
+  entityType: string; // TODO: split this property into two different (for objects and for entities) or rename existing
   entityModule?: string | null;
 
   typeAccessor?: string;
-  moduleAccessor?: string;
+  moduleAccessor: string | null;
 }
 
-export const isIHasEntityType = (value: any): value is IHasEntityType => {
+export interface IEntityProperty extends IPropertyMetadata, IHasEntityType {
+}
+
+export const isIHasEntityType = (value: unknown): value is IHasEntityType => {
   const typed = value as IHasEntityType;
   return typed && typeof typed.entityType === 'string';
 };
@@ -136,10 +152,6 @@ export type PropertiesLoader = () => PropertiesPromise;
 export type NestedProperties = IPropertyMetadata[] | PropertiesLoader | null;
 
 export interface IPropertyMetadata extends IMemberMetadata {
-  columnName?: string | null;
-  createdInDb?: boolean;
-  inheritedFromId?: string | null;
-
   containerType?: string;
   required?: boolean;
   readonly?: boolean;
@@ -148,16 +160,13 @@ export interface IPropertyMetadata extends IMemberMetadata {
   min?: number | null;
   max?: number | null;
   validationMessage?: string | null;
-  //entityType?: string | null;
   referenceListName?: string | null;
   referenceListModule?: string | null;
   /**
    * Child properties, applicable for complex data types (e.g. object, array)
    */
-  properties?: NestedProperties;
+  properties?: NestedProperties | undefined;
   functions?: IFunctionMetadata[] | null;
-
-  formatting?: any;
 
   /**
    * If true, indicates that current property is a framework-related (e.g. Abp.Domain.Entities.ISoftDelete.IsDeleted, Abp.Domain.Entities.Auditing.IHasModificationTime.LastModificationTime)
@@ -170,21 +179,26 @@ export interface IPropertyMetadata extends IMemberMetadata {
   prefix?: string;
   isVisible?: boolean;
   itemsType?: IPropertyMetadata;
+
+  columnName?: string | null;
+  createdInDb?: boolean;
+  inheritedFromId?: string | null;
+  formatting?: any;
 }
 
 export interface IArrayMetadata extends IMetadata {
   itemsType?: IPropertyMetadata;
 }
 
-export const isPropertiesArray = (value: NestedProperties): value is IPropertyMetadata[] => {
+export const isPropertiesArray = (value: NestedProperties | undefined): value is IPropertyMetadata[] => {
   return value && Array.isArray(value);
 };
 
-export const isPropertiesLoader = (value: NestedProperties): value is PropertiesLoader => {
+export const isPropertiesLoader = (value: NestedProperties | undefined): value is PropertiesLoader => {
   return value && typeof value === 'function';
 };
 
-export const asPropertiesArray = (value: NestedProperties, fallback: IPropertyMetadata[] | undefined): IPropertyMetadata[] | undefined => {
+export const asPropertiesArray = (value: NestedProperties, fallback: IPropertyMetadata[]): IPropertyMetadata[] => {
   return isPropertiesArray(value) ? value : fallback;
 };
 
@@ -196,18 +210,18 @@ export const isDataPropertyMetadata = (value: IMemberMetadata): value is IProper
 };
 
 export type ProperyDataType =
-  | 'string'
-  | 'date'
-  | 'date-time'
-  | 'time'
-  | 'entity'
-  | 'file'
-  | 'number'
-  | 'reference-list-item'
-  | 'boolean'
-  | 'array'
-  | 'object'
-  | 'guid';
+  | 'string' |
+  'date' |
+  'date-time' |
+  'time' |
+  'entity' |
+  'file' |
+  'number' |
+  'reference-list-item' |
+  'boolean' |
+  'array' |
+  'object' |
+  'guid';
 
 export enum MetadataSourceType {
   ApplicationCode = 1,
@@ -277,8 +291,8 @@ export const isContextMetadata = (value: IModelMetadata): value is IContextMetad
 };
 
 export const metadataHasNestedProperties = (value: IModelMetadata): value is IContainerWithNestedProperties & IModelMetadata => {
-  return (isEntityMetadata(value) || isObjectMetadata(value) || isContextMetadata(value))
-    && Array.isArray((value as IContainerWithNestedProperties).properties);
+  return (isEntityMetadata(value) || isObjectMetadata(value) || isContextMetadata(value)) &&
+    Array.isArray((value as IContainerWithNestedProperties).properties);
 };
 
 export interface IApiEndpoint {

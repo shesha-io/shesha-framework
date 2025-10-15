@@ -17,7 +17,7 @@ export const useFormExpression = (): IFormExpression => {
 
   const allData: GenericDictionary = useAvailableConstantsData();
 
-  const executeAction = (payload: IExecuteActionPayload | IConfigurableActionConfiguration) => {
+  const executeAction = (payload: IExecuteActionPayload | IConfigurableActionConfiguration): void => {
     if ((payload as IExecuteActionPayload)?.argumentsEvaluationContext) {
       executeConfig(payload as IExecuteActionPayload);
     } else {
@@ -25,7 +25,7 @@ export const useFormExpression = (): IFormExpression => {
     }
   };
 
-  const executeBooleanExpression = (expression: string, returnBoolean = true) => {
+  const executeBooleanExpression = (expression: string, returnBoolean = true): boolean => {
     if (!expression) {
       if (returnBoolean) {
         return true;
@@ -39,7 +39,7 @@ export const useFormExpression = (): IFormExpression => {
     return typeof evaluated === 'boolean' ? evaluated : true;
   };
 
-  const executeExpression = (expression: string = '') => executeScriptSync(expression, allData);
+  const executeExpression = (expression: string = ''): boolean => executeScriptSync(expression, allData);
 
   return { argumentsEvaluationContext: allData, executeAction, executeBooleanExpression, executeExpression };
 };

@@ -1,11 +1,11 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
+
 
 export const useStyles = createStyles(({ css, cx }) => {
-    const columnFiltersButtonsLeft = "column-filters-buttons-left";
-    const columnFiltersButtonsRight = "column-filters-buttons-right";
-    
-    const columnFiltersButtons = cx("column-filters-buttons", css`
+  const columnFiltersButtonsLeft = "column-filters-buttons-left";
+  const columnFiltersButtonsRight = "column-filters-buttons-right";
+
+  const columnFiltersButtons = cx("column-filters-buttons", css`
         display: flex;
         justify-content: space-between;
         margin: ${sheshaStyles.paddingLG}px 0;
@@ -28,10 +28,10 @@ export const useStyles = createStyles(({ css, cx }) => {
         }
               
     `);
-    
-    return {
-        columnFiltersButtons,
-        columnFiltersButtonsLeft,
-        columnFiltersButtonsRight,
-    };
+
+  return {
+    columnFiltersButtons,
+    columnFiltersButtonsLeft,
+    columnFiltersButtonsRight,
+  };
 });

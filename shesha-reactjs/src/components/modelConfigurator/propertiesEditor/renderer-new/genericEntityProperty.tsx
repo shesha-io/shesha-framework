@@ -9,7 +9,7 @@ export interface IProps extends IModelItem {
   index: number[];
 }
 
-export const GenericEntityProperty: FC<IProps> = props => {
+export const GenericEntityProperty: FC<IProps> = (props) => {
   const { styles } = useStyles();
 
   return (

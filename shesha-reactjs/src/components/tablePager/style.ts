@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }, { style }) => {
-    const pager = cx("sha-pager", css`
+  const pager = cx("sha-pager", css`
         * { 
             --ant-pagination-item-size-sm: calc(${style?.fontSize} * 1.5px) !important;
             --ant-pagination-item-size: calc(${style?.fontSize} * 1.5px) !important;
@@ -27,7 +27,7 @@ export const useStyles = createStyles(({ css, cx }, { style }) => {
         }
     `);
 
-    const dropdown = cx("sha-dropdown", css`
+  const dropdown = cx("sha-dropdown", css`
         
         // height: calc(${style?.fontSize} * 1.5);
 
@@ -46,7 +46,7 @@ export const useStyles = createStyles(({ css, cx }, { style }) => {
         }
     `);
 
-    const popup = cx("sha-popup", css`
+  const popup = cx("sha-popup", css`
         .ant-select-item-option-content {
             font-size: ${style?.fontSize} !important;
             font-family: ${style?.fontFamily} !important;
@@ -55,17 +55,17 @@ export const useStyles = createStyles(({ css, cx }, { style }) => {
         }
     `);
 
-    const pagerContainer = cx("sha-pager-container", css`
+  const pagerContainer = cx("sha-pager-container", css`
         display: flex;
         align-items: center;
         flex-wrap: nowrap;
         justify-content: center;
     `);
 
-    return {
-        pager,
-        dropdown,
-        popup,
-        pagerContainer,
-    };
+  return {
+    pager,
+    dropdown,
+    popup,
+    pagerContainer,
+  };
 });

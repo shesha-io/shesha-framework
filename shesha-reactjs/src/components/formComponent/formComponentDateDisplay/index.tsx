@@ -9,7 +9,7 @@ export const FormComponentDateDisplay: FC<IFormComponent> = ({ name, isEditting,
   const [val, changeVal] = useState(value as string);
 
   if (isEditting) {
-    const handleChange = (_: any, dateString: string) => {
+    const handleChange = (_: any, dateString: string): void => {
       changeVal(dateString);
 
       if (onChange) {

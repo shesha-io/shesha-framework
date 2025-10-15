@@ -17,7 +17,7 @@ interface IGenericTextProps
   style?: CSSProperties;
 }
 
-const getColorByContentType = (contentType: ContentType, style: CSSProperties, theme: IConfigurableTheme) => {
+const getColorByContentType = (contentType: ContentType, style: CSSProperties, theme: IConfigurableTheme): string | undefined => {
   switch (contentType) {
     case 'custom':
       return style?.color;
@@ -79,11 +79,11 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
       padding: 0,
       margin: 0,
       ...{
-      ...style,
-      color: getColorByContentType(contentType, style, theme),
-      fontSize: textType === 'title' ? undefined : style?.fontSize,
-      justifyContent: style?.textAlign,
-    }},
+        ...style,
+        color: getColorByContentType(contentType, style, theme),
+        fontSize: textType === 'title' ? undefined : style?.fontSize,
+        justifyContent: style?.textAlign,
+      } },
   };
 
   const paragraphProps: ParagraphProps = {
@@ -111,14 +111,14 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
 
   if (textType === 'paragraph') {
     return (
-      <Paragraph key={`paragraph-${updateKey}`} style={{margin: '0px'}}  {...paragraphProps} className={className}>
+      <Paragraph key={`paragraph-${updateKey}`} style={{ margin: '0px' }} {...paragraphProps} className={className}>
         {children}
       </Paragraph>
     );
   }
 
   return (
-    <Title key={`title-${updateKey}`}  {...titleProps}  style={{...titleProps.style, fontSize: ''}} className={className}>
+    <Title key={`title-${updateKey}`} {...titleProps} style={{ ...titleProps.style, fontSize: '' }} className={className}>
       {children}
     </Title>
   );

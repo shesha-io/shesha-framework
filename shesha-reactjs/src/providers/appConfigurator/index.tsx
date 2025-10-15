@@ -5,10 +5,9 @@ import {
   IHasConfigurableItemId,
   downloadAsJson,
 } from '@/utils/configurationFramework/actions';
-import { useAuth } from '@/providers/auth';
+import { useAuthOrUndefined } from '@/providers/auth';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { useSheshaApplication } from '@/providers/sheshaApplication';
 import {
   softToggleInfoBlockAction,
   switchApplicationModeAction,
@@ -16,85 +15,59 @@ import {
   toggleEditModeConfirmationAction,
 } from './actions';
 import { genericItemActionArgumentsForm } from './configurable-actions/generic-item-arguments';
-import { APP_CONTEXT_INITIAL_STATE, AppConfiguratorActionsContext, AppConfiguratorStateContext } from './contexts';
-import { ApplicationMode, ConfigurationItemsViewMode } from './models';
+import { APP_CONTEXT_INITIAL_STATE, AppConfiguratorActionsContext, AppConfiguratorStateContext, IAppActionsContext, IAppStateContext } from './contexts';
+import { ApplicationMode } from './models';
 import appConfiguratorReducer from './reducer';
 import { useStyles } from '@/components/appConfigurator/styles/styles';
-import { SheshaHttpHeaders } from '@/shesha-constants/httpHeaders';
 import { useHttpClient } from '../sheshaApplication/publicApi';
+import { isDefined } from '@/utils/nullables';
 
-export interface IAppConfiguratorProviderProps { }
 
 interface IAppConfiguratorModesState {
-  mode: ConfigurationItemsViewMode;
   isInformerVisible: boolean;
 }
 
-const AppConfiguratorModeDefaults: IAppConfiguratorModesState = { mode: 'live', isInformerVisible: false };
+const AppConfiguratorModeDefaults: IAppConfiguratorModesState = { isInformerVisible: false };
 
 interface IUseAppConfiguratorSettingsResponse extends IAppConfiguratorModesState {
-  setMode: (mode: ConfigurationItemsViewMode) => void;
   setIsInformerVisible: (isInformerVisible: boolean) => void;
 }
 
 const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
-  const [itemMode, setItemMode] = useLocalStorage<ConfigurationItemsViewMode>(
-    'CONFIGURATION_ITEM_MODE',
-    AppConfiguratorModeDefaults.mode
-  );
   const [isFormInfoVisible, setIsFormInfoVisible] = useLocalStorage<boolean>(
     'FORM_INFO_VISIBLE',
-    AppConfiguratorModeDefaults.isInformerVisible
+    AppConfiguratorModeDefaults.isInformerVisible,
   );
-  const auth = useAuth(false);
-  const { httpHeaders, setRequestHeaders } = useSheshaApplication();
-
-  const setHeaderValue = (mode: ConfigurationItemsViewMode) => {
-    const currentHeaderValue = httpHeaders[SheshaHttpHeaders.ConfigItemsMode];
-    if (currentHeaderValue !== mode) setRequestHeaders({ [SheshaHttpHeaders.ConfigItemsMode]: mode });
-  };
+  const auth = useAuthOrUndefined();
 
   const hasRights = useMemo(() => {
     const result = auth && auth.anyOfPermissionsGranted([PERM_APP_CONFIGURATOR]);
 
     return result;
-  }, [auth, auth?.isLoggedIn, auth?.state?.status]);
-
-  useEffect(() => {
-    // sync headers
-    setHeaderValue(hasRights ? itemMode : 'live');
-  }, [itemMode, hasRights]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auth, auth?.isLoggedIn, auth?.state.status]);
 
   const result: IUseAppConfiguratorSettingsResponse = hasRights
     ? {
-      mode: itemMode,
       isInformerVisible: isFormInfoVisible,
-      setMode: (mode) => {
-        setRequestHeaders({ [SheshaHttpHeaders.ConfigItemsMode]: mode });
-        setItemMode(mode);
-      },
       setIsInformerVisible: setIsFormInfoVisible,
     }
     : {
       ...AppConfiguratorModeDefaults,
-      setMode: () => {
-        /*nop*/
-      },
       setIsInformerVisible: () => {
-        /*nop*/
+        /* nop*/
       },
     };
   return result;
 };
 
-const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProps>> = ({ children }) => {
+const AppConfiguratorProvider: FC<PropsWithChildren> = ({ children }) => {
   const configuratorSettings = useAppConfiguratorSettings();
   const { styles } = useStyles();
 
   const [state, dispatch] = useReducer(appConfiguratorReducer, {
     ...APP_CONTEXT_INITIAL_STATE,
     formInfoBlockVisible: configuratorSettings.isInformerVisible,
-    configurationItemMode: configuratorSettings.mode,
   });
 
   const httpClient = useHttpClient();
@@ -116,12 +89,12 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
-    actionDependencies
+    actionDependencies,
   );
   //#endregion
 
   useEffect(() => {
-    if (!document) return;
+    if (!isDefined(document)) return;
     const classes = styles.shaAppEditMode.split(' ');
     if (state.mode === 'live') {
       document.body.classList.remove(...classes);
@@ -129,46 +102,41 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
     if (state.mode === 'edit') {
       document.body.classList.add(...classes);
     }
-  }, [state.mode]);
+  }, [state.mode, styles.shaAppEditMode]);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const toggleShowInfoBlock = (visible: boolean) => {
+  const toggleShowInfoBlock = (visible: boolean): void => {
     configuratorSettings.setIsInformerVisible(visible);
   };
 
-  const switchApplicationMode = (mode: ApplicationMode) => {
+  const switchApplicationMode = (mode: ApplicationMode): void => {
     dispatch(switchApplicationModeAction(mode));
   };
 
-  const switchConfigurationItemMode = (mode: ConfigurationItemsViewMode) => {
-    configuratorSettings.setMode(mode);
-  };
-
-  const toggleEditModeConfirmation = (visible: boolean) => {
+  const toggleEditModeConfirmation = (visible: boolean): void => {
     dispatch(toggleEditModeConfirmationAction(visible));
   };
 
-  const toggleCloseEditModeConfirmation = (visible: boolean) => {
+  const toggleCloseEditModeConfirmation = (visible: boolean): void => {
     dispatch(toggleCloseEditModeConfirmationAction(visible));
   };
 
-  const softToggleInfoBlock = (softInfoBlock: boolean) => {
+  const softToggleInfoBlock = (softInfoBlock: boolean): void => {
     dispatch(softToggleInfoBlockAction(softInfoBlock));
   };
 
   return (
     <AppConfiguratorStateContext.Provider value={{
       ...state,
-      configurationItemMode: configuratorSettings.mode,
       formInfoBlockVisible: configuratorSettings.isInformerVisible,
-    }}>
+    }}
+    >
       <AppConfiguratorActionsContext.Provider
         value={{
           switchApplicationMode,
           toggleEditModeConfirmation,
           toggleCloseEditModeConfirmation,
-          switchConfigurationItemMode,
           toggleShowInfoBlock,
           softToggleInfoBlock,
         }}
@@ -179,7 +147,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
   );
 };
 
-function useAppConfiguratorState() {
+const useAppConfiguratorState = (): IAppStateContext => {
   const context = useContext(AppConfiguratorStateContext);
 
   if (context === undefined) {
@@ -187,9 +155,9 @@ function useAppConfiguratorState() {
   }
 
   return context;
-}
+};
 
-function useAppConfiguratorActions() {
+const useAppConfiguratorActions = (): IAppActionsContext => {
   const context = useContext(AppConfiguratorActionsContext);
 
   if (context === undefined) {
@@ -197,11 +165,11 @@ function useAppConfiguratorActions() {
   }
 
   return context;
-}
+};
 
-function useAppConfigurator() {
+const useAppConfigurator = (): IAppStateContext & IAppActionsContext => {
   return { ...useAppConfiguratorState(), ...useAppConfiguratorActions() };
-}
+};
 
 export {
   AppConfiguratorProvider,

@@ -19,6 +19,8 @@ import {
 } from './actions';
 import {
   IExecutionLogEvent,
+  IScheduledJobExecutionActionsContext,
+  IScheduledJobExecutionStateContext,
   SCHEDULED_JOB_EXECUTION_CONTEXT_INITIAL_STATE,
   ScheduledJobExecutionActionsContext,
   ScheduledJobExecutionStateContext,
@@ -66,7 +68,7 @@ const ScheduledJobExecutionProvider: FC<PropsWithChildren<IScheduledJobExecution
         // @ts-ignore
         const { result } = executionLogResponse;
         const events = result.map(
-          (e) => ({ message: e.message, timeStamp: moment(e.timeStamp), level: e.level }) as IExecutionLogEvent
+          (e) => ({ message: e.message, timeStamp: moment(e.timeStamp), level: e.level }) as IExecutionLogEvent,
         );
 
         dispatch(getExecutionLogSuccessAction(events));
@@ -78,7 +80,7 @@ const ScheduledJobExecutionProvider: FC<PropsWithChildren<IScheduledJobExecution
   useEffect(() => {
     if (idIsEmpty(id)) return;
     // Set the initial SignalR Hub Connection.
-    const createHubConnection = async () => {
+    const createHubConnection = async (): Promise<void> => {
       // Build new Hub Connection, url is currently hard coded.
       const connection = new HubConnectionBuilder().withUrl(`${backendUrl}/signalr-appender`).build();
       try {
@@ -87,10 +89,10 @@ const ScheduledJobExecutionProvider: FC<PropsWithChildren<IScheduledJobExecution
           dispatch(addExecutionLogEventAction(event));
         });
         connection.on('JobStarted', () => {
-          //setJobStarted(true);
+          // setJobStarted(true);
         });
         connection.on('JobFinished', () => {
-          //setJobFinished(true);
+          // setJobFinished(true);
         });
 
         await connection.start().then(() => connection.invoke('JoinGroup', id));
@@ -104,19 +106,19 @@ const ScheduledJobExecutionProvider: FC<PropsWithChildren<IScheduledJobExecution
     createHubConnection();
   }, [id]);
 
-  const getExecutionLogRequest = () => {
+  const getExecutionLogRequest = (): void => {
     dispatch(getExecutionLogRequestAction());
   };
 
-  const getExecutionLogSuccess = (events: IExecutionLogEvent[]) => {
+  const getExecutionLogSuccess = (events: IExecutionLogEvent[]): void => {
     dispatch(getExecutionLogSuccessAction(events));
   };
 
-  const getExecutionLogError = () => {
+  const getExecutionLogError = (): void => {
     dispatch(getExecutionLogErrorAction());
   };
 
-  const downloadLogFileRequest = () => {
+  const downloadLogFileRequest = (): void => {
     dispatch(downloadLogFileRequestAction());
 
     axios({
@@ -135,11 +137,11 @@ const ScheduledJobExecutionProvider: FC<PropsWithChildren<IScheduledJobExecution
       });
   };
 
-  const downloadLogFileSuccess = () => {
+  const downloadLogFileSuccess = (): void => {
     dispatch(downloadLogFileSuccessAction());
   };
 
-  const downloadLogFileError = () => {
+  const downloadLogFileError = (): void => {
     dispatch(downloadLogFileErrorAction());
   };
 
@@ -165,7 +167,7 @@ const ScheduledJobExecutionProvider: FC<PropsWithChildren<IScheduledJobExecution
   );
 };
 
-function useScheduledJobExecutionState() {
+function useScheduledJobExecutionState(): IScheduledJobExecutionStateContext {
   const context = useContext(ScheduledJobExecutionStateContext);
 
   if (context === undefined) {
@@ -175,7 +177,7 @@ function useScheduledJobExecutionState() {
   return context;
 }
 
-function useScheduledJobExecutionActions() {
+function useScheduledJobExecutionActions(): IScheduledJobExecutionActionsContext {
   const context = useContext(ScheduledJobExecutionActionsContext);
 
   if (context === undefined) {
@@ -185,7 +187,7 @@ function useScheduledJobExecutionActions() {
   return context;
 }
 
-function useScheduledJobExecution() {
+function useScheduledJobExecution(): IScheduledJobExecutionStateContext & IScheduledJobExecutionActionsContext {
   return { ...useScheduledJobExecutionState(), ...useScheduledJobExecutionActions() };
 }
 

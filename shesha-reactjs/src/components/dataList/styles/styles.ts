@@ -1,22 +1,22 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
-    const shaDatalistComponentItemCheckbox = "sha-datalist-component-item-checkbox";
-    const shaDatalistComponentDivider = "sha-datalist-component-divider";
-    const shaDatalistComponentExtraSpace = "sha-datalist-component-extra-space";
-    const shaResponsiveButtonGroupContainer = "sha-responsive-button-group-container";
-    const shaResponsiveButtonGroupInlineContainer = "sha-responsive-button-group-inline-container";
-    const shaDatalistComponentBody = "sha-datalist-component-body";
-    const shaDatalistComponentAddItemBtn = "sha-datalist-component-add-item-btn";
-    const shaDatalistComponentItem = "sha-datalist-component-item";
-    const shaDatalistWrapParent = "sha-datalist-wrap-parent";
-    const shaDatalistCard = "sha-datalist-card";
-    const shaDatalistActions = "sha-datalist-actions";
-    const shaDatalistCell = "sha-datalist-cell";
-    const shaDatalistHorizontal = "sha-datalist-horizontal";
+  const shaDatalistComponentItemCheckbox = "sha-datalist-component-item-checkbox";
+  const shaDatalistComponentDivider = "sha-datalist-component-divider";
+  const shaDatalistComponentExtraSpace = "sha-datalist-component-extra-space";
+  const shaResponsiveButtonGroupContainer = "sha-responsive-button-group-container";
+  const shaResponsiveButtonGroupInlineContainer = "sha-responsive-button-group-inline-container";
+  const shaDatalistComponentBody = "sha-datalist-component-body";
+  const shaDatalistComponentAddItemBtn = "sha-datalist-component-add-item-btn";
+  const shaDatalistComponentItem = "sha-datalist-component-item";
+  const shaDatalistWrapParent = "sha-datalist-wrap-parent";
+  const shaDatalistCard = "sha-datalist-card";
+  const shaDatalistActions = "sha-datalist-actions";
+  const shaDatalistCell = "sha-datalist-cell";
+  const shaDatalistHorizontal = "sha-datalist-horizontal";
 
 
-    const shaDatalistComponent = cx("sha-datalist-component", css`
+  const shaDatalistComponent = cx("sha-datalist-component", css`
         .${prefixCls}-collapse-extra {
             margin: unset !important;
         }
@@ -183,20 +183,20 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             }
         }
     `);
-    return {
-        shaDatalistComponent,
-        shaDatalistComponentItemCheckbox,
-        shaDatalistComponentDivider,
-        shaDatalistComponentExtraSpace,
-        shaResponsiveButtonGroupContainer,
-        shaResponsiveButtonGroupInlineContainer,
-        shaDatalistComponentBody,
-        shaDatalistComponentAddItemBtn,
-        shaDatalistComponentItem,
-        shaDatalistActions,
-        shaDatalistCell,
-        shaDatalistWrapParent,
-        shaDatalistCard,
-        shaDatalistHorizontal
-    };
+  return {
+    shaDatalistComponent,
+    shaDatalistComponentItemCheckbox,
+    shaDatalistComponentDivider,
+    shaDatalistComponentExtraSpace,
+    shaResponsiveButtonGroupContainer,
+    shaResponsiveButtonGroupInlineContainer,
+    shaDatalistComponentBody,
+    shaDatalistComponentAddItemBtn,
+    shaDatalistComponentItem,
+    shaDatalistActions,
+    shaDatalistCell,
+    shaDatalistWrapParent,
+    shaDatalistCard,
+    shaDatalistHorizontal,
+  };
 });

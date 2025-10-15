@@ -3,7 +3,7 @@ import React, {
   FC,
   MutableRefObject,
   useRef,
-  useState
+  useState,
 } from 'react';
 import { Button, App } from 'antd';
 import { ICommonModalProps } from '../../dynamicModal/models';
@@ -26,7 +26,7 @@ export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterP
   const { hideModal, importerRef: exporterRef } = props;
   const { message, notification } = App.useApp();
 
-  const onImport = () => {
+  const onImport = (): void => {
     setInProgress(true);
 
     exporterRef.current.importExecuter().then(() => {
@@ -44,13 +44,13 @@ export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterP
 
   return (
     <>
-      <Button type='default' onClick={hideModal}>Cancel</Button>
-      <Button type='primary' icon={<ImportOutlined />} onClick={onImport} loading={inProgress}>Import</Button>
+      <Button type="default" onClick={hideModal}>Cancel</Button>
+      <Button type="primary" icon={<ImportOutlined />} onClick={onImport} loading={inProgress}>Import</Button>
     </>
   );
 };
 
-export const useConfigurationItemsImportAction = () => {
+export const useConfigurationItemsImportAction = (): void => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
   const exporterRef = useRef<IImportInterface>();
@@ -64,13 +64,12 @@ export const useConfigurationItemsImportAction = () => {
       const modalId = nanoid();
 
       return new Promise((resolve, reject) => {
-
-        const hideModal = () => {
+        const hideModal = (): void => {
           reject();
           removeModal(modalId);
         };
 
-        const onImported = () => {
+        const onImported = (): void => {
           removeModal(modalId);
           resolve(true);
         };
@@ -90,7 +89,7 @@ export const useConfigurationItemsImportAction = () => {
           },
           showModalFooter: false,
           content: <ConfigurationItemsImport onImported={onImported} importRef={exporterRef} />,
-          footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerRef={exporterRef} />
+          footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerRef={exporterRef} />,
         };
         createModal({ ...modalProps });
       });

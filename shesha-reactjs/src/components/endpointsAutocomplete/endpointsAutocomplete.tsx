@@ -5,6 +5,7 @@ import { useApiEndpoints } from '@/apis/api';
 import { useDebouncedCallback } from 'use-debounce';
 import { IApiEndpoint } from '@/interfaces';
 import { DefaultOptionType } from 'antd/lib/select';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface IHttpVerb {
   id: string;
@@ -47,7 +48,7 @@ export interface VerbSelectorProps {
 }
 export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange, size }) => {
   const options: DefaultOptionType[] = useMemo(() => {
-    return (verbs ?? []).map<DefaultOptionType>(verb => ({
+    return (verbs ?? []).map<DefaultOptionType>((verb) => ({
       value: verb.value,
       label: verb.label,
     }));
@@ -65,7 +66,7 @@ export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange, si
   );
 };
 
-const getUrlFromValue = (value?: EndpointsAutocompleteValue) => {
+const getUrlFromValue = (value?: EndpointsAutocompleteValue): string | null => {
   if (!value)
     return null;
 
@@ -73,17 +74,16 @@ const getUrlFromValue = (value?: EndpointsAutocompleteValue) => {
     ? value.url
     : value;
 };
-const getVerbFromValue = (value?: EndpointsAutocompleteValue) => {
+const getVerbFromValue = (value?: EndpointsAutocompleteValue): string | null => {
   return !value || !isApiEndpoint(value)
     ? null
     : value.httpVerb;
 };
 
 export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnly = false, mode = 'url', ...props }) => {
-
   const endpointsFetcher = useApiEndpoints({ lazy: true });
 
-  const doFetchItems = (term: string, verb: string) => {
+  const doFetchItems = (term: string, verb: string): void => {
     endpointsFetcher.refetch({ queryParams: { term, verb: verb } });
   };
   const debouncedFetchItems = useDebouncedCallback<(value: string, verb: string) => void>(
@@ -91,7 +91,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       doFetchItems(localValue, localVerb);
     },
     // delay in ms
-    200
+    200,
   );
 
   const currentVerb = mode === 'url' ? props.httpVerb : getVerbFromValue(props.value);
@@ -100,7 +100,9 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     debouncedFetchItems(url, currentVerb);
   }, [currentVerb]);
 
-  const loadedEndpoints = endpointsFetcher.data?.result;
+  const loadedEndpoints = isAjaxSuccessResponse(endpointsFetcher.data)
+    ? endpointsFetcher.data.result
+    : undefined;
   const options = useMemo(() => {
     return (loadedEndpoints ?? []).map<IOption>((ep, idx) => ({
       key: idx,
@@ -109,7 +111,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     }));
   }, [loadedEndpoints]);
 
-  const onChangeUrl = (newUrl: string) => {
+  const onChangeUrl = (newUrl: string): void => {
     const newValue: EndpointsAutocompleteValue = mode === 'url'
       ? newUrl
       : { httpVerb: getVerbFromValue(props.value), url: newUrl };
@@ -117,7 +119,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     props.onChange?.(newValue);
   };
 
-  const onVerbChange = (newVerb: string) => {
+  const onVerbChange = (newVerb: string): void => {
     if (mode === 'url')
       return;
 
@@ -125,7 +127,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     props.onChange?.(newValue);
   };
 
-  const handleSearch = (localValue: string) => {
+  const handleSearch = (localValue: string): void => {
     onChangeUrl(localValue);
 
     if (localValue) {
@@ -144,7 +146,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       onChange={onChangeUrl}
       onSearch={handleSearch}
       notFoundContent={null}
-      size={props.size}
+      // size={props.size}
       styles={props.dropdownStyle ? { popup: { root: props.dropdownStyle } } : undefined}
       popupMatchSelectWidth={false}
     >

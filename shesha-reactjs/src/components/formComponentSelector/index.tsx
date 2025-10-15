@@ -67,8 +67,8 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
 
   const options = useMemo<DefaultOptionType[]>(() => {
     const result = editors.map<DefaultOptionType>((editor) => ({
-      //capitalise the first letter of each word
-      label: editor?.name?.replace(/\b\w/g, (char) => char.toUpperCase()), 
+      // capitalise the first letter of each word
+      label: editor?.name?.replace(/\b\w/g, (char) => char.toUpperCase()),
       value: editor.type }));
     if (noSelectionItem) result.splice(0, 0, noSelectionItem);
 
@@ -82,9 +82,9 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   }, [value?.type]);
 
   const canConfigure = Boolean(formComponent);
-  const selectStyle = { width: canConfigure ? 'calc(100% - 100px)' : '100%'};
+  const selectStyle = { width: canConfigure ? 'calc(100% - 100px)' : '100%' };
 
-  const getComponentModel = (toolboxComponent: IToolboxComponent) => {
+  const getComponentModel = (toolboxComponent: IToolboxComponent): IConfigurableFormComponent | null => {
     if (!toolboxComponent) return null;
 
     let componentModel: IConfigurableFormComponent = {
@@ -108,7 +108,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
     return componentModel;
   };
 
-  const onSelectChange = (selectedValue: string) => {
+  const onSelectChange = (selectedValue: string): void => {
     if (onChange) {
       const component = selectedValue ? allComponents[selectedValue] : null;
       const settings = getComponentModel(component);
@@ -116,17 +116,17 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
       onChange(selectedValue ? { type: selectedValue, settings } : null);
     }
   };
-  const onClear = () => {
+  const onClear = (): void => {
     if (onChange) onChange(null);
   };
 
-  const onConfigureClick = () => {
+  const onConfigureClick = (): void => {
     setIsSettingsVisible(true);
   };
-  const onCancelConfigureClick = () => {
+  const onCancelConfigureClick = (): void => {
     setIsSettingsVisible(false);
   };
-  const onSettingsSaveClick = (data) => {
+  const onSettingsSaveClick = (data): Promise<void> => {
     if (onChange) {
       const newValue: ComponentSelectorValue = { ...value, settings: data };
       onChange(newValue);
@@ -137,7 +137,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   };
 
   const propertyFilter = (name: string): boolean => {
-    const adapter = value?.type 
+    const adapter = value?.type
       ? getEditorAdapterByType(allComponents, value.type)
       : null;
     if (!adapter) return false;
@@ -166,7 +166,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         readOnly={readOnly}
         formComponent={formComponent}
         isVisible={isSettingsVisible}
-        model={value?.settings}//modalData}
+        model={value?.settings}// modalData}
         onSave={onSettingsSaveClick}
         onCancel={onCancelConfigureClick}
         propertyFilter={propertyFilter}

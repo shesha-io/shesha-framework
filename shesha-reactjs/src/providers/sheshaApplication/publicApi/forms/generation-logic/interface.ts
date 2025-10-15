@@ -13,11 +13,11 @@ export interface GenerationLogic {
    * @returns The processed markup ready for use
    */
   processTemplate(
-    markup: string, 
+    markup: string,
     replacements: object,
     metadataHelper?: FormMetadataHelper
   ): Promise<string>;
-  
+
   /**
    * Check if this generation logic implementation supports the given template
    * @param template The form template to check

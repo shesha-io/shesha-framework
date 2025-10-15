@@ -4,7 +4,7 @@ import { FormOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { NotesRenderer } from '@/components';
 import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
-import { evaluateValue, executeScript, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateValueAsString, executeScript, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
 import NotesProvider from '@/providers/notes';
 import {
@@ -28,7 +28,7 @@ export interface INotesProps extends IConfigurableFormComponent {
   allowDelete?: boolean;
   onCreated?: string;
   category?: string;
-  //new props
+  // new props
   showCharCount?: boolean;
   minLength?: number;
   maxLength?: number;
@@ -53,9 +53,9 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
 
     if (model.hidden) return null;
 
-    const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
+    const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState });
 
-    const onCreated = (createdNotes: Array<any>) => {
+    const onCreated = (createdNotes: Array<any>): void => {
       if (!model.onCreated) return;
 
       executeScript<void>(model?.onCreated, {
@@ -69,7 +69,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
-    const handleDeleteAction = (note: INote) => {
+    const handleDeleteAction = (note: INote): void => {
       if (!model.onDeleteAction) return;
 
       executeScript<void>(model.onDeleteAction, {
@@ -88,7 +88,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
-    const handleCreateAction = (note: INote) => {
+    const handleCreateAction = (note: INote): void => {
       if (!model.onCreateAction) return;
 
       executeScript<void>(model.onCreateAction, {
@@ -102,7 +102,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         setGlobalState,
       });
     };
-    const handleUpdateAction = (note: INote) => {
+    const handleUpdateAction = (note: INote): void => {
       if (!model.onUpdateAction) return;
 
       executeScript<void>(model.onUpdateAction, {
@@ -147,7 +147,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     return customModel;
   },
   settingsFormMarkup: (data) => getSettings(data),
-  linkToModelMetadata: (model, metadata) => ({...model, ownerId: '{data.id}', ownerType: metadata.containerType, category: metadata.path}),  
+  linkToModelMetadata: (model, metadata) => ({ ...model, ownerId: '{data.id}', ownerType: metadata.containerType, category: metadata.path }),
   migrator: (m) =>
     m
       .add<INotesProps>(
@@ -158,10 +158,10 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
               migrateFunctionToProp(
                 migrateFunctionToProp(prev, 'ownerId', 'ownerIdExpression'),
                 'ownerType',
-                'ownerTypeExpression'
-              )
-            )
-          ) as INotesProps
+                'ownerTypeExpression',
+              ),
+            ),
+          ) as INotesProps,
       )
       .add<INotesProps>(1, (prev) => migrateVisibility(prev))
       .add<INotesProps>(2, (prev) => migrateReadOnly(prev))

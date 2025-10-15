@@ -14,7 +14,6 @@ export interface IConfigurableFormComponentProps {
 }
 
 const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componentModel }) => {
-
   useShaFormDataUpdate();
 
   const shaApplication = useSheshaApplication();
@@ -29,7 +28,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
     ? { ...componentModel, ...componentModel?.[activeDevice] }
     : componentModel;
-  
+
   const actualModel = useActualContextData(
     deviceModel,
     undefined,
@@ -39,14 +38,14 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   );
 
   // TODO: AS review hidden and enabled for SubForm
-  actualModel.hidden = shaForm.formMode !== 'designer'
-    && (
-      actualModel.hidden
-      || !anyOfPermissionsGranted(actualModel?.permissions || []));
-      // || !isComponentFiltered(actualModel)); ToDo: AS - check if needed for dynamic components
+  actualModel.hidden = shaForm.formMode !== 'designer' &&
+    (
+      actualModel.hidden ||
+      !anyOfPermissionsGranted(actualModel?.permissions || []));
+  // || !isComponentFiltered(actualModel)); ToDo: AS - check if needed for dynamic components
 
   // binding only input and output components
-  if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
+  if (!toolboxComponent.isInput && !toolboxComponent.isOutput)
     actualModel.propertyName = undefined;
 
   actualModel.jsStyle = useActualContextExecution(actualModel.style, null, {}); // use default style if empty or error
@@ -54,7 +53,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.calculateModel);
 
   const control = useMemo(() => (
-    <toolboxComponent.Factory 
+    <toolboxComponent.Factory
       form={shaForm.antdForm}
       model={actualModel}
       calculatedModel={calculatedModel}
@@ -63,14 +62,19 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
     />
   ), [actualModel, actualModel.hidden, actualModel.jsStyle, calculatedModel]);
 
-  if (!toolboxComponent) 
-    return <ComponentError errors={{
-        hasErrors: true, componentId: componentModel.id, componentName: componentModel.componentName, componentType: componentModel.type
-      }} message={`Component '${componentModel.type}' not found`} type='error'
-    />;
+  if (!toolboxComponent)
+    return (
+      <ComponentError
+        errors={{
+          hasErrors: true, componentId: componentModel.id, componentName: componentModel.componentName, componentType: componentModel.type,
+        }}
+        message={`Component '${componentModel.type}' not found`}
+        type="error"
+      />
+    );
 
   if (shaForm.formMode === 'designer') {
-    const validationResult: IModelValidation = {hasErrors: false, errors: []};
+    const validationResult: IModelValidation = { hasErrors: false, errors: [] };
     toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
       validationResult.hasErrors = true;
       validationResult.errors.push({ propertyName, error });
@@ -79,7 +83,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
       validationResult.componentId = componentModel.id;
       validationResult.componentName = componentModel.componentName;
       validationResult.componentType = componentModel.type;
-      return <ComponentError errors={validationResult} message='' type='warning'/>;
+      return <ComponentError errors={validationResult} message="" type="warning" />;
     }
   }
 

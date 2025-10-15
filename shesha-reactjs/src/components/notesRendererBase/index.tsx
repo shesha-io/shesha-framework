@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, CSSProperties, useRef } from 'react';
+import React, { FC, useState, useEffect, CSSProperties, useRef, ReactNode } from 'react';
 import DateDisplay from '@/components/dateDisplay';
 import { Skeleton, Card, List, Empty, Input, App, Button, Typography, Popconfirm } from 'antd';
 import { Comment } from '@/components/antd';
@@ -27,7 +27,7 @@ export interface INotesRendererBaseProps {
   buttonFloatRight?: boolean;
   autoSize?: boolean;
   allowDelete?: boolean;
-  //new props
+  // new props
   showCharCount?: boolean;
   minLength?: number;
   maxLength?: number;
@@ -88,7 +88,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     }
   }, [isPostingNotes]);
 
-  const handleTextChange = (value: string) => {
+  const handleTextChange = (value: string): void => {
     setNewComments(value);
     setCharCount(value.length);
 
@@ -102,7 +102,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     setValidationError(error);
   };
 
-  const handleEditTextChange = (value: string) => {
+  const handleEditTextChange = (value: string): void => {
     setEditedText(value);
     setEditCharCount(value.length);
 
@@ -114,7 +114,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     }
   };
 
-  const handleSaveNotes = () => {
+  const handleSaveNotes = (): void => {
     // Validate against min length
     if (minLength && newComments.length < minLength) {
       setValidationError(`Minimum ${minLength} characters required`);
@@ -139,14 +139,14 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     }
   };
 
-  const handleEditClick = (note: INote) => {
+  const handleEditClick = (note: INote): void => {
     setEditingId(note.id);
     setEditedText(note.noteText);
     setEditCharCount(note.noteText.length);
     setEditValidationError('');
   };
 
-  const handleUpdate = (noteId: string) => {
+  const handleUpdate = (noteId: string): void => {
     if (minLength && editedText.length < minLength) {
       setEditValidationError(`Minimum ${minLength} characters required`);
       return;
@@ -183,14 +183,14 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     }
   };
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = (): void => {
     setEditingId(null);
     setEditedText('');
     setEditCharCount(0);
     setEditValidationError('');
   };
 
-  const handleDelete = (note: INote) => {
+  const handleDelete = (note: INote): void => {
     deleteNotes(note.id);
     if (onDeleteAction) {
       onDeleteAction({
@@ -202,7 +202,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     }
   };
 
-  const renderCharCounter = (count: number, error: string) => {
+  const renderCharCounter = (count: number, error: string): ReactNode => {
     if (!showCharCount) return null;
 
     return (
@@ -214,7 +214,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
     );
   };
 
-  const renderEditControls = (note: INote) => (
+  const renderEditControls = (note: INote): ReactNode => (
     <div className={styles.editControls}>
       <Input.TextArea
         value={editedText}
@@ -304,11 +304,10 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
                         noteText,
                         author,
                         creationTime,
-                        ownerId: '', 
+                        ownerId: '',
                         ownerType: '',
                         category: '',
-                      })
-                    }
+                      })}
                     okText="Yes"
                     cancelText="No"
                     okButtonProps={{ type: 'primary', danger: true }}

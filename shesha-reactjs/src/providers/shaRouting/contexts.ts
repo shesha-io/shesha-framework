@@ -2,7 +2,7 @@ import { FormIdentifier, INavigateActoinArguments, IRouter } from '@/providers';
 import { createNamedContext } from '@/utils/react';
 
 export interface IShaRoutingStateContext {
-  router?: IRouter;
+  router: IRouter;
   nextRoute?: string;
 }
 
@@ -12,7 +12,7 @@ export interface IShaRoutingActionsContext {
   getUrlFromNavigationRequest: (request: INavigateActoinArguments) => string;
 }
 
-export type ShaRouting = IShaRoutingStateContext & IShaRoutingActionsContext; ;
+export type ShaRouting = IShaRoutingStateContext & IShaRoutingActionsContext;
 
 export const ShaRoutingStateContext = createNamedContext<IShaRoutingStateContext>(undefined, "ShaRoutingStateContext");
 

@@ -4,7 +4,7 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IToolboxComponent } from '@/interfaces';
-import { IFormComponentContainer, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { IFormComponentContainer, StyleBoxValue, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { getLayoutStyle, getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
@@ -21,9 +21,10 @@ import { IColumnProps, IColumnsComponentProps, IColumnsInputProps } from './inte
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { nanoid } from '@/utils/uuid';
+import { Property } from 'csstype';
 
 // Validation function to ensure columns don't exceed 24-column limit
-const validateColumns = (columns: IColumnProps[]) => {
+const validateColumns = (columns: IColumnProps[]): IColumnProps[] => {
   if (!columns || columns.length === 0) return [];
 
   const totalFlex = columns.reduce((sum, col) => sum + (col.flex || 0), 0);
@@ -62,7 +63,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
     useEffect(() => {
-      const fetchStyles = async () => {
+      const fetchStyles = async (): Promise<void> => {
         const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
           ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
             { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
@@ -85,14 +86,14 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-    const styling = jsonSafeParse(model.stylingBox || '{}');
+    const styling = jsonSafeParse<StyleBoxValue>(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
     const additionalStyles = removeUndefinedProps({
       ...stylingBoxAsCSS,
       ...dimensionsStyles,
       ...borderStyles,
       ...backgroundStyles,
-      ...shadowStyles
+      ...shadowStyles,
     });
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
@@ -113,7 +114,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     const containerPadding = hasBorder
       ? { paddingTop: vPadTop, paddingLeft: hPad, paddingRight: hPad, paddingBottom: vPadBottom }
       : {};
-    const boxSizing = hasBorder ? { boxSizing: 'border-box' } : {};
+    const boxSizing = hasBorder ? { boxSizing: 'border-box' as Property.BoxSizing } : {};
     // Validate and normalize columns to prevent overflow
     const validatedColumns = validateColumns(columns);
 
@@ -151,7 +152,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
       ],
       gutterX: 12,
       gutterY: 12,
-      stylingBox: "{\"marginBottom\":\"5\"}"
+      stylingBox: "{\"marginBottom\":\"5\"}",
     };
 
     return tabsModel;
@@ -160,22 +161,22 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     m
       .add<IColumnsComponentProps>(
         0,
-        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IColumnsComponentProps
+        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IColumnsComponentProps,
       )
       .add<IColumnsComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<IColumnsComponentProps>(2, (prev) => removeComponents(prev))
       .add<IColumnsComponentProps>(3, (prev) => {
-        const columns = prev.columns.map(c => ({
+        const columns = prev.columns.map((c) => ({
           ...c,
-          components: c.components.map(c => ({
+          components: c.components.map((c) => ({
             ...c,
-            propertyName: c.propertyName || c.id
-          }))
+            propertyName: c.propertyName || c.id,
+          })),
         }));
 
         return {
           ...prev,
-          columns
+          columns,
         };
       })
       .add<IColumnsComponentProps>(4, (prev) => {
@@ -190,9 +191,9 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
           borderRadius: prev.borderRadius,
           border: {
             radius: {
-              all: prev.borderRadius
-            }
-          }
+              all: prev.borderRadius,
+            },
+          },
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })

@@ -99,39 +99,39 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
 
   #rerender: RerenderTrigger;
 
-  get backendUrl() {
+  get backendUrl(): string {
     return this.#backendUrl;
   }
 
-  get applicationKey() {
+  get applicationKey(): string | undefined {
     return this.#applicationKey;
   }
 
-  get applicationName() {
+  get applicationName(): string | undefined {
     return this.#applicationName;
   }
 
-  get getFormUrlFunc() {
+  get getFormUrlFunc(): ((formId: FormIdentifier) => string) | undefined {
     return this.#getFormUrlFunc;
   }
 
-  get formDesignerComponentGroups() {
+  get formDesignerComponentGroups(): IToolboxComponentGroup[] {
     return this.#formDesignerComponentGroups;
   }
 
-  get formDesignerComponentRegistrations() {
+  get formDesignerComponentRegistrations(): IDictionary<IToolboxComponentGroup[]> {
     return this.#formDesignerComponentRegistrations;
   }
 
-  get routes() {
+  get routes(): ISheshaRoutes | undefined {
     return this.#routes;
   }
 
-  get httpHeaders() {
+  get httpHeaders(): IHttpHeadersDictionary {
     return this.#httpHeaders;
   }
 
-  get buildHttpRequestHeaders() {
+  get buildHttpRequestHeaders(): (() => IHttpHeadersDictionary) | undefined {
     return this.#buildHttpRequestHeaders;
   }
 
@@ -161,11 +161,11 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
 
   #initializationActions: Record<string, InitializationAction> = {};
 
-  registerInitialization = (uid: string, action: InitializationAction) => {
+  registerInitialization = (uid: string, action: InitializationAction): void => {
     this.#initializationActions[uid] = action;
   };
 
-  get initializationState() {
+  get initializationState(): ApplicationInitializationState {
     return this.#initializationState;
   }
 
@@ -191,15 +191,15 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     }
   };
 
-  get settingsComponentGroups() {
+  get settingsComponentGroups(): ISettingsComponentGroup[] {
     return this.#settingsComponentGroups;
   }
 
-  get settingsComponentRegistrations() {
+  get settingsComponentRegistrations(): IDictionary<ISettingsComponentGroup[]> {
     return this.#settingsComponentRegistrations;
   }
 
-  setRequestHeaders = (headers: IRequestHeaders) => {
+  setRequestHeaders = (headers: IRequestHeaders): void => {
     this.#httpHeaders = {
       ...this.#httpHeaders,
       ...this.#buildHttpRequestHeaders?.(),
@@ -209,23 +209,23 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     this.#rerender();
   };
 
-  get globalVariables() {
+  get globalVariables(): Record<string, any> {
     return this.#globalVariables;
   }
 
-  setGlobalVariables = (values: Record<string, any>) => {
+  setGlobalVariables = (values: Record<string, any>): void => {
     this.#globalVariables = { ...(this.#globalVariables || {}), ...values };
     this.#rerender();
   };
 
-  anyOfPermissionsGranted = (permissions: string[]) => {
+  anyOfPermissionsGranted = (permissions: string[]): boolean => {
     if (permissions?.length === 0) return true;
 
     const authorizer = this.#authorizer?.current?.anyOfPermissionsGranted;
     return authorizer && authorizer(permissions);
   };
 
-  registerFormDesignerComponents = (owner: string, components: IToolboxComponentGroup[]) => {
+  registerFormDesignerComponents = (owner: string, components: IToolboxComponentGroup[]): void => {
     const registrations = { ...this.#formDesignerComponentRegistrations, [owner]: components };
     const componentGroups: IToolboxComponentGroup[] = [];
     for (const key in registrations) {
@@ -236,7 +236,7 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     this.#rerender();
   };
 
-  registerSettingsComponents = (owner: string, components: ISettingsComponentGroup[]) => {
+  registerSettingsComponents = (owner: string, components: ISettingsComponentGroup[]): void => {
     const registrations = { ...this.#settingsComponentRegistrations, [owner]: components };
     const componentGroups: ISettingsComponentGroup[] = [];
     for (const key in registrations) {
@@ -255,7 +255,7 @@ export const useSheshaApplicationInstance = (args: IShaApplicationArgs): IShesha
   const [, forceUpdate] = React.useState({});
 
   if (!appRef.current) {
-    const forceReRender = () => {
+    const forceReRender = (): void => {
       forceUpdate({});
     };
 
@@ -269,5 +269,5 @@ export const useSheshaApplicationInstance = (args: IShaApplicationArgs): IShesha
 
 export const SheshaApplicationInstanceContext = createNamedContext<ISheshaApplicationInstance>(
   undefined,
-  'SheshaApplicationInstanceContext'
+  'SheshaApplicationInstanceContext',
 );

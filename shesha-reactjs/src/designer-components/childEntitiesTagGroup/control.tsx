@@ -29,7 +29,7 @@ const ERROR_LABEL = 'Please configure label configuration for this component.';
 
 const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) => {
   const { styles } = useStyles();
-  const [ open, setOpen ] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
   const activeValue = useRef<IChildEntitiesTagGroupSelectOptions>(null);
   const { deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, propertyName, componentName } = model;
 
@@ -53,7 +53,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     }
   }, [formId]);
 
-  const calculateLabel = (value: any, func: string, showError: boolean = false) => {
+  const calculateLabel = (value: any, func: string, showError: boolean = false): string => {
     try {
       return executeScriptSync(func, { ...allData, item: value });
     } catch {
@@ -66,11 +66,11 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
   const options = useDeepCompareMemo(() => {
     if (Array.isArray(value) && value.length) {
       const opts: IChildEntitiesTagGroupSelectOptions[] = [];
-      value.forEach(item => {
+      value.forEach((item) => {
         opts.push({
           label: calculateLabel(item, labelFormat),
           value: nanoid(),
-          data: item
+          data: item,
         });
       });
       return opts;
@@ -78,12 +78,12 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     return [];
   }, [value]);
 
-  const onModalChange = (value: any) => {
+  const onModalChange = (value: any): void => {
     const data = !!value ? getValueByPropertyName(value, propertyName) : undefined;
     const opt = activeValue.current
-      ? options.map(item => item.value === activeValue.current.value ? data : item.data)
-      : [...options.map(item => item.data), data];
-    onChange(opt);    
+      ? options.map((item) => item.value === activeValue.current.value ? data : item.data)
+      : [...options.map((item) => item.data), data];
+    onChange(opt);
   };
 
   const onClickTag = (val: IChildEntitiesTagGroupSelectOptions) => () => {
@@ -103,31 +103,33 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
       cancelText: 'No',
       onOk: () => {
         const opts = options.filter(({ value }) => value !== item);
-        onChange(opts.map(item => item.data));
+        onChange(opts.map((item) => item.data));
       },
     });
   };
 
-  const onOpenModal = () => {
+  const onOpenModal = (): void => {
     if (formConfiguration) {
-        setOpen(true);
+      setOpen(true);
     } else {
       message.warning(WARNING_BIND_FORM);
     }
   };
 
-  const onCloseModal = () => {
+  const onCloseModal = (): void => {
     activeValue.current = null;
     setOpen(false);
   };
 
   const isEditable = !model?.readOnly;
 
-  const tagRender = ({ label, value }) => {
-    const val = options.find(x => x.value === value);
-    return <Tag closable={isEditable} onClick={onClickTag(val)} onClose={onCloseTag(value)}>
-      {label}
-    </Tag>;
+  const tagRender = ({ label, value }): JSX.Element => {
+    const val = options.find((x) => x.value === value);
+    return (
+      <Tag closable={isEditable} onClick={onClickTag(val)} onClose={onCloseTag(value)}>
+        {label}
+      </Tag>
+    );
   };
 
   const inputGroupProps = isEditable ? {} : { className: styles.childEntityTagFullWidth };
@@ -139,11 +141,11 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     return { components: formConfiguration?.markup, formSettings: formConfiguration?.settings };
   }, [formConfiguration]);
 
-  const contextId = [parent?.subFormIdPrefix, propertyName].filter(x => !!x).join('.');
+  const contextId = [parent?.subFormIdPrefix, propertyName].filter((x) => !!x).join('.');
 
   const initData = useMemo(() => {
-    return open ? new Promise<any>(resolve => resolve({ [propertyName]: {...activeValue.current?.data} })) : null;
-  }, [propertyName, open ]);
+    return open ? new Promise<any>((resolve) => resolve({ [propertyName]: { ...activeValue.current?.data } })) : null;
+  }, [propertyName, open]);
 
 
   return (
@@ -153,7 +155,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
           id={contextId}
           name={propertyName}
           description={propertyName}
-          type='control'
+          type="control"
           initialData={initData}
         >
           <SubFormProvider id={model.id} context={contextId} propertyName={propertyName} markup={markup} readOnly={model.readOnly} componentName={componentName}>
@@ -172,7 +174,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
       )}
 
       <Space.Compact style={{ width: "100%" }} {...inputGroupProps}>
-        <Select mode="tags" value={options} tagRender={tagRender} styles={{ popup: { root: {display: 'none'} } }} searchValue='' />
+        <Select mode="tags" value={options} tagRender={tagRender} styles={{ popup: { root: { display: 'none' } } }} searchValue="" />
         {isEditable && <Button onClick={onOpenModal} className={styles.childEntityTagAdd} icon={<PlusOutlined />} />}
       </Space.Compact>
     </div>

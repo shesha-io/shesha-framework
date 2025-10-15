@@ -3,8 +3,10 @@ import { getNumberFormat } from '@/utils/string';
 import {
   ContentDisplay,
   FONT_SIZES,
+  FontSizeProps,
   ITextTypographyProps,
   PADDING_SIZES,
+  PaddingProps,
   TypographyFontSize,
   TypographyPaddingSize,
 } from './models';
@@ -23,18 +25,18 @@ const SUPPORTED_DATE_FORMATS = [
   'YYYY-MM-DDTHH:mm:ss', // 2004-12-01T00:00:00
 ];
 
-export const getFontSizeStyle = (key: TypographyFontSize) => FONT_SIZES[key];
-export const getPaddingSizeStyle = (key: TypographyPaddingSize) => PADDING_SIZES[key];
+export const getFontSizeStyle = (key: TypographyFontSize): FontSizeProps => FONT_SIZES[key];
+export const getPaddingSizeStyle = (key: TypographyPaddingSize): PaddingProps => PADDING_SIZES[key];
 
 export const DEFAULT_CONTENT_TYPE = '';
 export const DEFAULT_CONTENT_DISPLAY: ContentDisplay = 'content';
 export const DEFAULT_PADDING_SIZE: TypographyPaddingSize = 'none';
 
 export interface IContent {
-  dataType?: ITextTypographyProps['dataType'];
-  dateFormat?: ITextTypographyProps['dateFormat'];
-  numberFormat?: ITextTypographyProps['numberFormat'];
-  dataFormat?: string;
+  dataType?: ITextTypographyProps['dataType'] | undefined;
+  dateFormat?: ITextTypographyProps['dateFormat'] | undefined;
+  numberFormat?: ITextTypographyProps['numberFormat'] | undefined;
+  dataFormat?: string | undefined;
 }
 
 const isValidDate = (dateString: string): boolean => {
@@ -60,7 +62,7 @@ const formatDate = (dateText: string, targetFormat: string): string => {
   return dateText; // Return original text if parsing fails
 };
 
-export const formatDateStringAndPrefix = (content: string, dateFormat: string = DATE_TIME_FORMATS.date) => {
+export const formatDateStringAndPrefix = (content: string, dateFormat: string = DATE_TIME_FORMATS.date): string => {
   // Match any date-like pattern
   const datePattern =
     /\d{2}[-/]\d{2}[-/]\d{4}|\d{4}[-/]\d{2}[-/]\d{2}|\d{4}\d{2}\d{2}T\d{6}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/g;
@@ -73,7 +75,7 @@ export const formatDateStringAndPrefix = (content: string, dateFormat: string = 
   });
 };
 
-export const getContent = (content: string, { dataType = 'string', dateFormat, numberFormat }: IContent = {}) => {
+export const getContent = (content: string, { dataType = 'string', dateFormat, numberFormat }: IContent = {}): string => {
   switch (dataType) {
     case 'boolean':
       return content ? 'Yes' : 'No';
@@ -91,7 +93,7 @@ export const defaultStyles = (textType: string): IStyleType => {
     font: {
       color: '#000',
       type: 'Segoe UI',
-      size:  textType === 'title' ? undefined : 14
+      size: textType === 'title' ? undefined : 14,
     },
     background: { type: 'color', color: '' },
     border: {

@@ -9,7 +9,7 @@ export interface IDataListComponentProps extends IDataListBaseProps, IDataListIn
 export interface IDataListWithDataSourceProps extends IDataListComponentProps {
   dataSourceInstance: DataTableFullInstance;
 }
-  
+
 export interface IDataListInlineEditableProps {
   canDeleteInline?: YesNoInherit;
   customDeleteUrl?: string;
@@ -24,7 +24,7 @@ export interface IDataListInlineEditableProps {
   modalWidth?: string;
   widthUnits?: string;
   customWidth?: number;
-
+  showEditIcons?: boolean;
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
@@ -34,4 +34,9 @@ export interface IDataListInlineEditableProps {
   cardHeight?: string;
   cardSpacing?: string;
   showBorder?: boolean;
+
+  onListItemClick?: IConfigurableActionConfiguration;
+  onListItemHover?: IConfigurableActionConfiguration;
+  onListItemSelect?: IConfigurableActionConfiguration;
+  onSelectionChange?: IConfigurableActionConfiguration;
 }

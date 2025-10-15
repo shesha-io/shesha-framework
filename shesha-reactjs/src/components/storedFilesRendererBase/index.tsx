@@ -43,7 +43,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadZipFile?: () => void;
   downloadZip?: boolean;
   downloadFile: (payload: IDownloadFilePayload) => void;
-  onFileListChanged?: (list: IStoredFile[]) => void;
   validFileTypes?: IUploaderFileTypes[];
   maxFileLength?: number;
   isDragger?: boolean;
@@ -61,7 +60,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   hideFileName?: boolean;
   gap?: number;
   container?: IStyleType;
-  primaryColor?: string;
   allStyles?: IFormComponentStyles;
   enableStyleOnReadonly?: boolean;
   thumbnail?: IStyleType;
@@ -76,7 +74,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   uploadFile,
   downloadZipFile,
   downloadFile,
-  onFileListChanged,
   ownerId,
   ownerType,
   fetchFilesError,
@@ -85,7 +82,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   validFileTypes = [],
   maxFileLength = 0,
   isDragger = false,
-  primaryColor,
   disabled,
   isStub = false,
   allowedFileTypes = [],
@@ -105,8 +101,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const model = rest;
   const hasFiles = !!fileList.length;
-  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS, fontStyles } = useFormComponentStyles({ ...model });
-  const { fullStyle, dimensionsStyles} = useFormComponentStyles({ ...model.thumbnail });
+
+  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
 
   const { styles } = useStyles({
     containerStyles: {
@@ -116,23 +112,28 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ...containerJsStyle,
       ...stylingBoxAsCSS,
     },
-    style: enableStyleOnReadonly && disabled ?
-      { ...dimensionsStyles, ...fontStyles } :
-      { ...fullStyle, ...fontStyles },
-    model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger, isStub },
-    primaryColor
+    style: enableStyleOnReadonly && disabled
+      ? { ...(model?.allStyles?.dimensionsStyles ?? {}), ...(model?.allStyles?.fontStyles ?? {}) }
+      : { ...(model?.allStyles?.fullStyle ?? {}) },
+    model: {
+      gap: addPx(gap),
+      layout: listType === 'thumbnail' && !isDragger,
+      hideFileName: rest.hideFileName && listType === 'thumbnail',
+      isDragger,
+      isStub,
+    },
   });
 
   const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
 
-  const openFilesZipNotification = () =>
+  const openFilesZipNotification = (): void =>
     notification.success({
       message: `Download success!`,
       description: 'Your files have been downloaded successfully. Please check your download folder.',
       placement: 'topRight',
     });
 
-  const fetchStoredFile = (url: string) => {
+  const fetchStoredFile = (url: string): Promise<string> => {
     const response = fetch(`${url}`,
       { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
       .then((response) => {
@@ -152,7 +153,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   }, [isDownloadZipSucceeded]);
 
   useEffect(() => {
-    const fetchImages = async () => {
+    const fetchImages = async (): Promise<void> => {
       const newImageUrls = { ...imageUrls };
       for (const file of fileList) {
         if (isImageType(file.type) && !newImageUrls[file.uid]) {
@@ -166,12 +167,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     fetchImages();
   }, [fileList]);
 
-  const handlePreview = (file: UploadFile) => {
+  const handlePreview = (file: UploadFile): void => {
     setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
     setPreviewOpen(true);
   };
 
-  const iconRender = (file) => {
+  const iconRender = (file): JSX.Element => {
     const { type, uid } = file;
 
     if (isImageType(type)) {
@@ -189,7 +190,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   }
 
 
-  const showDeleteConfirmation = (file) => {
+  const showDeleteConfirmation = (file): void => {
     modal.confirm({
       title: 'Delete Attachment',
       content: 'Are you sure you want to delete this attachment?',
@@ -198,7 +199,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       okType: 'danger',
       onOk: () => {
         deleteFile(file.uid);
-      }
+      },
     });
   };
 
@@ -208,16 +209,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     multiple,
     fileList,
     disabled,
-    pastable: false,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
       if (status === 'done') {
         message.success(`${info.file.name} file uploaded successfully.`);
       } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
-      }
-      if (onFileListChanged) {
-        onFileListChanged(info.fileList);
       }
     },
     onRemove(file) {
@@ -265,43 +262,51 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
 
-  const renderUploadContent = () => {
+  const renderUploadContent = (): JSX.Element => {
     return (
-      !disabled &&
-      <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
-        {listType === 'text' && '(press to upload)'}
-      </Button>
+      !disabled && (
+        <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
+          {listType === 'text' && '(press to upload)'}
+        </Button>
+      )
     );
   };
 
   return (
-    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal :
-      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical :
-        layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
+    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
+      : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
+        : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
+    >
       {isStub
         ? (isDragger
           ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
-          : <div
-            className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
-          >
-            {renderUploadContent()}
-            {listType !== 'text' && !rest.hideFileName &&
-              <span className='ant-upload-list-item-name ant-upload-list-item-name-stub'>
-                {'file name'}
-              </span>}
-          </div>)
+          : (
+            <div
+              className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
+            >
+              {renderUploadContent()}
+              {listType !== 'text' && !rest.hideFileName && (
+                <span className="ant-upload-list-item-name ant-upload-list-item-name-stub">
+                  file name
+                </span>
+              )}
+            </div>
+          ))
         : (props.disabled && fileList.length === 0
-          ? <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
-            {renderUploadContent()}
-          </div>
+          ? (
+            <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
+              {renderUploadContent()}
+            </div>
+          )
           : props.disabled
             ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
-            : isDragger ?
-              <Dragger {...props}>
-                <DraggerStub styles={styles} />
-              </Dragger>
-              : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)
-      }
+            : isDragger
+              ? (
+                <Dragger {...props}>
+                  <DraggerStub styles={styles} />
+                </Dragger>
+              )
+              : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
       {previewImage && (
         <Image
           wrapperStyle={{ display: 'none' }}
