@@ -9,9 +9,9 @@ namespace Shesha.Migrations.PostgreSql
         public override void Up()
         {
             IfDatabase("PostgreSql").Execute.Sql(@"
-CREATE OR REPLACE FUNCTION ""Frwk_GetMultiValueRefListItemNames""
+CREATE OR REPLACE FUNCTION ""frwk_get_multi_value_ref_list_item_names""
 (
-    ""RefListNamespace""               varchar(255),
+    ""RefListModuleName""               varchar(255),
     ""RefListName""                    varchar(255),           -- The Id of the Reference List to use for the lookup
     ""RefListItemValue""               bigint                  -- The Value of the Item to whose name should be returned
 )
@@ -24,17 +24,11 @@ $$
 DECLARE
     ""RetVal""                 text;
     ""ConcatenatedList""       text = '';
-    ""ReferenceListId""        uuid;
     ""NullValueName""          varchar(255) = null;    -- The value to return if the item is NULL
     ""Separator""              varchar(20) = null;     -- The characters to place in between each entry
 BEGIN
     ""Separator"" := ', ';
     ""NullValueName"" := '';
-
-    SELECT config.id INTO ""ReferenceListId"" FROM frwk.configuration_items config
-    WHERE config.name = CONCAT(coalesce(CONCAT(""RefListNamespace"" , '.'), '') , ""RefListName"")
-    AND config.item_type = 'reference-list'
-    AND config.is_deleted = false;
 
     IF (""RefListItemValue"" IS NULL) THEN
         ""RetVal"" := '';
@@ -42,11 +36,14 @@ BEGIN
         SELECT
             string_agg(item, ""Separator"") INTO ""ConcatenatedList""
         FROM
-            frwk.reference_list_items
+            frwk.vw_reference_list_item_values refItemValues
+            INNER JOIN frwk.vw_configuration_items_inheritance itemInheritance
+            ON refItemValues.name = itemInheritance.name AND refItemValues.module = itemInheritance.module_name
         WHERE
-            reference_list_id = ""ReferenceListId""
-        AND (item_value & ""RefListItemValue"") > 0
-        AND is_deleted = false;
+            module = ""RefListModuleName""
+            AND itemInheritance.module_name = ""RefListModuleName""
+            AND itemInheritance.name = ""RefListName""
+        AND (item_value & ""RefListItemValue"") > 0;
 
         ""RetVal"" := ""ConcatenatedList"";
     END IF;

@@ -9,9 +9,9 @@ namespace Shesha.Migrations
         public override void Up()
         {
             IfDatabase("SqlServer").Execute.Sql(@"
-CREATE OR ALTER   FUNCTION [dbo].[Frwk_GetMultiValueRefListItemNames]
+CREATE OR ALTER   FUNCTION [dbo].[frwk_get_multi_value_ref_list_item_names]
 (
-    @RefListNamespace               varchar(255),
+    @RefListModuleName               varchar(255),
     @RefListName                    varchar(255),           -- The Id of the Reference List to use for the lookup
     @RefListItemValue               bigint                     -- The Value of the Item to whose name should be returned
 )
@@ -23,16 +23,10 @@ BEGIN
     ************************************************************************************************/
     DECLARE @RetVal                 varchar(max),
             @ConcatenatedList       varchar(max) = '',
-            @ReferenceListId        uniqueidentifier,
             @NullValueName          varchar(255) = null,    -- The value to return if the item is NULL 
-            @Separator              varchar(20) = null      -- The characters to place in between each entry            
+            @Separator              varchar(20) = null      -- The characters to place in between each entry        
     SET @Separator = ', '
     SET @NullValueName = ''
-
-    SELECT @ReferenceListId = config.id FROM frwk.configuration_items config
-	WHERE config.name = CONCAT(coalesce(CONCAT(@RefListNamespace , '.'), '') , @RefListName)
-	AND config.item_type = 'reference-list'
-	AND config.is_deleted = 0
                             
     IF (@RefListItemValue IS NULL)
         SET @RetVal = ''
@@ -41,11 +35,14 @@ BEGIN
         SELECT
             @ConcatenatedList = COALESCE(@ConcatenatedList + @Separator, '') + item
             FROM
-                frwk.reference_list_items
+                [frwk].[vw_reference_list_item_values] refItemValues
+				INNER JOIN [frwk].[vw_configuration_items_inheritance] itemInheritance 
+				ON refItemValues.name = itemInheritance.name AND refItemValues.module = itemInheritance.module_name
             WHERE
-                reference_list_id = @ReferenceListId
-            AND (item_value & @RefListItemValue) > 0
-            AND is_deleted = 0  
+                module = @RefListModuleName
+				AND itemInheritance.module_name = @RefListModuleName
+				AND itemInheritance.name = @RefListName
+            AND (item_value & @RefListItemValue) > 0  
             
         SELECT @RetVal = substring(@ConcatenatedList, LEN(@Separator) + 1, len(@ConcatenatedList))
     END
