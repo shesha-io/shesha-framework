@@ -28,8 +28,6 @@ export class ShaRouter implements IShaRouter {
     return this._router;
   }
 
-  nextRoute?: string;
-
   constructor(args: ShaRouterArgs) {
     this._router = args.router;
     this._getFormUrlFunc = args.getFormUrlFunc;

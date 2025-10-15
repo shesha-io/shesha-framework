@@ -1068,7 +1068,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     const docId = this.getDocIdFromRoute();
     if (docId) {
       // open document
-      this.openDocumentByIdAsync(docId);
+      await this.openDocumentByIdAsync(docId);
     } else {
       // if docId is not provided - check opened tabs and select first one
       const doc = this.docs.at(0);
