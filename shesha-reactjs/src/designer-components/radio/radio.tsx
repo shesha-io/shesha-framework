@@ -57,7 +57,6 @@ const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValu
               {...restProps}
               style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle}
               value={value}
-              defaultValue={model.defaultValue}
               dataSourceUrl={calculatedModel.dataSourceUrl}
               {...customEvents}
               onChange={onChangeInternal}
