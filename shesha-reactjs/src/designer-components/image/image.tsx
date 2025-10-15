@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { Button, Image, Tooltip, Upload, UploadProps } from 'antd';
+import { App, Button, Image, Tooltip, Upload, UploadProps } from 'antd';
 import { toBase64, useSheshaApplication, useStoredFile } from '@/index';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 
@@ -17,12 +17,13 @@ export interface IImageFieldProps {
 }
 
 export const ImageField: FC<IImageFieldProps> = (props) => {
-  const { imageSource, value, allowPreview = false, styles, onChange } = props;
+  const { imageSource, value, allowPreview = false, styles, onChange, allowedFileTypes } = props;
 
   const readOnly = props?.readOnly || props.imageSource === 'url';
 
   const { uploadFile, deleteFile, fileInfo } = useStoredFile(false) ?? {};
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const { message } = App.useApp();
 
   const [fileUrl, setFileUrl] = useState<string>();
 
@@ -74,6 +75,15 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
     accept: props.allowedFileTypes?.join(','),
     showUploadList: false,
     beforeUpload: async (file) => {
+      if (allowedFileTypes && allowedFileTypes.length > 0) {
+        const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+        const isAllowed = allowedFileTypes.some(type => fileExt === type.toLowerCase());
+        if (!isAllowed) {
+          message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
+          return Upload.LIST_IGNORE;
+        }
+      }
+
       if (imageSource === 'base64') {
         if (onChange)
           onChange(await toBase64(file));
@@ -83,6 +93,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
           // fetchStoredFile();
         });
       }
+      return false;
     },
     fileList: [],
   };
