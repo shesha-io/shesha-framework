@@ -166,19 +166,20 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
         .${canvasWrapper} {
           height: calc(100vh - 120px);
+          overflow: scroll;
         }
         
         [data-sha-c-type="datatable"] {
           .${canvasWrapper} {
           height: 100%;
-         display: flex;
-         flex-direction: column;
-         overflow: auto;
+          display: flex;
+          flex-direction: column;
+          overflow: auto;
         }
         }
 
         .${sidebarContainerMainArea} {
-         width: 100%;
+          width: 100%;
 
           &::not(.no-padding) {
             padding: ${sheshaStyles.paddingLG}px;
