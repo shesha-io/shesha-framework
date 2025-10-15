@@ -40,9 +40,7 @@ export class FormPersister implements IFormPersisterActionsContext {
       saved: false,
       saving: false,
     };
-    this.loadForm({ skipCache: false }).catch(() => {
-      // noop
-    });
+    void this.loadForm({ skipCache: false });
   }
 
   setState = (updater: (prev: IFormPersisterStateContext) => IFormPersisterStateContext): void => {

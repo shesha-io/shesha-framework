@@ -64,7 +64,7 @@ export class ShaRouter implements IShaRouter {
     return buildUrl(url, queryParams);
   };
 
-  getUrlFromNavigationRequest = (request: INavigateActoinArguments): string => {
+  getUrlFromNavigationRequest = (request: INavigateActoinArguments): string | undefined => {
     switch (request?.navigationType) {
       case 'url': return this._prepareUrl(request.url, request.queryParameters);
       case 'form': {
