@@ -15,6 +15,7 @@ import { ItemToolbarHolder } from './components/item-toolbar-holder';
 import { DocumentDefinitionRegistration } from './document-definitions/documentDefinitionRegistration';
 import { SheshaDocumentDefinitions } from './document-definitions';
 import { useCanvas } from '@/providers';
+
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
   const canvas = useCanvas();

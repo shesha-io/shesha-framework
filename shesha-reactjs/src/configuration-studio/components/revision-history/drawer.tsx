@@ -4,7 +4,7 @@ import { useActiveDoc } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
 import { useItemRevisionHistory } from './hooks';
 import { HistoryItem } from './historyItem';
-import { IDocumentInstance } from '@/configuration-studio/models';
+import { IDocumentInstance, isCIDocument } from '@/configuration-studio/models';
 
 export interface IRevisionHistoryDrawerInnerProps {
   doc: IDocumentInstance;
@@ -48,7 +48,7 @@ const RevisionHistoryDrawerInner: FC<IRevisionHistoryDrawerInnerProps> = ({ doc 
 
 export const RevisionHistoryDrawer: FC = () => {
   const doc = useActiveDoc();
-  return doc
+  return doc && isCIDocument(doc)
     ? <RevisionHistoryDrawerInner doc={doc} />
     : undefined;
 };

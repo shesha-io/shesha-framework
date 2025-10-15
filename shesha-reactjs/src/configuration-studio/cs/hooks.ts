@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { ConfigItemTreeNode, DocumentDefinition, IDocumentInstance, TreeNode } from "../models";
 import { CsSubscriptionType, ProcessingState } from "./configurationStudio";
 import { useConfigurationStudio, useConfigurationStudioIfAvailable } from "./contexts";
@@ -7,7 +7,7 @@ import { isDefined } from "../../utils/nullables";
 
 type ExpandedKeys = TreeProps['expandedKeys'];
 type SeletcedKeys = TreeProps['selectedKeys'];
-type OnTreeExpand = TreeProps['onExpand'];
+type OnTreeExpand = Required<TreeProps<TreeNode>>['onExpand'];
 
 export const useCsSubscription = (subscriptionType: CsSubscriptionType): object => {
   const cs = useConfigurationStudioIfAvailable();
@@ -31,11 +31,11 @@ export type UseCsTreeResponse = {
   readonly treeLoadingState: ProcessingState;
   loadTreeAsync: () => Promise<void>;
 
-  quickSearch?: string;
+  quickSearch?: string | undefined;
   setQuickSearch: (value: string) => void;
   expandedKeys: ExpandedKeys;
   selectedKeys: SeletcedKeys;
-  selectedItemNode?: ConfigItemTreeNode;
+  selectedItemNode?: ConfigItemTreeNode | undefined;
   onNodeExpand: OnTreeExpand;
 };
 export const useCsTree = (): UseCsTreeResponse => {
@@ -78,9 +78,10 @@ export const useCsTreeDnd = (): UseCsTreeDndResponse => {
 
 export type UseCsTabsResponse = {
   readonly docs: IDocumentInstance[];
-  readonly activeDocId?: string;
-  readonly activeDocument?: IDocumentInstance;
-  readonly openDocById: (tabId?: string) => void;
+  readonly renderedDocs: Map<string, ReactNode>;
+  readonly activeDocId: string | undefined;
+  readonly activeDocument: IDocumentInstance | undefined;
+  readonly navigateToDocument: (docId: string) => void;
   readonly closeDoc: (tabId?: string) => void;
   readonly closeMultipleDocs: (predicate: (doc: IDocumentInstance, index: number) => boolean) => void;
 };
@@ -92,9 +93,10 @@ export const useCsTabs = (): UseCsTabsResponse => {
     docs: cs.docs,
     activeDocId: cs.activeDocId,
     activeDocument: cs.activeDocument,
-    openDocById: cs.openDocById,
+    navigateToDocument: cs.navigateToDocumentAsync,
     closeDoc: cs.closeDocAsync,
     closeMultipleDocs: cs.closeMultipleDocsAsync,
+    renderedDocs: cs.renderedDocs,
   };
 };
 
