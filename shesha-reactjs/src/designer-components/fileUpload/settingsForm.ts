@@ -320,20 +320,13 @@ export const getSettings = (): FormMarkupWithSettings => {
                                     hideLabel: true,
                                     width: 60,
                                     hidden: {
-                                      _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
+                                      _code: 'return  getSettingValue(data.listType) === "thumbnail";',
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
                                     dropdownOptions: textAlignOptions,
                                   },
                                 ],
-                              })
-                              .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'primaryColor',
-                                label: 'Primary Color',
-                                inputType: 'colorPicker',
-                                jsSetting: true,
                               })
                               .toJson(),
                           ],

@@ -51,7 +51,6 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       ...model.allStyles.fontStyles,
       ...model.allStyles.dimensionsStyles,
     } : model.allStyles.fullStyle;
-
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();

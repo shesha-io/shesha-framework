@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, primaryColor }) => {
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }) => {
   const {
     background = 'transparent',
     backgroundImage,
@@ -43,6 +43,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
   const { layout, isDragger, hideFileName, listType } = model;
 
+  const justifyContentMap = {
+    left: 'flex-start',
+    right: 'flex-end',
+    center: 'center',
+    justify: 'space-between',
+  };
+
+  const justifyContentValue = justifyContentMap[textAlign] || textAlign;
+
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const antUploadText = `${prefixCls}-upload-text`;
   const antUploadHint = `${prefixCls}-upload-hint`;
@@ -79,12 +88,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       --ant-button-content-font-size: ${fontSize} !important;
       --ant-button-font-weight: ${fontWeight} !important;
       --ant-font-family: ${fontFamily} !important;
-      height: ${height ?? '54px'} !important;
-      width: ${width ?? '54px'} !important;
-      max-height: ${maxHeight ?? 'auto'} !important;
-      min-height: ${minHeight} !important;
-      max-width: ${maxWidth} !important;
-      min-width: ${minWidth} !important;
+      height: ${layout ? (height ?? '54px') : '100%'} !important;
+      width: ${layout ? (width ?? '54px') : '100%'} !important;
+      max-height: ${layout ? (maxHeight ?? 'auto') : '100%'} !important;
+      min-height: ${layout ? (minHeight) : '100%'} !important;
+      max-width: ${layout ? (maxWidth) : '100%'} !important;
+      min-width: ${layout ? (minWidth) : '100%'} !important;
 
       .ant-upload-select-picture-card {
         width: var(--thumbnail-width) !important;
@@ -117,7 +126,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
       .ant-upload:not(.ant-upload-disabled) {
         .icon {
-          color: ${primaryColor || token.colorPrimary} !important;
+          color: ${color || token.colorPrimary} !important;
         }
       }
 
@@ -153,7 +162,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         }
         .ant-space {
           .anticon {
-            color: ${primaryColor} !important;
+            color: ${color} !important;
           }
         }
         ${listType !== 'thumbnail' && style?.jsStyle}
@@ -170,7 +179,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
       .ant-upload-list-text {
         ${commonTextStyles}
-        height: calc(var(--container-height) - 32px) !important;
         max-height: calc(var(--container-max-height) - calc(${fontSize} * 4)) !important;
         min-height: calc(var(--container-min-height) - 32px) !important;
         width: calc(var(--container-width) - 32px) !important;
@@ -185,7 +193,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       .${prefixCls}-upload {
 
         width: ${layout && !isDragger ? 'var(--thumbnail-width)' : '100%'} !important;
-        ${layout && !isDragger && 'height: var(--thumbnail-height) !important'};
+        height: ${layout && !isDragger ? 'var(--thumbnail-height)' : '100%'} !important;
         border-radius: ${borderRadius} !important;
         align-items: center;
 
@@ -201,8 +209,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       }
 
       .ant-btn {
-        color: ${primaryColor || token.colorPrimary} !important;
+        color: ${color || token.colorPrimary} !important;
         ${commonTextStyles}
+        justify-content: ${layout ? 'center' : justifyContentValue} !important;
+        align-items: center;
         padding: 0;
         * {
           ${commonTextStyles}
