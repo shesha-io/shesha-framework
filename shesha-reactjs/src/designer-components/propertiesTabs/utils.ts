@@ -4,7 +4,7 @@ import { ISettingsInputRowProps, isSettingsInputRow } from "../settingsInputRow"
 import { isPropertyRouterComponent } from "../propertyRouter";
 import { isDefined } from "@/utils/nullables";
 
-export const getHeaderStyles = (primaryColor?: string): IStyleType => (
+export const getHeaderStyles = (): IStyleType => (
   {
     font: {
       color: "darkslategray",
@@ -34,7 +34,7 @@ export const getHeaderStyles = (primaryColor?: string): IStyleType => (
         bottom: {
           width: "2px",
           style: "solid",
-          color: primaryColor || "#d9d9d9",
+          color: "#d9d9d9",
         },
         left: {},
       },
@@ -120,7 +120,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
         },
         ghost: false,
         collapsedByDefault: false,
-        headerStyles: getHeaderStyles(primaryColor),
+        headerStyles: getHeaderStyles(),
         // TODO: review and convert styles. I relized that types are incompatible after conversion to typed version
         // allStyles: getBodyStyles(),
         border: getBodyStyles().border,

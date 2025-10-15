@@ -17,6 +17,7 @@ export const DebugButton: FC = () => {
       title="Debug"
       type="primary"
       ghost={!isDebug}
+      size="small"
     />
   );
 };

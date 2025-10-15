@@ -1,4 +1,4 @@
-import { IDeviceTypes } from "./contexts";
+import { IDeviceTypes, IViewType } from "./contexts";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
 
@@ -62,6 +62,7 @@ export interface IAutoZoomParams {
   sizes?: number[];
   isSidebarCollapsed?: boolean;
   configTreePanelSize?: number;
+  viewType?: IViewType;
 };
 
 export const DEFAULT_OPTIONS = {
@@ -73,10 +74,22 @@ export const DEFAULT_OPTIONS = {
   designerWidth: defaultDesignerWidth,
 };
 
+const SIDEBAR_WIDTH = {
+  COLLAPSED: 60,
+  EXPANDED: 250,
+  MINIMAL: 32,
+} as const;
+
 const valueToPercent = (value: number): number => value / 100;
 
 export function calculateAutoZoom(params: IAutoZoomParams): number {
-  const { designerWidth = DEFAULT_OPTIONS.designerWidth, sizes = DEFAULT_OPTIONS.sizes, configTreePanelSize = DEFAULT_OPTIONS.configTreePanelWidth() } = params;
+  const {
+    designerWidth = DEFAULT_OPTIONS.designerWidth,
+    sizes = DEFAULT_OPTIONS.sizes,
+    configTreePanelSize = DEFAULT_OPTIONS.configTreePanelWidth(),
+    viewType = 'configStudio',
+    isSidebarCollapsed = false,
+  } = params;
   const availableWidthPercent = sizes[1];
 
   if (typeof window === 'undefined') {
@@ -84,8 +97,22 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   }
 
   const guttersAndScrollersSize = 14;
-  const windowWidth = parseInt(defaultDesignerWidth.replace('px', ''), 10);
-  const viewportWidth = Math.max(0, windowWidth - configTreePanelSize - guttersAndScrollersSize);
+  const windowWidth = window.screen.availWidth;
+
+  // Determine the offset based on view type
+  let offset: number;
+  if (viewType === 'configStudio') {
+    // Use configTreePanelSize for config studio
+    offset = configTreePanelSize;
+  } else if (viewType === 'page') {
+    // Use sidebar width for regular pages
+    // When collapsed: 32px, when expanded: 250px
+    offset = isSidebarCollapsed ? SIDEBAR_WIDTH.COLLAPSED : SIDEBAR_WIDTH.EXPANDED;
+  } else {
+    offset = SIDEBAR_WIDTH.MINIMAL;
+  }
+
+  const viewportWidth = Math.max(0, windowWidth - offset - guttersAndScrollersSize);
   const availableWidth = valueToPercent(availableWidthPercent) * viewportWidth;
 
   let canvasWidth: number;

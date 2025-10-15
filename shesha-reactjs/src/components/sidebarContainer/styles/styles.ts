@@ -16,6 +16,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const sidebarBodyContent = "sidebar-body-content";
   const sidebarContainerLeft = "sidebar-container-left";
   const sidebarContainerRight = "sidebar-container-right";
+  const canvasWrapper = "canvas-wrapper";
   const designerCanvas = "designer-canvas";
 
   const sidebarContainer = cx("sidebar-container", css`
@@ -163,12 +164,21 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           }
         }
     
-        .${sidebarContainerMainArea} {
-         width: 100%;
+        .${canvasWrapper} {
+          height: calc(100vh - 120px);
+        }
+        
+        [data-sha-c-type="datatable"] {
+          .${canvasWrapper} {
+          height: 100%;
          display: flex;
          flex-direction: column;
          overflow: auto;
-         height: calc(100vh - 100px);
+        }
+        }
+
+        .${sidebarContainerMainArea} {
+         width: 100%;
 
           &::not(.no-padding) {
             padding: ${sheshaStyles.paddingLG}px;
@@ -198,5 +208,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     sidebarContainerLeft,
     sidebarContainerRight,
     designerCanvas,
+    canvasWrapper,
   };
 });

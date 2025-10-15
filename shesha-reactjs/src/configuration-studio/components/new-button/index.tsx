@@ -39,7 +39,7 @@ export const NewButton: FC = () => {
           )
       )}
     >
-      <Button>
+      <Button size="small">
         <Space>
           New
           <DownOutlined />
