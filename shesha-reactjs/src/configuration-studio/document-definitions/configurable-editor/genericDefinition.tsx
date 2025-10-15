@@ -1,13 +1,13 @@
+import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
 import { DocumentDefinition, ItemEditorProps, ProviderRendererProps } from "@/configuration-studio/models";
 import { ConfigurableItemIdentifierToString, FormFullName } from "@/interfaces";
-import React, { FC, PropsWithChildren, ReactNode } from "react";
-import { ConfigurabeleEditor } from ".";
-import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
-import { Form, Result } from "antd";
-import { GenericToolbar } from "./toolbar";
-import { useShaForm } from "@/providers/form/store/shaFormInstance";
 import { ShaFormProvider } from "@/providers/form/providers/shaFormProvider";
+import { useShaForm } from "@/providers/form/store/shaFormInstance";
 import ParentProvider from "@/providers/parentProvider";
+import { Form, Result } from "antd";
+import React, { FC, PropsWithChildren, ReactNode } from "react";
+import { ConfigurableEditor } from ".";
+import { GenericToolbar } from "./toolbar";
 
 export interface DummyEditorProps {
   formId: FormFullName;
@@ -45,16 +45,19 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
 
   const definition: DocumentDefinition = {
     documentType: itemType,
-    Provider: ({ children }: ProviderRendererProps): ReactNode => {
+
+    Provider: (props: ProviderRendererProps): ReactNode => {
+      const { children } = props;
       const [form] = Form.useForm();
       const [shaForm] = useShaForm({
         form: undefined,
         antdForm: form,
         init: (_instance) => {
+          _instance.setLogEnabled(true);
           /*
-                        instance.setFormMode(props.mode);
-                        instance.setParentFormValues(parentFormValues);
-                        */
+           *instance.setFormMode(props.mode);
+           *instance.setParentFormValues(parentFormValues);
+           */
         },
       });
 
@@ -76,10 +79,9 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
     Editor: (props: ItemEditorProps): ReactNode => {
       const { doc: document } = props;
       return (
-        <ConfigurabeleEditor
+        <ConfigurableEditor
           formId={formId}
           itemId={document.itemId}
-
         />
       );
     },

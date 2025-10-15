@@ -24,7 +24,7 @@ export interface IParentProviderProps {
   formMode?: FormMode;
   context?: string;
   model: any;
-  formFlatMarkup?: IFlatComponentsStructure;
+  formFlatMarkup?: IFlatComponentsStructure | undefined;
   formApi?: IFormApi<any>;
   isScope?: boolean;
 }

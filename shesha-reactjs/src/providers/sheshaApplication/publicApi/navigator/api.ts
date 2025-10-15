@@ -1,5 +1,5 @@
 import { FormIdentifier } from "@/interfaces";
-import { ShaRouting } from "@/providers/shaRouting/contexts";
+import { IShaRouter } from "@/providers/shaRouting/contexts";
 import { buildUrl } from "@/utils/url";
 
 export interface INavigatorApi {
@@ -18,9 +18,9 @@ export interface INavigatorApi {
 }
 
 export class NavigatorApi implements INavigatorApi {
-  #shaRouter: ShaRouting;
+  #shaRouter: IShaRouter;
 
-  constructor(shaRouter: ShaRouting) {
+  constructor(shaRouter: IShaRouter) {
     this.#shaRouter = shaRouter;
   }
 

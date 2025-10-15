@@ -87,6 +87,9 @@ const stylisticOverrides = {
     }],
     "@stylistic/space-infix-ops": "error",
     "@stylistic/multiline-ternary": "off",
+    //"@stylistic/multiline-comment-style": "error",
+    // "@stylistic/object-curly-spacing": ["error", "always"],
+    // "@stylistic/jsx-curly-spacing": ["error", { "when": "always", "attributes": { "allowMultiline": false, "when": "never" }, "children": true }],
 };
 
 const legacyTypescriptOverrides = {
@@ -144,7 +147,7 @@ const typescriptOverrides = {
         varsIgnorePattern: "^_",
         argsIgnorePattern: "^_",
         ignoreRestSiblings: true,
-    }],    
+    }],
     "@typescript-eslint/explicit-module-boundary-types": "error",
     "@typescript-eslint/explicit-function-return-type": [
         "error",
@@ -253,7 +256,7 @@ const baseTsConfig = {
             ),
             createNodeResolver(
                 {
-                    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+                    extensions: ['.ts', '.tsx'],
                 }
             ),
         ],
