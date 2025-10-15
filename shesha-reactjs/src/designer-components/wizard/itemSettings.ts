@@ -228,6 +228,16 @@ export const getItemSettings = (): FormRawMarkup => {
               content: {
                 id: backButtonContentId,
                 components: [...new DesignerToolbarSettings()
+                  .addSettingsInput({
+                    id: nanoid(),
+                    inputType: 'switch',
+                    propertyName: 'showBackButton',
+                    label: 'Show Back Button',
+                    labelAlign: 'right',
+                    parentId: backButtonContentId,
+                    jsSetting: true,
+                    defaultValue: true,
+                  })
                   .addSettingsInputRow({
                     id: nanoid(),
                     inputs: [
@@ -288,6 +298,16 @@ export const getItemSettings = (): FormRawMarkup => {
               content: {
                 id: doneButtonContentId,
                 components: [...new DesignerToolbarSettings()
+                  .addSettingsInput({
+                    id: nanoid(),
+                    inputType: 'switch',
+                    propertyName: 'showDoneButton',
+                    label: 'Show Done Button',
+                    labelAlign: 'right',
+                    parentId: doneButtonContentId,
+                    jsSetting: true,
+                    defaultValue: true,
+                  })
                   .addSettingsInputRow({
                     id: nanoid(),
                     inputs: [
