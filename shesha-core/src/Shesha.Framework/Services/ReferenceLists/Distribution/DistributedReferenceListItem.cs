@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shesha.Services.ReferenceLists.Distribution
 {
     /// <summary>
     /// Distributed reference list item
     /// </summary>
-    public class DistributedReferenceListItem
+    public class DistributedReferenceListItem : IEquatable<DistributedReferenceListItem>
     {
         /// <summary>
         /// Item text
@@ -52,5 +53,37 @@ namespace Shesha.Services.ReferenceLists.Distribution
         /// Child items
         /// </summary>
         public List<DistributedReferenceListItem> ChildItems { get; set; } = new List<DistributedReferenceListItem>();
+
+        private bool StringEauqls(string? a, string? b) => string.IsNullOrEmpty(a) && string.IsNullOrEmpty(b) || a == b;
+
+        public bool Equals(DistributedReferenceListItem? other)
+        {
+            if (other == null)
+                return false;
+
+            var equals = StringEauqls(Item, other.Item) &&
+                ItemValue == other.ItemValue &&
+                StringEauqls(Description, other.Description) &&
+                OrderIndex == other.OrderIndex &&
+                // HardLinkToApplication == other.HardLinkToApplication &&
+                StringEauqls(Color, other.Color ) &&
+                StringEauqls(Icon, other.Icon) &&
+                StringEauqls(ShortAlias, other.ShortAlias);
+            if (!equals)
+                return false;
+
+            if (ChildItems.Count != other.ChildItems.Count)
+                return false;
+
+            var childOrdered = ChildItems.OrderBy(item => item.OrderIndex).ToList();
+            var otherChildOrdered = other.ChildItems.OrderBy(item => item.OrderIndex).ToList();
+
+            for (int i = 0; i < childOrdered.Count; i++)
+            {
+                if (!childOrdered[i].Equals(otherChildOrdered[i]))
+                    return false;
+            }
+            return true;
+        }
     }
 }
