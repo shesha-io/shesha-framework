@@ -59,7 +59,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
     hideModal();
     setLocalValue(deepCopyViaJson(prevValue));
     onChange?.(deepCopyViaJson(prevValue));
-    if (localValue?.length === 0) {
+    if (prevValue?.length === 0) {
       setStartedEmpty(false);
     }
   };
