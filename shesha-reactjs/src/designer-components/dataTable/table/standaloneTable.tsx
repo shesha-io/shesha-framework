@@ -46,7 +46,6 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
 
   const iconStyle: React.CSSProperties = {
     margin: '0 4px',
-    cursor: 'pointer',
     color: '#1890ff',
   };
 
@@ -85,12 +84,17 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
           </tr>
         </thead>
         <tbody>
-          {dummyRows.map((_row, rowIndex) => (
+          {dummyRows.map((_, rowIndex) => (
             <tr key={rowIndex} style={{ backgroundColor: rowIndex % 2 === 0 ? '#fff' : '#fafafa' }}>
-const iconStyle: React.CSSProperties = {
-  margin: '0 4px',
-  color: '#1890ff',
-};
+              <td style={actionCellStyle}>
+                <SearchOutlined style={iconStyle} />
+              </td>
+              <td style={actionCellStyle}>
+                <EditOutlined style={iconStyle} />
+              </td>
+              <td style={actionCellStyle}>
+                <DeleteOutlined style={iconStyle} />
+              </td>
               {columns.map((_column, colIndex) => (
                 <td key={colIndex} style={cellStyle}>
                   {colIndex === 0 ? `Record ${rowIndex + 1}` : 'Placeholder Info'}
