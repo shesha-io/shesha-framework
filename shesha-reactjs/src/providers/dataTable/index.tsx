@@ -197,6 +197,26 @@ const getFilter = (state: IDataTableStateContext): string => {
 const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRepository): IGetListDataPayload => {
   const dataColumns = getTableDataColumns(state.columns);
 
+  // Log table columns before fetch
+  console.log('📊 Table columns before fetch:', {
+    totalColumns: state.columns?.length || 0,
+    dataColumns: dataColumns.length,
+    allColumns: state.columns?.map(col => ({
+      id: col.id,
+      caption: col.caption || col.header,
+      propertyName: col.propertyName,
+      columnType: col.columnType,
+      isVisible: col.isVisible,
+      accessor: col.accessor
+    })),
+    dataColumnsForFetch: dataColumns.map(col => ({
+      propertyName: col.propertyName,
+      dataType: col.dataType,
+      propertiesToFetch: col.propertiesToFetch,
+      isVisible: col.isVisible
+    }))
+  });
+
   const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
 
   if (dataColumns.length > 0 && groupingSupported && state.groupingColumns && state.groupingColumns.length > 0) {
@@ -391,6 +411,12 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         repository
           .fetch(payload)
           .then((response) => {
+            console.log('✅ DataTable: Data fetch successful', {
+              totalRows: response.totalRows,
+              rowsReturned: response.rows?.length || 0,
+              totalPages: response.totalPages,
+              columnsUsedForFetch: payload.columns?.length || 0
+            });
             dispatch(fetchTableDataSuccessAction(response));
           })
           .catch((e) => {
@@ -419,8 +445,22 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const fetchTableDataInternal = (payload: IGetListDataPayload): void => {
     if (tableIsReady.current === true && !props.disableRefresh) {
+      console.log('🚀 DataTable: Initiating data fetch', {
+        isReady: tableIsReady.current,
+        isRefreshDisabled: props.disableRefresh,
+        columnsCount: payload.columns?.length || 0,
+        pageSize: payload.pageSize,
+        currentPage: payload.currentPage,
+        hasQuickSearch: !!payload.quickSearch,
+        hasFilter: !!payload.filter
+      });
       dispatch(fetchTableDataAction(payload));
       debouncedFetch(payload);
+    } else {
+      console.log('⏸️ DataTable: Skipping data fetch', {
+        isReady: tableIsReady.current,
+        isRefreshDisabled: props.disableRefresh
+      });
     }
   };
 
