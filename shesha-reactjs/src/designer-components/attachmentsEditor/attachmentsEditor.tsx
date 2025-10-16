@@ -43,7 +43,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
-  removeFieldFromPayload?: boolean;
+  addFieldToPayload?: boolean;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -58,7 +58,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { message } = App.useApp();
-    const pageContext = useDataContextManagerActions(false)?.getPageContext();
+    const pageContext = useDataContextManagerActions()?.getPageContext();
     const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
     const enabled = !model.readOnly;
@@ -81,7 +81,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
-      <ConfigurableFormItem model={{ ...model, propertyName: model.propertyName || `${GHOST_PAYLOAD_KEY}_${model.id}` }}>
+      <ConfigurableFormItem model={{ ...model, propertyName: model.addFieldToPayload ? model.propertyName : `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
 
           const onFileListChanged = (fileList) => {
@@ -157,8 +157,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       ...migrateFormApi.eventsAndProperties(prev),
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
-    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType }))
-    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, propertyName: prev.propertyName || '' })),
+    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType })),
 };
 
 export default AttachmentsEditor;
