@@ -59,7 +59,7 @@ export const defaultStyles = (): IStyleType => {
 };
 
 // Auditing columns to exclude from default column generation
-export const AUDITING_COLUMNS = [
+export const AUDITING_COLUMNS = Object.freeze([
   'id',
   'isDeleted',
   'deleterUserId',
@@ -69,7 +69,7 @@ export const AUDITING_COLUMNS = [
   'creationTime',
   'creatorUserId',
   'markup',
-];
+]);
 
 // Supported data types for table columns
 export const SUPPORTED_COLUMN_DATA_TYPES = [
@@ -89,7 +89,7 @@ export const filterPropertiesForTable = (properties: IPropertyMetadata[]): IProp
   return properties.filter((prop: IPropertyMetadata) => {
     const columnName = prop.path || prop.columnName || '';
     const isAuditing = AUDITING_COLUMNS.includes(columnName.toLowerCase());
-    const isFramework = prop.isFrameworkRelated;
+    const isFramework = prop.isFrameworkRelated === true;
     return !isAuditing && !isFramework;
   });
 };
