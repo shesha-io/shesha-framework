@@ -6,6 +6,7 @@ import { useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
+import { useStyles } from './styles';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -27,9 +28,21 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, formItemWrapperCol]);
   const settings = shaForm.settings;
+  const { styles } = useStyles(layout);
+
   const defaultMargins = settings?.formItemMargin || {};
   const { top, left, right, bottom } = defaultMargins;
-  const { marginTop = top, marginBottom = bottom, marginRight = right, marginLeft = left } = model?.allStyles?.fullStyle || {};
+  const { marginTop = top,
+     marginBottom = bottom,
+      marginRight = right,
+       marginLeft = left,
+       width,
+       height,
+       minWidth,
+       minHeight,
+       maxWidth,
+      maxHeight,
+     } = model?.allStyles?.fullStyle || {};
 
   const { hideLabel, hidden } = model;
   if (hidden) return null;
@@ -39,7 +52,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     : model.propertyName;
 
   const formItemProps: FormItemProps = {
-    className: classNames(className),
+    className: classNames(className, styles.formItem, layout),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
@@ -51,7 +64,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
-    style: { marginBottom, marginRight, marginLeft, marginTop}
+    style: { marginBottom, marginRight, marginLeft, marginTop, width, height, minHeight, minWidth, maxHeight, maxWidth}
   };
 
   if (typeof children === 'function') {

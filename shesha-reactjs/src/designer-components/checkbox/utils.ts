@@ -1,33 +1,55 @@
 import { IStyleType } from '@/index';
 
-export const defaultStyles = (): IStyleType => {
+export const boxDefaultStyles = (prev): IStyleType => {
   return {
-    background: { type: 'color', color: '' },
-    font: {
-      weight: '400',
-      size: 14,
-      color: '',
-    },
-    border: {
-      border: {
-        all: {
-          width: 1,
-          style: 'solid',
-          color: '#d9d9d9',
-        },
-      },
-      radius: { all: 4 },
-      borderType: 'all',
-      radiusType: 'all',
-    },
     dimensions: {
       width: '16px',
-      height: '16px',
+      height: prev?.height ?? '16px',
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',
       maxWidth: 'auto',
-
-    },
+    }
   };
+};
+
+export const defaultStyles = (): IStyleType => {
+  return  {
+    border: {
+      radiusType: 'all',
+      borderType: 'all',
+      border: { all: { width: '1px', style: 'solid', color: '#d9d9d9' } },
+      radius: { all: 4 },
+    },
+    dimensions: {
+    width: 'auto',
+    height: 'auto',
+    minHeight: '0px',
+    maxHeight: 'auto',
+    minWidth: '0px',
+    maxWidth: 'auto',
+  },
+  background: {
+    type: 'color',
+    color: '',
+    repeat: 'no-repeat',
+    size: 'cover',
+    position: 'center',
+    gradient: { direction: 'to right', colors: {} },
+    url: '',
+    storedFile: { id: null },
+    uploadFile: null,
+  },
+  font: {
+    color: '',
+    size: 14,
+    weight: '400',
+  },
+  shadow: {
+    offsetX: 0,
+    offsetY: 0,
+    color: '#000',
+    blurRadius: 0,
+    spreadRadius: 0,
+  },};
 };

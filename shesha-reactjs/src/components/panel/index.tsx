@@ -93,6 +93,9 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       expandIconPosition={expandIconPosition}
       className={classNames(shaCollapsiblePanelStyle, { [styles.hideWhenEmpty]: hideWhenEmpty }, className)}
       ghost={ghost}
+      style={{
+        width: ''
+      }}
       items={[
         {
           key: "1",

@@ -146,7 +146,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     );
   }, [componentDimensions, marginTop, marginBottom, marginLeft, marginRight, originalDimensions, hasLabel]);
 
-  console.log("Rendered model: ", renderComponentModel);
   return (
     <div
       style={rootContainerStyle}

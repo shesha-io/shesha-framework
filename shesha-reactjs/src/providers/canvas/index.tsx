@@ -1,7 +1,7 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useCallback } from 'react';
 import CanvasReducer from './reducer';
-import { SetCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, SetConfigTreePanelSizeAction, setDesignerDeviceAction, setScreenWidthAction } from './actions';
-import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, IDeviceTypes } from './contexts';
+import { SetCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, SetConfigTreePanelSizeAction, setDesignerDeviceAction, setScreenWidthAction, setViewTypeAction } from './actions';
+import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, IDeviceTypes, IViewType } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { DataTypes, IObjectMetadata } from '@/index';
 import { canvasContextCode } from '@/publicJsApis';
@@ -61,6 +61,10 @@ const CanvasProvider: FC<PropsWithChildren> = ({
   const setConfigTreePanelSize = useCallback((size: number) => {
     dispatch(SetConfigTreePanelSizeAction(size));
   }, []);
+
+  const setViewType = useCallback((viewType: IViewType) => {
+    dispatch(setViewTypeAction(viewType));
+  }, []);
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   const actions = useMemo(() => ({
@@ -69,8 +73,9 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     setCanvasZoom,
     setCanvasAutoZoom,
     setConfigTreePanelSize,
+    setViewType,
     /* NEW_ACTION_GOES_HERE */
-  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setCanvasAutoZoom, setConfigTreePanelSize]);
+  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setCanvasAutoZoom, setConfigTreePanelSize, setViewType]);
 
   const contextOnChangeData = useCallback((_data: any, changedData: ICanvasStateContext) => {
     if (!changedData)

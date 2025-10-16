@@ -101,6 +101,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const model = rest;
   const hasFiles = !!fileList.length;
+
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS, fontStyles } = useFormComponentStyles({ ...model });
   const { fullStyle, dimensionsStyles} = useFormComponentStyles({ ...model.thumbnail });
 

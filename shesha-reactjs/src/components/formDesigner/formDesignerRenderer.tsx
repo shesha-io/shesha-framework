@@ -11,7 +11,7 @@ export const FormDesignerRenderer: FC = ({ }) => {
     <div className={classNames("sha-page", styles.designerPage)}>
       <div className={styles.formDesigner}>
         <FormDesignerToolbar />
-        <DesignerMainArea />
+        <DesignerMainArea viewType="page" />
       </div>
     </div>
   );

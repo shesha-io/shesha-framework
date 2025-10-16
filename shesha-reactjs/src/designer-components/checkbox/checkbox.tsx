@@ -20,6 +20,8 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { boxDefaultStyles, defaultStyles } from './utils';
 import { useStyles } from './styles';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { migratePrevStyles } from '../_common-migrations';
+
 
 interface ICheckboxComponentCalulatedValues {
   eventHandlers?: IEventHandlers<any>;
@@ -41,12 +43,13 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
+    const boxDimensions = useFormComponentStyles(model.box).dimensionsStyles;
     const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
       ...model.allStyles.fontStyles,
       ...model.allStyles.dimensionsStyles,
     } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
-    const { styles } = useStyles({ style: finalStyle });
+    const { styles } = useStyles({ style: {...finalStyle, ...boxDimensions} });
 
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
@@ -80,7 +83,8 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles()))),
+      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles())))
+      .add<ICheckboxComponentProps>(6, (prev) => ({ ...prev, desktop: { ...prev.desktop, box: boxDefaultStyles(prev.desktop || prev) }, mobile: { ...prev.mobile, box: boxDefaultStyles(prev.mobile || prev) }, tablet: { ...prev.tablet,  box: boxDefaultStyles(prev.tablet || prev) } })),
 };
 
 export default CheckboxComponent;

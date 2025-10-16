@@ -18,7 +18,7 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { containerDefaultStyles, defaultStyles } from './utils';
+import { defaultStyles } from './utils';
 import { listType } from '../attachmentsEditor/attachmentsEditor';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
@@ -32,8 +32,6 @@ export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IForm
   allowedFileTypes?: string[];
   isDragger?: boolean;
   listType?: listType;
-  thumbnailWidth?: string;
-  thumbnailHeight?: string;
   thumbnail?: IStyleType;
   borderRadius?: number;
   hideFileName?: boolean;
@@ -144,11 +142,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
         desktop: { ...defaultStyles() },
         mobile: { ...defaultStyles() },
         tablet: { ...defaultStyles() },
-      }))
-      .add<IFileUploadProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
-      .add<IFileUploadProps>(8, (prev) => {
-        return { ...prev, desktop: { ...prev.desktop.container, thumbnail: prev.desktop }, mobile: { ...prev.mobile.container, thumbnail: prev.mobile }, tablet: { ...prev.tablet.container, thumbnail: prev.tablet } };
-      }),
+      })),
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
 };

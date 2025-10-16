@@ -7,6 +7,7 @@ import { FormToolbar } from "./toolbar";
 import { DesignerMainArea } from "@/components/formDesigner/designerMainArea";
 import { useMainStyles } from "@/components/formDesigner/styles/styles";
 import { CanvasConfig } from "@/components/formDesigner/toolbar/canvasConfig";
+import { Space } from "antd";
 
 export const FormDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.FORM,
@@ -14,7 +15,7 @@ export const FormDocumentDefinition: DocumentDefinition = {
     const { styles } = useMainStyles();
     return (
       <div className={styles.formDesigner}>
-        <DesignerMainArea />
+        <DesignerMainArea viewType="configStudio" />
       </div>
     );
   },
@@ -28,8 +29,10 @@ export const FormDocumentDefinition: DocumentDefinition = {
   Toolbar: (_props: ItemEditorProps): ReactNode => {
     return (
       <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center' }}>
-        <CanvasConfig />
-        <FormToolbar />
+        <Space direction="horizontal" size={5}>
+          <CanvasConfig />
+          <FormToolbar />
+        </Space>
       </div>
     );
   },

@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Button, ButtonProps } from 'antd';
+import { Button, ButtonProps, Space } from 'antd';
 import { RedoOutlined, UndoOutlined } from '@ant-design/icons';
 import { useFormDesignerActions, useFormDesignerUndoableState } from '@/providers/formDesigner';
 
@@ -10,7 +10,7 @@ export const UndoRedoButtons: FC<IUndoRedoButtonsProps> = (props) => {
   const { undo, redo } = useFormDesignerActions();
 
   return (
-    <>
+    <Space direction="horizontal" size={2}>
       <Button
         icon={<UndoOutlined />}
         key="undo"
@@ -27,6 +27,6 @@ export const UndoRedoButtons: FC<IUndoRedoButtonsProps> = (props) => {
         title="Redo"
         size={props.size}
       />
-    </>
+    </Space>
   );
 };

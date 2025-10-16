@@ -45,8 +45,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       hidden,
     } = model;
 
-    console.log("Model::", model);
-
     const evaluatedLabel = useMemo(() => (
       typeof label === 'string' ? evaluateString(label, data) : label
     ), [label, data]);

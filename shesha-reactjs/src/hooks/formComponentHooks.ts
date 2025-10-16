@@ -185,17 +185,7 @@ export const useFormComponentStyles = <TModel,>(
   const jsStyle = useActualContextExecution(model?.style, null, {}); // use default style if empty or error
   const { designerWidth } = useCanvas();
 
-  const formItemMargin = shaForm?.settings?.formItemMargin || {};
-
-  const {
-    dimensions,
-    border,
-    font,
-    shadow,
-    background,
-    stylingBox,
-    overflow
-  } = model || {};
+  const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 
   const [backgroundStyles, setBackgroundStyles] = useState(
     background?.storedFile?.id && background?.type === 'storedFile'
@@ -213,7 +203,7 @@ export const useFormComponentStyles = <TModel,>(
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-  const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox, formItemMargin, isInput), [stylingBox]);
+  const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox), [stylingBox]);
   const overflowStyles = useMemo(() => getOverflowStyle(overflow, false), [overflow]);
   const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, shaForm.formMode === "designer" && designerWidth), [dimensions, stylingBox, designerWidth]);
 

@@ -60,7 +60,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       disabled: model.readOnly,
       readOnly: model.readOnly,
       spellCheck: model.spellCheck,
-      style: { ...model.allStyles.fullStyle, width: '100%', ...zeroMargins },
+      style: { ...model.allStyles.fullStyle, width: '100%', height: "100%", ...zeroMargins },
       maxLength: model.validate?.maxLength,
       max: model.validate?.maxLength,
       minLength: model.validate?.minLength,

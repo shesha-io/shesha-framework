@@ -1,6 +1,6 @@
 import { handleActions } from 'redux-actions';
 import { CanvasConfigActionEnums } from './actions';
-import { ICanvasStateContext, CANVAS_CONTEXT_INITIAL_STATE, ICanvasWidthProps, IDeviceTypes } from './contexts';
+import { ICanvasStateContext, CANVAS_CONTEXT_INITIAL_STATE, ICanvasWidthProps, IDeviceTypes, IViewType } from './contexts';
 import { getDeviceTypeByWidth, getSmallerDevice, getWidthByDeviceType } from './utils';
 
 export default handleActions<ICanvasStateContext, any>(
@@ -52,6 +52,13 @@ export default handleActions<ICanvasStateContext, any>(
       return {
         ...state,
         configTreePanelSize: payload,
+      };
+    },
+    [CanvasConfigActionEnums.SetViewType]: (state: ICanvasStateContext, action: ReduxActions.Action<IViewType>) => {
+      const { payload } = action;
+      return {
+        ...state,
+        viewType: payload,
       };
     },
   },

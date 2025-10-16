@@ -39,8 +39,6 @@ export const createRootContainerStyle = (
     marginRight,
   } = margins;
 
-  console.log(    "Width:",dimensions.width, hasNumber(dimensions.width) ? `calc(${dimensions.width} + ${marginLeft} + ${marginRight})` : dimensions.width,
-)
   return {
     ...baseStyle,
     ...originalDimensions,

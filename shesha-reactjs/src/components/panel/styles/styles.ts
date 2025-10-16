@@ -36,6 +36,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     backgroundRepeat,
     boxShadow,
     width,
+    height,
     minWidth,
     minHeight,
     maxWidth,
@@ -100,11 +101,15 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       }
     --primary-color: ${token.colorPrimary};
     --ant-line-width: ${hasBorder ? '0px' : '1px'} !important;
-    --ant-border-radius-lg: 0px;
-;    ${hasBorder && '--ant-line-width: 0px !important;'}
+    ${hasBorder && '--ant-line-width: 0px !important;'}
     --ant-collapse-header-bg: transparent !important;
-    height: 100%;
     width: ${width};
+    min-width: ${minWidth};
+    max-width: ${maxWidth};
+    height: ${height};
+    min-height: ${minHeight};
+    max-height: ${maxHeight};
+
     > .ant-collapse-item {
       display: flex;
       flex-direction: column;
@@ -114,13 +119,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       margin-top: ${marginTop};
       margin-left: ${marginLeft};
       margin-right: ${marginRight};
-    }
-
-    > .ant-collapse-item-active {
-        height: 100%;
+      height: 100%;
     }
    
     > .ant-collapse-item > .ant-collapse-content {
+      width: 100%;
       height: 100%;
       background: ${backgroundImage || backgroundColor};
       background-size: ${backgroundSize};
@@ -160,7 +163,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       position: relative;
       visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
       background: ${headerBgImage || headerBgColor};
-      width: ${width};
+      width: 100%;
       background-size: ${headerBackgroundSize};
       background-repeat: ${headerBackgroundRepeat};
       background-position: ${headerBackgroundPosition};
@@ -204,10 +207,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       > .ant-collapse-item {
         > .ant-collapse-header {
           --ant-collapse-header-padding: 5px 0px !important;
+          border-bottom-left-radius: unset;
+          border-bottom-right-radius: unset; 
           border: none;
           ${accentStyle && `border-bottom: 2px solid ${token.colorPrimary};`}
           ${accentStyle && `border-top: 3px solid var(--primary-color);`}
           font-weight: ${fontWeight || '500'};
+        
         }
         > .ant-collapse-content {
           border: none;

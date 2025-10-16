@@ -34,31 +34,8 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
 
-  const deviceConfig = componentModel?.[activeDevice] || {};
-
-
-  const getDimensions = () => {
-    const toolboxComponent = getToolboxComponent(componentModel.type);
-
-    if (!toolboxComponent.isInput) {
-      return {
-        width: '100%',
-        height: '100%'
-      };
-    }
-
-    return null;
-  };
-
-  const dimensions = getDimensions();
-
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-    ?
-    {
-      ...componentModel,
-        ...deviceConfig,
-      ...dimensions
-    }
+    ? { ...componentModel, ...componentModel?.[activeDevice] }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);
