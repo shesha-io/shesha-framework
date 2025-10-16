@@ -6,6 +6,7 @@ import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from
 import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { addPx } from '@/utils/style';
+import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
@@ -226,14 +227,18 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       uploadFile({ file: options.file, ownerId, ownerType });
     },
     beforeUpload(file: RcFile) {
-      const { type, size } = file;
+      const { type, size, name } = file;
+
+      if (!isFileTypeAllowed(name, allowedFileTypes)) {
+        message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
+        return false;
+      }
 
       const isValidFileType =
         validFileTypes.length === 0 ? true : validFileTypes.map(({ type: fileType }) => fileType).includes(type);
 
       if (!isValidFileType) {
         const validTypes = validFileTypes.map(({ name }) => name).join(',');
-
         message.error(`You can only upload files of type: (${validTypes})`);
       }
 
