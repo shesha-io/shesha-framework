@@ -702,7 +702,7 @@ namespace Shesha.StoredFiles
             var currentUserId = _abpSession.UserId;
             if (currentUserId.HasValue)
             {
-                dto.UserHasDownloaded = await _fileVersionDownloadRepository.GetAll()
+                dto!.UserHasDownloaded = await _fileVersionDownloadRepository.GetAll()
                     .AnyAsync(x => x.CreatorUserId == currentUserId.Value &&
                                    x.FileVersion.File.Id == storedFile.Id);
             }
