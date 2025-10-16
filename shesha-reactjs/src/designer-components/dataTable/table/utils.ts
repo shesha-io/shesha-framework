@@ -3,7 +3,7 @@ import { IConfigurableColumnsProps, IDataColumnsProps } from '@/providers/datata
 import { IExpressionExecuterArguments, executeScriptSync } from '@/providers/form/utils';
 import { IConfigurableFormComponent, IStyleType } from "@/index";
 import { IModelMetadata, IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
-import { toCamelCase } from '@/utils/string';
+import { toCamelCase, humanizeString } from '@/utils/string';
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
 
@@ -112,17 +112,21 @@ export const filterPropertiesBySupportedTypes = (properties: IPropertyMetadata[]
  * @returns DataTable column configuration
  */
 export const propertyToDataColumn = (property: IPropertyMetadata, index: number): IDataColumnsProps => {
+  // Guard against undefined or empty property.path
+  const rawPath = property.path ?? '';
+  const fallbackId = `col_${index}`;
+
   return {
-    id: property.path || `col_${index}`,
-    caption: property.path,
+    id: rawPath || fallbackId,
+    caption: property.label ?? (rawPath ? humanizeString(rawPath) : `Column ${index + 1}`),
     description: property.description,
     columnType: 'data' as const,
     sortOrder: index,
     itemType: 'item' as const,
     isVisible: property.isVisible !== false, // Default to visible unless explicitly false
-    propertyName: toCamelCase(property.path),
+    propertyName: rawPath !== '' ? toCamelCase(rawPath) : fallbackId,
     allowSorting: true,
-    accessor: toCamelCase(property.path),
+    accessor: rawPath !== '' ? toCamelCase(rawPath) : fallbackId,
   };
 };
 
