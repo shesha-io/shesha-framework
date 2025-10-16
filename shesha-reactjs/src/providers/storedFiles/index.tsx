@@ -1,11 +1,11 @@
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import { IAjaxResponse } from '@/interfaces';
+import { DataTypes, IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
 import { useGet, useMutate } from '@/hooks';
-import { IApiEndpoint } from '@/interfaces/metadata';
+import { IApiEndpoint, IObjectMetadata } from '@/interfaces/metadata';
 import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
 import { STORED_FILES_DELAYED_UPDATE } from '@/providers/delayedUpdateProvider/models';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
@@ -41,7 +41,12 @@ import {
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
 import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
+import DataContextBinder from '../dataContextProvider/dataContextBinder';
+import { fileListContextCode } from '@/publicJsApis';
+import ConditionalWrap from '@/components/conditionalWrapper';
+
 export interface IStoredFilesProviderProps {
+  name: string;
   ownerId: string;
   ownerType: string;
   ownerName?: string;
@@ -66,6 +71,7 @@ const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', http
 
 const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   children,
+  name,
   ownerId,
   ownerType,
   ownerName,
@@ -207,17 +213,19 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const deleteFile = (fileIdToDelete: string) => {
     dispatch(deleteFileRequestAction(fileIdToDelete));
 
-    deleteFileHttp({ id: fileIdToDelete })
+    const fileId = state.fileList.find(x => x.id === fileIdToDelete || x.id === fileIdToDelete)?.id;
+
+    deleteFileHttp({ id: fileId })
       .then(() => {
-        deleteFileSuccess(fileIdToDelete);
-        const updateList = removeFile(state.fileList ?? [], fileIdToDelete);
+        deleteFileSuccess(fileId);
+        const updateList = removeFile(state.fileList ?? [], fileId);
         onChange?.(updateList);
         if (typeof addDelayedUpdate === 'function') {
-          removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
+          removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileId);
         }; 
       })
       .catch(() => {
-        deleteFileError(fileIdToDelete);
+        deleteFileError(fileId);
       });
   };
 
@@ -276,22 +284,47 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       });
   };
 
-  /* NEW_ACTION_DECLARATION_GOES_HERE */
+  const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
+    typeDefinitionLoader: () => {
+      return Promise.resolve({
+        typeName: 'IFileListContexApi',
+        files: [{ content: fileListContextCode, fileName: 'apis/fileListContextApi.ts' }]
+      });
+    },
+    properties: [],
+    dataType: DataTypes.object
+  }), []);
 
   return (
-    <StoredFilesStateContext.Provider value={state}>
-      <StoredFilesActionsContext.Provider
-        value={{
-          ...getFlagSetters(dispatch),
-          uploadFile,
-          deleteFile,
-          downloadZipFile,
-          downloadFile,          /* NEW_ACTION_GOES_HERE */
-        }}
+    <ConditionalWrap 
+      condition={Boolean(name)} 
+      wrap={children => (
+        <DataContextBinder
+        id={`ctx_fl_${name}`}
+        name={name}
+        description={`File list context for ${name}`}
+        type='control'
+        data={state}
+        metadata={contextMetadata}
       >
         {children}
-      </StoredFilesActionsContext.Provider>
-    </StoredFilesStateContext.Provider>
+      </DataContextBinder>
+      )}
+    >
+      <StoredFilesStateContext.Provider value={state}>
+        <StoredFilesActionsContext.Provider
+          value={{
+            ...getFlagSetters(dispatch),
+            uploadFile,
+            deleteFile,
+            downloadZipFile,
+            downloadFile,          /* NEW_ACTION_GOES_HERE */
+          }}
+        >
+          {children}
+        </StoredFilesActionsContext.Provider>
+      </StoredFilesStateContext.Provider>
+    </ConditionalWrap>
   );
 };
 
