@@ -5,16 +5,12 @@ import { SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 export const StandaloneTable: FC<ITableComponentProps> = (props) => {
   const { items = [] } = props;
 
-  // Determine columns to display
-  const columns = items && items.length > 0
-    ? items.filter((item) => !item.hidden).map((item) => ({
-      header: item.caption || item.header || 'Column',
-      accessor: item.accessor || 'data',
-    }))
-    : [
-      { header: 'Heading 1', accessor: 'col1' },
-      { header: 'Heading 2', accessor: 'col2' },
-    ];
+  // Always show default empty state columns when outside DataContext
+  // Ignore any configured items to ensure clean state when dragged outside
+  const columns = [
+    { header: 'Heading 1', accessor: 'col1' },
+    { header: 'Heading 2', accessor: 'col2' },
+  ];
 
   // Create dummy data rows that match the mockup exactly
   const dummyRows = [
