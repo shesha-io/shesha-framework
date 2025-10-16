@@ -20,7 +20,7 @@ import { useDataTableStore } from '@/providers/dataTable';
 import { defaultStyles } from './utils';
 
 
-// Factory component that logs entity properties when table is placed in DataSource
+// Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStore(false);
 
