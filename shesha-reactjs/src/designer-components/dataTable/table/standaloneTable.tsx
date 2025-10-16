@@ -1,23 +1,19 @@
 import React, { FC } from 'react';
 import { ITableComponentProps } from './models';
 import { SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+// Ignore any configured items to ensure clean state when dragged outside
+const columns = [
+  { header: 'Heading 1', accessor: 'col1' },
+  { header: 'Heading 2', accessor: 'col2' },
+];
 
-export const StandaloneTable: FC<ITableComponentProps> = (props) => {
-  const { items = [] } = props;
+// Create dummy data rows that match the mockup exactly
+const dummyRows = [
+  { col1: 'Record 1', col2: 'Placeholder Info' },
+  { col1: 'Record 2', col2: 'Placeholder Info' },
+];
 
-  // Always show default empty state columns when outside DataContext
-  // Ignore any configured items to ensure clean state when dragged outside
-  const columns = [
-    { header: 'Heading 1', accessor: 'col1' },
-    { header: 'Heading 2', accessor: 'col2' },
-  ];
-
-  // Create dummy data rows that match the mockup exactly
-  const dummyRows = [
-    { col1: 'Record 1', col2: 'Placeholder Info' },
-    { col1: 'Record 2', col2: 'Placeholder Info' },
-  ];
-
+export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
   const tableStyle: React.CSSProperties = {
     width: '100%',
     borderCollapse: 'collapse',
