@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { DeleteOutlined, FileAddOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Space, Upload } from 'antd';
+import { App, Button, Space, Upload } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
 import { useStyles } from './style';
 import { IToolboxComponent } from '@/interfaces';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { toBase64, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { IFileUploadProps } from '../fileUpload';
 import { getSettings } from './settings';
 
@@ -13,11 +14,13 @@ interface IImageUploaderProps {
   onChange: (value: any) => void;
   value: UploadFile;
   readOnly: boolean;
+  allowedFileTypes?: string[];
 }
 
-export const ImagePicker = ({ onChange, value, readOnly }: IImageUploaderProps): JSX.Element => {
+export const ImagePicker = ({ onChange, value, readOnly, allowedFileTypes }: IImageUploaderProps): JSX.Element => {
   const [fileList, setFileList] = useState<UploadFile[]>(typeof value == 'string' ? value : value ? [{ ...value }] : []);
   const { styles } = useStyles();
+  const { message } = App.useApp();
 
   const uploadBtnRef = useRef<HTMLButtonElement | null>(null);
 
@@ -67,9 +70,15 @@ export const ImagePicker = ({ onChange, value, readOnly }: IImageUploaderProps):
         fileList={[]}
         onRemove={handleRemove}
         onChange={handleChange}
-        beforeUpload={() => false}
+        beforeUpload={(file) => {
+          if (!isFileTypeAllowed(file.name, allowedFileTypes)) {
+            message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
+            return Upload.LIST_IGNORE;
+          }
+          return false;
+        }}
         disabled={readOnly}
-        accept=".jpg, .png, .gif, .webp, .jpeg"
+        accept={allowedFileTypes?.join(',')}
       >
         <Space>
           {uploadButton}
@@ -91,7 +100,12 @@ const ImagePickerComponent: IToolboxComponent<IFileUploadProps> = {
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           return (
-            <ImagePicker onChange={onChange} value={value} readOnly={model.readOnly} />
+            <ImagePicker
+              onChange={onChange}
+              value={value}
+              readOnly={model.readOnly}
+              allowedFileTypes={model.allowedFileTypes}
+            />
           );
         }}
       </ConfigurableFormItem>

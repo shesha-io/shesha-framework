@@ -57,7 +57,8 @@ export const useShaDataContextAccessor = <TData extends object = object>(
 ): IShaDataWrapper<TData> => {
   const storage = useRef<IShaDataWrapper<TData>>();
 
-  const path = useShaRouting().router.path;
+  const shaRouter = useShaRouting();
+  const path = shaRouter.router.path;
   const key = Boolean(webStorageType) ? `${id}:${path}` : 'no-key';
 
   const needStore = Boolean(webStorageType);

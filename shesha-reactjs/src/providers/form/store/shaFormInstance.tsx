@@ -762,7 +762,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   };
 }
 
-type UseShaFormArgsExistingForm<Values extends object = object> = { form: IShaFormInstance<Values> };
+type UseShaFormArgsExistingForm<Values extends object = object> = { form: IShaFormInstance<Values> | undefined };
 
 type UseShaFormArgsNewForm<Values extends object = object> = {
   antdForm?: FormInstance<Values>;
@@ -770,7 +770,7 @@ type UseShaFormArgsNewForm<Values extends object = object> = {
 };
 type UseShaFormArgs<Values extends object = object> = UseShaFormArgsExistingForm<Values> & UseShaFormArgsNewForm<Values>;
 
-const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>): IShaFormInstance<Values>[] => {
+const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>): [IShaFormInstance<Values>] => {
   const { antdForm, form, init } = args;
 
   const formRef = React.useRef<IShaFormInstance<Values>>();

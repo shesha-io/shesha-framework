@@ -1,10 +1,12 @@
-import React, { FC, ReactNode, useMemo, useRef, useState } from 'react';
+
+import React, { FC, useMemo, useState } from 'react';
 import { Dropdown, Empty, MenuProps, Tabs, TabsProps } from 'antd';
 import { useCsTabs } from '../cs/hooks';
 import { DocumentEditor } from './documentEditor';
 import { useStyles } from '../styles';
 import { TabLabel } from './tab-label';
 import { IDocumentInstance } from '../models';
+import { isDefined } from '@/utils/nullables';
 
 type Tab = Required<TabsProps>['items'][number];
 type OnEdit = TabsProps['onEdit'];
@@ -18,13 +20,9 @@ type TabContextMenuState = {
 };
 
 export const WorkArea: FC = () => {
-  const { docs, activeDocId, openDocById, closeDoc, closeMultipleDocs } = useCsTabs();
+  const { docs, renderedDocs, activeDocId, navigateToDocument, closeDoc, closeMultipleDocs } = useCsTabs();
   const { styles } = useStyles();
   const [contextMenuState, setContextMenuState] = useState<TabContextMenuState>();
-
-  // store rendered docs to keep them unchanged after manipulations with opened tabs
-  const renderedDocsRef = useRef<Map<string, ReactNode>>(new Map<string, ReactNode>());
-  const renderedDocs = renderedDocsRef.current;
 
   const getContextMenuItems = (doc: IDocumentInstance): MenuItem[] => [
     {
@@ -109,10 +107,11 @@ export const WorkArea: FC = () => {
         hideAdd
         type="editable-card"
         size="small"
-        activeKey={activeDocId}
-        onChange={openDocById}
+        {...isDefined(activeDocId) ? { activeKey: activeDocId } : {}}
+        onChange={navigateToDocument}
         onEdit={handleEdit}
         items={treeTabs}
+        destroyOnHidden={false}
       />
       {contextMenuState && (
         <Dropdown

@@ -1,128 +1,53 @@
-import React, { FC, PropsWithChildren, useCallback, useContext, useEffect } from 'react';
-import { FormUpdateMarkupInput, formConfigurationUpdateMarkup } from '@/apis/formConfiguration';
-import useThunkReducer from '@/hooks/thunkReducer';
-import { useSheshaApplication } from '@/providers';
-import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
+
+import React, { FC, PropsWithChildren, useContext } from 'react';
+import { useHttpClient } from '@/providers';
 import {
   FormIdentifier,
-  FormMarkupWithSettings,
-  IFormSettings,
 } from '../form/models';
+
 import {
-  loadErrorAction,
-  loadRequestAction,
-  loadSuccessAction,
-  resetAction,
-  saveErrorAction,
-  saveRequestAction,
-  saveSuccessAction,
-  updateFormSettingsAction,
-} from './actions';
-import {
-  FORM_PERSISTER_CONTEXT_INITIAL_STATE,
   FormPersisterActionsContext,
-  FormPersisterStateConsumer,
   FormPersisterStateContext,
   IFormPersisterActionsContext,
   IFormPersisterContext,
   IFormPersisterStateContext,
-  ILoadFormPayload,
 } from './contexts';
-import formReducer from './reducer';
 import { useFormManager } from '../formManager';
-import { toErrorInfo } from '@/interfaces';
+import { useRefInitialized } from '@/hooks';
+import { FormPersister } from './formPersister';
 
 export interface IFormProviderProps {
   formId: FormIdentifier;
   skipCache?: boolean;
 }
 
-const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ children, formId, skipCache = false }) => {
-  const initial: IFormPersisterStateContext = {
-    ...FORM_PERSISTER_CONTEXT_INITIAL_STATE,
-    formId: formId,
-  };
-
-  const [state, dispatch] = useThunkReducer(formReducer, initial);
-
-  const { clearFormCache } = useConfigurationItemsLoader();
-  const { getFormById } = useFormManager();
-  const { backendUrl, httpHeaders } = useSheshaApplication();
-
-  const doFetchFormInfo = useCallback((formId: FormIdentifier, skipCache: boolean): void => {
-    if (formId) {
-      dispatch(loadRequestAction({ formId }));
-
-      getFormById({ formId, skipCache: skipCache })
-        .then((form) => {
-          dispatch((dispatchThunk, _getState) => {
-            dispatchThunk(loadSuccessAction(form));
-          });
-        })
-        .catch((e) => {
-          dispatch(loadErrorAction(toErrorInfo(e)));
-        });
-    } else
-      dispatch(resetAction());
-  }, [dispatch, getFormById]);
-
-  useEffect(() => {
-    if (!formId) return;
-
-    doFetchFormInfo(formId, skipCache);
-  }, [formId, skipCache, doFetchFormInfo]);
-
-  /* NEW_ACTION_DECLARATION_GOES_HERE */
-
-  const loadForm = (payload: ILoadFormPayload): void => {
-    doFetchFormInfo(formId, payload.skipCache);
-  };
-
-  const saveForm = async (payload: FormMarkupWithSettings): Promise<void> => {
-    if (!state.formProps?.id) return Promise.reject();
-
-    dispatch(saveRequestAction());
-
-    const dto: FormUpdateMarkupInput = {
-      id: state.formProps.id,
-      markup: JSON.stringify(payload),
-      access: payload.formSettings.access,
-      permissions: payload.formSettings.permissions,
+const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ children, ...props }) => {
+  const formManager = useFormManager();
+  const httpClient = useHttpClient();
+  const [, forceUpdate] = React.useState({});
+  const persisterRef = useRefInitialized(() => {
+    const forceReRender = (): void => {
+      forceUpdate({});
     };
 
-    await formConfigurationUpdateMarkup(dto, { base: backendUrl, headers: httpHeaders })
-      .then((_response) => {
-        // clear cache
-        clearFormCache({ formId: state.formId });
-
-        dispatch(saveSuccessAction());
-        return Promise.resolve();
-      })
-      .catch((error) => {
-        dispatch(saveErrorAction(toErrorInfo(error)));
-        return Promise.reject();
-      });
-  };
-
-  const updateFormSettings = (settings: IFormSettings): void => {
-    dispatch(updateFormSettingsAction(settings));
-  };
-
-  const formPersisterActions: IFormPersisterActionsContext = {
-    loadForm,
-    saveForm,
-    updateFormSettings,
-    /* NEW_ACTION_GOES_HERE */
-  };
+    return new FormPersister({
+      forceRootUpdate: forceReRender,
+      formId: props.formId,
+      formManager: formManager,
+      httpClient: httpClient,
+    });
+  });
+  const persister = persisterRef.current;
 
   return (
-    <FormPersisterStateContext.Provider value={state}>
-      <FormPersisterActionsContext.Provider value={formPersisterActions}>
+    <FormPersisterStateContext.Provider value={persister.state}>
+      <FormPersisterActionsContext.Provider value={persister}>
         {children}
       </FormPersisterActionsContext.Provider>
     </FormPersisterStateContext.Provider>
   );
 };
+
 
 function useFormPersisterState(require: boolean = true): IFormPersisterStateContext | undefined {
   const context = useContext(FormPersisterStateContext);
@@ -158,4 +83,4 @@ const useFormPersisterIfAvailable = (require: boolean = false): IFormPersisterCo
 
 const useFormPersister = (): IFormPersisterContext => useFormPersisterIfAvailable(true)!;
 
-export { FormPersisterStateConsumer as FormPersisterConsumer, FormPersisterProvider, useFormPersister, useFormPersisterIfAvailable };
+export { FormPersisterProvider, useFormPersister, useFormPersisterIfAvailable, useFormPersisterState };

@@ -9,7 +9,7 @@ import { AxiosResponse } from 'axios';
 export interface IValidationErrorsProps extends AlertProps {
   error: string | IErrorInfo | IAjaxErrorResponse | AxiosResponse<IAjaxResponseBase> | Error | unknown;
   renderMode?: 'alert' | 'raw';
-  defaultMessage?: string;
+  defaultMessage?: string | undefined;
 }
 
 const DEFAULT_ERROR_MSG = 'Sorry, an error has occurred. Please try again later';

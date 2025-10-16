@@ -22,7 +22,7 @@ type IsDraggable = TreeProps<TreeNode>['draggable'];
 type AllowDrop = TreeProps<TreeNode>['allowDrop'];
 type OnDrop = TreeProps<TreeNode>['onDrop'];
 type OnRightClick = TreeProps<TreeNode>['onRightClick'];
-type MenuItems = MenuProps['items'];
+type MenuItems = Required<MenuProps>['items'];
 type OnTreeKeyDown = TreeProps<TreeNode>['onKeyDown'];
 type OnDragStart = TreeProps<TreeNode>['onDragStart'];
 type OnDragEnd = TreeProps<TreeNode>['onDragEnd'];
@@ -93,7 +93,6 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
         return isFolderTreeNode(dropNode) ? dropNode.id : undefined;
       }
     }
-    return undefined;
   };
 
   const handleNodeDrop: OnDrop = (info) => {
@@ -201,11 +200,11 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 onRightClick={handleNodeRightClick}
-                expandedKeys={expandedKeys}
+                expandedKeys={expandedKeys ?? []}
 
                 onSelect={handleSelect}
                 onClick={handleClick}
-                selectedKeys={selectedKeys}
+                selectedKeys={selectedKeys ?? []}
                 onExpand={onNodeExpand}
                 onKeyDown={handleKeyDown}
                 tabIndex={0}

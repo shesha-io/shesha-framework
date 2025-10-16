@@ -58,7 +58,6 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps, ICh
               style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles.fullStyle}
               dataSourceUrl={calculatedModel.dataSourceUrl}
               value={value}
-              defaultValue={model.defaultValue}
               {...calculatedModel.eventHandlers}
               onChange={onChangeInternal}
             />

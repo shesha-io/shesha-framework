@@ -30,6 +30,7 @@
     "strictNullChecks": false,
     "strictPropertyInitialization": false,
     "target": "ESNext",
+    "noEmitOnError": true,
     "baseUrl": ".",
     "paths": {
       "@/*": [
