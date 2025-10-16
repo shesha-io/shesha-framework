@@ -167,9 +167,7 @@ const buildCreateNewItemsMenu = ({ node, configurationStudio }: BuildNodeMenuArg
 };
 
 export const buildConfiguraitonItemMenu = (args: BuildNodeMenuArgs<ConfigItemTreeNode>): MenuItemType[] => {
-  return [
-    ...buildConfiguraitonItemActionsMenu(args),
-  ];
+  return buildConfiguraitonItemActionsMenu(args);
 };
 
 const buildConfigurationItemNodeContextMenu = (args: BuildNodeMenuArgs<ConfigItemTreeNode>): MenuItemType[] => {
@@ -180,7 +178,7 @@ const buildConfigurationItemNodeContextMenu = (args: BuildNodeMenuArgs<ConfigIte
       label: "Open",
       key: "open",
       onClick: () => {
-        configurationStudio.openDocById(node.id);
+        configurationStudio.activateDocById(node.id);
       },
     });
   result.push({

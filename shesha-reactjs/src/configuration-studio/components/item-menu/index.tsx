@@ -8,7 +8,7 @@ import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps, Space } from 'antd';
 import React, { FC, useMemo } from 'react';
 
-type MenuItems = MenuProps["items"];
+type MenuItems = Required<MenuProps>["items"];
 
 export const ConfigurationItemMenu: FC = () => {
   const cs = useConfigurationStudio();
@@ -16,7 +16,7 @@ export const ConfigurationItemMenu: FC = () => {
 
   // TODO: add current tree selection to the dependencies list
   const menuItems = useMemo<MenuItems>(() => {
-    return activeDoc
+    return activeDoc && activeDoc.type === 'ci'
       ? buildConfiguraitonItemMenu({
         configurationStudio: cs,
         node: {
@@ -34,7 +34,7 @@ export const ConfigurationItemMenu: FC = () => {
       : [];
   }, [cs, activeDoc]);
 
-  if (!activeDoc)
+  if (!activeDoc || menuItems.length === 0)
     return undefined;
   const icon = getIcon(TreeNodeType.ConfigurationItem, activeDoc.itemType);
 

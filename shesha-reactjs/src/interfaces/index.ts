@@ -12,7 +12,6 @@ export { type IOverlayLoaderPayload } from './overlayLoaderPayload';
 export { type ICancelIncidentPayload } from './cancelIncidentPayload';
 export { type IDesktopNotificationAction } from './desktopNotificationAction';
 export { type ILoginForm } from './loginForm';
-export { type IRoute } from './route';
 export { type ICoords } from './coords';
 export { type IUserInfo } from './userInfo';
 export { type ILegend } from './legend';

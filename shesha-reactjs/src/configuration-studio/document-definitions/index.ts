@@ -6,8 +6,15 @@ import { PermissionDocumentDefinition } from './permission-definition';
 import { ReferenceListDocumentDefinition } from './reference-list';
 import { RoleDocumentDefinition } from './role';
 import { SettingDocumentDefinition } from './setting';
+import { HomeDocumentDefinition } from './special-home';
+import { SettingsDocumentDefinition } from './special-settings';
 
 export const SheshaDocumentDefinitions = [
+  // special docs
+  HomeDocumentDefinition,
+  SettingsDocumentDefinition,
+
+  // configuration items
   EntityDocumentDefinition,
   FormDocumentDefinition,
   NotificationDocumentDefinition,

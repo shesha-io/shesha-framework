@@ -1,4 +1,3 @@
-import { mapProps } from "@/utils/object";
 import { IDocumentInstance, DocumentType, DocumentDefinition, LoadingStatus, ForceRenderFunc, DocumentFlags, DocumentInstanceFactoryArgs } from "../models";
 
 export type DocumentInstanceArgs = DocumentInstanceFactoryArgs & {
@@ -28,7 +27,20 @@ export class DocumentInstance implements IDocumentInstance {
   isHistoryVisible: boolean;
 
   constructor(args: DocumentInstanceArgs) {
-    mapProps(args, this, ['definition', 'itemType', 'itemId', 'label', 'moduleId', 'moduleName', 'flags']);
+    this.definition = args.definition;
+    this.itemType = args.itemType;
+    this.itemId = args.itemId;
+    this.label = args.label;
+    this.moduleId = args.moduleId;
+    this.moduleName = args.moduleName;
+    this.flags = args.flags ?? {
+      isCodeBased: false,
+      isCodegenPending: false,
+      isUpdated: false,
+      isUpdatedByMe: false,
+      isExposed: false,
+    };
+    this.loadingState = 'waiting';
 
     this.isHistoryVisible = false;
   }

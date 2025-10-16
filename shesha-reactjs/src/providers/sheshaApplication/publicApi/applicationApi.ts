@@ -6,7 +6,7 @@ import { UtilsApi, IUtilsApi } from './utils/api';
 import { FormsApi, IFormsApi } from './forms/api';
 import { ICacheProvider, IEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/models';
 import { NavigatorApi, INavigatorApi } from './navigator/api';
-import { ShaRouting } from '@/providers/shaRouting/contexts';
+import { IShaRouter } from '@/providers/shaRouting/contexts';
 import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
 
 export interface IApplicationPlugin {
@@ -45,7 +45,7 @@ export class ApplicationApi implements IApplicationApi {
     httpClient: HttpClientApi,
     cacheProvider: ICacheProvider,
     metadataFetcher: IEntityMetadataFetcher,
-    shaRouter: ShaRouting,
+    shaRouter: IShaRouter,
     metadataDispatcher: IMetadataDispatcher,
   ) {
     this.#plugins = new Map<string, IApplicationPlugin>();

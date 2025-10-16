@@ -326,8 +326,8 @@ export interface IFormSettingsCommon {
   size?: SizeType;
   /** if true then need to update components structure for using Setting component */
   isSettingsForm?: boolean;
-  permissions?: string[];
-  access?: number;
+  permissions?: string[] | undefined;
+  access?: number | undefined;
   formItemMargin?: IFormItemMargin;
 }
 
