@@ -85,7 +85,7 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
           </tr>
         </thead>
         <tbody>
-          {dummyRows.map((row, rowIndex) => (
+          {dummyRows.map((_row, rowIndex) => (
             <tr key={rowIndex} style={{ backgroundColor: rowIndex % 2 === 0 ? '#fff' : '#fafafa' }}>
               <td style={actionCellStyle}>
                 <SearchOutlined style={iconStyle} />
@@ -96,7 +96,7 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
               <td style={actionCellStyle}>
                 <DeleteOutlined style={iconStyle} />
               </td>
-              {columns.map((column, colIndex) => (
+              {columns.map((_column, colIndex) => (
                 <td key={colIndex} style={cellStyle}>
                   {colIndex === 0 ? `Record ${rowIndex + 1}` : 'Placeholder Info'}
                 </td>
