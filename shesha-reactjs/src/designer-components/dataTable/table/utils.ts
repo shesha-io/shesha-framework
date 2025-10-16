@@ -101,7 +101,7 @@ export const filterPropertiesForTable = (properties: IPropertyMetadata[]): IProp
  */
 export const filterPropertiesBySupportedTypes = (properties: IPropertyMetadata[]): IPropertyMetadata[] => {
   return properties.filter((property: IPropertyMetadata) => {
-    return SUPPORTED_COLUMN_DATA_TYPES.includes(property.dataType);
+    return property.dataType && SUPPORTED_COLUMN_DATA_TYPES.includes(property.dataType);
   });
 };
 
