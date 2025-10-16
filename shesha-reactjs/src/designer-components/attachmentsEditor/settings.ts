@@ -15,6 +15,12 @@ export const getSettings = () =>
       content: {
         id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
         components: [...new DesignerToolbarSettings()
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: "addFieldToPayload",
+            label: "Add Field To Payload",
+            parentId: "pnl54bf6-f76d-4139-a850-c99bf06c8b69"
+          })
           .addContextPropertyAutocomplete({
             id: nanoid(),
             propertyName: 'propertyName',
