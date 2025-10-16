@@ -22,15 +22,19 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
   const dataTableStore = useDataTableStore(false); // Don't require - modal may not be in a DataTable context
   const metadata = useMetadata(false); // Don't require - DataTable may not be in a DataSource
 
+  const [startedEmpty, setStartedEmpty] = useState(false);
+  const [prevValue, setPrevValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value));
   const [localValue, setLocalValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value));
 
   // Prepopulate with default columns when modal opens if items are empty and we're in a DataTable context
   useEffect(() => {
     if (visible && dataTableStore && metadata?.metadata && (!value || value.length === 0)) {
       const defaultColumns = calculateDefaultColumns(metadata.metadata);
-      if (defaultColumns.length > 0 && localValue.length === 0) {
+      if (defaultColumns.length > 0 && (!localValue || localValue.length === 0)) {
+        setPrevValue(localValue);
         setLocalValue(defaultColumns);
         onChange?.(defaultColumns);
+        setStartedEmpty(true);
       }
     }
   }, [metadata?.metadata, visible, onChange]);
@@ -38,11 +42,18 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
   const onOk = (): void => {
     onChange?.(deepCopyViaJson(localValue)); // make copy of localValue to re-render table
     hideModal();
+    if (localValue?.length > 0) {
+      setStartedEmpty(false);
+    }
   };
 
   const onCancel = (): void => {
     hideModal();
-    setLocalValue(deepCopyViaJson(value));
+    setLocalValue(deepCopyViaJson(prevValue));
+    onChange?.(deepCopyViaJson(prevValue));
+    if (localValue?.length === 0) {
+      setStartedEmpty(false);
+    }
   };
 
   return (
@@ -60,6 +71,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
         value={localValue}
         parentComponentType={parentComponentType}
         onChange={setLocalValue}
+        startedEmpty={startedEmpty}
       />
     </Modal>
   );

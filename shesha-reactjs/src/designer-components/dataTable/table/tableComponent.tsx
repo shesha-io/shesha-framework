@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React from 'react';
 import { getSettings } from './tableSettings';
 import { IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ITableComponentProps } from './models';
@@ -11,47 +11,18 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
 import { TableOutlined } from '@ant-design/icons';
 import { TableWrapper } from './tableWrapper';
-import { useMetadata } from '@/providers/metadata';
-import { IModelMetadata } from '@/interfaces/metadata';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { StandaloneTable } from './standaloneTable';
-import { defaultStyles, calculateDefaultColumns } from './utils';
 import { useDataTableStore } from '@/providers/dataTable';
+import { defaultStyles } from './utils';
 
 
 // Factory component that logs entity properties when table is placed in DataSource
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStore(false);
-  const metadata = useMetadata(false); // Don't require - table may not be in a DataSource
-
-  // Handle filtered properties registration with DataSource
-  const handleFilteredPropertiesRegistration = useCallback((properties: IDataColumnsProps[]) => {
-    if (properties.length > 0 && store?.registerConfigurableColumns) {
-      // Register the filtered properties as columns with the data source
-      store.registerConfigurableColumns(model.id, properties);
-
-      // Refresh the data to include the new properties
-      if (store.refreshTable) {
-        store.refreshTable();
-      }
-    }
-  }, [store, model.id]);
-
-  // Function to log entity properties for debugging
-  const filterAndRegisterProperties = useCallback((metadata: IModelMetadata | null) => {
-    // Only run column extraction if the DataTable is within a DataTable context
-    if (!store || !metadata || !metadata.properties) return;
-    const generatedColumns = calculateDefaultColumns(metadata);
-    if (generatedColumns.length > 0 && (!model.items || model.items.length === 0)) {
-      model.items = generatedColumns;
-      handleFilteredPropertiesRegistration(generatedColumns);
-    }
-  }, [handleFilteredPropertiesRegistration, model, store]);
-
-  useEffect(() => filterAndRegisterProperties(metadata.metadata), [filterAndRegisterProperties, metadata.metadata]);
 
   if (model.hidden) return null;
 
