@@ -37,7 +37,7 @@ export function storedFilesReducer(
     case StoredFilesActionEnums.OnFileDeleted:
       return {
         ...state,
-        fileList: removeFile(payload.fileId, state.fileList),
+        fileList: removeFile( state.fileList, payload.fileId),
       };
     case StoredFilesActionEnums.UploadFileRequest:
       return {
@@ -86,7 +86,7 @@ export function storedFilesReducer(
       };
     }
     case StoredFilesActionEnums.DeleteFileError: {
-      if (state.fileList?.some((x) => x.uid === payload.fileId && x.status === 'error'))
+      if (state.fileList?.find(x => x.uid === payload.fileId || x.id === payload.fileId)?.status === 'error')
         return {
           ...state,
           fileList: state.fileList.filter(

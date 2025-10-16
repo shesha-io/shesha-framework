@@ -1,4 +1,4 @@
-export const removeFile = (fileIdToDelete, fileList = []) => {
+export const removeFile = (fileList = [], fileIdToDelete) => {
     return fileList.filter(({ id, uid }) => id !== fileIdToDelete && uid !== fileIdToDelete);
   };
   

@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Shesha.DelayedUpdate;
 using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
 using Shesha.Notifications.Dto;
@@ -7,7 +8,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
 {
     public class NotificationDto
     {
-        public List<NotificationAttachmentDto>? NotificationAttachments { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -36,5 +36,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
         /// 
         /// </summary>
         public GenericEntityReference? TriggeringEntity { get; set; }
+
+        public DelayedUpdateGroup[]? _delayedUpdate { get; set; }
     }
 }
