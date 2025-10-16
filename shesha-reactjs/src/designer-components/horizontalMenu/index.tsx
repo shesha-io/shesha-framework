@@ -13,10 +13,10 @@ import {
   useMainMenu,
   validateConfigurableComponentSettings,
 } from '@/index';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { ItemType } from "antd/es/menu/interface";
-import React from "react";
+
 import Editor from "./modal";
 import { getSettings } from "./settings";
 import { defaultStyles } from "./utils";
@@ -158,8 +158,8 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
-    migrator: (m) => m
-      .add<IMenuListProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+  migrator: (m) => m
+    .add<IMenuListProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default MenuListComponent;

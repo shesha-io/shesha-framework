@@ -1,5 +1,5 @@
 import { IKeyInformationBarProps } from '@/designer-components/keyInformationBar/interfaces';
-import { ComponentsContainer, isValidGuid, useFormData, useSheshaApplication, ValidationErrors } from '@/index';
+import { ComponentsContainer, isValidGuid, StyleBoxValue, useFormData, useSheshaApplication, ValidationErrors } from '@/index';
 import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import { Flex } from 'antd';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
@@ -42,22 +42,22 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
   useEffect(() => {
-    const fetchStyles = async () => {
+    const fetchStyles = async (): Promise<void> => {
       try {
         const storedImageUrl =
           background?.storedFile?.id && background?.type === 'storedFile'
             ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`, {
-                headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
+              headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+                }
+                return response.blob();
               })
-                .then((response) => {
-                  if (!response.ok) {
-                    throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-                  }
-                  return response.blob();
-                })
-                .then((blob) => {
-                  return URL.createObjectURL(blob);
-                })
+              .then((blob) => {
+                return URL.createObjectURL(blob);
+              })
             : '';
 
         const style = getBackgroundStyle(background, jsStyle, storedImageUrl);
@@ -70,7 +70,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     fetchStyles();
   }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
-  const styling = jsonSafeParse(props.stylingBox || '{}');
+  const styling = jsonSafeParse<StyleBoxValue>(props.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   const additionalStyles: CSSProperties = removeUndefinedProps({
@@ -81,7 +81,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     ...shadowStyles,
   });
 
-  const dimensionStyles = getDimensionsStyle(dimensions, additionalStyles);
+  const dimensionStyles = getDimensionsStyle(dimensions);
 
   const { styles } = useStyles({ dimensions: dimensionStyles });
 
@@ -99,12 +99,12 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
 
   if (hidden) return null;
 
-  const stylingBoxJSON = jsonSafeParse(stylingBox || '{}');
+  const stylingBoxJSON = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
   const vertical = orientation === 'vertical';
   const computedStyle = { ...getStyle(style, data), ...pickStyleFromModel(stylingBoxJSON) };
   const barStyle = !vertical ? { justifyContent: alignItems } : { alignItems: alignItems };
 
-  const containerStyle = (item) => ({
+  const containerStyle = (item): CSSProperties => ({
     textAlign: item.textAlign,
     display: 'flex',
     flexDirection: item.flexDirection ? item.flexDirection : 'column',

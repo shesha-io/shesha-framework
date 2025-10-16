@@ -1,5 +1,5 @@
 import { ConfigurableFormItem } from '@/components';
-import { customOnClickEventHandler, getEventHandlers} from '@/components/formDesigner/components/utils';
+import { customOnClickEventHandler, getEventHandlers } from '@/components/formDesigner/components/utils';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import ShaStatistic from '@/components/statistic';
 import { IToolboxComponent } from '@/interfaces';
@@ -12,7 +12,7 @@ import {
 } from '@/providers/form/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { BarChartOutlined } from '@ant-design/icons';
-import React, {  useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { IFontValue } from '../_settings/utils/font/interfaces';
@@ -50,7 +50,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
   isOutput: true,
   Factory: ({ model: passedModel }) => {
     const { style, valueStyle, titleStyle, prefix, suffix, prefixIcon, suffixIcon, ...model } = passedModel;
-     const allData = useAvailableConstantsData();
+    const allData = useAvailableConstantsData();
     const { formMode } = useForm();
     const { allStyles } = model;
     const valueFont = model?.valueFont;
@@ -71,7 +71,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
         >
           {(value, _) => {
             const customEvent = customOnClickEventHandler(model, allData);
-            const onClickInternal = (_: any) => {
+            const onClickInternal = (_: any): void => {
               customEvent.onClick(value);
             };
             return (
@@ -81,21 +81,21 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
                 title={
                   <div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>
                 }
-                prefix={
+                prefix={(
                   <div>
                     {passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}
                     <span style={{ marginLeft: 5 }}>{passedModel.prefix ? passedModel.prefix : null}</span>
                   </div>
-                }
-                suffix={
+                )}
+                suffix={(
                   <div>
                     <span style={{ marginRight: 5 }}>
                       {passedModel.suffix && passedModel.suffix}
                       {passedModel.suffixIcon && <ShaIcon iconName={passedModel.suffixIcon as IconType} />}
                     </span>
                   </div>
-                }
-                style={removeUndefinedProps({ ...allStyles.fullStyle, width: '100%'})}
+                )}
+                style={removeUndefinedProps({ ...allStyles.fullStyle })}
                 valueStyle={removeUndefinedProps({
                   ...valueFontStyles,
                   ...valueStyles,
@@ -118,7 +118,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
       >
         {(value) => {
           const customEvent = customOnClickEventHandler(model, allData);
-          const onClickInternal = (_: any) => {
+          const onClickInternal = (_: any): void => {
             customEvent.onClick(value);
           };
           return (
@@ -128,18 +128,18 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
               title={
                 <div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>
               }
-              prefix={
+              prefix={(
                 <div>
                   {passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}
                   <span style={{ marginLeft: 5 }}>{passedModel.prefix ? passedModel.prefix : null}</span>
                 </div>
-              }
-              suffix={
+              )}
+              suffix={(
                 <div>
                   <span style={{ marginRight: 5 }}>{suffix && suffix}</span>
                   {suffixIcon && <ShaIcon iconName={suffixIcon as IconType} />}
                 </div>
-              }
+              )}
               style={removeUndefinedProps({ ...allStyles.fullStyle })}
               valueStyle={removeUndefinedProps({
                 ...valueFontStyles,

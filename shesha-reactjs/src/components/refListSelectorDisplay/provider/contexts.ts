@@ -40,7 +40,7 @@ export const REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE: IRefListItemGroupConfigu
 };
 
 export const RefListItemGroupConfiguratorStateContext = createContext<IRefListItemGroupConfiguratorStateContext>(
-  REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE
+  REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
 );
 
 export const RefListItemGroupConfiguratorActionsContext = createContext<IRefListItemGroupConfiguratorActionsContext>(undefined);

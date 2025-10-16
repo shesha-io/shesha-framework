@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
-import React, { CSSProperties, FC, Fragment, MutableRefObject, useEffect, useMemo } from 'react';
+import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import { ValidationErrors } from '..';
@@ -193,7 +193,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [onRowSelect, formData, globalState, setGlobalState, moment, executeAction, httpClient]);
 
-  const onSelectRowLocal = (index: number, row: any) => {
+  const onSelectRowLocal = (index: number, row: any): void => {
     if (onSelectRow) {
       onSelectRow(index, row);
     }
@@ -266,7 +266,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const { styles } = useStyles();
 
   const metadata = useMetadata(false)?.metadata;
-
 
 
   const handleRowClick = useMemo(() => {
@@ -401,7 +400,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const result: RowDataInitializer = props.onNewRowInitialize
       ? () => {
         // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
-        //return onNewRowInitializeExecuter(formData, globalState);
+        // return onNewRowInitializeExecuter(formData, globalState);
         const result = onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData);
         return Promise.resolve(result);
       }
@@ -417,7 +416,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     jsExpression: string,
     formMode: FormMode,
     formData: any,
-    globalState: IAnyObject
+    globalState: IAnyObject,
   ): boolean => {
     switch (value) {
       case 'yes':
@@ -448,19 +447,19 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         props.canDeleteInlineExpression,
         formMode,
         formData,
-        globalState
+        globalState,
       ),
       canEdit: evaluateYesNoInheritJs(
         props.canEditInline,
         props.canEditInlineExpression,
         formMode,
         formData,
-        globalState
+        globalState,
       ),
       inlineEditMode,
       formMode,
       canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
-      onNewRowInitialize
+      onNewRowInitialize,
     };
     return {
       ...result,
@@ -478,7 +477,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
               canEdit: props.canEditInline,
               canAdd: props.canAddInline,
               inlineEditMode,
-            }
+            },
           );
           column.minWidth = minWidth;
           column.maxWidth = maxWidth;
@@ -515,7 +514,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         return removeUndefinedProperties(column) as DataTableColumn<any>;
       });
     return localPreparedColumns;
-
   }, [
     columns,
     crudOptions.enabled,
@@ -544,7 +542,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
       return () => {
-        /*nop*/
+        /* nop*/
       };
 
     return (data, formApi, globalState, setGlobalState) => {
@@ -575,7 +573,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           : undefined;
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
-        setRowData(rowIndex, preparedData /*, response*/);
+        setRowData(rowIndex, preparedData /* , response*/);
         performOnRowSaveSuccess(preparedData, formApi, globalState, setGlobalState);
         return response;
       });
@@ -602,7 +600,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowDeleteSuccessAction)
       return () => {
-        /*nop*/
+        /* nop*/
       };
     return (data, formApi, globalState, setGlobalState) => {
       const evaluationContext = {
@@ -642,7 +640,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const getCrudComponents = (
     allowEdit: boolean,
-    componentAccessor: (col: ITableDataColumn) => IFieldComponentProps
+    componentAccessor: (col: ITableDataColumn) => IFieldComponentProps,
   ): IFlatComponentsStructure => {
     const result: IFlatComponentsStructure = {
       allComponents: {},
@@ -732,7 +730,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       propertyPath: g.propertyName.split('.'),
     }));
 
-    const getValue = (container: object, path: string[]) => {
+    const getValue = (container: object, path: string[]): any => {
       return path.reduce((prev, part) => (prev ? prev[part] : undefined), container);
     };
 
@@ -759,7 +757,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return result;
   };
 
-  const renderGroupTitle = (value: any, propertyName: string) => {
+  const renderGroupTitle = (value: any, propertyName: string): ReactElement => {
     if (!Boolean(value) && value !== false) return <Typography.Text type="secondary">(empty)</Typography.Text>;
     const column = groupingColumns.find((c) => isDataColumn(c) && c.propertyName === propertyName);
     const propertyMeta = isDataColumn(column) ? column.metadata : null;
@@ -820,7 +818,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     await repository.reorder(reorderPayload);
   };
 
-  const onResizedChange = (columns: ColumnInstance[], _columnSizes: IColumnResizing) => {
+  const onResizedChange = (columns: ColumnInstance[], _columnSizes: IColumnResizing): void => {
     const widths = columns.map<IColumnWidth>((c) => ({
       id: c.id,
       width: typeof c.width === 'number' ? c.width : undefined,
@@ -896,7 +894,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   return (
     <Fragment>
       <div className={styles.shaChildTableErrorContainer}>
-        {exportToExcelError && <ValidationErrors error={'Error occurred while exporting to excel'} />}
+        {exportToExcelError && <ValidationErrors error="Error occurred while exporting to excel" />}
       </div>
 
       {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps} />}

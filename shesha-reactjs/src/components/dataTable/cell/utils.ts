@@ -9,41 +9,41 @@ interface ICrudOptions {
   inlineEditMode?: 'all-at-once' | 'one-by-one';
 }
 
-export const adjustWidth = (crudOptions: ICrudOptions) => {
+export const adjustWidth = (crudOptions: ICrudOptions): { maxWidth: number; minWidth: number } => {
   const { canEdit, canAdd, canDelete, inlineEditMode } = crudOptions;
-  
+
   const isEditEnabled = canEdit === "yes";
   const isAddEnabled = canAdd === "yes";
   const isDeleteEnabled = canDelete === "yes";
 
-  if (inlineEditMode === 'all-at-once' &&  isDeleteEnabled) {
+  if (inlineEditMode === 'all-at-once' && isDeleteEnabled) {
     return { minWidth: 100, maxWidth: 100 };
   }
 
   if (inlineEditMode === 'all-at-once' && !isDeleteEnabled) {
     return { minWidth: 90, maxWidth: 90 };
   }
-  
+
   if (isAddEnabled) {
     return { minWidth: 70, maxWidth: 70 };
   }
-  
+
   if (isEditEnabled && isDeleteEnabled) {
     return { minWidth: 70, maxWidth: 70 };
   }
 
-    if (isEditEnabled && !isDeleteEnabled) {
+  if (isEditEnabled && !isDeleteEnabled) {
     return { minWidth: 70, maxWidth: 70 };
   }
-  
+
   if (isEditEnabled || isDeleteEnabled) {
     return { minWidth: 35, maxWidth: 35 };
   }
-  
+
   return { minWidth: 0, maxWidth: 0 };
 };
 
-export const getInjectables = ({ defaultRow, defaultValue }: IComponentWrapperProps) => {
+export const getInjectables = ({ defaultRow, defaultValue }: IComponentWrapperProps): IComponentMetadata => {
   let result: IComponentMetadata = {};
 
   /** Adds injectedTableRow to result if applicable **/
@@ -55,6 +55,6 @@ export const getInjectables = ({ defaultRow, defaultValue }: IComponentWrapperPr
   return result;
 };
 
-export const asNumber = (value: any): number => {
+export const asNumber = (value: unknown): number => {
   return typeof value === 'number' ? value : null;
 };

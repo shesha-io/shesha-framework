@@ -15,15 +15,15 @@ export interface IConfigurableCellProps<TConfig extends ITableColumn>
   extends IHasPropertyMetadata,
   IHasColumnConfig<TConfig> { }
 
-export interface ICommonCellProps<TConfig extends ITableColumn, D extends object = {}, V = any>
+export interface ICommonCellProps<TConfig extends ITableColumn, D extends object = object, V = any>
   extends CellProps<D, V>,
   IConfigurableCellProps<TConfig> { }
 
-export interface IDataCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableDataColumn, D, V> { }
+export type IDataCellProps<D extends object = object, V = any> = ICommonCellProps<ITableDataColumn, D, V>;
 
-export interface IRendererCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableDataColumn, D, V> { }
+export type IRendererCellProps<D extends object = object, V = any> = ICommonCellProps<ITableDataColumn, D, V>;
 
-export interface IFormCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableFormColumn, D, V> {
+export interface IFormCellProps<D extends object = object, V = any> extends ICommonCellProps<ITableFormColumn, D, V> {
   /** FormId GUID */
   parentFormId?: string;
   /** `Module`/`FormName` */

@@ -136,6 +136,18 @@ namespace Shesha.Metadata
 
         /// inheritedDoc
         [HttpGet]
+        public async Task<List<PropertyMetadataDto>> GetNonFrameworkRelatedPropertiesAsync(string container)
+        {
+            if (string.IsNullOrWhiteSpace(container))
+                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
+
+            var containerType = await _metadataProvider.GetContainerTypeAsync(null, container);
+            var properties = await _metadataProvider.GetPropertiesAsync(containerType);
+            return properties.Where(x => x.IsFrameworkRelated == false).ToList();
+        }
+
+        /// inheritedDoc
+        [HttpGet]
         public async Task<MetadataDto> GetAsync(string container)
         {
             if (string.IsNullOrWhiteSpace(container))

@@ -6,5 +6,5 @@ export enum DynamicActionsDispatcherActionEnums {
 
 export const activateProviderAction = createAction<string, string>(
   DynamicActionsDispatcherActionEnums.ActivateProvider,
-  (p) => p
+  (p) => p,
 );

@@ -2,13 +2,12 @@ import { IButtonGroupItem, IButtonItem, IConfigurableFormComponent } from "@/pro
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
-export interface IRefListGroupItemBase extends IButtonItem{
+export interface IRefListGroupItemBase extends IButtonItem {
   referenceList?: any;
   item?: string;
 }
 
-export interface IRefListItemFormModel extends IRefListGroupItemBase {
-}
+export type IRefListItemFormModel = IRefListGroupItemBase;
 
 export interface IRefListItemGroup extends IRefListGroupItemBase {
   childItems?: RefListGroupItemProps[];

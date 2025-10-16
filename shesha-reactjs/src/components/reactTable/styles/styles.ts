@@ -1,4 +1,4 @@
-import { createStyles } from 'antd-style';
+import { createStyles, SerializedStyles } from 'antd-style';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 
 const tableClassNames = {
@@ -33,13 +33,13 @@ const tableStyles = {
   styles: tableClassNames,
 };
 
-export const useStyles = () => {
+export const useStyles = (): typeof tableStyles => {
   return tableStyles;
 };
 
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }, {
   rowBackgroundColor,
-  rowAlternateBackgroundColor, 
+  rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
 }: {
@@ -86,7 +86,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     `;
 
   const groupBorder = '1px solid lightgray';
-  const nestedPaddings = (indexStart: number, index: number) => {
+  const nestedPaddings = (indexStart: number, index: number): SerializedStyles | null => {
     return indexStart < index
       ? css`
           &.sha-group-level-${indexStart} {
@@ -430,9 +430,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
       }
-    `
+    `,
 
-    
+
   );
   return {
     shaReactTable,

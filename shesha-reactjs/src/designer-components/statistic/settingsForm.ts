@@ -1,11 +1,11 @@
-import { DesignerToolbarSettings } from "@/index";
+import { DesignerToolbarSettings, FormMarkupWithSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
 import { fontTypes, fontWeightsOptions, textAlignOptions } from "../_settings/utils/font/utils";
 import { repeatOptions, positionOptions, sizeOptions } from "../_settings/utils/background/utils";
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceId = nanoid();
@@ -41,7 +41,7 @@ export const getSettings = (data: any) => {
                 label: "Property Name",
                 size: "small",
                 validate: {
-                  "required": true
+                  required: true,
                 },
                 jsSetting: true,
                 styledLabel: true,
@@ -64,8 +64,8 @@ export const getSettings = (data: any) => {
                     propertyName: 'placeholder',
                     label: 'Placeholder',
                     jsSetting: true,
-                  }
-                ]
+                  },
+                ],
               })
               .addSettingsInput(
                 {
@@ -75,7 +75,7 @@ export const getSettings = (data: any) => {
                   label: 'Hide',
                   jsSetting: true,
                   parentId: commonTabId,
-                }
+                },
               )
               .addSettingsInputRow({
                 id: nanoid(),
@@ -96,7 +96,7 @@ export const getSettings = (data: any) => {
                     label: 'Precision',
                     jsSetting: true,
                     min: 0,
-                  }
+                  },
                 ],
               })
               .addSettingsInputRow({
@@ -139,8 +139,8 @@ export const getSettings = (data: any) => {
                   },
                 ],
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'events',
@@ -154,10 +154,10 @@ export const getSettings = (data: any) => {
                 label: 'On Click',
                 labelAlign: 'right',
                 tooltip: 'Enter custom eventhandler on click of event.',
-                parentId: eventsId
+                parentId: eventsId,
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -176,7 +176,7 @@ export const getSettings = (data: any) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
+                    _value: "",
                   },
                   components: [
                     ...new DesignerToolbarSettings()
@@ -249,9 +249,9 @@ export const getSettings = (data: any) => {
                               label: 'Custom Styles',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -323,9 +323,9 @@ export const getSettings = (data: any) => {
                               label: 'Custom Styles',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
@@ -351,7 +351,7 @@ export const getSettings = (data: any) => {
                                   width: 85,
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
                                 },
                                 {
                                   type: 'textField',
@@ -370,8 +370,8 @@ export const getSettings = (data: any) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
-                                }
-                              ]
+                                },
+                              ],
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -385,7 +385,7 @@ export const getSettings = (data: any) => {
                                   width: 85,
                                   propertyName: "dimensions.height",
                                   icon: "heightIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
                                 },
                                 {
                                   type: 'textField',
@@ -404,12 +404,12 @@ export const getSettings = (data: any) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxHeight",
                                   icon: "maxHeightIcon",
-                                }
-                              ]
+                                },
+                              ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -427,16 +427,16 @@ export const getSettings = (data: any) => {
                             .addContainer({
                               id: 'borderStyleRow',
                               parentId: 'borderStylePnl',
-                              components: getBorderInputs() as any
+                              components: getBorderInputs() as any,
                             })
                             .addContainer({
                               id: 'borderRadiusStyleRow',
                               parentId: 'borderStylePnl',
-                              components: getCornerInputs() as any
+                              components: getCornerInputs() as any,
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -463,28 +463,28 @@ export const getSettings = (data: any) => {
                                   {
                                     value: "color",
                                     icon: "FormatPainterOutlined",
-                                    title: "Color"
+                                    title: "Color",
                                   },
                                   {
                                     value: "gradient",
                                     icon: "BgColorsOutlined",
-                                    title: "Gradient"
+                                    title: "Gradient",
                                   },
                                   {
                                     value: "image",
                                     icon: "PictureOutlined",
-                                    title: "Image"
+                                    title: "Image",
                                   },
                                   {
                                     value: "url",
                                     icon: "LinkOutlined",
-                                    title: "URL"
+                                    title: "URL",
                                   },
                                   {
                                     value: "storedFile",
                                     icon: "DatabaseOutlined",
-                                    title: "Stored File"
-                                  }
+                                    title: "Stored File",
+                                  },
                                 ],
                               })
                               .addSettingsInputRow({
@@ -509,7 +509,7 @@ export const getSettings = (data: any) => {
                                   propertyName: "background.gradient.colors",
                                   label: "Colors",
                                   jsSetting: false,
-                                }
+                                },
                                 ],
                                 hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                 hideLabel: true,
@@ -548,9 +548,9 @@ export const getSettings = (data: any) => {
                                     id: 'backgroundStyle-storedFile',
                                     jsSetting: false,
                                     propertyName: "background.storedFile.id",
-                                    label: "File ID"
-                                  }
-                                ]
+                                    label: "File ID",
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: "backgroundStyleRow-controls",
@@ -575,8 +575,8 @@ export const getSettings = (data: any) => {
                                     customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                     propertyName: "background.position",
                                     dropdownOptions: positionOptions,
-                                  }
-                                ]
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-repeat',
@@ -592,9 +592,9 @@ export const getSettings = (data: any) => {
                                 }],
                                 hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
-                              .toJson()
+                              .toJson(),
                           ],
-                        }
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -663,9 +663,9 @@ export const getSettings = (data: any) => {
                                 },
                               ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -684,9 +684,9 @@ export const getSettings = (data: any) => {
                               hideLabel: true,
                               propertyName: 'stylingBox',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -708,15 +708,15 @@ export const getSettings = (data: any) => {
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .toJson(),
-                  ]
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: 'security',
@@ -730,19 +730,19 @@ export const getSettings = (data: any) => {
                 label: 'Permissions',
                 size: 'small',
                 jsSetting: true,
-                parentId: securityId
+                parentId: securityId,
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
-        ]
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

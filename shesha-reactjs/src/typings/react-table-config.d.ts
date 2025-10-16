@@ -7,7 +7,7 @@ import {
   UseExpandedRowProps,
   UseExpandedState,
   UseFiltersColumnOptions,
-  //UseFiltersColumnProps,
+  // UseFiltersColumnProps,
   UseFiltersInstanceProps,
   UseFiltersOptions,
   UseFiltersState,
@@ -49,10 +49,7 @@ import {
 } from 'react-table';
 
 declare module 'react-table' {
-  export interface TestInterface {
 
-  }
-  
   // take this file as-is, or comment out the sections that don't apply to your plugin configuration
 
   export interface TableOptions<D extends Record<string, unknown>>
@@ -131,7 +128,7 @@ declare module 'react-table' {
     extends UseGroupByCellProps<D>,
     UseRowStateCellProps<D> { }
 
-  export function useTable<D extends object = {}>(
+  export function useTable<D extends object = object>(
     options: TableOptions<D>,
     ...plugins: Array<PluginHook<D>>
   ): TableInstance<D>;

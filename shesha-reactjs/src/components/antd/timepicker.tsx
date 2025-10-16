@@ -3,17 +3,17 @@ import type { PickerProps, RangePickerProps } from 'antd/es/date-picker/generate
 import type { Moment } from 'moment';
 import { DatePicker } from './datepicker';
 
-export interface TimePickerProps extends Omit<PickerProps<Moment>, 'picker'> { }
+export type TimePickerProps = Omit<PickerProps<Moment>, 'picker'>;
 
 const TimePicker = React.forwardRef<any, TimePickerProps>((props, ref) => (
-    <DatePicker {...props} picker="time" mode={undefined} ref={ref} />
+  <DatePicker {...props} picker="time" mode={undefined} ref={ref} />
 ));
 
 TimePicker.displayName = 'TimePicker';
 
-export interface TimePickerRangeProps extends Omit<RangePickerProps<Moment>, 'picker'> { }
+export type TimePickerRangeProps = Omit<RangePickerProps<Moment>, 'picker'>;
 const TimeRangePicker = React.forwardRef<any, TimePickerRangeProps>((props, ref) => (
-    <DatePicker.RangePicker {...props} picker="time" mode={undefined} ref={ref} />
+  <DatePicker.RangePicker {...props} picker="time" mode={undefined} ref={ref} />
 ));
 TimeRangePicker.displayName = 'TimeRangePicker';
 

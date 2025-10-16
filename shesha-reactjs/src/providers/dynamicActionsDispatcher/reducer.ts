@@ -17,7 +17,7 @@ const reducer = handleActions<IDynamicActionsDispatcherStateContext, any>(
     },
   },
 
-  DYNAMIC_ACTIONS_DISPATCHER_CONTEXT_INITIAL_STATE
+  DYNAMIC_ACTIONS_DISPATCHER_CONTEXT_INITIAL_STATE,
 );
 
 export default reducer;

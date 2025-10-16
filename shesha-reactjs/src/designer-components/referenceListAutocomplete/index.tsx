@@ -5,8 +5,7 @@ import React from 'react';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { IConfigurableItemAutocompleteComponentProps } from '../configurableItemAutocomplete/interfaces';
 
-export interface IReferenceListAutocompleteProps extends IConfigurableFormComponent {
-}
+export type IReferenceListAutocompleteProps = IConfigurableFormComponent;
 
 /**
  * @deprecated. Use ConfigurableItemAutocompleteComponent instead
@@ -20,8 +19,8 @@ const ReferenceListAutocompleteComponent: IToolboxComponent<IReferenceListAutoco
   Factory: () => {
     throw new Error('Reference List Autocomplete component was removed');
   },
-  migrator: m => m
-    .add<IReferenceListAutocompleteProps>(0, prev => ({ ...prev, convertToFullId: true }))
+  migrator: (m) => m
+    .add<IReferenceListAutocompleteProps>(0, (prev) => ({ ...prev, convertToFullId: true }))
     .add<IReferenceListAutocompleteProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IReferenceListAutocompleteProps>(2, (prev) => migrateReadOnly(prev))
     .add<IConfigurableItemAutocompleteComponentProps>(3, (prev) => {
@@ -32,8 +31,7 @@ const ReferenceListAutocompleteComponent: IToolboxComponent<IReferenceListAutoco
         version: 0,
         entityType: 'Shesha.Framework.ReferenceList',
       };
-    })
-  ,
+    }),
 };
 
 export default ReferenceListAutocompleteComponent;

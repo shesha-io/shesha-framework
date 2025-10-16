@@ -27,9 +27,9 @@ const StackedNavigationModal: FC<IStackedNavigationModalProps> = ({
     }
   }, [isMaxWidth]);
 
-  const toggleMaxWidth = () => setMaxWidth((prev) => !prev);
+  const toggleMaxWidth = (): void => setMaxWidth((prev) => !prev);
 
-  const closeDialog = (e: any) => {
+  const closeDialog = (e: any): void => {
     onCancel(e);
   };
 
@@ -46,7 +46,7 @@ const StackedNavigationModal: FC<IStackedNavigationModalProps> = ({
         centered={false}
         footer={null}
         closable={false}
-        title={
+        title={(
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>
               <Link href={`${removeURLParameter(router?.fullPath, 'navMode')}`}>
@@ -64,7 +64,7 @@ const StackedNavigationModal: FC<IStackedNavigationModalProps> = ({
               <Button type="link" onClick={(event) => closeDialog(event)} icon={<CloseOutlined />} />
             </span>
           </div>
-        }
+        )}
         {...props}
       >
         {children}

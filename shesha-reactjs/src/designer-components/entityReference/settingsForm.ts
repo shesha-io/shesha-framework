@@ -1,4 +1,4 @@
-import { DesignerToolbarSettings } from '@/index';
+import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { IEntityReferenceControlProps } from './entityReference';
@@ -11,7 +11,7 @@ import {
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 
-export const getSettings = (data: IEntityReferenceControlProps) => {
+export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();

@@ -3,6 +3,7 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
+using Abp.Reflection;
 using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using NetTopologySuite.Geometries;
@@ -13,7 +14,6 @@ using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.EntityTypeBuilder.Model;
-using Shesha.DynamicEntities.TypeFinder;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
@@ -40,7 +40,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
         private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
         private readonly ApplicationPartManager _appPartManager;
         private readonly IModuleList _moduleList;
-        private readonly IShaTypeFinder _typeFinder;
+        private readonly ITypeFinder _typeFinder;
         private readonly ILogger _logger;
 
         public DynamicEntityTypeBuilder(
@@ -49,7 +49,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             IRepository<EntityConfig, Guid> entityConfigRepo,
             ApplicationPartManager appPartManager,
             IModuleList moduleList,
-            IShaTypeFinder typeFinder,
+            ITypeFinder typeFinder,
             ILogger logger
         )
         {
@@ -248,18 +248,21 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                         : null );
 
             // Class Attributes
-            // Set Table
-            SetAttribute(
-                typeBuilder, 
-                typeof(TableAttribute), 
-                [entityConfig.TableName.NotNull()], 
-                new Dictionary<string, object?> {{ "Schema", entityConfig.SchemaName}}
-            );
-            // Set Discriminator
-            SetAttribute(typeBuilder, typeof(DiscriminatorAttribute), []);
-            SetAttribute(typeBuilder, typeof(DiscriminatorValueAttribute), [entityConfig.DiscriminatorValue.NotNull()]);
-            // Set name convention
-            SetAttribute(typeBuilder, typeof(SnakeCaseNamingAttribute), []);
+            if (entityConfig.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
+            {
+                // Set Table
+                SetAttribute(
+                    typeBuilder,
+                    typeof(TableAttribute),
+                    [entityConfig.TableName.NotNull()],
+                    new Dictionary<string, object?> { { "Schema", entityConfig.SchemaName } }
+                );
+                // Set Discriminator
+                SetAttribute(typeBuilder, typeof(DiscriminatorAttribute), []);
+                SetAttribute(typeBuilder, typeof(DiscriminatorValueAttribute), [entityConfig.DiscriminatorValue.NotNull()]);
+                // Set name convention
+                SetAttribute(typeBuilder, typeof(SnakeCaseNamingAttribute), []);
+            }
 
             var typeBuilderType = new EntityTypeBuilderType()
             {

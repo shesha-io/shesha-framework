@@ -44,6 +44,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
   return {
     searchField,
-    content
+    content,
   };
 });

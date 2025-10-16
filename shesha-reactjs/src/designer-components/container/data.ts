@@ -165,7 +165,7 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     borderRadius = '8',
     borderStyle = 'none',
     borderWidth = '1px',
-    shadowStyle
+    shadowStyle,
   } = prev || {};
 
   const isBelow = shadowStyle === 'below';
@@ -183,7 +183,7 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       minHeight,
       maxHeight,
       minWidth,
-      maxWidth
+      maxWidth,
     },
     border: {
       radiusType: 'all',
@@ -191,14 +191,14 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       border: {
         all: { width: borderWidth, color: borderColor, style: borderStyle as any },
       },
-      radius: { all: borderRadius }
+      radius: { all: borderRadius },
     },
     shadow: {
       blurRadius: isBelow || isAbove ? 4 : 0,
       color: '#000000',
       offsetX: 0,
       offsetY: isAbove ? -2 : isBelow ? 2 : 0,
-      spreadRadius: 0
+      spreadRadius: 0,
     },
     display: prev?.className === 'sha-index-table-control' || prev?.className === 'index-table-controls-right' ? 'flex' : prev?.display ?? null,
     direction: prev?.direction ?? "horizontal",
@@ -212,6 +212,6 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     justifySelf: prev?.justifySelf ?? "normal",
     noDefaultStyling: prev?.noDefaultStyling ?? false,
     gridColumnsCount: prev?.gridColumnsCount ?? null,
-    gap: prev?.gap ?? '8px'
+    gap: prev?.gap ?? '8px',
   };
 };

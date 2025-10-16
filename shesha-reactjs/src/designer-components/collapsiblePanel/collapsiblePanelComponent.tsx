@@ -144,7 +144,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       .add<ICollapsiblePanelComponentProps>(6, (prev) => removeComponents(prev))
       .add<ICollapsiblePanelComponentProps>(7, (prev) => ({
         ...prev,
-        customHeader: { id: nanoid(), components: [] }
+        customHeader: { id: nanoid(), components: [] },
       }))
       .add<ICollapsiblePanelComponentProps>(8, (prev) => {
         const accentStyle = prev?.overflow === undefined;
@@ -152,7 +152,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         return {
           ...prev, accentStyle, desktop: { ...prev.desktop, accentStyle },
           tablet: { ...prev.tablet, accentStyle },
-          mobile: { ...prev.mobile, accentStyle }
+          mobile: { ...prev.mobile, accentStyle },
         };
       })
       .add<ICollapsiblePanelComponentProps>(9, (prev) => {
@@ -162,7 +162,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         return {
           ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
           tablet: { ...newModel.tablet, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle },
-          mobile: { ...newModel.mobile, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle }
+          mobile: { ...newModel.mobile, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle },
         };
       }),
   customContainerNames: ['header', 'content', 'customHeader'],

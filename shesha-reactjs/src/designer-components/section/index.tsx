@@ -10,8 +10,7 @@ import { Alert } from 'antd';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { useConfigurableFormSections } from '@/providers/form/sections';
 
-export interface ISectionProps extends IConfigurableFormComponent {
-}
+export type ISectionProps = IConfigurableFormComponent;
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -39,10 +38,9 @@ const SectionComponent: IToolboxComponent<ISectionProps> = {
     return null;
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
-    .add<ISectionProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-  ,
+    .add<ISectionProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
 };
 
 export default SectionComponent;

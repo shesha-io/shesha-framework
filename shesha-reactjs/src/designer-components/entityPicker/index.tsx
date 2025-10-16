@@ -110,9 +110,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     return (
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
         {(value, onChange) => {
-
           const customEvent = customOnChangeValueEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]) => {
+          const onChangeInternal = (...args: any[]): void => {
             customEvent.onChange(args[0]);
             if (typeof onChange === 'function')
               onChange(...args);
@@ -138,7 +137,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
                     showModalFooter: model.showModalFooter,
                     modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
                     buttons: model?.buttons,
-                    footerButtons: model?.footerButtons
+                    footerButtons: model?.footerButtons,
                   }
                   : undefined
               }
@@ -155,8 +154,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  migrator: m => m
-    .add<IEntityPickerComponentProps>(0, prev => {
+  migrator: (m) => m
+    .add<IEntityPickerComponentProps>(0, (prev) => {
       return {
         ...prev,
         items: prev['items'] ?? [],
@@ -165,10 +164,10 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       };
     })
     .add<IEntityPickerComponentProps>(1, migrateV0toV1)
-    .add<IEntityPickerComponentProps>(2, prev => {
+    .add<IEntityPickerComponentProps>(2, (prev) => {
       return { ...prev, useRawValues: true };
     })
-    .add<IEntityPickerComponentProps>(3, prev => {
+    .add<IEntityPickerComponentProps>(3, (prev) => {
       const result = { ...prev };
       const useExpression = Boolean(result['useExpression']);
       delete result['useExpression'];
@@ -223,7 +222,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         rawModel.displayEntityKey
           ? `${propertyName}.${rawModel.displayEntityKey}`
           : `${propertyName}._displayName`,
-        `${propertyName}._className`
+        `${propertyName}._className`,
       ];
     }
     return null;

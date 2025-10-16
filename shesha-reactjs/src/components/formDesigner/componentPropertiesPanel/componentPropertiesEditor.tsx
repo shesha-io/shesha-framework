@@ -58,19 +58,19 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
   const { autoSave, onSave, formRef, propertyFilter, layoutSettings } = props;
 
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       onSave(values);
     },
     // delay in ms
-    300
+    300,
   );
 
-  const onValuesChange = (_changedValues, values) => {
+  const onValuesChange = (_changedValues, values): void => {
     if (autoSave && !readOnly)
       debouncedSave(values);
   };
 
-  const onCancel = () => {
+  const onCancel = (): void => {
     // not used
   };
 

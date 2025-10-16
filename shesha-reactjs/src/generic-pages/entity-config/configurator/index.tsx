@@ -2,7 +2,7 @@ import EntityConfigTree, { IEntityConfigTreeInstance } from '@/components/entity
 import IndexToolbar from '@/components/indexToolbar';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Checkbox, Col, Form, App, Modal, Row } from 'antd';
-import { Autocomplete, Page } from '@/components';
+import { Autocomplete, Page, ValidationErrors } from '@/components';
 import { DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import { EntityConfigDto } from '@/apis/entityConfig';
 import { IToolbarItem, PageWithLayout } from '@/interfaces';
@@ -10,11 +10,12 @@ import { MetadataSourceType } from '@/interfaces/metadata';
 import { modelConfigurationsMerge } from '@/apis/modelConfigurations';
 import { useLocalStorage } from '@/hooks';
 import { useModelConfigurator, useSheshaApplication } from '@/providers';
-import { ValidationErrors } from '@/components';
+
 import { SizableColumns } from '@/components/sizableColumns';
 import classNames from 'classnames';
 import { useStyles } from './styles';
 import ModelConfiguratorRenderer from '@/components/modelConfigurator/renderer';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface IEntityConfiguratorPageProps {
   id?: string;
@@ -41,7 +42,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
   const [mergeError, setMergeError] = useState(null);
   const { message } = App.useApp();
 
-  const onChange = (item: EntityConfigDto) => {
+  const onChange = (item: EntityConfigDto): void => {
     if (item) {
       setEntityConfigId(item.id);
       setEntityConfig(item);
@@ -53,25 +54,25 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
   useEffect(() => {
     if (configurator.modelConfiguration?.id && configurator.modelConfiguration?.id !== entityConfigId) {
       onChange(configurator.modelConfiguration);
-      if (entityConfigId === '') //{
+      if (entityConfigId === '') // {
         entityConfigTreeRef.current.refresh(configurator.modelConfiguration?.id);
-      /*} else {
+      /* } else {
         entityConfigTreeRef.current.update(configurator.modelConfiguration);*
       }*/
     }
   }, [configurator.modelConfiguration?.id]);
 
-  const handleOk = () => {
+  const handleOk = (): void => {
     const del =
       isDeleteAfterMerge &&
       (!(entityConfig?.source === MetadataSourceType.ApplicationCode) || entityConfig?.notImplemented);
     setLoadingState({ loading: true, loadingText: 'Saving...' });
     modelConfigurationsMerge(
       { sourceId: entityConfig.id, destinationId: autocompleteResult.id, deleteAfterMerge: del },
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     )
       .then((response) => {
-        if (response.success) {
+        if (isAjaxSuccessResponse(response)) {
           if (del) entityConfigTreeRef.current.refresh(autocompleteResult.id);
           onChange(response.result);
           message.success('Configurations merged successfully');
@@ -89,7 +90,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
   const allowDelete = useMemo(() => {
     return entityConfig && (entityConfig.source === MetadataSourceType.UserDefined || entityConfig.notImplemented);
   }, [entityConfig]);
-  /*const allowMerge = useMemo(() => {
+  /* const allowMerge = useMemo(() => {
     return entityConfig && entityConfig.source === MetadataSourceType.ApplicationCode && entityConfig.notImplemented;
   }, [entityConfig]);*/
 
@@ -99,7 +100,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
       icon: <PlusOutlined />,
       onClick: () => {
         setEntityConfigId('');
-        configurator.createNew({source: MetadataSourceType.UserDefined});
+        configurator.createNew({ source: MetadataSourceType.UserDefined });
       },
     },
     {
@@ -127,7 +128,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
           });
       },
     },
-    /*{
+    /* {
       title: 'Merge entity to...',
       icon: <MergeCellsOutlined />,
       disabled: entityConfigId === null || !allowMerge,
@@ -196,7 +197,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
             />
           </div>
           <div className={styles.propsPanel}>
-            <div  className={classNames(styles.propsPanelContent  )}>
+            <div className={classNames(styles.propsPanelContent)}>
               <IndexToolbar className={classNames(styles.propsPanelHeader)} items={toolbarItems} />
               {entityConfigId != null && <ModelConfiguratorRenderer />}
             </div>
@@ -243,8 +244,8 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
             <Col span="18">
               <Form.Item>
                 <Autocomplete
-                  dataSourceType={'url'}
-                  dataSourceUrl={'/api/services/app/EntityConfig/EntityConfigAutocomplete?implemented=true'}
+                  dataSourceType="url"
+                  dataSourceUrl="/api/services/app/EntityConfig/EntityConfigAutocomplete?implemented=true"
                   value={autocompleteResult}
                   onChange={setAutocompleteResult}
                 />

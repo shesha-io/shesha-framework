@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import {
   CopyOutlined,
-  SaveOutlined
+  SaveOutlined,
 } from '@ant-design/icons';
 import { componentsFlatStructureToTree } from '@/providers/form/utils';
 import {
@@ -22,8 +22,8 @@ export interface ISaveMenuProps {
 
 export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   const { saveForm, formProps } = useFormPersister();
-  const formFlatMarkup = useFormDesignerStateSelector(x => x.formFlatMarkup);
-  const formSettings = useFormDesignerStateSelector(x => x.formSettings);
+  const formFlatMarkup = useFormDesignerStateSelector((x) => x.formFlatMarkup);
+  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
   const toolboxComponents = useFormDesignerComponents();
   const { message } = App.useApp();
 
@@ -39,7 +39,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
     return saveForm(payload);
   };
 
-  const onSaveClick = () => {
+  const onSaveClick = (): void => {
     message.loading('Saving..', 0);
     saveFormInternal()
       .then(() => {
@@ -57,7 +57,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
       });
   };
 
-  const copyFormName = () => {
+  const copyFormName = (): void => {
     navigator.clipboard.writeText(fullName);
     message.success("Form name copied");
   };
@@ -81,7 +81,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
       >
         <span className={styles.formTitle}> {fullName}
         </span>
-        <CopyOutlined color='#555' size={12} title={fullName} />
+        <CopyOutlined color="#555" size={12} title={fullName} />
       </p>
     </div>
 

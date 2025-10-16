@@ -2,7 +2,7 @@ import React, {
   FC,
   PropsWithChildren,
   useContext,
-  useReducer
+  useReducer,
 } from 'react';
 import SidebarMenuReducer from './reducer';
 import { getFlagSetters } from '../utils/flagsSetters';
@@ -11,6 +11,9 @@ import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { setItemsAction, toggleSidebarAction } from './actions';
 import { FormFullName, isNavigationActionConfiguration, useSheshaApplication } from '@/providers';
 import {
+  ISidebarMenuActionsContext,
+  ISidebarMenuDefaultsContext,
+  ISidebarMenuStateContext,
   SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
   SidebarMenuActionsContext,
   SidebarMenuDefaultsContext,
@@ -20,6 +23,7 @@ import { FormIdFullNameDto } from '@/apis/entityConfig';
 import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/formConfiguration';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useActualContextData } from '@/hooks';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface ISidebarMenuProviderProps {
   items: ISidebarMenuItem[];
@@ -57,10 +61,10 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
 
     if (
       availableByPermissions &&
-      isNavigationActionConfiguration(item.actionConfiguration)
-      && item.actionConfiguration?.actionArguments?.navigationType === 'form'
-      && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
-      && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
+      isNavigationActionConfiguration(item.actionConfiguration) &&
+      item.actionConfiguration?.actionArguments?.navigationType === 'form' &&
+      (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name &&
+      (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
     ) {
       // form navigation, check form permissions
       const newItem = { ...item, hidden: true };
@@ -71,31 +75,31 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     return { ...item, hidden: !availableByPermissions };
   };
 
-  const updatetItemVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
+  const updatetItemVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]): void => {
     if (
-      item.actionConfiguration?.actionOwner === 'shesha.common'
-      && item.actionConfiguration?.actionName === 'Navigate'
-      && item.actionConfiguration?.actionArguments?.navigationType === 'form'
-      && item.actionConfiguration?.actionArguments?.formId?.name
-      && item.actionConfiguration?.actionArguments?.formId?.module
+      item.actionConfiguration?.actionOwner === 'shesha.common' &&
+      item.actionConfiguration?.actionName === 'Navigate' &&
+      item.actionConfiguration?.actionArguments?.navigationType === 'form' &&
+      item.actionConfiguration?.actionArguments?.formId?.name &&
+      item.actionConfiguration?.actionArguments?.formId?.module
     ) {
       // form navigation, check form permissions
-      const form = formsPermission.find(x =>
-        x.module === item.actionConfiguration?.actionArguments?.formId?.module
-        && x.name === item.actionConfiguration?.actionArguments?.formId?.name
+      const form = formsPermission.find((x) =>
+        x.module === item.actionConfiguration?.actionArguments?.formId?.module &&
+        x.name === item.actionConfiguration?.actionArguments?.formId?.name,
       );
       item.hidden = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
     }
   };
 
-  const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
+  const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]): void => {
     if (itemsToCheck.length > 0) {
       formConfigurationCheckPermissions(
-        itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto),
-        { base: backendUrl, headers: httpHeaders }
+        itemsToCheck.map((x) => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto),
+        { base: backendUrl, headers: httpHeaders },
       )
         .then((result) => {
-          if (result.success) {
+          if (isAjaxSuccessResponse(result)) {
             itemsToCheck.forEach((item) => {
               return updatetItemVisible(item, result.result);
             });
@@ -110,7 +114,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   useDeepCompareEffect(() => {
     const itemsToCheck = [];
     const localItems = actualItems.map((item) => requestItemVisible(item, itemsToCheck));
-    
+
     if (itemsToCheck.length > 0) {
       getFormPermissions(localItems, itemsToCheck);
     } else
@@ -120,11 +124,11 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
       }
   }, [actualItems]);
 
-  const collapse = () => {
+  const collapse = (): void => {
     dispatch(toggleSidebarAction(false));
   };
 
-  const expand = () => {
+  const expand = (): void => {
     dispatch(toggleSidebarAction(true));
   };
 
@@ -146,7 +150,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   );
 };
 
-function useSidebarMenuState(require: boolean) {
+function useSidebarMenuState(require: boolean): ISidebarMenuStateContext & ISidebarMenuActionsContext | undefined {
   const context = useContext(SidebarMenuStateContext);
   const actions = useContext(SidebarMenuActionsContext);
 
@@ -157,7 +161,7 @@ function useSidebarMenuState(require: boolean) {
   return { ...context, ...actions };
 }
 
-function useSidebarMenuActions(require: boolean) {
+function useSidebarMenuActions(require: boolean): ISidebarMenuActionsContext | undefined {
   const context = useContext(SidebarMenuActionsContext);
 
   if (context === undefined && require) {
@@ -167,7 +171,7 @@ function useSidebarMenuActions(require: boolean) {
   return context;
 }
 
-function useSidebarMenu(require: boolean = true) {
+function useSidebarMenu(require: boolean = true): ISidebarMenuStateContext | undefined {
   const actionsContext = useSidebarMenuActions(require);
   const stateContext = useSidebarMenuState(require);
 
@@ -195,7 +199,7 @@ const SidebarMenuDefaultsProvider: FC<PropsWithChildren<ISidebarMenuDefaultsProv
   );
 };
 
-function useSidebarMenuDefaults() {
+function useSidebarMenuDefaults(): ISidebarMenuDefaultsContext {
   const context = useContext(SidebarMenuDefaultsContext);
 
   return context;

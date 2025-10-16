@@ -1,6 +1,6 @@
 import { Tree } from 'antd';
 import { DataNode } from 'antd/lib/tree';
-import React, { FC, useMemo, useState, useEffect } from 'react';
+import React, { FC, useMemo, useState, useEffect, ReactNode } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
@@ -22,7 +22,7 @@ const getTreeData = (prop: IPropertyMetadata, onAddItem: (prop: IPropertyMetadat
     selectable: false,
     meta: prop,
   };
-  node.children = isPropertiesArray(prop.properties) ? prop.properties.map<DataNodeWithMeta>(childProp => getTreeData(childProp, onAddItem)) : [];
+  node.children = isPropertiesArray(prop.properties) ? prop.properties.map<DataNodeWithMeta>((childProp) => getTreeData(childProp, onAddItem)) : [];
 
   onAddItem(prop);
 
@@ -44,10 +44,10 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
   const { startDraggingNewItem, endDraggingNewItem } = useFormDesignerActions();
   const treeData = useMemo<NodesWithExpanded>(() => {
     const expanded: string[] = [];
-    const nodes = items.map(item =>
-      getTreeData(item, currentItem => {
+    const nodes = items.map((item) =>
+      getTreeData(item, (currentItem) => {
         expanded.push(currentItem.path);
-      })
+      }),
     );
 
     return {
@@ -60,7 +60,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
     if (defaultExpandAll) setManuallyExpanded(null);
   }, [defaultExpandAll]);
 
-  const getTitle = (prop: IPropertyMetadata) => {
+  const getTitle = (prop: IPropertyMetadata): ReactNode => {
     const { label, path } = prop;
     const displayName = label ?? path;
     const index = displayName?.toLowerCase()?.indexOf(searchText);
@@ -88,11 +88,11 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
       metadata: node.meta,
     };
 
-    const onDragStart = () => {
+    const onDragStart = (): void => {
       startDraggingNewItem();
     };
 
-    const onDragEnd = _evt => {
+    const onDragEnd = (_evt): void => {
       endDraggingNewItem();
     };
 
@@ -100,7 +100,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
       <ReactSortable
         list={[sortableItem]}
         setList={() => {
-          /*nop*/
+          /* nop*/
         }}
         group={{
           name: 'shared',
@@ -113,7 +113,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
         onStart={onDragStart}
         onEnd={onDragEnd}
       >
-        <div className={styles.shaToolboxComponent} >
+        <div className={styles.shaToolboxComponent}>
           {icon}
           <div className={styles.shaComponentTitle}>{getTitle(node.meta)}</div>
         </div>
@@ -121,7 +121,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
     );
   };
 
-  const onExpand = expandedKeys => {
+  const onExpand = (expandedKeys): void => {
     setManuallyExpanded(expandedKeys);
   };
 

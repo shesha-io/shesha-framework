@@ -2,11 +2,9 @@ import React, { FC } from 'react';
 import { Modal } from 'antd';
 import { useAppConfigurator } from '@/providers';
 
-export interface IProps {}
-
-export const SwitchToEditModeConfirmation: FC<IProps> = () => {
+export const SwitchToEditModeConfirmation: FC = () => {
   const { editModeConfirmationVisible, switchApplicationMode, toggleEditModeConfirmation } = useAppConfigurator();
-  
+
   return (
     <Modal
       title="Launch Edit Mode"

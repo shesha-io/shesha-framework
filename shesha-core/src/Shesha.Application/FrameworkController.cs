@@ -1,10 +1,12 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Uow;
 using Abp.Reflection;
 using Abp.Web.Models;
 using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc;
 using NHibernate.Cfg.XmlHbmBinding;
 using Shesha.Bootstrappers;
+using Shesha.ConfigurationItems;
 using Shesha.Controllers.Dtos;
 using Shesha.DynamicEntities;
 using Shesha.Extensions;
@@ -29,6 +31,15 @@ namespace Shesha.Controllers
     {
         public ILogger Logger { get; set; } = new NullLogger();
         public IIocManager IocManager { get; set; } = default!;
+
+        [HttpPost]
+        [UnitOfWork(IsDisabled = true)]
+        public async Task<string> BootstrapModulesAsync(bool force)
+        {
+            var bootstrapper = StaticContext.IocManager.Resolve<ConfigurableModuleBootstrapper>();
+            await bootstrapper.ProcessAsync(force);
+            return "Bootstrapped successfully";
+        }
 
         [HttpPost]
         public async Task<string> BootstrapReferenceListsAsync(bool force)

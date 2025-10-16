@@ -3,7 +3,6 @@ import useThunkReducer from '@/hooks/thunkReducer';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { useSheshaApplication, useTheme } from '@/providers';
 import React, { FC, PropsWithChildren, useContext, useEffect } from 'react';
-import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import * as RestfulShesha from '@/utils/fetchers';
 import { GENERIC_ENTITIES_ENDPOINT } from '@/shesha-constants';
 import {
@@ -33,8 +32,7 @@ import {
   SettingValue,
 } from './models';
 import { settingsEditorReducer } from './reducer';
-
-export interface ISettingsEditorProviderProps {}
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 const getListFetcherQueryParams = (maxResultCount): IGenericGetAllPayload => {
   return {
@@ -42,11 +40,9 @@ const getListFetcherQueryParams = (maxResultCount): IGenericGetAllPayload => {
     maxResultCount: maxResultCount ?? -1,
     entityType: 'Shesha.Domain.SettingConfiguration',
     properties:
-      'id category dataType editorFormModule editorFormName isClientSpecific name, module { id name }, label, description, versionNo',
+      'id category dataType editorFormModule editorFormName isClientSpecific name, module { id name }, label, description',
     quickSearch: null,
     sorting: 'module.name, name',
-    
-    filter: JSON.stringify({"and": [{"==": [{"var": "versionStatus"},ConfigurationItemVersionStatus.Live]}]}),
   };
 };
 interface SettingConfigurationDto {
@@ -59,14 +55,13 @@ interface SettingConfigurationDto {
   name: string;
   label?: string;
   description?: string;
-  versionNo?: number;
   module?: {
     id: string;
     name: string;
   };
 }
 
-const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>> = ({ children }) => {
+const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
   const initial: ISettingsEditorStateContext = {
     ...SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE,
   };
@@ -78,14 +73,14 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
     resetToApplicationTheme();
   }, [state.applications, state.settingSelection]);
 
-  const fetchConfigurations = () => {
+  const fetchConfigurations = (): void => {
     dispatch(fetchConfigurationsAction());
 
     // fetch configurations
     RestfulShesha.get<IAbpWrappedGetEntityListResponse<SettingConfigurationDto>, any, IGenericGetAllPayload, any>(
       `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
       getListFetcherQueryParams(1000),
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     )
       .then((response) => {
         if (response.success) {
@@ -121,7 +116,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
         quickSearch: null,
         sorting: '',
       },
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     )
       .then((response) => {
         if (response.success) {
@@ -138,17 +133,17 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
     fetchConfigurations();
   }, []);
 
-  const selectSetting = (setting: ISettingConfiguration, app: IFrontEndApplication) => {
+  const selectSetting = (setting: ISettingConfiguration, app: IFrontEndApplication): void => {
     state.editorBridge?.cancel();
     dispatch(selectSettingAction({ setting, app }));
     dispatch(setEditorModeAction('edit'));
   };
 
-  const selectApplication = (app: IFrontEndApplication) => {
+  const selectApplication = (app: IFrontEndApplication): void => {
     dispatch(selectApplicationAction({ app }));
   };
 
-  const saveSetting = () => {
+  const saveSetting = (): Promise<void> => {
     if (!state.editorBridge) return Promise.reject('Setting editor not available');
 
     dispatch(setSaveStatusAction('saving'));
@@ -158,29 +153,31 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
       dispatch(setSaveStatusAction('error'));
     });
   };
-  const startEditSetting = () => {
+  const startEditSetting = (): void => {
     dispatch(setSaveStatusAction('none'));
     dispatch(setEditorModeAction('edit'));
   };
-  const cancelEditSetting = () => {
+  const cancelEditSetting = (): void => {
     state.editorBridge.cancel();
     dispatch(setSaveStatusAction('canceled'));
   };
 
-  const fetchSettingValue = (settingId: ISettingIdentifier) => {
+  const fetchSettingValue = (settingId: ISettingIdentifier): Promise<SettingValue> => {
     return settingsGetValue(
       { name: settingId.name, module: settingId.module, appKey: settingId.appKey },
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     )
       .then((response) => {
-        return response.result;
+        return isAjaxSuccessResponse(response)
+          ? response.result
+          : undefined;
       })
       .catch((error) => {
         console.error(error);
       });
   };
 
-  const saveSettingValue = (settingId: ISettingIdentifier, value: SettingValue) => {
+  const saveSettingValue = (settingId: ISettingIdentifier, value: SettingValue): Promise<void> => {
     dispatch(setSaveStatusAction('saving'));
     return settingsUpdateValue(
       {
@@ -189,7 +186,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
         appKey: settingId.appKey,
         value: value,
       },
-      { base: backendUrl, headers: httpHeaders }
+      { base: backendUrl, headers: httpHeaders },
     )
       .then((response) => {
         dispatch(setSaveStatusAction('success'));
@@ -201,7 +198,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
       });
   };
 
-  const setEditor = (editorBridge: IEditorBridge) => {
+  const setEditor = (editorBridge: IEditorBridge): void => {
     dispatch(setEditorBridgeAction(editorBridge));
   };
 
@@ -221,7 +218,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
   return <SettingsEditorContext.Provider value={contextValue}>{children}</SettingsEditorContext.Provider>;
 };
 
-function useSettingsEditor(require: boolean = true) {
+function useSettingsEditor(require: boolean = true): ISettingsEditorContext | undefined {
   const context = useContext(SettingsEditorContext);
 
   if (require && context === undefined) {

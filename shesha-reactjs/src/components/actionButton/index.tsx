@@ -13,9 +13,9 @@ export interface IActionButtonProps {
   isVisible: boolean;
   loading?: boolean;
   error?: IErrorInfo;
-  }
-  
-const ActionButton: FC<IActionButtonProps> = ({ 
+}
+
+const ActionButton: FC<IActionButtonProps> = ({
   icon,
   title,
   executer,
@@ -23,7 +23,7 @@ const ActionButton: FC<IActionButtonProps> = ({
   loading,
   error,
   type = 'link',
-  shape = 'circle'
+  shape = 'circle',
 }) => {
   const mustConfirm = Boolean(confirmationText);
   const button = (
@@ -33,16 +33,16 @@ const ActionButton: FC<IActionButtonProps> = ({
       icon={icon}
       onClick={
         mustConfirm
-        ? undefined
-        : (e) => {
-          e.stopPropagation();
-          executer();
-        }
+          ? undefined
+          : (e) => {
+            e.stopPropagation();
+            executer();
+          }
       }
       title={title}
       loading={loading}
       danger={Boolean(error)}
-      className={"sha-link sha-action-button"}
+      className="sha-link sha-action-button"
     />
   );
 
@@ -50,17 +50,17 @@ const ActionButton: FC<IActionButtonProps> = ({
     <Popconfirm title={confirmationText} onConfirm={() => executer()}>
       {button}
     </Popconfirm>
-    ) : (
-      button
-    );
+  ) : (
+    button
+  );
 
   return error ? (
     <Popover title={error.message} content={<>{error.details}</>} trigger="hover" placement="topLeft">
       {withConfirmation}
     </Popover>
-    ) : (
-      <>{withConfirmation}</>
-    );
+  ) : (
+    <>{withConfirmation}</>
+  );
 };
 
 export default ActionButton;

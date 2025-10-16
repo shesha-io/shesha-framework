@@ -42,7 +42,7 @@ export interface IFormDesignerStateContext {
   formFlatMarkup: IFlatComponentsStructure;
 }
 
-export interface IUndoableFormDesignerStateContext extends StateWithHistory<IFormDesignerStateContext> { }
+export type IUndoableFormDesignerStateContext = StateWithHistory<IFormDesignerStateContext>;
 
 export interface AddComponentPayloadBase {
   index: number;
@@ -53,7 +53,7 @@ export interface IComponentAddPayload extends AddComponentPayloadBase {
   componentType: string;
 }
 
-export interface IComponentAddFromTemplatePayload extends AddComponentPayloadBase { }
+export type IComponentAddFromTemplatePayload = AddComponentPayloadBase;
 
 export interface IAddDataPropertyPayload {
   propertyMetadata: IPropertyMetadata;
@@ -148,7 +148,6 @@ export const UndoableFormDesignerStateContext = createNamedContext<IUndoableForm
 
 export interface ConfigurableFormInstance extends IFormDesignerActionsContext, IFormDesignerStateContext { }
 
-//export const FormDesignerStateContext = createNamedContext<IFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE, "FormDesignerStateContext");
 export const FormDesignerStateContext = createContext<IFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE);
 
 export const FormDesignerActionsContext = createNamedContext<IFormDesignerActionsContext>(undefined, "FormDesignerActionsContext");

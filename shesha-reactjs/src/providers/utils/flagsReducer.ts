@@ -24,7 +24,7 @@ const isThisFlagInAction = (type: string, flag: string): boolean => new RegExp(f
 
 const flagsReducer = <T extends IFlagsState<string, string, string, string>>(
   state: T = FLAGS_INITIAL_STATE as T,
-  { type, payload }: ReduxActions.Action<IFlagsState<string, string, string, string>>
+  { type, payload }: ReduxActions.Action<IFlagsState<string, string, string, string>>,
 ): T => {
   const flaggable = /(.*)_(REQUEST|SUCCESS|ERROR|ACTION)/.test(type);
 

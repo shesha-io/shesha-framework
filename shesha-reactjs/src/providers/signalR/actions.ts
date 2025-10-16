@@ -8,6 +8,6 @@ export enum SignalRActionEnums {
 
 export const setConnectionAction = createAction<ISignalRStateContext, ISignalRConnection>(
   SignalRActionEnums.SetConnection,
-  (connection) => ({ connection })
+  (connection) => ({ connection }),
 );
 /* NEW_ACTION_GOES_HERE */

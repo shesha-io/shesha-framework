@@ -12,42 +12,42 @@ export type ExpressionFactory<TArguments = any, TResult = any> = (expression: st
 export type AsyncExpressionFactory<TArguments = any, TResult = any> = ExpressionFactory<TArguments, Promise<TResult>>;
 
 export interface IDataArguments<Values> {
-    data: Values;
+  data: Values;
 }
 
 export interface FormDataSubmitPayload extends Required<SubmitRelatedEvents> {
-    data: any;
-    formSettings: IFormSettings;
-    formFlatStructure: IFlatComponentsStructure;
-    expressionExecuter: ExpressionExecuter;
-    antdForm: FormInstance;
-    getDelayedUpdates: () => IDelayedUpdateGroup[];
-    customSubmitCaller?: SubmitCaller;
+  data: any;
+  formSettings: IFormSettings;
+  formFlatStructure: IFlatComponentsStructure;
+  expressionExecuter: ExpressionExecuter;
+  antdForm: FormInstance;
+  getDelayedUpdates: () => IDelayedUpdateGroup[];
+  customSubmitCaller?: SubmitCaller;
 }
 
 export interface IFormDataSubmitter {
-    submitAsync: (payload: FormDataSubmitPayload) => Promise<any>;
+  submitAsync: (payload: FormDataSubmitPayload) => Promise<any>;
 }
 
 export type SubmitterEndpointType = 'default' | 'static' | 'dynamic';
 
 export interface GqlSubmitterSettings {
-    excludeFormFields?: string;
-    endpointType: SubmitterEndpointType;
-    staticEndpoint?: IApiEndpoint;
-    dynamicEndpoint?: string;
+  excludeFormFields?: string;
+  endpointType: SubmitterEndpointType;
+  staticEndpoint?: IApiEndpoint;
+  dynamicEndpoint?: string;
 }
 
-export const isGqlSubmitterSettings = (s: any): s is GqlSubmitterSettings => {
-    return s && typeof s === 'object' && s.endpointType;
+export const isGqlSubmitterSettings = (s: unknown): s is GqlSubmitterSettings => {
+  return s && typeof s === 'object' && "endpointType" in s && typeof (s.endpointType) === 'string';
 };
 
 export interface CustomSubmitterSettings {
-    onSubmitData: string;
+  onSubmitData: string;
 }
 
-export const isCustomSubmitterSettings = (s: any): s is CustomSubmitterSettings => {
-    return s && typeof s === 'object' && s.onSubmitData;
+export const isCustomSubmitterSettings = (s: unknown): s is CustomSubmitterSettings => {
+  return s && typeof s === 'object' && "onSubmitData" in s && typeof (s.onSubmitData) === 'string';
 };
 
 export type SubmitCaller = (data: any) => Promise<any>;

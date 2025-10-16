@@ -68,7 +68,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   font,
   size,
   searchOptions,
-  onFocus
+  onFocus,
 }) => {
   const { styles } = useStyles({ fontFamily: font?.type, fontWeight: font?.weight, textAlign: font?.align, color: font?.color, fontSize: font?.size });
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
@@ -79,7 +79,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   if (typeof window === 'undefined' || !(typeof window.google === 'object' && typeof window.google.maps === 'object'))
     return null;
 
-  const handleChange = (localAddress: string) => {
+  const handleChange = (localAddress: string): void => {
     try {
       if (onChange) {
         if (localAddress) {
@@ -93,13 +93,13 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
     }
   };
 
-  const handleSelect = (localAddress: string) => {
+  const handleSelect = (localAddress: string): void => {
     try {
       if (onChange) {
         onChange(localAddress);
       }
       geocodeByAddress(localAddress)
-        .then(results => getLatLng(results[0]))
+        .then((results) => getLatLng(results[0]))
         .then(({ lat, lng }) => {
           if (biasedCoordinates) {
             if (pointsInPolygon([lat, lng], biasedCoordinates)) {
@@ -123,7 +123,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
             });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error no coords', error);
         });
     } catch {
@@ -134,7 +134,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   const displayValue = selectedValue || value;
   const inputPrefix = externalLoader ? <LoadingOutlined /> : <SearchOutlined />;
 
-  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
     if (!suggestionRef.current || suggestionRef?.current?.length === 0) return;
 
     const suggestions = suggestionRef.current;
@@ -187,9 +187,9 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
     }
   };
 
-  const onBlur = () => setShowSuggestionsDropdownContainer(false);
+  const onBlur = (): void => setShowSuggestionsDropdownContainer(false);
 
-  const handleFocus = (event) => onFocus(event);
+  const handleFocus = (event): void => onFocus(event);
   return (
     // @ts-ignore
     <PlacesAutocomplete
@@ -214,7 +214,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
             return (
               <Input
                 value={displayValue}
-                onChange={e => {
+                onChange={(e) => {
                   if (inputProps.onChange) {
                     const {
                       target: { value: realValue },
@@ -243,7 +243,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
               hidden: !showSuggestionsDropdownContainer,
             })}
           >
-            {suggestions.map(suggestion => {
+            {suggestions.map((suggestion) => {
               const localSuggestion = { ...suggestion };
               localSuggestion.description = ignoreText
                 ? suggestion.description?.replace(ignoreText, '')

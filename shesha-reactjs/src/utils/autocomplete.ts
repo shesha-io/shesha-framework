@@ -25,15 +25,15 @@ export interface IAutocompleteProps {
 
 const buildFilterById = (value: AutocompleteValueType): string => {
   if (!value) return null;
-   
-  const ids = (Array.isArray(value) ? value : [value]).map(val => {
+
+  const ids = (Array.isArray(value) ? value : [value]).map((val) => {
     return typeof val === 'string' ? val : val?.id ?? undefined;
-  }).filter(x => Boolean(x));
-  
+  }).filter((x) => Boolean(x));
+
   return getEntityFilterByIds(ids);
 };
 
-export const autocompleteValueIsEmpty = (value: any): boolean => {
+export const autocompleteValueIsEmpty = (value: AutocompleteValueType): boolean => {
   return Array.isArray(value) ? value.length === 0 : !Boolean(value);
 };
 
@@ -74,7 +74,7 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
     {
       lazy: autocompleteValueIsEmpty(props.value),
       queryParams: getValuePayload,
-    }
+    },
   );
 
 
@@ -82,10 +82,10 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
     `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
     {
       lazy: true,
-    }
+    },
   );
 
-  const search = (term: string) => {
+  const search = (term: string): void => {
     const queryParams = getListFetcherQueryParams(term);
     if (isEqual(queryParams, previousQueryParams.current))
       return;

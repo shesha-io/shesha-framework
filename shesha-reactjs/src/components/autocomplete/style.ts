@@ -2,7 +2,6 @@ import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
 export const useStyles = createStyles(({ css, cx, token }, { style }: { style: CSSProperties }) => {
-
   const autocomplete = cx("sha-autocomplete", css`
     --ant-color-text: ${style?.color} !important;
     --ant-font-size: ${style?.fontSize} !important;
@@ -40,6 +39,6 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
   return {
     autocomplete,
     loadingSpinner,
-    loadingText
+    loadingText,
   };
 });

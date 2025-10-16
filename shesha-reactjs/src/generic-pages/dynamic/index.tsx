@@ -26,7 +26,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
     <Fragment>
       <div id="modalContainerId" className={classNames('sha-dynamic-page')}>
         <ConfigurableForm
-          formName='dynamic-page-form'
+          formName="dynamic-page-form"
           mode={mode}
 
           className="sha-dynamic-page"
@@ -46,7 +46,12 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
 
 export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   return (
-    <DataContextProvider id={SheshaCommonContexts.PageContext} name={SheshaCommonContexts.PageContext} type={'page'}>
+    <DataContextProvider
+      id={SheshaCommonContexts.PageContext}
+      name={SheshaCommonContexts.PageContext}
+      type="page"
+      webStorageType="sessionStorage"
+    >
       <DynamicPageInternal {...props} />
     </DataContextProvider>
   );

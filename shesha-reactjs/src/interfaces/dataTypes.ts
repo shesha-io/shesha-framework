@@ -31,11 +31,11 @@ export const StringFormats = {
 };
 
 export const NumberFormats = {
-    float: 'float',
-    double: 'double',
-    int32: 'int32',
-    int64: 'int64',
-    decimal: 'decimal',
+  float: 'float',
+  double: 'double',
+  int32: 'int32',
+  int64: 'int64',
+  decimal: 'decimal',
 };
 
 export const DataTypes = {
@@ -59,12 +59,12 @@ export const DataTypes = {
   any: 'any',
   AllowedComponents: (dataType: string, dataFormat: string): string[] => {
     switch (dataType) {
-      case DataTypes.string: 
+      case DataTypes.string:
         if (dataFormat === StringFormats.multiline || dataFormat === StringFormats.html || dataFormat === StringFormats.javascript || dataFormat === StringFormats.json)
           return ['textArea', 'text'];
         return ['textField', 'text', 'dropdown'];
       case DataTypes.number:
-          return ['numberField', 'slider', 'text', 'textField'];
+        return ['numberField', 'slider', 'text', 'textField'];
       case DataTypes.date:
       case DataTypes.dateTime:
         return ['dateField', 'text', 'textField'];
@@ -81,13 +81,13 @@ export const DataTypes = {
       case DataTypes.object:
         return ['subForm'];
       case DataTypes.advanced:
-          return [dataFormat];
+        return [dataFormat];
       case DataTypes.array:
         switch (dataFormat) {
           case ArrayFormats.entityReference:
-            return ['autocomplete','entityPicker'];
+            return ['autocomplete', 'entityPicker'];
           case ArrayFormats.manyToManyEntities:
-            return ['autocomplete','entityPicker'];
+            return ['autocomplete', 'entityPicker'];
           case ArrayFormats.childObjects:
             return ['childEntitiesTagGroup'];
           case ArrayFormats.multivalueReferenceList:
@@ -106,7 +106,7 @@ export const DataTypes = {
       case 'number':
           return ['numberField', 'slider', 'text', 'textField'];
       case 'date':
-      case 'dateTime':
+      case 'date-time':
         return ['dateField', 'text', 'textField'];
       case 'time':
         return ['timePicker', 'text', 'textField'];
@@ -135,5 +135,5 @@ export const DataTypes = {
         }
     }
     return [];
-  }`
+  }`,
 };

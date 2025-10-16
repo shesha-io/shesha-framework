@@ -33,7 +33,7 @@ export const MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE: IModelConfiguratorStateCo
 
 export const ModelConfiguratorStateContext = createNamedContext<IModelConfiguratorStateContext>(
   MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
-  "ModelConfiguratorStateContext"
+  "ModelConfiguratorStateContext",
 );
 
 export const ModelConfiguratorActionsContext = createNamedContext<IModelConfiguratorActionsContext>(undefined, "ModelConfiguratorActionsContext");

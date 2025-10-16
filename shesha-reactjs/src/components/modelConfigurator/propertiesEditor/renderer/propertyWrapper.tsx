@@ -15,42 +15,42 @@ export interface IProps extends IModelItem {
   parent?: IModelItem;
 }
 
-export const PropertyWrapper: FC<PropsWithChildren<IProps>> = props => {
+export const PropertyWrapper: FC<PropsWithChildren<IProps>> = (props) => {
   const { deleteItem, selectedItemId, selectedItemRef } = usePropertiesEditor();
   const { styles } = useStyles();
 
-  const onDeleteClick = () => {
+  const onDeleteClick = (): void => {
     deleteItem(props.id);
   };
 
-  const needRestart = 
-    props.source !== 1 
-    && !props.createdInDb 
-    && !props.inheritedFromId
-    && !props.parent 
-    && !(props.dataType === DataTypes.array && props.dataFormat === ArrayFormats.entityReference)
-    && props.dataType !== DataTypes.advanced;
+  const needRestart =
+    props.source !== 1 &&
+    !props.createdInDb &&
+    !props.inheritedFromId &&
+    !props.parent &&
+    !(props.dataType === DataTypes.array && props.dataFormat === ArrayFormats.entityReference) &&
+    props.dataType !== DataTypes.advanced;
 
   return (
-    <div 
-      className={classNames(styles.shaToolbarItem, { selected: selectedItemId === props.id })} 
+    <div
+      className={classNames(styles.shaToolbarItem, { selected: selectedItemId === props.id })}
       ref={selectedItemId === props.id ? selectedItemRef : undefined}
-      style={{color: props.suppress ? 'silver' : props.inheritedFromId ? 'green' : undefined}}
+      style={{ color: props.suppress ? 'silver' : props.inheritedFromId ? 'green' : undefined }}
     >
       <div className={styles.shaToolbarItemHeader}>
         <DragHandle id={props.id} />
         {props.suppress && !props.isItemsType && <span><EyeInvisibleOutlined /> </span>}
-        {needRestart && 
-          <Tooltip title={'This property has changes which require an application restart before they can take effect'}>
-            <span style={{color: 'red'}}><WarningFilled /> </span>
+        {needRestart && (
+          <Tooltip title="This property has changes which require an application restart before they can take effect">
+            <span style={{ color: 'red' }}><WarningFilled /> </span>
           </Tooltip>
-        }
+        )}
         {props.children}
         <div className={styles.shaToolbarItemControls}>
           {
             Boolean(props.inheritedFromId)
               ? <Tag>Inherited</Tag>
-              : props.source === MetadataSourceType.ApplicationCode 
+              : props.source === MetadataSourceType.ApplicationCode
                 ? <Tag>APP</Tag>
                 : <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
           }

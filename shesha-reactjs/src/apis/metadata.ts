@@ -31,10 +31,10 @@ export interface PropertyMetadataDto {
    * Validation message
    */
   validationMessage?: string | null;
-  path?: string | null;
+  path: string;
   label?: string | null;
   description?: string | null;
-  dataType?: string | null;
+  dataType: string;
   dataFormat?: string | null;
   entityType?: string | null;
   referenceListName?: string | null;
@@ -96,7 +96,7 @@ export interface MetadataDto {
   /**
    * Data type
    */
-  dataType?: string | null;
+  dataType: string;
   /**
    * Module
    */
@@ -113,7 +113,7 @@ export interface MetadataDto {
   /**
    * Propeties
    */
-  properties?: PropertyMetadataDto[] | null;
+  properties: PropertyMetadataDto[];
   /**
    * Specifications, applicable for entities
    */

@@ -1,6 +1,8 @@
 import { useContext } from 'react';
 import { IModelMetadata } from "@/index";
 import { createNamedContext } from '@/utils/react';
+import { DEFAULT_CONTEXT_METADATA } from '../dataContextManager/models';
+import { Path, PathValue } from '@/utils/dotnotation';
 
 export interface IDataContextFullInstance extends IDataContextProviderStateContext, IDataContextProviderActionsContext { }
 
@@ -8,57 +10,68 @@ export interface IDataContextProviderStateContext {
   id: string;
   uid: string;
   name: string;
-  description?: string;
+  description?: string | undefined;
   type: string;
-  // data?: object;
-  parentDataContext?: IDataContextFullInstance | null;
-  metadata?: Promise<IModelMetadata>;
+  parentDataContext?: IDataContextFullInstance | undefined;
+  metadata: Promise<IModelMetadata>;
 }
 
 export interface IDataContextFull {
-  [key: string]: any;
-  api?: any;
-  metadata?: Promise<IModelMetadata>;
-  setFieldValue?: ContextSetFieldValue;
+  [key: string]: unknown;
+  api?: unknown;
+  metadata?: Promise<IModelMetadata> | undefined;
+  setFieldValue?: ContextSetFieldValue | undefined;
 }
 
-export interface IDataContextProviderActionsContext {
-  setFieldValue: ContextSetFieldValue;
+export interface IDataContextProviderActionsContext<TData extends object = object> {
+  setFieldValue: ContextSetFieldValue<TData>;
   getFieldValue: ContextGetFieldValue;
-  setData: ContextSetData;
+  setData: ContextSetData<TData>;
   getData: ContextGetData;
   getFull: ContextGetFull;
-  updateApi: (api: object) => any;
-  getApi: () => any;
+  updateApi: (api: object) => unknown;
+  getApi: () => unknown;
 }
 
-export interface IDataContextProviderActionsContextOverride extends Partial<IDataContextProviderActionsContext> {}
+export type IDataContextProviderActionsContextOverride = Partial<IDataContextProviderActionsContext>;
 
 /** initial state */
-export const DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE: IDataContextProviderStateContext = { id: '', uid: '', name: '', type: '' };
+export const DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE: IDataContextProviderStateContext = {
+  id: '',
+  uid: '',
+  name: '',
+  type: '',
+  metadata: Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name: '', properties: [] } as IModelMetadata),
+};
 
-export const DataContextProviderStateContext = createNamedContext<IDataContextProviderStateContext>(DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE, "DataContextProviderStateContext");
-export const DataContextProviderActionsContext = createNamedContext<IDataContextProviderActionsContext>(undefined, "DataContextProviderActionsContext");
+export const DataContextProviderStateContext = createNamedContext<IDataContextProviderStateContext | undefined>(DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE, "DataContextProviderStateContext");
+export const DataContextProviderActionsContext = createNamedContext<IDataContextProviderActionsContext | undefined>(undefined, "DataContextProviderActionsContext");
 
 export type DataContextType = 'root' | 'storage' | 'app' | 'page' | 'form' | 'control' | 'settings' | 'appLayer';
 
 
-export type ContextGetFieldValue = (name: string) => any;
+export type ContextGetFieldValue = (name: string) => unknown;
 export type ContextGetFull = () => IDataContextFull;
-export type ContextGetData = () => any;
-export type ContextSetFieldValue = <T>(name: string, value: T, refreshContext?: RefreshContext) => void;
-export type ContextSetData = (changedData: any, refreshContext?: RefreshContext) => void;
-export type ContextOnChangeData = <T>(data: T, changedData: any, refreshContext?: RefreshContext) => void;
-export type RefreshContext = () => void;
+export type ContextGetData<TData extends object = object> = () => TData;
+export type ContextSetFieldValue<TData extends object = object> = <P extends Path<TData>>(name: P, value: PathValue<TData, P>, refreshContext?: RefreshContext) => void;
+export type ContextSetData<TData extends object = object> = (changedData: TData, refreshContext?: RefreshContext) => void;
+export type ContextOnChangeData = <T>(data: T, changedData: unknown, refreshContext?: RefreshContext) => void;
+export type RefreshContext<TData extends object = object> = (data?: Partial<TData>) => void;
 
-export function useDataContext(require: boolean = true) {
+export const useDataContextOrUndefined = (): IDataContextProviderStateContext & IDataContextProviderActionsContext | undefined => {
   const actionsContext = useContext(DataContextProviderActionsContext);
   const stateContext = useContext(DataContextProviderStateContext);
 
-  if ((actionsContext === undefined || stateContext === undefined) && require) {
-    throw new Error('useDataContext must be used within a DataContextProvider');
-  }
   return actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext } as IDataContextFullInstance
     : undefined;
+};
+
+export function useDataContext(): IDataContextProviderStateContext & IDataContextProviderActionsContext {
+  const context = useDataContextOrUndefined();
+
+  if (context === undefined) {
+    throw new Error('useDataContext must be used within a DataContextProvider');
+  }
+  return context;
 }

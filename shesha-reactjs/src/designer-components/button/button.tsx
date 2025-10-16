@@ -33,7 +33,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.shadowStyles),
       ...model.allStyles.stylingBoxAsCSS,
       ...model.allStyles.jsStyle,
-      justifyContent: model.font?.align
+      justifyContent: model.font?.align,
     };
 
     return model.hidden ? null : (
@@ -46,9 +46,9 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       />
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
-  initModel: model => {
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  initModel: (model) => {
     const buttonModel: IButtonComponentProps = {
       ...model,
       label: 'Submit',
@@ -57,16 +57,16 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     };
     return buttonModel;
   },
-  migrator: m =>
+  migrator: (m) =>
     m
-      .add<IButtonGroupItemBaseV0>(0, prev => {
+      .add<IButtonGroupItemBaseV0>(0, (prev) => {
         const buttonModel: IButtonGroupItemBaseV0 = {
           ...prev,
           hidden: prev.hidden,
           label: prev.label ?? 'Submit',
           sortOrder: 0,
           itemType: 'item',
-          name: prev['name']
+          name: prev['name'],
         };
         return buttonModel;
       })
@@ -81,7 +81,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
         ...prev,
         desktop: { ...prev.desktop, buttonType: prev.buttonType || 'default' },
         mobile: { ...prev.mobile, buttonType: prev.buttonType || 'default' },
-        tablet: { ...prev.tablet, buttonType: prev.buttonType || 'default' }
+        tablet: { ...prev.tablet, buttonType: prev.buttonType || 'default' },
       }))
       .add<IButtonComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };

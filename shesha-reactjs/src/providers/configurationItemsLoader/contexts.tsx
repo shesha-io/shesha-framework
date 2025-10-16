@@ -1,9 +1,9 @@
-import { IReferenceList } from '@/interfaces/referenceList';
 import { PromisedValue } from '@/utils/promises';
-import { ConfigurationItemsViewMode, IComponentSettings } from '../appConfigurator/models';
+import { IComponentSettings } from '../appConfigurator/models';
 import { FormFullName, FormIdentifier, IFormDto } from '../form/models';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { createNamedContext } from '@/utils/react';
+import { ReferenceListDto } from './models';
 
 export interface IConfigurationItemsLoaderStateContext {
   activeProvider?: string;
@@ -11,13 +11,11 @@ export interface IConfigurationItemsLoaderStateContext {
 
 export interface IGetFormPayload {
   formId: FormIdentifier;
-  configurationItemMode?: ConfigurationItemsViewMode;
   skipCache: boolean;
 }
 
 export interface IGetRefListPayload {
   refListId: IReferenceListIdentifier;
-  configurationItemMode?: ConfigurationItemsViewMode;
   skipCache: boolean;
 }
 
@@ -38,22 +36,20 @@ export interface IClearFormCachePayload {
 }
 
 export interface IConfigurationItemsLoaderActionsContext {
-  getCachedForm: (payload: IGetFormPayload) => Promise<IFormDto>;
   getForm: (payload: IGetFormPayload) => Promise<IFormDto>;
-  getRefList: (payload: IGetRefListPayload) => PromisedValue<IReferenceList>;
+  clearFormCache: (payload: IClearFormCachePayload) => void;
+
+  getRefList: (payload: IGetRefListPayload) => PromisedValue<ReferenceListDto>;
   getComponent: (payload: IGetComponentPayload) => PromisedValue<IComponentSettings>;
   updateComponent: (payload: IUpdateComponentPayload) => Promise<void>;
-
-  clearFormCache: (payload: IClearFormCachePayload) => void;
   getEntityFormId: (className: string, formType: string) => Promise<FormFullName>;
 }
 
-/** initial state */
-export const CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE: IConfigurationItemsLoaderStateContext = {};
+export const ConfigurationItemsLoaderActionsContext = createNamedContext<IConfigurationItemsLoaderActionsContext | undefined>(undefined, "ConfigurationItemsLoaderActionsContext");
 
-export const ConfigurationItemsLoaderStateContext = createNamedContext<IConfigurationItemsLoaderStateContext>(
-  CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE,
-  "ConfigurationItemsLoaderStateContext"
-);
-
-export const ConfigurationItemsLoaderActionsContext = createNamedContext<IConfigurationItemsLoaderActionsContext>(undefined, "ConfigurationItemsLoaderActionsContext");
+export interface IGetConfigurationPayload {
+  module: string;
+  name: string;
+  itemType: string;
+  skipCache: boolean;
+};

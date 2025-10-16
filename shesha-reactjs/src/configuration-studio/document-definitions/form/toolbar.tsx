@@ -5,16 +5,16 @@ import { UndoRedoButtons } from '@/components/formDesigner/toolbar/undoRedoButto
 import React, { FC } from 'react';
 
 export interface IFormToolbarProps {
-    readOnly?: boolean;
+  readOnly?: boolean;
 }
 
 export const FormToolbar: FC<IFormToolbarProps> = ({ readOnly = false }) => {
-    return (
-        <div>
-            <FormSettingsButton buttonText="" />
-            <SaveButton size="small" type="link" />
-            {!readOnly && (<UndoRedoButtons size="small" />)}
-            <PreviewButton size="small" />
-        </div>
-    );
+  return (
+    <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center' }}>
+      <FormSettingsButton buttonText="" />
+      <SaveButton size="small" type="link" />
+      {!readOnly && (<UndoRedoButtons size="small" />)}
+      <PreviewButton size="small" />
+    </div>
+  );
 };

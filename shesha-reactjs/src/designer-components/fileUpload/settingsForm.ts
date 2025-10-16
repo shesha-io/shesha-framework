@@ -1,12 +1,13 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { FormLayout } from 'antd/es/form/Form';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = () => {
+export const getSettings = (): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -258,7 +259,7 @@ export const getSettings = () => {
                         label: 'Enable Style On Readonly',
                         tooltip: 'Removes all visual styling except typography when the component becomes read-only',
                         inputType: 'switch',
-                        jsSetting: true
+                        jsSetting: true,
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -319,20 +320,13 @@ export const getSettings = () => {
                                     hideLabel: true,
                                     width: 60,
                                     hidden: {
-                                      _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
+                                      _code: 'return  getSettingValue(data.listType) === "thumbnail";',
                                       _mode: 'code',
                                       _value: false,
                                     } as any,
                                     dropdownOptions: textAlignOptions,
                                   },
                                 ],
-                              })
-                              .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'primaryColor',
-                                label: 'Primary Color',
-                                inputType: 'colorPicker',
-                                jsSetting: true,
                               })
                               .toJson(),
                           ],

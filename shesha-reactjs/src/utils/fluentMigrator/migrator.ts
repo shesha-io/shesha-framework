@@ -11,9 +11,9 @@ export interface MigrationRegistration<TPrev = IHasVersion, TNext = IHasVersion>
   up: Migration<TPrev, TNext>;
 }
 
-export const isHasVersion = (value: any): value is IHasVersion  => {
+export const isHasVersion = (value: unknown): value is IHasVersion => {
   const version = (value as IHasVersion)?.version;
-  return version && (typeof(version) === 'number' || version === 'latest');
+  return version && (typeof (version) === 'number' || version === 'latest');
 };
 
 export interface IAddMigrationPayload<TModel = IHasVersion, TNext = IHasVersion> {
@@ -34,7 +34,7 @@ export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext =
     this.migrator = owner;
   }
 
-  add = <TNext = IHasVersion>(version: number, migration: Migration<TModel, TNext, TContext>) => {
+  add = <TNext = IHasVersion>(version: number, migration: Migration<TModel, TNext, TContext>): MigratorFluent<TNext, TDst, TContext> => {
     this.migrator.addMigration<TModel, TNext>({ version, migration });
 
     const fluent = new MigratorFluent<TNext, TDst, TContext>(this.migrator);
@@ -42,15 +42,15 @@ export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext =
   };
 }
 
-export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = any>
-  implements IMigrationRegistrationsOwner<TDst> {
+export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = unknown>
+implements IMigrationRegistrationsOwner<TDst> {
   migrations: MigrationRegistration[];
 
   constructor() {
     this.migrations = [];
   }
 
-  addMigration = <TSrc, TNext>(payload: IAddMigrationPayload<TSrc, TNext>) => {
+  addMigration = <TSrc, TNext>(payload: IAddMigrationPayload<TSrc, TNext>): void => {
     const registration: MigrationRegistration<TSrc, TNext> = {
       version: payload.version,
       up: payload.migration,
@@ -61,7 +61,7 @@ export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = any>
     this.migrations.push(registration as unknown as MigrationRegistration);
   };
 
-  add = <TNext = IHasVersion>(version: number, migration: Migration<TSrc, TNext>) => {
+  add = <TNext = IHasVersion>(version: number, migration: Migration<TSrc, TNext>): MigratorFluent<TNext, TDst, TContext> => {
     this.addMigration<TSrc, TNext>({ version, migration });
 
     return new MigratorFluent<TNext, TDst, TContext>(this);

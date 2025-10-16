@@ -17,7 +17,7 @@ export const RefListItemsContainer: FC<IRefListItemsContainerProps> = (props) =>
   const { styles } = useStyles();
   const { readOnly, updateChildItems } = useRefListItemGroupConfigurator();
 
-  const onSetList = (newState: ItemInterface[]) => {
+  const onSetList = (newState: ItemInterface[]): void => {
     const listChanged = true;
 
     if (listChanged) {
@@ -31,7 +31,7 @@ export const RefListItemsContainer: FC<IRefListItemsContainerProps> = (props) =>
   }
 
   return (
-    <div className={styles.sidebarContainerMainArea} style={{marginTop: '5px'}}>
+    <div className={styles.sidebarContainerMainArea} style={{ marginTop: '5px' }}>
       <ReactSortable
         disabled={readOnly}
         list={props.items}

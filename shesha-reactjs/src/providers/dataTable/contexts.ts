@@ -78,7 +78,7 @@ export interface IDataTableStoredConfig {
 
 export interface IDataTableStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-    IHasModelType {
+  IHasModelType {
   exportToExcelError?: string;
 
   exportToExcelWarning?: string;

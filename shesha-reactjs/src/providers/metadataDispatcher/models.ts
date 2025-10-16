@@ -7,7 +7,7 @@ export interface IProperty {
 }
 
 export interface IModelsDictionary {
-  [key: string]: Promise<IModelMetadata>;
+  [key: string]: Promise<IModelMetadata> | undefined;
 }
 
 export interface ISpecificationsDictionary {

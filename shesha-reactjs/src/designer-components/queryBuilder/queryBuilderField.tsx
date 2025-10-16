@@ -17,7 +17,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
 
   const { readOnly = false } = props;
 
-  const onOkClick = () => {
+  const onOkClick = (): void => {
     if (jsonLogicResult) {
       if (jsonLogicResult && jsonLogicResult.errors && jsonLogicResult.errors.length > 0) {
         // show errors
@@ -31,11 +31,11 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
     setModalVisible(false);
   };
 
-  const onChange = (result: JsonLogicResult) => {
+  const onChange = (result: JsonLogicResult): void => {
     if (result !== jsonLogicResult) setJsonLogicResult(result);
   };
 
-  const onExpandClick = () => {
+  const onExpandClick = (): void => {
     setJsonExpanded(!jsonExpanded);
   };
 
@@ -58,8 +58,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
             <span onClick={onExpandClick}>
               show json <CaretRightOutlined rotate={0} />
             </span>
-          )
-        }
+          )}
         items={[
           {
             key: '1',
@@ -93,7 +92,8 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
             ),
           },
         ]}
-      ></Collapse>
+      >
+      </Collapse>
       <Modal
         open={modalVisible}
         width={isSmall ? '90%' : '60%'}

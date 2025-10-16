@@ -12,7 +12,6 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
   showReflistName,
   children,
 }) => {
-
   const popReflistName = !!(!showReflistName && currentStatus?.item);
 
   const showToolTip = !!currentStatus?.description || popReflistName;
@@ -21,8 +20,8 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
   return showToolTip ? (
     <Tooltip
       placement="right"
-      title={
-        <div >
+      title={(
+        <div>
           {popReflistName && (
             <>
               <span>{currentStatus?.item}</span>
@@ -31,7 +30,7 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
           )}
           <span>{currentStatus.description}</span>
         </div>
-      }
+      )}
     >
       <>{children}</>
     </Tooltip>

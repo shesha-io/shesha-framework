@@ -30,7 +30,7 @@ export const getItemById = (items: ButtonGroupItemProps[], id: string): ButtonGr
   return position ? position.ownerArray[position.index] : null;
 };
 
-export const updateBranch = (items: ButtonGroupItemProps[], payload: { id: any; settings: any }) => {
+export const updateBranch = (items: ButtonGroupItemProps[], payload: { id: any; settings: any }): ButtonGroupItemProps[] | null => {
   for (let index = 0; index < items.length; index++) {
     const item = items[index];
     if (item.id === payload.id) {

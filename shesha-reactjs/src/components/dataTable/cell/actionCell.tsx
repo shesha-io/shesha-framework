@@ -14,9 +14,9 @@ import { useAsyncDeepCompareMemo } from '@/hooks/useAsyncMemo';
 import { TypedProxy, useAvailableConstantsData } from '@/index';
 
 
-export interface IActionCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableActionColumn, D, V> { }
+export type IActionCellProps<D extends object = object, V = any> = ICommonCellProps<ITableActionColumn, D, V>;
 
-export const ActionCell = <D extends object = {}, V = any>(props: IActionCellProps<D, V>) => {
+export const ActionCell = <D extends object = object, V = any>(props: IActionCellProps<D, V>): JSX.Element => {
   const { columnConfig } = props;
   const { changeActionedRow } = useDataTable();
   const { executeAction, prepareArguments, useActionDynamicContext } = useConfigurableActionDispatcher();
@@ -27,7 +27,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   const evaluationContext = useAvailableConstantsData({}, dynamicContext);
   (evaluationContext as TypedProxy<any>).addAccessor('selectedRow', () => props?.cell?.row?.original);
 
-  const clickHandler = (event, data) => {
+  const clickHandler = (event, data): void => {
     event.preventDefault();
 
     if (actionConfiguration) {
@@ -36,7 +36,6 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext: evaluationContext,
       });
-
     } else console.error('Action is not configured');
   };
 
@@ -47,32 +46,37 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     const preparedArguments = await prepareArguments({ actionConfiguration, argumentsEvaluationContext: evaluationContext });
     return getUrlFromNavigationRequest(preparedArguments);
   }, [
-    actionConfiguration, 
-    {...evaluationContext.data},
-    {...evaluationContext.contexts.appConext},
-    {...evaluationContext.contexts.pageContext},
-    {...evaluationContext.contexts.formContext}
+    actionConfiguration,
+    { ...evaluationContext.data },
+    // TODO: review contexts and add to corresponding type
+    evaluationContext.contexts.appConext,
+    evaluationContext.contexts.pageContext,
+    evaluationContext.contexts.formContext,
   ], "");
 
   return (
     <>
-      {navigationUrl === "" ?
-        <a className="sha-link" onClick={(e) => clickHandler(e, props)}>
-          {icon && (
-            <Tooltip title={description}>
-              <ShaIcon iconName={icon as IconType} />
-            </Tooltip>
-          )}
-        </a>
-        :
-        <Link className="sha-link" href={navigationUrl} onClick={(e) => clickHandler(e, props)}>
-          {icon && (
-            <Tooltip title={description}>
-              <ShaIcon iconName={icon as IconType} />
-            </Tooltip>
-          )}
-        </Link>}
-    </>);
+      {navigationUrl === ""
+        ? (
+          <a className="sha-link" onClick={(e) => clickHandler(e, props)}>
+            {icon && (
+              <Tooltip title={description}>
+                <ShaIcon iconName={icon as IconType} />
+              </Tooltip>
+            )}
+          </a>
+        )
+        : (
+          <Link className="sha-link" href={navigationUrl} onClick={(e) => clickHandler(e, props)}>
+            {icon && (
+              <Tooltip title={description}>
+                <ShaIcon iconName={icon as IconType} />
+              </Tooltip>
+            )}
+          </Link>
+        )}
+    </>
+  );
 };
 
 export default ActionCell;

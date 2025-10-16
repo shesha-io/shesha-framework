@@ -9,6 +9,7 @@ import qs from "qs";
 import { unwrapAbpResponse } from "@/utils/fetchers";
 import { mapKeyValueToDictionary } from "@/utils/dictionary";
 import { getQueryParams } from "@/utils/url";
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IApiCallArguments {
   url: string;
@@ -87,11 +88,11 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
   })
   .toJson();
 
-const isGlobalUrl = (url: string) => {
-  return url?.match(/^(http|ftp|https):\/\//gi);
+const isGlobalUrl = (url: string): boolean => {
+  return !isNullOrWhiteSpace(url) && Boolean(url.match(/^(http|ftp|https):\/\//gi));
 };
 
-export const useApiCallAction = () => {
+export const useApiCallAction = (): void => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
   useConfigurableAction<IApiCallArguments>({

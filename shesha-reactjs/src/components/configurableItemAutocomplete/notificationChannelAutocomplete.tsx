@@ -1,17 +1,17 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { FormFullName } from '@/providers/form/models';
 import { GenericConfigItemAutocomplete, ConfigurableItemAutocompleteRuntimeProps, StandardAutocompleteProps } from './generic';
-import React from 'react';
+
 
 export type INotificationChannelAutocompleteRuntimeProps = ConfigurableItemAutocompleteRuntimeProps<FormFullName, Omit<StandardAutocompleteProps, 'entityType' | 'filter'>>;
 
 const NOTIFICATION_CONFIG_ENTITY_TYPE = 'Shesha.Domain.NotificationChannelConfig';
 
 export const NotificationChannelAutocomplete: FC<INotificationChannelAutocompleteRuntimeProps> = (props) => {
-    return (
-        <GenericConfigItemAutocomplete
-            {...props}
-            entityType={NOTIFICATION_CONFIG_ENTITY_TYPE}
-        />
-    );
+  return (
+    <GenericConfigItemAutocomplete
+      {...props}
+      entityType={NOTIFICATION_CONFIG_ENTITY_TYPE}
+    />
+  );
 };

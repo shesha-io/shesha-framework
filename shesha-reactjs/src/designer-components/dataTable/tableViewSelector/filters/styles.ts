@@ -1,8 +1,8 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }) => {
-    const controls = "item-controls";
-    const filterItem = cx("filter-item", css`
+  const controls = "item-controls";
+  const filterItem = cx("filter-item", css`
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -24,10 +24,10 @@ export const useStyles = createStyles(({ css, cx }) => {
         }
     `);
 
-    return {
-        filterItem,
-        controls,
-    };
+  return {
+    filterItem,
+    controls,
+  };
 });
 
 

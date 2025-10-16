@@ -22,7 +22,7 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps, IColor
   isInput: true,
   isOutput: true,
   icon: <FormatPainterOutlined />,
-  calculateModel: (model, allData) => ({ 
+  calculateModel: (model, allData) => ({
     eventHandlers: getAllEventHandlers(model, allData),
   }),
   Factory: ({ model, calculatedModel }) => {
@@ -30,11 +30,11 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps, IColor
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (colorValue) => {
+          const onChangeInternal = (colorValue): void => {
             customEvents.onChange({ value: colorValue }, null);
             if (typeof onChange === 'function') onChange(colorValue);
           };
-          
+
           return <ColorPicker value={value} onChange={onChangeInternal} {...model} style={model.allStyles.fullStyle} />;
         }}
       </ConfigurableFormItem>
@@ -45,9 +45,8 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps, IColor
     .add<IColorPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IColorPickerComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IColorPickerComponentProps>(2, (prev) => ({ ...prev, allowClear: false, showText: false }))
-    .add<IColorPickerComponentProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
-  ,
-  validateSettings: model => validateConfigurableComponentSettings(getSettings, model),
+    .add<IColorPickerComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) })),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default ColorPickerComponent;

@@ -1,11 +1,11 @@
-import { DesignerToolbarSettings } from '@/index';
+import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -93,8 +93,8 @@ export const getSettings = (data: any) => {
                         _value: false,
                       } as any,
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addCollapsiblePanel({
                   id: nanoid(),
@@ -151,7 +151,7 @@ export const getSettings = (data: any) => {
                               } as any,
                               jsSetting: true,
                             },
-                          ]
+                          ],
                         })
                         .addContainer({
                           id: dataSettingsForUrlId,
@@ -224,7 +224,7 @@ export const getSettings = (data: any) => {
                                   { name: 'moment', description: 'moment', type: '' },
                                   { name: 'http', description: 'axiosHttp', type: '' },
                                 ].map((item) => JSON.stringify(item)),
-                              }
+                              },
                               )
                               .toJson(),
                           ],
@@ -276,7 +276,7 @@ export const getSettings = (data: any) => {
                                     validate: { required: false },
                                     min: -1,
                                     jsSetting: true,
-                                  }
+                                  },
                                 ],
                               })
                               .addSettingsInputRow({
@@ -302,7 +302,7 @@ export const getSettings = (data: any) => {
                                     modelType: {
                                       _code: 'return getSettingValue(data?.entityType);',
                                       _mode: 'code',
-                                      _value: false
+                                      _value: false,
                                     } as any,
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
@@ -357,8 +357,8 @@ export const getSettings = (data: any) => {
                                       _value: true,
                                     } as any,
                                     width: '50%',
-                                  }
-                                ]
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -383,7 +383,7 @@ export const getSettings = (data: any) => {
                                     modelType: {
                                       _code: 'return getSettingValue(data?.entityType);',
                                       _mode: 'code',
-                                      _value: false
+                                      _value: false,
                                     } as any,
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
@@ -416,7 +416,7 @@ export const getSettings = (data: any) => {
                                     modelType: {
                                       _code: 'return getSettingValue(data?.entityType);',
                                       _mode: 'code',
-                                      _value: false
+                                      _value: false,
                                     } as any,
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
@@ -471,7 +471,7 @@ export const getSettings = (data: any) => {
                                       _value: true,
                                     } as any,
                                     width: '50%',
-                                  }
+                                  },
                                 ],
                               })
 
@@ -543,8 +543,8 @@ export const getSettings = (data: any) => {
                                 _mode: 'code',
                                 _value: true,
                               } as any,
-                            }
-                          ]
+                            },
+                          ],
                         })
                         .addSettingsInputRow({
                           id: nanoid(),
@@ -644,7 +644,7 @@ export const getSettings = (data: any) => {
                               parentId: commonTabId,
                               jsSetting: true,
                             },
-                          ]
+                          ],
                         })
                         .addSettingsInputRow({
                           id: nanoid(),
@@ -698,12 +698,12 @@ export const getSettings = (data: any) => {
                               tooltip: 'Custom label of the value property. If not provided, the label will be generated from the entity type property.',
                               parentId: commonTabId,
                               jsSetting: true,
-                            }
-                          ]
+                            },
+                          ],
                         })
                         .toJson(),
-                    ]
-                  }
+                    ],
+                  },
                 })
                 .toJson(),
             ],
@@ -749,8 +749,8 @@ export const getSettings = (data: any) => {
                       defaultValue: 10000,
                       min: 0,
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addContainer({
                   id: dataSettingsForUrlId,
@@ -822,7 +822,7 @@ export const getSettings = (data: any) => {
                           { name: 'http', description: 'axiosHttp', type: '' },
                         ].map((item) => JSON.stringify(item)),
                         jsSetting: true,
-                      }
+                      },
                       )
                       .toJson(),
                   ],
@@ -859,7 +859,7 @@ export const getSettings = (data: any) => {
                             settingsValidationErrors: [],
                             jsSetting: true,
                             useRawValues: true,
-                            width: '50%'
+                            width: '50%',
                           },
                           {
                             id: nanoid(),
@@ -874,7 +874,7 @@ export const getSettings = (data: any) => {
                             validate: { required: false },
                             min: -1,
                             jsSetting: true,
-                          }
+                          },
                         ],
                       })
                       .addSettingsInputRow({
@@ -900,7 +900,7 @@ export const getSettings = (data: any) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false
+                              _value: false,
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
@@ -980,7 +980,7 @@ export const getSettings = (data: any) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false
+                              _value: false,
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
@@ -1013,7 +1013,7 @@ export const getSettings = (data: any) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false
+                              _value: false,
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
@@ -1128,8 +1128,8 @@ export const getSettings = (data: any) => {
                             } as any,
                             jsSetting: true,
                             width: '100%',
-                          }
-                        ]
+                          },
+                        ],
                       })
                       .addSettingsInput({
                         id: nanoid(),
@@ -1251,9 +1251,9 @@ export const getSettings = (data: any) => {
                           },
                         ],
                       })
-                      .toJson()
-                    ]
-                  }
+                      .toJson(),
+                    ],
+                  },
                 })
                 .addCollapsiblePanel({
                   id: nanoid(),
@@ -1313,8 +1313,8 @@ export const getSettings = (data: any) => {
                           },
                         ],
                       })
-                      .toJson()
-                    ]
+                      .toJson(),
+                    ],
                   },
                   hidden: {
                     _code: 'return ["polarArea", "pie"].includes(getSettingValue(data?.chartType));',
@@ -1385,9 +1385,9 @@ export const getSettings = (data: any) => {
                           },
                         ],
                       })
-                      .toJson()
-                    ]
-                  }
+                      .toJson(),
+                    ],
+                  },
                 })
                 .addCollapsiblePanel({
                   id: nanoid(),
@@ -1447,8 +1447,8 @@ export const getSettings = (data: any) => {
                           },
                         ],
                       })
-                      .toJson()
-                    ]
+                      .toJson(),
+                    ],
                   },
                   hidden: {
                     _code: 'return ["polarArea", "pie"].includes(getSettingValue(data?.chartType));',
@@ -1467,7 +1467,7 @@ export const getSettings = (data: any) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
+                    _value: "",
                   },
                   components: [
                     ...new DesignerToolbarSettings()
@@ -1494,7 +1494,7 @@ export const getSettings = (data: any) => {
                                   width: 85,
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit. We recommend 100%."
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit. We recommend 100%.",
 
                                 },
                                 {
@@ -1514,8 +1514,8 @@ export const getSettings = (data: any) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
-                                }
-                              ]
+                                },
+                              ],
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -1529,7 +1529,7 @@ export const getSettings = (data: any) => {
                                   width: 85,
                                   propertyName: "dimensions.height",
                                   icon: "heightIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit. We recommend minimum height of 400px."
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit. We recommend minimum height of 400px.",
                                 },
                                 {
                                   type: 'textField',
@@ -1548,12 +1548,12 @@ export const getSettings = (data: any) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxHeight",
                                   icon: "maxHeightIcon",
-                                }
-                              ]
+                                },
+                              ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -1570,16 +1570,16 @@ export const getSettings = (data: any) => {
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              components: getBorderInputs() as any
+                              components: getBorderInputs() as any,
                             })
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              components: getCornerInputs() as any
+                              components: getCornerInputs() as any,
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -1626,7 +1626,7 @@ export const getSettings = (data: any) => {
                                   propertyName: "background.gradient.colors",
                                   label: "Colors",
                                   jsSetting: false,
-                                }
+                                },
                                 ],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                 hideLabel: true,
@@ -1665,9 +1665,9 @@ export const getSettings = (data: any) => {
                                     id: nanoid(),
                                     jsSetting: false,
                                     propertyName: "background.storedFile.id",
-                                    label: "File ID"
-                                  }
-                                ]
+                                    label: "File ID",
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -1693,7 +1693,7 @@ export const getSettings = (data: any) => {
                                     propertyName: "background.position",
                                     dropdownOptions: positionOptions,
                                   },
-                                ]
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -1709,9 +1709,9 @@ export const getSettings = (data: any) => {
                                 }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
-                              .toJson()
+                              .toJson(),
                           ],
-                        }
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -1779,9 +1779,9 @@ export const getSettings = (data: any) => {
                                 },
                               ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -1799,9 +1799,9 @@ export const getSettings = (data: any) => {
                               hideLabel: true,
                               propertyName: 'stylingBox',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -1827,12 +1827,12 @@ export const getSettings = (data: any) => {
                               propertyName: 'className',
                               label: 'Custom CSS Class',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
-                      .toJson()
-                  ]
+                      .toJson(),
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -1880,8 +1880,8 @@ export const getSettings = (data: any) => {
                         _value: true,
                       } as any,
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .toJson(),
             ],

@@ -168,9 +168,9 @@ export type BrandAndLogosTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.brandAn
 export type ApplicationTwoToneIconTypes = typeof TWO_FACED_ICON_GROUPS.application[number];
 
 export type TwoToneIconTypes =
-  | DirectionalTwoToneIconTypes
-  | SuggestedTwoToneIconTypes
-  | EditorTwoToneIconTypes
-  | DataTwoToneIconTypes
-  | BrandAndLogosTwoToneIconTypes
-  | ApplicationTwoToneIconTypes;
+  | DirectionalTwoToneIconTypes |
+  SuggestedTwoToneIconTypes |
+  EditorTwoToneIconTypes |
+  DataTwoToneIconTypes |
+  BrandAndLogosTwoToneIconTypes |
+  ApplicationTwoToneIconTypes;

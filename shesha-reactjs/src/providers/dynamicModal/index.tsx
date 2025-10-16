@@ -14,6 +14,9 @@ import {
   DynamicModalActionsContext,
   DynamicModalInstanceContext,
   DynamicModalStateContext,
+  IDynamicModalActionsContext,
+  IDynamicModalInstanceContext,
+  IDynamicModalStateContext,
 } from './contexts';
 import { IModalInstance, IModalProps } from './models';
 import DynamicModalReducer from './reducer';
@@ -21,9 +24,7 @@ import { nanoid } from '@/utils/uuid';
 import { migrateToV0 } from './migrations/ver0';
 import { DynamicModalRenderer } from './renderer';
 
-export interface IDynamicModalProviderProps { }
-
-const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = ({ children }) => {
+const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, dispatch] = useReducer(DynamicModalReducer, {
     ...DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   });
@@ -58,14 +59,14 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       },
       argumentsFormMarkup: showConfirmationArgumentsForm,
     },
-    actionDependencies
+    actionDependencies,
   );
 
-  const removeModal = (id: string) => {
+  const removeModal = (id: string): void => {
     dispatch(removeModalAction(id));
   };
 
-  const createModal = (modalProps: IModalProps) => {
+  const createModal = (modalProps: IModalProps): void => {
     dispatch(createModalAction({ modalProps: { ...modalProps, width: modalProps.width ?? '60%' } }));
   };
 
@@ -76,7 +77,6 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
       executer: (actionArgs, context) => {
-
         const modalId = nanoid();
 
         const { formMode, ...restArguments } = actionArgs;
@@ -86,7 +86,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
           ? executeScript(argumentsExpression, context)
           : Promise.resolve(undefined);
 
-        return argumentsPromise.then(dialogArguments => {
+        return argumentsPromise.then((dialogArguments) => {
           const parentFormValues = context?.data ?? {};
 
           const { modalWidth, customWidth, widthUnits, showCloseIcon = true } = actionArgs;
@@ -127,20 +127,20 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
         const evaluationContext: EvaluationContext = {
           contextData: evaluationData,
           path: '',
-          evaluationFilter: (context, _data) => context.path !== 'buttons'
+          evaluationFilter: (context, _data) => context.path !== 'buttons',
         };
         return recursiveEvaluator(argumentsConfiguration, evaluationContext);
       },
       useDynamicContextHook: () => {
-        const configurableActionsDispatcherProxy = useConfigurableActionDispatcherProxy(false);
+        const configurableActionsDispatcherProxy = useConfigurableActionDispatcherProxy();
         return { configurableActionsDispatcherProxy };
       },
       migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0),
     },
-    actionDependencies
+    actionDependencies,
   );
 
-  const getLatestVisibleInstance = () => {
+  const getLatestVisibleInstance = (): IModalInstance | null => {
     const { instances = {} } = state;
     const keys = Object.keys(instances);
     let highestInstance: IModalInstance = null;
@@ -175,22 +175,22 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       },
       argumentsFormMarkup: closeDialogArgumentsForm,
     },
-    actionDependencies
+    actionDependencies,
   );
   //#endregion
 
-  const open = (modalProps: IModalProps) => {
+  const open = (modalProps: IModalProps): void => {
     dispatch(openAction(modalProps));
   };
 
-  const modalExists = (id: string) => {
+  const modalExists = (id: string): boolean => {
     return Boolean(state.instances[id]);
   };
 
   return (
     <DynamicModalStateContext.Provider value={state}>
-      <DynamicModalActionsContext.Provider value={{ open, createModal, removeModal, modalExists }} >
-        <DynamicModalRenderer id='root'>
+      <DynamicModalActionsContext.Provider value={{ open, createModal, removeModal, modalExists }}>
+        <DynamicModalRenderer id="root">
           {children}
         </DynamicModalRenderer>
       </DynamicModalActionsContext.Provider>
@@ -198,7 +198,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   );
 };
 
-function useDynamicModalState() {
+function useDynamicModalState(): IDynamicModalStateContext {
   const context = useContext(DynamicModalStateContext);
 
   if (context === undefined) {
@@ -208,7 +208,7 @@ function useDynamicModalState() {
   return context;
 }
 
-function useDynamicModalActions() {
+function useDynamicModalActions(): IDynamicModalActionsContext {
   const context = useContext(DynamicModalActionsContext);
 
   if (context === undefined) {
@@ -218,16 +218,20 @@ function useDynamicModalActions() {
   return context;
 }
 
-function useDynamicModals() {
+function useDynamicModals(): IDynamicModalStateContext & IDynamicModalActionsContext {
   return { ...useDynamicModalState(), ...useDynamicModalActions() };
 }
 
-function useModal(modalProps: IModalProps) {
+interface SimpleModal {
+  open: () => void;
+  close: () => void;
+}
+function useModal(modalProps: IModalProps): SimpleModal {
   const context = useDynamicModals();
 
   if (!modalProps) return null;
 
-  const instance = {
+  const instance: SimpleModal = {
     open: () => {
       if (!context.modalExists(modalProps.id)) context.createModal({ ...modalProps, isVisible: true });
     },
@@ -239,7 +243,7 @@ function useModal(modalProps: IModalProps) {
   return instance;
 }
 
-function useClosestModal() {
+function useClosestModal(): IDynamicModalInstanceContext {
   const context = useContext(DynamicModalInstanceContext);
   return context;
 }

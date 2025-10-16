@@ -9,9 +9,7 @@ import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
 import { MetadataProvider } from '@/providers';
 import { IKanbanProps } from '@/components/kanban/model';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
-import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
-
-interface IKanbanSettingsState extends IKanbanProps { }
+import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 
 const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
   const { values } = useSettingsForm<IKanbanProps>();
@@ -53,7 +51,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
           <Autocomplete
             dataSourceType="entitiesList"
             entityType="Shesha.Framework.ReferenceList"
-            filter={{ "and": [{ "==": [{ "var": "isLast" }, true] }] }}
+            filter={{ and: [{ "==": [{ var: "isLast" }, true] }] }}
             readOnly={values.readOnly}
           />
         </SettingsFormItem>
@@ -177,5 +175,5 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
 };
 
 export const KanbanSettingsForm: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
-  return SettingsForm<IKanbanSettingsState>({ ...props, children: <KanbanSettings {...props} /> });
+  return SettingsForm({ ...props, children: <KanbanSettings {...props} /> });
 };

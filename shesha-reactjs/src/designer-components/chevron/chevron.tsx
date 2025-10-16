@@ -1,4 +1,4 @@
- 
+
 import { FolderOpenOutlined } from '@ant-design/icons';
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
@@ -16,22 +16,23 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
   name: 'Chevron',
   icon: <FolderOpenOutlined />,
   Factory: ({ model }) => {
-    if (model.hidden) return null;    
+    if (model.hidden) return null;
     return (
       <ConfigurableFormItem model={model}>
-        {value => (
-          <RefListItemGroupConfiguratorProvider value={value} items={model.items} referenceList={model.referenceList} readOnly={model.readOnly}>        
-            <ChevronControl 
+        {(value) => (
+          <RefListItemGroupConfiguratorProvider value={value} items={model.items} referenceList={model.referenceList} readOnly={model.readOnly}>
+            <ChevronControl
               value={value}
-              {...model}/>
+              {...model}
+            />
           </RefListItemGroupConfiguratorProvider>
         )}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: (props) => getSettings(props),
-    migrator: (m) => m
-    .add<IChevronProps>(1, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),  
+  migrator: (m) => m
+    .add<IChevronProps>(1, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default ChevronComponent;

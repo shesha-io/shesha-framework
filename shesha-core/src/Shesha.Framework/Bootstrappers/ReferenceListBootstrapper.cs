@@ -153,24 +153,19 @@ namespace Shesha.Bootstrappers
                 });
             }
 
-            // note: if the module on the attribute is null - use fallback to 
-            var searchByNamespaceOnly = list.Attribute.IsLegacy;
             var refListId = list.Attribute.GetReferenceListIdentifier(list.Enum);
 
-            var listModule = refListId.Module != null
-                ? await _moduleManager.GetOrCreateModuleAsync(refListId.Module)
+            var moduleName = refListId.Module != null
+                ? refListId.Module
+                : list.Enum.GetConfigurableModuleName();
+
+            var listModule = !string.IsNullOrWhiteSpace(moduleName)
+                ? await _moduleManager.GetOrCreateModuleAsync(moduleName)
                 : module;
 
-            var listInDb = searchByNamespaceOnly
-                ? await _listRepo.GetAll()
-                    .Where(l => l.Name == list.Attribute.FullName)
-                    .OrderBy(l => l.Module == null ? 0 : 1)
-                    .ThenBy(l => !l.IsDeleted ? 0 : 1)
-                    .FirstOrDefaultAsync()
-                : await _listRepo.GetAll()
-                    .Where(l => l.Name == list.Attribute.FullName &&
-                        l.Module == listModule)
-                    .OrderBy(l => !l.IsDeleted ? 0 : 1)
+            var listInDb = await _listRepo.GetAll()
+                .Where(l => l.Name == list.Attribute.FullName && l.Module == listModule)
+                .OrderBy(l => !l.IsDeleted ? 0 : 1)
                 .FirstOrDefaultAsync();
 
             if (listInDb == null)
@@ -231,7 +226,7 @@ namespace Shesha.Bootstrappers
                 };
                 newItem.SetHardLinkToApplication(true);
 
-                await _listItemRepo.InsertOrUpdateAsync(newItem);
+                await _listItemRepo.InsertAsync(newItem);
             }
 
             var toInactivate = itemsInDb.Where(ldb => ldb.HardLinkToApplication && !listInCode.Any(i => i.Value == ldb.ItemValue)).ToList();
@@ -262,7 +257,7 @@ namespace Shesha.Bootstrappers
                 item.ItemInDB.Item = item.UpdatedItemInCode.Name ?? string.Empty;
                 item.ItemInDB.SetHardLinkToApplication(true);
 
-                await _listItemRepo.InsertOrUpdateAsync(item.ItemInDB);
+                await _listItemRepo.UpdateAsync(item.ItemInDB);
             }
 
             await _listRepo.InsertOrUpdateAsync(listInDb);

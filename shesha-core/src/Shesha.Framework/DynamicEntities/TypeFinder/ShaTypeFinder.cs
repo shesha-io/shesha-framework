@@ -8,22 +8,29 @@ using System.Reflection;
 
 namespace Shesha.DynamicEntities.TypeFinder
 {
-    public class ShaTypeFinder: IShaTypeFinder, ITransientDependency
+    public class ShaTypeFinder : IShaTypeFinder, ITransientDependency
     {
         private readonly ITypeFinder _abpTypeFinder;
 
         public ShaTypeFinder(
             ITypeFinder abpTypeFinder
-        ) 
+        )
         {
             _abpTypeFinder = abpTypeFinder;
         }
 
         public List<Assembly> GetDynamicEntityAssemblies()
         {
-            // ToDo: AS - use generic Dynamic namespaces
+            // ToDo: AS - V1 use generic Dynamic namespaces
             return AppDomain.CurrentDomain.GetAssemblies()
                 .Where(x => x.IsDynamic && (x.FullName?.Contains(DynamicEntityTypeBuilder.SheshaDynamicNamespace) ?? false))
+                .GroupBy(x => x.GetName().Name ?? "")
+                .Select(x =>
+                    x.OrderBy(a => a.GetName().Version?.Major)
+                        .ThenBy(a => a.GetName().Version?.Minor)
+                        .ThenBy(a => a.GetName().Version?.Build)
+                        .ThenBy(a => a.GetName().Version?.Revision)
+                    .Last())
                 .ToList();
         }
 

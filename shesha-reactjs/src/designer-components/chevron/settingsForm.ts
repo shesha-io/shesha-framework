@@ -1,4 +1,4 @@
-import { DesignerToolbarSettings } from '@/index';
+import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
 import { nanoid } from '@/utils/uuid';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { FormLayout } from 'antd/es/form/Form';
@@ -12,7 +12,7 @@ const styleRouterId = nanoid();
 const pnlFontStyleId = nanoid();
 const dimensionsStylePnlId = nanoid();
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   return {
     components: new DesignerToolbarSettings(data)
       .addSearchableTabs({

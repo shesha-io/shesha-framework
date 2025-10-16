@@ -6,10 +6,6 @@ export interface IProvidersDictionary {
   [key: string]: IDynamicActionsRegistration;
 }
 
-export interface DynamicAction {
-
-}
-
 export interface IHasActions {
   items: ButtonGroupItemProps[]; // TODO: make a generic interface with minimal number of properties, ButtonGroupItemProps will implement/extend this interface
 }

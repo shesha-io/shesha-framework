@@ -4,9 +4,9 @@ import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/util
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { FormLayout } from 'antd/es/form/Form';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = () => {
-
+export const getSettings = (): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -23,7 +23,6 @@ export const getSettings = () => {
   const pnlShadowStyleId = nanoid();
   const customStylePnlId = nanoid();
   const pnlFontStyleId = nanoid();
-  const containerId = nanoid();
 
   return {
     components: new DesignerToolbarSettings()
@@ -42,36 +41,18 @@ export const getSettings = () => {
             id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInput({
+                .addContextPropertyAutocomplete({
                   id: nanoid(),
-                  propertyName: 'removeFieldFromPayload',
-                  label: 'Exclude From Form Data',
-                  inputType: 'switch',
-                  tooltip: 'If checked, the field will not be included in the submitted payload',
-                  jsSetting: true,
-                })
-                .addContainer({
-                  id: containerId,
-                  propertyName: 'container',
-                  label: 'Container',
+                  propertyName: 'propertyName',
+                  label: 'Property Name',
                   parentId: commonTabId,
-                  hidden: { _code: 'return getSettingValue(data?.removeFieldFromPayload);', _mode: 'code', _value: false } as any,
-                  components: [
-                    ...new DesignerToolbarSettings()
-                    .addContextPropertyAutocomplete({
-                      id: nanoid(),
-                      propertyName: 'propertyName',
-                      label: 'Property Name',
-                      parentId: containerId,
-                      size: 'small',
-                      styledLabel: true,
-                      validate: {
-                        required: true,
-                      },
-                      jsSetting: true,
-                    })
-                    .toJson()
-                  ]
+                  description: "If left empty, the field will not be included in the submitted payload",
+                  size: 'small',
+                  styledLabel: true,
+                  validate: {
+                    required: true,
+                  },
+                  jsSetting: true,
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -86,7 +67,7 @@ export const getSettings = () => {
                   propertyName: 'hideLabel',
                   hideLabel: true,
                   label: 'Label',
-                  hideLabelPropName: 'hideLabel'
+                  hideLabelPropName: 'hideLabel',
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -97,7 +78,7 @@ export const getSettings = () => {
                       propertyName: 'description',
                       label: 'Tooltip',
                       type: 'textArea',
-                      jsSetting: true
+                      jsSetting: true,
                     },
                     {
                       id: nanoid(),
@@ -107,8 +88,8 @@ export const getSettings = () => {
                       jsSetting: true,
                       description: 'Where the uploader should show a dragger instead of a button',
                       hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false } as any,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -133,8 +114,8 @@ export const getSettings = () => {
                       type: 'switch',
                       jsSetting: true,
                       hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -206,7 +187,7 @@ export const getSettings = () => {
                       type: 'propertyAutocomplete',
                       autoFillProps: false,
                     },
-                  ]
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -222,7 +203,7 @@ export const getSettings = () => {
                       useRawValues: true,
                       jsSetting: true,
                     },
-                  ]
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -241,8 +222,8 @@ export const getSettings = () => {
                       label: 'Files Category',
                       type: 'textField',
                       jsSetting: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -256,8 +237,8 @@ export const getSettings = () => {
                       description: 'File types that can be accepted.',
                       jsSetting: true,
                       tooltip: "The file typeName should consist a dot before the name, for example .png",
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .toJson(),
             ],
@@ -286,7 +267,7 @@ export const getSettings = () => {
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'codeEditor',
-                propertyName: 'onFileChanged',
+                propertyName: 'onChangeCustom',
                 label: 'On File List Changed',
                 labelAlign: 'right',
                 parentId: eventsTabId,
@@ -299,9 +280,28 @@ export const getSettings = () => {
                   functionName: 'onFileListChanged',
                   useAsyncDeclaration: true,
                 },
+                availableConstantsExpression: " return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .addString(\"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
               })
-              .toJson()
-            ]
+              .addSettingsInput({
+                id: nanoid(),
+                inputType: 'codeEditor',
+                propertyName: 'onDownload',
+                label: 'On Download',
+                labelAlign: 'right',
+                parentId: eventsTabId,
+                hidden: false,
+                description: 'Callback that is triggered when a file is downloaded.',
+                validate: {},
+                settingsValidationErrors: [],
+                wrapInTemplate: true,
+                templateSettings: {
+                  functionName: 'onDownload',
+                  useAsyncDeclaration: true,
+                },
+                availableConstantsExpression: " return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .addString(\"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
+              })
+              .toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -319,7 +319,7 @@ export const getSettings = () => {
                 propertyRouteName: {
                   _mode: "code",
                   _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
-                  _value: ""
+                  _value: "",
                 },
                 components: [
                   ...new DesignerToolbarSettings()
@@ -421,16 +421,9 @@ export const getSettings = () => {
                               },
                             ],
                           })
-                          .addSettingsInput({
-                            id: nanoid(),
-                            propertyName: 'primaryColor',
-                            label: 'Primary Color',
-                            inputType: 'colorPicker',
-                            jsSetting: true,
-                          })
-                          .toJson()
-                        ]
-                      }
+                          .toJson(),
+                        ],
+                      },
                     })
                     .addCollapsiblePanel({
                       id: nanoid(),
@@ -456,7 +449,7 @@ export const getSettings = () => {
                                 width: 85,
                                 propertyName: "dimensions.width",
                                 icon: "widthIcon",
-                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
                               },
                               {
                                 type: 'textField',
@@ -475,8 +468,8 @@ export const getSettings = () => {
                                 hideLabel: true,
                                 propertyName: "dimensions.maxWidth",
                                 icon: "maxWidthIcon",
-                              }
-                            ]
+                              },
+                            ],
                           })
                           .addSettingsInputRow({
                             id: nanoid(),
@@ -491,7 +484,7 @@ export const getSettings = () => {
                                 width: 85,
                                 propertyName: "dimensions.height",
                                 icon: "heightIcon",
-                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
                               },
                               {
                                 type: 'textField',
@@ -955,18 +948,18 @@ export const getSettings = () => {
                   label: 'Permissions',
                   jsSetting: true,
                   size: 'small',
-                  parentId: securityTabId
+                  parentId: securityTabId,
                 })
-                .toJson()
-            ]
-          }
-        ]
+                .toJson(),
+            ],
+          },
+        ],
       }).toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

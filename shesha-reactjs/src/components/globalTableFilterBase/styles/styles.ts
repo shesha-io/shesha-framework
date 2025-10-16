@@ -46,7 +46,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token }, props: IS
         padding-right: 0;
         width: 100%;
       }
-    `
+    `,
   );
   return {
     shaGlobalTableFilter,

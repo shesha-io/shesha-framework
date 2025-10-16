@@ -1,16 +1,12 @@
-import React, { FC, useEffect } from 'react';
-import { useStyles } from '../styles/styles';
-import { Button, InputNumber, Space, Tooltip } from 'antd';
-import { ExpandOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { useCanvas } from '@/providers';
-import { DEFAULT_OPTIONS } from '@/components/sidebarContainer/canvasUtils';
-import { DeviceOptions } from './mobileDropdown';
+import React, { FC, useEffect } from "react";
+import { useStyles } from "../styles/styles";
+import { Button, Space, Tooltip } from "antd";
+import { ExpandOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { useCanvas } from "@/providers";
+import { DeviceOptions } from "./mobileDropdown";
+import { DEFAULT_OPTIONS } from "@/providers/canvas/utils";
 
-export interface ICanvasConfigProps {
-
-}
-
-export const CanvasConfig: FC<ICanvasConfigProps> = () => {
+export const CanvasConfig: FC = () => {
   const { styles } = useStyles();
   const { setCanvasZoom, setCanvasAutoZoom, autoZoom, zoom } = useCanvas();
 
@@ -55,29 +51,20 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
   return (
     <div className={styles.shaDesignerCanvasConfig}>
       <DeviceOptions />
-      <Space direction='horizontal' size={0} style={{ flexWrap: 'nowrap' }}>
-        <Space size={0} direction='horizontal' style={{ flexWrap: 'nowrap' }}>
-          <Tooltip title={`${zoom}%`}>
-            <Button size='small' style={{ height: '24px' }} type={autoZoom ? 'link' : 'text'} icon={<ExpandOutlined />} title='Auto' onClick={() => {
+      <Space direction="horizontal" size={0} style={{ flexWrap: "nowrap" }}>
+        <Tooltip title={`${zoom}%`}>
+          <Button
+            size="small"
+            type={autoZoom ? "link" : "text"}
+            icon={<ExpandOutlined size={14} />}
+            title="Auto"
+            onClick={() => {
               setCanvasAutoZoom();
-            }} />
-          </Tooltip>
-          <Button disabled={autoZoom} type='link' size='small' icon={<MinusOutlined />} onClick={() => setCanvasZoom(zoom - (zoom > DEFAULT_OPTIONS.minZoom ? 2 : 0))} />
-          <InputNumber
-            min={25}
-            max={200}
-            maxLength={3}
-            size='small'
-            value={zoom}
-            variant='borderless'
-            disabled={autoZoom}
-            style={{ width: '42px', paddingInlineStart:'2px' }}
-            controls={false}
-            onChange={setCanvasZoom}
-            suffix='%'
+            }}
           />
-          <Button disabled={autoZoom} type='link' size='small' icon={<PlusOutlined />} onClick={() => setCanvasZoom(zoom + (zoom > DEFAULT_OPTIONS.minZoom ? 2 : 0))} />
-        </Space>
+        </Tooltip>
+        <Tooltip title={`${zoom}%`}><Button size="small" disabled={autoZoom} type="text" icon={<MinusOutlined />} title="Zoom out" onClick={() => setCanvasZoom(zoom - (zoom > DEFAULT_OPTIONS.minZoom ? 2 : 0))} /></Tooltip>
+        <Tooltip title={`${zoom}%`}><Button size="small" disabled={autoZoom} type="text" icon={<PlusOutlined />} title="Zoom in" onClick={() => setCanvasZoom(zoom + (zoom < DEFAULT_OPTIONS.maxZoom ? 2 : 0))} /></Tooltip>
       </Space>
     </div>
   );

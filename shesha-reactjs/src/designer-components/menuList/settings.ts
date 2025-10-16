@@ -1,11 +1,11 @@
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from 'antd/lib/form/Form';
-import { DesignerToolbarSettings } from "@/index";
+import { DesignerToolbarSettings, FormMarkupWithSettings } from "@/index";
 import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -35,7 +35,7 @@ export const getSettings = (data: any) => {
                 label: "Property Name",
                 size: "small",
                 validate: {
-                  required: true
+                  required: true,
                 },
                 styledLabel: true,
                 jsSetting: true,
@@ -50,7 +50,7 @@ export const getSettings = (data: any) => {
                     propertyName: 'hidden',
                     label: 'Hidden',
                     jsSetting: true,
-                  }
+                  },
                 ],
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
@@ -67,14 +67,14 @@ export const getSettings = (data: any) => {
                     dropdownOptions: [
                       { label: 'Dropdown', value: 'dropdown' },
                       { label: 'Menu', value: 'menu' },
-                      { label: 'Scroll', value: 'scroll' }
-                    ]
-                  }
+                      { label: 'Scroll', value: 'scroll' },
+                    ],
+                  },
                 ],
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
-              .toJson()
-            ]
+              .toJson(),
+            ],
           },
           {
             key: 'appearance',
@@ -93,7 +93,7 @@ export const getSettings = (data: any) => {
                   propertyRouteName: {
                     _mode: "code",
                     _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
+                    _value: "",
                   },
                   components: [
                     ...new DesignerToolbarSettings()
@@ -158,9 +158,9 @@ export const getSettings = (data: any) => {
                                 // },
                               ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -204,8 +204,8 @@ export const getSettings = (data: any) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
-                                }
-                              ]
+                                },
+                              ],
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -219,7 +219,7 @@ export const getSettings = (data: any) => {
                                   width: 85,
                                   propertyName: "dimensions.height",
                                   icon: "heightIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
                                 },
                                 {
                                   type: 'textField',
@@ -238,12 +238,12 @@ export const getSettings = (data: any) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxHeight",
                                   icon: "maxHeightIcon",
-                                }
-                              ]
+                                },
+                              ],
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -259,16 +259,16 @@ export const getSettings = (data: any) => {
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              components: getBorderInputs() as any
+                              components: getBorderInputs() as any,
                             })
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              components: getCornerInputs() as any
+                              components: getCornerInputs() as any,
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -314,7 +314,7 @@ export const getSettings = (data: any) => {
                                   propertyName: "background.gradient.colors",
                                   label: "Colors",
                                   jsSetting: false,
-                                }
+                                },
                                 ],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                 hideLabel: true,
@@ -353,9 +353,9 @@ export const getSettings = (data: any) => {
                                     id: nanoid(),
                                     jsSetting: false,
                                     propertyName: "background.storedFile.id",
-                                    label: "File ID"
-                                  }
-                                ]
+                                    label: "File ID",
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -382,7 +382,7 @@ export const getSettings = (data: any) => {
                                     propertyName: "background.position",
                                     dropdownOptions: positionOptions,
                                   },
-                                ]
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
@@ -398,9 +398,9 @@ export const getSettings = (data: any) => {
                                 }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
-                              .toJson()
+                              .toJson(),
                           ],
-                        }
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -418,9 +418,9 @@ export const getSettings = (data: any) => {
                               hideLabel: true,
                               propertyName: 'stylingBox',
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -445,14 +445,14 @@ export const getSettings = (data: any) => {
                                   jsSetting: true,
                                   min: 1,
                                   max: 100,
-                                  defaultValue: 12
-                                }
+                                  defaultValue: 12,
+                                },
                               ],
                               readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -492,7 +492,7 @@ export const getSettings = (data: any) => {
                                           propertyName: 'selectedItemColor',
                                           label: 'Selected Item Color',
                                           jsSetting: true,
-                                          allowClear: true
+                                          allowClear: true,
                                         },
                                         {
                                           type: 'colorPicker',
@@ -500,14 +500,14 @@ export const getSettings = (data: any) => {
                                           propertyName: 'selectedItemBackground',
                                           label: 'Selected Item Background',
                                           jsSetting: true,
-                                          allowClear: true
-                                        }
+                                          allowClear: true,
+                                        },
                                       ],
                                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                     })
-                                    .toJson()
-                                ]
-                              }
+                                    .toJson(),
+                                ],
+                              },
                             })
                             .addCollapsiblePanel({
                               id: nanoid(),
@@ -531,7 +531,7 @@ export const getSettings = (data: any) => {
                                           propertyName: 'itemColor',
                                           label: 'Item Color',
                                           jsSetting: true,
-                                          allowClear: true
+                                          allowClear: true,
                                         },
                                         {
                                           type: 'colorPicker',
@@ -539,14 +539,14 @@ export const getSettings = (data: any) => {
                                           propertyName: 'itemBackground',
                                           label: 'Item Background',
                                           jsSetting: true,
-                                          allowClear: true
-                                        }
+                                          allowClear: true,
+                                        },
                                       ],
                                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                     })
-                                    .toJson()
-                                ]
-                              }
+                                    .toJson(),
+                                ],
+                              },
                             })
                             .addCollapsiblePanel({
                               id: nanoid(),
@@ -570,7 +570,7 @@ export const getSettings = (data: any) => {
                                           propertyName: 'hoverItemColor',
                                           label: 'Hover Item Color',
                                           jsSetting: true,
-                                          allowClear: true
+                                          allowClear: true,
                                         },
                                         {
                                           type: 'colorPicker',
@@ -578,18 +578,18 @@ export const getSettings = (data: any) => {
                                           propertyName: 'hoverItemBackground',
                                           label: 'Hover Background Color',
                                           jsSetting: true,
-                                          allowClear: true
-                                        }
+                                          allowClear: true,
+                                        },
                                       ],
                                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                     })
-                                    .toJson()
-                                ]
-                              }
+                                    .toJson(),
+                                ],
+                              },
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -638,24 +638,24 @@ export const getSettings = (data: any) => {
                               description: 'A script that returns the sub menu style of the element as an object. This should conform to CSSProperties',
                               readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
-                            .toJson()
-                          ]
-                        }
+                            .toJson(),
+                          ],
+                        },
                       })
-                      .toJson()
-                  ]
+                      .toJson(),
+                  ],
                 })
-                .toJson()
-            ]
-          }
-        ]
+                .toJson(),
+            ],
+          },
+        ],
       })
       .toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

@@ -1,38 +1,33 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
-import useThunkReducer from '@/hooks/thunkReducer';
+import React, { DependencyList, FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import {
-  CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE,
   ConfigurableActionDispatcherActionsContext,
-  ConfigurableActionDispatcherStateContext,
   IConfigurableActionDispatcherActionsContext,
-  IConfigurableActionDispatcherStateContext,
   IExecuteActionPayload,
   IGetConfigurableActionPayload,
   IPrepareActionArgumentsPayload,
   IRegisterActionPayload,
+  RegisterActionType,
 } from './contexts';
 import { IConfigurableActionGroupDictionary } from './models';
-import metadataReducer from './reducer';
 import {
+  ConfigurableActionArgumentsMigrationContext,
   DynamicContextHook,
   EMPTY_DYNAMIC_CONTEXT_HOOK,
-  IConfigurableActionArguments,
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
 } from '@/interfaces/configurableAction';
 import { genericActionArgumentsEvaluator } from '../form/utils';
-import { GenericDictionary } from '@/interfaces';
+import { ActionParametersDictionary, GenericDictionary } from '@/interfaces';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
+import { isDefined } from '@/utils/nullables';
 
-export interface IConfigurableActionDispatcherProviderProps { }
-
-const getActualActionArguments = (action: IConfigurableActionDescriptor, actionArguments: any) => {
-  const { migrator } = action ?? {};
+const getActualActionArguments = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(action: IConfigurableActionDescriptor<TArguments>, actionArguments: TArguments): TArguments => {
+  const { migrator } = action;
   if (!migrator)
     return actionArguments;
 
-  const migratorInstance = new Migrator<any, any>();
+  const migratorInstance = new Migrator<unknown, TArguments, ConfigurableActionArgumentsMigrationContext>();
   const fluent = migrator(migratorInstance);
   const versionedValue = { ...actionArguments } as IHasVersion;
   if (versionedValue.version === undefined)
@@ -41,96 +36,70 @@ const getActualActionArguments = (action: IConfigurableActionDescriptor, actionA
   return model;
 };
 
-function useConfigurableActionDispatcherState(require: boolean) {
-  const context = useContext(ConfigurableActionDispatcherStateContext);
+const useConfigurableActionDispatcherOrUndefined = (): IConfigurableActionDispatcherActionsContext | undefined => {
+  return useContext(ConfigurableActionDispatcherActionsContext);
+};
 
-  if (context === undefined && require) {
-    throw new Error('useConfigurableActionDispatcherState must be used within a ConfigurableActionDispatcherProvider');
-  }
+const useConfigurableActionDispatcher = (): IConfigurableActionDispatcherActionsContext => {
+  const context = useConfigurableActionDispatcherOrUndefined();
 
-  return context;
-}
-
-function useConfigurableActionDispatcherActions(require: boolean) {
-  const context = useContext(ConfigurableActionDispatcherActionsContext);
-
-  if (context === undefined && require) {
+  if (context === undefined) {
     throw new Error(
-      'useConfigurableActionDispatcherActions must be used within a ConfigurableActionDispatcherProvider'
+      'useConfigurableActionDispatcherActions must be used within a ConfigurableActionDispatcherProvider',
     );
   }
 
   return context;
-}
+};
 
-function useConfigurableActionDispatcher(require: boolean = true) {
-  const actionsContext = useConfigurableActionDispatcherActions(require);
-  const stateContext = useConfigurableActionDispatcherState(require);
 
-  // useContext() returns initial state when provider is missing
-  // initial context state is useless especially when require == true
-  // so we must return value only when both context are available
-  return actionsContext !== undefined && stateContext !== undefined
-    ? { ...actionsContext, ...stateContext }
-    : undefined;
-}
+const useConfigurableActionDispatcherProxy = (): FC<PropsWithChildren> => {
+  const actionsContext = useConfigurableActionDispatcherOrUndefined();
 
-const useConfigurableActionDispatcherProxy = (require: boolean = true): FC<PropsWithChildren> => {
-  const actionsContext = useConfigurableActionDispatcherActions(require);
-  const stateContext = useConfigurableActionDispatcherState(require);
-  return actionsContext !== undefined && stateContext !== undefined
+  return actionsContext !== undefined
     ? ({ children }) => (
-      <ConfigurableActionDispatcherStateContext.Provider value={stateContext}>
-        <ConfigurableActionDispatcherActionsContext.Provider value={actionsContext}>
-          {children}
-        </ConfigurableActionDispatcherActionsContext.Provider>
-      </ConfigurableActionDispatcherStateContext.Provider>
+      <ConfigurableActionDispatcherActionsContext.Provider value={actionsContext}>
+        {children}
+      </ConfigurableActionDispatcherActionsContext.Provider>
     )
     : ({ children }) => (<>{children}</>);
 };
 
-const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableActionDispatcherProviderProps>> = ({
+const ConfigurableActionDispatcherProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-  const initial: IConfigurableActionDispatcherStateContext = {
-    ...CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE,
-  };
-
   const actions = useRef<IConfigurableActionGroupDictionary>({});
 
-  const [state] = useThunkReducer(metadataReducer, initial);
+  const parent = useConfigurableActionDispatcherOrUndefined();
 
-  const parent = useConfigurableActionDispatcher(false);
-
-  const getConfigurableActionOrNull = (
-    payload: IGetConfigurableActionPayload
-  ): IConfigurableActionDescriptor | null => {
+  const getConfigurableActionOrNull = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IGetConfigurableActionPayload): IConfigurableActionDescriptor<TArguments> | null => {
     const { owner, name } = payload;
 
     if (!owner || !name) return null;
 
-    // TODO: search action in the dictionary and return action
     const actionsGroup = actions.current[owner];
-    if (!actionsGroup?.actions) return parent?.getConfigurableActionOrNull(payload);
 
-    const action = actionsGroup.actions.find((a) => a.name === name);
-    if (!action) return parent?.getConfigurableActionOrNull(payload);
+    const action = actionsGroup?.actions
+      ? actionsGroup.actions.find((a) => a.name === name)
+      : null;
+
+    return action
+      ? action as unknown as IConfigurableActionDescriptor<TArguments>
+      : parent?.getConfigurableActionOrNull(payload) ?? null;
+  };
+
+  const getConfigurableAction = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IGetConfigurableActionPayload): IConfigurableActionDescriptor<TArguments> => {
+    const action = getConfigurableActionOrNull<TArguments>(payload);
+    if (!action) throw `Action '${payload.name}' in the owner '${payload.owner}' not found.`;
 
     return action;
   };
 
-  const getConfigurableAction = <TArguments = IConfigurableActionArguments>(payload: IGetConfigurableActionPayload): IConfigurableActionDescriptor<TArguments> => {
-    const action = getConfigurableActionOrNull(payload);
-    if (!action) throw `Action '${payload.name}' in the owner '${payload.owner}' not found.`;
-
-    return action as IConfigurableActionDescriptor<TArguments>;
-  };
-
-  const getActions = () => {
+  const getActions = (): IConfigurableActionGroupDictionary => {
     return { ...parent?.getActions(), ...actions.current };
   };
 
-  const registerAction = (payload: IRegisterActionPayload) => {
+  const registerAction: RegisterActionType = (payload) => {
     const ownerActions = actions.current[payload.ownerUid] ?? { ownerName: payload.owner, actions: [] };
 
     const newActions = ownerActions.actions.filter((action) => action.name !== payload.name);
@@ -142,7 +111,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     };
   };
 
-  const unregisterAction = (payload: IConfigurableActionIdentifier) => {
+  const unregisterAction = (payload: IConfigurableActionIdentifier): void => {
     if (!payload.ownerUid) return;
     const ownerActions = actions.current[payload.ownerUid];
     if (!ownerActions) return;
@@ -158,26 +127,25 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     }
   };
 
-  const prepareArguments = <TArguments = any>(payload: IPrepareActionArgumentsPayload<TArguments>): Promise<TArguments> => {
+  const prepareArguments = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(payload: IPrepareActionArgumentsPayload<TArguments>): Promise<TArguments> => {
     const { actionConfiguration, argumentsEvaluationContext } = payload;
     const { actionOwner, actionName, actionArguments } = actionConfiguration;
     const action = getConfigurableAction<TArguments>({ owner: actionOwner, name: actionName });
-    if (!action)
-      return undefined;
 
     const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
-    return argumentsEvaluator(actionArguments, argumentsEvaluationContext);
+    return actionArguments
+      ? argumentsEvaluator(actionArguments, argumentsEvaluationContext)
+      : Promise.resolve({} as TArguments);
   };
 
-  const executeAction = (payload: IExecuteActionPayload) => {
+  const executeAction = (payload: IExecuteActionPayload): Promise<void> => {
     const { actionConfiguration, argumentsEvaluationContext } = payload;
-    if (!actionConfiguration) return Promise.reject('Action Configuration is mandatory');
+    if (!isDefined(actionConfiguration))
+      return Promise.reject('Action Configuration is mandatory');
     const { actionOwner, actionName, actionArguments, handleSuccess, onSuccess, handleFail, onFail } = actionConfiguration;
     if (!actionName) return Promise.reject('Action name is mandatory');
 
     const action = getConfigurableAction({ owner: actionOwner, name: actionName });
-
-    if (!action) return Promise.reject(`Action '${actionOwner}:${actionName}' not found`);
 
     // migrate arguments
     const actualArguments = action.hasArguments
@@ -199,7 +167,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
                   actionConfiguration: { ...onSuccess },
                   argumentsEvaluationContext: onSuccessContext,
                   success: payload.success,
-                  fail: payload.fail
+                  fail: payload.fail,
                 });
               } else {
                 console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
@@ -208,7 +176,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
               if (payload.success) payload.success(actionResponse);
             };
           })
-          .catch(async (error) => {
+          .catch(async (error: unknown) => {
             console.error(`Failed to execute action '${actionOwner}:${actionName}', error:`, error);
             if (handleFail) {
               if (onFail) {
@@ -229,7 +197,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
       });
   };
 
-  const getDynamicContextHook = (actionConfiguration: IConfigurableActionConfiguration): DynamicContextHook => {
+  const getDynamicContextHook = (actionConfiguration: IConfigurableActionConfiguration | undefined): DynamicContextHook => {
     if (!actionConfiguration)
       return EMPTY_DYNAMIC_CONTEXT_HOOK;
 
@@ -263,11 +231,9 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
 
 
   return (
-    <ConfigurableActionDispatcherStateContext.Provider value={state}>
-      <ConfigurableActionDispatcherActionsContext.Provider value={configurableActionActions}>
-        {children}
-      </ConfigurableActionDispatcherActionsContext.Provider>
-    </ConfigurableActionDispatcherStateContext.Provider>
+    <ConfigurableActionDispatcherActionsContext.Provider value={configurableActionActions}>
+      {children}
+    </ConfigurableActionDispatcherActionsContext.Provider>
   );
 };
 
@@ -276,9 +242,9 @@ const ConfigurableActionDispatcherConsumer = ConfigurableActionDispatcherActions
 /**
  * Register configurable action
  */
-function useConfigurableAction<TArguments = IConfigurableActionArguments, TResponse = any>(
+function useConfigurableAction<TArguments extends object = object, TResponse = unknown>(
   payload: IRegisterActionPayload<TArguments, TResponse>,
-  deps?: ReadonlyArray<any>
+  deps?: DependencyList,
 ): void {
   const { registerAction, unregisterAction } = useConfigurableActionDispatcher();
 
@@ -292,6 +258,7 @@ function useConfigurableAction<TArguments = IConfigurableActionArguments, TRespo
         unregisterAction(payload);
       }
       : undefined;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 }
 

@@ -1,17 +1,21 @@
-import { evaluateString, useDataContextManagerActions, useFormData, useGlobalState } from '@/index';
-import { Key, useMemo } from 'react';
+import { useMemo } from 'react';
 import { IDataSourceArguments } from './model';
 import { buildUrl } from '@/utils/url';
+import { useFormData } from '@/providers/formContext';
+import { useGlobalState } from '@/providers/globalState';
+import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager';
+import { evaluateString } from '@/providers/form/utils';
+import { FetcherOptions, IQueryParams } from '@/utils/fetchers';
 
-interface IQueryParams {
-  [name: string]: Key;
-}
+type UseUrlTemplatesResponse = {
+  getUrlTemplateState: (evaluatedFilters?: any) => FetcherOptions;
+};
 
-export const useUrlTemplates = (settings: IDataSourceArguments) => {
+export const useUrlTemplates = (settings: IDataSourceArguments): UseUrlTemplatesResponse => {
   const { dataSourceUrl, queryParams } = settings ?? {};
   const { data } = useFormData();
   const { globalState } = useGlobalState();
-  const pageContext = useDataContextManagerActions(false)?.getPageContext();
+  const pageContext = useDataContextManagerActionsOrUndefined()?.getPageContext();
 
   const getQueryParams = useMemo(() => {
     return (): IQueryParams => {
@@ -43,9 +47,13 @@ export const useUrlTemplates = (settings: IDataSourceArguments) => {
   return { getUrlTemplateState };
 };
 
-export const useEntityTemplates = (settings: IDataSourceArguments) => {
+type UseEntityTemplatesResponse = {
+  getEntityTemplateState: (evaluatedFilters?: any) => FetcherOptions;
+};
+
+export const useEntityTemplates = (settings: IDataSourceArguments): UseEntityTemplatesResponse => {
   const { entityTypeShortAlias, maxResultCount } = settings ?? {};
-  const getEntityTemplateState = (evaluatedFilters?: any) => {
+  const getEntityTemplateState = (evaluatedFilters?: any): FetcherOptions => {
     return {
       path: `/api/services/app/Entities/GetAll`,
       queryParams: {
@@ -58,4 +66,3 @@ export const useEntityTemplates = (settings: IDataSourceArguments) => {
 
   return { getEntityTemplateState };
 };
-

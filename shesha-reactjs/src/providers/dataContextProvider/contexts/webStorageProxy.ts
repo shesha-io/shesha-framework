@@ -1,60 +1,80 @@
-export interface IWebStorageProx {
+import { isDefined } from "@/utils/nullables";
+
+export interface IWebStorageProxy {
   updateOnChangeHandler: (func: () => void) => void;
 };
 
-export type webStorageType = 'localStorage' | 'sessionStorage';
+export type WebStorageType = 'localStorage' | 'sessionStorage';
 
 export class WebStorageProxy {
-    private _onChangeHandler: () => void;
+  private _onChangeHandler?: () => void;
 
-    private _storage: webStorageType;
+  private _storage: WebStorageType;
 
-    private _prefix: string;
+  private _prefix: string;
 
-    setItem(key: string, value: any) {
-        window[this._storage].setItem(`${this._prefix}${key}`, value);
-        if (this._onChangeHandler)
-            this._onChangeHandler();
-    }
+  private serialize(value: unknown): string {
+    return JSON.stringify(value); // undefined ans null will be serialized as 'undefined' and 'null'
+  }
 
-    removeItem(key: string) {
-        window[this._storage].removeItem(`${this._prefix}${key}`);
-        if (this._onChangeHandler)
-            this._onChangeHandler();
-    }
+  private deserialize(value: string | null | undefined): unknown {
+    return isDefined(value)
+      ? value === 'undefined'
+        ? undefined
+        : value === 'null'
+          ? null
+          : JSON.parse(value)
+      : value;
+  }
 
-    clear() {
-        window[this._storage].clear();
-        if (this._onChangeHandler)
-            this._onChangeHandler();
-    }
+  setItem(key: string, value: unknown): void {
+    window[this._storage].setItem(`${this._prefix}${key}`, this.serialize(value));
+    if (this._onChangeHandler)
+      this._onChangeHandler();
+  }
 
-    getItem(key: string) {
-      return window[this._storage].getItem(`${this._prefix}${key}`);
-    }
+  removeItem(key: string): void {
+    window[this._storage].removeItem(`${this._prefix}${key}`);
+    if (this._onChangeHandler)
+      this._onChangeHandler();
+  }
 
-    key(index: number) {
-      window[this._storage].key(index);
-    }
+  clear(): void {
+    window[this._storage].clear();
+    if (this._onChangeHandler)
+      this._onChangeHandler();
+  }
 
-    updateOnChangeHandler(func: () => void) {
-        this._onChangeHandler = func;
-    }
+  getItem(key: string): unknown {
+    const value = window[this._storage].getItem(`${this._prefix}${key}`);
+    return this.deserialize(value);
+  }
 
-    constructor(storage: webStorageType = 'localStorage', prefix: string = '') {
-        this._storage = storage;
-        this._prefix = prefix;
-        return new Proxy(this, {
-            get(target, name) {
-                const propName = name.toString();
-                return propName in target
-                  ? typeof target[propName] === 'function' ? target[propName].bind(target) : target[propName]
-                  : target.getItem(propName);
-            },
-            set(target, name, newValue) {
-              target.setItem(name.toString(), newValue);
-              return true;
-            },
-        });
-    }
+  key(index: number): string | null {
+    return window[this._storage].key(index);
+  }
+
+  updateOnChangeHandler(func: () => void): void {
+    this._onChangeHandler = func;
+  }
+
+  constructor(storage: WebStorageType = 'localStorage', prefix: string = '') {
+    this._storage = storage;
+    this._prefix = prefix;
+    return new Proxy(this, {
+      get(target, name) {
+        if (name in target) {
+          const result = target[name as keyof IWebStorageProxy];
+          return typeof result === 'function'
+            ? result.bind(target)
+            : result;
+        } else
+          return target.getItem(name.toString());
+      },
+      set(target, name, newValue) {
+        target.setItem(name.toString(), newValue);
+        return true;
+      },
+    });
+  }
 }

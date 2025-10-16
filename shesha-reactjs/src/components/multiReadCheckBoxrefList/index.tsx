@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { CheckCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { DisplayFormItem, ShaSpin } from '@/components';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
@@ -11,13 +11,13 @@ export interface IMultiReadCheckBoxRefListProps {
   readonly display?: 'boolean' | 'check' | 'component' | 'yn';
 }
 
-export const binaryToList = (val: number) => {
+export const binaryToList = (val: number): number[] => {
   const total = [];
   let currentVal = 1;
 
   while (currentVal <= val) {
-    if ((val & currentVal) === currentVal) total.push(currentVal);//eslint-disable-line no-bitwise
-    currentVal *= 2; 
+    if ((val & currentVal) === currentVal) total.push(currentVal);// eslint-disable-line no-bitwise
+    currentVal *= 2;
   }
 
   return total;
@@ -33,9 +33,9 @@ export const MultiReadCheckBoxRefList: FC<IMultiReadCheckBoxRefListProps> = ({
 
   const list = binaryToList(value);
 
-  const result = refList?.items?.map(i => ({ ...i, checked: list.includes(i?.itemValue) }));
+  const result = refList?.items?.map((i) => ({ ...i, checked: list.includes(i?.itemValue) }));
 
-  const displayText = (checked: boolean) => {
+  const displayText = (checked: boolean): ReactNode => {
     switch (display) {
       case 'boolean':
         return checked ? 'True' : 'False';

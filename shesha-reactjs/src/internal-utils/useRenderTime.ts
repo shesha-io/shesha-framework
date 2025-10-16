@@ -4,21 +4,21 @@ import { useEffect, useRef } from "react";
 type OnMeasurementLog = (measure: PerformanceMeasure) => void;
 
 interface UseRenderTimeArgs {
-    onLog: OnMeasurementLog;
+  onLog: OnMeasurementLog;
 }
 
-export const useRenderTime = ({ onLog }: UseRenderTimeArgs) => {
-    const id = useRef<string>(nanoid());
-    const isFirstRender = useRef<boolean>(true);
+export const useRenderTime = ({ onLog }: UseRenderTimeArgs): void => {
+  const id = useRef<string>(nanoid());
+  const isFirstRender = useRef<boolean>(true);
 
-    if (isFirstRender.current){
-        isFirstRender.current = false;
-        performance.mark(id.current + ":beginRender");
-    }
+  if (isFirstRender.current) {
+    isFirstRender.current = false;
+    performance.mark(id.current + ":beginRender");
+  }
 
-    useEffect(() => {
-        performance.mark(id.current + ":endRender");
-        const measure = performance.measure(id.current, id.current + ":beginRender", id.current + ":endRender");
-        onLog?.(measure);
-    }, []);
+  useEffect(() => {
+    performance.mark(id.current + ":endRender");
+    const measure = performance.measure(id.current, id.current + ":beginRender", id.current + ":endRender");
+    onLog?.(measure);
+  }, []);
 };

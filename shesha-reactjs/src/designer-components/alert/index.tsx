@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
@@ -16,20 +16,20 @@ import parse from 'html-react-parser';
 const defaultTextForPreview = {
   success: {
     text: 'Success Alert Preview Text',
-    description: 'This is a success alert preview text. More information here.'
+    description: 'This is a success alert preview text. More information here.',
   },
   info: {
     text: 'Info Alert Preview Text',
-    description: 'This is an info alert preview text. More information here.'
+    description: 'This is an info alert preview text. More information here.',
   },
   warning: {
     text: 'Warning Alert Preview Text',
-    description: 'This is a warning alert preview text. More information here.'
+    description: 'This is a warning alert preview text. More information here.',
   },
   error: {
     text: 'Error Alert Preview Text',
-    description: 'This is an error alert preview text. More information here.'
-  }
+    description: 'This is an error alert preview text. More information here.',
+  },
 };
 
 interface IAlertComponentCalulatedValues {
@@ -64,15 +64,15 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCal
       }
     }
 
-    const renderContent = (content: string | React.ReactNode) => {
+    const renderContent = (content: string | React.ReactNode): ReactNode => {
       if (React.isValidElement(content)) {
         return React.cloneElement(content as React.ReactElement, {
           style: {
             ...(content as React.ReactElement).props?.style,
             padding: 0,
             margin: 0,
-            lineHeight: 'normal'
-          }
+            lineHeight: 'normal',
+          },
         });
       }
 
@@ -90,8 +90,8 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCal
               ...(parsedContent as React.ReactElement).props?.style,
               padding: 0,
               margin: 0,
-              lineHeight: 'normal'
-            }
+              lineHeight: 'normal',
+            },
           });
         }
         return parsedContent;
@@ -128,8 +128,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps, IAlertComponentCal
   migrator: (m) => m
     .add<IAlertComponentProps>(0, (prev: IAlertComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAlertComponentProps>(1, (prev) => migrateVisibility(prev))
-    .add<IAlertComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-  ,
+    .add<IAlertComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };

@@ -1,18 +1,17 @@
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { useEntityTemplates } from '../utils';
-import { useAppConfigurator } from '@/providers/appConfigurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
 import {
   DynamicActionsProvider,
   DynamicItemsEvaluationHook,
   FormMarkup,
-  useDataContextManagerActions,
+  useDataContextManagerActionsOrUndefined,
   useFormData,
   useGlobalState,
   useNestedPropertyMetadatAccessor,
 } from '@/providers';
 import { useGet } from '@/hooks';
-import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from '../model';
+import { IDataSourceArguments } from '../model';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { getSettings } from './entitySettings';
 
@@ -25,14 +24,14 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   const { data: FormData } = useFormData();
   const { globalState } = useGlobalState();
   const [data, setData] = useState(null);
-  const pageContext = useDataContextManagerActions(false)?.getPageContext();
+  const pageContext = useDataContextManagerActionsOrUndefined()?.getPageContext();
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityTypeShortAlias);
   const evaluatedFilters = useFormEvaluatedFilter({
     filter,
     metadataAccessor: propertyMetadataAccessor,
   });
 
-  const fetchTemplateData = async () => {
+  const fetchTemplateData = async (): Promise<void> => {
     const response = await refetch(getEntityTemplateState(evaluatedFilters));
     const result = Array.isArray(response.result) ? response.result : response.result.items;
     setData(result);
@@ -47,8 +46,6 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
       fetchTemplateData();
     }
   }, [item, settings, evaluatedFilters, pageContext, FormData, globalState]);
-
-  const { configurationItemMode } = useAppConfigurator();
 
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
@@ -76,11 +73,11 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
     }));
 
     return result;
-  }, [settings, item, data, configurationItemMode]);
+  }, [settings, item, data]);
   return operations;
 };
 
-export const EntityActions: FC<PropsWithChildren<IWorkflowInstanceStartActionsProps>> = ({ children }) => {
+export const EntityActions: FC<PropsWithChildren> = ({ children }) => {
   return (
     <DynamicActionsProvider
       id="Entity"

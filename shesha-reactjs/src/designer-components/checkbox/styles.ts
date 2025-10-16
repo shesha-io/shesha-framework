@@ -2,27 +2,26 @@ import { createStyles } from '@/styles';
 import React from 'react';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { style: React.CSSProperties }) => {
+  const { fontWeight, backgroundImage, backgroundColor, ...rest } = style;
 
-    const { fontWeight, backgroundImage, backgroundColor, ...rest } = style;
-
-    const borderWidthFromWeight = (weight) => {
-        switch (weight) {
-            case '100':
-                return '1px';
-            case '400':
-                return '2px';
-            case '500':
-                return '3px';
-            case '700':
-                return '4px';
-            case '900':
-                return '5px';
-            default:
-                return '2px';
-        };
+  const borderWidthFromWeight = (weight): string => {
+    switch (weight) {
+      case '100':
+        return '1px';
+      case '400':
+        return '2px';
+      case '500':
+        return '3px';
+      case '700':
+        return '4px';
+      case '900':
+        return '5px';
+      default:
+        return '2px';
     };
+  };
 
-    const checkbox = cx("sha-checkbox", css`
+  const checkbox = cx("sha-checkbox", css`
       .${prefixCls}-checkbox {
         .${prefixCls}-checkbox-inner {
             --ant-control-interactive-size: ${style?.fontSize};
@@ -55,7 +54,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
         }
     `);
 
-    return {
-        checkbox,
-    };
+  return {
+    checkbox,
+  };
 });

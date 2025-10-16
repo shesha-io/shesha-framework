@@ -19,7 +19,7 @@ const HeaderAppControl: IToolboxComponent = {
       <ParentProvider model={model}>
         <ProtectedContent permissionName={PERM_APP_CONFIGURATOR}>
           <Space className="sha-header-app-control">
-            <AppEditModeToggler {...model} />
+            <AppEditModeToggler />
           </Space>
         </ProtectedContent>
       </ParentProvider>

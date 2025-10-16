@@ -17,7 +17,7 @@ export const RefListItem: FC<IRefListGroupItemProps> = (props) => {
   const { styles } = useStyles();
   const { selectedItemId } = useRefListItemGroupConfigurator();
 
-  const onEditBtnClick = () => {
+  const onEditBtnClick = (): void => {
     if (props.onConfigClick) {
       props.onConfigClick(props.id);
     }
@@ -31,8 +31,8 @@ export const RefListItem: FC<IRefListGroupItemProps> = (props) => {
           {props.item}
         </span>
         {props.hidden && (
-            <EyeInvisibleOutlined style={{ marginRight: '8px', color: '#999' }} />
-          )}
+          <EyeInvisibleOutlined style={{ marginRight: '8px', color: '#999' }} />
+        )}
         <div className={styles.shaToolbarItemControls}>
 
           <Button icon={<SettingOutlined />} onClick={onEditBtnClick} size="small" />

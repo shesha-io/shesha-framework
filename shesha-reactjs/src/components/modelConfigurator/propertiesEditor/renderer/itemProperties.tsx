@@ -1,13 +1,11 @@
-//import propertySettingsJson from './propertySettings.json';
 import React, {
   FC,
   ReactNode,
   useEffect,
-  useState
+  useState,
 } from 'react';
 import { ConfigurableForm } from '../../..';
 import { Empty } from 'antd';
-//import { FormMarkup } from '@/providers/form/models';
 import { nanoid } from '@/utils/uuid';
 import { useDebouncedCallback } from 'use-debounce';
 import { usePropertiesEditor } from '../provider';
@@ -16,9 +14,7 @@ import { getSettings } from './propertySettings/propertySettings';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 
-export interface IProps { }
-
-export const ToolbarItemProperties: FC<IProps> = () => {
+export const ToolbarItemProperties: FC = () => {
   const { selectedItemId, getItem, updateItem } = usePropertiesEditor();
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);
@@ -26,11 +22,11 @@ export const ToolbarItemProperties: FC<IProps> = () => {
   const components = useFormDesignerComponents();
 
   const debouncedSave = useDebouncedCallback(
-    values => {
+    (values) => {
       updateItem({ id: selectedItemId, settings: values });
     },
     // delay in ms
-    300
+    300,
   );
 
   useEffect(() => {
@@ -45,7 +41,7 @@ export const ToolbarItemProperties: FC<IProps> = () => {
       formRef?.current?.setFieldsValue(currentItem);
   }, [currentItem]);
 
-  const getEditor = () => {
+  const getEditor = (): ReactNode => {
     const emptyEditor = null;
     if (!selectedItemId) return emptyEditor;
 

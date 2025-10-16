@@ -19,7 +19,7 @@ const FormMarkupConverter: FC<IFormMarkupConverterProps> = ({ children, markup, 
     return convertFormMarkupToFlatStructure(markup, formSettings, designerComponents);
   }, [markup, formSettings, designerComponents]);
 
-  const onChange = (_value: IFlatComponentsStructure) => {
+  const onChange = (_value: IFlatComponentsStructure): void => {
     // nop
   };
 

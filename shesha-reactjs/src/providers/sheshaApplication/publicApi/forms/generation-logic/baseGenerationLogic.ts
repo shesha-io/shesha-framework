@@ -16,7 +16,7 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
    * Should match the `generationLogicTypeName` property in the template.
    */
   abstract readonly typeName: string;
-  
+
   /**
    * Process the template markup with replacements and specialized logic
    */
@@ -29,7 +29,7 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
         try {
           const { entity, nonFrameworkProperties } = await this.fetchEntityMetadata(replacements, metadataHelper);
           if (entity && nonFrameworkProperties) {
-            await this.addComponentsToMarkup(markupObj, entity, nonFrameworkProperties, metadataHelper);
+            await this.addComponentsToMarkup(markupObj, entity, nonFrameworkProperties, metadataHelper, replacements);
           }
         } catch (entityError) {
           console.error(`Error processing entity metadata in ${this.typeName}:`, entityError);
@@ -50,7 +50,7 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
   supportsTemplate(template: FormConfigurationDto): boolean {
     return template?.generationLogicTypeName === this.typeName;
   }
-  
+
   /**
    * Check if metadata should be fetched for this template
    */
@@ -66,12 +66,12 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
   /**
    * Fetch entity metadata and extract non-framework properties
    */
-  protected async fetchEntityMetadata(replacements: object, metadataHelper: FormMetadataHelper): Promise<{ entity: IEntityMetadata, nonFrameworkProperties: PropertyMetadataDto[] }> {
+  protected async fetchEntityMetadata(replacements: object, metadataHelper: FormMetadataHelper): Promise<{ entity: IEntityMetadata; nonFrameworkProperties: PropertyMetadataDto[] }> {
     const modelType = this.getModelTypeFromReplacements(replacements);
     if (!modelType) {
       throw new Error('Model type is required for fetching metadata');
     }
-    
+
     return await metadataHelper.fetchEntityMetadataWithPropertiesAsync(modelType);
   }
 
@@ -79,9 +79,10 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
    * Add components to the markup based on entity metadata and properties
    */
   protected abstract addComponentsToMarkup(
-    markup: any, 
-    entity: IEntityMetadata, 
+    markup: unknown,
+    entity: IEntityMetadata,
     nonFrameworkProperties: PropertyMetadataDto[],
-    metadataHelper: FormMetadataHelper
+    metadataHelper: FormMetadataHelper,
+    replacements?: object
   ): Promise<void>;
 }

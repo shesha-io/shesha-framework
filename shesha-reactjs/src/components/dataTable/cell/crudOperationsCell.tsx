@@ -1,13 +1,9 @@
 import { CloseCircleOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, SaveOutlined } from '@ant-design/icons';
-import React, { useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useCrud } from '@/providers/crudContext';
-import { ITableCrudOperationsColumn } from '@/providers/dataTable/interfaces';
-import { IHasColumnConfig } from './interfaces';
 import ActionButton, { IActionButtonProps } from '@/components/actionButton/index';
 
-export interface ICrudOperationsCellProps extends IHasColumnConfig<ITableCrudOperationsColumn> {}
-
-export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
+export const CrudOperationsCell: FC = () => {
   const {
     mode,
     switchMode,
@@ -26,11 +22,11 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
     deletingError,
   } = useCrud();
 
-  const onEditClick = () => {
+  const onEditClick = (): void => {
     switchMode('update');
   };
 
-  const onSaveUpdateClick = async () => {
+  const onSaveUpdateClick = async (): Promise<void> => {
     try {
       await performUpdate();
       switchMode('read');
@@ -39,7 +35,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
     }
   };
 
-  const onSaveCreateClick = async () => {
+  const onSaveCreateClick = async (): Promise<void> => {
     try {
       await performCreate();
       await reset();
@@ -48,12 +44,12 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
     }
   };
 
-  const onCancelEditClick = async () => {
+  const onCancelEditClick = async (): Promise<void> => {
     await reset();
     switchMode('read');
   };
 
-  const onDeleteClick = () => {
+  const onDeleteClick = (): void => {
     performDelete();
   };
 
@@ -79,7 +75,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
           onSaveUpdateClick();
         },
         icon: <SaveOutlined />,
-        isVisible: /*!autoSave &&*/ allowEdit && mode === 'update',
+        isVisible: /* !autoSave &&*/ allowEdit && mode === 'update',
         loading: isSaving,
         error: saveError,
       },
@@ -89,7 +85,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
           onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
-        isVisible: /*!autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
+        isVisible: /* !autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
       },
       {
         title: 'Reset',
@@ -97,7 +93,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
           onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
-        isVisible: /*!autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
+        isVisible: /* !autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
       },
       {
         title: 'Delete',

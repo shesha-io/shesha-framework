@@ -23,9 +23,7 @@ using Shesha.Extensions;
 using Shesha.MultiTenancy;
 using Shesha.Reflection;
 using Shesha.Services;
-using Shesha.Swagger;
 using Shesha.Validations;
-using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -453,15 +451,16 @@ namespace Shesha
 
             if (result.HasValidationError)
                 return result;
-
-            if (jObject != null)
+            
+            // ToDo: AS - V1 remove after implementation Entity Configuration
+            /*if (jObject != null)
             {
                 await MapJObjectToDynamicPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
             }
             else
             {
                 await MapDynamicPropertiesToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
-            }
+            }*/
 
             return result;
         }
@@ -485,9 +484,13 @@ namespace Shesha
             var result = await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResult);
             result = result && await ValidateEntityAsync<TEntity>(entity, validationResult);
 
-            if (!result) return false;
+            return result;
 
+            // ToDo: AS - V1 remove after implementation Entity Configuration
+            /*if (!result) return false;
+             
             return await MapJObjectToDynamicPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResult);
+            */
         }
 
         /// <summary>

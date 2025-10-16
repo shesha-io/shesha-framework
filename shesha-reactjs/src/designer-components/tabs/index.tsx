@@ -42,7 +42,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
 
     const cardStyles = useFormComponentStyles({ ...model.card });
 
-    const { styles } = useStyles({ styles: model.allStyles.fullStyle, cardStyles: tabType === 'line' ? { ...cardStyles.fontStyles, ...cardStyles.dimensionsStyles, } : cardStyles.fullStyle, position: tabPosition, tabType, tabLineColor, overflow: model.allStyles.overflowStyles });
+    const { styles } = useStyles({ styles: model.allStyles.fullStyle, cardStyles: tabType === 'line' ? { ...cardStyles.fontStyles, ...cardStyles.dimensionsStyles } : cardStyles.fullStyle, position: tabPosition, tabType, tabLineColor, overflow: model.allStyles.overflowStyles });
 
     const items = useDeepCompareMemo(() => {
       const tabItems: TabItem[] = [];
@@ -86,11 +86,13 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           animated: animated,
           destroyOnHidden: destroyInactiveTabPane,
           closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
-          disabled: selectMode === 'readOnly' || selectMode === 'inherited' && readOnly,
+          disabled: selectMode === 'readOnly' || (selectMode === 'inherited' && readOnly),
           children: (
             <ParentProvider model={item}>
               <ComponentsContainer
-                containerId={id} dynamicComponents={model?.isDynamic ? components : []} />
+                containerId={id}
+                dynamicComponents={model?.isDynamic ? components : []}
+              />
             </ParentProvider>
           ),
         };
@@ -125,7 +127,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         title: 'Tab 1',
         editMode: 'inherited',
         selectMode: 'editable',
-        components: []
+        components: [],
       }],
     };
     return tabsModel;
@@ -138,7 +140,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     })
     .add<ITabsComponentProps>(1, (prev) => {
       const newModel = { ...prev };
-      newModel.tabs = newModel.tabs.map(x => migrateReadOnly(x, 'inherited'));
+      newModel.tabs = newModel.tabs.map((x) => migrateReadOnly(x, 'inherited'));
       return newModel;
     })
     .add<ITabsComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
@@ -152,7 +154,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         card: { ...initialCardStyle },
         desktop: { ...newModel.desktop, card: { ...initialCardStyle } },
         tablet: { ...newModel.tablet, card: { ...initialCardStyle } },
-        mobile: { ...newModel.mobile, card: { ...initialCardStyle } }
+        mobile: { ...newModel.mobile, card: { ...initialCardStyle } },
       };
     }),
   settingsFormMarkup: () => getSettings(),

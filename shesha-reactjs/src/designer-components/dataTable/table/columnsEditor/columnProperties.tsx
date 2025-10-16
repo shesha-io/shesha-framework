@@ -1,5 +1,3 @@
-//import columnSettingsJson from './columnSettings.json';
-//import { getSettings } from './columnSettings';
 import React, {
   FC,
   useEffect,
@@ -49,10 +47,10 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       onChange?.({ ...item, ...values });
     },
     // delay in ms
-    300
+    300,
   );
 
-  const linkToModelMetadata = (metadata: IPropertyMetadata) => {
+  const linkToModelMetadata = (metadata: IPropertyMetadata): void => {
     if (readOnly) return;
     const values = form.getFieldsValue() as IDataColumnsProps;
     const newValues: IDataColumnsProps = {
@@ -81,5 +79,4 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       className={sheshaStyles.verticalSettingsClass}
     />
   );
-
 };

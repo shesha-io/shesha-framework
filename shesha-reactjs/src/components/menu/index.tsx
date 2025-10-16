@@ -61,7 +61,7 @@ export const LayoutMenu: FC<IProps> = ({
   styleOnSubMenu,
   width,
   fontStyles,
-  menuId
+  menuId,
 }) => {
   const isScrolling = overflow === "scroll";
   const { styles } = useStyles({
@@ -93,12 +93,12 @@ export const LayoutMenu: FC<IProps> = ({
     menuId,
     colors,
     fontStyles,
-    styleOnSubMenu
+    styleOnSubMenu,
   });
 
   const [openedKeys, setOpenedKeys] = useLocalStorage(
     "openedSidebarKeys",
-    null
+    null,
   );
 
   const currentUrl = normalizeUrl(router?.fullPath);
@@ -107,7 +107,7 @@ export const LayoutMenu: FC<IProps> = ({
 
   const initialSelection = useRef<string>(undefined);
 
-  const checkOverflow = () => {
+  const checkOverflow = (): void => {
     if (current) {
       setState((s) => ({
         ...s,
@@ -115,7 +115,7 @@ export const LayoutMenu: FC<IProps> = ({
       }));
     }
   };
-  
+
   useEffect(() => {
     checkOverflow();
 
@@ -136,13 +136,13 @@ export const LayoutMenu: FC<IProps> = ({
     }
   }, []);
 
-  const onClick = () => setState((s) => ({ ...s, open: true }));
-  const onClose = () => setState((s) => ({ ...s, open: false }));
+  const onClick = (): void => setState((s) => ({ ...s, open: true }));
+  const onClose = (): void => setState((s) => ({ ...s, open: false }));
 
   const onButtonClick = (
     _itemId: string,
-    actionConfiguration: IConfigurableActionConfiguration
-  ) => {
+    actionConfiguration: IConfigurableActionConfiguration,
+  ): void => {
     executeAction({
       actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: executionContext,
@@ -158,14 +158,14 @@ export const LayoutMenu: FC<IProps> = ({
           const url = getUrlFromNavigationRequest(args?.actionArguments);
           const href = evaluateString(
             decodeURIComponent(url),
-            executionContext
+            executionContext,
           );
           return href;
         },
         getUrl: (url) => {
           const href = evaluateString(
             decodeURIComponent(url),
-            executionContext
+            executionContext,
           );
           return href;
         },
@@ -176,7 +176,7 @@ export const LayoutMenu: FC<IProps> = ({
             isNavigationActionConfiguration(nestedItem.actionConfiguration)
           ) {
             const url = getUrlFromNavigationRequest(
-              nestedItem.actionConfiguration.actionArguments
+              nestedItem.actionConfiguration.actionArguments,
             );
 
             if (url && normalizeUrl(url) === currentUrl) {
@@ -185,20 +185,20 @@ export const LayoutMenu: FC<IProps> = ({
             }
           }
         },
-      })
+      }),
     );
 
     if (menuId) {
       const addDropdownClassName = (item: any): any => {
         if (!item) return item;
-        
+
         const newItem = { ...item };
-        
+
         if (newItem.children && newItem.children.length > 0) {
           newItem.popupClassName = `horizontal-menu-${menuId}-dropdown`;
           newItem.children = newItem.children.map(addDropdownClassName);
         }
-        
+
         return newItem;
       };
 
@@ -210,7 +210,7 @@ export const LayoutMenu: FC<IProps> = ({
 
   if (menuItems.length === 0) return null;
 
-  const onOpenChange = (openKeys: React.Key[]) => {
+  const onOpenChange = (openKeys: React.Key[]): void => {
     setOpenedKeys(openKeys);
   };
 
@@ -220,9 +220,9 @@ export const LayoutMenu: FC<IProps> = ({
     return (
       <Fragment>
         <Button type="link" icon={<MenuOutlined />} onClick={onClick} />
-        <ShaMenuDrawer 
-          items={menuItems} 
-          open={open} 
+        <ShaMenuDrawer
+          items={menuItems}
+          open={open}
           onClose={onClose}
           colors={colors}
           fontStyles={fontStyles}
@@ -250,9 +250,9 @@ export const LayoutMenu: FC<IProps> = ({
       )}
       <div
         className={classNames(
-          styles.menuWrapper, 
+          styles.menuWrapper,
           styles.menuWrapperScroll,
-          menuId ? `horizontal-menu-${menuId}` : undefined
+          menuId ? `horizontal-menu-${menuId}` : undefined,
         )}
         ref={menuWrapperRef}
       >

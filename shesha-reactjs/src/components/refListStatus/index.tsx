@@ -5,6 +5,8 @@ import { DescriptionTooltip } from './tooltip';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { useReferenceListItem } from '@/providers/referenceListDispatcher';
 import { useStyles } from './styles/styles';
+import { extractErrorMessage } from '@/providers/referenceListDispatcher/models';
+import * as antdIcons from '@ant-design/icons';
 
 export interface IRefListStatusProps {
   referenceListId: IReferenceListIdentifier;
@@ -15,14 +17,13 @@ export interface IRefListStatusProps {
   value?: any;
 }
 
-const Icon = ({ type, ...rest }) => {
-  const icons = require(`@ant-design/icons`);
+const Icon = ({ type, ...rest }): JSX.Element => {
+  const icons = antdIcons;
   const Component = icons[type];
   return <Component {...rest} />;
 };
 
 export const RefListStatus: FC<IRefListStatusProps> = (props) => {
-
   const {
     value,
     referenceListId,
@@ -43,7 +44,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
       <Alert
         showIcon
         message="Something went during Reflists fetch"
-        description={listItem.error.message}
+        description={extractErrorMessage(listItem.error)}
         type="error"
       />
     );

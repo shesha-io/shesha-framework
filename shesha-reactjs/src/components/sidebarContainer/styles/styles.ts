@@ -1,5 +1,4 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const leftSidebarWidth = "550px";
@@ -17,6 +16,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const sidebarBodyContent = "sidebar-body-content";
   const sidebarContainerLeft = "sidebar-container-left";
   const sidebarContainerRight = "sidebar-container-right";
+  const designerCanvas = "designer-canvas";
 
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
@@ -24,7 +24,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
       .${sidebarContainerMainAreaBody} {
         overflow: auto;
-        margin: 0 auto;
+        height: 100%;
+
         background: #fff;
 
          > div {
@@ -52,7 +53,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         display: flex;
         position: relative;
         width: 100%;
-        height: 85vh;
+        min-height: 100%;
     
         .${sidebarContainerLeft},
         .${sidebarContainerRight} {
@@ -179,14 +180,22 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
         .${sidebarContainerMainArea} {
          width: 100%;
-         position: sticky;
-          overflow-x: auto;
-    
+         display: flex;
+         flex-direction: column;
+         overflow: auto;
+         height: calc(100vh - 100px);
+
           &::not(.no-padding) {
             padding: ${sheshaStyles.paddingLG}px;
           }
         }
-      }    
+
+        .${designerCanvas} {
+          margin: 0 auto;
+          height: 100%;
+          transform-origin: top left;
+        }
+      }
     `);
 
   return {
@@ -203,5 +212,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     sidebarBodyContent,
     sidebarContainerLeft,
     sidebarContainerRight,
+    designerCanvas,
   };
 });

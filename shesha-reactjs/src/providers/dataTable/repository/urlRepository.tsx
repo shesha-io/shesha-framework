@@ -3,8 +3,8 @@ import { IHasEntityDataSourceConfig, useMetadataDispatcher, useSheshaApplication
 import { IResult } from '@/interfaces/result';
 import { IHttpHeadersDictionary } from '@/providers/sheshaApplication/contexts';
 import qs from 'qs';
-import React, { ComponentType, useMemo } from 'react';
-import { FC } from 'react';
+import React, { ComponentType, useMemo, FC } from 'react';
+
 import { camelcaseDotNotation } from '@/utils/string';
 import {
   DataTableColumnDto,
@@ -22,6 +22,7 @@ import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/confi
 import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
 import { getUrlKeyParam } from '@/utils';
 import { wrapDisplayName } from '@/utils/react';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface IWithUrlRepositoryArgs {
   getListUrl: string;
@@ -29,7 +30,7 @@ export interface IWithUrlRepositoryArgs {
 
 export const UrlRepositoryType = 'url-repository';
 
-export interface IUrlRepository extends IRepository { }
+export type IUrlRepository = IRepository;
 
 interface ICreateUrlRepositoryArgs extends IWithUrlRepositoryArgs {
   backendUrl: string;
@@ -44,11 +45,11 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
 
   const getPropertyNamesForFetching = (columns: ITableDataFetchColumn[]): string[] => {
     const result: string[] = [];
-    columns.forEach(column => {
+    columns.forEach((column) => {
       if (!column.propertiesToFetch)
         return;
       if (Array.isArray(column.propertiesToFetch)) {
-        column.propertiesToFetch.forEach(p => {
+        column.propertiesToFetch.forEach((p) => {
           if (!!p)
             result.push(p);
         });
@@ -57,7 +58,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
         // special handling for entity references: expand properties list to include `id` and `_displayName`
         if (column.isEnitty) {
           const requiredProps = [`${column.propertiesToFetch}.Id`, `${column.propertiesToFetch}._displayName`];
-          requiredProps.forEach(rp => {
+          requiredProps.forEach((rp) => {
             if (!result.includes(rp))
               result.push(rp);
           });
@@ -89,9 +90,10 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
   /** Convert back-end response to a form that is used by the data source */
   const convertListDataResponse = (
     response: IResult<ITableDataResponse>,
-    pageSize: number
+    pageSize: number,
   ): ITableDataInternalResponse => {
-    if (!response.result) throw 'Failed to parse response';
+    if (!isAjaxSuccessResponse(response))
+      throw 'Failed to parse response';
 
     const items = response.result.items ?? (Array.isArray(response.result) ? response.result : null);
     const totalCount = response.result.totalCount ?? items?.length;
@@ -146,7 +148,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     return Promise.resolve();
   };
 
-  const reorder = (_payload: RowsReorderPayload) => {
+  const reorder = (_payload: RowsReorderPayload): Promise<void> => {
     return Promise.reject(`Reordering is not supported by the repository '${UrlRepositoryType}'`);
   };
 
@@ -184,7 +186,7 @@ export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository =
 };
 
 export function withUrlRepository<WrappedProps>(
-  WrappedComponent: ComponentType<WrappedProps & IHasRepository>
+  WrappedComponent: ComponentType<WrappedProps & IHasRepository>,
 ): FC<WrappedProps> {
   return wrapDisplayName((props) => {
     const { getDataPath } = props as IHasEntityDataSourceConfig;

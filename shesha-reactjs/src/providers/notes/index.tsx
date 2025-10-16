@@ -26,7 +26,9 @@ import {
   COMMENTS_CONTEXT_INITIAL_STATE,
   ICreateNotePayload,
   INote,
+  INotesActionsContext,
   INoteSettings,
+  INotesStateContext,
   NotesActionsContext,
   NotesStateContext,
 } from './contexts';
@@ -79,16 +81,16 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     lazy: true,
   });
 
-  const fetchNotesRequest = () => {
+  const fetchNotesRequest = (): void => {
     dispatch(fetchNotesRequestAction());
     refetchNotesHttp();
   };
 
-  const fetchNotesSuccess = (notes: INote[]) => {
+  const fetchNotesSuccess = (notes: INote[]): void => {
     dispatch(fetchNotesSuccessAction(notes));
   };
 
-  const fetchNotesError = () => {
+  const fetchNotesError = (): void => {
     dispatch(fetchNotesErrorAction(fetchNotesResError?.data));
   };
 
@@ -112,22 +114,24 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     }
   }, [fetchingNotes]);
 
-  const refreshNotes = () => refetchNotesHttp();
+  const refreshNotes = (): void => {
+    refetchNotesHttp();
+  };
   //#endregion
 
   //#region Save notes
 
-  const postNotesSuccess = (newNotes: INote) => {
+  const postNotesSuccess = (newNotes: INote): void => {
     dispatch(postNotesSuccessAction(newNotes));
   };
 
   const { mutate: saveNotesHttp, error: saveNotesResError } = useNoteCreate();
 
-  const postNotesError = () => {
+  const postNotesError = (): void => {
     dispatch(postNotesErrorAction(saveNotesResError?.data));
   };
 
-  const postNotesRequest = (newNotes: ICreateNotePayload) => {
+  const postNotesRequest = (newNotes: ICreateNotePayload): void => {
     if (newNotes) {
       dispatch(postNotesRequestAction(newNotes));
 
@@ -164,7 +168,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   //#region Delete notes
   const { mutate: deleteNotesHttp, error: deleteNotesResError } = useMutate();
 
-  const deleteNotesRequest = (commentIdToBeDeleted: string) => {
+  const deleteNotesRequest = (commentIdToBeDeleted: string): void => {
     dispatch(deleteNotesRequestAction(commentIdToBeDeleted));
 
     deleteNotesHttp({ url: `/api/services/app/Note/Delete?id=${commentIdToBeDeleted}`, httpVerb: 'DELETE' })
@@ -178,17 +182,17 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   //#region updates notes
-  const updateNotesSuccess = (newNotes: ICreateNotePayload) => {
+  const updateNotesSuccess = (newNotes: ICreateNotePayload): void => {
     dispatch(updateNotesSuccessAction(newNotes));
   };
 
   const { mutate: updateNotesHttp, error: updateNotesResError } = useNoteUpdate();
 
-  const updateNotesError = () => {
+  const updateNotesError = (): void => {
     dispatch(updateNotesErrorAction(updateNotesResError?.data));
   };
 
-  const updateNotesRequest = (newNotes: ICreateNotePayload) => {
+  const updateNotesRequest = (newNotes: ICreateNotePayload): void => {
     if (newNotes) {
       dispatch(updateNotesRequestAction(newNotes));
 
@@ -232,7 +236,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
           deleteNotes: deleteNotesRequest,
           refreshNotes,
           /* NEW_ACTION_GOES_HERE */
-          updateNotes:updateNotesRequest
+          updateNotes: updateNotesRequest,
         }}
       >
         {children}
@@ -241,7 +245,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   );
 };
 
-function useNotesState() {
+function useNotesState(): INotesStateContext {
   const context = useContext(NotesStateContext);
 
   if (context === undefined) {
@@ -251,7 +255,7 @@ function useNotesState() {
   return context;
 }
 
-function useNotesActions() {
+function useNotesActions(): INotesActionsContext {
   const context = useContext(NotesActionsContext);
 
   if (context === undefined) {
@@ -261,7 +265,7 @@ function useNotesActions() {
   return context;
 }
 
-function useNotes() {
+function useNotes(): INotesStateContext & INotesActionsContext {
   return { ...useNotesState(), ...useNotesActions() };
 }
 

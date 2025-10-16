@@ -22,6 +22,7 @@ import { useStyles } from './styles/styles';
 import SectionSeparator from '../sectionSeparator';
 import { useConfigurableFormActions } from '@/providers/form/actions';
 import { ShaSpin } from '..';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -47,7 +48,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
   const [showSuppress, setShowSuppress] = useLocalStorage('shaEntityConfig.toolbox.objects.showSuppress', false);
   const [showNotImplemented, setShowNotImplemented] = useLocalStorage(
     'shaEntityConfig.toolbox.objects.showNotImplemented',
-    false
+    false,
   );
 
   const [response, setResponse] = useState<EntityConfigDtoPagedResultDto>();
@@ -63,7 +64,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
 
   const { onChangeId } = useConfigurableFormActions(false) ?? {};
 
-  const {styles} = useStyles();
+  const { styles } = useStyles();
 
   useEffect(() => {
     if (props.defaultSelected && props.defaultSelected !== objectId) setObjectId(props.defaultSelected);
@@ -83,8 +84,8 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
 
   useEffect(() => {
     if (!isFetchingData) {
-      if (fetchingDataResponse) {
-        const fetchedData = fetchingDataResponse?.result;
+      if (isAjaxSuccessResponse(fetchingDataResponse)) {
+        const fetchedData = fetchingDataResponse.result;
         if (fetchedData) {
           setResponse(fetchedData);
           if (refershId !== objectId) {
@@ -102,19 +103,19 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
     return list;
   }, [response, showSuppress, showNotImplemented]);
 
-  //useEffect(() => {fetcher.refetch();}, [showSuppress])
+  // useEffect(() => {fetcher.refetch();}, [showSuppress])
 
-  const refresh = (id: string) => {
+  const refresh = (id: string): void => {
     fetcher.refetch();
     setRefreshId(id);
   };
 
-  const update = (item: EntityConfigDto) => {
+  const update = (item: EntityConfigDto): void => {
     setResponse((prev) => {
       return {
         ...prev,
         items: prev.items.map((i) =>
-          i.id === objectId ? { ...i, className: item.className, suppress: item.suppress, module: item.module } : i
+          i.id === objectId ? { ...i, className: item.className, suppress: item.suppress, module: item.module } : i,
         ),
       };
     });
@@ -127,7 +128,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
     };
   }
 
-  const onChangeHandler = (item: EntityConfigDto) => {
+  const onChangeHandler = (item: EntityConfigDto): void => {
     setObjectId(item.id);
     if (Boolean(props.onChange)) props.onChange(item);
   };
@@ -201,9 +202,9 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
   ];
 
   return (
-    <ShaSpin spinning={isFetchingData} tip={'Fetching data...'}>
+    <ShaSpin spinning={isFetchingData} tip="Fetching data...">
       <div className="sha-page-heading sha-paging-height">
-        <div className="sha-page-heading-left" style={{width: 'calc(100% - 60px)'}}>
+        <div className="sha-page-heading-left" style={{ width: 'calc(100% - 60px)' }}>
           <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />
         </div>
         <div className="sha-page-heading-right">
@@ -249,19 +250,20 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
             return name;
           }}
           onRenterItem={(item) => {
-            return <div className={styles.shaComponentParent}>
-              {item.suppress
-                ? <EyeInvisibleOutlined />
-                : item.source === MetadataSourceType.UserDefined
-                  ? <UserAddOutlined />
-                  : item.notImplemented
-                    ? <QuestionCircleOutlined />
-                    : item.entityConfigType === EntityConfigType.Interface
-                      ? <InterfaceOutlined />
-                      : <ClassOutlined />
-              }<span style={{paddingRight: '5px'}}> </span>
-              <span className={styles.shaComponentTitle}> {item.className} </span>
-            </div>;
+            return (
+              <div className={styles.shaComponentParent}>
+                {item.suppress
+                  ? <EyeInvisibleOutlined />
+                  : item.source === MetadataSourceType.UserDefined
+                    ? <UserAddOutlined />
+                    : item.notImplemented
+                      ? <QuestionCircleOutlined />
+                      : item.entityConfigType === EntityConfigType.Interface
+                        ? <InterfaceOutlined />
+                        : <ClassOutlined />}<span style={{ paddingRight: '5px' }}> </span>
+                <span className={styles.shaComponentTitle}> {item.className} </span>
+              </div>
+            );
           }}
         />
       </div>

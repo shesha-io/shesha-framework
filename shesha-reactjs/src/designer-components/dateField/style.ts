@@ -2,10 +2,9 @@ import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
 export const useStyles = createStyles(({ css, cx }, { fullStyles }: { fullStyles: CSSProperties }) => {
-
-    const dateField = cx(
-        "sha-dropdown",
-        css`
+  const dateField = cx(
+    "sha-dropdown",
+    css`
           --ant-color-text: ${fullStyles.color} !important;
           --ant-font-size: ${fullStyles.fontSize} !important;
           --ant-font-weight: ${fullStyles.fontWeight} !important;
@@ -20,11 +19,11 @@ export const useStyles = createStyles(({ css, cx }, { fullStyles }: { fullStyles
           .ant-picker-cell-inner {
             font-weight: var(--ant-font-weight) !important;
           }
-        `
-    );
+        `,
+  );
 
 
-    return {
-        dateField
-    };
+  return {
+    dateField,
+  };
 });

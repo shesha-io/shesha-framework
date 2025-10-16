@@ -47,7 +47,7 @@ const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValu
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (e: any) => {
+          const onChangeInternal = (e: any): void => {
             if (e.target) customEvents.onChange({ ...e, currentTarget: { value: e.target.value } });
             if (typeof onChange === 'function') onChange(e);
           };

@@ -1,5 +1,5 @@
 import { MessageInstance } from 'antd/es/message/interface';
-import { DOMAttributes , FocusEvent} from 'react';
+import { DOMAttributes, FocusEvent } from 'react';
 import { IAnyObject, IConfigurableFormComponent } from '@/interfaces';
 import { IGooglePlacesAutocompleteProps } from '@/components';
 import { ISetStatePayload } from '@/providers/globalState/contexts';
@@ -12,8 +12,6 @@ import { ObservableProxy } from '@/providers/form/observableProxy';
 import { CustomLabeledValue } from '@/components/refListDropDown/models';
 import { TouchableProxy } from '@/providers/form/touchableProxy';
 
-type SetGlobalStateFunc = (payload: ISetStatePayload) => void;
-
 export interface ICustomEventHandler {
   model: IConfigurableFormComponent;
   form: IFormApi;
@@ -25,10 +23,10 @@ export interface ICustomEventHandler {
   setGlobalState: (payload: ISetStatePayload) => void;
 };
 
-export const addContextData = (context: any, additionalContext: any) => {
+export const addContextData = (context: object, additionalContext: object): any => {
   // if context is an ObservableProxy
   if (context instanceof ObservableProxy || context instanceof TouchableProxy) {
-    for(const propName in additionalContext) {
+    for (const propName in additionalContext) {
       if (additionalContext.hasOwnProperty(propName)) {
         context.addAccessor(propName, () => additionalContext[propName]);
       }
@@ -36,7 +34,7 @@ export const addContextData = (context: any, additionalContext: any) => {
     return context;
   }
   // if context is a simple object
-  return {...context, ...additionalContext};
+  return { ...context, ...additionalContext };
 };
 
 export interface ICustomAddressEventHandler extends ICustomEventHandler {
@@ -46,16 +44,16 @@ export interface ICustomAddressEventHandler extends ICustomEventHandler {
 
 export type EventHandlerAttributes<T = any> = Pick<DOMAttributes<T>, 'onBlur' | 'onChange' | 'onFocus' | 'onClick'>;
 
-export interface IEventHandlers<T = any> extends Pick<DOMAttributes<T>, 'onBlur' | 'onFocus' | 'onClick'>{
+export interface IEventHandlers<T = any> extends Pick<DOMAttributes<T>, 'onBlur' | 'onFocus' | 'onClick'> {
   onChange: (values: object, event?: any) => void;
 };
 
 /** @deprecated use getAllEventHandlers instead */
 export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext): EventHandlerAttributes<T> => {
-  const onCustomEvent = (event: any, key: string) => {
+  const onCustomEvent = (event: any, key: string): void => {
     const expression = model?.[key];
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {event, value: event?.currentTarget.value}));
+      return executeScriptSync(expression, addContextData(context, { event, value: event?.currentTarget.value }));
     }
   };
 
@@ -68,14 +66,14 @@ export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, con
 };
 
 export const getAllEventHandlers = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext): IEventHandlers<T> => {
-  const onCustomEvent = (event: any, key: string) => {
+  const onCustomEvent = (event: any, key: string): void => {
     const expression = model?.[key];
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {event, value: event?.currentTarget.value}));
+      return executeScriptSync(expression, addContextData(context, { event, value: event?.currentTarget.value }));
     }
   };
 
-  const onChange = (values: object, event: any) => {
+  const onChange = (values: object, event: any): void => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { event, ...values }));
@@ -92,14 +90,14 @@ export const getAllEventHandlers = <T = any>(model: IConfigurableFormComponent, 
 
 export const customDateEventHandler = (
   model: IConfigurableFormComponent,
-  context: IApplicationContext
-) => ({
+  context: IApplicationContext,
+): IEventHandlers => ({
   onChange: (value: any | null, dateString: string | [string, string]) => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(
         expression,
-        addContextData(context, { dateString, value })
+        addContextData(context, { dateString, value }),
       );
     }
   },
@@ -109,7 +107,7 @@ export const customDateEventHandler = (
     if (Boolean(expression)) {
       return executeScriptSync(
         expression,
-        addContextData(context, { event })
+        addContextData(context, { event }),
       );
     }
   },
@@ -119,87 +117,58 @@ export const customDateEventHandler = (
     if (Boolean(expression)) {
       return executeScriptSync(
         expression,
-        addContextData(context, { event })
+        addContextData(context, { event }),
       );
     }
   },
 });
 
-export const customTimeEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext) => ({
+export const customTimeEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext): IEventHandlers => ({
   onChange: (value: any | null, timeString: string | [string, string]) => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {timeString, value}));
+      return executeScriptSync(expression, addContextData(context, { timeString, value }));
     }
   },
 });
 
-export const customDropDownEventHandler = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext) => ({
+export const customDropDownEventHandler = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext): IEventHandlers => ({
   onChange: (value: CustomLabeledValue<T>, option: any) => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {option, value}));
+      return executeScriptSync(expression, addContextData(context, { option, value }));
     }
   },
 });
 
-export const customOnChangeValueEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext) => ({
+export const customOnChangeValueEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext): IEventHandlers => ({
   onChange: (value: any) => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {value}));
+      return executeScriptSync(expression, addContextData(context, { value }));
     }
   },
 });
 
-export const customOnClickEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext, clickEvent: Function = null) => ({
+export const customOnClickEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext, clickEvent: Function = null): Pick<DOMAttributes<any>, 'onClick'> => ({
   onClick: (value: any) => {
     if (typeof clickEvent === 'function')
       clickEvent(value);
     const expression = model?.onClickCustom;
     if (Boolean(expression)) {
-      return executeScriptSync(expression, addContextData(context, {value}));
+      return executeScriptSync(expression, addContextData(context, { value }));
     }
   },
 });
 
-export const onCustomEventsHandler = <FormCustomEvent = any>(
-  event: FormCustomEvent,
-  customEventAction: string,
-  form: IFormApi,
-  formData: any,
-  globalState: IAnyObject,
-  http: HttpClientApi,
-  message: MessageInstance,
-  moment: object,
-  value: any,
-  setGlobalState: SetGlobalStateFunc
-) => {
-  /* tslint:disable:function-constructor */
-  const eventFunc = new Function(
-    'data',
-    'event',
-    'form',
-    'globalState',
-    'http',
-    'message',
-    'moment',
-    'value',
-    'setGlobalState',
-    customEventAction
-  );
-  return eventFunc(formData, event, form, globalState, http, message, moment, value, setGlobalState);
-};
-
 export const customAddressEventHandler = (
   model: IConfigurableFormComponent,
   context: IApplicationContext,
-  onChangeCustom,
-  onSelectCustom,
-  onFocusCustom,
+  onChangeCustom: (value: string) => void,
+  onSelectCustom: (selected: IAddressAndCoords) => Promise<IOpenCageResponse | IAddressAndCoords>,
+  onFocusCustom: (value: string) => void,
 ): IGooglePlacesAutocompleteProps => {
-
-  const onCustomEvent = (event: any, key: string) => {
+  const onCustomEvent = (event: any, key: string): void => {
     const expression = model?.[key];
     if (Boolean(expression)) {
       // if context is an ObservableProxy
@@ -215,23 +184,23 @@ export const customAddressEventHandler = (
     }
   };
 
-  const onChange = (e: string) => {
+  const onChange = (e: string): void => {
     onChangeCustom(e);
     onCustomEvent(e, 'onChangeCustom');
   };
 
-  const onFocus = (e: string) => {
+  const onFocus = (e: string): void => {
     onFocusCustom(e);
     onCustomEvent(e, 'onFocusCustom');
   };
 
-  const onGeocodeChange = (event: IAddressAndCoords) =>
+  const onGeocodeChange = (event: IAddressAndCoords): Promise<void> =>
     onSelectCustom(event).then((payload) => onCustomEvent({ ...event, ...(payload || {}) }, 'onSelectCustom'));
 
   return {
     onChange,
     onGeocodeChange,
-    onFocus
+    onFocus,
   };
 };
 

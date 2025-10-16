@@ -9,14 +9,13 @@ import { createNamedContext } from '@/utils/react';
 
 export interface IFormPersisterStateContext {
   formId: FormIdentifier;
-  skipCache: boolean;
-  formProps: UpToDateForm;
+  formProps: UpToDateForm | null;
   loaded: boolean;
   loading: boolean;
-  loadError?: IErrorInfo;
+  loadError?: IErrorInfo | undefined;
   saving: boolean;
   saved: boolean;
-  saveError?: IErrorInfo;
+  saveError?: IErrorInfo | undefined;
 }
 
 export interface ILoadRequestPayload {
@@ -35,8 +34,7 @@ export interface IFormPersisterActionsContext {
 
 /** Form initial state */
 export const FORM_PERSISTER_CONTEXT_INITIAL_STATE: IFormPersisterStateContext = {
-  formId: null,
-  skipCache: false,
+  formId: "",
   formProps: null,
   loaded: false,
   loading: false,
@@ -44,13 +42,13 @@ export const FORM_PERSISTER_CONTEXT_INITIAL_STATE: IFormPersisterStateContext = 
   saving: false,
 };
 
-export const FormPersisterStateContext = createNamedContext<IFormPersisterStateContext>(
-  FORM_PERSISTER_CONTEXT_INITIAL_STATE,
-  "FormPersisterStateContext"
+export const FormPersisterStateContext = createNamedContext<IFormPersisterStateContext | undefined>(
+  undefined,
+  "FormPersisterStateContext",
 );
 
 export type IFormPersisterContext = IFormPersisterActionsContext & IFormPersisterStateContext;
 
-export const FormPersisterActionsContext = createNamedContext<IFormPersisterActionsContext>(undefined, "FormPersisterActionsContext");
+export const FormPersisterActionsContext = createNamedContext<IFormPersisterActionsContext | undefined>(undefined, "FormPersisterActionsContext");
 
 export const FormPersisterStateConsumer = FormPersisterStateContext.Consumer;

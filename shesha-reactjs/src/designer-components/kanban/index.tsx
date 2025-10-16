@@ -43,7 +43,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     const [columnBackgroundStyle, setColumnBackgroundStyle] = useState({});
 
     useEffect(() => {
-      const fetchStyles = async () => {
+      const fetchStyles = async (): Promise<void> => {
         const url = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
         const style = getBackgroundStyle(background, headerStyle, url);
 
@@ -53,7 +53,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     }, [background, backendUrl, httpHeaders]);
 
     useEffect(() => {
-      const fetchStyles = async () => {
+      const fetchStyles = async (): Promise<void> => {
         const url = await getBackgroundImageUrl(columnBackground, backendUrl, httpHeaders);
         const style = getBackgroundStyle(columnBackground, columnStyle, url);
 

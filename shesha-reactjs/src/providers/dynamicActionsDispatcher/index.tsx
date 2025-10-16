@@ -13,18 +13,16 @@ import useThunkReducer from '@/hooks/thunkReducer';
 import { DynamicItemsEvaluationHook, IProvidersDictionary } from './models';
 import { IDynamicActionsContext } from '../dynamicActions/contexts';
 
-export interface IDynamicActionsDispatcherProviderProps { }
-
-const DynamicActionsDispatcherProvider: FC<PropsWithChildren<IDynamicActionsDispatcherProviderProps>> = ({ children }) => {
+const DynamicActionsDispatcherProvider: FC<PropsWithChildren> = ({ children }) => {
   const initial: IDynamicActionsDispatcherStateContext = {
     ...DYNAMIC_ACTIONS_DISPATCHER_CONTEXT_INITIAL_STATE,
   };
 
   const providers = useRef<IProvidersDictionary>({});
 
-  const [state/*, dispatch*/] = useThunkReducer(metadataReducer, initial);
+  const [state/* , dispatch*/] = useThunkReducer(metadataReducer, initial);
 
-  const registerProvider = (payload: IRegisterProviderPayload) => {
+  const registerProvider = (payload: IRegisterProviderPayload): void => {
     const existingProvider = providers.current[payload.id];
     if (!existingProvider) {
       providers.current[payload.id] = {
@@ -59,7 +57,7 @@ const DynamicActionsDispatcherProvider: FC<PropsWithChildren<IDynamicActionsDisp
   );
 };
 
-function useDynamicActionsDispatcherState(require: boolean) {
+function useDynamicActionsDispatcherState(require: boolean): IDynamicActionsDispatcherStateContext | undefined {
   const context = useContext(DynamicActionsDispatcherStateContext);
 
   if (context === undefined && require) {
@@ -69,7 +67,7 @@ function useDynamicActionsDispatcherState(require: boolean) {
   return context;
 }
 
-function useDynamicActionsDispatcherActions(require: boolean) {
+function useDynamicActionsDispatcherActions(require: boolean): IDynamicActionsDispatcherActionsContext | undefined {
   const context = useContext(DynamicActionsDispatcherActionsContext);
 
   if (context === undefined && require) {
@@ -79,7 +77,7 @@ function useDynamicActionsDispatcherActions(require: boolean) {
   return context;
 }
 
-function useDynamicActionsDispatcher(require: boolean = true): IDynamicActionsDispatcherFullInstance {
+function useDynamicActionsDispatcher(require: boolean = true): IDynamicActionsDispatcherFullInstance | undefined {
   const actionsContext = useDynamicActionsDispatcherActions(require);
   const stateContext = useDynamicActionsDispatcherState(require);
 
@@ -88,10 +86,10 @@ function useDynamicActionsDispatcher(require: boolean = true): IDynamicActionsDi
     : undefined;
 }
 
-export { 
-  DynamicActionsDispatcherProvider, 
-  useDynamicActionsDispatcherState, 
-  useDynamicActionsDispatcherActions, 
+export {
+  DynamicActionsDispatcherProvider,
+  useDynamicActionsDispatcherState,
+  useDynamicActionsDispatcherActions,
   useDynamicActionsDispatcher,
-  type DynamicItemsEvaluationHook,  
+  type DynamicItemsEvaluationHook,
 };

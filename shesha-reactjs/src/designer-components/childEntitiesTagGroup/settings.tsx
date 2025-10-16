@@ -11,7 +11,7 @@ import { IChildEntitiesTagGroupProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { useForm } from '@/providers';
 import { useFormDesignerState } from '@/providers/formDesigner';
-import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const { Option } = Select;
@@ -21,17 +21,18 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
 
   const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
-  const labelFormatConstants = useAvailableConstantsMetadata({ 
-    addGlobalConstants: true, 
+  const labelFormatConstants = useAvailableConstantsMetadata({
+    addGlobalConstants: true,
     onBuild: (builder) => {
       builder.addObject("item", "Properties of the edited object", undefined);
-    }
+    },
   });
 
   return (
     <>
-      <SettingsCollapsiblePanel header='Display'>
-        <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
+      <SettingsCollapsiblePanel header="Display">
+        <ContextPropertyAutocomplete
+          id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
           onValuesChange={onValuesChange}
@@ -60,7 +61,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Modal Display'>
+      <SettingsCollapsiblePanel header="Modal Display">
         <SettingsFormItem name="deleteConfirmationTitle" label="Delete Confirmation Title" jsSetting>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
@@ -83,8 +84,8 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Render'>
-        {/*<SettingsFormItem name="capturedProperties" label="Captured Properties" jsSetting>
+      <SettingsCollapsiblePanel header="Render">
+        {/* <SettingsFormItem name="capturedProperties" label="Captured Properties" jsSetting>
           <Select mode="tags" />
   </SettingsFormItem>*/}
 
@@ -98,7 +99,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
             mode="dialog"
             propertyName="labelFormat"
             label="Label Format"
-            //description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+            // description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
             exposedVariables={[
               { name: "item", description: "Properties of the edited object", type: "object" },
               { name: "data", description: "Form values", type: "object" },
@@ -114,13 +115,13 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
             ]}
             wrapInTemplate={true}
             templateSettings={{
-              functionName: "getFormat",              
+              functionName: "getFormat",
             }}
             availableConstants={labelFormatConstants}
           />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
-      
+
       <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting

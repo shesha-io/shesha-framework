@@ -26,7 +26,7 @@ export const DateDisplay: FC<IDateDisplayProps> = ({
 }) => {
   const dateString = tolocalIsoDate(children || date);
 
-  const getDate = () =>
+  const getDate = (): JSX.Element =>
     dateAgo ? <span>{moment(dateString).fromNow()}</span> : <span>{moment(dateString).format(format)}</span>;
 
   if (showTooltip) {

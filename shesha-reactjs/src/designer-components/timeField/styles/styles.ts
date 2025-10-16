@@ -2,7 +2,7 @@ import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
 export const useStyles = createStyles(({ css, cx }, { fullStyles }: { fullStyles: CSSProperties }) => {
-    const shaTimepicker = cx("sha-timepicker", css`
+  const shaTimepicker = cx("sha-timepicker", css`
         width: 100%;
         --ant-color-text: ${fullStyles.color} !important;
           --ant-font-size: ${fullStyles.fontSize} !important;
@@ -19,8 +19,8 @@ export const useStyles = createStyles(({ css, cx }, { fullStyles }: { fullStyles
             font-weight: var(--ant-font-weight) !important;
           }
   `);
-    return {
-        shaTimepicker,
-    };
+  return {
+    shaTimepicker,
+  };
 });
 

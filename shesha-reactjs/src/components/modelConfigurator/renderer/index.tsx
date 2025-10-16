@@ -10,16 +10,14 @@ import { useModelConfigurator } from '@/providers';
 import { ViewsEditorComponent } from '../viewsEditor';
 import { useStyles } from '../styles/styles';
 
-export interface IModelConfiguratorRendererProps { }
-
 const markup = modelSettingsMarkup as FormMarkup;
 
-export const ModelConfiguratorRenderer: FC<IModelConfiguratorRendererProps> = () => {
+export const ModelConfiguratorRenderer: FC = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
   const { modelConfiguration, form, save, id } = useModelConfigurator();
 
-  const onSettingsSave = values => {
+  const onSettingsSave = (values): void => {
     const dto = { ...values, id };
     save(dto)
       .then(() => message.success('Model saved successfully'))
@@ -46,7 +44,7 @@ export const ModelConfiguratorRenderer: FC<IModelConfiguratorRendererProps> = ()
             permissionCreate: () => <PermissionEditorComponent name="permissionCreate" />,
             permissionUpdate: () => <PermissionEditorComponent name="permissionUpdate" />,
             permissionDelete: () => <PermissionEditorComponent name="permissionDelete" />,
-            viewConfigurations: () => <ViewsEditorComponent />
+            viewConfigurations: () => <ViewsEditorComponent />,
           }}
         />
       </CustomErrorBoundary>

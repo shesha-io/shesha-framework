@@ -6,10 +6,10 @@ export interface IDataContextDescriptor extends IDataContextProviderActionsConte
   id: string;
   uid: string;
   name: string;
-  description?: string;
+  description?: string | undefined;
   type: DataContextType;
-  parentUid?: string;
-  metadata?: IContextMetadata;
+  parentUid?: string | undefined;
+  metadata?: IContextMetadata | undefined;
 }
 
 export interface IDataContextDictionary {
@@ -17,7 +17,7 @@ export interface IDataContextDictionary {
 }
 
 export interface IRegisterDataContextPayload extends IDataContextDescriptor {
-  initialData?: any;
+  initialData?: unknown;
 }
 
 export const SHESHA_ROOT_DATA_CONTEXT_MANAGER = 'SHESHA_ROOT_DATA_CONTEXT_MANAGER';

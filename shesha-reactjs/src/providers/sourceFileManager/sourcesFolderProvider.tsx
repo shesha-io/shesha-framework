@@ -2,7 +2,7 @@ import React, { FC, PropsWithChildren, useContext, useMemo } from 'react';
 import { ISourcesFolderContext, SourcesFolderContext } from './contexts';
 
 export interface ISourceFilesFolderProviderProps {
-    folder: string;
+  folder: string;
 }
 
 /**
@@ -12,13 +12,13 @@ export interface ISourceFilesFolderProviderProps {
  * @return {ISourcesFolderContext} the SourcesFolderContext
  */
 export const useSourcesFolder = (require: boolean): ISourcesFolderContext => {
-    const context = useContext(SourcesFolderContext);
+  const context = useContext(SourcesFolderContext);
 
-    if (context === undefined && require) {
-        throw new Error('useSourcesFolder must be used within a SourcesFolderContext');
-    }
+  if (context === undefined && require) {
+    throw new Error('useSourcesFolder must be used within a SourcesFolderContext');
+  }
 
-    return context;
+  return context;
 };
 
 /**
@@ -28,8 +28,8 @@ export const useSourcesFolder = (require: boolean): ISourcesFolderContext => {
  * @return {string} The full path of the file or folder.
  */
 export const useSourceFullPath = (fileOrFolderName: string): string => {
-    const parentContext = useSourcesFolder(false);
-    return parentContext ? parentContext.path + '/' + fileOrFolderName : fileOrFolderName;
+  const parentContext = useSourcesFolder(false);
+  return parentContext ? parentContext.path + '/' + fileOrFolderName : fileOrFolderName;
 };
 
 /**
@@ -40,17 +40,17 @@ export const useSourceFullPath = (fileOrFolderName: string): string => {
  * @return {ReactElement} The JSX element representing the component.
  */
 export const SourceFilesFolderProvider: FC<PropsWithChildren<ISourceFilesFolderProviderProps>> = ({ folder, children }) => {
-    const fullPath = useSourceFullPath(folder);
-    
-    const value = useMemo<ISourcesFolderContext>(() => {
-        return { folder: folder, path: fullPath };
-    }, [folder, fullPath]);
+  const fullPath = useSourceFullPath(folder);
 
-    return (
-        <SourcesFolderContext.Provider
-            value={value}
-        >
-            {children}
-        </SourcesFolderContext.Provider>
-    );
+  const value = useMemo<ISourcesFolderContext>(() => {
+    return { folder: folder, path: fullPath };
+  }, [folder, fullPath]);
+
+  return (
+    <SourcesFolderContext.Provider
+      value={value}
+    >
+      {children}
+    </SourcesFolderContext.Provider>
+  );
 };

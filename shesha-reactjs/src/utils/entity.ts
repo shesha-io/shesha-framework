@@ -60,23 +60,23 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
     maxResultCount: 1000,
     entityType: entityType,
     properties: `id ${gqlFields}`,
-    filter: buildFilterById(selection),    
+    filter: buildFilterById(selection),
   }), [entityType, displayProperty, selection]);
 
   const isEmptySelection = !selection || (Array.isArray(selection) && selection.length === 0);
   const mustFetch = !isEmptySelection && entityType && !itemsAlreadyLoaded;
 
   const valueFetcher = useGet<IAbpWrappedGetEntityListResponse, any, IGetEntityPayload>(
-      `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
-      {
-          lazy: true,
-          queryParams: getValuePayload,
-      }
+    `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
+    {
+      lazy: true,
+      queryParams: getValuePayload,
+    },
   );
-  
+
   useEffect(() => {
-      if (mustFetch)
-          valueFetcher.refetch({queryParams: getValuePayload});
+    if (mustFetch)
+      valueFetcher.refetch({ queryParams: getValuePayload });
   }, [getValuePayload.filter]);
 
   const valueItems = valueFetcher.data?.result?.items;

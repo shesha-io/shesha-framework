@@ -4,7 +4,7 @@ import {
   getListEditorActionsContext,
   getListEditorContextInitialState,
   getListEditorStateContext,
-  IListEditorContext
+  IListEditorContext,
 } from './contexts';
 import { IGenericListEditorProps } from './interfaces';
 import { ListEditorRenderer } from './renderer';
@@ -22,7 +22,7 @@ export interface NestedItemsRenderingArgs<TItem = any> {
 
 export interface ItemChangeDetails {
   isReorder: boolean;
-  childsLengthDelta?: number; 
+  childsLengthDelta?: number;
 }
 export interface ListItemRenderingArgs<TItem = any> {
   item: TItem;
@@ -48,10 +48,6 @@ export interface IListEditorProps<TItem = any> extends IGenericListEditorProps<T
   maxItemsCount?: number;
 }
 
-export interface IListEditorProviderProps {
-
-}
-
 interface CreateListEditorComponentResult<TItem extends object> {
   ListEditorProvider: <T extends React.PropsWithChildren<IGenericListEditorProps<TItem>>>(props: T) => React.JSX.Element;
   useListEditorComponent: () => IListEditorContext<TItem>;
@@ -60,7 +56,7 @@ export const createListEditorComponent = <TItem extends object>(): CreateListEdi
   const StateContext = getListEditorStateContext<TItem>(undefined);
   const ActionContext = getListEditorActionsContext<TItem>();
 
-  const useListEditorComponent = () => {
+  const useListEditorComponent = (): IListEditorContext<TItem> => {
     const stateContext = useContext(StateContext);
     const actionsContext = useContext(ActionContext);
 
@@ -72,8 +68,8 @@ export const createListEditorComponent = <TItem extends object>(): CreateListEdi
   };
 
   const ListEditorProvider = <T extends PropsWithChildren<IGenericListEditorProps<TItem>>>(
-    props: T
-  ) => {
+    props: T,
+  ): JSX.Element => {
     const { value, onChange, onSelectionChange, initNewItem, readOnly } = props;
     const initialState = useMemo(() => {
       return getListEditorContextInitialState<TItem>(value);
@@ -107,7 +103,7 @@ export const ListEditor = <TItem extends ListItem>({
   initNewItem,
   readOnly = false,
   maxItemsCount,
-}: IListEditorProps<TItem>) => {
+}: IListEditorProps<TItem>): JSX.Element => {
   const component = useMemo(() => {
     return createListEditorComponent<TItem>();
   }, []);

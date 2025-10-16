@@ -1,28 +1,24 @@
-import { IReferenceListIdentifier } from '@/interfaces';
+import { ConfigurableItemIdentifier, IReferenceListIdentifier, isConfigurableItemFullName, isConfigurableItemRawId } from '@/interfaces';
 import { getFormFullName } from '@/utils/form';
 import { FormIdentifier } from '../form/models';
-import { isFormFullName, isFormRawId } from '../form/utils';
-import { getReferenceListFullName } from '../referenceListDispatcher/utils';
 
-export const getFormNotFoundMessage = (formId: FormIdentifier) => {
-  if (isFormRawId(formId)) return `Form with id='${formId}' not found`;
+export const getConfigurationNotFoundMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier): string => {
+  if (isConfigurableItemRawId(configurationId)) return `${configurationType} with id='${configurationId}' not found`;
 
-  if (isFormFullName(formId)) return `Form '${getFormFullName(formId.module, formId.name)}' not found`;
+  if (isConfigurableItemFullName(configurationId)) return `${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}' not found`;
 
-  return 'Form not found';
+  return `${configurationType} not found`;
 };
 
-export const getFormForbiddenMessage = (formId: FormIdentifier) => {
-  if (isFormRawId(formId)) return `You are not authorized to access the form with id='${formId}'`;
+export const getFormNotFoundMessage = (formId: FormIdentifier): string => getConfigurationNotFoundMessage("Form", formId);
+export const getReferenceListNotFoundMessage = (refListId?: IReferenceListIdentifier): string => getConfigurationNotFoundMessage("Reference list", refListId);
 
-  if (isFormFullName(formId)) return `You are not authorized to access the form '${getFormFullName(formId.module, formId.name)}'`;
+export const getConfigurationForbiddenMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier): string => {
+  if (isConfigurableItemRawId(configurationId)) return `You are not authorized to access the ${configurationType} with id='${configurationId}'`;
 
-  return 'Form not found';
+  if (isConfigurableItemFullName(configurationId)) return `You are not authorized to access the ${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}'`;
+
+  return `${configurationType} not found`;
 };
 
-
-export const getReferenceListNotFoundMessage = (refListId: IReferenceListIdentifier) => {
-  if (refListId) return `Reference list '${getReferenceListFullName(refListId)}' not found`;
-
-  return 'Reference list not found';
-};
+export const getFormForbiddenMessage = (formId: FormIdentifier): string => getConfigurationForbiddenMessage("form", formId);

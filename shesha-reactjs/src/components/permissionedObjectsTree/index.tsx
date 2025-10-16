@@ -10,6 +10,7 @@ import { ISetGroupingArguments, setGroupingArgumentsForm } from './set-grouping-
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { ISetSearchTextArguments, setSearchTextArgumentsForm } from './set-search-text-arguments';
 import { ShaSpin, useAvailableConstantsData } from '@/index';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 export interface IPermissionedObjectsTreeProps {
   objectsType?: string;
@@ -30,13 +31,9 @@ export interface IPermissionedObjectsTreeProps {
 }
 
 export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props) => {
-
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaPermissionedObjects.toolbox.objects.openedKeys.' + props.objectsType, ['']);
   const [searchText, setSearchText] = useLocalStorage('shaPermissionedObjects.toolbox.objects.search.' + props.objectsType, '');
   const [groupBy, setGroupBy] = useLocalStorage('shaPermissionedObjects.toolbox.objects.grouping.' + props.objectsType, '-');
-  //const [objectsType, setObjectsType] = useLocalStorage('shaPermissionedObjects.toolbox.objects.type', null);
-  //const objectsType = 'Shesha.WebApi';
-
   const [allItems, setAllItems] = useState<PermissionedObjectDto[]>();
 
   const { executeAction } = useConfigurableActionDispatcher();
@@ -54,15 +51,15 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
 
   useEffect(() => {
     if (!isFetchingData) {
-      if (fetchingDataResponse) {
-        const fetchedData = fetchingDataResponse?.result;
+      if (isAjaxSuccessResponse(fetchingDataResponse)) {
+        const fetchedData = fetchingDataResponse.result;
         if (fetchedData) {
           setAllItems(fetchedData);
         }
       }
     }
   }, [isFetchingData, fetchingDataError, fetchingDataResponse]);
-  
+
   const findItem = (items: PermissionedObjectDto[], key: string): PermissionedObjectDto => {
     let res = null;
     let i = 0;
@@ -97,7 +94,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
 
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -112,7 +109,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
         setGroupBy(arg.group);
         return Promise.resolve();
       },
-    }
+    },
   );
 
   useConfigurableAction(
@@ -127,19 +124,19 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
         setSearchText(arg.searchText);
         return Promise.resolve();
       },
-    }
+    },
   );
 
-  const onChangeAction = (selectedRow: PermissionedObjectDto) => {
+  const onChangeAction = (selectedRow: PermissionedObjectDto): void => {
     if (props.onSelectAction?.actionName) {
       executeAction({
         actionConfiguration: props.onSelectAction,
-        argumentsEvaluationContext: {...allData.current, selectedRow},
+        argumentsEvaluationContext: { ...allData.current, selectedRow },
       });
     }
   };
 
-  const onChangeHandler = (item: PermissionedObjectDto) => {
+  const onChangeHandler = (item: PermissionedObjectDto): void => {
     setObjectId(item.id);
     onChangeAction(item);
     if (Boolean(props.onChange))
@@ -147,41 +144,41 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
   };
 
   const renderTitle = (item: PermissionedObjectDto): React.ReactNode => {
-    const parent = item.parent ? allItems.find(x => x.object === item.parent) : null;
-    const access = 
-      item.access === 1 || item.access === 2 && parent?.access === 1 // Disabled
+    const parent = item.parent ? allItems.find((x) => x.object === item.parent) : null;
+    const access =
+      item.access === 1 || (item.access === 2 && parent?.access === 1 /* Disabled*/)
         ? 1
-        : item.access === 3 || item.access === 2 && parent?.access === 3 // Any authenticated
+        : item.access === 3 || (item.access === 2 && parent?.access === 3 /* Any authenticated*/)
           ? 3
-          : item.access === 4 || item.access === 2 && parent?.access === 4 // Requires permissions
+          : item.access === 4 || (item.access === 2 && parent?.access === 4 /* Requires permissions*/)
             ? 4
-            : item.access === 5 || item.access === 2 && parent?.access === 5 // Allow anonymous
+            : item.access === 5 || (item.access === 2 && parent?.access === 5 /* Allow anonymous*/)
               ? 5
               : !props.defaultAccess
                 ? 5 // Allow anonymous
                 : props.defaultAccess;
     const name = item.hardcoded === true
-      ? <span style={{fontWeight: 'bold'}}>{item.name}</span>
+      ? <span style={{ fontWeight: 'bold' }}>{item.name}</span>
       : <>{item.name}</>;
     return (
       <>
         {(item.type === "Shesha.WebApi" ? <ApiOutlined /> : <InterfaceOutlined />)}
-        <span 
-          className='sha-component-title' 
-          style={access === 1 ? { textDecoration: 'line-through', color: 'gray', paddingLeft: '10px'} : {paddingLeft: '10px'}}
+        <span
+          className="sha-component-title"
+          style={access === 1 ? { textDecoration: 'line-through', color: 'gray', paddingLeft: '10px' } : { paddingLeft: '10px' }}
         >
           {item.description && <Tooltip title={item.description}>{name}</Tooltip>}
           {!item.description && name}
-          </span>
-          {access === 4 && <span style={{color: 'green'}}> (permissioned)</span>}
-          {access === 5 && <span style={{color: 'red'}}> (unsecured)</span>}
-        
+        </span>
+        {access === 4 && <span style={{ color: 'green' }}> (permissioned)</span>}
+        {access === 5 && <span style={{ color: 'red' }}> (unsecured)</span>}
+
       </>
     );
   };
 
   return (
-    <ShaSpin spinning={isFetchingData} tip={'Fetching data...'}>
+    <ShaSpin spinning={isFetchingData} tip="Fetching data...">
       <GrouppedObjectsTree<PermissionedObjectDto>
         items={allItems}
         openedKeys={openedKeys}

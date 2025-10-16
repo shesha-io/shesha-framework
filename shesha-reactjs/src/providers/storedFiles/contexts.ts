@@ -6,21 +6,18 @@ export type IFlagProgressFlags =
   'downloadFile' |
   'uploadFile' |
   'deleteFile' |
-  'dowloadZip' |
   'fetchFileList' |
   'downloadZip'; /* NEW_IN_PROGRESS_FLAG_GOES_HERE */
 export type IFlagSucceededFlags =
   'downloadFile' |
   'uploadFile' |
   'deleteFile' |
-  'dowloadZip' |
   'fetchFileList' |
   'downloadZip'; /* NEW_SUCCEEDED_FLAG_GOES_HERE */
 export type IFlagErrorFlags =
   'downloadFile' |
   'uploadFile' |
   'deleteFile' |
-  'dowloadZip' |
   'fetchFileList' |
   'downloadZip'; /* NEW_ERROR_FLAG_GOES_HERE */
 export type IFlagActionedFlags = '__DEFAULT__'; /* NEW_ACTIONED_FLAG_GOES_HERE */
@@ -31,6 +28,7 @@ export interface IStoredFile extends UploadFile {
   fileCategory?: string | null;
   url?: string | null;
   temporary?: boolean;
+  userHasDownloaded?: boolean;
 }
 
 export interface IRequestFilePayload {
@@ -40,9 +38,9 @@ export interface IRequestFilePayload {
   ownerName?: string;
 }
 
-export interface IUploadFilePayload extends IRequestFilePayload {}
+export type IUploadFilePayload = IRequestFilePayload;
 
-export interface IDownloadZipPayload extends IRequestFilePayload {}
+export type IDownloadZipPayload = IRequestFilePayload;
 
 export interface IDownloadFilePayload {
   fileId: string;
@@ -54,7 +52,7 @@ export interface IStoredFilesStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   fileList?: IStoredFile[];
   newFile?: IStoredFile;
-  fileIdToDelete?: string;
+  fileId?: string;
   url?: string;
 }
 

@@ -9,7 +9,7 @@ import { RangeValue } from '@/designer-components/dateField/interfaces';
  * @param {string} dateTo - the maximum date
  * @param {string} dateToCompare - the date to compare
  */
-export const isDateBetween = (dateFrom: string, dateTo: string, dateToCompare: string) => {
+export const isDateBetween = (dateFrom: string, dateTo: string, dateToCompare: string): boolean => {
   if (!getSafelyTrimmedString(dateFrom) || !getSafelyTrimmedString(dateTo) || !getSafelyTrimmedString(dateToCompare))
     return false;
   let lDate = new Date();
@@ -27,7 +27,7 @@ export const isDateBetween = (dateFrom: string, dateTo: string, dateToCompare: s
  *
  * @param dateString
  */
-export const getFormattedDate = (dateString: string) => {
+export const getFormattedDate = (dateString: string): string => {
   const date = new Date(dateString);
   return `${date.toDateString()} ${date.toLocaleTimeString()}`;
 };
@@ -38,7 +38,7 @@ export const getFormattedDate = (dateString: string) => {
  * @param date - date in `YYYY/MM/DD HH:mm:ss` format
  * @returns date in `YYYY/MM/DD HH:mm:ss` or an empty string if the date passed was in the wrong format
  */
-export const formattedDate = (date: string) => {
+export const formattedDate = (date: string): string => {
   try {
     const dateValue = new Date(date);
 
@@ -48,7 +48,7 @@ export const formattedDate = (date: string) => {
   }
 };
 
-export const shortDob = (date: string) => {
+export const shortDob = (date: string): string => {
   try {
     const dateValue = new Date(date);
 
@@ -58,7 +58,7 @@ export const shortDob = (date: string) => {
   }
 };
 
-export const LongDob = (date: string) => {
+export const LongDob = (date: string): string => {
   try {
     const dateValue = new Date(date);
 
@@ -68,12 +68,12 @@ export const LongDob = (date: string) => {
   }
 };
 
-export const tolocalIsoDate = (dateIsoString: string) => {
-  const tzoffset = new Date().getTimezoneOffset() * 60000; //offset in milliseconds
+export const tolocalIsoDate = (dateIsoString: string): string => {
+  const tzoffset = new Date().getTimezoneOffset() * 60000; // offset in milliseconds
   return new Date(Date.parse(dateIsoString) - tzoffset).toISOString().slice(0, -1);
 };
 
-export const getMoment = (value: any, dateFormat: string): Moment => {
+export const getMoment = (value: unknown, dateFormat: string): Moment => {
   if (value === null || value === undefined) return undefined;
 
   const values = [isMoment(value) ? value : null, moment(value as string), moment(value as string, dateFormat)];
@@ -81,7 +81,7 @@ export const getMoment = (value: any, dateFormat: string): Moment => {
   return parsed;
 };
 
-export const getRangeMoment = (value: any, dateFormat: string): RangeValue =>
+export const getRangeMoment = (value: unknown, dateFormat: string): RangeValue =>
   (Array.isArray(value) && value?.length === 2
     ? value?.map((v) => getMoment(v, dateFormat))
     : [null, null]) as RangeValue;

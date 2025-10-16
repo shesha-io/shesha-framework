@@ -48,17 +48,17 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
   const isWider = useMedia('(min-width: 1202px)');
   const { styles } = useStyles({ style });
 
-  const onPageNumberChange = (page: number, pageSize?: number) => {
+  const onPageNumberChange = (page: number, pageSize?: number): void => {
     setCurrentPage(page);
     changePageSize(pageSize);
   };
 
-  const onShowSizeChange = (current: number, size?: number) => {
+  const onShowSizeChange = (current: number, size?: number): void => {
     changePageSize(size);
     setCurrentPage(current);
   };
 
-  const showTotal = (total: number, range: number[]) => {
+  const showTotal = (total: number, range: number[]): string | null => {
     if (showTotalItems) {
       return total > 0 ? `${range[0]}-${range[1]} of ${total} items` : '0 items found';
     }
@@ -93,7 +93,7 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
         <Select
           size="small"
           className={styles.dropdown}
-          style={{ width: 100 }}
+          style={{ width: 100, ...style }}
           classNames={{ popup: { root: styles.popup } }}
           options={pageSizeOptions.map((s) => ({ label: `${s} / page`, value: s }))}
           value={selectedPageSize}

@@ -1,11 +1,12 @@
 import { IEntityReferenceDto, IErrorInfo, ILoginForm } from '@/interfaces';
 import { GetCurrentLoginInfoOutput, UserLoginInfoDto } from '@/apis/session';
+import { IRouter } from '../shaRouting';
 
 export type AuthenticationStatus = 'waiting' | 'inprogress' | 'ready' | 'failed';
 export interface AuthenticationState {
   status: AuthenticationStatus;
-  hint?: string;
-  error?: IErrorInfo;
+  hint?: string | undefined;
+  error?: IErrorInfo | undefined;
 }
 
 export interface LoginUserResponse {
@@ -26,10 +27,11 @@ export const ERROR_MESSAGES = {
   GENERIC: 'Oops, something went wrong',
   LOGIN: 'Failed to login',
   USER_PROFILE_LOADING: 'Failed to load user profile',
+  USER_PROFILE_IS_UNAVAILABLE: 'User profile info is unavailable',
 };
 
 export interface IAuthenticator {
-  loginInfo: UserLoginInfoDto;
+  loginInfo: UserLoginInfoDto | undefined;
   isLoggedIn: boolean;
 
   loginUserAsync: (loginFormData: ILoginForm) => Promise<LoginUserResponse>;
@@ -39,4 +41,5 @@ export interface IAuthenticator {
   anyOfPermissionsGranted: (permissions: string[], permissionedEntities?: IEntityReferenceDto[]) => boolean;
 
   state: AuthenticationState;
+  applyRouter: (router: IRouter) => void;
 }

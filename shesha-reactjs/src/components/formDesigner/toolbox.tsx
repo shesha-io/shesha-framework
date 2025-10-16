@@ -7,11 +7,9 @@ import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { useMetadata } from '@/providers';
 
-export interface IProps { }
-
-const Toolbox: FC<IProps> = () => {
+const Toolbox: FC = () => {
   const { styles } = useStyles();
-  const formDs = useFormDesignerStateSelector(x => x.dataSources);
+  const formDs = useFormDesignerStateSelector((x) => x.dataSources);
   const currentMeta = useMetadata(false);
 
   const builderItems = useMemo(() => {
@@ -35,7 +33,7 @@ const Toolbox: FC<IProps> = () => {
 
   return (
     <div className={styles.shaDesignerToolbox}>
-      <Tabs style={{paddingBottom: '50px'}} defaultActiveKey="1" type="card" items={[...builderItems]} />
+      <Tabs style={{ paddingBottom: '50px' }} defaultActiveKey="1" type="card" items={[...builderItems]} />
     </div>
   );
 };

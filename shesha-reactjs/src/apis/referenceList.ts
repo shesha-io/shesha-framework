@@ -20,23 +20,23 @@ export interface GuidNullableEntityReferenceDto {
  * Dto of the Shesha.Domain.ReferenceListItem
  */
 export interface ReferenceListItemDto {
-  id?: string;
-  item?: string | null;
-  itemValue?: number;
-  description?: string | null;
-  orderIndex?: number;
+  id: string;
+  item: string | null;
+  itemValue: number;
+  description: string | null;
+  orderIndex: number;
   /**
    * Color associated with the item
    */
-  color?: string | null;
+  color: string | null;
   /**
    * Icon associated with the item
    */
-  icon?: string | null;
+  icon: string | null;
   /**
    * Short alias
    */
-  shortAlias?: string | null;
+  shortAlias: string | null;
 }
 
 export interface ReferenceListGetByNameQueryParams {
@@ -81,23 +81,14 @@ export interface ReferenceListWithItemsDto {
    * Module name
    */
   module?: string | null;
-  /**
-   * Version number
-   */
-  versionNo?: number;
-  /**
-   * If true, indicates that this is a last version of the form
-   */
-  isLastVersion?: boolean;
-  versionStatus?: ConfigurationItemVersionStatus;
-  name?: string | null;
+  name: string;
   label?: string | null;
   description?: string | null;
   hardLinkToApplication?: boolean;
   namespace?: string | null;
   noSelectionValue?: number | null;
   suppress?: boolean;
-  items?: ReferenceListItemDto[] | null;
+  items: ReferenceListItemDto[];
   /**
    * Cache MD5, is used for client-side caching
    */
@@ -115,15 +106,3 @@ export type referenceListGetByNameProps = Omit<
   >,
   'queryParams'
 >;
-/**
- * Get current form configuration by name
- */
-export const referenceListGetByName = (
-  queryParams: ReferenceListGetByNameQueryParams,
-  props: referenceListGetByNameProps
-) =>
-  RestfulShesha.get<ReferenceListWithItemsDtoAjaxResponse, IAjaxResponseBase, ReferenceListGetByNameQueryParams, void>(
-    `/api/services/app/ReferenceList/GetByName`,
-    queryParams,
-    props
-  );

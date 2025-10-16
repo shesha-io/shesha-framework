@@ -3,8 +3,8 @@ import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models'
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { evaluateValue, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React from 'react';
+import { evaluateValueAsString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import React, { ReactElement } from 'react';
 import {
   migrateCustomFunctions,
   migratePropertyName,
@@ -66,8 +66,8 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   isInput: true,
   isOutput: true,
   calculateModel: (model, allData) => ({
-    ownerId: evaluateValue(model.ownerId, allData),
-    dataId: allData.data?.Id,
+    ownerId: evaluateValueAsString(model.ownerId, allData),
+    dataId: (allData.data as { Id: string })?.Id, // TODO: review and remove
     formModelType: allData.form.formSettings?.modelType,
   }),
   Factory: ({ model, calculatedModel }) => {
@@ -86,7 +86,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
       ...model.allStyles.dimensionsStyles,
       ...model.allStyles.borderStyles,
       ...model.allStyles.shadowStyles,
-      ...model.allStyles.stylingBoxAsCSS
+      ...model.allStyles.stylingBoxAsCSS,
     });
 
     return (
@@ -94,7 +94,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
         {(value, onChange) => {
           const uploadedFileUrl = model.base64 || value;
 
-          const readonly = model.readOnly || model.dataSource === 'base64' && Boolean(model.base64);
+          const readonly = model.readOnly || (model.dataSource === 'base64' && Boolean(model.base64));
 
           const val = model.dataSource === 'storedFile'
             ? model.storedFileId || value?.id || value
@@ -102,7 +102,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               ? uploadedFileUrl
               : model.url || value;
 
-          const fileProvider = child => {
+          const fileProvider = (child): ReactElement => {
             return (
               <StoredFileProvider
                 value={val}
@@ -114,7 +114,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
                 }
                 fileCategory={model.fileCategory}
                 propertyName={!model.context ? model.propertyName : null}
-                //uploadMode={model.useSync ? 'sync' : 'async'}
+                // uploadMode={model.useSync ? 'sync' : 'async'}
               >
                 {child}
               </StoredFileProvider>
@@ -144,7 +144,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   },
   initModel: (model) => {
     const customModel: IImageProps = {
-      ...model
+      ...model,
     };
     return customModel;
   },

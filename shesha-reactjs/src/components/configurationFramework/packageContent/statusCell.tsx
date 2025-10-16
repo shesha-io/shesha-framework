@@ -6,44 +6,44 @@ import { Popover } from 'antd';
 import { useTheme } from 'antd-style';
 
 export interface IStatusCellProps {
-    row: PackageItemDto;
+  row: PackageItemDto;
 }
 
 const getIcon = (data: PackageItemDto): FC<AntdIconProps> | undefined => {
-    switch (data.status) {
-        case PackageItemStatus.New: return FileAddOutlined;
-        case PackageItemStatus.Updated: return FormOutlined;
-        case PackageItemStatus.Error: return ExclamationCircleOutlined;
-        case PackageItemStatus.Unchanged: return MinusOutlined;
-    }
-    return undefined;
+  switch (data.status) {
+    case PackageItemStatus.New: return FileAddOutlined;
+    case PackageItemStatus.Updated: return FormOutlined;
+    case PackageItemStatus.Error: return ExclamationCircleOutlined;
+    case PackageItemStatus.Unchanged: return MinusOutlined;
+  }
+  return undefined;
 };
 
 const getStatusText = (status: PackageItemStatus): string => {
-    switch (status) {
-        case PackageItemStatus.New: return 'New';
-        case PackageItemStatus.Updated: return 'Updated';
-        case PackageItemStatus.Error: return 'Error';
-        case PackageItemStatus.Unchanged: return 'Unchanged';
-    }
-    return '';
+  switch (status) {
+    case PackageItemStatus.New: return 'New';
+    case PackageItemStatus.Updated: return 'Updated';
+    case PackageItemStatus.Error: return 'Error';
+    case PackageItemStatus.Unchanged: return 'Unchanged';
+  }
+  return '';
 };
 
 export const StatusCell: FC<IStatusCellProps> = ({ row }) => {
-    const Icon = getIcon(row);
-    const theme = useTheme();
+  const Icon = getIcon(row);
+  const theme = useTheme();
 
-    const description = row.statusDescription ?? getStatusText(row.status);
+  const description = row.statusDescription ?? getStatusText(row.status);
 
-    return Icon
-        ? (
-            <div>
-                <Popover content={description}>
-                    <Icon
-                        style={{ color: row.status === PackageItemStatus.Error ? theme.colorError : theme.colorPrimary }}
-                    />
-                </Popover>
-            </div>
-        )
-        : undefined;
+  return Icon
+    ? (
+      <div>
+        <Popover content={description}>
+          <Icon
+            style={{ color: row.status === PackageItemStatus.Error ? theme.colorError : theme.colorPrimary }}
+          />
+        </Popover>
+      </div>
+    )
+    : undefined;
 };

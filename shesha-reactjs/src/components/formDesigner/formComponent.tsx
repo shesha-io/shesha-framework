@@ -17,13 +17,13 @@ export interface IFormComponentProps {
 // nested components will be handled by their own FormComponent
 // action configuration details will be handled by their own FormComponent
 const propertiesToSkip = ['id', 'componentName', 'type', 'jsSetting', 'isDynamic', 'components', 'actionConfiguration'];
-export const standartActualModelPropertyFilter = (name: string) => {
+export const standartActualModelPropertyFilter = (name: string): boolean => {
   return propertiesToSkip.indexOf(name) === -1;
 };
 
-export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: any) => {
-  return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true)
-    && propertiesToSkip.indexOf(name) === -1;
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: unknown): boolean => {
+  return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true) &&
+    propertiesToSkip.indexOf(name) === -1;
 };
 
 const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
@@ -68,14 +68,14 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     undefined,
     undefined,
     (name: string, value: any) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
-    undefined
+    undefined,
   );
 
-  actualModel.hidden = shaForm.formMode !== 'designer'
-    && (
-      actualModel.hidden
-      || !anyOfPermissionsGranted(actualModel?.permissions || [])
-      || !isComponentFiltered(actualModel));
+  actualModel.hidden = shaForm.formMode !== 'designer' &&
+    (
+      actualModel.hidden ||
+      !anyOfPermissionsGranted(actualModel?.permissions || []) ||
+      !isComponentFiltered(actualModel));
 
   if (!toolboxComponent?.isInput && !toolboxComponent?.isOutput)
     actualModel.propertyName = undefined;
@@ -85,7 +85,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
 
   const control = useMemo(() => (
-    <toolboxComponent.Factory 
+    <toolboxComponent.Factory
       form={shaForm.antdForm}
       model={actualModel}
       calculatedModel={calculatedModel}
@@ -95,10 +95,15 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   ), [actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
 
   if (!toolboxComponent)
-    return <ComponentError errors={{
-      hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type
-    }} message={`Component '${actualModel.type}' not found`} type='error'
-    />;
+    return (
+      <ComponentError
+        errors={{
+          hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type,
+        }}
+        message={`Component '${actualModel.type}' not found`}
+        type="error"
+      />
+    );
 
   if (shaForm.formMode === 'designer') {
     const validationResult: IModelValidation = { hasErrors: false, errors: [] };
@@ -114,7 +119,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
       validationResult.componentId = actualModel.id;
       validationResult.componentName = actualModel.componentName;
       validationResult.componentType = actualModel.type;
-      return <ComponentError errors={validationResult} message='' type='warning' />;
+      return <ComponentError errors={validationResult} message="" type="warning" />;
     }
   }
 

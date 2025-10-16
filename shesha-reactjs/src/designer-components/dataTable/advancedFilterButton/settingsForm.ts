@@ -10,8 +10,9 @@ import {
 import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
 import { buttonTypes } from '@/designer-components/button/util';
 import { fontTypes, fontWeightsOptions } from '@/designer-components/_settings/utils/font/utils';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();

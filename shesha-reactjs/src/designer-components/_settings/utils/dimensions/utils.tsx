@@ -3,14 +3,14 @@ import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTable
 import { IDimensionsValue } from "./interfaces";
 import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
-import { widthRelativeToCanvas } from "@/components/sidebarContainer/canvasUtils";
+import { widthRelativeToCanvas } from "@/providers/canvas/utils";
 
 const getDimension = (main: string | number, canvasWidth?) => {
   const width = canvasWidth ? widthRelativeToCanvas(main, canvasWidth) : main;
   return !hasNumber(main) ? main : `calc(${addPx(width)})`;
 };
 
-export const getDimensionsStyle = (dimensions: IDimensionsValue, canvasWidth?): CSSProperties => {
+export const getDimensionsStyle = (dimensions: IDimensionsValue, canvasWidth?: string): CSSProperties => {
   return {
     width: dimensions?.width
       ? getDimension(dimensions.width, canvasWidth)

@@ -9,7 +9,7 @@ interface IFormComponentDisplayProps {
 }
 
 export const FormComponentDisplay: FC<IFormComponentDisplayProps> = ({ className, value, onEdit, editable }) => {
-  const renderIcon = () => (editable ? <EditOutlined onClick={onEdit} /> : <LockOutlined />);
+  const renderIcon = (): JSX.Element => (editable ? <EditOutlined onClick={onEdit} /> : <LockOutlined />);
 
   return (
     <span className={`sha-form-component sha-form-component-display ${className}`}>

@@ -7,8 +7,8 @@ export const getStyleChangeValue = (
   direction: keyof IInputDirection,
   value: string,
   prevVal: string,
-) => {
-  const v = jsonSafeParse(prevVal || '{}');
+): string => {
+  const v = jsonSafeParse<object>(prevVal || '{}');
 
   return JSON.stringify({
     ...(v || {}),

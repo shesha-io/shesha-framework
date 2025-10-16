@@ -7,7 +7,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
   {
     [ModelActionEnums.CreateNew]: (
       state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<ModelConfigurationDto>
+      action: ReduxActions.Action<ModelConfigurationDto>,
     ) => {
       return {
         ...state,
@@ -41,7 +41,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
 
     [ModelActionEnums.LoadSuccess]: (
       state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<ModelConfigurationDto>
+      action: ReduxActions.Action<ModelConfigurationDto>,
     ) => {
       const { payload } = action;
 
@@ -54,7 +54,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
 
     [ModelActionEnums.SaveSuccess]: (
       state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<ModelConfigurationDto>
+      action: ReduxActions.Action<ModelConfigurationDto>,
     ) => {
       const { payload } = action;
 
@@ -67,7 +67,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
     },
 
     [ModelActionEnums.Cancel]: (
-      state: IModelConfiguratorStateContext
+      state: IModelConfiguratorStateContext,
     ) => {
       return {
         ...state,
@@ -77,7 +77,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
 
   },
 
-  MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE
+  MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
 );
 
 export default modelReducer;

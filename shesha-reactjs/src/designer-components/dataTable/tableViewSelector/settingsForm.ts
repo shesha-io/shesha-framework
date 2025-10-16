@@ -1,7 +1,8 @@
+import { FormMarkupWithSettings } from '@/interfaces';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (data: any) => {
+export const getSettings = (data: object): FormMarkupWithSettings => {
   return {
     components: new DesignerToolbarSettings(data)
       .addSearchableTabs({
@@ -44,13 +45,22 @@ export const getSettings = (data: any) => {
                   },
                 })
                 .addSettingsInput({
-                    inputType: 'switch',
-                    id: 'hidden-s4gmBg31azZC0UjZjpfTm',
-                    propertyName: 'hidden',
-                    label: 'Hide',
-                    jsSetting: true,
-                    layout: 'horizontal',
-                  })
+                  inputType: 'switch',
+                  id: 'hidden-s4gmBg31azZC0UjZjpfTm',
+                  propertyName: 'hidden',
+                  label: 'Hide',
+                  jsSetting: true,
+                  layout: 'horizontal',
+                })
+                .addSettingsInput({
+                  inputType: 'switch',
+                  id: 'showIcon-s4gmBg31azZC0UjZjpfTm',
+                  propertyName: 'showIcon',
+                  label: 'Show Icon',
+                  description: 'Display the layout icon next to the View label',
+                  defaultValue: true,
+                  layout: 'horizontal',
+                })
                 .toJson(),
             ],
           },

@@ -1,6 +1,8 @@
 import { IStyleType } from "@/index";
+import { ICardComponentProps } from "./interfaces";
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (prev: ICardComponentProps): IStyleType => {
+  const { size } = prev;
 
   return {
     border: { hideBorder: false, radiusType: 'all', borderType: 'all', border: { all: { width: '1px', style: 'solid', color: '#d9d9d9' } }, radius: { all: 8 } },
@@ -20,7 +22,7 @@ export const defaultStyles = (): IStyleType => {
       offsetY: 0,
       color: '#000',
       blurRadius: 0,
-      spreadRadius: 0
+      spreadRadius: 0,
     },
   };
 };

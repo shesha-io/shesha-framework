@@ -10,8 +10,9 @@ import {
   sizeOptions,
 } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
+import { FormMarkupWithSettings } from '@/interfaces';
 
-export const getSettings = (data: INumberFieldComponentProps) => {
+export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const validationTabId = nanoid();
@@ -302,7 +303,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                         label: 'Enable Style On Readonly',
                         tooltip: 'Removes all visual styling except typography when the component becomes read-only',
                         inputType: 'switch',
-                        jsSetting: true
+                        jsSetting: true,
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),

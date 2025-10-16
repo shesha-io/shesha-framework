@@ -9,7 +9,9 @@ type LevelType = 1 | 2 | 3 | 4 | 5;
 export type ContentType = 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'custom' | '';
 export type ContentDisplay = 'content' | 'name';
 
-export const FONT_SIZES = {
+export type FontSizeProps = Pick<CSSProperties, 'fontSize' | 'lineHeight'>;
+
+export const FONT_SIZES: Record<string, FontSizeProps> = {
   'text-xxs': { fontSize: '0.6rem', lineHeight: '0.8rem' },
   'text-xs': { fontSize: '0.75rem', lineHeight: '1rem' },
   'text-sm': { fontSize: '0.875rem', lineHeight: '1.25rem' },
@@ -26,8 +28,10 @@ export const FONT_SIZES = {
   'text-9xl': { fontSize: '8rem', lineHeight: 1 },
 };
 
-export const PADDING_SIZES = {
-  none: { padding: '0' },
+export type PaddingProps = Pick<CSSProperties, 'padding'>;
+
+export const PADDING_SIZES: Record<string, PaddingProps> = {
+  "none": { padding: '0' },
   'padding-xxs': { padding: '0.6rem' },
   'padding-xs': { padding: '0.75rem' },
   'padding-sm': { padding: '0.875rem' },
@@ -70,7 +74,7 @@ export interface ITextTypographyProps extends IConfigurableFormComponent {
   level?: LevelType | TypographyFontSize;
   fontSize?: TypographyFontSize | string | number;
   padding?: TypographyPaddingSize;
-  dataType?: 'string' | 'date-time' | 'number' | 'boolean';
+  dataType?: string;
   dateFormat?: string;
   numberFormat?: string;
   code?: boolean;

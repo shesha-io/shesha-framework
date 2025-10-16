@@ -64,7 +64,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const filterKeysFunc: FilterSelectedFunc = useCallback((value: any | any[]) => {
       const localValue = value?.length === 1 ? value[0] : value;
       return Array.isArray(localValue)
-        ? { or: localValue.map(x => executeExpression(model.filterKeysFunc, { value: x }, null, null)) }
+        ? { or: localValue.map((x) => executeExpression(model.filterKeysFunc, { value: x }, null, null)) }
         : executeExpression(model.filterKeysFunc, { value: localValue }, null, null);
     }, [model.filterKeysFunc]);
 
@@ -77,26 +77,28 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       <ConfigurableFormItem {...{ model }}>
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]) => {
+          const onChangeInternal = (...args: any[]): void => {
             customEvent.onChange(args[0], args[1]);
             if (typeof onChange === 'function')
               onChange(...args);
           };
 
 
-          return <Autocomplete
-            {...model}
-            grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
-            keyValueFunc={keyValueFunc}
-            outcomeValueFunc={outcomeValueFunc}
-            displayValueFunc={displayValueFunc}
-            filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
-            style={finalStyle}
-            size={model?.size ?? 'middle'}
-            value={value}
-            onChange={onChangeInternal}
-            allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}
-          />;
+          return (
+            <Autocomplete
+              {...model}
+              grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
+              keyValueFunc={keyValueFunc}
+              outcomeValueFunc={outcomeValueFunc}
+              displayValueFunc={displayValueFunc}
+              filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
+              style={finalStyle}
+              size={model?.size ?? 'middle'}
+              value={value}
+              onChange={onChangeInternal}
+              allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}
+            />
+          );
         }}
       </ConfigurableFormItem>
     );
@@ -139,7 +141,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         borderColor: prev.borderColor,
         fontSize: prev.fontSize,
         backgroundColor: prev.backgroundColor,
-        stylingBox: prev.stylingBox
+        stylingBox: prev.stylingBox,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
@@ -160,8 +162,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         keyPropName: prev.dataSourceType === 'url' && prev['useRawValues'] ? prev.keyPropName || 'value' : prev.keyPropName,
       };
     })
-    .add<IAutocompleteComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-  ,
+    .add<IAutocompleteComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {
       ...model,
@@ -175,8 +176,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
         ? 'entityReference'
         : 'simple',
-      filter: typeof propMetadata.formatting?.filter === 'object' && propMetadata.formatting?.filter 
-        ? {...propMetadata.formatting?.filter}
+      filter: typeof propMetadata.formatting?.filter === 'object' && propMetadata.formatting?.filter
+        ? { ...propMetadata.formatting?.filter }
         : null,
     };
   },

@@ -74,7 +74,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               beforeDoneActionConfiguration: step.doneButtonActionConfiguration,
             };
           }),
-          editMode: 'inherited'
+          editMode: 'inherited',
         };
       })
       .add<IWizardComponentProps>(
@@ -83,8 +83,8 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           migrateFunctionToProp(
             migratePropertyName(migrateCustomFunctions(prev as IConfigurableFormComponent)),
             'defaultActiveStep',
-            'defaultActiveValue'
-          ) as IWizardComponentProps
+            'defaultActiveValue',
+          ) as IWizardComponentProps,
       )
       .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev))
       .add<IWizardComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
