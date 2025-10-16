@@ -5,7 +5,6 @@ import Button from '@/designer-components/button/button';
 import ButtonGroup from '@/designer-components/button/buttonGroup/buttonGroupComponent';
 import Buttons from '@/designer-components/button/buttonGroup/buttonsComponent';
 import CheckboxGroup from '@/designer-components/checkboxGroup/checkboxGroup';
-import ChildEntitiesTagGroup from '@/designer-components/childEntitiesTagGroup';
 import CodeEditor from '@/designer-components/codeEditor';
 import ColorPickerComponent from '@/designer-components/colorPicker';
 import Columns from '@/designer-components/columns/columns';
@@ -21,7 +20,6 @@ import NotificationAutocompleteComponent from '@/designer-components/notificatio
 import IconPicker from '@/designer-components/iconPicker';
 import ImagePickerComponent from '@/designer-components/imagePicker';
 import Image from '@/designer-components/image';
-import ImageAnnotationComponent from '@/designer-components/imageAnnotation';
 import KeyInformationBarComponent from '@/designer-components/keyInformationBar';
 import Paragraph from '@/designer-components/_legacyComponents/paragraph';
 import Title from '@/designer-components/_legacyComponents/title';
@@ -157,7 +155,6 @@ export const getToolboxComponents = (
         IconPicker,
         HtmlRender,
         Image,
-        ImageAnnotationComponent,
         RichTextEditor,
         Markdown,
         PasswordCombo,
@@ -177,7 +174,6 @@ export const getToolboxComponents = (
         FileUpload,
         AttachmentsEditor,
         Notes,
-        ChildEntitiesTagGroup,
       ],
     },
     {
