@@ -10,6 +10,7 @@ import { DebugPanel } from '../debugPanel';
 import { useStyles } from '../styles/styles';
 import Toolbox from '../toolbox';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
+import { IViewType } from '@/providers/canvas/contexts';
 
 const rightSidebarProps = {
   title: () => <ComponentPropertiesTitle />,
@@ -17,7 +18,7 @@ const rightSidebarProps = {
   placeholder: 'Properties',
 };
 
-export const DesignerMainArea: FC = () => {
+export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'configStudio' }) => {
   const isDebug = useFormDesignerStateSelector((state) => state.isDebug);
   const readOnly = useFormDesignerStateSelector((state) => state.readOnly);
   const formSettings = useFormDesignerStateSelector((state) => state.formSettings);
@@ -57,6 +58,7 @@ export const DesignerMainArea: FC = () => {
             leftSidebarProps={leftSidebarProps}
             rightSidebarProps={rightSidebarProps}
             canZoom={true}
+            viewType={viewType}
           >
             {children}
           </SidebarContainer>

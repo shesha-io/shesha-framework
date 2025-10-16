@@ -1,5 +1,5 @@
 import { useFormDesignerStateSelector } from '@/providers/formDesigner';
-import { App } from 'antd';
+import { App, Space } from 'antd';
 import React, { FC } from 'react';
 import { DebugButton } from '../toolbar/debugButton';
 import { FormSettingsButton } from '../toolbar/formSettingsButton';
@@ -27,19 +27,21 @@ export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, render
 
   return (
     <div className="sha-designer-toolbar">
+      <Space direction="horizontal" size={20}>
+        <CanvasConfig />
+        <div className="sha-designer-toolbar-right" style={{ marginRight: renderSource === "modal" ? "30px" : "auto" }}>
+          <FormSettingsButton buttonText="" size="small" />
+          <OpenOnNewPageButton />
+          <PreviewButton size="small" />
+          <DebugButton />
+
+          {!readOnly && (<UndoRedoButtons size="small" />)}
+        </div>
+      </Space>
       <div className="sha-designer-toolbar-left">
         {!readOnly && (
           <SaveMenu onSaved={onSaved} />
         )}
-      </div>
-      <CanvasConfig />
-      <div className="sha-designer-toolbar-right" style={{ marginRight: renderSource === "modal" ? "30px" : "auto" }}>
-        <FormSettingsButton />
-        <OpenOnNewPageButton />
-        <PreviewButton />
-        <DebugButton />
-
-        {!readOnly && (<UndoRedoButtons />)}
       </div>
     </div>
   );

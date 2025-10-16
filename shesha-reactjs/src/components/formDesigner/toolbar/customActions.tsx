@@ -49,7 +49,7 @@ export const CustomActions: FC = () => {
   ];
   return (
     <Dropdown menu={{ items }} placement="bottomRight" arrow>
-      <Button icon={<MenuOutlined />}></Button>
+      <Button icon={<MenuOutlined />} size="small"></Button>
     </Dropdown>
   );
 };

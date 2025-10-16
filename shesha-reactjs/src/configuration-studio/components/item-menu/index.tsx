@@ -41,7 +41,7 @@ export const ConfigurationItemMenu: FC = () => {
   return (
     <CustomErrorBoundary key={activeDoc.itemId}>
       <Dropdown menu={{ items: menuItems }}>
-        <Button title={`${activeDoc.moduleName}/${activeDoc.label}`}>
+        <Button title={`${activeDoc.moduleName}/${activeDoc.label}`} size="small">
           <Space>
             {activeDoc.label}
             {icon}
