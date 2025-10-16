@@ -29,13 +29,21 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
   // Prepopulate with default columns when modal opens if items are empty and we're in a DataTable context
   useEffect(() => {
     if (visible && dataTableStore && metadata?.metadata && (!value || value.length === 0)) {
-      const defaultColumns = calculateDefaultColumns(metadata.metadata);
-      if (defaultColumns.length > 0 && (!localValue || localValue.length === 0)) {
-        setPrevValue(localValue);
-        setLocalValue(defaultColumns);
-        onChange?.(defaultColumns);
-        setStartedEmpty(true);
-      }
+      const loadDefaultColumns = async (): Promise<void> => {
+        try {
+          const defaultColumns = await calculateDefaultColumns(metadata.metadata);
+          if (defaultColumns.length > 0 && (!localValue || localValue.length === 0)) {
+            setPrevValue(localValue);
+            setLocalValue(defaultColumns);
+            onChange?.(defaultColumns);
+            setStartedEmpty(true);
+          }
+        } catch (error) {
+          console.warn('❌ Failed to generate default columns for modal:', error);
+        }
+      };
+
+      loadDefaultColumns();
     }
   }, [metadata?.metadata, visible, onChange]);
 

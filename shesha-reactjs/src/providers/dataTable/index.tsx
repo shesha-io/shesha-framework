@@ -600,7 +600,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const registerConfigurableColumns = (ownerId: string, configurableColumns: IConfigurableColumnsProps[]): void => {
-    dispatch((dispatchThunk, getState) => {
+    dispatch(async (dispatchThunk, getState) => {
       let columnsToRegister = configurableColumns;
       const currentState = getState();
 
@@ -613,9 +613,14 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       if ((!configurableColumns || configurableColumns.length === 0) &&
         (!currentState.configurableColumns || currentState.configurableColumns.length === 0) &&
         metadata?.metadata) {
-        const defaultColumns = calculateDefaultColumns(metadata.metadata);
-        if (defaultColumns.length > 0) {
-          columnsToRegister = defaultColumns;
+        try {
+          const defaultColumns = await calculateDefaultColumns(metadata.metadata);
+          if (defaultColumns.length > 0) {
+            columnsToRegister = defaultColumns;
+          }
+        } catch (error) {
+          console.warn('❌ Failed to generate default columns:', error);
+          // Continue with empty columns if generation fails
         }
       }
 

@@ -2,7 +2,7 @@ import { nanoid } from '@/utils/uuid';
 import { IConfigurableColumnsProps, IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IExpressionExecuterArguments, executeScriptSync } from '@/providers/form/utils';
 import { IConfigurableFormComponent, IStyleType } from "@/index";
-import { IModelMetadata, IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
+import { IModelMetadata, IPropertyMetadata, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
 import { toCamelCase, humanizeString } from '@/utils/string';
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
@@ -133,17 +133,33 @@ export const propertyToDataColumn = (property: IPropertyMetadata, index: number)
 /**
  * Calculates default columns for a DataTable
  * @param metadata - Model metadata containing properties
- * @returns Array of DataTable column configurations
+ * @returns Promise resolving to array of DataTable column configurations
  */
-export const calculateDefaultColumns = (metadata: IModelMetadata): IDataColumnsProps[] => {
+export const calculateDefaultColumns = async (metadata: IModelMetadata): Promise<IDataColumnsProps[]> => {
   if (!metadata || !metadata.properties) {
     console.warn('❌ No metadata available for column registration');
     return [];
   }
 
-  const properties = isPropertiesArray(metadata.properties)
-    ? metadata.properties
-    : [];
+  let properties: IPropertyMetadata[] = [];
+
+  if (isPropertiesArray(metadata.properties)) {
+    properties = metadata.properties;
+  } else if (isPropertiesLoader(metadata.properties)) {
+    try {
+      properties = await metadata.properties();
+      if (!properties) {
+        console.warn('⚠️ PropertiesLoader returned null/undefined, using empty array');
+        properties = [];
+      }
+    } catch (error) {
+      console.warn('❌ Failed to load properties from PropertiesLoader:', error);
+      return [];
+    }
+  } else {
+    // metadata.properties is null or undefined
+    return [];
+  }
 
   // Filter out auditing columns and framework-related properties
   const filteredProperties = filterPropertiesForTable(properties);
