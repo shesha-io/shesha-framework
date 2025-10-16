@@ -73,10 +73,9 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
   if (!isWider) return null;
 
   return (
-    <div className={styles.pagerContainer}>
+    <div className={styles.pagerContainer} style={style}>
       <Pagination
         className={styles.pager}
-        style={style}
         size="small"
         total={totalRows}
         pageSizeOptions={(pageSizeOptions || []).map((s) => `${s}`)}
@@ -93,7 +92,6 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
         <Select
           size="small"
           className={styles.dropdown}
-          style={{ width: 100, ...style }}
           classNames={{ popup: { root: styles.popup } }}
           options={pageSizeOptions.map((s) => ({ label: `${s} / page`, value: s }))}
           value={selectedPageSize}

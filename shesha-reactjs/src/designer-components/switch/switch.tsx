@@ -49,8 +49,6 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
               style={finalStyle}
               size={model.size as SwitchSize}
               checked={value}
-              defaultChecked={model.defaultChecked}
-              defaultValue={model.defaultValue}
               onChange={onChangeInternal}
             />
           );

@@ -152,6 +152,14 @@ export const getSettings = (): FormMarkupWithSettings => {
                   jsSetting: true,
                 },
                 {
+                  type: 'switch',
+                  id: nanoid(),
+                  propertyName: 'showCloseIcon',
+                  label: 'Show Close Icon',
+                  defaultValue: true,
+                  jsSetting: true,
+                },
+                {
                   type: 'buttonGroupConfigurator',
                   id: nanoid(),
                   propertyName: 'buttons',

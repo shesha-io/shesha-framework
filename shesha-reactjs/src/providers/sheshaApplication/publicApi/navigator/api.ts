@@ -1,5 +1,5 @@
 import { FormIdentifier } from "@/interfaces";
-import { ShaRouting } from "@/providers/shaRouting/contexts";
+import { IShaRouter } from "@/providers/shaRouting/contexts";
 import { buildUrl } from "@/utils/url";
 
 export interface INavigatorApi {
@@ -18,15 +18,15 @@ export interface INavigatorApi {
 }
 
 export class NavigatorApi implements INavigatorApi {
-  #shaRouter: ShaRouting;
+  #shaRouter: IShaRouter;
 
-  constructor(shaRouter: ShaRouting) {
+  constructor(shaRouter: IShaRouter) {
     this.#shaRouter = shaRouter;
   }
 
   navigateToUrl = (url: string, queryParameters?: Record<string, string>): void => {
     const finalUrl = buildUrl(url, queryParameters);
-    this.#shaRouter.goingToRoute(finalUrl);
+    void this.#shaRouter.goingToRoute(finalUrl);
   };
 
   navigateToForm = (formId: FormIdentifier, args?: Record<string, string>): void => {
