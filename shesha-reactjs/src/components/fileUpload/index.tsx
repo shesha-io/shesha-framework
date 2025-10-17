@@ -11,7 +11,7 @@ import { Image } from 'antd/lib';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { CSSProperties, FC, useEffect, useRef, useState } from 'react';
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { useSheshaApplication, useStoredFile, useTheme } from '@/providers';
@@ -36,7 +36,7 @@ export interface IFileUploadProps {
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
-  styles?: any;
+  style?: CSSProperties;
   type?: string;
 }
 
@@ -51,7 +51,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   isDragger = false,
   listType = 'text',
   hideFileName = false,
-  styles: stylesProp,
+  style,
 }) => {
   const {
     fileInfo,
@@ -62,7 +62,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   } = useStoredFile();
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const props = {
-    style: stylesProp,
+    style,
     model: {
       layout: listType === 'thumbnail' && !isDragger,
       isDragger,
@@ -79,6 +79,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
 
+  console.log("Style >>> ", style)
   const url = fileInfo?.url ? `${backendUrl}${fileInfo.url}` : '';
   useEffect(() => {
     if (fileInfo && url) {
@@ -223,7 +224,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     accept: allowedFileTypes?.join(','),
     multiple: false,
     fileList: fileInfo ? [fileInfo] : [],
-    style: !isDragger && stylesProp,
+    style: !isDragger && style,
     customRequest: onCustomRequest,
     beforeUpload: (file) => {
       if (!isFileTypeAllowed(file.name, allowedFileTypes)) {

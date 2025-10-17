@@ -18,7 +18,7 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { defaultStyles } from './utils';
+import { containerDefaultStyles, defaultStyles } from './utils';
 import { listType } from '../attachmentsEditor/attachmentsEditor';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
@@ -49,10 +49,12 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
 
     const { dimensionsStyles } = useFormComponentStyles(model?.thumbnail);
 
+    console.log("Model :: ", model)
     const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) || model.listType === 'text' ? {
       ...model.allStyles.fontStyles,
       ...dimensionsStyles,
-    } : {...model.allStyles.fullStyle};
+    } : {...model.allStyles.fullStyle,
+      ...dimensionsStyles,};
 
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
@@ -90,7 +92,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
                 allowReplace={enabled && model.allowReplace}
                 allowedFileTypes={model?.allowedFileTypes}
                 isDragger={model?.isDragger}
-                styles={finalStyle}
+                style={finalStyle}
               />
             </StoredFileProvider>
           );
@@ -142,7 +144,29 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
         desktop: { ...defaultStyles() },
         mobile: { ...defaultStyles() },
         tablet: { ...defaultStyles() },
-      })),
+      }))
+      .add<IFileUploadProps>(7, (prev) => {
+        const migrateStyleLevel = (prevStyles: any) => {
+          if (!prevStyles) return prevStyles;
+  
+          const thumbnailStyles = { ...containerDefaultStyles(), ...prevStyles.thumbnail };
+          const rootStyles = { ...prevStyles };
+          delete rootStyles.container;
+   
+          console.log("Thum bthumbnailStyles >>.", thumbnailStyles, rootStyles);
+          return {
+            ...thumbnailStyles,
+            thumbnail: rootStyles,
+          };
+        };
+  
+        return {
+          ...prev,
+          desktop: migrateStyleLevel(prev.desktop),
+          mobile: migrateStyleLevel(prev.mobile),
+          tablet: migrateStyleLevel(prev.tablet),
+        };
+      }),
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
 };

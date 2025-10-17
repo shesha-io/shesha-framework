@@ -13,6 +13,7 @@ export const useStyles = createStyles(({ css, cx }, layout) => {
             width: 100% !important;
             height: 100% !important;
             max-height: ${layout === 'vertical' ? 'calc(100% - 32px)' : '100%'};
+            margin: auto;
 
             .ant-form-item-control-input {
                 min-height : 0px !important;

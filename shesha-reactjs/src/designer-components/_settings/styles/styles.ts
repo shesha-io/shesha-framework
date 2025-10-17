@@ -46,9 +46,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
             }
     `);
 
-  const bindingOptionsBtn = cx(css`
-        top: -8px;
-        `);
   const jsSwitch = cx(css`
             position: absolute;
             right: 0;
@@ -87,7 +84,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
     contentCode,
     jsContent,
     label,
-    bindingOptionsBtn,
     jsSwitch,
   };
 });

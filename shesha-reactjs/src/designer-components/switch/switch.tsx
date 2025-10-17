@@ -26,11 +26,6 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
   canBeJsSetting: true,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
-    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
-
 
     return (
       <ConfigurableFormItem model={model} valuePropName="checked">
@@ -46,7 +41,7 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
             <Switch
               className="sha-switch"
               disabled={model.readOnly}
-              style={finalStyle}
+              style={model.allStyles.jsStyle}
               size={model.size as SwitchSize}
               checked={value}
               onChange={onChangeInternal}

@@ -12,8 +12,8 @@ import { PropertyAutocomplete } from '@/components/propertyAutocomplete/property
 import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import SettingsControl from '../_settings/settingsControl';
 import { getValueFromPropertySettings } from '../_settings/utils';
-import { useStyles } from '../_settings/styles/styles';
 import { ConfigurableFormItem } from '@/components';
+import { useStyles } from './styles';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -86,7 +86,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
   const dataType: MetadataType = !context || mode === 'formData' ? 'entity' : 'context';
 
   return (
-    <>
+    <div className={styles.wrapper}>
       <ConfigurableFormItem model={{ ...model as any, label: componentlabel, componentName: 'componentName', propertyName: 'componentName', hidden: mode === 'formData' }}>
         {(value, onChange) => {
           return (
@@ -120,7 +120,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
           );
         }}
       </ConfigurableFormItem>
-      <MetadataProvider modelType={modelType} dataType={dataType}>
+        <MetadataProvider modelType={modelType} dataType={dataType}>
         <ConfigurableFormItem model={{ ...model as any, label: propertylabel, componentName: 'propertyName', propertyName: 'propertyName' }}>
           {(value, onChange) => {
             return (
@@ -162,13 +162,13 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
           }}
         </ConfigurableFormItem>
       </MetadataProvider>
-      <Button type="link" onClick={setFormDataMode} hidden={model.readOnly || mode === 'formData'}>
+      <Button type="link" onClick={setFormDataMode} hidden={model.readOnly || mode === 'formData'} className={styles.bindingOptionBtn}>
         hide binding option (bind to form data)
       </Button>
-      <Button type="link" onClick={setContextMode} hidden={model.readOnly || mode === 'context'}>
+      <Button type="link" onClick={setContextMode} hidden={model.readOnly || mode === 'context'} className={styles.bindingOptionBtn}>
         show binding option
       </Button>
-    </>
+    </div>
   );
 };
 
