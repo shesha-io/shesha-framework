@@ -38,6 +38,8 @@ export interface IConfigurableColumnsBase {
  * Configurable table column
  */
 export interface IConfigurableColumnsProps extends IConfigurableColumnsBase {
+  hidden?: boolean;
+  accessor?: string;
   columnType: DatatableColumnType;
   anchored?: IAnchoredDirection;
   customVisibility?: string;

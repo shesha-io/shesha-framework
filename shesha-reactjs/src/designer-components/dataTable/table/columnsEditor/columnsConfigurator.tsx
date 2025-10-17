@@ -11,9 +11,10 @@ export interface IColumnsConfiguratorProps {
   value: ColumnsItemProps[];
   parentComponentType?: string;
   onChange: (newValue: ColumnsItemProps[]) => void;
+  startedEmpty: boolean;
 }
 
-export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = ({ value, onChange, readOnly, parentComponentType }) => {
+export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = ({ value, onChange, readOnly, parentComponentType, startedEmpty }) => {
   const makeNewItem = (items: ColumnsItemProps[]): ColumnsItemProps => {
     const safeItems = items ?? [];
     const itemsCount = safeItems.filter((i) => i.itemType === 'item').length;
@@ -43,7 +44,15 @@ export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = ({ value, onCh
       onChange={onChange}
       initNewItem={makeNewItem}
       readOnly={readOnly}
-      header={<Alert message={readOnly ? 'Here you can view columns configuration.' : 'Here you can configure columns by adjusting their settings and ordering.'} />}
+      header={(
+        <Alert message={
+          (
+            `${readOnly ? 'Here you can view columns configuration.' : 'Here you can configure columns by adjusting their settings and ordering.'
+            } ${startedEmpty ? ' (Default columns have been pre-populated for convenience when configuring a DataTable)' : ''}`
+          )
+        }
+        />
+      )}
       itemProperties={(itemProps) => (<ColumnProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} parentComponentType={parentComponentType} />)}
       addItemText="Add Column"
     >

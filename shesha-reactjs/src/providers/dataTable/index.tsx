@@ -7,11 +7,12 @@ import React, {
   useRef,
 } from 'react';
 import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumns, getTableFormColumns } from './utils';
+import { calculateDefaultColumns } from '@/designer-components/dataTable/table/utils';
 import { dataTableReducer } from './reducer';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
 import { isEqual, sortBy } from 'lodash';
-import { MetadataProvider } from '@/providers/metadata';
+import { MetadataProvider, useMetadata } from '@/providers/metadata';
 import { Row } from 'react-table';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useDebouncedCallback } from 'use-debounce';
@@ -290,6 +291,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     permanentFilter,
     customReorderEndpoint,
   });
+
+  const metadata = useMetadata(false); // Don't require metadata - may not be in DataSource context
 
   const changePageSize = (val: number): void => {
     dispatch(changePageSizeAction(val));
@@ -597,12 +600,35 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const registerConfigurableColumns = (ownerId: string, configurableColumns: IConfigurableColumnsProps[]): void => {
-    dispatch((dispatchThunk, _getState) => {
-      dispatchThunk(registerConfigurableColumnsAction({ ownerId, columns: configurableColumns }));
+    dispatch(async (dispatchThunk, getState) => {
+      let columnsToRegister = configurableColumns;
+      const currentState = getState();
 
-      repository.prepareColumns(configurableColumns).then((preparedColumns) => {
+      // Generate default columns only when:
+      // 1. DataTable has empty columns configuration (configurableColumns)
+      // 2. DataContext state has no existing columns (first-time registration)
+      // 3. Metadata is available from the DataContext entity
+      // This ensures columns are generated only when DataTable first joins DataContext,
+      // not when it's moved outside or re-registered
+      if ((!configurableColumns || configurableColumns.length === 0) &&
+        (!currentState.configurableColumns || currentState.configurableColumns.length === 0) &&
+        metadata?.metadata) {
+        try {
+          const defaultColumns = await calculateDefaultColumns(metadata.metadata);
+          if (defaultColumns.length > 0) {
+            columnsToRegister = defaultColumns;
+          }
+        } catch (error) {
+          console.warn('❌ Failed to generate default columns:', error);
+          // Continue with empty columns if generation fails
+        }
+      }
+
+      dispatchThunk(registerConfigurableColumnsAction({ ownerId, columns: columnsToRegister }));
+
+      repository.prepareColumns(columnsToRegister).then((preparedColumns) => {
         // backgroundColor
-        dispatchThunk(fetchColumnsSuccessSuccessAction({ configurableColumns, columns: preparedColumns, userConfig }));
+        dispatchThunk(fetchColumnsSuccessSuccessAction({ configurableColumns: columnsToRegister, columns: preparedColumns, userConfig }));
       });
     });
   };
