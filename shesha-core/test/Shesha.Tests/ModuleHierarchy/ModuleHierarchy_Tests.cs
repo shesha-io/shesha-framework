@@ -200,7 +200,7 @@ namespace Shesha.Tests.ModuleHierarchy
         }
 
         [Fact]
-        public async Task When_ExposedOnTopLevel_SHould_ReturnTopLevel()
+        public async Task When_ExposedOnTopLevel_Should_ReturnTopLevel()
         {
             /*
              * case: 

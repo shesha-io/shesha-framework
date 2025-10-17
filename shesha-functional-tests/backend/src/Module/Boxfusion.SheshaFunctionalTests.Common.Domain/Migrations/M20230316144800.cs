@@ -1,17 +1,11 @@
 ﻿using FluentMigrator;
 using Shesha.FluentMigrator;
-using System;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 {
-    [Migration(20230316144800), MsSqlOnly]
-    public class M20230316144800 : Migration
+    [Migration(20230316144800)]
+    public class M20230316144800 : OneWayMigration
     {
-        public override void Down()
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Up()
         {
             if (!Schema.Table("SheshaFunctionalTests_TestClasses").Column("TestListOfJsonHouses").Exists())
