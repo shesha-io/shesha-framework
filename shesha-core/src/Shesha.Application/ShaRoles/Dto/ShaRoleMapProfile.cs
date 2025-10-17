@@ -10,9 +10,8 @@ namespace Shesha.ShaRoles.Dto
         {
             CreateMap<CreateShaRoleDto, ShaRole>();
 
-            
-            CreateMap<ShaRoleDto, ShaRole>();
-
+            CreateMap<ShaRoleDto, ShaRole>()
+                .ForMember(e => e.Permissions, c => c.MapFrom((s, d, m, ctx) => d.MapPermissions(s.Permissions)));
             CreateMap<ShaRole, ShaRoleDto>()
                 .ForMember(e => e.Permissions, c => c.MapFrom(e => e.Permissions.Select(x => x.Permission)));
         }
