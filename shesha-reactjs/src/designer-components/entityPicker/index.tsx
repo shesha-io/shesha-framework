@@ -128,7 +128,6 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
               entityType={model.entityType}
               filters={entityPickerFilter}
               mode={model.mode}
-              hideBorder={model.hideBorder}
               addNewRecordsProps={
                 model.allowNewRecord
                   ? {
@@ -147,7 +146,6 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
               value={value}
               onChange={onChangeInternal}
               size={model.size}
-              dividerStyle={model.border?.border?.middle}
             />
           );
         }}
@@ -198,7 +196,11 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         : prev.footerButtons ?? prev.showModalFooter ? 'default' : 'none',
     }))
     .add<IEntityPickerComponentProps>(9, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IEntityPickerComponentProps>(10, (prev) => ({ ...prev, desktop: { ...defaultStyles(prev) }, mobile: { ...defaultStyles(prev) }, tablet: { ...defaultStyles(prev) } })),
+    .add<IEntityPickerComponentProps>(10, (prev) => ({ ...prev, desktop: { ...defaultStyles(prev) }, mobile: { ...defaultStyles(prev) }, tablet: { ...defaultStyles(prev) } }))
+    .add<IEntityPickerComponentProps>(11, (prev, context) => ({
+      ...prev,
+      entityType: prev.entityType || (context.isNew ? 'Shesha.Core.Person' : prev.entityType),
+    })),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 
