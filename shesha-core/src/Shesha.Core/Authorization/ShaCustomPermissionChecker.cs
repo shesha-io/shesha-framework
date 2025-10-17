@@ -46,19 +46,8 @@ namespace Shesha.Authorization
             var appointments = (await _rolePersonRepository.GetAll().Where(x => x.Person == person && x.Role != null)
                 .ToListAsync())
                 .Where(x =>
-                {
-                    // If no PermissionedEntities are defined, grant permission globally
-                    if (!x.PermissionedEntities.Any())
-                        return true;
-
-                    // If entity context is not provided but role has PermissionedEntities,
-                    // fall back to basic permission checking without entity constraints
-                    if (permissionedEntity == null)
-                        return true;
-
-                    // Check if the specific entity matches any of the PermissionedEntities
-                    return x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className);
-                });
+                    !x.PermissionedEntities.Any()
+                    || x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className));
             return roles.SelectMany(x => x.Role.Permissions).Any(x => x.Permission == permissionName && x.IsGranted);
         }
 
@@ -73,20 +62,9 @@ namespace Shesha.Authorization
             var person = _personRepository.GetAll().FirstOrDefault(x => x.User.Id == userId);
             var roles = _rolePersonRepository.GetAll().Where(x => x.Person == person)
                 .ToList()
-                .Where(x =>
-                {
-                    // If no PermissionedEntities are defined, grant permission globally
-                    if (!x.PermissionedEntities.Any())
-                        return true;
-
-                    // If entity context is not provided but role has PermissionedEntities,
-                    // fall back to basic permission checking without entity constraints
-                    if (permissionedEntity == null)
-                        return true;
-
-                    // Check if the specific entity matches any of the PermissionedEntities
-                    return x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className);
-                });
+                .Where(x => 
+                    !x.PermissionedEntities.Any()
+                    || x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className));
             return roles.SelectMany(x => x.Role.Permissions).Any(x => x.Permission == permissionName && x.IsGranted);
         }
     }
