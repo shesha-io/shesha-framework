@@ -42,9 +42,20 @@ namespace Shesha.Authorization
             var roles = (await _rolePersonRepository.GetAll().Where(x => x.Person == person && x.Role != null)
                 .ToListAsync())
                 .Where(x =>
-                    !x.PermissionedEntities.Any()
-                    || x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className));
-            return roles.SelectMany(x => x.Role!.Permissions).Any(x => x.Permission == permissionName && x.IsGranted);
+                {
+                    // If no PermissionedEntities are defined, grant permission globally
+                    if (!x.PermissionedEntities.Any())
+                        return true;
+
+                    // If entity context is not provided but role has PermissionedEntities,
+                    // fall back to basic permission checking without entity constraints
+                    if (permissionedEntity == null)
+                        return true;
+
+                    // Check if the specific entity matches any of the PermissionedEntities
+                    return x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className);
+                });
+            return roles.SelectMany(x => x.Role.Permissions).Any(x => x.Permission == permissionName && x.IsGranted);
         }
 
         public bool IsGranted(long userId, string permissionName)
@@ -55,12 +66,24 @@ namespace Shesha.Authorization
 
         public bool IsGranted(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
         {
-            return AsyncHelper.RunSync(async () => await IsGrantedAsync(userId, permissionName, permissionedEntity));
-        }
+            var person = _personRepository.GetAll().FirstOrDefault(x => x.User.Id == userId);
+            var roles = _rolePersonRepository.GetAll().Where(x => x.Person == person)
+                .ToList()
+                .Where(x =>
+                {
+                    // If no PermissionedEntities are defined, grant permission globally
+                    if (!x.PermissionedEntities.Any())
+                        return true;
 
-        private async Task<Person> GetPersonAsync(long userId)
-        {
-            return await _personRepository.FirstOrDefaultAsync(x => x.User != null && x.User.Id == userId);
+                    // If entity context is not provided but role has PermissionedEntities,
+                    // fall back to basic permission checking without entity constraints
+                    if (permissionedEntity == null)
+                        return true;
+
+                    // Check if the specific entity matches any of the PermissionedEntities
+                    return x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className);
+                });
+            return roles.SelectMany(x => x.Role.Permissions).Any(x => x.Permission == permissionName && x.IsGranted);
         }
     }
 }
