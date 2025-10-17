@@ -46,7 +46,7 @@ import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
 
 export interface IStoredFilesProviderProps {
-  name: string;
+  name?: string;
   ownerId: string;
   ownerType: string;
   ownerName?: string;
