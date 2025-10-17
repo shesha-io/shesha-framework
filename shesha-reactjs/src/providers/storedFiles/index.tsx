@@ -47,7 +47,7 @@ import ConditionalWrap from '@/components/conditionalWrapper';
 
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 export interface IStoredFilesProviderProps {
-  name: string;
+  name?: string;
   ownerId: string;
   ownerType: string;
   ownerName?: string;
