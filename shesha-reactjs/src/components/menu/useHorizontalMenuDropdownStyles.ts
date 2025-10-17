@@ -6,6 +6,9 @@ interface UseHorizontalMenuDropdownStylesProps {
   menuId?: string;
   colors?: ILayoutColor;
   fontStyles?: React.CSSProperties;
+  style?: React.CSSProperties;
+  styleOnHover?: React.CSSProperties;
+  styleOnSelected?: React.CSSProperties;
   styleOnSubMenu?: React.CSSProperties;
 }
 
@@ -15,9 +18,14 @@ export const useHorizontalMenuDropdownStyles = ({
   menuId,
   colors,
   fontStyles,
+  style,
+  styleOnHover,
+  styleOnSelected,
   styleOnSubMenu,
 }: UseHorizontalMenuDropdownStylesProps): void => {
   useLayoutEffect(() => {
+    if (!menuId) return;
+
     const styleId = `horizontal-menu-dropdown-styles-${menuId}`;
 
     const existingStyle = document.getElementById(styleId);
@@ -25,15 +33,18 @@ export const useHorizontalMenuDropdownStyles = ({
       existingStyle.remove();
     }
 
+    const customStyle = convertJsonToCss(style);
+    const customStyleOnHover = convertJsonToCss(styleOnHover);
+    const customStyleOnSelected = convertJsonToCss(styleOnSelected);
     const customStyleOnSubMenu = convertJsonToCss(styleOnSubMenu);
 
-    const style = document.createElement('style');
-    style.id = styleId;
-    style.textContent = `
+    const styleElement = document.createElement('style');
+    styleElement.id = styleId;
+    styleElement.textContent = `
       /* Dropdown styles for horizontalMenu-${menuId} */
       .horizontal-menu-${menuId}-dropdown .ant-menu {
-        ${customStyleOnSubMenu || `
-          background: ${colors.itemBackground || 'transparent'} !important;
+        ${customStyleOnSubMenu || customStyle || `
+          background: ${colors?.itemBackground || 'transparent'} !important;
         `}
         border: none !important;
         font-family: ${fontStyles?.fontFamily} !important;
@@ -42,9 +53,9 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item {
-        ${customStyleOnSubMenu || `
-          color: ${colors.itemColor || BLACK_CLR} !important;
-          background: ${colors.itemBackground || 'transparent'} !important;
+        ${customStyle || `
+          color: ${colors?.itemColor || BLACK_CLR} !important;
+          background: ${colors?.itemBackground || 'transparent'} !important;
         `}
         border: none !important;
         margin: 0 !important;
@@ -54,23 +65,23 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item:hover {
-        ${customStyleOnSubMenu || `
-          color: ${colors.hoverItemColor || BLACK_CLR} !important;
-          background: ${colors.hoverItemBackground || 'transparent'} !important;
+        ${customStyleOnHover || `
+          color: ${colors?.hoverItemColor || BLACK_CLR} !important;
+          background: ${colors?.hoverItemBackground || 'transparent'} !important;
         `}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item.ant-menu-item-selected {
-        ${customStyleOnSubMenu || `
-          color: ${colors.selectedItemColor || BLACK_CLR} !important;
-          background: ${colors.selectedItemBackground || 'transparent'} !important;
+        ${customStyleOnSelected || `
+          color: ${colors?.selectedItemColor || BLACK_CLR} !important;
+          background: ${colors?.selectedItemBackground || 'transparent'} !important;
         `}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title {
-        ${customStyleOnSubMenu || `
-          color: ${colors.itemColor || BLACK_CLR} !important;
-          background: ${colors.itemBackground || 'transparent'} !important;
+        ${customStyleOnSubMenu || customStyle || `
+          color: ${colors?.itemColor || BLACK_CLR} !important;
+          background: ${colors?.itemBackground || 'transparent'} !important;
         `}
         border: none !important;
         margin: 0 !important;
@@ -80,35 +91,35 @@ export const useHorizontalMenuDropdownStyles = ({
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu .ant-menu-submenu-title:hover {
-        ${customStyleOnSubMenu || `
-          color: ${colors.hoverItemColor || BLACK_CLR} !important;
-          background: ${colors.hoverItemBackground || 'transparent'} !important;
+        ${customStyleOnHover || `
+          color: ${colors?.hoverItemColor || BLACK_CLR} !important;
+          background: ${colors?.hoverItemBackground || 'transparent'} !important;
         `}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu.ant-menu-submenu-selected .ant-menu-submenu-title {
-        ${customStyleOnSubMenu || `
-          color: ${colors.selectedItemColor || BLACK_CLR} !important;
-          background: ${colors.selectedItemBackground || 'transparent'} !important;
+        ${customStyleOnSelected || `
+          color: ${colors?.selectedItemColor || BLACK_CLR} !important;
+          background: ${colors?.selectedItemBackground || 'transparent'} !important;
         `}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-item-active {
-        ${customStyleOnSubMenu || `
-          color: ${colors.hoverItemColor || BLACK_CLR} !important;
-          background: ${colors.hoverItemBackground || 'transparent'} !important;
+        ${customStyleOnHover || `
+          color: ${colors?.hoverItemColor || BLACK_CLR} !important;
+          background: ${colors?.hoverItemBackground || 'transparent'} !important;
         `}
       }
 
       .horizontal-menu-${menuId}-dropdown .ant-menu .ant-menu-submenu-active .ant-menu-submenu-title {
-        ${customStyleOnSubMenu || `
-          color: ${colors.hoverItemColor || BLACK_CLR} !important;
-          background: ${colors.hoverItemBackground || 'transparent'} !important;
+        ${customStyleOnHover || `
+          color: ${colors?.hoverItemColor || BLACK_CLR} !important;
+          background: ${colors?.hoverItemBackground || 'transparent'} !important;
         `}
       }
     `;
 
-    document.head.appendChild(style);
+    document.head.appendChild(styleElement);
 
     return () => {
       const styleElement = document.getElementById(styleId);
@@ -116,5 +127,5 @@ export const useHorizontalMenuDropdownStyles = ({
         styleElement.remove();
       }
     };
-  }, [menuId, colors, fontStyles, styleOnSubMenu]);
+  }, [menuId, colors, fontStyles, style, styleOnHover, styleOnSelected, styleOnSubMenu]);
 };
