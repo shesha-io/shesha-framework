@@ -31,7 +31,7 @@ const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
       notificationApi: notificationApi,
       toolbarRef: toolbarRef,
       shaRouter: shaRouter,
-      logEnabled: true,
+      logEnabled: false,
     });
     csRef.current = instance;
 
