@@ -98,8 +98,8 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         "hoverItemColor",
         "hoverItemBackground",
       ]),
-      itemBackground: model.background?.color || model.itemBackground,
-      itemColor: model.font?.color || model.itemColor,
+      itemBackground: model.itemBackground || model.background?.color,
+      itemColor: model.itemColor || model.font?.color,
     };
 
     const finalStyle = useMemo(() => {

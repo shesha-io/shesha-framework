@@ -220,13 +220,17 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
   .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
 
     ${(p: GlobalMenuType) => p?.styleOnSubMenu};
-    
+
     background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'transparent'} !important;
     border: none !important;
     box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
     font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
     font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
     text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
+
+    .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
+      display: none !important;
+    }
 
     .${(p) => p?.theme.prefixCls}-menu-item {
       color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
@@ -333,12 +337,17 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
   .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
 
     ${(p: GlobalMenuType) => p?.styleOnSubMenu};
-    
+
     background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'transparent'} !important;
     border: none !important;
     font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
     font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
     text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
+
+    /* Hide submenu arrows */
+    .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
+      display: none !important;
+    }
 
     .${(p) => p?.theme.prefixCls}-menu-item {
       color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
