@@ -102,7 +102,7 @@ export const useStyles = createStyles(
             font-family: ${fontStyles?.fontFamily};
             font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
             font-weight: ${fontStyles?.fontWeight};
-  
+
             .${prefixCls}-icon {
               font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
               color: ${colors?.itemColor ?? BLACK_CLR};
@@ -118,41 +118,41 @@ export const useStyles = createStyles(
           }
 
           &:hover {
-            background: ${colors?.hoverItemBackground
-              ? `${colors.hoverItemBackground} !important`
-              : "transparent"};
-            color: ${colors?.hoverItemColor
-              ? `${colors.hoverItemColor} !important`
-              : BLACK_CLR};
-
-            ${styleOnHover}
+            ${styleOnHover ? styleOnHover : `
+              background: ${colors?.hoverItemBackground
+                ? `${colors.hoverItemBackground} !important`
+                : "transparent"};
+              color: ${colors?.hoverItemColor
+                ? `${colors.hoverItemColor} !important`
+                : BLACK_CLR};
+            `}
           }
         }
 
         .${prefixCls}-menu-submenu-active {
-          background: ${colors?.hoverItemBackground
-            ? `${colors.hoverItemBackground} !important`
-            : "transparent"};
+          ${styleOnHover ? styleOnHover : `
+            background: ${colors?.hoverItemBackground
+              ? `${colors.hoverItemBackground} !important`
+              : "transparent"};
 
-          .${prefixCls}-menu-submenu-title {
-            color: ${colors?.hoverItemColor ?? BLACK_CLR};
-            font-family: ${fontStyles?.fontFamily};
-            font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
-            font-weight: ${fontStyles?.fontWeight};
-          }
-
-          ${styleOnHover}
+            .${prefixCls}-menu-submenu-title {
+              color: ${colors?.hoverItemColor ?? BLACK_CLR};
+              font-family: ${fontStyles?.fontFamily};
+              font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
+              font-weight: ${fontStyles?.fontWeight};
+            }
+          `}
         }
 
         .${prefixCls}-menu-item-selected {
-          background: ${colors?.selectedItemBackground
-            ? `${colors.selectedItemBackground} !important`
-            : "transparent"};
-          color: ${colors?.selectedItemColor
-            ? `${colors.selectedItemColor} !important`
-            : BLACK_CLR};
-
-          ${styleOnSelected}
+          ${styleOnSelected ? styleOnSelected : `
+            background: ${colors?.selectedItemBackground
+              ? `${colors.selectedItemBackground} !important`
+              : "transparent"};
+            color: ${colors?.selectedItemColor
+              ? `${colors.selectedItemColor} !important`
+              : BLACK_CLR};
+          `}
         }
 
         ::-webkit-scrollbar {
