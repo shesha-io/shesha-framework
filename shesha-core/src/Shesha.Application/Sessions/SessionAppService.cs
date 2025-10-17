@@ -85,35 +85,52 @@ namespace Shesha.Sessions
                 var roles = await _roleAppointmentRepository.GetAll().Where(a => a.Person == currentUser).ToListAsync();
                 var allPermissionNames = PermissionManager.GetAllPermissions(false).Select(p => p.Name).ToList();
 
-                foreach (var permissionName in allPermissionNames)
+                // Group permissions by name and collect all associated PermissionedEntities
+                var permissionGroups = roles
+                    .SelectMany(role => role.Role.Permissions
+                        .Where(p => p.IsGranted)
+                        .Select(p => new { Permission = p.Permission, Role = role }))
+                    .GroupBy(x => x.Permission)
+                    .ToList();
+
+                foreach (var permissionGroup in permissionGroups)
                 {
+                    var permissionName = permissionGroup.Key;
+
+                    // Check if user has this permission granted
                     if (await PermissionChecker.IsGrantedAsync(permissionName))
                     {
-                        var permissionRoles = roles.Where(x => x.Role.Permissions.Any(p => p.Permission == permissionName)).ToList();
+                        var rolesWithPermission = permissionGroup.Select(x => x.Role).ToList();
+
+                        // Collect all PermissionedEntities from roles that have this permission
+                        var permissionedEntities = new List<EntityReferenceDto<string>>();
+                        var hasGlobalPermission = false;
+
+                        foreach (var role in rolesWithPermission)
+                        {
+                            if (!role.PermissionedEntities.Any())
+                            {
+                                // If any role has no PermissionedEntities, this is a global permission
+                                hasGlobalPermission = true;
+                                break;
+                            }
+                            else
+                            {
+                                // Add specific entities from this role
+                                permissionedEntities.AddRange(
+                                    role.PermissionedEntities.Select(x =>
+                                        new EntityReferenceDto<string>(x.Id, x._displayName, x._className))
+                                );
+                            }
+                        }
+
                         grantedPermissions.Add(new GrantedPermissionDto
                         {
                             Permission = permissionName,
-                            PermissionedEntity = permissionRoles.Any(x => !x.PermissionedEntities.Any())
-                                ? new List<EntityReferenceDto<string>>()
-                                : permissionRoles.SelectMany(x => x.PermissionedEntities).Distinct()
-                                    .Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className))
-                                    .ToList()
-                        }); ;
-                    }
-                }
-
-                foreach(var role in roles)
-                {
-                    if (!role.Role.Permissions.Any())
-                        continue;
-
-                    foreach (var permission in role.Role.Permissions.Where(x => x.IsGranted))
-                    {
-                        var grantedPermission = new GrantedPermissionDto
-                        {
-                            Permission = permission.Permission,
-                            PermissionedEntity = role.PermissionedEntities.Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className)).ToList(),
-                        };
+                            PermissionedEntity = hasGlobalPermission
+                                ? new List<EntityReferenceDto<string>>()  // Empty list = global permission
+                                : permissionedEntities.Distinct().ToList()  // Specific entities
+                        });
                     }
                 }
             }
