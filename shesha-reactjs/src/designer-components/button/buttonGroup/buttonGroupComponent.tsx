@@ -15,6 +15,7 @@ import { migratePrevStyles, migrateStyles } from '@/designer-components/_common-
 import { defaultContainerStyles, defaultStyles } from './utils';
 import { ConfigurableFormItem } from '@/components';
 import { useStyles } from './styles/styles';
+import { nanoid } from '@/utils/uuid';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
@@ -113,6 +114,76 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       const newModel = { ...prev };
       newModel.items = prev.items;
       return newModel;
+    })
+    .add<IButtonGroupComponentProps>(14, (prev) => {
+      // Add default buttons with proper styling when ButtonGroup is empty
+      if (!prev.items || prev.items.length === 0) {
+        const newModel = { ...prev };
+        return {
+          ...newModel,
+          items: [
+            {
+              id: nanoid(),
+              itemType: 'item',
+              sortOrder: 0,
+              name: 'button1',
+              label: 'Button 1',
+              itemSubType: 'button',
+              buttonType: 'primary',
+              editMode: 'inherited',
+              permissions: [],
+              hidden: false,
+              background: {
+                type: 'color',
+                repeat: 'no-repeat',
+                size: 'cover',
+                position: 'center',
+                gradient: { direction: 'to right', colors: {} },
+              },
+              font: { weight: '400', size: 14, align: 'center', type: 'Segoe UI' },
+              dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+              border: {
+                radiusType: 'all',
+                borderType: 'all',
+                hideBorder: false,
+                border: { all: { width: '1px', style: 'solid' } },
+                radius: { all: 8 },
+              },
+              shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
+            },
+            {
+              id: nanoid(),
+              itemType: 'item',
+              sortOrder: 1,
+              name: 'button2',
+              label: 'Button 2',
+              itemSubType: 'button',
+              buttonType: 'default',
+              editMode: 'inherited',
+              permissions: [],
+              hidden: false,
+              background: {
+                type: 'color',
+                repeat: 'no-repeat',
+                size: 'cover',
+                position: 'center',
+                gradient: { direction: 'to right', colors: {} },
+              },
+              font: { weight: '400', size: 14, align: 'center', type: 'Segoe UI' },
+              dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+              border: {
+                radiusType: 'all',
+                borderType: 'all',
+                hideBorder: false,
+                border: { all: { width: '1px', style: 'solid' } },
+                radius: { all: 8 },
+              },
+              shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
+            },
+          ],
+        };
+      }
+      return prev;
     }),
   settingsFormMarkup: (props) => getSettings(props),
 };

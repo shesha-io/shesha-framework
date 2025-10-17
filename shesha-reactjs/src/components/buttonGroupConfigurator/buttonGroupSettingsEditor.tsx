@@ -35,7 +35,7 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
         sortOrder: itemsCount,
         name: `group${itemNo}`,
         label: `Group ${itemNo}`,
-        buttonType: 'link',
+        buttonType: 'default',
         hideWhenEmpty: true,
         childItems: [],
         editMode: 'inherited',
@@ -80,7 +80,7 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
       name: `button${itemNo}`,
       label: `Button ${itemNo}`,
       itemSubType: 'button',
-      buttonType: 'link',
+      buttonType: itemNo === 1 ? 'primary' : 'default',
       editMode: 'inherited',
       ...initialValues(),
     };
