@@ -510,6 +510,37 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     })
                     .addCollapsiblePanel({
                       id: nanoid(),
+                      propertyName: 'pnlMenuSpecific',
+                      label: 'Menu Specific',
+                      parentId: styleRouterId,
+                      labelAlign: 'right',
+                      ghost: true,
+                      collapsible: 'header',
+                      content: {
+                        id: nanoid(),
+                        components: [...new DesignerToolbarSettings()
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            parentId: styleRouterId,
+                            inputs: [
+                              {
+                                type: 'numberField',
+                                id: nanoid(),
+                                propertyName: 'gap',
+                                label: 'Gap',
+                                jsSetting: true,
+                                min: 1,
+                                max: 100,
+                                defaultValue: 12,
+                              },
+                            ],
+                          })
+                          .toJson(),
+                        ],
+                      },
+                    })
+                    .addCollapsiblePanel({
+                      id: nanoid(),
                       propertyName: 'customStyle',
                       label: 'Custom Styles',
                       labelAlign: 'right',

@@ -173,7 +173,7 @@ export const useStyles = createStyles(
       width: 80px;
       display: flex;
       height: 100%;
-      background: ${colors?.itemBackground ?? "#fff"};
+      background: ${colors?.itemBackground ?? "transparent"};
       color: ${colors?.itemColor};
       flex-direction: row;
       justify-content: center;
