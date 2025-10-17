@@ -333,15 +333,15 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       condition={Boolean(name)} 
       wrap={children => (
         <DataContextBinder
-        id={`ctx_fl_${name}`}
-        name={name}
-        description={`File list context for ${name}`}
-        type='control'
-        data={state}
-        metadata={contextMetadata}
-      >
-        {children}
-      </DataContextBinder>
+          id={`ctx_fl_${name}`}
+          name={name}
+          description={`File list context for ${name}`}
+          type='control'
+          data={state}
+          metadata={contextMetadata}
+        >
+          {children}
+        </DataContextBinder>
       )}
     >
       <StoredFilesStateContext.Provider value={state}>
