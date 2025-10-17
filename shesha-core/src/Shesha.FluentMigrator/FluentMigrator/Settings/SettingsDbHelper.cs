@@ -224,7 +224,7 @@ where
                         where 
 	                        ""SettingConfigurationId"" = @settingId
                             and ((@appId is null and ""ApplicationId"" is null or (""ApplicationId"" = @appId)))
-                            {(userIdExists ? "and ((@userId is null and \"UserId\" is null or (\"ApplicationId\" = @userId)))" : "")}
+                            {(userIdExists ? "and ((@userId is null and \"UserId\" is null or (\"UserId\" = @userId)))" : "")}
             ";
 
             return ExecuteScalar<Guid?>(sql, command =>

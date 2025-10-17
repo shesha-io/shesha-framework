@@ -10,33 +10,40 @@ namespace Shesha.DynamicEntities
 {
     public class DynamicEntityUpdateEvent : IDynamicEntityUpdateEvent, ITransientDependency
     {
-        private readonly ISwaggerProvider _swaggerProvider;
-        private readonly IConfigureOptions<SwaggerGeneratorOptions> _swaggerOptions;
-        private readonly IOptions<SwaggerGeneratorOptions> _options;
-        private readonly IOptions<SwaggerGenOptions> _genOptions;
+        private readonly IIocResolver _iocResolver;
+        
 
-        public DynamicEntityUpdateEvent(
-            ISwaggerProvider swaggerProvider,
-            IConfigureOptions<SwaggerGeneratorOptions> swaggerOptions,
-            IOptions<SwaggerGeneratorOptions> options,
-            IOptions<SwaggerGenOptions> genOptions
-        ) 
+        public DynamicEntityUpdateEvent(IIocResolver iocResolver) 
         {
-            _swaggerProvider = swaggerProvider;
-            _swaggerOptions = swaggerOptions;
-            _options = options;
-            _genOptions = genOptions;
+            _iocResolver = iocResolver;
         }
 
         public async Task ProcessAsync()
         {
             await SheshaActionDescriptorChangeProvider.RefreshControllersAsync();
 
-            if (_swaggerProvider != null && _swaggerProvider is CachingSwaggerProvider cachedProvider)
+            var swaggerProvider = RevolveOrNull<ISwaggerProvider>();
+            if (swaggerProvider == null)
+                return;
+
+            if (swaggerProvider is CachingSwaggerProvider cachedProvider)
                 await cachedProvider.ClearCacheAsync();
 
-            _genOptions.Value.AddDocumentsPerService();
-            _swaggerOptions.Configure(_options.Value);
+            var genOptions = RevolveOrNull<IOptions<SwaggerGenOptions>>();
+            if (genOptions != null)
+                genOptions.Value.AddDocumentsPerService();
+
+            var swaggerOptions = RevolveOrNull<IConfigureOptions<SwaggerGeneratorOptions>>();
+            var options = RevolveOrNull<IOptions<SwaggerGeneratorOptions>>();
+            if (swaggerOptions != null && options != null)
+                swaggerOptions.Configure(options.Value);
+        }
+
+        private T? RevolveOrNull<T>() where T: class
+        {
+            return _iocResolver.IsRegistered<T>() 
+                ? _iocResolver.Resolve<T>() 
+                : null;
         }
     }
 }
