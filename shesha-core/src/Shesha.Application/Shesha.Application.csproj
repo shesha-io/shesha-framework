@@ -184,7 +184,4 @@
         <ProjectReference Include="..\Shesha.GraphQL\Shesha.GraphQL.csproj" />
         <ProjectReference Include="..\Shesha.NHibernate\Shesha.NHibernate.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-    </ItemGroup>
 </Project>
