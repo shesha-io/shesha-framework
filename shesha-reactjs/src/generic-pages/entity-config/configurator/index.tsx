@@ -217,13 +217,11 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
           <Alert
             type="warning"
             showIcon
-            description={
-              "This will merge this entity configuration '" +
+            description={"This will merge this entity configuration '" +
               entityConfig?.namespace +
               '.' +
               entityConfig?.className +
-              "' into and overwrite the configuration of the entity you selected"
-            }
+              "' into and overwrite the configuration of the entity you selected"}
           />
           <Row>
             <Col span="6">

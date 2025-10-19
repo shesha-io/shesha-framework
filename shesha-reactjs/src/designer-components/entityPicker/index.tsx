@@ -129,18 +129,16 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
               filters={entityPickerFilter}
               mode={model.mode}
               hideBorder={model.hideBorder}
-              addNewRecordsProps={
-                model.allowNewRecord
-                  ? {
-                    modalFormId: model.modalFormId,
-                    modalTitle: model.modalTitle,
-                    showModalFooter: model.showModalFooter,
-                    modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-                    buttons: model?.buttons,
-                    footerButtons: model?.footerButtons,
-                  }
-                  : undefined
-              }
+              addNewRecordsProps={model.allowNewRecord
+                ? {
+                  modalFormId: model.modalFormId,
+                  modalTitle: model.modalTitle,
+                  showModalFooter: model.showModalFooter,
+                  modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+                  buttons: model?.buttons,
+                  footerButtons: model?.footerButtons,
+                }
+                : undefined}
               name={model?.componentName}
               width={width}
               configurableColumns={model.items ?? []}
