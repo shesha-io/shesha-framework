@@ -78,11 +78,9 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
             disabled={props.readOnly || isFiltering}
             icon={filterIcon}
             size={props.size}
-            style={
-              isFiltering || props.readOnly
-                ? { ...buttonStyle, opacity: 0.5, border: props.buttonType === 'link' ? 'none' : buttonStyle.border }
-                : { ...buttonStyle }
-            }
+            style={isFiltering || props.readOnly
+              ? { ...buttonStyle, opacity: 0.5, border: props.buttonType === 'link' ? 'none' : buttonStyle.border }
+              : { ...buttonStyle }}
           >
             {props.label}
           </Button>

@@ -78,9 +78,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
               <ShaStatistic
                 value={value || passedModel?.value || passedModel?.placeholder}
                 precision={passedModel?.precision}
-                title={
-                  <div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>
-                }
+                title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
                 prefix={(
                   <div>
                     {passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}
@@ -125,9 +123,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
             <ShaStatistic
               value={value || passedModel?.value || passedModel?.placeholder}
               precision={passedModel?.precision}
-              title={
-                <div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>
-              }
+              title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
               prefix={(
                 <div>
                   {passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}

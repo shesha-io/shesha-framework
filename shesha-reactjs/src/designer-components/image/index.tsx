@@ -109,9 +109,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
                 onChange={onChange}
                 fileId={val}
                 ownerId={Boolean(calculatedModel.ownerId) ? calculatedModel.ownerId : Boolean(calculatedModel.dataId) ? calculatedModel.dataId : ''}
-                ownerType={
-                  Boolean(model.ownerType) ? model.ownerType : Boolean(calculatedModel.formModelType) ? calculatedModel.formModelType : ''
-                }
+                ownerType={Boolean(model.ownerType) ? model.ownerType : Boolean(calculatedModel.formModelType) ? calculatedModel.formModelType : ''}
                 fileCategory={model.fileCategory}
                 propertyName={!model.context ? model.propertyName : null}
                 // uploadMode={model.useSync ? 'sync' : 'async'}
