@@ -1,7 +1,6 @@
-import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
-import { CSSProperties } from 'react';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 
-export type ValueFormat = 'fullNumber' | 'object';
+export type ValueFormat = 'string' | 'national' | 'object';
 
 export interface IPhoneNumberValue {
     number: string;
@@ -9,24 +8,29 @@ export interface IPhoneNumberValue {
     countryCode: string;
 }
 
-export interface IPhoneNumberInputComponentProps extends IConfigurableFormComponent, IInputStyles {
-    desktop?: CSSProperties;
-    tablet?: CSSProperties;
-    mobile?: CSSProperties;
+export interface IPhoneNumberInputComponentProps extends IConfigurableFormComponent {
     placeholder?: string;
     initialValue?: string;
     valueFormat?: ValueFormat;
+    stripCountryCode?: boolean;
     country?: string;
     defaultCountry?: string;
     allowClear?: boolean;
     enableArrow?: boolean;
     enableSearch?: boolean;
+    distinct?: boolean;
     disableParentheses?: boolean;
-    onlyCountries?: string[];
-    excludeCountries?: string[];
-    preferredCountries?: string[];
+    disableDropdown?: boolean;
+    onlyCountries?: string[] | string;
+    excludeCountries?: string[] | string;
+    preferredCountries?: string[] | string;
     searchNotFound?: string;
+    searchPlaceholder?: string;
+    size?: 'small' | 'middle' | 'large';
+    wrapperStyle?: string;
+    inputGroupWrapperStyle?: string;
+    inputWrapperStyle?: string;
+    inputGroupStyle?: string;
+    inputStyle?: string;
     onChangeCustom?: string;
-    onBlurCustom?: string;
-    onFocusCustom?: string;
 }
