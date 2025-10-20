@@ -2,11 +2,10 @@ import { Radio, Space } from 'antd';
 import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 import { useGet } from '@/hooks';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getDataSourceList, IRadioProps } from './utils';
 
 const RadioGroup: FC<IRadioProps> = (model) => {
-  const { referenceListId, items = [], value, onChange, defaultValue } = model;
+  const { referenceListId, items = [], value, onChange } = model;
   const { data: refListItems } = useReferenceList(referenceListId);
 
   //#region Data source is url
@@ -17,12 +16,6 @@ const RadioGroup: FC<IRadioProps> = (model) => {
       refetch();
     }
   }, [model.dataSourceType, model.dataSourceUrl]);
-
-  useEffect(() => {
-    if (defaultValue) {
-      onChange(defaultValue);
-    }
-  }, [defaultValue]);
 
   const reducedData = useMemo(() => {
     const list = Array.isArray(data?.result) ? data?.result : data?.result?.items;
@@ -40,14 +33,11 @@ const RadioGroup: FC<IRadioProps> = (model) => {
     [model.dataSourceType, items, refListItems?.items, reducedData],
   );
 
-  const val = value ? `${value}` : defaultValue;
-
   const renderCheckGroup = (): ReactElement => (
     <Radio.Group
       className="sha-radio-group"
       disabled={model.readOnly}
-      defaultValue={defaultValue}
-      value={val}
+      value={value != null ? `${value}` : undefined}
       onBlur={model.onBlur}
       onFocus={model.onFocus}
       onChange={onChange}
@@ -62,10 +52,6 @@ const RadioGroup: FC<IRadioProps> = (model) => {
       </Space>
     </Radio.Group>
   );
-
-  if (model.readOnly) {
-    return <ReadOnlyDisplayFormItem type="radiogroup" disabled={model.readOnly} render={renderCheckGroup} style={model.style} />;
-  }
 
   return renderCheckGroup();
 };

@@ -2,6 +2,7 @@ import { FormSettingsButton } from '@/components/formDesigner/toolbar/formSettin
 import { PreviewButton } from '@/components/formDesigner/toolbar/previewButton';
 import { SaveButton } from '@/components/formDesigner/toolbar/saveButton';
 import { UndoRedoButtons } from '@/components/formDesigner/toolbar/undoRedoButtons';
+import { Space } from 'antd';
 import React, { FC } from 'react';
 
 export interface IFormToolbarProps {
@@ -10,11 +11,11 @@ export interface IFormToolbarProps {
 
 export const FormToolbar: FC<IFormToolbarProps> = ({ readOnly = false }) => {
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center' }}>
-      <FormSettingsButton buttonText="" />
-      <SaveButton size="small" type="link" />
+    <Space direction="horizontal" size={5}>
+      <FormSettingsButton buttonText="" size="small" />
       {!readOnly && (<UndoRedoButtons size="small" />)}
       <PreviewButton size="small" />
-    </div>
+      <SaveButton size="small" type="primary" />
+    </Space>
   );
 };

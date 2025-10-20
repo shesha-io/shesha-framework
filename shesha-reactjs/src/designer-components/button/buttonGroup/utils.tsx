@@ -1,6 +1,6 @@
 import { MenuProps } from 'antd';
 import React from 'react';
-import { IStyleType } from '@/index';
+import { ButtonGroupItemProps, IStyleType } from '@/index';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -29,10 +29,10 @@ export function getButtonGroupMenuItem(
   } as MenuItem;
 };
 
-export const defaultStyles = (prev): IStyleType => {
+export const defaultStyles = (prev: ButtonGroupItemProps): IStyleType => {
   return {
     background: { type: 'color', color: prev.backgroundColor },
-    font: { color: prev.buttonType === 'primary' ? '#fff' : prev.fontColor ?? '', weight: prev.fontWeight ?? '400', size: prev.fontSize ?? 14, type: prev.fontFamily ?? 'Segoe UI', align: 'center' },
+    font: { color: prev.buttonType === 'primary' ? '#fff' : prev["fontColor"] ?? '', weight: prev.fontWeight ?? '400', size: prev.fontSize ?? 14, type: prev["fontFamily"] ?? 'Segoe UI', align: 'center' },
     border: {
       borderType: 'all',
       radiusType: 'all',

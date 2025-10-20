@@ -114,7 +114,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   return <td {...restProps}>{childNode}</td>;
 };
 
-const getItemStyle = (draggableStyle: any, isDragging: boolean): {} => ({
+const getItemStyle = (draggableStyle: any, isDragging: boolean): CSSProperties => ({
   padding: '2px',
   userSelect: 'none',
   background: isDragging ? 'white' : 'inherit',

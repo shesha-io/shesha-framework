@@ -45,7 +45,6 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   borderRadius?: number;
   hideFileName?: boolean;
   container?: IStyleType;
-  primaryColor?: string;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -96,9 +95,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           return (
             <StoredFilesProvider
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
-              ownerType={
-                Boolean(model.ownerType) ? model.ownerType : Boolean(form?.formSettings?.modelType) ? form?.formSettings?.modelType : ''
-              }
+              ownerType={Boolean(model.ownerType) ? model.ownerType : Boolean(form?.formSettings?.modelType) ? form?.formSettings?.modelType : ''}
               ownerName={model.ownerName}
               filesCategory={model.filesCategory}
               baseUrl={backendUrl}

@@ -164,11 +164,9 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
           data-column-id={column.id}
         >
           <Flex
-            justify={
-              props.kanbanReadonly || props.readonly || !(props.allowNewRecord || props.collapsible)
-                ? 'center'
-                : 'space-between'
-            }
+            justify={props.kanbanReadonly || props.readonly || !(props.allowNewRecord || props.collapsible)
+              ? 'center'
+              : 'space-between'}
             align="center"
             className={styles.combinedHeaderStyle}
             style={props.headerStyles || {}}

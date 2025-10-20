@@ -39,8 +39,6 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     labelPlacement,
     wizardType = 'default',
     stepWidth,
-    showBackButton = true,
-    showDoneButton = true,
   } = model;
 
   const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = model;
@@ -125,7 +123,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                 condition={splitButtons}
                 wrap={(children) => <Space><div className={styles.shaStepsButtons}>{children}</div></Space>}
               >
-                {current > 0 && showBackButton && (
+                {current > 0 && (currentStep?.showBackButton ?? true) && (
                   <Button
                     style={btnStyle('back')}
                     onClick={back}
@@ -159,7 +157,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                     {currentStep.nextButtonText ? currentStep.nextButtonText : 'Next'}
                   </Button>
                 )}
-                {current === visibleSteps.length - 1 && showDoneButton && (
+                {current === visibleSteps.length - 1 && (currentStep?.showDoneButton ?? true) && (
                   <Button
                     type="primary"
                     style={btnStyle('next')}

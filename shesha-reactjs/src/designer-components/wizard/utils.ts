@@ -2,6 +2,7 @@ import { findLastIndex } from 'lodash';
 import { nanoid } from '@/utils/uuid';
 import { IWizardSequence, IWizardStepProps } from './models';
 import { IStyleType } from '@/index';
+import { CSSProperties } from 'react';
 
 export const EXPOSED_VARIABLES = [
   { id: nanoid(), name: 'data', description: 'The form data', type: 'object' },
@@ -24,8 +25,9 @@ export const EXPOSED_VARIABLES = [
   { id: nanoid(), name: 'moment', description: 'The moment.js object', type: 'object' },
 ];
 
+type StepDescriptionGetter = (description: string, index: number) => string;
 export const getStepDescritpion =
-  (show: boolean, sequence: IWizardSequence, currentIndex: number) => (description: string, index: number) => {
+  (show: boolean, sequence: IWizardSequence, currentIndex: number): StepDescriptionGetter => (description: string, index: number): string => {
     if (show) {
       switch (true) {
         case index === currentIndex:
@@ -45,8 +47,9 @@ export const getStepDescritpion =
     return description;
   };
 
+type ButtonStyleGetter = (type: 'back' | 'cancel' | 'next') => CSSProperties;
 export const getWizardButtonStyle =
-  (buttonsLayout: 'left' | 'right' | 'spaceBetween') => (type: 'back' | 'cancel' | 'next') => {
+  (buttonsLayout: 'left' | 'right' | 'spaceBetween'): ButtonStyleGetter => (type: 'back' | 'cancel' | 'next') => {
     const left = { marginLeft: '8px' };
     const right = { marginRight: '8px' };
 

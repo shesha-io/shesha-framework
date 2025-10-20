@@ -1,27 +1,18 @@
 ﻿using FluentMigrator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shesha.FluentMigrator;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 {
-    [Migration(20230228151500), MsSqlOnly]
-    public class M20230228151500 : Migration
+    [Migration(20230228151500)]
+    public class M20230228151500 : OneWayMigration
     {
-        public override void Down()
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Up()
         {
             Alter.Table("SheshaFunctionalTests_TestClasses")
-                .AddColumn("SomeGenericPropId").AsCustom("nvarchar(100)").Nullable()
-                .AddColumn("SomeGenericPropDisplayName").AsCustom("nvarchar(1000)").Nullable()
-                .AddColumn("SomeGenericPropClassName").AsCustom("nvarchar(1000)").Nullable()
-                .AddColumn("SomeJsonAddressProp").AsCustom("nvarchar(max)").Nullable();
+                .AddColumn("SomeGenericPropId").AsString(100).Nullable()
+                .AddColumn("SomeGenericPropDisplayName").AsString(1000).Nullable()
+                .AddColumn("SomeGenericPropClassName").AsString(1000).Nullable()
+                .AddColumn("SomeJsonAddressProp").AsStringMax().Nullable();
         }
     }
 }

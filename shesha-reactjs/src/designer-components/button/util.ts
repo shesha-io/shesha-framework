@@ -1,4 +1,5 @@
 import { IStyleType } from "@/index";
+import { IButtonComponentProps } from "./interfaces";
 
 export const buttonTypes = [
   {
@@ -27,7 +28,7 @@ export const buttonTypes = [
   },
 ];
 
-export const defaultStyles = (prev): IStyleType => {
+export const defaultStyles = (prev: IButtonComponentProps): IStyleType => {
   return {
     background: { type: 'color' },
     font: { weight: '400', size: 14, type: 'Segoe UI', align: 'center' },

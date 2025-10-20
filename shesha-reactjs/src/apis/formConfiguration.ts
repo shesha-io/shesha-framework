@@ -112,9 +112,9 @@ export interface FormUpdateMarkupInput {
    */
   markup?: string | null;
   /** Form asscess mode */
-  access?: number;
+  access?: number | undefined;
   /** Form permissions for Required premission mode */
-  permissions?: string[];
+  permissions?: string[] | undefined;
 }
 
 export interface FormConfigurationUpdateMarkupQueryParams {

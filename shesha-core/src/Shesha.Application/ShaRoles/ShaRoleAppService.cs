@@ -49,7 +49,8 @@ namespace Shesha.ShaRoles
 
             var role = await Repository.GetAsync(input.Id);
 
-            ObjectMapper.Map(input, role);
+            role.Label = input.Label;
+            role.Description = input.Description;
             role.MapPermissions(input.Permissions);            
 
             await _shaPermissionChecker.ClearPermissionsCacheAsync();

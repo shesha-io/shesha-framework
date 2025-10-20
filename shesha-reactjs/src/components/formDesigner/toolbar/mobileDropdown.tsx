@@ -2,21 +2,19 @@ import React, { FC } from 'react';
 import { Tooltip } from 'antd';
 import { useCanvas } from '@/providers';
 import CustomDropdown from '@/designer-components/_settings/utils/CustomDropdown';
-import { getDeviceTypeByWidth, screenSizeOptions } from '@/providers/canvas/utils';
+import { defaultDesignerWidth, getDeviceTypeByWidth, screenSizeOptions } from '@/providers/canvas/utils';
 
-export interface IPreviewButtonProps { }
-
-export const DeviceOptions: FC<IPreviewButtonProps> = () => {
+export const DeviceOptions: FC = () => {
   const { setCanvasWidth, designerWidth } = useCanvas();
 
   return (
     <CustomDropdown
       placeholder="Select a device"
       optionFilterProp="label"
-      defaultValue="1024px"
+      defaultValue={defaultDesignerWidth}
       style={{ width: '120px' }}
       size="small"
-      customTooltip='Add a custom screen size e.g "1440px".'
+      customTooltip='Add a custom screen size e.g "1024px".'
       popupMatchSelectWidth={false}
       onChange={(val) => {
         const value = parseInt(val, 10);

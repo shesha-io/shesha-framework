@@ -79,7 +79,7 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
    * Add components to the markup based on entity metadata and properties
    */
   protected abstract addComponentsToMarkup(
-    markup: any,
+    markup: unknown,
     entity: IEntityMetadata,
     nonFrameworkProperties: PropertyMetadataDto[],
     metadataHelper: FormMetadataHelper,

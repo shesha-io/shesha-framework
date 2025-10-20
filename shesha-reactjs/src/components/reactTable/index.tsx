@@ -33,6 +33,7 @@ import { ErrorDetails } from '@/utils/configurationFramework/actions';
 import axios from 'axios';
 import { isAxiosResponse } from '@/interfaces/ajaxResponse';
 import { getBorderStyle } from '@/designer-components/_settings/utils/index';
+import { useCanvasState } from '@/providers/canvas';
 
 interface IReactTableState {
   allRows: any[];
@@ -117,6 +118,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   const { setDragState } = useDataTableStore();
 
   const shaForm = useShaFormInstance(false);
+  const canvasState = useCanvasState(false);
 
   const { allColumns, allRows } = componentState;
 
@@ -423,6 +425,10 @@ export const ReactTable: FC<IReactTableProps> = ({
     const getSmartPosition = (): { top: number; left: number } => {
       if (!cellRect) return { top: 0, left: 0 };
 
+      // Get the canvas zoom level (default to 100 if not available)
+      const zoomLevel = canvasState?.zoom ?? 100;
+      const zoomScale = Math.max(0.01, zoomLevel / 100);
+
       const viewport = {
         width: window.innerWidth,
         height: window.innerHeight,
@@ -437,19 +443,22 @@ export const ReactTable: FC<IReactTableProps> = ({
       const margin = 10;
       const bottomOffset = 5;
 
-      let top = cellRect.top + offset;
-      let left = cellRect.left + offset;
+      let top = (cellRect.top / zoomScale) + offset;
+      let left = (cellRect.left / zoomScale) + offset;
 
-      if (left + popup.width + margin > viewport.width) {
-        left = cellRect.right - popup.width - offset;
+      const scaledPopupWidth = popup.width / zoomScale;
+      const scaledPopupHeight = popup.height / zoomScale;
+
+      if (left + scaledPopupWidth + margin > viewport.width / zoomScale) {
+        left = (cellRect.right / zoomScale) - scaledPopupWidth - offset;
       }
 
       if (left < margin) {
         left = margin;
       }
 
-      if (top + popup.height + margin > viewport.height) {
-        top = cellRect.top - popup.height - bottomOffset;
+      if (top + scaledPopupHeight + margin > viewport.height / zoomScale) {
+        top = (cellRect.top / zoomScale) - scaledPopupHeight - bottomOffset;
       }
 
       if (top < margin) {

@@ -2,9 +2,7 @@ import React, { FC } from 'react';
 import { Empty } from 'antd';
 import { useFormDesignerState } from '@/providers/formDesigner';
 
-export interface IProps { }
-
-const ComponentPropertiesPanelInner: FC<IProps> = () => {
+const ComponentPropertiesPanelInner: FC = () => {
   const { selectedComponentId, readOnly, settingsPanelRef } = useFormDesignerState();
 
   return (
@@ -12,9 +10,7 @@ const ComponentPropertiesPanelInner: FC<IProps> = () => {
       {!selectedComponentId && (
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={
-            readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'
-          }
+          description={readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'}
         />
       )}
       <div style={{ paddingBottom: '50px' }} ref={settingsPanelRef}></div>

@@ -51,7 +51,6 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       ...model.allStyles.fontStyles,
       ...model.allStyles.dimensionsStyles,
     } : model.allStyles.fullStyle;
-
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();
@@ -70,13 +69,11 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
               fileId={model.value?.Id ?? model.value}
               baseUrl={backendUrl}
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
-              ownerType={
-                Boolean(model.ownerType)
-                  ? model.ownerType
-                  : Boolean(formSettings?.modelType)
-                    ? formSettings?.modelType
-                    : ''
-              }
+              ownerType={Boolean(model.ownerType)
+                ? model.ownerType
+                : Boolean(formSettings?.modelType)
+                  ? formSettings?.modelType
+                  : ''}
               propertyName={model.propertyName}
               uploadMode={model.useSync ? 'sync' : 'async'}
             >

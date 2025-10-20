@@ -10,6 +10,7 @@ export enum TreeNodeType {
   Module = 1,
   ConfigurationItem = 2,
   Folder = 3,
+  Special = 4,
 }
 
 export type DocumentFlags = {
@@ -22,21 +23,21 @@ export type DocumentFlags = {
 
 export type TreeNode = DataNode & {
   id: string;
-  parentId?: string | null;
+  parentId?: string | undefined;
   moduleId: string;
   name: string;
   label: string;
-  description?: string;
+  description?: string | undefined;
   nodeType: TreeNodeType;
 };
 
 export type ConfigItemTreeNode = TreeNode & {
   itemType: string;
   flags: DocumentFlags;
-  lastModifierUser?: string;
-  lastModificationTime?: string;
+  lastModifierUser?: string | undefined;
+  lastModificationTime?: string | undefined;
   moduleName: string;
-  baseModule?: string;
+  baseModule?: string | undefined;
 };
 
 export type NodeWithChilds = {
@@ -49,23 +50,31 @@ export type ModuleTreeNode = TreeNode & NodeWithChilds & {
 export type FolderTreeNode = TreeNode & NodeWithChilds & {
 };
 
+export type SpecialTreeNode = TreeNode & {
+};
+
+
 export type FlatTreeNode = DocumentFlags & {
   id: string;
-  parentId?: string | null;
+  parentId: string | null;
   moduleId: string;
   name: string;
   label: string;
   nodeType: number;
   itemType?: string;
-  description?: string;
-  lastModifierUser?: string;
-  lastModificationTime?: string;
-  baseModule?: string;
+  description: string | null | undefined;
+  lastModifierUser: string | null;
+  lastModificationTime: string | null;
+  baseModule: string | null;
 };
 
 export const isTreeNode = (node?: DataNode): node is TreeNode => {
   const casted = node as TreeNode | undefined;
   return isDefined(casted?.nodeType);
+};
+
+export const isSpecialTreeNode = (node?: DataNode): node is SpecialTreeNode => {
+  return isTreeNode(node) && node.nodeType === TreeNodeType.Special;
 };
 
 export const isConfigItemTreeNode = (node?: DataNode): node is ConfigItemTreeNode => {
@@ -88,6 +97,7 @@ export const TREE_NODE_TYPES = {
   Module: 1,
   ConfigurationItem: 2,
   Folder: 3,
+  Special: 4,
 };
 
 export const ITEM_TYPES = {
@@ -137,8 +147,16 @@ export type CIDocument = DocumentBase & {
   moduleName: string;
 };
 
+export type CustomDocument = DocumentBase & {
+
+};
+
 export const isCIDocument = (doc?: StoredDocumentInfo): doc is CIDocument => {
   return isDefined(doc) && doc.type === 'ci';
+};
+
+export const isCustomDocument = (doc?: StoredDocumentInfo): doc is CustomDocument => {
+  return isDefined(doc) && doc.type === 'custom';
 };
 
 export type ItemEditorProps<TDoc extends IDocumentInstance = IDocumentInstance> = {
@@ -166,8 +184,8 @@ export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDo
 export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstance> = {
   documentType: string;
   Editor: ItemEditorRenderer<TDoc>;
-  Provider: ProviderRenderer<TDoc>;
-  Toolbar: ItemEditorRenderer<TDoc>;
+  Provider?: ProviderRenderer<TDoc> | undefined;
+  Toolbar?: ItemEditorRenderer<TDoc> | undefined;
   documentInstanceFactory: DocumentInstanceFactory;
   createModalFooterButtons?: ModalFooterButtons;
 };

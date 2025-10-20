@@ -1,10 +1,9 @@
 import React from 'react';
 import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
-import { IProviderSettings } from './interfaces';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
-export interface IProps<TModel extends IProviderSettings> {
+export interface IProps<TModel extends object = object> {
   model: TModel;
   markup: FormMarkup;
   onSave: (model: TModel) => void;
@@ -13,7 +12,7 @@ export interface IProps<TModel extends IProviderSettings> {
   readOnly?: boolean;
 }
 
-export function GenericSettingsEditor<TModel extends IProviderSettings>({
+export function GenericSettingsEditor<TModel extends object = object>({
   onSave,
   model,
   markup,

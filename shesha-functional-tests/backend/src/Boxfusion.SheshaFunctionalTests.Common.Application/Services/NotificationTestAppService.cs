@@ -56,21 +56,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 Body = type.Description ?? string.Empty
             };
 
-            List<StoredFile> files = new List<StoredFile>();
-
-            if (notification.SchoolId != null)
-            {
-                files = await _storedFileRepository.GetAllIncluding()
-                    .Where(x => x.Owner.Id == notification.SchoolId)
-                    .ToListAsync();
-            }
-
-            var attachments = files.Select(x => new NotificationAttachmentDto()
-            {
-                FileName = x.FileName,
-                StoredFileId = x.Id,
-            }).ToList();
-
             var senderPerson = await GetCurrentPersonAsync();
             if (senderPerson == null)
                 throw new InvalidOperationException("Current person could not be determined. Ensure the user is logged in.");
@@ -88,7 +73,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 recipient,                
                 data,
                 notification.Priority,
-                attachments,
+                notification.NotificationAttachments,
                 notification.Cc,
                 null,
                 channel
@@ -110,21 +95,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 Name = "Test Name",
             };
 
-            List<StoredFile> files = new List<StoredFile>();
-
-            if (notification.SchoolId != null)
-            {
-                files = await _storedFileRepository.GetAllIncluding()
-                    .Where(x => x.Owner.Id == notification.SchoolId)
-                    .ToListAsync();
-            }
-
-            var attachments = files.Select(x => new NotificationAttachmentDto()
-            {
-                FileName = x.FileName,
-                StoredFileId = x.Id,
-            }).ToList();
-
             // Get the current person
             var senderPerson = await GetCurrentPersonAsync();
             if (senderPerson == null)
@@ -143,7 +113,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         receiver,
                         data,
                         notification.Priority,
-                        attachments,
+                        notification.NotificationAttachments,
                         null,
                         null,
                         channel
@@ -164,7 +134,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         receiver,
                         data,
                         notification.Priority,
-                        attachments,
+                        notification.NotificationAttachments,
                         null,
                         null,
                         channel

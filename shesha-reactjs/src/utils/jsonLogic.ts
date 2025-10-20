@@ -1,6 +1,7 @@
 import { DataTypes } from '@/interfaces/dataTypes';
 import { evaluateComplexStringWithResult, IEvaluateComplexStringResult, IMatchData } from '@/providers/form/utils';
 import { executeFunction } from '@/utils';
+import { isDefined } from './nullables';
 
 export type EvaluationType = 'mustache' | 'javascript';
 export interface IEvaluateNodeArgs {
@@ -222,22 +223,25 @@ const evaluateMustacheSync = (evaluationNode: IEvaluateNode, allArgs: any[], opt
   };
 };
 
-export const getEvaluationNodeFromJsonLogicNode = (node: any): IEvaluateNode => {
-  const { evaluate } = node ?? {};
-  const args = evaluate && Array.isArray(evaluate) && evaluate.length === 1
-    ? evaluate[0]
-    : undefined;
+export const getEvaluationNodeFromJsonLogicNode = (node: object): IEvaluateNode | undefined => {
+  if (isDefined(node) && "evaluate" in node) {
+    const { evaluate } = node;
+    const args = evaluate && Array.isArray(evaluate) && evaluate.length === 1
+      ? evaluate[0]
+      : undefined;
 
-  const typedArgs = args as IEvaluateNodeArgs;
-  const result: IEvaluateNode = typeof (typedArgs?.expression) === 'string'
-    ? {
-      evaluate: {
-        ...typedArgs,
-        type: (args as IEvaluateNodeArgs).type ?? 'mustache' /* fallback to legacy */,
-      },
-    }
-    : undefined;
-  return result;
+    const typedArgs = args as IEvaluateNodeArgs;
+    const result: IEvaluateNode = typeof (typedArgs?.expression) === 'string'
+      ? {
+        evaluate: {
+          ...typedArgs,
+          type: (args as IEvaluateNodeArgs).type ?? 'mustache' /* fallback to legacy */,
+        },
+      }
+      : undefined;
+    return result;
+  } else
+    return undefined;
 };
 
 export const convertJsonLogicNode = async (
@@ -414,9 +418,12 @@ export interface IMustacheEvaluateNode {
   evaluate: IMustacheEvaluateNodeArgs[];
 }
 
-export const isLegacyMustacheEvaluationNode = (node: any): node is IMustacheEvaluateNode => {
-  const { evaluate } = node ?? {};
-  const expressionType = (evaluate as IEvaluateNodeArgs)?.type;
+export const isLegacyMustacheEvaluationNode = (node: object): node is IMustacheEvaluateNode => {
+  if ("evaluate" in node) {
+    const { evaluate } = node ?? {};
+    const expressionType = (evaluate as IEvaluateNodeArgs)?.type;
 
-  return evaluate && !expressionType;
+    return evaluate && !expressionType;
+  } else
+    return false;
 };

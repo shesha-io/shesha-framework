@@ -10,7 +10,7 @@ export interface IPropertyTouched {
   getData: () => any;
 }
 
-export const CreateTouchableProperty = (data: any, parent: IPropertyTouched, name: string): IPropertyTouched => {
+export const CreateTouchableProperty = (data: object, parent: IPropertyTouched, name: string): IPropertyTouched => {
   const prop = (Array.isArray(data))
     ? new TouchableArrayProperty(data, parent, name)
     : new TouchableProperty(data, parent, name);
@@ -53,11 +53,11 @@ export class TouchableProperty implements IPropertyTouched {
 
   getData = (): any => this.accessor.getData();
 
-  touched(propName: string, fullPropName: string, value: any): void {
+  touched(propName: string, fullPropName: string, value: unknown): void {
     this.accessor.touched(propName, fullPropName, value);
   }
 
-  constructor(data: any, parent: IPropertyTouched, name: string) {
+  constructor(data: object, parent: IPropertyTouched, name: string) {
     this.accessor = new PropertyTouchAccessor(data, parent, name);
   }
 }
@@ -67,11 +67,11 @@ export class TouchableArrayProperty extends Array implements IPropertyTouched {
 
   getData = (): any => this.accessor.getData();
 
-  touched(propName: string, fullPropName: string, value: any): void {
+  touched(propName: string, fullPropName: string, value: unknown): void {
     this.accessor.touched(propName, fullPropName, value);
   }
 
-  constructor(data: any, parent: IPropertyTouched, name: string) {
+  constructor(data: object, parent: IPropertyTouched, name: string) {
     super();
     this.accessor = new PropertyTouchAccessor(data, parent, name);
   }

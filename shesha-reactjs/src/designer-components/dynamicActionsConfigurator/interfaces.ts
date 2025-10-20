@@ -2,14 +2,9 @@ import { IObjectMetadata } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ReactNode } from 'react';
 
-export interface IDynamicActionsConfiguratorComponentProps extends IConfigurableFormComponent {
+export type IDynamicActionsConfiguratorComponentProps = IConfigurableFormComponent;
 
-}
-
-export interface IProviderSettings {
-}
-
-export interface ISettingsFormFactoryArgs<TModel = IProviderSettings> {
+export interface ISettingsFormFactoryArgs<TModel extends object = object> {
   model: TModel;
   onSave: (values: TModel) => void;
   onCancel: () => void;
@@ -18,6 +13,6 @@ export interface ISettingsFormFactoryArgs<TModel = IProviderSettings> {
   availableConstants?: IObjectMetadata;
 }
 
-export type IProviderSettingsFormFactory<TModel = IProviderSettings> = (
+export type IProviderSettingsFormFactory<TModel extends object = object> = (
   props: ISettingsFormFactoryArgs<TModel>
 ) => ReactNode;

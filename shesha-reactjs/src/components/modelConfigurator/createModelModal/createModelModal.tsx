@@ -5,10 +5,7 @@ import React, { FC } from 'react';
 import markup from './createModelModal.json';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
-export interface ICreateModelModalProps {
-}
-
-export const CreateModelModal: FC<ICreateModelModalProps> = () => {
+export const CreateModelModal: FC = () => {
   const { isCreateNew, save, cancel } = useModelConfigurator();
   const formRef = useShaFormRef();
   const { message } = App.useApp();

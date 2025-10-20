@@ -7,9 +7,7 @@ import { ConfigurableFormInstance, FormMarkup } from '@/interfaces';
 import { getComponentModel } from '../provider/utils';
 import { ConfigurableForm } from '@/components/configurableForm';
 
-export interface IRefListItemPropertiesProps {}
-
-export const RefListItemProperties: FC<IRefListItemPropertiesProps> = () => {
+export const RefListItemProperties: FC = () => {
   const { selectedItemId, getItem, updateItem, readOnly } = useRefListItemGroupConfigurator();
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);

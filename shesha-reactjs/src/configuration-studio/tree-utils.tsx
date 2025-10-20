@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
-import { ConfigItemTreeNode, FlatTreeNode, FolderTreeNode, isConfigItemTreeNode, isTreeNode, ITEM_TYPES, ModuleTreeNode, TREE_NODE_TYPES, TreeNode, TreeNodeType } from "./models";
-import { FileUnknownOutlined, FolderOpenOutlined, FolderOutlined, FormOutlined, MessageOutlined, NotificationOutlined, OrderedListOutlined, ProductOutlined, SafetyOutlined, SettingOutlined, TableOutlined, TeamOutlined } from "@ant-design/icons";
+import { ConfigItemTreeNode, CustomDocument, FlatTreeNode, FolderTreeNode, isConfigItemTreeNode, isTreeNode, ITEM_TYPES, ModuleTreeNode, SpecialTreeNode, TREE_NODE_TYPES, TreeNode, TreeNodeType } from "./models";
+import { FileUnknownOutlined, FolderOpenOutlined, FolderOutlined, FormOutlined, HomeOutlined, MessageOutlined, NotificationOutlined, OrderedListOutlined, ProductOutlined, SafetyOutlined, SettingOutlined, TableOutlined, TeamOutlined } from "@ant-design/icons";
 
 import { TreeNodeProps } from "antd";
 import { CsTreeNode } from "./components/tree-node";
@@ -28,6 +28,14 @@ export const getIcon = (nodeType: TreeNodeType, itemType?: string, expanded?: bo
     default: return undefined;
   }
 };
+export const getCustomIcon = (doc: CustomDocument): ReactNode => {
+  // TODO: move to document definition
+  switch (doc.itemId) {
+    case 'home': return <HomeOutlined />;
+    case 'settings': return <SettingOutlined />;
+    default: return undefined;
+  }
+};
 
 const applyIcon = (node: TreeNode): void => {
   node.icon = (props: TreeNodeProps): ReactNode => {
@@ -46,17 +54,25 @@ export const renderCsTreeNode = (node: TreeNode, displayText?: ReactNode): React
 export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
   const baseProps: TreeNode = {
     id: node.id,
-    parentId: node.parentId,
+    parentId: node.parentId ?? undefined,
     key: node.id,
     name: node.name,
     label: node.label,
     nodeType: node.nodeType,
     title: (node) => isTreeNode(node) ? renderCsTreeNode(node, undefined) : undefined,
     moduleId: node.moduleId,
-    description: node.description,
+    description: node.description ?? undefined,
   };
 
   switch (node.nodeType) {
+    case TREE_NODE_TYPES.Special: {
+      const specialNode: SpecialTreeNode = {
+        ...baseProps,
+        children: [],
+      };
+      applyIcon(specialNode);
+      return specialNode;
+    }
     case TREE_NODE_TYPES.Module: {
       const moduleNode: ModuleTreeNode = {
         ...baseProps,
@@ -86,9 +102,9 @@ export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
           isExposed: node.isExposed,
           isUpdatedByMe: node.isUpdatedByMe,
         },
-        lastModifierUser: node.lastModifierUser,
-        lastModificationTime: node.lastModificationTime,
-        baseModule: node.baseModule,
+        lastModifierUser: node.lastModifierUser ?? undefined,
+        lastModificationTime: node.lastModificationTime ?? undefined,
+        baseModule: node.baseModule ?? undefined,
         moduleName: "",
       };
       applyIcon(itemNode);

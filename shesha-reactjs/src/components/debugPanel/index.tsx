@@ -7,10 +7,7 @@ import { CloseOutlined } from "@ant-design/icons";
 import DebugPanelDataContent from "./dataContent";
 import { useStyles } from './styles/styles';
 
-export interface DebugPanelProps {
-}
-
-export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({ children }) => {
+export const DebugPanel: FC<PropsWithChildren> = ({ children }) => {
   const { styles } = useStyles();
   const [open, setOpen] = useState(false);
   const [ctrlPressed] = useKeyPress('Control');
@@ -156,7 +153,7 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({ children })
           }}
         >
           <div className={styles.debugPanelBody}>
-            { position === 'right' && (
+            {position === 'right' && (
               <div
                 className={styles.debugPanelRightResizer}
                 draggable
@@ -167,7 +164,7 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({ children })
             <div className={styles.debugPanelContent}>
               <DebugPanelDataContent />
             </div>
-            { position === 'left' && (
+            {position === 'left' && (
               <div
                 className={styles.debugPanelLeftResizer}
                 draggable

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useContext, useState, Fragment } from 'react';
+import React, { FC, useEffect, useRef, useContext, useState, Fragment, CSSProperties } from 'react';
 import {
   DragDropContext,
   DropResult,
@@ -87,7 +87,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   return <td {...restProps}>{childNode}</td>;
 };
 
-const getItemStyle = (draggableStyle: any, isDragging: boolean): {} => ({
+const getItemStyle = (draggableStyle: any, isDragging: boolean): CSSProperties => ({
   padding: '2px',
   userSelect: 'none',
   background: isDragging ? 'white' : 'inherit',
@@ -254,7 +254,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
 
   return (
     <Fragment>
-      <Button size="small" onClick={toggleModal}>{ readOnly ? 'View Columns' : 'Configure Columns' }</Button>
+      <Button size="small" onClick={toggleModal}>{readOnly ? 'View Columns' : 'Configure Columns'}</Button>
 
       <Modal
         title={readOnly ? 'View Columns' : 'Configure Columns'}

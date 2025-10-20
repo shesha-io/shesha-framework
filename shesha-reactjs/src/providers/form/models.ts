@@ -13,6 +13,7 @@ import { IBorderValue } from '@/designer-components/_settings/utils/border/inter
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { ColorValueType } from 'antd/es/color-picker/interface';
+import { isDefined } from '@/utils/nullables';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
@@ -283,6 +284,9 @@ export interface IConfigurableFormComponent
   listType?: 'text' | 'thumbnail';
 }
 
+export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>
+  isDefined(component) && ['id', 'type'].every((key) => (key in component && typeof component[key] === 'string'));
+
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
   /** Whether the component is read-only */
   readOnly?: boolean;
@@ -315,8 +319,8 @@ export interface IFormSettingsCommon {
   size?: SizeType;
   /** if true then need to update components structure for using Setting component */
   isSettingsForm?: boolean;
-  permissions?: string[];
-  access?: number;
+  permissions?: string[] | undefined;
+  access?: number | undefined;
 }
 
 export interface ILegacyFormSettings extends IFormSettingsCommon {

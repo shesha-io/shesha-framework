@@ -9,11 +9,7 @@ import React, { FC } from "react";
 
 type MenuItem = MenuProps['items'][number];
 
-export interface ICustomActionsProps {
-
-}
-
-export const CustomActions: FC<ICustomActionsProps> = () => {
+export const CustomActions: FC = () => {
   const httpClient = useHttpClient();
   const { formProps, loadForm } = useFormPersister();
   const { open: openModal } = useDynamicModals();
@@ -53,7 +49,7 @@ export const CustomActions: FC<ICustomActionsProps> = () => {
   ];
   return (
     <Dropdown menu={{ items }} placement="bottomRight" arrow>
-      <Button icon={<MenuOutlined />}></Button>
+      <Button icon={<MenuOutlined />} size="small"></Button>
     </Dropdown>
   );
 };

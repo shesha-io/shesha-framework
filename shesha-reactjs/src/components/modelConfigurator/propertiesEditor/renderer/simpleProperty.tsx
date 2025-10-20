@@ -23,9 +23,9 @@ export const SimpleProperty: FC<IProps> = (props) => {
     : <>{props.name} {props.label && <>({props.label})</>}</>;
 
   const labelInfo = props.dataType === DataTypes.entityReference
-    ? <>: <i>{props.entityType ?? 'Generic entity reference' }</i></>
+    ? <>: <i>{props.entityType ?? 'Generic entity reference'}</i></>
     : props.dataType === DataTypes.object && props.dataFormat === ObjectFormats.interface
-      ? <>: <i>{props.entityType ?? 'undefined' }</i></>
+      ? <>: <i>{props.entityType ?? 'undefined'}</i></>
       : null;
 
 

@@ -62,12 +62,12 @@ export interface IFormDesignerProviderProps {
   readOnly: boolean;
 }
 
-const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = ({
-  children,
-  flatMarkup,
-  formSettings,
-  readOnly,
-}) => {
+const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = ({ children, ...props }) => {
+  const {
+    flatMarkup,
+    formSettings,
+    readOnly,
+  } = props;
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const toolboxComponents = useFormDesignerComponents();
   const settingsPanelRef = useRef();

@@ -125,6 +125,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                           name={SheshaCommonContexts.AppContext}
                                           description="Application data store context"
                                           type="app"
+                                          webStorageType="localStorage"
                                         >
                                           <FormDataLoadersProvider>
                                             <FormDataSubmittersProvider>

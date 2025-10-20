@@ -37,7 +37,7 @@ export const defaultCardStyles: IStyleType = {
   background: { type: 'color', color: 'rgba(0,0,0,0.02)', repeat: 'repeat', size: 'cover', position: 'center' },
 };
 
-export const onAddNewItem = (items): ITabPaneProps => {
+export const onAddNewItem = (items: ITabPaneProps[]): ITabPaneProps => {
   const count = (items ?? []).length;
   const id = nanoid();
   const buttonProps: ITabPaneProps = {

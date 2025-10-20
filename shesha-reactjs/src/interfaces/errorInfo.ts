@@ -14,14 +14,14 @@ export interface IHasErrorInfo {
   errorInfo: IErrorInfo;
 }
 
-export const isErrorInfo = (value: any): value is IErrorInfo => {
+export const isErrorInfo = (value: unknown): value is IErrorInfo => {
   const typed = value as IErrorInfo;
   return value && typeof (value) === 'object' &&
     // && typed.code !== undefined
     typed.message !== undefined;
 };
 
-export const isHasErrorInfo = (value: any): value is IHasErrorInfo => {
+export const isHasErrorInfo = (value: unknown): value is IHasErrorInfo => {
   const typed = value as IHasErrorInfo;
   return value && typeof (value) === 'object' &&
     isErrorInfo(typed.errorInfo);

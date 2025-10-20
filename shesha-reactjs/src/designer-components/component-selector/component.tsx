@@ -35,9 +35,7 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
       <ConfigurableFormItem model={model}>
         <FormComponentSelector
           componentType={model.componentType}
-          noSelectionItem={
-            noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined
-          }
+          noSelectionItem={noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined}
           readOnly={model.readOnly}
           propertyMeta={propertyMeta}
         />

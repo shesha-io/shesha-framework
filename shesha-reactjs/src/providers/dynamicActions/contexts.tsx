@@ -3,7 +3,7 @@ import { FormMarkup } from '@/interfaces';
 import { DynamicItemsEvaluationHook } from '@/providers/dynamicActionsDispatcher/models';
 import { createNamedContext } from '@/utils/react';
 
-export interface IDynamicActionsContext<TSettings = any> {
+export interface IDynamicActionsContext<TSettings extends object = object> {
   id: string;
   name: string;
   useEvaluator: DynamicItemsEvaluationHook;

@@ -33,18 +33,23 @@ const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): st
   const initialData = {};
   const initValues = [...initialValues, { key: "__shaFormData", value: 0 }];
   initValues.forEach((item) => {
-    const value = typeof item.value === "string" && /{(.*?)}/gm.test(item.value)
-      ? "'" + item.value.replaceAll("{", "' + ").replaceAll("}", " + '") + "'" // replace Mustache syntax if needed
+    const value = typeof item.value === "string"
+      ? item.value.toLowerCase().indexOf("return") !== -1
+        ? `#(() => { ${item.value.split("\r\n").join("\r\n").replaceAll("'", "#'").replaceAll("\"", "#\"").trim()} })()#` // wrap in parentheses if needed
+        : /{(.*?)}/gm.test(item.value)
+          ? "'" + item.value.replaceAll("{", "' + ").replaceAll("}", " + '") + "'" // replace Mustache syntax if needed
+          : item.value
       : item.value;
     setValueByPropertyName(initialData, item.key, value);
   });
   const initialObjString = JSON.stringify(initialData, null, 4)
+    .replaceAll("\"#", "").replaceAll("#\"", "").replaceAll("#\\\"", "\"")
     .replaceAll("\"'' + ", "").replaceAll(" + ''\"", "")
     .replaceAll("\"'", "'").replaceAll("'\"", "'")
     .replace("\"__shaFormData\": 0", "...form.data"); // add loaded form data
 
   let result = '\r\n// Migrated from Initial Values and components defaults\r\n';
-  result += `const initialData = ${initialObjString};\r\n`;
+  result += `const initialData = ${initialObjString};\r\n`.split("\\r\\n").join("\r\n");
   result += 'form.setFieldsValue(initialData);\r\n';
   result += '// ----------------------------------------------------\r\n\r\n';
 

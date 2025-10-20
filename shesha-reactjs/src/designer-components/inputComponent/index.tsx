@@ -330,12 +330,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             description: item.tooltip,
           })}
           buttonText={readOnly ? props.buttonTextReadOnly : props.buttonText}
-          modalSettings={
-            {
-              title: readOnly ? props.modalReadonlySettings.title : props.modalSettings.title,
-              header: <Alert message={readOnly ? props.modalReadonlySettings.header : props.modalSettings.header} />,
-            }
-          }
+          modalSettings={{
+            title: readOnly ? props.modalReadonlySettings.title : props.modalSettings.title,
+            header: <Alert message={readOnly ? props.modalReadonlySettings.header : props.modalSettings.header} />,
+          }}
         />
       );
     case 'formTypeAutocomplete':
@@ -376,9 +374,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       return (
         <FormComponentSelector
           componentType={componentType}
-          noSelectionItem={
-            noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined
-          }
+          noSelectionItem={noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined}
           readOnly={readOnly}
           size={size}
           value={value}

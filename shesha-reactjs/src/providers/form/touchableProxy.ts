@@ -9,7 +9,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
 
   private _changed: boolean;
 
-  touched(_propName: string, fullPropName: string, value: any): void {
+  touched(_propName: string, fullPropName: string, value: unknown): void {
     this._touchedProps.set(fullPropName, value);
   };
 
@@ -99,7 +99,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     });
   };
 
-  setAdditionalData = (data: any): void => {
+  setAdditionalData = (data: object): void => {
     for (let key in data)
       if (Object.hasOwn(data, key))
         this.addAccessor(key, () => data[key]);

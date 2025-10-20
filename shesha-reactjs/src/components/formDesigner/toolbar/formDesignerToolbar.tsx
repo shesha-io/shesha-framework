@@ -10,9 +10,7 @@ import { useStyles } from '../styles/styles';
 import { CanvasConfig } from './canvasConfig';
 import { CustomActions } from './customActions';
 
-export interface IProps { }
-
-export const FormDesignerToolbar: FC<IProps> = () => {
+export const FormDesignerToolbar: FC = () => {
   const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
   const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
   const { styles } = useStyles();
@@ -34,11 +32,11 @@ export const FormDesignerToolbar: FC<IProps> = () => {
             <CanvasConfig />
           </div>
           <div className={styles.shaDesignerToolbarRight}>
-            <FormSettingsButton />
-            <PreviewButton />
+            <FormSettingsButton buttonText="" size="small" />
+            <PreviewButton size="small" />
             <DebugButton />
 
-            {!readOnly && (<UndoRedoButtons />)}
+            {!readOnly && (<UndoRedoButtons size="small" />)}
             <CustomActions />
           </div>
         </>

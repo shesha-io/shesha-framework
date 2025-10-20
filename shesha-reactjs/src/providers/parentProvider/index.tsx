@@ -24,7 +24,7 @@ export interface IParentProviderProps {
   formMode?: FormMode;
   context?: string;
   model: any;
-  formFlatMarkup?: IFlatComponentsStructure;
+  formFlatMarkup?: IFlatComponentsStructure | undefined;
   formApi?: IFormApi<any>;
   isScope?: boolean;
 }
@@ -133,9 +133,10 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
             <DataContextManager id={id}>
               <ConfigurableActionDispatcherProvider>
                 <DataContextProvider
-                  id={SheshaCommonContexts.FormContext}
+                  id={id}
                   name={SheshaCommonContexts.FormContext}
                   type="form"
+                  webStorageType="sessionStorage"
                   description={`${props.name || id}`}
                 >
                   {children}

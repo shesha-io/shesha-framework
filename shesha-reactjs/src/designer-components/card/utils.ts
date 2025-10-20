@@ -1,6 +1,7 @@
 import { IStyleType } from "@/index";
+import { ICardComponentProps } from "./interfaces";
 
-export const defaultStyles = (prev): IStyleType => {
+export const defaultStyles = (prev: ICardComponentProps): IStyleType => {
   const { size } = prev;
 
   return {

@@ -10,7 +10,7 @@ import ScheduledJobExecution from './scheduledJobExecution';
 import settingsFormJson from './settingsForm.json';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 
-export interface IScheduledJobExecutionLogProps extends IConfigurableFormComponent {}
+export type IScheduledJobExecutionLogProps = IConfigurableFormComponent;
 
 const settingsForm = settingsFormJson as FormMarkup;
 

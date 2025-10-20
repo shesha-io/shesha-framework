@@ -214,7 +214,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   initialValues: any;
 
-  parentFormValues: any;
+  parentFormValues: object | undefined;
 
   formArguments?: any;
 
@@ -358,7 +358,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.updateData?.();
   };
 
-  setParentFormValues = (values: any): void => {
+  setParentFormValues = (values: object): void => {
     this.parentFormValues = values;
   };
 
@@ -410,7 +410,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.logEnabled = enabled;
   };
 
-  log = (...args): void => {
+  log = (...args: unknown[]): void => {
     if (this.logEnabled)
     // eslint-disable-next-line no-console
       console.log(...args);
@@ -651,7 +651,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     return this.loadData(this.formArguments);
   };
 
-  loadData = async (formArguments: any): Promise<Values> => {
+  loadData = async (formArguments: object | undefined): Promise<Values> => {
     this.log('LOG: loadData, use loader: ', this.useDataLoader, this.initialValues);
     if (!this.useDataLoader) {
       this.log('LOG: loadData', this.useDataLoader);
@@ -762,7 +762,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   };
 }
 
-type UseShaFormArgsExistingForm<Values extends object = object> = { form: IShaFormInstance<Values> };
+type UseShaFormArgsExistingForm<Values extends object = object> = { form: IShaFormInstance<Values> | undefined };
 
 type UseShaFormArgsNewForm<Values extends object = object> = {
   antdForm?: FormInstance<Values>;
@@ -770,7 +770,7 @@ type UseShaFormArgsNewForm<Values extends object = object> = {
 };
 type UseShaFormArgs<Values extends object = object> = UseShaFormArgsExistingForm<Values> & UseShaFormArgsNewForm<Values>;
 
-const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>): IShaFormInstance<Values>[] => {
+const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>): [IShaFormInstance<Values>] => {
   const { antdForm, form, init } = args;
 
   const formRef = React.useRef<IShaFormInstance<Values>>();

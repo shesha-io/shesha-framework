@@ -4,9 +4,7 @@ import { EyeOutlined } from '@ant-design/icons';
 import { useFormActions } from '@/providers';
 import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
 
-export interface IPreviewButtonProps extends Pick<ButtonProps, 'size'> {
-
-}
+export type IPreviewButtonProps = Pick<ButtonProps, 'size'>;
 
 export const PreviewButton: FC<IPreviewButtonProps> = (props) => {
   const { setFormMode } = useFormActions();

@@ -645,7 +645,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               if (onListItemClick) {
                 onListItemClick(index, item);
               }
-              onSelectRowLocal(index, item);
             }}
             onMouseEnter={() => {
               // Trigger onListItemHover event

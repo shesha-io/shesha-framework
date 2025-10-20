@@ -25,7 +25,7 @@ export const CS_URLS = {
 export type MoveNodePayload = {
   nodeType: number;
   nodeId: string;
-  folderId?: string;
+  folderId?: string | undefined;
 };
 export type MoveNodeResponse = void;
 

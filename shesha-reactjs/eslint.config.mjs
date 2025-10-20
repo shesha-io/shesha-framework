@@ -87,6 +87,9 @@ const stylisticOverrides = {
     }],
     "@stylistic/space-infix-ops": "error",
     "@stylistic/multiline-ternary": "off",
+    //"@stylistic/multiline-comment-style": "error",
+    "@stylistic/object-curly-spacing": ["error", "always"],
+    "@stylistic/jsx-curly-spacing": ["error", { "when": "never", "attributes": { "allowMultiline": false, "when": "never" }, "children": true }],
 };
 
 const legacyTypescriptOverrides = {
@@ -99,13 +102,7 @@ const legacyTypescriptOverrides = {
         "allowDirectConstAssertionInArrowFunctions": true
     }],
 
-    "@typescript-eslint/explicit-module-boundary-types": ["off", {
-        allowArgumentsExplicitlyTypedAsAny: true,
-        allowDirectConstAssertionInArrowFunctions: true,
-        allowHigherOrderFunctions: false,
-        allowTypedFunctionExpressions: false,
-    }],
-
+    "@typescript-eslint/explicit-module-boundary-types": "error",
     "@typescript-eslint/indent": "off",
 
     "@typescript-eslint/naming-convention": ["error", {
@@ -136,7 +133,7 @@ const legacyTypescriptOverrides = {
         propertyDeclaration: true,
         variableDeclaration: true,
     }],
-    "@typescript-eslint/no-empty-object-type": "warn",
+    "@typescript-eslint/no-empty-object-type": "error",
     // TODO: activate and review code
     // "@typescript-eslint/no-explicit-any": "error",
     // "@typescript-eslint/no-unsafe-call": "error",
@@ -151,7 +148,6 @@ const typescriptOverrides = {
         argsIgnorePattern: "^_",
         ignoreRestSiblings: true,
     }],
-
     "@typescript-eslint/explicit-module-boundary-types": "error",
     "@typescript-eslint/explicit-function-return-type": [
         "error",
@@ -260,7 +256,7 @@ const baseTsConfig = {
             ),
             createNodeResolver(
                 {
-                    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+                    extensions: ['.ts', '.tsx'],
                 }
             ),
         ],

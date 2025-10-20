@@ -7,7 +7,6 @@ using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Elmah;
 using Shesha.Reflection;
-using Shesha.Swagger;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Threading.Tasks;
@@ -24,17 +23,20 @@ namespace Shesha.DynamicEntities
         private readonly IModelConfigurationManager _modelConfigurationManager;
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly ISwaggerProvider _swaggerProvider;
+        //private readonly SwaggerDocumentDictionary? _swaggerDocs;
 
         public ModelConfigurationsAppService(
             IRepository<EntityConfig, Guid> entityConfigRepository,
             IModelConfigurationManager modelConfigurationProvider,
             ISwaggerProvider swaggerProvider,
+            //SwaggerDocumentDictionary? swaggerDocs,
             IEntityConfigurationStore entityConfigurationStore)
         {
             _entityConfigRepository = entityConfigRepository;
             _modelConfigurationManager = modelConfigurationProvider;
             _entityConfigurationStore = entityConfigurationStore;
             _swaggerProvider = swaggerProvider;
+            //_swaggerDocs = swaggerDocs;
         }
 
         [HttpGet, Route("")]
@@ -81,11 +83,14 @@ namespace Shesha.DynamicEntities
             return res;
         }
 
-        private async Task RefreshControllersAsync()
+        //[HttpGet, Route("RefreshControllers")]
+        public async Task RefreshControllersAsync()
         {
-            // ToDo: AS - decide if we will generate entities on fly
-            //_entityConfigurationStore.ReInitialize();
+            await Task.CompletedTask;
 
+            // ToDo: AS - decide if we will generate entities on fly
+            //await _entityConfigurationStore.ReInitializeAsync();
+            /*
             // Notify change
             // ASP.Net Core register Controller at runtime
             // https://stackoverflow.com/questions/46156649/asp-net-core-register-controller-at-runtime
@@ -98,7 +103,10 @@ namespace Shesha.DynamicEntities
 
                 if (_swaggerProvider != null && _swaggerProvider is CachingSwaggerProvider cachedProvider)
                     await cachedProvider.ClearCacheAsync();
+
+                _swaggerDocs?.Clear();
             }
+            */
         }
     }
 }

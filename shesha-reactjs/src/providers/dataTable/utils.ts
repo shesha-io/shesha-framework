@@ -64,7 +64,7 @@ export const ADVANCEDFILTER_DATE_FORMAT = 'DD/MM/YYYY';
 export const ADVANCEDFILTER_DATETIME_FORMAT = 'DD/MM/YYYY HH:mm';
 export const ADVANCEDFILTER_TIME_FORMAT = 'HH:mm';
 
-export const getMoment = (value: any, format: string): Moment => {
+export const getMoment = (value: unknown, format: string): Moment => {
   if (value === null || value === undefined) return undefined;
 
   if (isMoment(value)) return value;
@@ -72,7 +72,7 @@ export const getMoment = (value: any, format: string): Moment => {
   return moment(value as string, format).isValid() ? moment.utc(value as string, format) : undefined;
 };
 
-export const getDuration = (value: any): Duration => {
+export const getDuration = (value: unknown): Duration => {
   if (value === null || value === undefined) return undefined;
 
   if (isDuration(value)) return value;
