@@ -13,11 +13,11 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     this._touchedProps.set(fullPropName, value);
   };
 
-  getData(): any {
-    return {};
+  getData(): T {
+    return {} as T;
   };
 
-  getPropertyValue(propName: string): any {
+  getPropertyValue(propName: string): unknown {
     if (!this._propAccessors.has(propName))
       return undefined;
 
@@ -40,7 +40,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     return propValue;
   };
 
-  get touchedProps(): Map<string, any> {
+  get touchedProps(): Map<string, unknown> {
     return this._touchedProps;
   };
 

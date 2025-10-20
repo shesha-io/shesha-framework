@@ -9,7 +9,7 @@ import { useStyles } from './styles/styles';
  * @param {any} data - The data to be checked
  * @return {boolean} Indicates whether the data is an instance of IPropertySetting
  */
-export const isPropertySettings = <Value = any>(data: unknown): data is IPropertySetting<Value> => {
+export const isPropertySettings = <Value = unknown>(data: unknown): data is IPropertySetting<Value> => {
   if (!data || typeof data !== 'object') return false;
 
   const typed = data as IPropertySetting;

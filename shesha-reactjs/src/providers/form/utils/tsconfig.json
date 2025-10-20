@@ -1,0 +1,7 @@
+{
+  //"extends": "../../../../tsconfig.strictNulls.json",
+  "extends": "../../../../tsconfig.base.json",
+  "include": [
+    "**/*"
+  ],
+}

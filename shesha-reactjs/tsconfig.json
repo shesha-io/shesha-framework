@@ -13,6 +13,7 @@
       { "path": "./src/providers/auth" },
       { "path": "./src/providers/appConfigurator" },
       { "path": "./src/providers/dataContextManager" },
-      { "path": "./src/providers/dataContextProvider" }
+      { "path": "./src/providers/dataContextProvider" },
+      { "path": "./src/providers/form/utils" }
   ]
 }

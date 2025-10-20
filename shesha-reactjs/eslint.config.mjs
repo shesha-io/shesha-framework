@@ -37,7 +37,8 @@ const strictFolders = isLightBuild
         "src/providers/appConfigurator",
         "src/providers/dataContextManager",
         "src/providers/dataContextProvider",
-        //"src/providers/sheshaApplication",        
+        //"src/providers/sheshaApplication",
+        //"src/providers/form/utils",
     ];
 
 const stylisticOverrides = {
