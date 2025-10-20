@@ -253,6 +253,16 @@
                         "version": 2
                     },
                     {
+                        "id": "phone_enable_search",
+                        "type": "checkbox",
+                        "propertyName": "enableSearch",
+                        "parentId": "phone_behavior_content",
+                        "label": "Enable Search",
+                        "description": "Allow searching for countries in the dropdown",
+                        "defaultValue": true,
+                        "version": 2
+                    },
+                    {
                         "id": "phone_distinct",
                         "type": "checkbox",
                         "propertyName": "distinct",

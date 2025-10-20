@@ -10,7 +10,7 @@ export interface IPhoneNumberValue {
 
 export interface IPhoneNumberInputComponentProps extends IConfigurableFormComponent {
     placeholder?: string;
-    initialValue?: string;
+    initialValue?: string | IPhoneNumberValue;
     valueFormat?: ValueFormat;
     stripCountryCode?: boolean;
     country?: string;
@@ -33,4 +33,6 @@ export interface IPhoneNumberInputComponentProps extends IConfigurableFormCompon
     inputGroupStyle?: string;
     inputStyle?: string;
     onChangeCustom?: string;
+    onBlurCustom?: string;
+    onFocusCustom?: string;
 }

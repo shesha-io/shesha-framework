@@ -73,6 +73,7 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
         defaultCountry,
         allowClear,
         enableArrow = true,
+        enableSearch = true,
         distinct,
         disableParentheses,
         disableDropdown,
@@ -127,7 +128,7 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
     const parsedPreferredCountries = parseCountryCodes(preferredCountries);
 
     // Evaluate style with form data to support dynamic styling
-    const componentStyle = getStyle(style, formData) || {};
+    const componentStyle = getStyle(style, formData, allData?.globalState) || {};
 
 
 
@@ -215,11 +216,16 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
             setValidationMessage(validationMsg);
 
             if (!isValidNumber) {
-                // Don't clear the value if invalid - keep the raw input for user to continue typing
-                nextValue = trimmed;
+                // For invalid input with valueFormat: 'object', return null to maintain type consistency
+                // Otherwise keep raw string for user to continue typing
+                if (valueFormat === 'object') {
+                    nextValue = null;
+                } else {
+                    nextValue = trimmed;
+                }
             } else {
                 const internationalNumber = parsed!.number;
-                const nationalNumber = parsed!.formatNational();
+                const nationalNumber = parsed!.nationalNumber?.toString() || '';
                 const dialCode = parsed!.countryCallingCode ? `+${parsed!.countryCallingCode}` : '';
                 const countryCode = parsed!.country ?? '';
 
@@ -227,11 +233,11 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
                 if (valueFormat === 'object') {
                     nextValue = { number: internationalNumber, dialCode, countryCode };
                 } else if (valueFormat === 'national') {
-                    // For 'national' format, return the national format (e.g., "0123456789" for ZA)
+                    // For 'national' format, return the national number digits only (e.g., "123456789")
                     nextValue = nationalNumber;
                 } else {
                     // For 'string' format, return the international format (e.g., "+27123456789")
-                    // But if stripCountryCode is true, return national format instead
+                    // But if stripCountryCode is true, return national number digits instead
                     nextValue = stripCountryCode ? nationalNumber : internationalNumber;
                 }
             }
@@ -243,15 +249,46 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
         // Execute custom onChange handler if defined
         const expression = model?.onChangeCustom;
         if (Boolean(expression)) {
-            // Create a context with value exposed
+            // Create a context with value and phoneValue exposed
             const contextWithValue = {
                 ...allData,
-                value: nextValue
+                value: nextValue,
+                phoneValue: phoneNumber
             };
             try {
                 executeScriptSync(expression, contextWithValue);
             } catch (_e) {
                 console.error('Error executing onChange script for PhoneNumberControl:', _e);
+            }
+        }
+    };
+
+    const onBlurInternal = (event: React.FocusEvent<HTMLInputElement>) => {
+        const expression = model?.onBlurCustom;
+        if (Boolean(expression)) {
+            const contextWithEvent = {
+                ...allData,
+                event
+            };
+            try {
+                executeScriptSync(expression, contextWithEvent);
+            } catch (_e) {
+                console.error('Error executing onBlur script for PhoneNumberControl:', _e);
+            }
+        }
+    };
+
+    const onFocusInternal = (event: React.FocusEvent<HTMLInputElement>) => {
+        const expression = model?.onFocusCustom;
+        if (Boolean(expression)) {
+            const contextWithEvent = {
+                ...allData,
+                event
+            };
+            try {
+                executeScriptSync(expression, contextWithEvent);
+            } catch (_e) {
+                console.error('Error executing onFocus script for PhoneNumberControl:', _e);
             }
         }
     };
@@ -313,11 +350,22 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
     const uniqueClass = useMemo(() => `phone-input-${nanoid(8)}`, []);
 
     // Evaluate individual styles with form data
-    const evaluatedWrapperStyle = getStyle(wrapperStyle, formData) || {};
-    const evaluatedInputGroupWrapperStyle = getStyle(inputGroupWrapperStyle, formData) || {};
-    const evaluatedInputWrapperStyle = getStyle(inputWrapperStyle, formData) || {};
-    const evaluatedInputGroupStyle = getStyle(inputGroupStyle, formData) || {};
-    const evaluatedInputStyle = getStyle(inputStyle, formData) || {};
+    const evaluatedWrapperStyle = getStyle(wrapperStyle, formData, allData?.globalState) || {};
+    const evaluatedInputGroupWrapperStyle = getStyle(inputGroupWrapperStyle, formData, allData?.globalState) || {};
+    const evaluatedInputWrapperStyle = getStyle(inputWrapperStyle, formData, allData?.globalState) || {};
+    const evaluatedInputGroupStyle = getStyle(inputGroupStyle, formData, allData?.globalState) || {};
+    const evaluatedInputStyle = getStyle(inputStyle, formData, allData?.globalState) || {};
+
+    // Helper to sanitize CSS values to prevent injection attacks
+    const sanitizeCssValue = (value: any): string => {
+        if (typeof value !== 'string') return String(value);
+        // Remove potentially dangerous characters: braces, comments, semicolons outside of expected contexts
+        return value
+            .replace(/[{}]/g, '') // Remove braces
+            .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
+            .replace(/<!--[\s\S]*?-->/g, '') // Remove HTML comments
+            .trim();
+    };
 
     // Helper to convert style object to CSS string
     const styleToCss = (styleObj: any) => {
@@ -326,7 +374,8 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
         Object.entries(styleObj).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
                 const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
-                rules.push(`${cssKey}: ${value} !important`);
+                const sanitizedValue = sanitizeCssValue(value);
+                rules.push(`${cssKey}: ${sanitizedValue} !important`);
             }
         });
         return rules.join('; ');
@@ -391,7 +440,9 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
                     allowClear={allowClear}
                     value={phoneInputValue}
                     onChange={onChangeInternal}
-                    enableSearch={true}
+                    onBlur={onBlurInternal}
+                    onFocus={onFocusInternal}
+                    enableSearch={enableSearch}
                     enableArrow={enableArrow}
                     distinct={distinct}
                     disableParentheses={disableParentheses}
@@ -445,6 +496,7 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
         stripCountryCode: model.stripCountryCode !== undefined ? model.stripCountryCode : false,
         defaultCountry: model.defaultCountry || 'za',
         enableArrow: model.enableArrow !== undefined ? model.enableArrow : true,
+        enableSearch: model.enableSearch !== undefined ? model.enableSearch : true,
         labelAlign: model.labelAlign || 'left',
     }),
     migrator: (m) => m
