@@ -221,7 +221,7 @@ export const LayoutMenu: FC<IProps> = ({
 
   if (overflow === "menu")
     return (
-      <Fragment>
+      <div className={styles.menuContainer} style={style}>
         <Button type="link" icon={<MenuOutlined />} onClick={onClick} />
         <ShaMenuDrawer
           items={menuItems}
@@ -232,11 +232,11 @@ export const LayoutMenu: FC<IProps> = ({
           styleOnSubMenu={styleOnSubMenu}
           menuId={menuId}
         />
-      </Fragment>
+      </div>
     );
 
   return (
-    <div className={styles.menuContainer}>
+    <div className={styles.menuContainer} style={style}>
       {menuId ? (
         <ScopedMenuStyles
           colors={colors}
@@ -271,7 +271,7 @@ export const LayoutMenu: FC<IProps> = ({
           }
           overflowedIndicatorPopupClassName={menuId ? `horizontal-menu-${menuId}-dropdown` : undefined}
           disabledOverflow={isScrolling}
-          style={style}
+          style={{ background: 'none' }}
         />
       </div>
 
