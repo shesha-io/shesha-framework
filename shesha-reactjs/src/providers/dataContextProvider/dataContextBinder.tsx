@@ -21,7 +21,7 @@ import {
   useDataContext 
 } from "./contexts";
 import ConditionalWrap from "@/components/conditionalWrapper/index";
-import { useDeepCompareCallback } from "@/hooks/useDeepCompareEffect";
+import { useDeepCompareCallback, useDeepCompareEffect } from "@/hooks/useDeepCompareEffect";
 import { isEmpty } from "lodash";
 
 export interface  IDataContextBinderRef {
@@ -70,6 +70,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   // use ref to get actual data value inside methods
   const dataRef = useRef<any>();
   dataRef.current = data;
+  useDeepCompareEffect(() => onChangeContextData(), [data]);
 
   const parentContext = useDataContext(false);
   const [state, setState] = useState<IDataContextProviderStateContext>({
