@@ -199,7 +199,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     .add<IEntityPickerComponentProps>(10, (prev) => ({ ...prev, desktop: { ...defaultStyles(prev) }, mobile: { ...defaultStyles(prev) }, tablet: { ...defaultStyles(prev) } }))
     .add<IEntityPickerComponentProps>(11, (prev, context) => ({
       ...prev,
-      entityType: prev.entityType || (context.isNew ? 'Shesha.Core.Person' : prev.entityType),
+      entityType: context.isNew && !prev.entityType ? 'Shesha.Core.Person' : prev.entityType,
     })),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
