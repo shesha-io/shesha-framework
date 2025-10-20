@@ -161,7 +161,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     showIcon,
     showItemName,
     solidColor,
-    tagStyle
+    tagStyle,
   ]);
 
   return (
