@@ -284,7 +284,7 @@ const DataListControlInner: FC<IDataListWithDataSourceProps> = (props) => {
 
       dataSource.registerConfigurableColumns(`datalist_${props.id}`, virtualColumns);
 
-      // Refresh the data to include the new properties
+      // Refresh the table - refreshTable() has its own readiness checks
       if (dataSource.refreshTable) {
         dataSource.refreshTable();
       }

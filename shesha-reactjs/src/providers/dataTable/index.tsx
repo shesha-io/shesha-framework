@@ -14,7 +14,6 @@ import { isEqual, sortBy } from 'lodash';
 import { MetadataProvider } from '@/providers/metadata';
 import { Row } from 'react-table';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { useDebouncedCallback } from 'use-debounce';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useGlobalState } from '@/providers/globalState';
 import { useLocalStorage } from '@/hooks';
@@ -383,45 +382,38 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     return true;
   };
 
-  const debouncedFetchInternal = useDebouncedCallback(
-    (payload: IGetListDataPayload) => {
-      // TODO: check payload and skip fetching if the filters (or other required things) are not calculated
-      const canFetch = true;
-      if (canFetch) {
-        repository
-          .fetch(payload)
-          .then((response) => {
-            dispatch(fetchTableDataSuccessAction(response));
-          })
-          .catch((e) => {
-            console.error(e);
-            dispatch(fetchTableDataErrorAction());
-          });
-      } else {
-        // skip fetching and return empty list
-        dispatch(
-          fetchTableDataSuccessAction({
-            totalPages: 0,
-            totalRows: 0,
-            totalRowsBeforeFilter: 0,
-            rows: [],
-          }),
-        );
-      }
-    },
-    // delay in ms
-    300,
-  );
-
-  const debouncedFetch = (payload: IGetListDataPayload): void => {
-    debouncedFetchInternal(payload);
+  const executeDataFetch = (payload: IGetListDataPayload): void => {
+    // TODO: check payload and skip fetching if the filters (or other required things) are not calculated
+    const canFetch = true;
+    if (canFetch) {
+      repository
+        .fetch(payload)
+        .then((response) => {
+          dispatch(fetchTableDataSuccessAction(response));
+        })
+        .catch((e) => {
+          console.error(e);
+          dispatch(fetchTableDataErrorAction());
+        });
+    } else {
+      // skip fetching and return empty list
+      dispatch(
+        fetchTableDataSuccessAction({
+          totalPages: 0,
+          totalRows: 0,
+          totalRowsBeforeFilter: 0,
+          rows: [],
+        }),
+      );
+    }
   };
 
   const fetchTableDataInternal = (payload: IGetListDataPayload): void => {
-    if (tableIsReady.current === true && !props.disableRefresh) {
+    if (tableIsReady.current === true && !props.disableRefresh && !state.isFetchingTableData) {
       dispatch(fetchTableDataAction(payload));
-      debouncedFetch(payload);
+      executeDataFetch(payload);
     }
+    // Skip if not ready to fetch or already fetching to avoid duplicate requests
   };
 
   const getColumnsUserSettings = (column: ITableColumn): ITableColumnUserSettings => {
@@ -458,7 +450,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const refreshTable = (): void => {
-    if (tableIsReady.current === true && !props.disableRefresh) {
+    if (tableIsReady.current === true && !props.disableRefresh && !state.isFetchingTableData) {
       fetchTableData(state);
     }
   };

@@ -18,7 +18,7 @@ import { DataTableFullInstance } from '@/providers/dataTable/contexts';
 const createMockDataSource = (orientation: string = 'vertical'): DataTableFullInstance => {
   const mockData = orientation === 'vertical' ? [{}] : [{}, {}, {}, {}];
 
-  return {
+  const mockInstance = {
     // State properties
     succeeded: {},
     isInProgress: {},
@@ -50,51 +50,16 @@ const createMockDataSource = (orientation: string = 'vertical'): DataTableFullIn
     tableFilter: [],
     selectedStoredFilterIds: [],
     properties: [],
-
-    // Action properties - Mock implementations (no-op)
-    changeSelectedIds: () => { /* mock implementation */ },
-    getRepository: () => null,
-    setRowData: () => { /* mock implementation */ },
-    setSelectedRow: () => { /* mock implementation */ },
-    setMultiSelectedRow: () => { /* mock implementation */ },
-    refreshTable: () => { /* mock implementation */ },
-    registerConfigurableColumns: () => { /* mock implementation */ },
-    requireColumns: () => { /* mock implementation */ },
-    registerDataFetchDependency: () => { /* mock implementation */ },
-    unregisterDataFetchDependency: () => { /* mock implementation */ },
-    changeDisplayColumn: () => { /* mock implementation */ },
-    changePersistedFiltersToggle: () => { /* mock implementation */ },
-    setDragState: () => { /* mock implementation */ },
-    setColumnWidths: () => { /* mock implementation */ },
-    toggleColumnVisibility: () => { /* mock implementation */ },
-    setCurrentPage: () => { /* mock implementation */ },
-    changePageSize: () => { /* mock implementation */ },
-    toggleColumnFilter: () => { /* mock implementation */ },
-    removeColumnFilter: () => { /* mock implementation */ },
-    changeFilterOption: () => { /* mock implementation */ },
-    changeFilter: () => { /* mock implementation */ },
-    applyFilters: () => { /* mock implementation */ },
-    clearFilters: () => { /* mock implementation */ },
-    changeQuickSearch: () => { /* mock implementation */ },
-    performQuickSearch: () => { /* mock implementation */ },
-    toggleSaveFilterModal: () => { /* mock implementation */ },
-    changeActionedRow: () => { /* mock implementation */ },
-    changeSelectedStoredFilterIds: () => { /* mock implementation */ },
-    setPredefinedFilters: () => { /* mock implementation */ },
-    setPermanentFilter: () => { /* mock implementation */ },
-    onSort: () => { /* mock implementation */ },
-    onGroup: () => { /* mock implementation */ },
-    getCurrentFilter: () => [],
-    setIsInProgressFlag: () => { /* mock implementation */ },
-    setSucceededFlag: () => { /* mock implementation */ },
-    setFailedFlag: () => { /* mock implementation */ },
-    setActionedFlag: () => { /* mock implementation */ },
-    resetIsInProgressFlag: () => { /* mock implementation */ },
-    resetSucceededFlag: () => { /* mock implementation */ },
-    resetFailedFlag: () => { /* mock implementation */ },
-    resetActionedFlag: () => { /* mock implementation */ },
-    resetAllFlag: () => { /* mock implementation */ },
   };
+
+  return new Proxy(mockInstance, {
+    get(target, prop) {
+      if (prop in target) {
+        return target[prop];
+      }
+      return () => undefined;
+    },
+  }) as DataTableFullInstance;
 };
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
