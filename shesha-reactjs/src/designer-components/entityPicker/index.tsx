@@ -145,6 +145,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
               value={value}
               onChange={onChangeInternal}
               size={model.size}
+              dividerStyle={model.border?.border?.middle}
             />
           );
         }}
