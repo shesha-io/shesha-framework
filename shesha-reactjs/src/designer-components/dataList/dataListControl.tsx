@@ -122,7 +122,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   }, [onListItemHover, allData, httpClient, executeAction]);
 
   const handleListItemSelect = useCallback((index: number, item: any) => {
-    if (onListItemSelect) {
+    if (onListItemSelect && props.selectionMode !== 'none') {
       const evaluationContext = {
         data: item,
         index,
@@ -139,10 +139,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         argumentsEvaluationContext: evaluationContext,
       });
     }
-  }, [onListItemSelect, allData, httpClient, executeAction]);
+  }, [onListItemSelect, props.selectionMode, allData, httpClient, executeAction]);
 
   const handleSelectionChange = useCallback((selectedItems: any[], selectedIndices: number[]) => {
-    if (onSelectionChange) {
+    if (onSelectionChange && props.selectionMode !== 'none') {
       const evaluationContext = {
         selectedItems,
         selectedIndices,
@@ -160,7 +160,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         argumentsEvaluationContext: evaluationContext,
       });
     }
-  }, [onSelectionChange, allData, httpClient, executeAction]);
+  }, [onSelectionChange, props.selectionMode, allData, httpClient, executeAction]);
 
   const dataListRef = useRef<any>({});
 

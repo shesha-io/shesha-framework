@@ -104,8 +104,8 @@ select
 from 
 	cte
 	left join frwk.module_relations rel on rel.module_id = frwk.get_module_id() and rel.base_module_id = cte.override_module_id
-	inner join frwk.modules m on m.id = cte.module_id and m.is_deleted = fasle
-	inner join frwk.modules om on om.id = cte.override_module_id and om.is_deleted = fasle");
+	inner join frwk.modules m on m.id = cte.module_id and m.is_deleted = false
+	inner join frwk.modules om on om.id = cte.override_module_id and om.is_deleted = false");
         }
     }
 }

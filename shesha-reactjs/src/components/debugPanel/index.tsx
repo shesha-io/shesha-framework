@@ -153,7 +153,7 @@ export const DebugPanel: FC<PropsWithChildren> = ({ children }) => {
           }}
         >
           <div className={styles.debugPanelBody}>
-            { position === 'right' && (
+            {position === 'right' && (
               <div
                 className={styles.debugPanelRightResizer}
                 draggable
@@ -164,7 +164,7 @@ export const DebugPanel: FC<PropsWithChildren> = ({ children }) => {
             <div className={styles.debugPanelContent}>
               <DebugPanelDataContent />
             </div>
-            { position === 'left' && (
+            {position === 'left' && (
               <div
                 className={styles.debugPanelLeftResizer}
                 draggable

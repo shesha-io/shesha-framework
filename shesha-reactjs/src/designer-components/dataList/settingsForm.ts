@@ -476,17 +476,39 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                 label: 'On List Item Hover',
                 description: 'Action to execute when hovering over a list item',
               })
-              .addConfigurableActionConfigurator({
+              .addSettingsInputRow({
                 id: nanoid(),
-                propertyName: 'onListItemSelect',
-                label: 'On List Item Select',
-                description: 'Action to execute when a list item is selected',
+                hidden: {
+                  _code: 'return (data?.selectionMode ?? "none") === "none";',
+                  _mode: 'code',
+                  _value: false,
+                } as any,
+                inputs: [{
+                  id: nanoid(),
+                  type: 'configurableActionConfigurator',
+                  propertyName: 'onListItemSelect',
+                  label: 'On List Item Select',
+                  description: 'Action to execute when a list item is selected (does not trigger on unselect)',
+                  hideLabel: true,
+                }],
+                hideLabel: true,
               })
-              .addConfigurableActionConfigurator({
+              .addSettingsInputRow({
                 id: nanoid(),
-                propertyName: 'onSelectionChange',
-                label: 'On Selection Change',
-                description: 'Action to execute when the selection changes',
+                hidden: {
+                  _code: 'return (data?.selectionMode ?? "none") === "none";',
+                  _mode: 'code',
+                  _value: false,
+                } as any,
+                inputs: [{
+                  id: nanoid(),
+                  type: 'configurableActionConfigurator',
+                  propertyName: 'onSelectionChange',
+                  label: 'On Selection Change',
+                  description: 'Action to execute when the selection changes (triggers on both select and unselect)',
+                  hideLabel: true,
+                }],
+                hideLabel: true,
               })
               .toJson(),
             ],

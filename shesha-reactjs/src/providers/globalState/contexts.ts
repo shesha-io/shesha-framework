@@ -7,7 +7,7 @@ export interface ISetStatePayload {
 }
 
 export interface IGlobalState {
-  readonly globalState?: IAnyObject;
+  readonly globalState?: IAnyObject | undefined;
   setState: (payload: ISetStatePayload) => void;
   clearState: (stateKey: string) => void;
   getStateByKey?: (key: string) => IAnyObject;

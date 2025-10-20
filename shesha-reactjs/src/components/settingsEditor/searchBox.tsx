@@ -22,9 +22,7 @@ export const SearchBox: FC<ISearchBoxProps> = (props) => {
       allowClear={true}
       value={props.value}
       onChange={handleSearchChange}
-      suffix={
-        <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-      }
+      suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}
     />
   );
 };

@@ -118,9 +118,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
                 placeholder="Search properties"
                 value={searchQuery}
                 onChange={handleSearchChange}
-                suffix={
-                  <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-                }
+                suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}
               />
               <ComponentsContainer
                 containerId={tab.id + tab.key}
@@ -174,9 +172,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
             value={searchQuery}
             onChange={handleSearchChange}
             autoFocus
-            suffix={
-              <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-            }
+            suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}
           />
         </div>
       )}

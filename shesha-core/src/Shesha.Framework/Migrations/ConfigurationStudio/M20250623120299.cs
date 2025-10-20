@@ -79,6 +79,9 @@ namespace Shesha.Migrations.ConfigurationStudio
 
             IfDatabase("SqlServer").Execute.Sql(@"IF (OBJECT_ID('dbo.FK_SheshaFunctionalTests_TestAccounts_CaptureFormId_Frwk_FormConfigurations_Id', 'F') IS NOT NULL)
 	ALTER TABLE SheshaFunctionalTests_TestAccounts DROP CONSTRAINT FK_SheshaFunctionalTests_TestAccounts_CaptureFormId_Frwk_FormConfigurations_Id;");
+
+            if (Schema.Table("SheshaFunctionalTests_TestAccounts").Exists())
+                IfDatabase("PostgreSql").Execute.Sql(@"ALTER TABLE ""SheshaFunctionalTests_TestAccounts"" DROP CONSTRAINT IF EXISTS ""FK_SheshaFunctionalTests_TestAccounts_CaptureFormId_Frwk_FormCo""");
             Delete.Table("Frwk_FormConfigurations");
             Delete.Table("Frwk_PermissionDefinitions");
             Delete.Table("Frwk_ConfigurableComponents");

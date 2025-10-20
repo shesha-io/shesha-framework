@@ -198,11 +198,9 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
               labelTitle="Key"
               valueName="value"
               valueTitle="Value"
-              description={
-                'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
+              description={'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                 'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
-                'Id initial value is already initialised with {{entityReference.id}} but you can override it'
-              }
+                'Id initial value is already initialised with {{entityReference.id}} but you can override it'}
               exposedVariables={[
                 { name: 'data', description: 'This form data', type: 'object' },
                 { name: 'form', description: 'Form instance', type: 'object' },
