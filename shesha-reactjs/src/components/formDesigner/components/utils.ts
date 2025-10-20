@@ -176,7 +176,7 @@ export const customAddressEventHandler = (
         const ctx = context as any as ObservableProxy<IApplicationContext>;
         ctx.addAccessor('event', () => event);
         ctx.addAccessor('value', () => event?.currentTarget.value);
-        return executeScriptSync(expression, context);
+        return executeScriptSync(expression, { ...context });
       }
 
       // if context is a simple object
