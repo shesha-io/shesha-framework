@@ -337,7 +337,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           id={`ctx_fl_${name}`}
           name={name}
           description={`File list context for ${name}`}
-          type='control'
+          type="control"
           data={state}
           metadata={contextMetadata}
         >
