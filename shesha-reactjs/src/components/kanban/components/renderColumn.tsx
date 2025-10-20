@@ -69,7 +69,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   };
 
   const columnDropdownItems: MenuProps['items'] = [
-    props.allowNewRecord || props.kanbanReadonly && {
+    props.allowNewRecord && !props.kanbanReadonly && {
       key: '1',
       label: 'Add',
       onClick: () => handleCreateClick(column.itemValue),
@@ -184,7 +184,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
               {column.item} ({columnTasks.length})
             </span>
 
-            { props.readonly || !(props.allowNewRecord || props.collapsible) ? null : (
+            { props.readonly || columnDropdownItems.length === 0 ? null : (
               <Dropdown trigger={['click']} menu={{ items: columnDropdownItems }} placement="bottomRight">
                 <Button type="text" icon={<SettingOutlined style={iconStyles} />} />
               </Dropdown>
