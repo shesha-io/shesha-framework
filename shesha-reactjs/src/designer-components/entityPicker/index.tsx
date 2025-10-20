@@ -199,6 +199,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     .add<IEntityPickerComponentProps>(10, (prev) => ({ ...prev, desktop: { ...defaultStyles(prev) }, mobile: { ...defaultStyles(prev) }, tablet: { ...defaultStyles(prev) } }))
     .add<IEntityPickerComponentProps>(11, (prev, context) => ({
       ...prev,
+      // Default to Person for backward compatibility with legacy forms
+      // should explicitly set entityType for other entity types
       entityType: context.isNew && !prev.entityType ? 'Shesha.Core.Person' : prev.entityType,
     })),
   settingsFormMarkup: (data) => getSettings(data),
