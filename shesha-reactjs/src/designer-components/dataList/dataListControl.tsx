@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
-import { Alert } from 'antd';
 import { DataList } from '@/components/dataList';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import classNames from 'classnames';
@@ -14,10 +13,6 @@ import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { IFormApi } from '@/providers/form/formApi';
 
-export const NotConfiguredWarning: FC = () => {
-  return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
-};
-
 export type OnSaveHandler = (data: object, formData: object, contexts: object, globalState: object) => Promise<object>;
 export type OnSaveSuccessHandler = (
   data: object,
@@ -27,7 +22,7 @@ export type OnSaveSuccessHandler = (
   setGlobalState: Function
 ) => void;
 
-const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
+const DataListControlInner: FC<IDataListWithDataSourceProps> = (props) => {
   const {
     dataSourceInstance: dataSource,
     onListItemSave,
@@ -179,13 +174,36 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     [],
   );
 
+  // Check if formId configuration is missing or invalid
+  const isFormIdMisconfigured = isDesignMode && (
+    (!props.formId && props.formSelectionMode === "name") ||
+    (props.formSelectionMode === "view" && !props.formType && !props.entityType) ||
+    (!props.formIdExpression && props.formSelectionMode === "expression")
+  );
+
   const data = useDeepCompareMemo(() => {
-    return isDesignMode
-      ? orientation === 'vertical'
+    // In designer mode, show real data if available and properly configured,
+    // otherwise show mock data for layout preview
+    if (isDesignMode) {
+      // If we have real data and component is configured correctly, show it
+      if (tableData && tableData.length > 0 && repository && !isFormIdMisconfigured) {
+        return tableData;
+      }
+
+      // Otherwise show mock data for layout preview
+      // If formId is misconfigured, always show 3 cards regardless of orientation
+      if (isFormIdMisconfigured) {
+        return [{}, {}, {}];
+      }
+
+      return orientation === 'vertical'
         ? [{}]
-        : [{}, {}, {}, {}]
-      : tableData;
-  }, [isDesignMode, tableData, orientation]);
+        : [{}, {}, {}, {}];
+    }
+
+    // In live mode, always use real data
+    return tableData;
+  }, [isDesignMode, tableData, orientation, repository, isFormIdMisconfigured]);
 
   // http, moment, setFormData
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
@@ -211,7 +229,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         console.error('Error executing row delete success action:', error);
       }
     };
-  }, [onRowDeleteSuccessAction, httpClient]);
+  }, [onRowDeleteSuccessAction, httpClient, executeAction]);
 
 
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
@@ -222,7 +240,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       const preparedData = executer(data, form, contexts, globalState, allData.http, allData.moment);
       return Promise.resolve(preparedData);
     };
-  }, [onListItemSave]);
+  }, [onListItemSave, allData.http, allData.moment]);
 
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onListItemSaveSuccessAction)
@@ -246,7 +264,32 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         argumentsEvaluationContext: evaluationContext,
       });
     };
-  }, [onListItemSaveSuccessAction]);
+  }, [onListItemSaveSuccessAction, allData.http, executeAction]);
+
+
+  // Handle form properties discovered by DataList - register them with the data source
+  const handleFormPropertiesDiscovered = useCallback((properties: string[]) => {
+    if (properties.length > 0 && dataSource?.registerConfigurableColumns) {
+      const virtualColumns = properties.map((prop, index) => ({
+        id: `datalist_form_${prop}`,
+        propertyName: prop,
+        caption: prop,
+        label: prop,
+        columnType: 'data' as const,
+        isVisible: false, // Hidden - just for data fetching
+        sortOrder: index,
+        itemType: 'item' as const,
+        allowSorting: false,
+      }));
+
+      dataSource.registerConfigurableColumns(`datalist_${props.id}`, virtualColumns);
+
+      // Refresh the table - refreshTable() has its own readiness checks
+      if (dataSource.refreshTable) {
+        dataSource.refreshTable();
+      }
+    }
+  }, [dataSource, props.id]);
 
   const updater = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = getRepository();
@@ -312,14 +355,6 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  if (isDesignMode &&
-    (
-      !repository ||
-      (!props.formId && props.formSelectionMode === "name") ||
-      (!props.formType && props.formSelectionMode === "view") ||
-      (!props.formIdExpression && props.formSelectionMode === "expression")
-    )) return <NotConfiguredWarning />;
-
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
   if (groupingColumns?.length > 0 && orientation === "wrap") {
@@ -346,9 +381,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         canAddInline={canAction(canAddInline)}
         canEditInline={canAction(canEditInline)}
         canDeleteInline={canAction(canDeleteInline)}
-        noDataIcon={noDataIcon}
-        noDataSecondaryText={noDataSecondaryText}
-        noDataText={noDataText}
+        noDataIcon={isFormIdMisconfigured ? "ExclamationCircleOutlined" : noDataIcon}
+        noDataSecondaryText={isFormIdMisconfigured ? "The datalist item form template (formId) is not configured correctly. Please configure the form selection in the component settings." : noDataSecondaryText}
+        noDataText={isFormIdMisconfigured ? "Form Template Not Configured" : noDataText}
         entityType={modelType}
         onSelectRow={onSelectRow}
         onMultiSelectRows={setMultiSelectedRow}
@@ -370,9 +405,21 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         onListItemHover={handleListItemHover}
         onListItemSelect={handleListItemSelect}
         onSelectionChange={handleSelectionChange}
+        onFormPropertiesDiscovered={handleFormPropertiesDiscovered}
+        isOutsideDataContext={!repository}
       />
     </ConfigurableFormItem>
   );
+};
+
+const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
+  const uniqueKey = useMemo(() => {
+    const formIdStr = typeof props.formId === 'string' ? props.formId
+      : typeof props.formId === 'object' ? `${props.formId.module ?? ''}_${props.formId.name ?? ''}` : '';
+    return `${props.dataSource ?? 'no-datasource'}_${props.entityType ?? 'no-entity'}_${formIdStr}`;
+  }, [props.dataSource, props.entityType, props.formId]);
+
+  return <DataListControlInner key={uniqueKey} {...props} />;
 };
 
 export default DataListControl;

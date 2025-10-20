@@ -1,9 +1,11 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
-import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Checkbox, Collapse, Divider, Typography, Popover, Avatar, Card } from 'antd';
+import { InfoCircleOutlined, UserOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties, ReactElement, useMemo } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
+import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance, useTheme } from '@/providers';
+import { useMetadataDispatcher } from '@/providers/metadataDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
@@ -21,6 +23,7 @@ import DataListItemCreateModal from './createModal';
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
+import { useStyles as useTableStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
@@ -33,6 +36,37 @@ interface EntityForm {
   isFetchingFormConfiguration?: boolean;
   formConfiguration: IFormDto;
 }
+
+// Utility function to extract propertyName values from form components
+const extractPropertyNames = (components: any[]): string[] => {
+  const propertyNames: string[] = [];
+
+  const traverse = (obj: any): void => {
+    if (obj && typeof obj === 'object') {
+      // Check if this object has a propertyName
+      if (obj.propertyName && typeof obj.propertyName === 'string') {
+        propertyNames.push(obj.propertyName);
+      }
+
+      // Recursively traverse all properties
+      Object.values(obj).forEach((value) => {
+        if (Array.isArray(value)) {
+          value.forEach((item) => traverse(item));
+        } else if (value && typeof value === 'object') {
+          traverse(value);
+        }
+      });
+    }
+  };
+
+  components.forEach((component) => traverse(component));
+  return propertyNames;
+};
+
+// Utility function to check if an item is a group
+const isGroup = (item: RowOrGroup): item is RowsGroup => {
+  return item && Array.isArray((item as RowsGroup).$childs);
+};
 
 export const DataList: FC<Partial<IDataListProps>> = ({
   id,
@@ -82,10 +116,12 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   onListItemHover,
   onListItemSelect,
   onSelectionChange,
+  isOutsideDataContext,
   ...props
 }) => {
   const { styles } = useStyles();
-
+  const { styles: tableStyles } = useTableStyles();
+  const { theme } = useTheme();
   let skipCache = false;
 
   interface IFormIdDictionary {
@@ -220,6 +256,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   }, [isFetchingTableData]);
 
   const { getEntityFormId, getForm } = useConfigurationItemsLoader();
+  const { getMetadata } = useMetadataDispatcher();
 
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
@@ -263,6 +300,50 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       getForm({ formId: entityForm.formId, skipCache })
         .then((response) => {
           entityForm.formConfiguration = response;
+
+          // Extract all propertyName values recursively
+          const propertyNames = extractPropertyNames(response.markup || []);
+
+          // Get model metadata and find matching properties (similar to charts)
+          if (entityType && getMetadata && propertyNames.length > 0) {
+            getMetadata({ modelType: entityType, dataType: 'entity' })
+              .then((metaData) => {
+                if (metaData?.properties) {
+                  // Extract available property paths from metadata and convert to camelCase
+                  const modelProperties: string[] = [];
+                  const modelPropertiesCamel: string[] = [];
+                  if (Array.isArray(metaData.properties)) {
+                    metaData.properties.forEach((prop: any) => {
+                      if (prop.path) {
+                        modelProperties.push(prop.path);
+                        modelPropertiesCamel.push(toCamelCase(prop.path));
+                      }
+                    });
+                  }
+
+                  // Find matching properties (compare form camelCase with model camelCase)
+                  const matchingProperties = propertyNames.filter((formProp) => {
+                    const formPropCamel = toCamelCase(formProp);
+                    const rootFormPropCamel = toCamelCase(formProp.split('.')[0]);
+
+                    return modelPropertiesCamel.some((modelPropCamel) => {
+                      if (formPropCamel === modelPropCamel) return true;
+                      if (formProp.includes('.') && rootFormPropCamel === modelPropCamel) return true;
+                      return false;
+                    });
+                  });
+
+                  // Call onFormPropertiesDiscovered if provided by parent
+                  if (props.onFormPropertiesDiscovered) {
+                    props.onFormPropertiesDiscovered(matchingProperties);
+                  }
+                }
+              })
+              .catch((error) => {
+                console.error('Error fetching metadata:', error);
+              });
+          }
+
           isReady(entityForms.current);
         });
     } else {
@@ -336,8 +417,55 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
 
-    if (!entityForm?.formConfiguration?.markup)
-      return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
+    if (!entityForm?.formConfiguration?.markup) {
+      // Show greyed out user cards in both designer and live modes
+      return (
+        <Card
+          size="small"
+          style={{
+            opacity: 0.5,
+            cursor: 'default',
+            border: '1px solid #e8e8e8',
+            borderRadius: '8px',
+            background: '#fafafa',
+          }}
+          styles={{ body: { padding: '12px' } }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Avatar icon={<UserOutlined />} size={40} style={{ backgroundColor: '#bfbfbf' }} />
+            <div style={{ flex: 1, color: '#8c8c8c' }}>
+              <div style={{ fontWeight: 500, marginBottom: '4px' }}>Sample User</div>
+              <div style={{ fontSize: '12px', color: '#bfbfbf' }}>user@example.com</div>
+            </div>
+            <Popover
+              content={(
+                <div style={{ maxWidth: '300px' }}>
+                  {isOutsideDataContext ? (
+                    <>
+                      <div style={{ fontWeight: 500, marginBottom: '8px' }}>Data Context Required</div>
+                      <div>This DataList component needs to be placed inside a Data Context (like a Table Context) to display actual data from your data source.</div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ fontWeight: 500, marginBottom: '8px' }}>Form Template Missing</div>
+                      <div>Configure the form template in component settings to display actual data.</div>
+                    </>
+                  )}
+                </div>
+              )}
+              title="Configuration Required"
+              trigger={['hover', 'click']}
+              rootClassName={tableStyles.dataListHintPopover}
+              classNames={{
+                body: tableStyles.dataListHintPopover,
+              }}
+            >
+              <InfoCircleOutlined style={{ color: theme.application.warningColor, cursor: 'pointer' }} />
+            </Popover>
+          </div>
+        </Card>
+      );
+    }
 
     const dblClick = (): boolean => {
       if (props.dblClickActionConfiguration) {
@@ -390,9 +518,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     );
   };
 
-  const isGroup = (item: RowOrGroup): item is RowsGroup => {
-    return item && Array.isArray((item as RowsGroup).$childs);
-  };
 
   const groups = useDeepCompareMemo(() => {
     if (grouping?.length > 0) {
@@ -623,6 +748,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   return (
     <>
+      <style>
+        {tableStyles.quickSearchPopoverArrowStyles}
+      </style>
       {createModalOpen && createFormInfo?.current?.formConfiguration && (
         <DataListItemCreateModal
           id={id}

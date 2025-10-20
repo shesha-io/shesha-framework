@@ -1,17 +1,66 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "@/interfaces";
 import { useDataSources } from '@/providers/dataSourcesProvider';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
-import DataListControl, { NotConfiguredWarning } from './dataListControl';
-import { useDataTableStore } from '@/providers';
+import DataListControl from './dataListControl';
+import { useDataTableStore, useForm } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { DataTableFullInstance } from '@/providers/dataTable/contexts';
+
+// Mock data source for when datalist is outside a data context
+const createMockDataSource = (orientation: string = 'vertical'): DataTableFullInstance => {
+  const mockData = orientation === 'vertical' ? [{}] : [{}, {}, {}, {}];
+
+  const mockInstance = {
+    // State properties
+    succeeded: {},
+    isInProgress: {},
+    error: {},
+    actioned: {},
+    tableData: mockData,
+    isFetchingTableData: false,
+    selectedIds: [],
+    selectedRow: null,
+    selectedRows: [],
+    modelType: null,
+    columns: [],
+    groupingColumns: [],
+    grouping: [],
+    dataFetchingMode: 'paging' as const,
+    allowReordering: false,
+    pageSizeOptions: [5, 10, 20, 30, 40, 50, 100],
+    selectedPageSize: 10,
+    currentPage: 1,
+    totalPages: 1,
+    totalRows: mockData.length,
+    quickSearch: '',
+    standardSorting: [],
+    userSorting: [],
+    sortMode: 'standard' as const,
+    persistSelectedFilters: false,
+    configurableColumns: [],
+    predefinedFilters: [],
+    tableFilter: [],
+    selectedStoredFilterIds: [],
+    properties: [],
+  };
+
+  return new Proxy(mockInstance, {
+    get(target, prop) {
+      if (prop in target) {
+        return target[prop];
+      }
+      return () => undefined;
+    },
+  }) as DataTableFullInstance;
+};
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -21,15 +70,29 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   Factory: ({ model }) => {
     const ds = useDataSources();
     const dts = useDataTableStore(false);
+    const { formMode } = useForm();
+    const isDesignerMode = formMode === 'designer';
+
+
+    const mockDataSource = useMemo(() => createMockDataSource(model.orientation), [model.orientation]);
+
     if (model.hidden) return null;
 
     const dataSource = model.dataSource
       ? ds.getDataSource(model.dataSource)?.dataSource
       : dts;
 
-    return dataSource
-      ? <DataListControl {...model} dataSourceInstance={dataSource} />
-      : <NotConfiguredWarning />;
+    // If no data source, show mock data in designer mode
+    if (!dataSource && isDesignerMode) {
+      return <DataListControl {...model} dataSourceInstance={mockDataSource} />;
+    }
+
+    // If no data source in live mode, show warning (but this should be handled differently)
+    if (!dataSource) {
+      return <DataListControl {...model} dataSourceInstance={mockDataSource} />;
+    }
+
+    return <DataListControl {...model} dataSourceInstance={dataSource} />;
   },
   migrator: (m) => m
     .add<IDataListComponentProps>(0, (prev) => ({ ...prev, formSelectionMode: 'name', selectionMode: 'none', items: [] }))
