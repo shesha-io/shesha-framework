@@ -80,7 +80,9 @@ export const useCalendarLayers = (layers: ICalendarLayersProps[]): IGetData => {
       .then((results) => {
         // Filter out rejected promises and null results from failed layers
         const successfulData = results
-          .filter((result) => result.status === 'fulfilled' && result.value != null)
+          .filter((result): result is PromiseFulfilledResult<any> =>
+            result.status === 'fulfilled' && result.value != null
+          )
           .map((result) => result.value);
 
         setState((s) => ({ ...s, layerData: getResponseListToState(successfulData) }));
