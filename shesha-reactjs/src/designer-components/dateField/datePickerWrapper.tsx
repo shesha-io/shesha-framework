@@ -30,18 +30,10 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     onChange,
     picker = 'date',
     defaultValue,
-    disabledDateMode,
-    disabledDateTemplate,
-    disabledDateFunc,
-    disabledTimeMode,
-    disabledTimeTemplate,
-    disabledTimeFunc,
     readOnly,
     additionalStyles,
     defaultToMidnight,
     resolveToUTC,
-    enableStyleOnReadonly,
-    ...rest
   } = props;
 
 
@@ -200,7 +192,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         format={pickerFormat}
         value={rangeMomentValue}
         defaultValue={defaultMomentValue}
-        {...rest}
         picker={picker}
         showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
         disabled={readOnly}
@@ -218,7 +209,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   return (
     <DatePicker
-      {...rest}
       className={styles.dateField}
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
       disabledTime={disabledTime(props, formData, globalState)}
