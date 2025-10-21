@@ -94,6 +94,7 @@ import {
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { dataTableContextCode } from '@/publicJsApis';
 import { DataTypes, IObjectMetadata } from '@/index';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -139,6 +140,15 @@ interface IDataTableProviderBaseProps {
   customReorderEndpoint?: string;
 
   needToRegisterContext?: boolean;
+  /**
+   * Action to execute before row reorder (allows validation and cancellation)
+   */
+  onBeforeRowReorder?: IConfigurableActionConfiguration;
+
+  /**
+   * Action to execute after row reorder (receives API response)
+   */
+  onAfterRowReorder?: IConfigurableActionConfiguration;
 }
 
 interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
@@ -270,7 +280,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     allowReordering = false,
     permanentFilter,
     customReorderEndpoint,
-    needToRegisterContext = true
+    needToRegisterContext = true,
+    onBeforeRowReorder,
+    onAfterRowReorder,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -287,6 +299,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     standardSorting: sortingItems2ColumnSorting(sortingItems),
     permanentFilter,
     customReorderEndpoint,
+    onBeforeRowReorder,
+    onAfterRowReorder,
   });
 
   const changePageSize = (val: number) => {

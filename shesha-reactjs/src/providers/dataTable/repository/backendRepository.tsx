@@ -285,7 +285,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
             });
     };
 
-    const reorder = async (payload: RowsReorderPayload): Promise<void> => {
+    const reorder = async (payload: RowsReorderPayload): Promise<any> => {
         let reorderUrl = `${GENERIC_ENTITIES_ENDPOINT}/Reorder`;
         if (payload.customReorderEndpoint?.trim().length > 0)
             reorderUrl = payload.customReorderEndpoint;
@@ -326,10 +326,11 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
                 // real update
                 payload.applyOrder(orderedRows);
             }
+            return dataResponse?.result;
         } catch (error) {
             payload.applyOrder(oldRows);
             throw error;
-        }        
+        }
     };
 
 const supportsReordering = (args: SupportsReorderingArgs) => {
