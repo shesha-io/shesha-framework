@@ -16,7 +16,7 @@ import {
   useConfigurableActionDispatcher,
   useTheme
 } from '@/index';
-import { ICalendarLayersProps } from '@/providers/layersProvider/models';
+import { ICalendarEvent } from '@/providers/layersProvider/models';
 import { ICalendarProps } from '@/designer-components/calendar/interfaces';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 
@@ -50,7 +50,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const [internalEndDate, setInternalEndDate] = useState<string>(externalEndDate);
 
   const clickTimeoutRef = useRef<number | null>(null);
-  const lastClickedEventRef = useRef<ICalendarLayersProps | null>(null);
+  const lastClickedEventRef = useRef<ICalendarEvent | null>(null);
 
   const primaryColor = theme.application.primaryColor;
   const defaultVisibleLayers = getLayerOptions(items)?.map((item) => item.value);
@@ -123,9 +123,9 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     setEvents(getLayerEvents(layerEvents, checked as string[]));
   };
 
-  const handleCustomSelect = (event: ICalendarLayersProps) => {
+  const handleCustomSelect = (event: ICalendarEvent) => {
     // Prevent selection if the event date is disabled
-    if (event.startTime && isDateDisabled(new Date(event.startTime), minDate, maxDate)) {
+    if (event.start && isDateDisabled(event.start, minDate, maxDate)) {
       return;
     }
 
@@ -155,9 +155,9 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     }, 300); // 300ms delay to detect double clicks
   };
 
-  const handleCustomDoubleClick = (event: ICalendarLayersProps) => {
+  const handleCustomDoubleClick = (event: ICalendarEvent) => {
     // Prevent double click if the event date is disabled
-    if (event.startTime && isDateDisabled(new Date(event.startTime), minDate, maxDate)) {
+    if (event.start && isDateDisabled(event.start, minDate, maxDate)) {
       return;
     }
 

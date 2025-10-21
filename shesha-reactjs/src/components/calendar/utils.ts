@@ -7,7 +7,7 @@ import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/co
 import { evaluateString } from "@/formDesignerUtils";
 
 export const parseIntOrDefault = (input: any, defaultValue: number = 0): number => {
-  const parsed = parseFloat(input);
+  const parsed = parseInt(String(input), 10);
   return isNaN(parsed) ? defaultValue : parsed;
 };
 
