@@ -95,9 +95,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
               <Fragment key={col.id}>
                 <ComponentsContainer
                   containerId={col.id}
-                  dynamicComponents={
-                    model?.isDynamic ? col?.components : []
-                  }
+                  dynamicComponents={model?.isDynamic ? col?.components : []}
                 />
               </Fragment>
             ))}

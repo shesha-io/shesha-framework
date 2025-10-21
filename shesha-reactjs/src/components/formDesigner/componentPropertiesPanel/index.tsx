@@ -10,9 +10,7 @@ const ComponentPropertiesPanelInner: FC = () => {
       {!selectedComponentId && (
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={
-            readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'
-          }
+          description={readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'}
         />
       )}
       <div style={{ paddingBottom: '50px' }} ref={settingsPanelRef}></div>

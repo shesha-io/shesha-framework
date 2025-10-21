@@ -31,7 +31,7 @@ export const DocumentEditor: FC<IItemEditorProps> = ({ doc }) => {
               isDefined(Provider)
                 ? (
                   <Provider doc={doc}>
-                    { content }
+                    {content}
                   </Provider>
                 )
                 : undefined}

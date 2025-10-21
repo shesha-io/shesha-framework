@@ -15,7 +15,7 @@ export const DefaultGroupHeader = <TItem extends ListItemWithId>({ contextAccess
   return !readOnly
     ? (
       <div className={styles.customActionButtons}>
-        <Button onClick={onAddItemClick} type="primary">{ addItemText ?? 'Add New Item' }</Button>
+        <Button onClick={onAddItemClick} type="primary">{addItemText ?? 'Add New Item'}</Button>
       </div>
     ) : null;
 };

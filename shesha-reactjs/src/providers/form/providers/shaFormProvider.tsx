@@ -41,7 +41,7 @@ const useShaFormRef = <Values extends object = object>(): MutableRefObject<IShaF
 
 const useShaFormDataUpdate = (): object => useContext(ShaFormDataUpdateContext);
 
-const useShaFormInstance = (required: boolean = true): IShaFormInstance => {
+const useShaFormInstance = (required: boolean = true): IShaFormInstance | undefined => {
   const context = useContext(ShaFormInstanceContext);
 
   if (required && context === undefined) {

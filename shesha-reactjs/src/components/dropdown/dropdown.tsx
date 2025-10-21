@@ -251,8 +251,7 @@ export const Dropdown: FC<IDropdownProps> = ({
             />
           );
         },
-      } : {})
-      }
+      } : {})}
     >
       {options?.map(({ value: localValue, label }) => (
         <Select.Option value={localValue} key={label}>

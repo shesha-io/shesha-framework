@@ -1,12 +1,11 @@
-﻿using System;
-using FluentMigrator;
+﻿using FluentMigrator;
 using Shesha.Domain;
 using Shesha.FluentMigrator;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 {
-    [Migration(20230516104216), MsSqlOnly]
-    public class M20230516104216 : Migration
+    [Migration(20230516104216)]
+    public class M20230516104216 : OneWayMigration
     {
         /// <summary>
         /// 
@@ -50,14 +49,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Migrations
 
             Alter.Table("SheshaFunctionalTests_Subjects").AddForeignKeyColumn("SchoolId", "SheshaFunctionalTests_Schools").Nullable();
 
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public override void Down()
-        {
-            throw new NotImplementedException();
         }
     }
 }

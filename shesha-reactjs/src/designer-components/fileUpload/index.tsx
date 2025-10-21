@@ -74,13 +74,11 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
               fileId={model.value?.Id ?? model.value}
               baseUrl={backendUrl}
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
-              ownerType={
-                Boolean(model.ownerType)
-                  ? model.ownerType
-                  : Boolean(formSettings?.modelType)
-                    ? formSettings?.modelType
-                    : ''
-              }
+              ownerType={Boolean(model.ownerType)
+                ? model.ownerType
+                : Boolean(formSettings?.modelType)
+                  ? formSettings?.modelType
+                  : ''}
               propertyName={model.propertyName}
               uploadMode={model.useSync ? 'sync' : 'async'}
             >

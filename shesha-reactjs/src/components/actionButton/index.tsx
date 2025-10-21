@@ -31,14 +31,12 @@ const ActionButton: FC<IActionButtonProps> = ({
       type={type}
       shape={shape}
       icon={icon}
-      onClick={
-        mustConfirm
-          ? undefined
-          : (e) => {
-            e.stopPropagation();
-            executer();
-          }
-      }
+      onClick={mustConfirm
+        ? undefined
+        : (e) => {
+          e.stopPropagation();
+          executer();
+        }}
       title={title}
       loading={loading}
       danger={Boolean(error)}

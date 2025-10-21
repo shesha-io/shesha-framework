@@ -1,4 +1,4 @@
-import React, { FC, CSSProperties, useEffect, useRef } from 'react';
+import React, { FC, CSSProperties } from 'react';
 import { useNotes } from '@/providers';
 import NotesRendererBase from '@/components/notesRendererBase';
 import { useStyles } from './styles/styles';
@@ -12,12 +12,11 @@ export interface INotesRendererProps {
   buttonPostion?: 'left' | 'right';
   autoSize?: boolean;
   allowDelete?: boolean;
-  onCreated?: (payload: Array<any>) => void;
   showCharCount?: boolean;
   minLength?: number;
   maxLength?: number;
   onDeleteAction?: (note: INote) => void;
-  onCreateAction?: (note: any) => void;
+  onCreateAction?: (createdNotes: INote[]) => void;
   allowEdit?: boolean;
   onUpdateAction?: (note: INote) => void;
 }
@@ -27,7 +26,6 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
   buttonPostion,
   showCommentBox = true,
   allowDelete,
-  onCreated,
   showCharCount,
   minLength,
   maxLength,
@@ -38,23 +36,8 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
 }) => {
   const { notes, deleteNotes, isInProgress, postNotes, updateNotes } = useNotes();
   const { styles } = useStyles();
-  const prevNotes = useRef(notes);
-  const wasPostingNotes = useRef(false);
-  const { fetchNotes: isFetchingNotes, postNotes: isPostingNotes } = isInProgress;
-
-  useEffect(() => {
-    if (wasPostingNotes.current && !isPostingNotes) {
-      if (prevNotes.current && notes?.length > prevNotes.current.length) {
-        const newNotes = notes.filter((note) => !prevNotes.current.some((prev) => prev.id === note.id));
-        if (onCreated && newNotes.length > 0) {
-          onCreated(newNotes);
-        }
-      }
-    }
-
-    wasPostingNotes.current = isPostingNotes;
-    prevNotes.current = notes;
-  }, [notes, isPostingNotes, onCreated]);
+  const isFetchingNotes = isInProgress?.fetchNotes;
+  const isPostingNotes = isInProgress?.postNotes;
 
   return (
     <div className={styles.shaNotesRenderer}>

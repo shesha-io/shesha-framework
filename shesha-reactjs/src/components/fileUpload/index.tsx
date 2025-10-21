@@ -202,9 +202,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
               {(listType === 'text' || !hideFileName) && (
                 <a
                   style={{ marginRight: '5px' }}
-                  onClick={
-                    isImageType(file.type) ? onPreview : () => downloadFile({ fileId: file.id, fileName: file.name })
-                  }
+                  onClick={isImageType(file.type) ? onPreview : () => downloadFile({ fileId: file.id, fileName: file.name })}
                 >
                   {listType !== 'thumbnail' && getFileIcon(file?.type)} {`${file.name} (${filesize(file?.size || 0)})`}
                 </a>
@@ -268,9 +266,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return (
       <>
         <div
-          className={
-            listType === 'thumbnail' ? 'ant-upload-list-item-name ant-upload-list-item-name-stub thumbnail-stub' : ''
-          }
+          className={listType === 'thumbnail' ? 'ant-upload-list-item-name ant-upload-list-item-name-stub thumbnail-stub' : ''}
         >
           {uploadButton}
         </div>
