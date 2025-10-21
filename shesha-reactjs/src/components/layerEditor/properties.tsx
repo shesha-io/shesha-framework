@@ -18,8 +18,8 @@ export const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
   const formRef = useRef<ConfigurableFormInstance>(null);
 
   const debouncedSave = useDebouncedCallback(
-    (values) => {
-      updateItem({ id: selectedItemId, settings: values });
+    (_changedValues, allValues) => {
+      updateItem({ id: selectedItemId, settings: allValues });
     },
     // delay in ms
     300,
@@ -38,7 +38,10 @@ export const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
   const getEditor = () => {
     if (!selectedItemId) return null;
 
-    const componentModel = getComponentModel(getItem(selectedItemId));
+    const item = getItem(selectedItemId);
+    if (!item) return null;
+
+    const componentModel = getComponentModel(item);
 
     return (
 

@@ -5,7 +5,7 @@ export interface IItemPosition {
   index: number;
 }
 
-export const getItemPositionById = (items: LayerGroupItemProps[], id: string): IItemPosition => {
+export const getItemPositionById = (items: LayerGroupItemProps[], id: string): IItemPosition | null => {
   for (let index = 0; index < items.length; index++) {
     const item = items[index];
     if (item.id === id)
@@ -17,7 +17,7 @@ export const getItemPositionById = (items: LayerGroupItemProps[], id: string): I
     const children = (item as ILayerGroup)?.childItems;
 
     if (children) {
-      const itemPosition = getItemPositionById(children, id);
+      const itemPosition: IItemPosition | null = getItemPositionById(children, id);
       if (itemPosition) return itemPosition;
     }
   }
@@ -25,7 +25,7 @@ export const getItemPositionById = (items: LayerGroupItemProps[], id: string): I
   return null;
 };
 
-export const getItemById = (items: LayerGroupItemProps[], id: string): LayerGroupItemProps => {
+export const getItemById = (items: LayerGroupItemProps[], id: string): LayerGroupItemProps | null => {
   const position = getItemPositionById(items, id);
   return position ? position.ownerArray[position.index] : null;
 };
