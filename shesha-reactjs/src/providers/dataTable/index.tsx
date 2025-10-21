@@ -13,7 +13,7 @@ import { IHasModelType, IHasRepository, IRepository } from './repository/interfa
 import { isEqual, sortBy } from 'lodash';
 import { MetadataProvider } from '@/providers/metadata';
 import { Row } from 'react-table';
-import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
+import { IConfigurableActionConfiguration, useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useDebouncedCallback } from 'use-debounce';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useGlobalState } from '@/providers/globalState';
@@ -140,6 +140,15 @@ interface IDataTableProviderBaseProps {
   customReorderEndpoint?: string;
 
   needToRegisterContext?: boolean;
+  /**
+   * Action to execute before row reorder (allows validation and cancellation)
+   */
+  onBeforeRowReorder?: IConfigurableActionConfiguration;
+
+  /**
+   * Action to execute after row reorder (receives API response)
+   */
+  onAfterRowReorder?: IConfigurableActionConfiguration;
 }
 
 interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
@@ -273,6 +282,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     permanentFilter,
     customReorderEndpoint,
     needToRegisterContext = true,
+    onBeforeRowReorder,
+    onAfterRowReorder,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -289,6 +300,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     standardSorting: sortingItems2ColumnSorting(sortingItems),
     permanentFilter,
     customReorderEndpoint,
+    onBeforeRowReorder,
+    onAfterRowReorder,
   });
 
   const changePageSize = (val: number): void => {
