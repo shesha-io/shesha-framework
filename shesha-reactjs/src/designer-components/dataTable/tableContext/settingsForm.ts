@@ -515,7 +515,7 @@ export const getSettings = (data: any) => {
                             jsSetting: true,
                           },
                         ],
-                      })                      
+                      })
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
@@ -544,6 +544,48 @@ export const getSettings = (data: any) => {
                           },
                         ],
                       })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: dataTabId,
+                        hidden: {
+                          "_value": false,
+                          "_code": "return getSettingValue(data?.allowReordering) !== 'yes';",
+                          "_mode": "code"
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'onBeforeRowReorder',
+                            label: 'On Before Reorder',
+                            hideLabel: true,
+                            parentId: dataTabId,
+                            type: 'configurableActionConfigurator',
+                            description: 'Action to execute before row reorder. Can be used for validation and cancellation.',
+                            placeholder: '',
+                          },
+                        ],
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: dataTabId,
+                        hidden: {
+                          "_value": false,
+                          "_code": "return getSettingValue(data?.allowReordering) !== 'yes';",
+                          "_mode": "code"
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'onAfterRowReorder',
+                            label: 'On After Reorder',
+                            parentId: dataTabId,
+                            hideLabel: true,
+                            type: 'configurableActionConfigurator',
+                            description: 'Action to execute after row reorder. Receives the API response data.',
+                            placeholder: '',
+                          },
+                        ],
+                      })
                       .toJson(),
                   ],
                 })
@@ -565,7 +607,7 @@ export const getSettings = (data: any) => {
                   size: 'small',
                   parentId: securityTabId,
                 })
-      
+
                 .toJson(),
             ],
           },

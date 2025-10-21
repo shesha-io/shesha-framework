@@ -8,6 +8,7 @@ import {
     } from '@/providers/dataTable/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { YesNoInherit } from '@/interfaces';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 
 export interface ITableContextComponentProps extends Omit<IConfigurableFormComponent, 'description'> {
     sourceType?: 'Form' | 'Entity' | 'Url';
@@ -25,4 +26,21 @@ export interface ITableContextComponentProps extends Omit<IConfigurableFormCompo
     allowReordering?: YesNoInherit;
     permanentFilter?: FilterExpression;
     disableRefresh?: string;
+    onBeforeRowReorder?: IConfigurableActionConfiguration;
+    onAfterRowReorder?: IConfigurableActionConfiguration;
+}
+
+export interface IBeforeRowReorderArguments {
+    oldIndex: number;
+    newIndex: number;
+    rowData: any;
+    allData: any[];
+}
+
+export interface IAfterRowReorderArguments {
+    oldIndex: number;
+    newIndex: number;
+    rowData: any;
+    allData: any[];
+    response?: any;
 }

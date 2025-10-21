@@ -466,7 +466,45 @@
         "_code": "return getSettingValue(data?.allowReordering) !== 'yes';",
         "_mode": "code"
       }
-    }, 
+    },
+    {
+      "id": "onBeforeRowReorder-action",
+      "type": "configurableActionConfigurator",
+      "propertyName": "onBeforeRowReorder",
+      "componentName": "onBeforeRowReorder",
+      "label": "On Before Row Reorder",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {
+        "_value": false,
+        "_code": "return getSettingValue(data?.allowReordering) !== 'yes';",
+        "_mode": "code"
+      },
+      "isDynamic": false,
+      "version": 1,
+      "description": "Action to execute before row reorder. Can be used for validation and cancellation.",
+      "validate": {},
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "onAfterRowReorder-action",
+      "type": "configurableActionConfigurator",
+      "propertyName": "onAfterRowReorder",
+      "componentName": "onAfterRowReorder",
+      "label": "On After Row Reorder",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {
+        "_value": false,
+        "_code": "return getSettingValue(data?.allowReordering) !== 'yes';",
+        "_mode": "code"
+      },
+      "isDynamic": false,
+      "version": 1,
+      "description": "Action to execute after row reorder. Receives the API response data.",
+      "validate": {},
+      "settingsValidationErrors": []
+    },
     {
       "id": "hWKZzsgtRKKXBy8TdBFMy",
       "type": "dataSortingEditor",
