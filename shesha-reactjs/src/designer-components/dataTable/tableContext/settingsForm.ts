@@ -556,7 +556,7 @@ export const getSettings = (data: any) => {
                           {
                             id: nanoid(),
                             propertyName: 'onBeforeRowReorder',
-                            label: 'On Before Reorder',
+                            label: 'On Before Row Reorder',
                             hideLabel: true,
                             parentId: dataTabId,
                             type: 'configurableActionConfigurator',

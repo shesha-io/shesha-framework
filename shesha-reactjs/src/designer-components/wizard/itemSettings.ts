@@ -425,7 +425,7 @@ export const getItemSettings = () => {
             .addCollapsiblePanel({
               id: nanoid(),
               propertyName: 'onBeforeRenderCollapsiblePanel',
-              label: 'On Before Render',
+              label: 'On Before Row Render',
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
