@@ -45,12 +45,10 @@ export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = ({ value, onCh
       initNewItem={makeNewItem}
       readOnly={readOnly}
       header={(
-        <Alert message={
-          (
-            `${readOnly ? 'Here you can view columns configuration.' : 'Here you can configure columns by adjusting their settings and ordering.'
-            } ${startedEmpty ? ' (Default columns have been pre-populated for convenience when configuring a DataTable)' : ''}`
-          )
-        }
+        <Alert message={(
+          `${readOnly ? 'Here you can view columns configuration.' : 'Here you can configure columns by adjusting their settings and ordering.'
+          } ${startedEmpty ? ' (Default columns have been pre-populated for convenience when configuring a DataTable)' : ''}`
+        )}
         />
       )}
       itemProperties={(itemProps) => (<ColumnProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} parentComponentType={parentComponentType} />)}
