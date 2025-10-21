@@ -320,7 +320,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
     typeDefinitionLoader: () => {
       return Promise.resolve({
-        typeName: 'IFileListContexApi',
+        typeName: 'IFileListContextApi',
         files: [{ content: fileListContextCode, fileName: 'apis/fileListContextApi.ts' }]
       });
     },
