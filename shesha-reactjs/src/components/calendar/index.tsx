@@ -81,7 +81,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
         setInternalEndDate(res ? res : internalStartDate);
       });
     }
-  }, [externalStartDate, externalEndDate, allData]);
+  }, [externalStartDate, externalEndDate, allData, allData.data]);
 
   // Fetch initial data
   useEffect(() => {
