@@ -308,7 +308,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   };
 
 
-  const supportsReordering = (args: SupportsReorderingArgs) => {
+  const supportsReordering = (args: SupportsReorderingArgs): string | true => {
     return args.sortMode !== 'strict' || !args.strictSortBy
       ? '`sortMode` and `strictSortBy` properties are mandatory for the generic reordering functionality'
       : true;

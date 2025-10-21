@@ -31,16 +31,16 @@ export interface ITableContextComponentProps extends Omit<IConfigurableFormCompo
 }
 
 export interface IBeforeRowReorderArguments {
-    oldIndex: number;
-    newIndex: number;
-    rowData: any;
-    allData: any[];
+  oldIndex: number;
+  newIndex: number;
+  rowData: any;
+  allData: any[];
 }
 
 export interface IAfterRowReorderArguments {
-    oldIndex: number;
-    newIndex: number;
-    rowData: any;
-    allData: any[];
-    response?: any;
+  oldIndex: number;
+  newIndex: number;
+  rowData: any;
+  allData: any[];
+  response?: any;
 }

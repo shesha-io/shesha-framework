@@ -17,7 +17,7 @@ import { useParent } from '@/providers/parentProvider';
 type ITableContextInnerProps = ITableContextComponentProps;
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
-  const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering, components,  onBeforeRowReorder, onAfterRowReorder } = props;
+  const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering, components, onBeforeRowReorder, onAfterRowReorder } = props;
   const { formMode } = useForm();
   const { data } = useFormData();
   const { styles, cx } = useStyles();
@@ -64,28 +64,28 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
           </div>
         )}
         <DataTableProvider
-            userConfigId={props.id}
-            entityType={entityType}
-            getDataPath={getDataPath}
-            propertyName={propertyName}
-            actionOwnerId={id}
-            actionOwnerName={componentName}
-            sourceType={props.sourceType}
-            initialPageSize={props.defaultPageSize ?? 10}
-            dataFetchingMode={props.dataFetchingMode ?? 'paging'}
-            getFieldValue={getFieldValue}
-            onChange={onChange}
-            grouping={props.grouping}
-            sortMode={props.sortMode}
-            strictSortBy={props.strictSortBy}
-            strictSortOrder={props.strictSortOrder}
-            standardSorting={props.standardSorting}
-            allowReordering={evaluateYesNo(allowReordering, formMode)}
-            permanentFilter={permanentFilter}
-            disableRefresh={disableRefresh}
-            customReorderEndpoint={customReorderEndpoint}
-            onBeforeRowReorder={onBeforeRowReorder}
-            onAfterRowReorder={onAfterRowReorder}
+          userConfigId={props.id}
+          entityType={entityType}
+          getDataPath={getDataPath}
+          propertyName={propertyName}
+          actionOwnerId={id}
+          actionOwnerName={componentName}
+          sourceType={props.sourceType}
+          initialPageSize={props.defaultPageSize ?? 10}
+          dataFetchingMode={props.dataFetchingMode ?? 'paging'}
+          getFieldValue={getFieldValue}
+          onChange={onChange}
+          grouping={props.grouping}
+          sortMode={props.sortMode}
+          strictSortBy={props.strictSortBy}
+          strictSortOrder={props.strictSortOrder}
+          standardSorting={props.standardSorting}
+          allowReordering={evaluateYesNo(allowReordering, formMode)}
+          permanentFilter={permanentFilter}
+          disableRefresh={disableRefresh}
+          customReorderEndpoint={customReorderEndpoint}
+          onBeforeRowReorder={onBeforeRowReorder}
+          onAfterRowReorder={onAfterRowReorder}
         >
           {!isDesignerMode && !hasChildComponents && (
             <div className="data-context-label">

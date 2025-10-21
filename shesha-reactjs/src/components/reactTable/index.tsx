@@ -320,8 +320,8 @@ export const ReactTable: FC<IReactTableProps> = ({
         return typedRow.original !== rows[index].original;
       });
       if (changedIndex) {
-        const oldRows = rows.map(row => row.original);
-        const newRows = newState.map(row => row.original);
+        const oldRows = rows.map((row) => row.original);
+        const newRows = newState.map((row) => row.original);
 
         let oldIndex = -1;
         let newIndex = -1;
@@ -330,7 +330,7 @@ export const ReactTable: FC<IReactTableProps> = ({
           if (oldRows[i] !== newRows[i]) {
             if (oldIndex === -1) {
               const movedItem = newRows[i];
-              oldIndex = oldRows.findIndex(item => item === movedItem);
+              oldIndex = oldRows.findIndex((item) => item === movedItem);
               newIndex = i;
               break;
             }

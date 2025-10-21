@@ -841,7 +841,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           actionConfiguration: onBeforeRowReorder,
           argumentsEvaluationContext: evaluationContext,
         });
-
       } catch (error) {
         console.error('OnBeforeRowReorder event error:', error);
         // Reset to original order on error

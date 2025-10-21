@@ -548,9 +548,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         id: nanoid(),
                         parentId: dataTabId,
                         hidden: {
-                          "_value": false,
-                          "_code": "return getSettingValue(data?.allowReordering) !== 'yes';",
-                          "_mode": "code"
+                          _value: false,
+                          _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
+                          _mode: "code",
                         } as any,
                         inputs: [
                           {
@@ -569,9 +569,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         id: nanoid(),
                         parentId: dataTabId,
                         hidden: {
-                          "_value": false,
-                          "_code": "return getSettingValue(data?.allowReordering) !== 'yes';",
-                          "_mode": "code"
+                          _value: false,
+                          _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
+                          _mode: "code",
                         } as any,
                         inputs: [
                           {
