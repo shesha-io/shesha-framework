@@ -33,6 +33,7 @@ import { FormLayout } from 'antd/es/form/Form';
 import { CustomLabelValueEditorInputs, getEditor } from './utils';
 import EditModeSelector from '@/components/editModeSelector';
 import Icon from '@/components/icon/Icon';
+import { DatePickerWrapper } from '../dateField/datePickerWrapper';
 
 const { Password } = Input;
 
@@ -332,6 +333,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 readOnly={readOnly}
                 variant={variant}
             />;
+
+        case 'date':
+            return <DatePickerWrapper {...props} />;
+
         default:
             return <Input
                 size={size}
