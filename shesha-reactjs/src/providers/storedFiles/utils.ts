@@ -1,6 +1,6 @@
 import { IStoredFile } from "./contexts";
 
-export const removeFile = (fileIdToDelete: string, fileList = []): IStoredFile[] => {
+export const removeFile = (fileList = [], fileIdToDelete: string): IStoredFile[] => {
   return fileList.filter(({ id, uid }) => id !== fileIdToDelete && uid !== fileIdToDelete);
 };
 

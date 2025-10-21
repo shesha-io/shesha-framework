@@ -1,3 +1,4 @@
+import fileListContextCode from './fileListContextApi.ts?raw';
 import metadataSourceCode from './metadata.ts?raw';
 import metadataBuilderSourceCode from './metadataBuilder.ts?raw';
 import userApiSourceCode from './userApi.ts?raw';
@@ -18,6 +19,7 @@ const CODE = {
 };
 
 export {
+  fileListContextCode,
   metadataSourceCode,
   metadataBuilderSourceCode,
   userApiSourceCode,

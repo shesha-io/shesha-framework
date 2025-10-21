@@ -7,7 +7,7 @@ export type IFlagProgressFlags =
   'downloadFile' |
   'uploadFile' |
   'deleteFile' |
-  'dowloadZip' |
+  'downloadZip' |
   'fetchFileInfo' |
   'getStoredFile'
   /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
@@ -15,7 +15,7 @@ export type IFlagSucceededFlags =
   'downloadFile' |
   'uploadFile' |
   'deleteFile' |
-  'dowloadZip' |
+  'downloadZip' |
   'fetchFileInfo' |
   'getStoredFile'
   /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
@@ -23,7 +23,7 @@ export type IFlagErrorFlags =
   'downloadFile' |
   'uploadFile' |
   'deleteFile' |
-  'dowloadZip' |
+  'downloadZip' |
   'fetchFileInfo' |
   'getStoredFile'
   /* NEW_ERROR_FLAG_GOES_HERE */;
