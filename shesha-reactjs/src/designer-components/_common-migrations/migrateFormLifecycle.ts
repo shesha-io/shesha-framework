@@ -27,7 +27,7 @@ const getBeforeDataLoad = (onInitialized: string): string => {
 
 const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): string => {
   if (!initialValues || initialValues.length === 0)
-    return onDataLoaded;
+    return onDataLoaded || null;
 
   // Convert to JSON
   const initialData = {};
