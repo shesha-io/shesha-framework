@@ -418,99 +418,89 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: 'events',
             title: 'Events',
             id: eventsTabId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInputRow({
-                id: nanoid(),
-                inputs: [{
+            components: [
+              // Build the base components first
+              ...new DesignerToolbarSettings()
+                .addSettingsInputRow({
                   id: nanoid(),
-                  type: 'codeEditor',
-                  propertyName: 'onListItemSave',
-                  label: 'On List Item Save',
+                  inputs: [{
+                    id: nanoid(),
+                    type: 'codeEditor',
+                    propertyName: 'onListItemSave',
+                    label: 'On List Item Save',
+                    jsSetting: false,
+                    tooltip: 'Custom business logic executed when saving list items (validation, calculations, etc.)',
+                  }],
+                  hideLabel: true,
+                })
+                .addConfigurableActionConfigurator({
+                  id: nanoid(),
+                  propertyName: "dblClickActionConfiguration",
+                  parentId: eventsTabId,
+                  label: "On Double-Click",
+                  description: "Action to execute when a list item is double-clicked",
                   jsSetting: false,
-                  tooltip: 'Custom business logic executed when saving list items (validation, calculations, etc.)',
-                },
-                ],
-                hideLabel: true,
-              })
-              .addConfigurableActionConfigurator({
-                id: nanoid(),
-                propertyName: "dblClickActionConfiguration",
-                parentId: eventsTabId,
-                label: "On Double-Click",
-                jsSetting: false,
-              })
-              .addConfigurableActionConfigurator({
-                id: nanoid(),
-                propertyName: 'onListItemSaveSuccessAction',
-                label: 'On List Item Save Success',
-                hideLabel: true,
-                description: 'Custom Action configuration executed when saving list items (validation, calculations, etc.)',
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: 'onRowSave',
-                label: 'On Row Save',
-                inputType: 'codeEditor',
-                parentId: eventsTabId,
-                tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
-                hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
-                exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
-              })
-              .addConfigurableActionConfigurator({
-                id: nanoid(),
-                propertyName: 'onRowDeleteSuccessAction',
-                label: 'On List Item Delete Success',
-                description: 'Custom business logic to be executed after successfull deletion of a list item.',
-                hideLabel: true,
-              })
-              .addConfigurableActionConfigurator({
-                id: nanoid(),
-                propertyName: 'onListItemClick',
-                label: 'On List Item Click',
-                description: 'Action to execute when a list item is clicked',
-              })
-              .addConfigurableActionConfigurator({
-                id: nanoid(),
-                propertyName: 'onListItemHover',
-                label: 'On List Item Hover',
-                description: 'Action to execute when hovering over a list item',
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                hidden: {
-                  _code: 'return (data?.selectionMode ?? "none") === "none";',
-                  _mode: 'code',
-                  _value: false,
-                } as any,
-                inputs: [{
+                })
+                .addConfigurableActionConfigurator({
                   id: nanoid(),
-                  type: 'configurableActionConfigurator',
-                  propertyName: 'onListItemSelect',
-                  label: 'On List Item Select',
-                  description: 'Action to execute when a list item is selected (does not trigger on unselect)',
+                  propertyName: 'onListItemSaveSuccessAction',
+                  label: 'On List Item Save Success',
                   hideLabel: true,
-                }],
-                hideLabel: true,
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                hidden: {
-                  _code: 'return (data?.selectionMode ?? "none") === "none";',
-                  _mode: 'code',
-                  _value: false,
-                } as any,
-                inputs: [{
+                  description: 'Custom Action configuration executed when saving list items (validation, calculations, etc.)',
+                })
+                .addSettingsInput({
                   id: nanoid(),
-                  type: 'configurableActionConfigurator',
-                  propertyName: 'onSelectionChange',
-                  label: 'On Selection Change',
-                  description: 'Action to execute when the selection changes (triggers on both select and unselect)',
+                  propertyName: 'onRowSave',
+                  label: 'On Row Save',
+                  inputType: 'codeEditor',
+                  parentId: eventsTabId,
+                  tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
+                  hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
+                  description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
+                  exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
+                })
+                .addConfigurableActionConfigurator({
+                  id: nanoid(),
+                  propertyName: 'onRowDeleteSuccessAction',
+                  label: 'On List Item Delete Success',
+                  description: 'Custom business logic to be executed after successfull deletion of a list item.',
                   hideLabel: true,
-                }],
-                hideLabel: true,
-              })
-              .toJson(),
+                })
+                .addConfigurableActionConfigurator({
+                  id: nanoid(),
+                  propertyName: 'onListItemClick',
+                  label: 'On List Item Click',
+                  description: 'Action to execute when a list item is clicked',
+                })
+                .addConfigurableActionConfigurator({
+                  id: nanoid(),
+                  propertyName: 'onListItemHover',
+                  label: 'On List Item Hover',
+                  description: 'Action to execute when hovering over a list item',
+                })
+                .toJson(),
+              // Wrap selection configurators in a container with conditional visibility
+              {
+                id: nanoid(),
+                type: 'container',
+                hidden: { _code: 'return (getSettingValue(data?.selectionMode) || "none") === "none";', _mode: 'code', _value: false } as any,
+                components: [
+                  {
+                    id: nanoid(),
+                    type: 'configurableActionConfigurator',
+                    propertyName: 'onListItemSelect',
+                    label: 'On List Item Select',
+                    description: 'Action to execute when a list item is selected (does not trigger on unselect)',
+                  },
+                  {
+                    id: nanoid(),
+                    type: 'configurableActionConfigurator',
+                    propertyName: 'onSelectionChange',
+                    label: 'On Selection Change',
+                    description: 'Action to execute when the selection changes (triggers on both select and unselect)',
+                  }
+                ]
+              } as any
             ],
           },
           {
