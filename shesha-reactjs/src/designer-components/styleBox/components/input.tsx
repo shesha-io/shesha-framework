@@ -28,10 +28,10 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value }) =>
     <Input
       className={getStyleClassName(type, direction)}
       onChange={onModifyChange}
-      value={getStyleValue(type, direction, value) || defaultMargins[direction]}
-      type='number'
+      value={getStyleValue(type, direction, value) ?? defaultMargins[direction]}
+      type="number"
       disabled={readOnly}
-      placeholder='auto'
+      placeholder="auto"
     />
   );
 };

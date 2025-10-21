@@ -70,7 +70,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
         icon={<SaveOutlined />}
         onClick={onSaveClick}
         type="primary"
-        size='small'
+        size="small"
       >
         Save
       </Button>

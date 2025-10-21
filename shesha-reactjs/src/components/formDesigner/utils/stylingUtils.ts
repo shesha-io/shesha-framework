@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { ComponentTypeInfo } from './componentTypeUtils';
 import { ComponentDimensions } from './dimensionUtils';
 import { addPx, hasNumber } from '@/utils/style';
@@ -17,10 +17,9 @@ export interface StyleConfig {
 export const createRootContainerStyle = (
   dimensions: ComponentDimensions,
   stylingBox: StyleConfig,
-  originalDimensions: any,
-  isInput
-) => {
-
+  originalDimensions: ComponentDimensions,
+  isInput: boolean,
+): CSSProperties => {
   const baseStyle = {
     boxSizing: 'border-box' as const,
   };
@@ -56,8 +55,8 @@ export const createFormItemStyle = (
   stylingBox: StyleConfig,
   formMode: string,
   dimensionsStyles: React.CSSProperties,
-  typeInfo: ComponentTypeInfo
-) => {
+  typeInfo: ComponentTypeInfo,
+): CSSProperties => {
   const { isDataTableContext, isInput } = typeInfo;
   const {
     marginLeft,

@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
-import { DataContextTopLevels, EditMode, IConfigurableFormComponent, useCanvas } from '@/providers';
+import { DataContextTopLevels, EditMode, IConfigurableFormComponent, useCanvas, useShaFormInstance } from '@/providers';
 import {
   EditOutlined,
   EyeInvisibleOutlined,
@@ -25,7 +25,6 @@ import { useFormDesignerState, useFormDesignerStateSelector } from '@/providers/
 import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
-import { useShaFormInstance } from '@/providers';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getComponentTypeInfo } from '../utils/componentTypeUtils';
 import { getComponentDimensions, getDeviceDimensions, getDeviceFlexBasis } from '../utils/dimensionUtils';
@@ -49,7 +48,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 }) => {
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
-  const formSettings = useFormDesignerStateSelector(x => x.formSettings);
+  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
   const { formMode } = useShaFormInstance();
   const { activeDevice } = useCanvas();
 
@@ -104,7 +103,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       paddingBottom: originalStylingBox.paddingBottom,
       paddingLeft: originalStylingBox.paddingLeft,
       paddingRight: originalStylingBox.paddingRight,
-      paddingTop: originalStylingBox.paddingTop
+      paddingTop: originalStylingBox.paddingTop,
     };
   }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
 
@@ -112,8 +111,8 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return {
       marginTop: marginTop ? top : marginTop,
       marginBottom: marginBottom ? bottom : marginBottom,
-       marginLeft: marginLeft ? left : marginLeft,
-        marginRight: marginRight ? right : marginRight
+      marginLeft: marginLeft ? left : marginLeft,
+      marginRight: marginRight ? right : marginRight,
     };
   }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
 
@@ -129,20 +128,19 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       ...componentModel,
       [activeDevice]: {
         ...desktopConfig,
-      dimensions: deviceDimensions,
+        dimensions: deviceDimensions,
       },
-        // ...(formMode === 'designer' ? {stylingBox: paddingStyles} : {stylingBox: JSON.stringify({...stylingBoxPadding, ...stylingBoxMargin})}),
-      flexBasis: getDeviceFlexBasis(dimensionsStyles)
+      // ...(formMode === 'designer' ? {stylingBox: paddingStyles} : {stylingBox: JSON.stringify({...stylingBoxPadding, ...stylingBoxMargin})}),
+      flexBasis: getDeviceFlexBasis(dimensionsStyles),
     };
-
   }, [componentModel, desktopConfig, paddingStyles, originalDimensions, formMode, typeInfo]);
 
   const rootContainerStyle = useMemo(() => {
     return createRootContainerStyle(
       componentDimensions,
-      {...JSON.parse(marginStyles)},
+      { ...JSON.parse(marginStyles) },
       originalDimensions,
-      typeInfo.isInput
+      typeInfo.isInput,
     );
   }, [componentDimensions, marginTop, marginBottom, marginLeft, marginRight, originalDimensions, hasLabel]);
 
@@ -185,14 +183,16 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       <div style={{
         width: '100%',
         height: '100%',
-        boxSizing: 'border-box'
-      }}>
+        boxSizing: 'border-box',
+      }}
+      >
         <DragWrapper componentId={componentModel.id} readOnly={readOnly}>
           <div style={{
             width: '100%',
             height: '100%',
-            boxSizing: 'border-box'
-          }}>
+            boxSizing: 'border-box',
+          }}
+          >
             <FormComponent
               componentModel={renderComponentModel}
             />

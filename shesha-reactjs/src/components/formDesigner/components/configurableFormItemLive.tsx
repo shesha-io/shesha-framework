@@ -15,7 +15,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   initialValue,
   className,
   labelCol,
-  wrapperCol
+  wrapperCol,
 }) => {
   const { getPublicFormApi } = useShaFormInstance();
   const getFormData = getPublicFormApi().getFormData;
@@ -32,17 +32,18 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
 
   const defaultMargins = settings?.formItemMargin || {};
   const { top, left, right, bottom } = defaultMargins;
-  const { marginTop = top,
-     marginBottom = bottom,
-      marginRight = right,
-       marginLeft = left,
-       width,
-       height,
-       minWidth,
-       minHeight,
-       maxWidth,
-      maxHeight,
-     } = model?.allStyles?.fullStyle || {};
+  const {
+    marginTop = top ?? 5,
+    marginBottom = bottom ?? 5,
+    marginRight = right ?? 3,
+    marginLeft = left ?? 3,
+    width,
+    height,
+    minWidth,
+    minHeight,
+    maxWidth,
+    maxHeight,
+  } = model?.allStyles?.fullStyle || {};
 
   const { hideLabel, hidden } = model;
   if (hidden) return null;
@@ -64,7 +65,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
-    style: { marginBottom, marginRight, marginLeft, marginTop, width, height, minHeight, minWidth, maxHeight, maxWidth}
+    style: { marginBottom, marginRight, marginLeft, marginTop, width, height, minHeight, minWidth, maxHeight, maxWidth },
   };
 
   if (typeof children === 'function') {

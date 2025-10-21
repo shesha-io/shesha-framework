@@ -21,6 +21,7 @@ import { getSettings } from './settingsForm';
 import { containerDefaultStyles, defaultStyles } from './utils';
 import { listType } from '../attachmentsEditor/attachmentsEditor';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { migratePrevStyles } from '../_common-migrations';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IStyleType {
   ownerId: string;
@@ -49,12 +50,11 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
 
     const { dimensionsStyles } = useFormComponentStyles(model?.thumbnail);
 
-    console.log("Model :: ", model)
     const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) || model.listType === 'text' ? {
       ...model.allStyles.fontStyles,
       ...dimensionsStyles,
-    } : {...model.allStyles.fullStyle,
-      ...dimensionsStyles,};
+    } : { ...model.allStyles.fullStyle,
+      ...dimensionsStyles };
 
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
@@ -138,28 +138,30 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       .add<IFileUploadProps>(3, (prev) => migrateVisibility(prev))
       .add<IFileUploadProps>(4, (prev) => migrateReadOnly(prev))
       .add<IFileUploadProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IFileUploadProps>(6, (prev) => ({
-        ...prev,
-        ...defaultStyles(),
-        desktop: { ...defaultStyles() },
-        mobile: { ...defaultStyles() },
-        tablet: { ...defaultStyles() },
-      }))
+      .add<IFileUploadProps>(6, (prev) => {
+        return {
+          ...prev,
+          ...defaultStyles(),
+          desktop: { ...defaultStyles() },
+          mobile: { ...defaultStyles() },
+          tablet: { ...defaultStyles() },
+        };
+      })
       .add<IFileUploadProps>(7, (prev) => {
-        const migrateStyleLevel = (prevStyles: any) => {
+        const migrateStyleLevel = (prevStyles: any): any => {
           if (!prevStyles) return prevStyles;
-  
-          const thumbnailStyles = { ...containerDefaultStyles(), ...prevStyles.thumbnail };
+
+          const thumbnailStyles = migratePrevStyles(prevStyles.thumbnail, containerDefaultStyles());
           const rootStyles = { ...prevStyles };
           delete rootStyles.container;
-   
-          console.log("Thum bthumbnailStyles >>.", thumbnailStyles, rootStyles);
+
           return {
             ...thumbnailStyles,
+            font: prevStyles.font,
             thumbnail: rootStyles,
           };
         };
-  
+
         return {
           ...prev,
           desktop: migrateStyleLevel(prev.desktop),

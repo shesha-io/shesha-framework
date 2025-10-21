@@ -41,7 +41,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     textAlign = 'left',
   } = style || {};
 
-  console.log("useStyles >>>> ", style);
   const { layout, isDragger, hideFileName, listType } = model;
 
   const justifyContentMap = {

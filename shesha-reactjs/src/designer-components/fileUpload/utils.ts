@@ -39,7 +39,7 @@ export const defaultStyles = (): IStyleType => {
 };
 
 export const containerDefaultStyles = (): IStyleType => {
-  return  {
+  return {
     font: {
       color: '',
       type: 'Segoe UI',
@@ -48,11 +48,11 @@ export const containerDefaultStyles = (): IStyleType => {
       weight: '400',
     },
     dimensions: {
-    width: 'auto',
-    height: 'auto',
-    minHeight: '0px',
-    maxHeight: 'auto',
-    minWidth: '0px',
-    maxWidth: 'auto',
-  }};
+      width: 'auto',
+      height: 'auto',
+      minHeight: '0px',
+      maxHeight: 'auto',
+      minWidth: '0px',
+      maxWidth: 'auto',
+    } };
 };

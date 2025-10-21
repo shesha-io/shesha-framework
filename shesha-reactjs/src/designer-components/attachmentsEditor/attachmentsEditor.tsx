@@ -166,19 +166,15 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       // 1. Move styles from model.container to model (root level)
       // 2. Move styles that were in model to thumbnail
 
-      console.log("Prev : -> ", prev);
-
-      const migrateStyleLevel = (prevStyles: any) => {
+      const migrateStyleLevel = (prevStyles: any): any => {
         if (!prevStyles) return prevStyles;
 
         const containerStyles = prevStyles.container || {};
         const rootStyles = { ...prevStyles };
-
-        console.log("Style: containerStyles => ", containerStyles);
-        console.log("Root styles => : ", rootStyles)
         delete rootStyles.container;
- 
+
         return {
+          ...rootStyles,
           ...containerStyles,
           thumbnail: rootStyles,
         };

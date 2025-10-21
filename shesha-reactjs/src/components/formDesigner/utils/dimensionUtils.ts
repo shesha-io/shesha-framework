@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import { ComponentTypeInfo } from './componentTypeUtils';
 
 export interface DimensionConfig {
@@ -22,7 +23,7 @@ export interface ComponentDimensions {
 
 export const getComponentDimensions = (
   typeInfo: ComponentTypeInfo,
-  dimensionsStyles: any
+  dimensionsStyles: ComponentDimensions,
 ): ComponentDimensions => {
   const { isDataTableContext, isInput } = typeInfo;
 
@@ -36,7 +37,7 @@ export const getComponentDimensions = (
       ? 'auto'
       : dimensionsStyles?.height;
 
-  const getDimensionValue = (dimensionType: keyof DimensionConfig) => {
+  const getDimensionValue = (dimensionType: keyof DimensionConfig): string => {
     if (isDataTableContext) return '100%';
     return dimensionsStyles?.[dimensionType];
   };
@@ -56,19 +57,19 @@ export const getComponentDimensions = (
 
 export const getDeviceDimensions = (
   typeInfo: ComponentTypeInfo,
-  dimensionsStyles: any,
-) => {
+  dimensionsStyles: ComponentDimensions,
+): CSSProperties => {
   const { isInput } = typeInfo;
   // const {marginBottom, marginTop, marginLeft, margingRight} = stylingBox;
 
   return {
     width: '100%',
-    height: isInput ? dimensionsStyles?.height : '100%'
+    height: isInput ? dimensionsStyles?.height : '100%',
   };
 };
 
 export const getDeviceFlexBasis = (
-  dimensionsStyles: any,
-) => {
+  dimensionsStyles: ComponentDimensions,
+): string => {
   return dimensionsStyles?.width;
 };

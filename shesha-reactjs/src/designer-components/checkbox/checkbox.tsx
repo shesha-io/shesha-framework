@@ -49,7 +49,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
       ...model.allStyles.dimensionsStyles,
     } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
-    const { styles } = useStyles({ style: {...finalStyle, ...boxDimensions} });
+    const { styles } = useStyles({ style: { ...finalStyle, ...boxDimensions } });
 
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
@@ -68,8 +68,8 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: () => getSettings(),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
   migrator: (m) =>
     m
       .add<ICheckboxComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -85,10 +85,10 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
       })
       .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles())))
       .add<ICheckboxComponentProps>(6, (prev) => (
-        { ...prev, 
+        { ...prev,
           desktop: { ...prev.desktop, dimensions: {}, checkbox: boxDefaultStyles(prev.desktop || prev) },
           mobile: { ...prev.mobile, dimensions: {}, checkbox: boxDefaultStyles(prev.mobile || prev) },
-          tablet: { ...prev.tablet, dimensions: {}, checkbox: boxDefaultStyles(prev.tablet || prev) }
+          tablet: { ...prev.tablet, dimensions: {}, checkbox: boxDefaultStyles(prev.tablet || prev) },
         })),
 };
 

@@ -1,8 +1,7 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }, layout) => {
-
-    const formItem = cx(css`
+  const formItem = cx(css`
         --ant-form-item-margin-bottom: 0px !important;
         .ant-form-item-row {
             height: 100%;
@@ -32,7 +31,7 @@ export const useStyles = createStyles(({ css, cx }, layout) => {
 
 
   `);
-    return {
-        formItem,
-    };
+  return {
+    formItem,
+  };
 });

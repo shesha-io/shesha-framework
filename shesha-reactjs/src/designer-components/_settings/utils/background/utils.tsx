@@ -37,12 +37,12 @@ export const getBackgroundStyle = (input: IBackgroundValue, jsStyle: React.CSSPr
   if (input?.type === 'color') {
     style.backgroundColor = input?.color;
   } else if (input?.type === 'gradient') {
-        const direction = input?.gradient?.direction;
-        const isRadial = direction === 'radial';
-        const isConic = direction === 'conic';
+    const direction = input?.gradient?.direction;
+    const isRadial = direction === 'radial';
+    const isConic = direction === 'conic';
     const colors = input?.gradient?.colors || [];
     const colorsString = Object.values(colors).filter((color) => color !== undefined && color !== '').join(', ');
-    style.backgroundImage = isRadial || isConic? `${direction}-gradient(${colorsString})` : `linear-gradient(${input?.gradient?.direction || 'to right'}, ${colorsString})`;
+    style.backgroundImage = isRadial || isConic ? `${direction}-gradient(${colorsString})` : `linear-gradient(${input?.gradient?.direction || 'to right'}, ${colorsString})`;
   } else if (input?.type === 'url') {
     style.backgroundImage = `url(${input?.url})`;
   } else if (input?.type === 'image') {
@@ -65,7 +65,7 @@ export const gradientDirectionOptions: IDropdownOption[] = [
   { value: 'to bottom right', label: 'To bottom right' },
   { value: 'to bottom left', label: 'To bottom left' },
   { value: 'radial', label: 'Radial' },
-  { value: 'conic', label: 'Conic'}
+  { value: 'conic', label: 'Conic' },
 ];
 
 export const backgroundTypeOptions: IRadioOption[] = [

@@ -13,7 +13,7 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
   valuePropName,
 }) => {
   const { formData } = useShaFormInstance();
-  const {styles} = useStyles();
+  const { styles } = useStyles();
   if (model.hidden) return null;
 
   const { _mode: mode } = getPropertySettingsFromData(formData, model.propertyName);
@@ -25,7 +25,7 @@ export const ConfigurableFormItemSetting: FC<IConfigurableFormItemProps> = ({
     required: model.validate?.required,
     tooltip: model.description || undefined,
     hidden: model.hidden,
-    className: styles.formItem
+    className: styles.formItem,
   };
 
   if (typeof children === 'function') {

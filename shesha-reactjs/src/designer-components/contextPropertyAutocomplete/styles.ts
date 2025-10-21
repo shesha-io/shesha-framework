@@ -31,6 +31,6 @@ export const useStyles = createStyles(({ css, cx }) => {
   return {
     label,
     wrapper,
-    bindingOptionBtn
+    bindingOptionBtn,
   };
 });

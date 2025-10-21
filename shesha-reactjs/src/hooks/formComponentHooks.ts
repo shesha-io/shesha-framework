@@ -176,9 +176,8 @@ export function useActualContextExecutionExecutor<T = any>(executor: (context: a
   return actualDataRef.current;
 };
 
-export const useFormComponentStyles = <TModel,>(
+export const useFormComponentStyles = <TModel>(
   model: TModel & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>,
-  isInput?: boolean
 ): IFormComponentStyles => {
   const app = useSheshaApplication();
   const shaForm = useShaFormInstance();

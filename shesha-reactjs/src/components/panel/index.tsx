@@ -94,7 +94,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       className={classNames(shaCollapsiblePanelStyle, { [styles.hideWhenEmpty]: hideWhenEmpty }, className)}
       ghost={ghost}
       style={{
-        width: ''
+        width: '',
       }}
       items={[
         {

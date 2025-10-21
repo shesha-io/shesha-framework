@@ -14,7 +14,7 @@ import {
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { useDeepCompareMemoKeepReference } from '@/hooks';
-import { useForm, useFormData } from '@/providers';
+import { useFormData } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './formSettings';

@@ -79,7 +79,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
 
-  console.log("Style >>> ", style)
   const url = fileInfo?.url ? `${backendUrl}${fileInfo.url}` : '';
   useEffect(() => {
     if (fileInfo && url) {

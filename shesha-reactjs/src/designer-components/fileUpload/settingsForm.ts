@@ -25,7 +25,6 @@ export const getSettings = (): FormMarkupWithSettings => {
   const containerDimensionsStylePnlId = nanoid();
 
 
-
   return {
     components: new DesignerToolbarSettings()
       .addSearchableTabs({
@@ -46,9 +45,13 @@ export const getSettings = (): FormMarkupWithSettings => {
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
-                  label: 'Property name',
-                  validate: { required: true },
+                  label: 'Property Name',
+                  parentId: commonTabId,
+                  size: 'small',
                   styledLabel: true,
+                  validate: {
+                    required: true,
+                  },
                   jsSetting: true,
                 })
                 .addLabelConfigurator({

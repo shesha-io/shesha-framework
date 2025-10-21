@@ -16,9 +16,8 @@ export const DebugButton: FC = () => {
       icon={<BugOutlined />}
       title="Debug"
       type="primary"
-      size='small'
-      ghost={!isDebug}
       size="small"
+      ghost={!isDebug}
     />
   );
 };

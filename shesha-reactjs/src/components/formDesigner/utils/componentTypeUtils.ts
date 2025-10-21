@@ -9,6 +9,6 @@ export const getComponentTypeInfo = (component: any): ComponentTypeInfo => {
 
   return {
     isDataTableContext,
-    isInput
+    isInput,
   };
 };

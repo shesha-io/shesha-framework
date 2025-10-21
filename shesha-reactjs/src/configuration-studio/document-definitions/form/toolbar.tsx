@@ -17,7 +17,7 @@ export const FormToolbar: FC<IFormToolbarProps> = ({ readOnly = false }) => {
       {!readOnly && (<UndoRedoButtons size="small" />)}
       <PreviewButton size="small" />
       <SaveButton size="small" type="primary" />
-      <CustomActions/>
+      <CustomActions />
     </Space>
   );
 };

@@ -8,7 +8,7 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SwitcherOutlined } from '@ant-design/icons';
 import { Switch } from 'antd';
 import { SwitchChangeEventHandler, SwitchSize } from 'antd/lib/switch';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ISwitchComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
@@ -26,7 +26,6 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
   canBeJsSetting: true,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
-
     return (
       <ConfigurableFormItem model={model} valuePropName="checked">
         {(value, onChange) => {
