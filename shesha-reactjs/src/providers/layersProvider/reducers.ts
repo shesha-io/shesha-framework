@@ -6,7 +6,7 @@ import {
 } from './contexts';
 import { LayerGroupActionEnums } from './actions';
 import { ILayerFormModel, ILayerGroup } from './models';
-import { handleActions } from 'redux-actions';
+import { handleActions, Action } from 'redux-actions';
 import { getItemPositionById } from './utils';
 import { nanoid } from '@/utils/uuid';
 
@@ -17,6 +17,7 @@ const LayerGroupReducer = handleActions<ILayerGroupConfiguratorStateContext, any
       const LayerProps: ILayerFormModel = {
         id: nanoid(),
         sortOrder: state.items.length,
+        orderIndex: state.items.length,
         name: `Layer${LayersCount + 1}`,
         label: `Layer ${LayersCount + 1}`,
         allowChangeVisibility: true,
@@ -36,7 +37,7 @@ const LayerGroupReducer = handleActions<ILayerGroupConfiguratorStateContext, any
 
     [LayerGroupActionEnums.DeleteLayer]: (
       state: ILayerGroupConfiguratorStateContext,
-      action: ReduxActions.Action<string>,
+      action: Action<string>,
     ) => {
       const { payload } = action;
 
@@ -45,13 +46,13 @@ const LayerGroupReducer = handleActions<ILayerGroupConfiguratorStateContext, any
       return {
         ...state,
         items: [...newItems],
-        selectedItemId: state.selectedItemId === payload ? null : state.selectedItemId,
+        selectedItemId: state.selectedItemId === payload ? undefined : state.selectedItemId,
       };
     },
 
     [LayerGroupActionEnums.SelectItem]: (
       state: ILayerGroupConfiguratorStateContext,
-      action: ReduxActions.Action<string>,
+      action: Action<string>,
     ) => {
       const { payload } = action;
 
@@ -63,7 +64,7 @@ const LayerGroupReducer = handleActions<ILayerGroupConfiguratorStateContext, any
 
     [LayerGroupActionEnums.UpdateItem]: (
       state: ILayerGroupConfiguratorStateContext,
-      action: ReduxActions.Action<IUpdateItemSettingsPayload>,
+      action: Action<IUpdateItemSettingsPayload>,
     ) => {
       const { payload } = action;
 
@@ -86,7 +87,7 @@ const LayerGroupReducer = handleActions<ILayerGroupConfiguratorStateContext, any
 
     [LayerGroupActionEnums.UpdateChildItems]: (
       state: ILayerGroupConfiguratorStateContext,
-      action: ReduxActions.Action<IUpdateChildItemsPayload>,
+      action: Action<IUpdateChildItemsPayload>,
     ) => {
       const {
         payload: { index, childs: childIds },

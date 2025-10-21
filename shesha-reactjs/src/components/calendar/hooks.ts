@@ -11,10 +11,10 @@ import { ICalendarLayersProps } from '@/providers/layersProvider/models';
 
 interface IGetData {
   fetchData: () => void;
-  fetchDefaultCalendarView: () => Promise<ISettingResponse>;
+  fetchDefaultCalendarView: () => Promise<ISettingResponse | null>;
   layerData: { [key in string]: any }[];
   layerEvents: ICalendarLayersProps[];
-  updateDefaultCalendarView: (value: string) => Promise<any>;
+  updateDefaultCalendarView: (value: string) => Promise<ISettingResponse | null>;
 }
 
 interface ISettingResponse {
@@ -55,26 +55,43 @@ export const useCalendarLayers = (layers: ICalendarLayersProps[]): IGetData => {
     layers?.map(obj => ({
       ...obj,
       metadata: getMetadataAccessor(obj.entityType)
-    })), [layers]
+    })), [layers, dispatcher]
   );
 
   const fetchData = useCallback(() => {
-    Promise.all(
-      layerWithMetadata?.map(
-        (item) =>
-          new Promise(async (resolve, reject) => {
-            const filter = await evaluateFilters(item, formData, globalState, item.metadata);
+    Promise.allSettled(
+      layerWithMetadata?.map(async (item) => {
+        try {
+          const filter = await evaluateFilters(item, formData, globalState, item.metadata);
+          const evalCustomUrl = evaluateString(item.customUrl, { data: formData, globalState });
 
-            const evalCustomUrl = evaluateString(item.customUrl, { data: formData, globalState });
+          const response = await refetch(
+            getCalendarRefetchParams({ ...item, customUrl: evalCustomUrl, overfetch: item.overfetch }, filter)
+          );
 
-            refetch(getCalendarRefetchParams({ ...item, customUrl: evalCustomUrl, overfetch: item.overfetch }, filter))
-              .then(resolve)
-              .catch(reject);
-          }),
-      ),
+          return response;
+        } catch (error) {
+          console.error(`Failed to fetch data for layer "${item.label || item.id}":`, error);
+          // Return null or empty result so this layer is skipped without breaking others
+          return null;
+        }
+      }),
     )
-      .then((resp) => setState((s) => ({ ...s, layerData: getResponseListToState(resp) })))
-      .catch(() => setState((s) => ({ ...s, layerData: [] })));
+      .then((results) => {
+        // Filter out rejected promises and null results from failed layers
+        const successfulData = results
+          .filter((result): result is PromiseFulfilledResult<any> =>
+            result.status === 'fulfilled' && result.value != null
+          )
+          .map((result) => result.value);
+
+        setState((s) => ({ ...s, layerData: getResponseListToState(successfulData) }));
+      })
+      .catch((error) => {
+        // This should rarely happen with allSettled, but handle it just in case
+        console.error('Unexpected error in fetchData:', error);
+        setState((s) => ({ ...s, layerData: [] }));
+      });
   }, [layerWithMetadata, formData, globalState, refetch, refreshTrigger]);
 
 
@@ -120,11 +137,11 @@ export const useCalendarLayers = (layers: ICalendarLayersProps[]): IGetData => {
         return response;
       } else {
         console.warn('Unexpected response format or result missing');
-        return null;  // Return an empty string as a fallback
+        return null;  // Return null as a fallback
       }
     } catch (error) {
       console.error('Error fetching default calendar view:', error);
-      return null;  // Return an empty string in case of error
+      return null;  // Return null in case of error
     }
   }, [mutate]);
 

@@ -4,9 +4,10 @@ import { ICalendarLayersProps } from "@/providers/layersProvider/models";
 import { UseEvaluatedFilterArgs } from "@/providers/dataTable/filters/evaluateFilter";
 import { IStoredFilter } from "@/providers/dataTable/interfaces";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
+import { executeScriptSync } from "@/providers/form/utils";
 
 export const parseIntOrDefault = (input: any, defaultValue: number = 0): number => {
-  const parsed = parseFloat(input);
+  const parsed = parseInt(String(input), 10);
   return isNaN(parsed) ? defaultValue : parsed;
 };
 
@@ -19,19 +20,28 @@ export const getLayerEventItems = (
   if (Array.isArray(layerDataItem)) {
     events = layerDataItem
       .filter((i) => i?.[startTime] && i?.[endTime])
-      .map((j) => ({
-        ...j,
-        id: j?.id,
-        start: new Date(j?.[startTime]),
-        end: new Date(j?.[endTime]),
-        icon,
-        showIcon,
-        color,
-        iconColor: iconColor || '#000000',
-        title,
-        onDblClick,
-        onSelect,
-      }));
+      .map((j) => {
+        const startDate = new Date(j?.[startTime]);
+        const endDate = new Date(j?.[endTime]);
+        // Skip events with invalid dates
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+          return null;
+        }
+        return {
+          ...j,
+          id: j?.id,
+          start: startDate,
+          end: endDate,
+          icon,
+          showIcon,
+          color,
+          iconColor: iconColor || '#000000',
+          title,
+          onDblClick,
+          onSelect,
+        };
+      })
+      .filter(event => event !== null);
   } else {
     events = [
       {
@@ -176,7 +186,17 @@ export const getIcon = (
   defaultIcon: string = 'UserOutlined',
 ): any => {
   if (!icon) return defaultIcon;
-  return new Function('data', 'globalState', 'item', icon)(formData, globalState, item);
+
+  try {
+    // Use executeScriptSync for safer script evaluation with scoped context
+    // The icon string is expected to be JavaScript code that returns an icon name
+    const context = { data: formData, globalState, item };
+    const result = executeScriptSync<string>(icon, context);
+    return result || defaultIcon;
+  } catch (error) {
+    console.error('Error evaluating icon expression:', error);
+    return defaultIcon;
+  }
 };
 
 export const isDateDisabled = (date: Date, minDate?: string, maxDate?: string): boolean => {

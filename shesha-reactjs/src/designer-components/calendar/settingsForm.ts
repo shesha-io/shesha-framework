@@ -58,12 +58,11 @@ export const getSettings = (data: any) => {
                                 })
                                 .addSettingsInputRow({
                                     id: nanoid(),
-                                    parentId: dataTabId,
+                                    parentId: commonTabId,
                                     inputs: [
                                         {
                                             type: 'date',
                                             id: nanoid(),
-                                            parentId: dataTabId,
                                             propertyName: 'minDate',
                                             label: 'Min Date',
                                             tooltip: 'Min Date',
@@ -71,7 +70,6 @@ export const getSettings = (data: any) => {
                                         {
                                             type: 'date',
                                             id: nanoid(),
-                                            parentId: dataTabId,
                                             propertyName: 'maxDate',
                                             label: 'Max Date',
                                             tooltip: 'Max Date',
