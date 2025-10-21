@@ -184,7 +184,7 @@ export const useFormComponentStyles = <TModel>(
   const jsStyle = useActualContextExecution(model?.style, null, {}); // use default style if empty or error
   const { designerWidth } = useCanvas();
 
-  const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
+  const { dimensions, border, font, shadow, background, stylingBox, overflow } = model || {};
 
   const [backgroundStyles, setBackgroundStyles] = useState(
     background?.storedFile?.id && background?.type === 'storedFile'
