@@ -247,19 +247,27 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const deleteFile = (fileIdToDelete: string): void => {
     dispatch(deleteFileRequestAction(fileIdToDelete));
 
-    const fileId = state.fileList.find((x) => x.id === fileIdToDelete || x.id === fileIdToDelete)?.id;
+    const list = state.fileList ?? [];
+    const found = list.find((x) => x.id === fileIdToDelete || x.uid === fileIdToDelete);
+    const resolvedId = found?.id;
 
-    deleteFileHttp({ id: fileId })
+    if (!resolvedId) {
+      // nothing to delete; dispatch error and exit
+      dispatch(deleteFileErrorAction(fileIdToDelete));
+      return;
+    }
+
+    deleteFileHttp({ id: resolvedId })
       .then(() => {
-        deleteFileSuccess(fileId);
-        const updateList = removeFile(state.fileList ?? [], fileId);
+        deleteFileSuccess(resolvedId);
+        const updateList = removeFile(list, resolvedId);
         onChange?.(updateList);
-        if (typeof addDelayedUpdate === 'function') {
-          removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileId);
-        };
+        if (typeof removeDelayedUpdate === 'function') {
+          removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, resolvedId);
+        }
       })
       .catch(() => {
-        deleteFileError(fileId);
+        deleteFileError(resolvedId);
       });
   };
 
@@ -321,7 +329,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
     typeDefinitionLoader: () => {
       return Promise.resolve({
-        typeName: 'IFileListContexApi',
+        typeName: 'IFileListContextApi',
         files: [{ content: fileListContextCode, fileName: 'apis/fileListContextApi.ts' }],
       });
     },
