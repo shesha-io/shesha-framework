@@ -53,7 +53,7 @@ const LayerGroupConfiguratorProvider: FC<PropsWithChildren<ILayerGroupConfigurat
     if (!state.readOnly) dispatch(updateItemAction(payload));
   };
 
-  const getItem = (uid: string): LayerGroupItemProps => {
+  const getItem = (uid: string): LayerGroupItemProps | null => {
     return getItemById(state.items, uid);
   };
 

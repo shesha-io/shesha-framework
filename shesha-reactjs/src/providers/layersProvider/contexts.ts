@@ -24,7 +24,7 @@ export interface ILayerGroupConfiguratorActionsContext {
   deleteLayer: (uid: string) => void;
   selectItem: (uid: string) => void;
   updateItem: (payload: IUpdateItemSettingsPayload) => void;
-  getItem: (uid: string) => LayerGroupItemProps;
+  getItem: (uid: string) => LayerGroupItemProps | null;
   updateChildItems: (payload: IUpdateChildItemsPayload) => void;
   setRefreshTrigger?: (payload: number | ((prev: number) => number)) => void;
 }

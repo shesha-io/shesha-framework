@@ -2,7 +2,6 @@
 import React, { FC, useMemo } from 'react';
 import { useFormState, useGlobalState } from '@/providers';
 import ShaIcon from '../shaIcon';
-import { evaluateString } from '@/formDesignerUtils';
 import { getIcon } from './utils';
 
 // Custom Event Component with Icon
@@ -10,9 +9,9 @@ export const EventComponent: FC<any> = ({ event }) => {
   const { formData } = useFormState();
   const { globalState } = useGlobalState();
 
-  const icon = useMemo(() => 
+  const icon = useMemo(() =>
     getIcon(event.icon, formData, globalState, event, 'CalendarOutlined'),
-    [event.icon, formData, globalState, event]
+    [event.icon, formData, globalState]
   );
 
   return (
@@ -35,7 +34,7 @@ export const EventComponent: FC<any> = ({ event }) => {
         </span>
       )}
       <span style={{ fontSize: '14px', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        {evaluateString(event.title, event)}
+        {event.title}
       </span>
     </div>
   );

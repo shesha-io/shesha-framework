@@ -55,11 +55,14 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const primaryColor = theme.application.primaryColor;
   const defaultVisibleLayers = getLayerOptions(items)?.map((item) => item.value);
 
-  const dummyEvent = {
-    start: new Date(internalStartDate),
-    end: new Date(internalEndDate),
-    color: primaryColor,
-  };
+  const dummyEvent =
+    internalStartDate && internalEndDate
+      ? (() => {
+          const s = new Date(internalStartDate);
+          const e = new Date(internalEndDate);
+          return isNaN(s.getTime()) || isNaN(e.getTime()) ? null : { start: s, end: e, color: primaryColor };
+        })()
+      : null;
 
   const updatedEvents = useMemo(() =>
     events.map((event: any) => ({
@@ -269,7 +272,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
           localizer={localizer}
           defaultDate={new Date()}
           view={displayPeriod?.includes(defaultView) ? defaultView : displayPeriod?.[0]}
-          events={updatedEvents.concat(dummyEvent)}
+          events={dummyEvent ? updatedEvents.concat(dummyEvent) : updatedEvents}
           style={styles}
           onSelectEvent={handleCustomSelect}
           onDoubleClickEvent={handleCustomDoubleClick}

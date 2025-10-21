@@ -4,6 +4,7 @@ import { ICalendarLayersProps } from "@/providers/layersProvider/models";
 import { UseEvaluatedFilterArgs } from "@/providers/dataTable/filters/evaluateFilter";
 import { IStoredFilter } from "@/providers/dataTable/interfaces";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
+import { evaluateString } from "@/formDesignerUtils";
 
 export const parseIntOrDefault = (input: any, defaultValue: number = 0): number => {
   const parsed = parseFloat(input);
@@ -176,7 +177,15 @@ export const getIcon = (
   defaultIcon: string = 'UserOutlined',
 ): any => {
   if (!icon) return defaultIcon;
-  return new Function('data', 'globalState', 'item', icon)(formData, globalState, item);
+
+  // Use evaluateString for safe template evaluation instead of dynamic code execution
+  // Supports Mustache-style templates like "{{data.iconName}}" or literal icon names
+  const context = { data: formData, globalState, item };
+  const evaluated = icon.includes('{{') || icon.includes('${')
+    ? evaluateString(icon, context, true)
+    : icon;
+
+  return evaluated || defaultIcon;
 };
 
 export const isDateDisabled = (date: Date, minDate?: string, maxDate?: string): boolean => {
