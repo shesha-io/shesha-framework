@@ -463,7 +463,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   id: nanoid(),
                   propertyName: 'onRowDeleteSuccessAction',
                   label: 'On List Item Delete Success',
-                  description: 'Custom business logic to be executed after successfull deletion of a list item.',
+                  description: 'Custom business logic to be executed after successful deletion of a list item.',
                   hideLabel: true,
                 })
                 .addConfigurableActionConfigurator({
@@ -498,9 +498,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     propertyName: 'onSelectionChange',
                     label: 'On Selection Change',
                     description: 'Action to execute when the selection changes (triggers on both select and unselect)',
-                  }
-                ]
-              } as any
+                  },
+                ],
+              } as any,
             ],
           },
           {
