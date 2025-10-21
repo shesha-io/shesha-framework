@@ -210,7 +210,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   return (
     <div style={{ marginRight: 1 }}>
       <DatePicker
-      className={styles.dateField}
+        className={styles.dateField}
         disabledDate={(e) => disabledDate(props, e, formData, globalState)}
         disabledTime={disabledTime(props, formData, globalState)}
         onChange={handleDatePickerChange}
@@ -219,13 +219,13 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         showNow={showNow}
         picker={picker}
         format={pickerFormat}
-          onCalendarChange={(dates) => {
+        onCalendarChange={(dates) => {
           if (dates && showTime && !defaultToMidnight) handleCalendarDatePickerChange(dates);
         }}
-          value={momentValue}
+        value={momentValue}
         allowClear
         style={finalStyles}
-    />
+      />
     </div>
   );
 };

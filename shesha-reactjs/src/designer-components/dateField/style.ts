@@ -2,7 +2,6 @@ import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
 export const useStyles = createStyles(({ css, cx }, { fullStyles }: { fullStyles: CSSProperties }) => {
-
   const dateField = cx(
     "sha-dropdown",
     css`

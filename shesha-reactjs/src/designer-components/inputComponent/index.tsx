@@ -397,9 +397,8 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         />
       );
 
-      case 'date':
-        return <DatePickerWrapper {...props} id={id} />;
-        
+    case 'date':
+      return <DatePickerWrapper {...props} id={id} />;
     default:
       return (
         <Input
