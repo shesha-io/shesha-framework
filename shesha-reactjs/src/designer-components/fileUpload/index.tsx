@@ -18,8 +18,10 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { defaultStyles } from './utils';
+import { containerDefaultStyles, defaultStyles } from './utils';
 import { listType } from '../attachmentsEditor/attachmentsEditor';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { migratePrevStyles } from '../_common-migrations';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IStyleType {
   ownerId: string;
@@ -31,8 +33,7 @@ export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IForm
   allowedFileTypes?: string[];
   isDragger?: boolean;
   listType?: listType;
-  thumbnailWidth?: string;
-  thumbnailHeight?: string;
+  thumbnail?: IStyleType;
   borderRadius?: number;
   hideFileName?: boolean;
 }
@@ -47,10 +48,14 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
 
+    const { dimensionsStyles } = useFormComponentStyles(model?.thumbnail);
+
     const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) || model.listType === 'text' ? {
       ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle;
+      ...dimensionsStyles,
+    } : { ...model.allStyles.fullStyle,
+      ...dimensionsStyles };
+
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();
@@ -85,7 +90,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
                 allowReplace={enabled && model.allowReplace}
                 allowedFileTypes={model?.allowedFileTypes}
                 isDragger={model?.isDragger}
-                styles={finalStyle}
+                style={finalStyle}
               />
             </StoredFileProvider>
           );
@@ -131,13 +136,37 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       .add<IFileUploadProps>(3, (prev) => migrateVisibility(prev))
       .add<IFileUploadProps>(4, (prev) => migrateReadOnly(prev))
       .add<IFileUploadProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IFileUploadProps>(6, (prev) => ({
-        ...prev,
-        ...defaultStyles(),
-        desktop: { ...defaultStyles() },
-        mobile: { ...defaultStyles() },
-        tablet: { ...defaultStyles() },
-      })),
+      .add<IFileUploadProps>(6, (prev) => {
+        return {
+          ...prev,
+          ...defaultStyles(),
+          desktop: { ...defaultStyles() },
+          mobile: { ...defaultStyles() },
+          tablet: { ...defaultStyles() },
+        };
+      })
+      .add<IFileUploadProps>(7, (prev) => {
+        const migrateStyleLevel = (prevStyles: any): any => {
+          if (!prevStyles) return prevStyles;
+
+          const thumbnailStyles = migratePrevStyles(prevStyles.thumbnail, containerDefaultStyles());
+          const rootStyles = { ...prevStyles };
+          delete rootStyles.container;
+
+          return {
+            ...thumbnailStyles,
+            font: prevStyles.font,
+            thumbnail: rootStyles,
+          };
+        };
+
+        return {
+          ...prev,
+          desktop: migrateStyleLevel(prev.desktop),
+          mobile: migrateStyleLevel(prev.mobile),
+          tablet: migrateStyleLevel(prev.tablet),
+        };
+      }),
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
 };

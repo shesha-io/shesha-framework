@@ -17,9 +17,11 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { boxDefaultStyles, defaultStyles } from './utils';
 import { useStyles } from './styles';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { migratePrevStyles } from '../_common-migrations';
-import { defaultStyles } from './utils';
+
 
 interface ICheckboxComponentCalulatedValues {
   eventHandlers?: IEventHandlers<any>;
@@ -41,12 +43,13 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
   Factory: ({ model, calculatedModel }) => {
+    const boxDimensions = useFormComponentStyles(model.checkbox).dimensionsStyles;
     const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
       ...model.allStyles.fontStyles,
       ...model.allStyles.dimensionsStyles,
     } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
-    const { styles } = useStyles({ style: finalStyle });
+    const { styles } = useStyles({ style: { ...finalStyle, ...boxDimensions } });
 
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
@@ -65,8 +68,8 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: () => getSettings(),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
   migrator: (m) =>
     m
       .add<ICheckboxComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -80,7 +83,13 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles()))),
+      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles())))
+      .add<ICheckboxComponentProps>(6, (prev) => (
+        { ...prev,
+          desktop: { ...prev.desktop, dimensions: {}, checkbox: boxDefaultStyles(prev.desktop || prev) },
+          mobile: { ...prev.mobile, dimensions: {}, checkbox: boxDefaultStyles(prev.mobile || prev) },
+          tablet: { ...prev.tablet, dimensions: {}, checkbox: boxDefaultStyles(prev.tablet || prev) },
+        })),
 };
 
 export default CheckboxComponent;

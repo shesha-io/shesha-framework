@@ -14,6 +14,7 @@ import {
   useAvailableConstantsContextsNoRefresh,
   useCanvas,
   useDeepCompareMemo,
+  useShaFormInstance,
   useSheshaApplication,
   wrapConstantsData,
 } from "..";
@@ -179,10 +180,11 @@ export const useFormComponentStyles = <TModel>(
   model: TModel & IStyleType & Omit<IConfigurableFormComponent, 'id' | 'type'>,
 ): IFormComponentStyles => {
   const app = useSheshaApplication();
-  const jsStyle = useActualContextExecution(model.style, null, {}); // use default style if empty or error
+  const shaForm = useShaFormInstance();
+  const jsStyle = useActualContextExecution(model?.style, null, {}); // use default style if empty or error
   const { designerWidth } = useCanvas();
 
-  const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
+  const { dimensions, border, font, shadow, background, stylingBox, overflow } = model || {};
 
   const [backgroundStyles, setBackgroundStyles] = useState(
     background?.storedFile?.id && background?.type === 'storedFile'
@@ -197,12 +199,12 @@ export const useFormComponentStyles = <TModel>(
 
   const styligBox = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
 
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, styligBox, designerWidth), [dimensions, stylingBox, designerWidth]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
   const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(styligBox), [stylingBox]);
   const overflowStyles = useMemo(() => getOverflowStyle(overflow, false), [overflow]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, shaForm.formMode === "designer" && designerWidth), [dimensions, stylingBox, designerWidth]);
 
   useDeepCompareEffect(() => {
     if (background?.storedFile?.id && background?.type === 'storedFile') {

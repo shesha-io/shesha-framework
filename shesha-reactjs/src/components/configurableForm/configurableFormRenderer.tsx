@@ -72,6 +72,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     labelCol: props.labelCol ?? formSettings.labelCol,
     wrapperCol: props.wrapperCol ?? formSettings.wrapperCol,
     colon: formSettings.colon,
+    formItemMargin: props.formItemMargin ?? formSettings?.formItemMargin,
   };
 
   if (formSettings?.access === 4 && !anyOfPermissionsGranted(formSettings?.permissions || [])) {

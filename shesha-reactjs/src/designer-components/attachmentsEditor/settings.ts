@@ -331,6 +331,35 @@ export const getSettings = (): FormMarkupWithSettings => {
                       tooltip: 'Removes all visual styling except typography when the component becomes read-only',
                       jsSetting: true,
                     })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      parentId: containerStylePnlId,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          propertyName: 'filesLayout',
+                          label: 'Layout',
+                          type: 'dropdown',
+                          dropdownOptions: [
+                            { label: 'Vertical', value: 'vertical' },
+                            { label: 'Horizontal', value: 'horizontal' },
+                            { label: 'Grid', value: 'grid' },
+                          ],
+                          defaultValue: 'horizontal',
+                          jsSetting: true,
+                          hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
+                        },
+                        {
+                          id: nanoid(),
+                          propertyName: 'gap',
+                          label: 'Gap',
+                          type: 'numberField',
+                          description: 'The gap between the thumbnails.',
+                          jsSetting: true,
+                          hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                        },
+                      ],
+                    })
                     .addCollapsiblePanel({
                       id: nanoid(),
                       propertyName: 'pnlFontStyle',
@@ -404,7 +433,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       labelAlign: 'right',
                       ghost: true,
                       collapsible: 'header',
-                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                      // hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: styleDimensionsPnlId,
                         components: [...new DesignerToolbarSettings()
@@ -412,6 +441,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                             id: nanoid(),
                             parentId: styleDimensionsPnlId,
                             inline: true,
+                            hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "vertical";', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
                                 type: 'textField',
@@ -446,6 +476,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                             id: nanoid(),
                             parentId: styleRouterId,
                             inline: true,
+                            hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "horizontal";', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
                                 type: 'textField',
@@ -737,7 +768,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
-                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: customStylePnlId,
                         components: [...new DesignerToolbarSettings()
@@ -757,43 +787,15 @@ export const getSettings = (): FormMarkupWithSettings => {
                     .addCollapsiblePanel({
                       id: nanoid(),
                       propertyName: 'pnlContainerStyle',
-                      label: 'Container Styles',
+                      label: 'Thumbnail Styles',
                       labelAlign: 'right',
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail"', _mode: 'code', _value: false } as any,
                       content: {
                         id: containerStylePnlId,
                         components: [...new DesignerToolbarSettings()
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: containerStylePnlId,
-                            inputs: [
-                              {
-                                id: nanoid(),
-                                propertyName: 'filesLayout',
-                                label: 'Layout',
-                                type: 'dropdown',
-                                dropdownOptions: [
-                                  { label: 'Vertical', value: 'vertical' },
-                                  { label: 'Horizontal', value: 'horizontal' },
-                                  { label: 'Grid', value: 'grid' },
-                                ],
-                                defaultValue: 'horizontal',
-                                jsSetting: true,
-                                hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
-                              },
-                              {
-                                id: nanoid(),
-                                propertyName: 'gap',
-                                label: 'Gap',
-                                type: 'numberField',
-                                description: 'The gap between the thumbnails.',
-                                jsSetting: true,
-                                hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
-                              },
-                            ],
-                          })
                           .addCollapsiblePanel({
                             id: nanoid(),
                             propertyName: 'containerDimensionsPanel',
@@ -809,14 +811,13 @@ export const getSettings = (): FormMarkupWithSettings => {
                                   id: nanoid(),
                                   parentId: containerDimensionsStylePnlId,
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "vertical";', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
                                       type: 'textField',
                                       id: nanoid(),
                                       label: "Width",
                                       width: 85,
-                                      propertyName: "container.dimensions.width",
+                                      propertyName: "thumbnail.dimensions.width",
                                       icon: "widthIcon",
                                       tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
                                     },
@@ -826,7 +827,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                       label: "Min Width",
                                       width: 85,
                                       hideLabel: true,
-                                      propertyName: "container.dimensions.minWidth",
+                                      propertyName: "thumbnail.dimensions.minWidth",
                                       icon: "minWidthIcon",
                                     },
                                     {
@@ -835,7 +836,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                       label: "Max Width",
                                       width: 85,
                                       hideLabel: true,
-                                      propertyName: "container.dimensions.maxWidth",
+                                      propertyName: "thumbnail.dimensions.maxWidth",
                                       icon: "maxWidthIcon",
                                     },
                                   ],
@@ -844,14 +845,13 @@ export const getSettings = (): FormMarkupWithSettings => {
                                   id: nanoid(),
                                   parentId: styleRouterId,
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "horizontal";', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
                                       type: 'textField',
                                       id: nanoid(),
                                       label: "Height",
                                       width: 85,
-                                      propertyName: "container.dimensions.height",
+                                      propertyName: "thumbnail.dimensions.height",
                                       icon: "heightIcon",
                                       tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
                                     },
@@ -861,7 +861,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                       label: "Min Height",
                                       width: 85,
                                       hideLabel: true,
-                                      propertyName: "container.dimensions.minHeight",
+                                      propertyName: "thumbnail.dimensions.minHeight",
                                       icon: "minHeightIcon",
                                     },
                                     {
@@ -870,7 +870,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                       label: "Max Height",
                                       width: 85,
                                       hideLabel: true,
-                                      propertyName: "container.dimensions.maxHeight",
+                                      propertyName: "thumbnail.dimensions.maxHeight",
                                       icon: "maxHeightIcon",
                                     },
                                   ],
@@ -895,7 +895,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                     id: nanoid(),
                                     label: 'Margin Padding',
                                     hideLabel: true,
-                                    propertyName: 'container.stylingBox',
+                                    propertyName: 'thumbnail.stylingBox',
                                     parentId: 'containerStylingBoxPanel',
                                   })
                                   .toJson(),
@@ -916,7 +916,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 .addSettingsInput({
                                   id: nanoid(),
                                   inputType: 'codeEditor',
-                                  propertyName: 'container.style',
+                                  propertyName: 'thumbnail.style',
                                   hideLabel: false,
                                   label: 'Style',
                                   description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',

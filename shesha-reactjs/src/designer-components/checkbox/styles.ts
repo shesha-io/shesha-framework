@@ -22,6 +22,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
   };
 
   const checkbox = cx("sha-checkbox", css`
+      .${prefixCls}-checkbox-wrapper {
+        height: 100%;
+      }
       .${prefixCls}-checkbox {
         .${prefixCls}-checkbox-inner {
             --ant-control-interactive-size: ${style?.fontSize};
@@ -36,8 +39,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
             :after {
                 inset-inline-start: unset;
             }
-            .${prefixCls}-checkbox {
-
+            input {
+              widht: 100%;
+              height: 100%;
             }
         }
       }
@@ -46,10 +50,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
         .${prefixCls}-checkbox-inner {
             background: ${backgroundImage || backgroundColor};
             ${rest}
-           
-            .${prefixCls}-checkbox {
-
-                }
             }
         }
     `);

@@ -4,9 +4,9 @@ import { nanoid } from '@/utils/uuid';
 import { fontWeightsOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { FormMarkupWithSettings } from '@/index';
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings = (): FormMarkupWithSettings => {
   // Generate unique IDs for major components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -17,7 +17,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
   const styleRouterId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: new DesignerToolbarSettings()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -183,7 +183,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       parentId: styleRouterId,
                       ghost: true,
                       collapsible: 'header',
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                       content: {
                         id: nanoid(),
                         components: [...new DesignerToolbarSettings()
@@ -198,7 +197,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 id: nanoid(),
                                 label: 'Size',
                                 propertyName: 'font.size',
-                                hideLabel: true,
                                 width: 50,
                               },
                               {
@@ -271,38 +269,39 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 icon: "maxWidthIcon",
                               },
                             ],
+
                           })
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: nanoid(),
+                            parentId: styleRouterId,
                             inline: true,
                             inputs: [
                               {
                                 type: 'textField',
                                 id: nanoid(),
-                                label: "Height",
+                                label: 'Height',
                                 width: 85,
-                                propertyName: "dimensions.height",
-                                icon: "heightIcon",
-                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
+                                propertyName: 'dimensions.height',
+                                icon: 'heightIcon',
+                                tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                               },
                               {
                                 type: 'textField',
                                 id: nanoid(),
-                                label: "Min Height",
+                                label: 'Min Height',
                                 width: 85,
                                 hideLabel: true,
-                                propertyName: "dimensions.minHeight",
-                                icon: "minHeightIcon",
+                                propertyName: 'dimensions.minHeight',
+                                icon: 'minHeightIcon',
                               },
                               {
                                 type: 'textField',
                                 id: nanoid(),
-                                label: "Max Height",
+                                label: 'Max Height',
                                 width: 85,
                                 hideLabel: true,
-                                propertyName: "dimensions.maxHeight",
-                                icon: "maxHeightIcon",
+                                propertyName: 'dimensions.maxHeight',
+                                icon: 'maxHeightIcon',
                               },
                             ],
                           })
@@ -579,6 +578,106 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                           })
                           .toJson(),
+                        ],
+                      },
+                    })
+                    .addCollapsiblePanel({
+                      id: nanoid(),
+                      propertyName: 'pnlBoxStyle',
+                      label: 'Box Styles',
+                      labelAlign: 'right',
+                      parentId: styleRouterId,
+                      ghost: true,
+                      collapsible: 'header',
+                      content: {
+                        id: nanoid(),
+                        components: [
+                          ...new DesignerToolbarSettings()
+                            .addCollapsiblePanel({
+                              id: nanoid(),
+                              propertyName: 'pnlDimensions',
+                              label: 'Dimensions',
+                              parentId: 'styleRouter',
+                              labelAlign: 'right',
+                              ghost: true,
+                              collapsible: 'header',
+                              content: {
+                                id: nanoid(),
+                                components: [
+                                  ...new DesignerToolbarSettings()
+                                    .addSettingsInputRow({
+                                      id: nanoid(),
+                                      parentId: styleRouterId,
+                                      inline: true,
+                                      inputs: [
+                                        {
+                                          type: 'textField',
+                                          id: nanoid(),
+                                          label: 'Width',
+                                          width: 85,
+                                          propertyName: 'box.dimensions.width',
+                                          icon: 'widthIcon',
+                                          tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                        },
+                                        {
+                                          type: 'textField',
+                                          id: nanoid(),
+                                          label: 'Min Width',
+                                          width: 85,
+                                          hideLabel: true,
+                                          propertyName: 'box.dimensions.minWidth',
+                                          icon: 'minWidthIcon',
+                                        },
+                                        {
+                                          type: 'textField',
+                                          id: nanoid(),
+                                          label: 'Max Width',
+                                          width: 85,
+                                          hideLabel: true,
+                                          propertyName: 'box.dimensions.maxWidth',
+                                          icon: 'maxWidthIcon',
+                                        },
+                                      ],
+                                    })
+                                    .addSettingsInputRow({
+                                      id: nanoid(),
+                                      parentId: styleRouterId,
+                                      inline: true,
+                                      inputs: [
+                                        {
+                                          type: 'textField',
+                                          id: nanoid(),
+                                          label: 'Height',
+                                          width: 85,
+                                          propertyName: 'box.dimensions.height',
+                                          icon: 'heightIcon',
+                                          tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                        },
+                                        {
+                                          type: 'textField',
+                                          id: nanoid(),
+                                          label: 'Min Height',
+                                          width: 85,
+                                          hideLabel: true,
+                                          propertyName: 'box.dimensions.minHeight',
+                                          icon: 'minHeightIcon',
+                                        },
+                                        {
+                                          type: 'textField',
+                                          id: nanoid(),
+                                          label: 'Max Height',
+                                          width: 85,
+                                          hideLabel: true,
+                                          propertyName: 'box.dimensions.maxHeight',
+                                          icon: 'maxHeightIcon',
+                                        },
+                                      ],
+                                    })
+                                    .toJson(),
+                                ],
+                              },
+                            })
+                            .toJson(),
                         ],
                       },
                     })

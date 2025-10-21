@@ -28,13 +28,6 @@ export const defaultStyles = (): IStyleType => {
       storedFile: { id: null },
       uploadFile: null,
     },
-    font: {
-      color: '',
-      type: 'Segoe UI',
-      align: 'left',
-      size: 14,
-      weight: '400',
-    },
     shadow: {
       offsetX: 0,
       offsetY: 0,
@@ -43,4 +36,23 @@ export const defaultStyles = (): IStyleType => {
       spreadRadius: 0,
     },
   };
+};
+
+export const containerDefaultStyles = (): IStyleType => {
+  return {
+    font: {
+      color: '',
+      type: 'Segoe UI',
+      align: 'left',
+      size: 14,
+      weight: '400',
+    },
+    dimensions: {
+      width: 'auto',
+      height: 'auto',
+      minHeight: '0px',
+      maxHeight: 'auto',
+      minWidth: '0px',
+      maxWidth: 'auto',
+    } };
 };
