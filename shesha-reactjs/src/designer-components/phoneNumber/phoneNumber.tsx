@@ -7,11 +7,11 @@ import { useFormData } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import { IPhoneNumberInputComponentProps, IPhoneNumberValue } from './interface';
 import PhoneInput from 'antd-phone-input';
-import { nanoid } from 'nanoid';
-import { Input } from 'antd';
+import { nanoid } from '@/utils/uuid';
 import { parsePhoneNumberFromString, CountryCode, getExampleNumber } from 'libphonenumber-js';
 import examples from 'libphonenumber-js/mobile/examples';
 import settingsFormJson from './settingsForm.json';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 
 const settingsFormMarkup = settingsFormJson as FormMarkup;
 
@@ -347,7 +347,7 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
     const displayValue = typeof value === 'string' ? value : (value as IPhoneNumberValue)?.number;
 
     // Generate unique class name for this instance
-    const uniqueClass = useMemo(() => `phone-input-${nanoid(8)}`, []);
+    const uniqueClass = useMemo(() => `phone-input-${nanoid()}`, []);
 
     // Evaluate individual styles with form data
     const evaluatedWrapperStyle = getStyle(wrapperStyle, formData, allData?.globalState) || {};
@@ -422,11 +422,9 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
     }, [componentStyle, uniqueClass, evaluatedWrapperStyle, evaluatedInputGroupWrapperStyle, evaluatedInputWrapperStyle, evaluatedInputGroupStyle, evaluatedInputStyle]);
 
     return readOnly ? (
-        <Input
+        <ReadOnlyDisplayFormItem
             value={displayValue}
-            disabled
-            readOnly
-            style={componentStyle}
+            disabled={readOnly}
         />
     ) : (
         <>

@@ -120,7 +120,7 @@
     "lint-staged": "^15.2.5",
     "lodash": "^4.17.20",
     "moment": "^2.25.3",
-    "nanoid": "^3.3.7",
+    "nanoid": "^3.3.8",
     "nprogress": "^0.2.0",
     "prettier": "^3.0.3",
     "qs": "^6.10.1",

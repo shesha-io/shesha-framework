@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import { ColorPicker as AntdColorPicker } from 'antd';
 import { ColorValueType } from 'antd/es/color-picker/interface';
-import { Color } from 'antd/es/color-picker/color';
+import type { Color } from 'antd/es/color-picker';
 import type { ColorPickerProps } from 'antd';
 
 type Preset = Required<ColorPickerProps>['presets'][number];

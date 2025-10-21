@@ -11,7 +11,7 @@ export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
 
-  const toggleMode = (checked: boolean, event: React.MouseEvent<HTMLButtonElement>) => {
+  const toggleMode = (checked: boolean, event: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
     if (checked) {
