@@ -4,7 +4,7 @@ import { ICalendarLayersProps } from "@/providers/layersProvider/models";
 import { UseEvaluatedFilterArgs } from "@/providers/dataTable/filters/evaluateFilter";
 import { IStoredFilter } from "@/providers/dataTable/interfaces";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
-import { evaluateString } from "@/formDesignerUtils";
+import { executeScriptSync } from "@/providers/form/utils";
 
 export const parseIntOrDefault = (input: any, defaultValue: number = 0): number => {
   const parsed = parseInt(String(input), 10);
@@ -187,14 +187,16 @@ export const getIcon = (
 ): any => {
   if (!icon) return defaultIcon;
 
-  // Use evaluateString for safe template evaluation instead of dynamic code execution
-  // Supports Mustache-style templates like "{{data.iconName}}" or literal icon names
-  const context = { data: formData, globalState, item };
-  const evaluated = icon.includes('{{') || icon.includes('${')
-    ? evaluateString(icon, context, true)
-    : icon;
-
-  return evaluated || defaultIcon;
+  try {
+    // Use executeScriptSync for safer script evaluation with scoped context
+    // The icon string is expected to be JavaScript code that returns an icon name
+    const context = { data: formData, globalState, item };
+    const result = executeScriptSync<string>(icon, context);
+    return result || defaultIcon;
+  } catch (error) {
+    console.error('Error evaluating icon expression:', error);
+    return defaultIcon;
+  }
 };
 
 export const isDateDisabled = (date: Date, minDate?: string, maxDate?: string): boolean => {
