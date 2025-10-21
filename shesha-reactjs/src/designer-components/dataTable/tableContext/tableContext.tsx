@@ -17,7 +17,7 @@ import { useParent } from '@/providers/parentProvider';
 type ITableContextInnerProps = ITableContextComponentProps;
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
-  const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering, components } = props;
+  const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering, components, onBeforeRowReorder, onAfterRowReorder } = props;
   const { formMode } = useForm();
   const { data } = useFormData();
   const { styles, cx } = useStyles();
@@ -84,6 +84,8 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
           permanentFilter={permanentFilter}
           disableRefresh={disableRefresh}
           customReorderEndpoint={customReorderEndpoint}
+          onBeforeRowReorder={onBeforeRowReorder}
+          onAfterRowReorder={onAfterRowReorder}
         >
           {!isDesignerMode && !hasChildComponents && (
             <div className="data-context-label">

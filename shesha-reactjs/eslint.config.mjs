@@ -37,7 +37,8 @@ const strictFolders = isLightBuild
         "src/providers/appConfigurator",
         "src/providers/dataContextManager",
         "src/providers/dataContextProvider",
-        //"src/providers/sheshaApplication",        
+        //"src/providers/sheshaApplication",
+        //"src/providers/form/utils",
     ];
 
 const stylisticOverrides = {
@@ -88,8 +89,8 @@ const stylisticOverrides = {
     "@stylistic/space-infix-ops": "error",
     "@stylistic/multiline-ternary": "off",
     //"@stylistic/multiline-comment-style": "error",
-    // "@stylistic/object-curly-spacing": ["error", "always"],
-    // "@stylistic/jsx-curly-spacing": ["error", { "when": "always", "attributes": { "allowMultiline": false, "when": "never" }, "children": true }],
+    "@stylistic/object-curly-spacing": ["error", "always"],
+    "@stylistic/jsx-curly-spacing": ["error", { "when": "never", "attributes": { "allowMultiline": false, "when": "never" }, "children": true }],
 };
 
 const legacyTypescriptOverrides = {

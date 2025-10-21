@@ -26,7 +26,6 @@ export interface INotesProps extends IConfigurableFormComponent {
   savePlacement?: 'left' | 'right';
   autoSize?: boolean;
   allowDelete?: boolean;
-  onCreated?: string;
   category?: string;
   // new props
   showCharCount?: boolean;
@@ -55,10 +54,10 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
 
     const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState });
 
-    const onCreated = (createdNotes: Array<any>): void => {
-      if (!model.onCreated) return;
+    const handleCreateAction = (createdNotes: Array<any>): void => {
+      if (!model.onCreateAction) return;
 
-      executeScript<void>(model?.onCreated, {
+      executeScript<void>(model?.onCreateAction, {
         createdNotes,
         data,
         form: getFormApi(form),
@@ -79,20 +78,6 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
           priority: note.priority || null,
           parentId: note.parentId || null,
         },
-        data,
-        form: getFormApi(form),
-        globalState,
-        http: httpClient,
-        message,
-        moment,
-        setGlobalState,
-      });
-    };
-    const handleCreateAction = (note: INote): void => {
-      if (!model.onCreateAction) return;
-
-      executeScript<void>(model.onCreateAction, {
-        note,
         data,
         form: getFormApi(form),
         globalState,
@@ -124,12 +109,11 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
           buttonPostion={model?.savePlacement}
           autoSize={model?.autoSize}
           allowDelete={model.allowDelete}
-          onCreated={onCreated}
+          onCreateAction={handleCreateAction}
           showCharCount={model.showCharCount}
           minLength={model.minLength}
           maxLength={model.maxLength}
           onDeleteAction={handleDeleteAction}
-          onCreateAction={handleCreateAction}
           allowEdit={model.allowEdit}
           onUpdateAction={handleUpdateAction}
         />

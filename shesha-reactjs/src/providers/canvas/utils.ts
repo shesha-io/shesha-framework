@@ -1,4 +1,4 @@
-import { IDeviceTypes } from "./contexts";
+import { IDeviceTypes, IViewType } from "./contexts";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
 
@@ -54,6 +54,7 @@ export function widthRelativeToCanvas(width: string | number, canvasWidth: strin
   return trimmed;
 }
 
+export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.screen.availWidth : 1024)}px`;
 
 export interface IAutoZoomParams {
   currentZoom: number;
@@ -61,6 +62,7 @@ export interface IAutoZoomParams {
   sizes?: number[];
   isSidebarCollapsed?: boolean;
   configTreePanelSize?: number;
+  viewType?: IViewType;
 };
 
 export const DEFAULT_OPTIONS = {
@@ -69,13 +71,25 @@ export const DEFAULT_OPTIONS = {
   sizes: [25, 50, 25],
   configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
   gutter: 4,
-  designerWidth: '1024px',
+  designerWidth: defaultDesignerWidth,
 };
+
+const SIDEBAR_WIDTH = {
+  COLLAPSED: 60,
+  EXPANDED: 250,
+  MINIMAL: 32,
+} as const;
 
 const valueToPercent = (value: number): number => value / 100;
 
 export function calculateAutoZoom(params: IAutoZoomParams): number {
-  const { designerWidth = DEFAULT_OPTIONS.designerWidth, sizes = DEFAULT_OPTIONS.sizes, configTreePanelSize = DEFAULT_OPTIONS.configTreePanelWidth() } = params;
+  const {
+    designerWidth = DEFAULT_OPTIONS.designerWidth,
+    sizes = DEFAULT_OPTIONS.sizes,
+    configTreePanelSize = DEFAULT_OPTIONS.configTreePanelWidth(),
+    viewType = 'configStudio',
+    isSidebarCollapsed = false,
+  } = params;
   const availableWidthPercent = sizes[1];
 
   if (typeof window === 'undefined') {
@@ -83,8 +97,22 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   }
 
   const guttersAndScrollersSize = 14;
-  const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1024;
-  const viewportWidth = Math.max(0, windowWidth - configTreePanelSize - guttersAndScrollersSize);
+  const windowWidth = window.screen.availWidth;
+
+  // Determine the offset based on view type
+  let offset: number;
+  if (viewType === 'configStudio') {
+    // Use configTreePanelSize for config studio
+    offset = configTreePanelSize;
+  } else if (viewType === 'page') {
+    // Use sidebar width for regular pages
+    // When collapsed: 32px, when expanded: 250px
+    offset = isSidebarCollapsed ? SIDEBAR_WIDTH.COLLAPSED : SIDEBAR_WIDTH.EXPANDED;
+  } else {
+    offset = SIDEBAR_WIDTH.MINIMAL;
+  }
+
+  const viewportWidth = Math.max(0, windowWidth - offset - guttersAndScrollersSize);
   const availableWidth = valueToPercent(availableWidthPercent) * viewportWidth;
 
   let canvasWidth: number;
@@ -94,7 +122,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     const vwValue = parseFloat(designerWidth.replace('vw', ''));
     canvasWidth = (vwValue / 100) * windowWidth;
   } else {
-    canvasWidth = parseFloat(designerWidth) || 1024;
+    canvasWidth = parseFloat(designerWidth);
   }
 
   const optimalZoom = (availableWidth / canvasWidth) * 100;
@@ -215,5 +243,8 @@ export const screenSizeOptions = [
   },
   {
     label: 'Desktop 1920', value: '1920px', icon: DesktopOutlined,
+  },
+  {
+    label: 'Default', value: defaultDesignerWidth, icon: DesktopOutlined,
   },
 ];

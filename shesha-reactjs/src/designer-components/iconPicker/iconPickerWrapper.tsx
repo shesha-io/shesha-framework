@@ -84,9 +84,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
             defaultValue={iconValue as ShaIconTypes}
             onIconChange={onIconChange}
             selectBtnSize={selectBtnSize}
-            iconSize={
-              iconSize ?? fontSize
-            }
+            iconSize={iconSize ?? fontSize}
             readOnly={readOnly}
             style={{ ...style, background: 'transparent' }}
             color={props.color}

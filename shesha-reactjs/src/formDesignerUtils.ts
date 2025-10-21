@@ -8,7 +8,6 @@ export {
   getComponentsAndSettings,
   getFieldNameFromExpression,
   getValidationRules,
-  replaceTags,
   validateConfigurableComponentSettings,
 } from './providers/form/utils';
 

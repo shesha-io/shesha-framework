@@ -32,11 +32,11 @@ export const FormDesignerToolbar: FC = () => {
             <CanvasConfig />
           </div>
           <div className={styles.shaDesignerToolbarRight}>
-            <FormSettingsButton />
-            <PreviewButton />
+            <FormSettingsButton buttonText="" size="small" />
+            <PreviewButton size="small" />
             <DebugButton />
 
-            {!readOnly && (<UndoRedoButtons />)}
+            {!readOnly && (<UndoRedoButtons size="small" />)}
             <CustomActions />
           </div>
         </>

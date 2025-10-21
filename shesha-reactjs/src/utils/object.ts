@@ -29,7 +29,7 @@ export const isProxy = <TValue extends object = object>(value: TValue): boolean 
   );
 };
 
-export const unproxyValue = <TValue extends object = object>(value: unknown | TValue): TValue => {
+export const unproxyValue = <TValue>(value: TValue): TValue => {
   const result = value
     ? value instanceof TouchableProperty ||
     value instanceof TouchableArrayProperty ||

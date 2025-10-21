@@ -176,7 +176,6 @@
     "localforage": "^1.10.0",
     "monaco-editor": "^0.50.0",
     "mustache": "^4.2.0",
-    "nested-property": "^4.0.0",
     "next": "^14.2.4",
     "number-to-words": "^1.2.4",
     "object-hash": "^3.0.0",

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Tabs, Input, Empty, theme } from 'antd';
+import { Tabs, Input, Empty } from 'antd';
 import ParentProvider from '@/providers/parentProvider';
 import { ComponentsContainer } from '@/components';
 import { useStyles } from './style';
@@ -19,7 +19,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const [activeTabKey, setActiveTabKey] = useState('1');
   const searchRefs = useRef(new Map());
   const { styles } = useStyles();
-  const { token } = theme.useToken();
 
   const formState = useFormState(false);
   const formActions = useFormActions(false);
@@ -81,7 +80,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
   const newFilteredTabs = tabs
     .map((tab: any, index: number) => {
-      const filteredComponents = tab.children ?? filterDynamicComponents(tab.components, searchQuery, token.colorPrimary);
+      const filteredComponents = tab.children ?? filterDynamicComponents(tab.components, searchQuery);
 
       const visibleComponents = Array.isArray(filteredComponents)
         ? filteredComponents.filter((comp) => isComponentHidden(comp))
@@ -119,9 +118,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
                 placeholder="Search properties"
                 value={searchQuery}
                 onChange={handleSearchChange}
-                suffix={
-                  <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-                }
+                suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}
               />
               <ComponentsContainer
                 containerId={tab.id + tab.key}
@@ -175,9 +172,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
             value={searchQuery}
             onChange={handleSearchChange}
             autoFocus
-            suffix={
-              <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-            }
+            suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}
           />
         </div>
       )}

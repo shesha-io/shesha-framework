@@ -129,18 +129,16 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
               filters={entityPickerFilter}
               mode={model.mode}
               hideBorder={model.hideBorder}
-              addNewRecordsProps={
-                model.allowNewRecord
-                  ? {
-                    modalFormId: model.modalFormId,
-                    modalTitle: model.modalTitle,
-                    showModalFooter: model.showModalFooter,
-                    modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-                    buttons: model?.buttons,
-                    footerButtons: model?.footerButtons,
-                  }
-                  : undefined
-              }
+              addNewRecordsProps={model.allowNewRecord
+                ? {
+                  modalFormId: model.modalFormId,
+                  modalTitle: model.modalTitle,
+                  showModalFooter: model.showModalFooter,
+                  modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+                  buttons: model?.buttons,
+                  footerButtons: model?.footerButtons,
+                }
+                : undefined}
               name={model?.componentName}
               width={width}
               configurableColumns={model.items ?? []}
@@ -198,7 +196,13 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         : prev.footerButtons ?? prev.showModalFooter ? 'default' : 'none',
     }))
     .add<IEntityPickerComponentProps>(9, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IEntityPickerComponentProps>(10, (prev) => ({ ...prev, desktop: { ...defaultStyles(prev) }, mobile: { ...defaultStyles(prev) }, tablet: { ...defaultStyles(prev) } })),
+    .add<IEntityPickerComponentProps>(10, (prev) => ({ ...prev, desktop: { ...defaultStyles(prev) }, mobile: { ...defaultStyles(prev) }, tablet: { ...defaultStyles(prev) } }))
+    .add<IEntityPickerComponentProps>(11, (prev, context) => ({
+      ...prev,
+      // Default to Person for backward compatibility with legacy forms
+      // should explicitly set entityType for other entity types
+      entityType: context.isNew && !prev.entityType ? 'Shesha.Core.Person' : prev.entityType,
+    })),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 

@@ -8,6 +8,6 @@ export const OpenOnNewPageButton: FC = () => {
   const { formId } = useFormPersister();
   const formDesignerUrl = useFormDesignerUrl(formId);
   return (
-    <Button icon={<ArrowsAltOutlined />} onClick={() => window?.open(formDesignerUrl, '_blank')} type="default" shape="circle" title="Expand" />
+    <Button icon={<ArrowsAltOutlined />} onClick={() => window?.open(formDesignerUrl, '_blank')} type="default" title="Expand" size="small" />
   );
 };
