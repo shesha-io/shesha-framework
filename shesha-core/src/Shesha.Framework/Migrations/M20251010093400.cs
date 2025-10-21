@@ -37,12 +37,11 @@ BEGIN
             FROM
                 [frwk].[vw_reference_list_item_values] ref_item_values
 			INNER JOIN [frwk].[vw_configuration_items_inheritance] item_inheritance
-			ON ref_item_values.name = item_inheritance.name AND ref_item_values.module = item_inheritance.module_name
+			ON ref_item_values.name = item_inheritance.name AND ref_item_values.module = item_inheritance.module_name AND item_inheritance.item_type = 'reference-list'
             WHERE
                 ref_item_values.module = @ref_list_module_name
 			AND item_inheritance.module_name = @ref_list_module_name
 			AND item_inheritance.name = @ref_list_name
-			AND item_inheritance.item_type = 'reference-list'
             AND (ref_item_values.item_value & @ref_list_item_value) > 0
 
         SELECT @ret_val = substring(@concatenated_list, LEN(@separator) + 1, len(@concatenated_list))
