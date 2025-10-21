@@ -55,7 +55,7 @@ export const useCalendarLayers = (layers: ICalendarLayersProps[]): IGetData => {
     layers?.map(obj => ({
       ...obj,
       metadata: getMetadataAccessor(obj.entityType)
-    })), [layers]
+    })), [layers, dispatcher]
   );
 
   const fetchData = useCallback(() => {
