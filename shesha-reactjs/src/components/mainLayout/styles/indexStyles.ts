@@ -77,7 +77,7 @@ export const GlobalSheshaStyles = createGlobalStyle`
   .${(p) => p.theme.prefixCls}-form-item-label  {
     white-space: normal;
     font-weight: bold;
-    margin: auto;
+    margin: auto 0;
   }
 
   [data-sha-c-type="textArea"] {
