@@ -151,7 +151,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                 overflow={model.overflow}
                 width={width}
                 fontStyles={finalFontStyles as React.CSSProperties}
-                menuId={`horizontal-menu-${model.id}`}
+                menuId={model.id}
               />
             </div>
           );

@@ -229,6 +229,8 @@ export const LayoutMenu: FC<IProps> = ({
           onClose={onClose}
           colors={colors}
           fontStyles={fontStyles}
+          styleOnHover={styleOnHover}
+          styleOnSelected={styleOnSelected}
           styleOnSubMenu={styleOnSubMenu}
           menuId={menuId}
         />
@@ -240,6 +242,8 @@ export const LayoutMenu: FC<IProps> = ({
       {menuId ? (
         <ScopedMenuStyles
           colors={colors}
+          styleOnHover={convertJsonToCss(styleOnHover)}
+          styleOnSelected={convertJsonToCss(styleOnSelected)}
           styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
           fontStyles={fontStyles}
           menuId={menuId}
@@ -247,6 +251,8 @@ export const LayoutMenu: FC<IProps> = ({
       ) : (
         <GlobalMenuStyles
           colors={colors}
+          styleOnHover={convertJsonToCss(styleOnHover)}
+          styleOnSelected={convertJsonToCss(styleOnSelected)}
           styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
           fontStyles={fontStyles}
         />

@@ -540,6 +540,57 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         ],
                       },
                     })
+                    .addCollapsiblePanel({
+                      id: nanoid(),
+                      propertyName: 'pnlCustomStyle',
+                      label: 'Custom Styles',
+                      parentId: styleRouterId,
+                      labelAlign: 'right',
+                      ghost: true,
+                      collapsible: 'header',
+                      content: {
+                        id: nanoid(),
+                        components: [...new DesignerToolbarSettings()
+                          .addSettingsInput({
+                            id: nanoid(),
+                            inputType: 'codeEditor',
+                            propertyName: 'style',
+                            label: 'Style',
+                            mode: 'dialog',
+                            description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                          })
+                          .addSettingsInput({
+                            id: nanoid(),
+                            inputType: 'codeEditor',
+                            propertyName: 'styleOnHover',
+                            label: 'Style On Hover',
+                            mode: 'dialog',
+                            description: 'A script that returns the hover style of the element as an object. This should conform to CSSProperties',
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                          })
+                          .addSettingsInput({
+                            id: nanoid(),
+                            inputType: 'codeEditor',
+                            propertyName: 'styleOnSelected',
+                            label: 'Style On Selected',
+                            mode: 'dialog',
+                            description: 'A script that returns the selected style of the element as an object. This should conform to CSSProperties',
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                          })
+                          .addSettingsInput({
+                            id: nanoid(),
+                            inputType: 'codeEditor',
+                            propertyName: 'styleOnSubMenu',
+                            label: 'Style On Sub Menu',
+                            mode: 'dialog',
+                            description: 'A script that returns the sub menu style of the element as an object. This should conform to CSSProperties',
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                          })
+                          .toJson(),
+                        ],
+                      },
+                    })
                     .toJson(),
                 ],
               }).toJson(),
