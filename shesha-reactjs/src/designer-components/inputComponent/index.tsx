@@ -398,7 +398,27 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       );
 
     case 'date':
-      return <DatePickerWrapper {...props} id={id} />;
+      return (
+        <DatePickerWrapper
+          type="date"
+          id={id}
+          propertyName={propertyName}
+          value={value}
+          defaultValue={defaultValue}
+          onChange={onChange}
+          readOnly={readOnly}
+          hideBorder={false}
+          range={false}
+          showTime={false}
+          showNow={false}
+          picker="date"
+          defaultToMidnight={false}
+          resolveToUTC={false}
+          dateFormat={undefined}
+          timeFormat={undefined}
+          additionalStyles={undefined}
+        />
+      );
     default:
       return (
         <Input
