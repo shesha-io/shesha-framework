@@ -56,6 +56,20 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 parentId: commonTabId,
                                 inputs: [
                                     {
+                                        type: 'date',
+                                        id: nanoid(),
+                                        propertyName: 'defaultValue',
+                                        label: 'Default Value',
+                                        size: 'small',
+                                        jsSetting: true,
+                                    }
+                                ]
+                            })
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: commonTabId,
+                                inputs: [
+                                    {
                                         type: 'textField',
                                         id: nanoid(),
                                         propertyName: 'placeholder',
