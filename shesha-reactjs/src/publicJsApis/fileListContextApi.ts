@@ -27,22 +27,19 @@ export type IFlagProgressFlags =
   'uploadFile' |
   'deleteFile' |
   'downloadZip' |
-  'fetchFileList' |
-  'downloadZip'; /* NEW_IN_PROGRESS_FLAG_GOES_HERE */
+  'fetchFileList'; /* NEW_IN_PROGRESS_FLAG_GOES_HERE */
 export type IFlagSucceededFlags =
   | 'downloadFile' |
   'uploadFile' |
   'deleteFile' |
   'downloadZip' |
-  'fetchFileList' |
-  'downloadZip'; /* NEW_SUCCEEDED_FLAG_GOES_HERE */
+  'fetchFileList'; /* NEW_SUCCEEDED_FLAG_GOES_HERE */
 export type IFlagErrorFlags =
   | 'downloadFile' |
   'uploadFile' |
   'deleteFile' |
   'downloadZip' |
-  'fetchFileList' |
-  'downloadZip'; /* NEW_ERROR_FLAG_GOES_HERE */
+  'fetchFileList'; /* NEW_ERROR_FLAG_GOES_HERE */
 export type IFlagActionedFlags = '__DEFAULT__'; /* NEW_ACTIONED_FLAG_GOES_HERE */
 
 export type UploadFileStatus = 'error' | 'done' | 'uploading' | 'removed';
