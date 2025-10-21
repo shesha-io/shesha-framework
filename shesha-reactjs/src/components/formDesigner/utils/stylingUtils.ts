@@ -1,6 +1,5 @@
 import React, { CSSProperties } from 'react';
 import { ComponentTypeInfo } from './componentTypeUtils';
-import { ComponentDimensions } from './dimensionUtils';
 import { addPx, hasNumber } from '@/utils/style';
 
 export interface StyleConfig {
@@ -15,9 +14,9 @@ export interface StyleConfig {
 }
 
 export const createRootContainerStyle = (
-  dimensions: ComponentDimensions,
+  dimensions: CSSProperties,
   stylingBox: StyleConfig,
-  originalDimensions: ComponentDimensions,
+  originalDimensions: CSSProperties,
   isInput: boolean,
 ): CSSProperties => {
   const baseStyle = {

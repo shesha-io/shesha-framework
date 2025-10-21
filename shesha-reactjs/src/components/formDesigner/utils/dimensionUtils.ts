@@ -11,20 +11,10 @@ export interface DimensionConfig {
   flexBasis?: string;
 }
 
-export interface ComponentDimensions {
-  width: string;
-  height: string;
-  maxWidth?: string;
-  minWidth?: string;
-  maxHeight?: string;
-  minHeight?: string;
-  flexBasis?: string;
-}
-
 export const getComponentDimensions = (
   typeInfo: ComponentTypeInfo,
-  dimensionsStyles: ComponentDimensions,
-): ComponentDimensions => {
+  dimensionsStyles: CSSProperties,
+): CSSProperties => {
   const { isDataTableContext, isInput } = typeInfo;
 
   const width = isDataTableContext
@@ -37,7 +27,7 @@ export const getComponentDimensions = (
       ? 'auto'
       : dimensionsStyles?.height;
 
-  const getDimensionValue = (dimensionType: keyof DimensionConfig): string => {
+  const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number => {
     if (isDataTableContext) return '100%';
     return dimensionsStyles?.[dimensionType];
   };
@@ -57,7 +47,7 @@ export const getComponentDimensions = (
 
 export const getDeviceDimensions = (
   typeInfo: ComponentTypeInfo,
-  dimensionsStyles: ComponentDimensions,
+  dimensionsStyles: CSSProperties,
 ): CSSProperties => {
   const { isInput } = typeInfo;
   // const {marginBottom, marginTop, marginLeft, margingRight} = stylingBox;
@@ -69,7 +59,7 @@ export const getDeviceDimensions = (
 };
 
 export const getDeviceFlexBasis = (
-  dimensionsStyles: ComponentDimensions,
-): string => {
+  dimensionsStyles: CSSProperties,
+): string | number => {
   return dimensionsStyles?.width;
 };
