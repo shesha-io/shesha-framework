@@ -44,7 +44,12 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             {
                 foreach (var payloadFile in payloadFiles.Items)
                 {
-                    var file = await _storedFileRepository.GetAsync(Guid.Parse(payloadFile.Id.ToString()));
+                    var id = payloadFile.Id.ToString();
+
+                    if (string.IsNullOrEmpty(id))
+                        continue;
+
+                    var file = await _storedFileRepository.GetAsync(Guid.Parse(id));
                     if (file != null)
                     {
                         attachments.Add(new NotificationAttachmentDto()
