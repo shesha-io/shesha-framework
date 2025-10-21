@@ -832,6 +832,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           data: beforeArgs,
           formData,
           globalState,
+          setGlobalState,
           http: httpClient,
           moment,
         };
