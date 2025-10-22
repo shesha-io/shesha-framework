@@ -24,7 +24,7 @@ export const useHorizontalMenuDropdownStyles = ({
   styleOnSubMenu,
 }: UseHorizontalMenuDropdownStylesProps): void => {
   useLayoutEffect(() => {
-    if (!menuId) return;
+    if (!menuId) return undefined;
 
     const styleId = `horizontal-menu-dropdown-styles-${menuId}`;
 
