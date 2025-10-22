@@ -53,8 +53,8 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
 }) => {
   const { items, readOnly } = useLayerGroupConfigurator();
   useDeepCompareEffect(() => {
-    if (typeof onChange === 'function') onChange(items);
-  }, [items, onChange]);
+    onChange(items);
+  }, [items]);
 
   const updateFilters = () => {
     if (typeof onChange === 'function') onChange(items);
