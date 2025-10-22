@@ -1,5 +1,5 @@
 import { Form } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { RowDataInitializer } from '@/components/reactTable/interfaces';
 import useThunkReducer from '@/hooks/thunkReducer';
@@ -232,11 +232,9 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   };
 
   const debouncedUpdate = useDebouncedCallback(
-    () => {
-      performUpdate();
-    },
-    // delay in ms
-    300
+    performUpdate,
+    300, // delay in ms
+    { leading: false, trailing: true }
   );
 
   const performCreate = () => {
@@ -271,29 +269,21 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     return state.initialValues;
   };
 
-  const autoSaveEnqueued = useRef<boolean>(false);
-  const onValuesChange = () => {
+  const onValuesChange = useCallback(() => {
     if (!state.autoSave || state.mode !== 'update') return;
 
     if (!form.isFieldsTouched()) return;
 
-    autoSaveEnqueued.current = true;
-  };
+    debouncedUpdate();
+  }, [state.autoSave, state.mode, form, debouncedUpdate]);
 
-  const handleFocusIn = () => {
-    if (autoSaveEnqueued.current === true) {
-      autoSaveEnqueued.current = false;
-      // auto save
-      debouncedUpdate();
-    }
-  };
-
+  // Cancel pending auto-save when mode changes or component unmounts
   useEffect(() => {
-    document.addEventListener('focusin', handleFocusIn);
     return () => {
-      document.removeEventListener('focusin', handleFocusIn);
+      // cancel any pending debounced update on cleanup
+      debouncedUpdate.cancel();
     };
-  }, []);
+  }, [state.mode, debouncedUpdate]);
 
   const contextValue: ICrudContext = {
     ...state,
