@@ -46,17 +46,6 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   const originalHiddenValues = useRef<Map<string, boolean>>(new Map());
   const actualItems = useActualContextData(items);
 
-  const storeOriginalHiddenValues = (items: ISidebarMenuItem[]) => {
-    items.forEach((item) => {
-      if (!originalHiddenValues.current.has(item.id)) {
-        originalHiddenValues.current.set(item.id, item.hidden || false);
-      }
-      if (isSidebarGroup(item) && item.childItems) {
-        storeOriginalHiddenValues(item.childItems);
-      }
-    });
-  };
-
   const updateOriginalHiddenValues = (items: ISidebarMenuItem[]) => {
     items.forEach((item) => {
       originalHiddenValues.current.set(item.id, item.hidden || false);
