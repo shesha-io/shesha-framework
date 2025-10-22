@@ -234,7 +234,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   const debouncedUpdate = useDebouncedCallback(
     performUpdate,
     300, // delay in ms
-    { leading: false, trailing: true }
+    { leading: false, trailing: true },
   );
 
   const performCreate = (): Promise<void> => {
