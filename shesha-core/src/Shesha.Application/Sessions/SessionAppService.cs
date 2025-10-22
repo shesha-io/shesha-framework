@@ -74,15 +74,15 @@ namespace Shesha.Sessions
                 if (currentUser == null)
                     return grantedPermissions;
 
-                var roles = await _roleAppointmentRepository.GetAll().Where(a => a.Person == currentUser).ToListAsync();
+                var roles = await _roleAppointmentRepository.GetAll().Where(a => a.Person == currentUser && a.Role != null).ToListAsync().ConfigureAwait(false);
                 var allPermissionNames = PermissionManager.GetAllPermissions(false).Select(p => p.Name).ToList();
 
                 // Check if user is System Administrator
-                var isSystemAdministrator = roles.Any(r => r.Role.Name == StaticRoleNames.SystemAdministrator);
+                var isSystemAdministrator = roles.Any(r => r.Role!.Name == StaticRoleNames.SystemAdministrator);
 
                 // Group permissions by name and collect all associated PermissionedEntities
                 var permissionGroups = roles
-                    .SelectMany(role => role.Role.Permissions
+                    .SelectMany(role => role.Role!.Permissions
                         .Where(p => p.IsGranted)
                         .Select(p => new { p.Permission, Role = role }))
                     .GroupBy(x => x.Permission)

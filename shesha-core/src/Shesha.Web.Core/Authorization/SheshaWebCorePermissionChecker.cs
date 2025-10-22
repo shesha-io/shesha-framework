@@ -57,7 +57,7 @@ namespace Boxfusion.Authorization
         /// </summary>
         /// <param name="person"></param>
         /// <returns></returns>
-        public Task<bool> IsDataAdministratorAsync(Person person)
+        public async Task<bool> IsDataAdministratorAsync(Person person)
         {
             return await IsInAnyOfRolesAsync(person, StaticRoleNames.SystemAdministrator);
         }
