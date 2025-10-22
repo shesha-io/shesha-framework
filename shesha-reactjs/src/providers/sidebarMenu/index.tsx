@@ -45,30 +45,26 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   const actualItems = useActualContextData(items);
 
   const requestItemVisible = (item: ISidebarMenuItem, itemsToCheck: ISidebarMenuItem[]): ISidebarMenuItem => {
-    if (item.hidden)
-      return item;
-
     const availableByPermissions = item.requiredPermissions?.length > 0
       ? anyOfPermissionsGranted(item?.requiredPermissions)
       : true;
 
     if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0)
-      return { ...item, hidden: !availableByPermissions, childItems: item.childItems.map((childItem) => requestItemVisible(childItem, itemsToCheck)) } as ISidebarMenuItem;
+      return { ...item, hidden: item.hidden || !availableByPermissions, childItems: item.childItems.map((childItem) => requestItemVisible(childItem, itemsToCheck)) } as ISidebarMenuItem;
 
     if (
-      availableByPermissions &&
-      isNavigationActionConfiguration(item.actionConfiguration)
-      && item.actionConfiguration?.actionArguments?.navigationType === 'form'
-      && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
-      && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
+      isNavigationActionConfiguration(item.actionConfiguration) &&
+      item.actionConfiguration?.actionArguments?.navigationType === 'form' &&
+      (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name &&
+      (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
     ) {
-      // form navigation, check form permissions
-      const newItem = { ...item, hidden: true };
+      // form navigation, check form permissions - but preserve explicit hidden state
+      const newItem = { ...item, explicitlyHidden: item.hidden };
       itemsToCheck.push(newItem);
       return newItem;
     }
 
-    return { ...item, hidden: !availableByPermissions };
+    return { ...item, hidden: item.hidden || !availableByPermissions };
   };
 
   const updatetItemVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
@@ -84,7 +80,9 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
         x.module === item.actionConfiguration?.actionArguments?.formId?.module
         && x.name === item.actionConfiguration?.actionArguments?.formId?.name
       );
-      item.hidden = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
+      const hiddenByPermissions = form && form.permissions ? !anyOfPermissionsGranted(form.permissions) : false;
+      const explicitlyHidden = (item as any).explicitlyHidden || false;
+      item.hidden = explicitlyHidden || hiddenByPermissions;
     }
   };
 
