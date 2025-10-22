@@ -2,6 +2,11 @@ namespace Shesha.Authorization.Roles
 {
     public static class StaticRoleNames
     {
+        /// <summary>
+        /// System Administrator role name
+        /// </summary>
+        public const string SystemAdministrator = "System Administrator";
+
         public static class Host
         {
             public const string Admin = "Application Administrator";
