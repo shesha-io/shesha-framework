@@ -231,12 +231,19 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
             <div
               className={calendarStyles.calendarLegendColor}
               style={{
+                width: '12px',
+                height: '12px',
                 backgroundColor: (layer.color) || primaryColor,
+                borderRadius: '2px',
+                display: 'inline-block',
+                flexShrink: 0,
+                border: '1px solid rgba(0,0,0,0.1)',
+                marginRight: '8px',
               }}
             />
             <span className={calendarStyles.calendarLegendLabel}>{layer.label}</span>
           </div>
-        ) : null,
+        ) : null
       )}
     </div>
   );
