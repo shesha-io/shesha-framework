@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { ILayerGroupConfiguratorStateContext, IUpdateChildItemsPayload, IUpdateItemSettingsPayload } from './contexts';
+import { IUpdateChildItemsPayload, IUpdateItemSettingsPayload } from './contexts';
 
 export enum LayerGroupActionEnums {
   AddLayer = 'ADD_LAYER',
@@ -7,7 +7,7 @@ export enum LayerGroupActionEnums {
   UpdateItem = 'UPDATE_ITEM',
   SelectItem = 'SELECT_ITEM',
   UpdateChildItems = 'UPDATE_CHILD_ITEMS',
-  setRefreshTrigger = "SET_REFRESH_TRIGGER"
+  SetRefreshTrigger = "SET_REFRESH_TRIGGER"
 }
 
 export const addLayerAction = createAction(LayerGroupActionEnums.AddLayer);
@@ -26,7 +26,7 @@ export const updateChildItemsAction = createAction<IUpdateChildItemsPayload, IUp
   (p) => p
 );
 
-export const setRefreshTriggerAction = createAction<ILayerGroupConfiguratorStateContext, number>(LayerGroupActionEnums.setRefreshTrigger,
+export const setRefreshTriggerAction = createAction<{ refreshTrigger: number }, number>(LayerGroupActionEnums.SetRefreshTrigger,
   (refreshTrigger) => ({
     refreshTrigger,
   })

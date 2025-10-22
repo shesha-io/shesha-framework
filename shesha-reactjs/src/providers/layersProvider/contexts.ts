@@ -39,4 +39,4 @@ export const LayerGroupConfiguratorStateContext = createContext<ILayerGroupConfi
   LAYER_GROUP_CONTEXT_INITIAL_STATE
 );
 
-export const LayerGroupConfiguratorActionsContext = createContext<ILayerGroupConfiguratorActionsContext>(undefined);
+export const LayerGroupConfiguratorActionsContext = createContext<ILayerGroupConfiguratorActionsContext | undefined>(undefined);

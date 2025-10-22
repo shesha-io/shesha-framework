@@ -16,10 +16,17 @@ export const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
   const [form] = Form.useForm();
 
   const formRef = useRef<ConfigurableFormInstance>(null);
+  const selectedItemIdRef = useRef(selectedItemId);
+
+  // Keep ref in sync with selectedItemId
+  useEffect(() => {
+    selectedItemIdRef.current = selectedItemId;
+  }, [selectedItemId]);
 
   const debouncedSave = useDebouncedCallback(
     (_changedValues, allValues) => {
-      updateItem({ id: selectedItemId, settings: allValues });
+      // Use ref to get the current selectedItemId, not the stale closure value
+      updateItem({ id: selectedItemIdRef.current, settings: allValues });
     },
     // delay in ms
     300,
@@ -64,7 +71,7 @@ export const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
 
   useEffect(() => {
     setEditor(getEditor());
-  }, [selectedItemId]);
+  }, [selectedItemId, readOnly, settings]);
 
   if (!selectedItemId) {
     return (

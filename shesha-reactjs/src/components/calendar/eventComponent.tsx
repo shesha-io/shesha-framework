@@ -3,9 +3,10 @@ import React, { FC, useMemo } from 'react';
 import { useFormState, useGlobalState } from '@/providers';
 import ShaIcon from '../shaIcon';
 import { getIcon } from './utils';
+import { IEventComponentProps } from './interfaces';
 
 // Custom Event Component with Icon
-export const EventComponent: FC<any> = ({ event }) => {
+export const EventComponent: FC<IEventComponentProps> = ({ event }) => {
   const { formData } = useFormState();
   const { globalState } = useGlobalState();
 

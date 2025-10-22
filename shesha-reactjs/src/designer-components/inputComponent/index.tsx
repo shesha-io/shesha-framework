@@ -52,7 +52,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
 
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true, settings } = props;
 
     const allData = useAvailableConstantsData();
 
@@ -339,7 +339,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             return <DatePickerWrapper {...props} />;
 
         case 'layerSelectorSettingsModal':
-            return <LayerSelectorSettingsModal readOnly {...props} />;
+            return <LayerSelectorSettingsModal value={value} onChange={onChange} readOnly={readOnly} settings={settings} />;
 
         default:
             return <Input

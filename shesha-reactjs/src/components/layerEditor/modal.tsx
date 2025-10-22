@@ -4,13 +4,13 @@ import React, { FC, useState } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import { LayerGroupConfiguratorProvider, useLayerGroupConfigurator } from '@/providers/layersProvider';
 import { ILayerFormModel } from '@/providers/layersProvider/models';
-import LayerGroupConfigurator from './configurator';
-import LayerItemsContainer from './layersContainer';
+import { LayerGroupConfigurator } from './configurator';
+import { LayerItemsContainer } from './layersContainer';
 import { useStyles } from './styles/styles';
 
 interface IFiltersListProps {
   layers?: ILayerFormModel[];
-  showModal?: () => void;
+  showModal: () => void;
   readOnly?: boolean;
 }
 
@@ -53,8 +53,8 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
 }) => {
   const { items, readOnly } = useLayerGroupConfigurator();
   useDeepCompareEffect(() => {
-    onChange(items);
-  }, [items]);
+    if (typeof onChange === 'function') onChange(items);
+  }, [items, onChange]);
 
   const updateFilters = () => {
     if (typeof onChange === 'function') onChange(items);
@@ -86,7 +86,7 @@ export const LayerSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal
 
   const hideModal = () => setModalVisible(false);
 
-  const items = (props.value as ILayerFormModel[]) || [];
+  const items = Array.isArray(props.value) ? (props.value as ILayerFormModel[]) : [];
 
   return (
     <LayerGroupConfiguratorProvider items={items} readOnly={props.readOnly}>

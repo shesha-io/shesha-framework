@@ -43,13 +43,28 @@ export const getLayerEventItems = (
       })
       .filter(event => event !== null);
   } else {
-    events = [
-      {
-        start: new Date(layerDataItem?.[startTime]),
-        end: new Date(layerDataItem?.[endTime]),
-        ...layerDataItem
-      },
-    ];
+    const startDate = new Date(layerDataItem?.[startTime]);
+    const endDate = new Date(layerDataItem?.[endTime]);
+    // Skip events with invalid dates
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      events = [];
+    } else {
+      events = [
+        {
+          ...layerDataItem,
+          id: layerDataItem?.id,
+          start: startDate,
+          end: endDate,
+          icon,
+          showIcon,
+          color,
+          iconColor: iconColor || '#000000',
+          title,
+          onDblClick,
+          onSelect,
+        },
+      ];
+    }
   }
   return { ...item, events };
 };
@@ -72,10 +87,17 @@ export const getLayerOptions = (layers: ICalendarLayersProps[]) =>
 
 export const getQueryProperties = ({ startTime, endTime, propertyList }: ICalendarLayersProps) => {
   const properties = new Set<string>(['id']);
-  properties.add(startTime).add(endTime);
+  if (startTime?.trim()) {
+    properties.add(startTime);
+  }
+  if (endTime?.trim()) {
+    properties.add(endTime);
+  }
   if (propertyList) {
     propertyList.forEach((property) => {
-      properties.add(property);
+      if (property?.trim()) {
+        properties.add(property);
+      }
     });
   }
   return Array.from(properties).join(' ');

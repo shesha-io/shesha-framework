@@ -5,7 +5,7 @@ import {
   LAYER_GROUP_CONTEXT_INITIAL_STATE,
 } from './contexts';
 import { LayerGroupActionEnums } from './actions';
-import { ILayerFormModel, ILayerGroup } from './models';
+import { ILayerFormModel, ILayerGroup, LayerGroupItemProps } from './models';
 import { handleActions, Action } from 'redux-actions';
 import { getItemPositionById } from './utils';
 import { nanoid } from '@/utils/uuid';
@@ -105,18 +105,53 @@ const LayerGroupReducer = handleActions<ILayerGroupConfiguratorStateContext, any
       // lastIndex - index of the current element in its' parent
       const lastIndex = blockIndex.pop();
 
-      // search for a parent item
-      const lastArr = blockIndex.reduce((arr, i) => (arr[i] as ILayerGroup).childItems, newItems);
+      // Defensive check: ensure lastIndex is defined
+      if (lastIndex === undefined) {
+        console.error('UpdateChildItems: lastIndex is undefined, returning original state');
+        return state;
+      }
+
+      // search for a parent item with defensive checks
+      let lastArr: LayerGroupItemProps[];
+      try {
+        lastArr = blockIndex.reduce((arr, i) => {
+          // Verify the current element exists
+          if (!arr[i]) {
+            throw new Error(`UpdateChildItems: Element at index ${i} does not exist`);
+          }
+          // Verify it's an ILayerGroup with childItems
+          const item = arr[i] as ILayerGroup;
+          if (!item.childItems) {
+            throw new Error(`UpdateChildItems: Element at index ${i} is not an ILayerGroup or has no childItems`);
+          }
+          return item.childItems;
+        }, newItems);
+      } catch (error) {
+        console.error(error.message);
+        return state;
+      }
+
+      // Verify the target element exists and is an ILayerGroup
+      if (!lastArr[lastIndex]) {
+        console.error(`UpdateChildItems: Target element at index ${lastIndex} does not exist`);
+        return state;
+      }
+
+      const targetItem = lastArr[lastIndex] as ILayerGroup;
+      if (!('childItems' in targetItem)) {
+        console.error(`UpdateChildItems: Target element at index ${lastIndex} is not an ILayerGroup`);
+        return state;
+      }
 
       // and set a list of childs
-      (lastArr[lastIndex] as ILayerGroup).childItems = childIds;
+      targetItem.childItems = childIds;
 
       return {
         ...state,
         items: newItems,
       };
     },
-    [LayerGroupActionEnums.setRefreshTrigger]: (state, action) => ({
+    [LayerGroupActionEnums.SetRefreshTrigger]: (state, action) => ({
       ...state,
       ...action.payload,
     }),
