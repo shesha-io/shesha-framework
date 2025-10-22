@@ -290,26 +290,26 @@ export class Authenticator implements IAuthenticator {
 
     const granted = loginInfo.grantedPermissions || [];
 
-        return permissions.some((p) =>
-            granted.some(gp =>
-                gp.permission === p
-                && (
-                    // Global permission: No entity constraints or empty entity array
-                    !gp.permissionedEntity
-                    || gp.permissionedEntity.length === 0
+    return permissions.some((p) =>
+      granted.some((gp) =>
+        gp.permission === p &&
+        (
+        // Global permission: No entity constraints or empty entity array
+          !gp.permissionedEntity ||
+          gp.permissionedEntity.length === 0 ||
 
-                    // Entity-specific permission: Check if entities match
-                    || (
-                        // If UI provides entity context, check for matching entities
-                        permissionedEntities && permissionedEntities.length > 0
-                            ? gp.permissionedEntity.some(pe => permissionedEntities.some(ppe => pe?.id === ppe?.id && ppe?._className === pe?._className))
-                            // If UI doesn't provide entity context, grant access since backend already determined permission
-                            : true
-                    )
-                )
-            )
-        );
-    };
+          // Entity-specific permission: Check if entities match
+          (
+          // If UI provides entity context, check for matching entities
+            permissionedEntities && permissionedEntities.length > 0
+              ? gp.permissionedEntity.some((pe) => permissionedEntities.some((ppe) => pe.id === ppe.id && ppe._className === pe._className))
+            // If UI doesn't provide entity context, grant access since backend already determined permission
+              : true
+          )
+        ),
+      ),
+    );
+  };
 }
 
 export const useAuthenticatorInstance = (args: AuthenticatorArgs): IAuthenticator[] => {
