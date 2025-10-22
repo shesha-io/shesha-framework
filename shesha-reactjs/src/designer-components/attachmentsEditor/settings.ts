@@ -999,7 +999,7 @@ export const getSettings = () => {
                             label: 'Custom Styles',
                             labelAlign: 'right',
                             ghost: true,
-                            parentId: styleRouterId,
+                            parentId: downloadedStylesPnlId,
                             collapsible: 'header',
                             content: {
                               id: 'pnlDownloadedFileCustomStylePanel',
