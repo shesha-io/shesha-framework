@@ -67,7 +67,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const {
       fullStyle: downloadedFileFullStyle,
-    } = useFormComponentStyles(model.downloadedFileStyles);
+    } = useFormComponentStyles(model.downloadedFileStyles ?? downloadedFileDefaultStyles());
 
     const enabled = !model.readOnly;
 

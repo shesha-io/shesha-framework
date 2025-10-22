@@ -923,6 +923,7 @@ export const getSettings = () => {
                       label: 'Downloaded File Styles',
                       labelAlign: 'right',
                       ghost: true,
+                      collapsedByDefault: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
                       content: {
@@ -943,7 +944,7 @@ export const getSettings = () => {
                                   id: nanoid(),
                                   parentId: pnlDownloadedFileFontStylesId,
                                   inline: true,
-                                  propertyName: 'font',
+                                  propertyName: 'downloadedFileStyles.font',
                                   inputs: [
                                     {
                                       type: 'dropdown',
