@@ -6,7 +6,7 @@ import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from
 import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { addPx } from '@/utils/style';
-import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
+import { DownloadOutlined, FileZipOutlined, UploadOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import {
   Alert,
   App,
@@ -18,7 +18,7 @@ import {
 } from 'antd';
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import React, { FC, useEffect, useState } from 'react';
+import React, { CSSProperties, FC, useEffect, useState } from 'react';
 import { isValidGuid } from '../formDesigner/components/utils';
 import { useStyles } from './styles/styles';
 interface IUploaderFileTypes {
@@ -64,6 +64,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   allStyles?: IFormComponentStyles;
   enableStyleOnReadonly?: boolean;
   thumbnail?: IStyleType;
+  downloadedFileStyles?: CSSProperties;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -93,6 +94,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   listType,
   gap,
   enableStyleOnReadonly = true,
+  downloadedFileStyles,
   ...rest
 }) => {
   const { message, notification, modal } = App.useApp();
@@ -100,13 +102,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
-
   const model = rest;
   const hasFiles = !!fileList.length;
 
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
 
   const { styles } = useStyles({
+    downloadedFileStyles: downloadedFileStyles,
     containerStyles: {
       ...(containerDimensionsStyles ?? {}),
       width: layout === 'vertical' ? undefined : addPx(containerDimensionsStyles?.width),
@@ -169,6 +171,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
     fetchImages();
   }, [fileList]);
+
 
   const handlePreview = async (file: UploadFile) => {
     setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
@@ -255,13 +258,28 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       const { uid, name } = file;
       if (isImageType(file.type)) {
         handlePreview(file);
-      } else downloadFile({ fileId: uid, fileName: name });
+      } else {
+        downloadFile({ fileId: uid, fileName: name });
+      }
     },
     showUploadList: {
       showRemoveIcon: allowDelete,
       showDownloadIcon: true,
     },
     iconRender,
+    itemRender: (originNode, file) => {
+      const isDownloaded = (file as any).userHasDownloaded === true;
+      return (
+        <div className={isDownloaded ? styles.downloadedFile : ''}>
+          {originNode}
+          {isDownloaded && (
+            <div className={styles.downloadedIcon}>
+              <CheckCircleOutlined />
+            </div>
+          )}
+        </div>
+      );
+    },
   };
 
 
@@ -310,7 +328,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             onVisibleChange: (visible) => setPreviewOpen(visible),
             afterOpenChange: (visible) => !visible && setPreviewImage(null),
             toolbarRender: (original) => {
-              return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })} />{original}</div>;
+              return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => {
+                downloadFile({ fileId: previewImage.uid, fileName: previewImage.name });
+              }} />{original}</div>;
             },
           }}
           src={previewImage.url}

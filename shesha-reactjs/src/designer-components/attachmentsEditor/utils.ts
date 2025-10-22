@@ -44,3 +44,15 @@ export const containerDefaultStyles = (): IStyleType => {
         }
     };
 };
+
+export const downloadedFileDefaultStyles = (): IStyleType => {
+    return {
+        font: {
+            type: 'Segoe UI',
+            align: 'left',
+            size: 14,
+            weight: '400',
+            color: '#52c41a',
+        },
+    };
+};
