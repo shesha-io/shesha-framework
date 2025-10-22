@@ -6,21 +6,18 @@ export type IFlagProgressFlags =
   | 'downloadFile'
   | 'uploadFile'
   | 'deleteFile'
-  | 'dowloadZip'
   | 'fetchFileList'
   | 'downloadZip'; /* NEW_IN_PROGRESS_FLAG_GOES_HERE */
 export type IFlagSucceededFlags =
   | 'downloadFile'
   | 'uploadFile'
   | 'deleteFile'
-  | 'dowloadZip'
   | 'fetchFileList'
   | 'downloadZip'; /* NEW_SUCCEEDED_FLAG_GOES_HERE */
 export type IFlagErrorFlags =
   | 'downloadFile'
   | 'uploadFile'
   | 'deleteFile'
-  | 'dowloadZip'
   | 'fetchFileList'
   | 'downloadZip'; /* NEW_ERROR_FLAG_GOES_HERE */
 export type IFlagActionedFlags = '__DEFAULT__'; /* NEW_ACTIONED_FLAG_GOES_HERE */
