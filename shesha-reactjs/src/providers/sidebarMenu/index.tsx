@@ -85,7 +85,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
         x.name === item.actionConfiguration?.actionArguments?.formId?.name,
       );
       const hiddenByPermissions = form && form.permissions ? !anyOfPermissionsGranted(form.permissions) : false;
-      const explicitlyHidden = (item as any).explicitlyHidden || false;
+      const explicitlyHidden = item.explicitlyHidden || false;
       item.hidden = explicitlyHidden || hiddenByPermissions;
     }
   };

@@ -29,6 +29,7 @@ export interface ISidebarMenuItem {
 
   icon?: ReactNode | string;
   hidden?: boolean;
+  explicitlyHidden?: boolean;
   visibility?: string;
   requiredPermissions?: string[];
 }
