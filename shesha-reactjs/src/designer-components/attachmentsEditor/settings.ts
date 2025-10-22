@@ -41,6 +41,14 @@ export const getSettings = () => {
             id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
+                  .addSettingsInput({
+                    id: nanoid(),
+                    propertyName: 'componentName',
+                    label: 'Component name',
+                    inputType: 'propertyAutocomplete',
+                    validate: { required: true },
+                    jsSetting: false,
+                  })
                 .addLabelConfigurator({
                   id: nanoid(),
                   propertyName: 'hideLabel',
