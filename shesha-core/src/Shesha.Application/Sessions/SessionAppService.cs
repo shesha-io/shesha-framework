@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
+using Shesha.Authorization.Roles;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Extensions;
@@ -76,38 +77,109 @@ namespace Shesha.Sessions
                 var roles = await _roleAppointmentRepository.GetAll().Where(a => a.Person == currentUser).ToListAsync();
                 var allPermissionNames = PermissionManager.GetAllPermissions(false).Select(p => p.Name).ToList();
 
-                foreach (var permissionName in allPermissionNames)
+                // Check if user is System Administrator
+                var isSystemAdministrator = roles.Any(r => r.Role.Name == StaticRoleNames.SystemAdministrator);
+
+                // Group permissions by name and collect all associated PermissionedEntities
+                var permissionGroups = roles
+                    .SelectMany(role => role.Role.Permissions
+                        .Where(p => p.IsGranted)
+                        .Select(p => new { p.Permission, Role = role }))
+                    .GroupBy(x => x.Permission)
+                    .ToList();
+
+                // Collect all permissions with their entities, handling duplicates properly
+                var permissionMap = new Dictionary<string, GrantedPermissionDto>();
+
+                // First, process explicitly granted permissions from roles
+                foreach (var permissionGroup in permissionGroups)
                 {
-                    if (await PermissionChecker.IsGrantedAsync(permissionName))
+                    var permissionName = permissionGroup.Key;
+
+                    // Check if user has this permission granted (or if they're system admin)
+                    if (isSystemAdministrator || await PermissionChecker.IsGrantedAsync(permissionName))
                     {
-                        var permissionRoles = roles.Where(x => x.Role != null && x.Role.Permissions.Any(p => p.Permission == permissionName)).ToList();
-                        grantedPermissions.Add(new GrantedPermissionDto
+                        var roleAppointmentsWithPermission = permissionGroup.Select(x => x.Role).ToList();
+                        var permissionedEntities = new List<EntityReferenceDto<string>>();
+                        var hasGlobalPermission = false;
+
+                        foreach (var roleAppointment in roleAppointmentsWithPermission)
                         {
-                            Permission = permissionName,
-                            PermissionedEntity = permissionRoles.Any(x => !x.PermissionedEntities.Any())
-                                ? new List<EntityReferenceDto<string>>()
-                                : permissionRoles.SelectMany(x => x.PermissionedEntities).Distinct()
-                                    .Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className))
-                                    .ToList()
-                        }); ;
+                            if (!roleAppointment.PermissionedEntities.Any())
+                            {
+                                // If any role appointment has no PermissionedEntities, this is a global permission
+                                hasGlobalPermission = true;
+                            }
+                            else
+                            {
+                                // Add specific entities from this role appointment
+                                permissionedEntities.AddRange(
+                                    roleAppointment.PermissionedEntities.Select(x =>
+                                        new EntityReferenceDto<string>(x.Id, x._displayName, x._className))
+                                );
+                            }
+                        }
+
+                        var deduped = permissionedEntities.DistinctBy(e => new { e._className, e.Id }).ToList();
+
+                        // Handle duplicates: prefer permissioned entities over global permissions
+                        if (permissionMap.ContainsKey(permissionName))
+                        {
+                            var existing = permissionMap[permissionName];
+                            if (existing.PermissionedEntity.Any() || (!hasGlobalPermission && deduped.Any()))
+                            {
+                                // Keep existing if it has entities, or update if current has entities and existing doesn't
+                                if (!existing.PermissionedEntity.Any() && deduped.Any())
+                                {
+                                    permissionMap[permissionName] = new GrantedPermissionDto
+                                    {
+                                        Permission = permissionName,
+                                        PermissionedEntity = deduped
+                                    };
+                                }
+                                // If existing already has entities, merge them
+                                else if (existing.PermissionedEntity.Any() && deduped.Any())
+                                {
+                                    var mergedEntities = existing.PermissionedEntity.Concat(deduped)
+                                        .DistinctBy(e => new { e._className, e.Id }).ToList();
+                                    permissionMap[permissionName] = new GrantedPermissionDto
+                                    {
+                                        Permission = permissionName,
+                                        PermissionedEntity = mergedEntities
+                                    };
+                                }
+                            }
+                        }
+                        else
+                        {
+                            permissionMap[permissionName] = new GrantedPermissionDto
+                            {
+                                Permission = permissionName,
+                                PermissionedEntity = hasGlobalPermission && !deduped.Any()
+                                    ? new List<EntityReferenceDto<string>>()  // Empty list = global permission
+                                    : deduped  // Specific entities
+                            };
+                        }
                     }
                 }
 
-                foreach(var role in roles)
+                // For system administrators, add any missing permissions as global
+                if (isSystemAdministrator)
                 {
-                    var permissions = role.Role?.Permissions;
-                    if (permissions == null || permissions.Any())
-                        continue;
-
-                    foreach (var permission in permissions.Where(x => x.IsGranted))
+                    foreach (var permissionName in allPermissionNames)
                     {
-                        var grantedPermission = new GrantedPermissionDto
+                        if (!permissionMap.ContainsKey(permissionName))
                         {
-                            Permission = permission.Permission,
-                            PermissionedEntity = role.PermissionedEntities.Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className)).ToList(),
-                        };
+                            permissionMap[permissionName] = new GrantedPermissionDto
+                            {
+                                Permission = permissionName,
+                                PermissionedEntity = new List<EntityReferenceDto<string>>() // Global permission
+                            };
+                        }
                     }
                 }
+
+                grantedPermissions.AddRange(permissionMap.Values);
             }
 
             return grantedPermissions;
