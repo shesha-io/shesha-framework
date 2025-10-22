@@ -2,7 +2,8 @@ import React, {
   FC,
   PropsWithChildren,
   useContext,
-  useReducer
+  useReducer,
+  useRef
 } from 'react';
 import SidebarMenuReducer from './reducer';
 import { getFlagSetters } from '../utils/flagsSetters';
@@ -42,7 +43,28 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     items: [],
   });
 
+  const originalHiddenValues = useRef<Map<string, boolean>>(new Map());
   const actualItems = useActualContextData(items);
+
+  const storeOriginalHiddenValues = (items: ISidebarMenuItem[]) => {
+    items.forEach((item) => {
+      if (!originalHiddenValues.current.has(item.id)) {
+        originalHiddenValues.current.set(item.id, item.hidden || false);
+      }
+      if (isSidebarGroup(item) && item.childItems) {
+        storeOriginalHiddenValues(item.childItems);
+      }
+    });
+  };
+
+  const updateOriginalHiddenValues = (items: ISidebarMenuItem[]) => {
+    items.forEach((item) => {
+      originalHiddenValues.current.set(item.id, item.hidden || false);
+      if (isSidebarGroup(item) && item.childItems) {
+        updateOriginalHiddenValues(item.childItems);
+      }
+    });
+  };
 
   const requestItemVisible = (item: ISidebarMenuItem, itemsToCheck: ISidebarMenuItem[]): ISidebarMenuItem => {
     const availableByPermissions = item.requiredPermissions?.length > 0
@@ -58,8 +80,8 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
       (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name &&
       (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
     ) {
-      // form navigation, check form permissions - but preserve explicit hidden state
-      const newItem = { ...item, explicitlyHidden: item.hidden };
+      // Form navigation item - will be processed for form permissions later
+      const newItem = { ...item, hidden: item.hidden || !availableByPermissions };
       itemsToCheck.push(newItem);
       return newItem;
     }
@@ -67,26 +89,39 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     return { ...item, hidden: item.hidden || !availableByPermissions };
   };
 
-  const updatetItemVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
-    if (
-      item.actionConfiguration?.actionOwner === 'shesha.common'
-      && item.actionConfiguration?.actionName === 'Navigate'
-      && item.actionConfiguration?.actionArguments?.navigationType === 'form'
-      && item.actionConfiguration?.actionArguments?.formId?.name
-      && item.actionConfiguration?.actionArguments?.formId?.module
-    ) {
-      // form navigation, check form permissions
-      const form = formsPermission.find(x =>
-        x.module === item.actionConfiguration?.actionArguments?.formId?.module
-        && x.name === item.actionConfiguration?.actionArguments?.formId?.name
-      );
-      const hiddenByPermissions = form && form.permissions ? !anyOfPermissionsGranted(form.permissions) : false;
-      const explicitlyHidden = item.explicitlyHidden || false;
-      item.hidden = explicitlyHidden || hiddenByPermissions;
+  const findAndUpdateItemVisible = (items: ISidebarMenuItem[], targetItem: ISidebarMenuItem, formsPermission: FormPermissionsDto[]): boolean => {
+    for (const item of items) {
+      if (item.id === targetItem.id) {
+        if (
+          item.actionConfiguration?.actionOwner === 'shesha.common'
+          && item.actionConfiguration?.actionName === 'Navigate'
+          && item.actionConfiguration?.actionArguments?.navigationType === 'form'
+          && item.actionConfiguration?.actionArguments?.formId?.name
+          && item.actionConfiguration?.actionArguments?.formId?.module
+        ) {
+          // form navigation, check form permissions
+          const form = formsPermission.find(x =>
+            x.module === item.actionConfiguration?.actionArguments?.formId?.module
+            && x.name === item.actionConfiguration?.actionArguments?.formId?.name
+          );
+          const hiddenByFormPermissions = form && form.permissions ? !anyOfPermissionsGranted(form.permissions) : false;
+          const hiddenByRequiredPermissions = item.requiredPermissions?.length > 0 ? !anyOfPermissionsGranted(item.requiredPermissions) : false;
+          const originalHiddenValue = originalHiddenValues.current.get(item.id) || false;
+          // For form navigation items: respect original hidden setting OR any permission failure
+          item.hidden = originalHiddenValue || hiddenByFormPermissions || hiddenByRequiredPermissions;
+        }
+        return true;
+      }
+      if (isSidebarGroup(item) && item.childItems) {
+        if (findAndUpdateItemVisible(item.childItems, targetItem, formsPermission)) {
+          return true;
+        }
+      }
     }
+    return false;
   };
 
-  const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
+  const getFormPermissions = (localItems: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
     if (itemsToCheck.length > 0) {
       formConfigurationCheckPermissions(
         itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto),
@@ -95,9 +130,9 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
         .then((result) => {
           if (result.success) {
             itemsToCheck.forEach((item) => {
-              return updatetItemVisible(item, result.result);
+              findAndUpdateItemVisible(localItems, item, result.result);
             });
-            dispatch(setItemsAction([...items]));
+            dispatch(setItemsAction([...localItems]));
           } else {
             console.error(result.error);
           }
@@ -106,16 +141,20 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   };
 
   useDeepCompareEffect(() => {
+    // Update original hidden values when items change (including user configuration changes)
+    updateOriginalHiddenValues(actualItems);
+
     const itemsToCheck = [];
     const localItems = actualItems.map((item) => requestItemVisible(item, itemsToCheck));
-    
+
     if (itemsToCheck.length > 0) {
       getFormPermissions(localItems, itemsToCheck);
-    } else
+    } else {
       if (localItems.length > 0) {
         // no forms to check set items as is
         dispatch(setItemsAction([...localItems]));
       }
+    }
   }, [actualItems]);
 
   const collapse = () => {
