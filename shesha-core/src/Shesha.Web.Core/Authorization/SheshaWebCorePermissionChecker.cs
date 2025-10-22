@@ -1,5 +1,6 @@
 using Abp.Domain.Repositories;
 using Shesha.Authorization;
+using Shesha.Authorization.Roles;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Extensions;
@@ -37,7 +38,7 @@ namespace Boxfusion.Authorization
                 return false;
 
             // system administrator has all rights
-            if (await IsInAnyOfRolesAsync(person, RoleNames.SystemAdministrator))
+            if (await IsInAnyOfRolesAsync(person, StaticRoleNames.SystemAdministrator))
                 return true;
 
             // add custom permission checks here...
@@ -60,7 +61,7 @@ namespace Boxfusion.Authorization
         /// <returns></returns>
         public async Task<bool> IsDataAdministratorAsync(Person person)
         {
-            return await IsInAnyOfRolesAsync(person, RoleNames.SystemAdministrator);
+            return await IsInAnyOfRolesAsync(person, StaticRoleNames.SystemAdministrator);
         }
 
         public bool IsGranted(long userId, string permissionName)
