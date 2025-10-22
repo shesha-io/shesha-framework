@@ -39,8 +39,8 @@ const LayersListInner: FC<Omit<IFiltersListProps, 'layers'>> = ({ showModal, rea
 export interface ITableViewSelectorSettingsModal {
   visible: boolean;
   hideModal: () => void;
-  value?: object;
-  onChange?: any;
+  value?: ILayerFormModel[];
+  onChange?: (items: ILayerFormModel[]) => void;
   readOnly: boolean;
   settings?: FormMarkup;
 }
