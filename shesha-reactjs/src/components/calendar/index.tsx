@@ -1,7 +1,7 @@
 import { DownOutlined } from '@ant-design/icons';
 import { Checkbox, Dropdown, Empty, Menu } from 'antd';
 import moment from 'moment';
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, momentLocalizer, SlotInfo, View } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useDeepCompareEffect } from 'react-use';
@@ -119,9 +119,9 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     };
   }, []);
 
-  const onChange = (checked: string[]) => {
-    setPoints(getMarkerPoints(layerMarkers, checked as string[]));
-  };
+  const onChange = useCallback((checked: string[]) => {
+    setEvents(getLayerEvents(layerEvents, checked as string[]));
+  }, [layerEvents]);
 
   const handleCustomSelect = (event: ICalendarEvent) => {
     // Prevent selection if the event date is disabled
