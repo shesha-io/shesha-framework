@@ -53,11 +53,13 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
       && item.actionConfiguration?.actionArguments?.formId?.module
     ) {
       // form navigation, check form permissions
-      const form = formsPermission.find(x => 
+      const form = formsPermission.find(x =>
         x.module === item.actionConfiguration?.actionArguments?.formId?.module
         && x.name === item.actionConfiguration?.actionArguments?.formId?.name
       );
-      item.hidden = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
+      const hiddenByPermissions = form && form.permissions ? !anyOfPermissionsGranted(form.permissions) : false;
+      const explicitlyHidden = (item as any).explicitlyHidden || false;
+      item.hidden = explicitlyHidden || hiddenByPermissions;
     }
   };
 
@@ -65,7 +67,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
     const itemsToCheck = [];
     items?.forEach((item) => {
       if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0) {
-        itemsToCheck.concat(getItemsWithFormNavigation(item.childItems));
+        itemsToCheck.push(...getItemsWithFormNavigation(item.childItems));
         return;
       }
 
@@ -75,8 +77,10 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
         && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
         && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
       ) {
+        // Preserve explicit hidden state for form navigation items
+        (item as any).explicitlyHidden = item.hidden || false;
         itemsToCheck.push(item);
-      } 
+      }
     });
 
     return itemsToCheck;
