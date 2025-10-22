@@ -24,13 +24,20 @@ namespace Shesha.Authorization
             _rolePersonRepository = rolePersonRepository;
         }
 
+        private async Task<Person> GetPersonAsync(long userId)
+        {
+            return await _personRepository.GetAll().FirstOrDefaultAsync(x => x.User != null && x.User.Id == userId);
+        }
+
         public async Task<bool> IsGrantedAsync(long userId, string permissionName)
         {
             var person = await GetPersonAsync(userId);
             if (person == null)
                 return false;
-            var roles = _rolePersonRepository.GetAll().Where(x => x.Person == person && x.Role != null);
-            return roles.SelectMany(x => x.Role!.Permissions).Any(x => x.Permission == permissionName && x.IsGranted);
+            
+            // TODO: add caching
+            var roles = await _rolePersonRepository.GetAll().Where(x => x.Person == person && x.Role != null).Select(e => e.Role).ToListAsync();
+            return roles.Any(r => r != null && r.Permissions.Any(x => x.Permission == permissionName && x.IsGranted));
         }
 
         public async Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
@@ -38,13 +45,13 @@ namespace Shesha.Authorization
             var person = await GetPersonAsync(userId);
             if (person == null)
                 return false;
-
-            var roles = (await _rolePersonRepository.GetAll().Where(x => x.Person == person && x.Role != null)
+            
+            var appointments = (await _rolePersonRepository.GetAll().Where(x => x.Person == person && x.Role != null)
                 .ToListAsync())
                 .Where(x =>
                     !x.PermissionedEntities.Any()
                     || x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className));
-            return roles.SelectMany(x => x.Role.Permissions).Any(x => x.Permission == permissionName && x.IsGranted);
+            return appointments.SelectMany(x => x.Role?.Permissions ?? Enumerable.Empty<ShaRolePermission>()).Any(x => x.Permission == permissionName && x.IsGranted);
         }
 
         public bool IsGranted(long userId, string permissionName)
@@ -52,16 +59,18 @@ namespace Shesha.Authorization
             return AsyncHelper.RunSync(async() => await IsGrantedAsync(userId, permissionName));
         }
 
-
         public bool IsGranted(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
         {
-            var person = _personRepository.GetAll().FirstOrDefault(x => x.User.Id == userId);
+            var person = _personRepository.GetAll().FirstOrDefault(x => x.User != null && x.User.Id == userId);
+            if (person == null)
+                return false;
+
             var roles = _rolePersonRepository.GetAll().Where(x => x.Person == person)
                 .ToList()
-                .Where(x => 
+                .Where(x =>
                     !x.PermissionedEntities.Any()
                     || x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className));
-            return roles.SelectMany(x => x.Role.Permissions).Any(x => x.Permission == permissionName && x.IsGranted);
+            return roles.SelectMany(x => x.Role?.Permissions ?? Enumerable.Empty<ShaRolePermission>()).Any(x => x.Permission == permissionName && x.IsGranted);
         }
     }
 }
