@@ -1,9 +1,10 @@
 using Abp.Domain.Repositories;
+using Abp.Threading;
 using Shesha.Authorization;
+using Shesha.Authorization.Roles;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Extensions;
-using Shesha.Utilities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,16 +18,14 @@ namespace Boxfusion.Authorization
     {
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _rolePersonRepository;
-        private readonly IRepository<ShaRoleAppointmentEntity, Guid> _appEntityRepository;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public SheshaWebCorePermissionChecker(IRepository<Person, Guid> personRepository, IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository, IRepository<ShaRoleAppointmentEntity, Guid> appEntityRepository)
+        public SheshaWebCorePermissionChecker(IRepository<Person, Guid> personRepository, IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository)
         {
             _personRepository = personRepository;
             _rolePersonRepository = rolePersonRepository;
-            _appEntityRepository = appEntityRepository;
         }
 
         /// inheritedDoc
@@ -37,7 +36,7 @@ namespace Boxfusion.Authorization
                 return false;
 
             // system administrator has all rights
-            if (await IsInAnyOfRolesAsync(person, RoleNames.SystemAdministrator))
+            if (await IsInAnyOfRolesAsync(person, StaticRoleNames.SystemAdministrator))
                 return true;
 
             // add custom permission checks here...
@@ -60,7 +59,7 @@ namespace Boxfusion.Authorization
         /// <returns></returns>
         public async Task<bool> IsDataAdministratorAsync(Person person)
         {
-            return await IsInAnyOfRolesAsync(person, RoleNames.SystemAdministrator);
+            return await IsInAnyOfRolesAsync(person, StaticRoleNames.SystemAdministrator);
         }
 
         public bool IsGranted(long userId, string permissionName)
