@@ -12,7 +12,7 @@ import { ICalendarLayersProps } from '@/providers/layersProvider/models';
 interface IGetData {
   fetchData: () => void;
   fetchDefaultCalendarView: () => Promise<ISettingResponse | null>;
-  layerData: { [key in string]: any }[];
+  layerData: Record<string, any>[];
   layerEvents: ICalendarLayersProps[];
   updateDefaultCalendarView: (value: string) => Promise<ISettingResponse | null>;
 }
@@ -120,7 +120,7 @@ export const useMetaMapMarker = (layers: ICalendarLayersProps[]): IGetData => {
   }, [mutate]);
 
 
-  const fetchDefaultCalendarView = useCallback(async (): Promise<ISettingResponse> => {
+  const fetchDefaultCalendarView = useCallback(async (): Promise<ISettingResponse | null> => {
     try {
       const response = await mutate(
         {

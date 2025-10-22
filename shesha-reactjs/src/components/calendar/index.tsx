@@ -16,9 +16,9 @@ import {
   useConfigurableActionDispatcher,
   useTheme
 } from '@/index';
-import { ICalendarEvent } from '@/providers/layersProvider/models';
 import { ICalendarProps } from '@/designer-components/calendar/interfaces';
 import { DataContextProvider } from '@/providers/dataContextProvider';
+import { ICalendarEvent } from '@/providers/layersProvider/models';
 
 moment.locale('en-za');
 const localizer = momentLocalizer(moment);
@@ -58,10 +58,10 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const dummyEvent =
     internalStartDate && internalEndDate
       ? (() => {
-          const s = new Date(internalStartDate);
-          const e = new Date(internalEndDate);
-          return isNaN(s.getTime()) || isNaN(e.getTime()) ? null : { start: s, end: e, color: primaryColor };
-        })()
+        const s = new Date(internalStartDate);
+        const e = new Date(internalEndDate);
+        return isNaN(s.getTime()) || isNaN(e.getTime()) ? null : { start: s, end: e, color: primaryColor };
+      })()
       : null;
 
   const updatedPoints = useMemo(() =>
@@ -94,7 +94,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   // Load saved default calendar view
   useEffect(() => {
     fetchDefaultCalendarView()
-      .then((response) => setDefaultView(response.result ? response.result : displayPeriod?.[0]))
+      .then((response) => setDefaultView(response?.result ?? displayPeriod?.[0]))
       .catch(() => setDefaultView(displayPeriod?.[0]));
   }, []);
 
@@ -210,10 +210,17 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     });
   };
 
-  const menu = (
-    <Menu className={calendarStyles.calendarMenu}>
-      <Checkbox.Group options={getLayerOptions(items)} onChange={onChange} defaultValue={defaultVisibleLayers} />
-    </Menu>
+  const menuItems = {
+    items: [],
+  };
+
+  const dropdownContent = useMemo(
+    () => (
+      <Menu className={calendarStyles.calendarMenu}>
+        <Checkbox.Group options={getLayerOptions(items)} onChange={onChange} defaultValue={defaultVisibleLayers} />
+      </Menu>
+    ),
+    [calendarStyles.calendarMenu, items, onChange, defaultVisibleLayers]
   );
 
   const renderLegend = () => (
@@ -237,7 +244,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const renderHeader = () => (
     <div className={calendarStyles.calendarHeader}>
       {renderLegend()}
-      <Dropdown overlay={menu}>
+      <Dropdown menu={menuItems} dropdownRender={() => dropdownContent}>
         <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
           Views <DownOutlined />
         </a>

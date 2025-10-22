@@ -34,7 +34,7 @@ export const getSettings = () => {
                       id: nanoid(),
                       propertyName: 'hidden',
                       label: 'Hidden',
-                      description: 'If enabled, the layer will be visible',
+                      description: 'If enabled, the layer will be hidden',
                     },
                     {
                       type: 'switch',

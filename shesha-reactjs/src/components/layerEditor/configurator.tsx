@@ -9,7 +9,7 @@ export interface ILayerGroupConfiguratorProps {
   allowAddLayers?: boolean;
   render?: ReactNode | (() => ReactNode);
   heading?: ReactNode | (() => ReactNode);
-  settings?: FormMarkup;
+  settings: FormMarkup;
 }
 
 export const LayerGroupConfigurator: FC<ILayerGroupConfiguratorProps> = ({ settings }) => {

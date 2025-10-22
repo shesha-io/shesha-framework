@@ -34,8 +34,8 @@ const LayerGroupConfiguratorProvider: FC<PropsWithChildren<ILayerGroupConfigurat
 
   const [state, dispatch] = useReducer(LayerGroupReducer, {
     ...LAYER_GROUP_CONTEXT_INITIAL_STATE,
-    items: props.items,
-    readOnly: readOnly,
+    items: props.items ?? [],
+    readOnly: !!readOnly,
   });
 
   const addLayer = () => {
@@ -54,7 +54,7 @@ const LayerGroupConfiguratorProvider: FC<PropsWithChildren<ILayerGroupConfigurat
   };
 
   const getItem = (uid: string): LayerGroupItemProps | null => {
-    return getItemById(state.items, uid);
+    return getItemById(state.items ?? [], uid);
   };
 
   const updateChildItems = (payload: IUpdateChildItemsPayload) => {

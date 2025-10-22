@@ -78,7 +78,7 @@ export const getSettings = (data: any) => {
                                 })
                                 .addSettingsInputRow({
                                     id: nanoid(),
-                                    parentId: dataTabId,
+                                    parentId: commonTabId,
                                     inputs: [
                                         {
                                             type: 'codeEditor',
@@ -118,7 +118,6 @@ export const getSettings = (data: any) => {
                                     hideLabel: true,
                                     settings: getCalendarLayersSettings(),
                                 })
-
                                 .toJson(),
                         ],
                     },
