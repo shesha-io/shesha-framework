@@ -58,7 +58,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
         && x.name === item.actionConfiguration?.actionArguments?.formId?.name
       );
       const hiddenByPermissions = form && form.permissions ? !anyOfPermissionsGranted(form.permissions) : false;
-      const explicitlyHidden = (item as any).explicitlyHidden || false;
+      const explicitlyHidden = item.explicitlyHidden || false;
       item.hidden = explicitlyHidden || hiddenByPermissions;
     }
   };
@@ -78,7 +78,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
         && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
       ) {
         // Preserve explicit hidden state for form navigation items
-        (item as any).explicitlyHidden = item.hidden || false;
+        item.explicitlyHidden = item.hidden || false;
         itemsToCheck.push(item);
       }
     });
