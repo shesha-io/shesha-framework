@@ -23,7 +23,8 @@ export const getSettings = () => {
   const pnlShadowStyleId = nanoid();
   const customStylePnlId = nanoid();
   const pnlFontStyleId = nanoid();
-
+  const downloadedStylesPnlId = nanoid();
+  const pnlDownloadedFileFontStylesId = nanoid();
   return {
     components: new DesignerToolbarSettings()
       .addSearchableTabs({
@@ -41,14 +42,14 @@ export const getSettings = () => {
             id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
-                  .addSettingsInput({
-                    id: nanoid(),
-                    propertyName: 'componentName',
-                    label: 'Component name',
-                    inputType: 'propertyAutocomplete',
-                    validate: { required: true },
-                    jsSetting: false,
-                  })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'componentName',
+                  label: 'Component name',
+                  inputType: 'propertyAutocomplete',
+                  validate: { required: true },
+                  jsSetting: false,
+                })
                 .addLabelConfigurator({
                   id: nanoid(),
                   propertyName: 'hideLabel',
@@ -914,6 +915,111 @@ export const getSettings = () => {
                             }
                           })
                           .toJson()]
+                      }
+                    })
+                    .addCollapsiblePanel({
+                      id: nanoid(),
+                      propertyName: 'pnlDownloadedStyles',
+                      label: 'Downloaded File Styles',
+                      labelAlign: 'right',
+                      ghost: true,
+                      collapsedByDefault: true,
+                      parentId: styleRouterId,
+                      collapsible: 'header',
+                      content: {
+                        id: downloadedStylesPnlId,
+                        components: [...new DesignerToolbarSettings()
+                          .addCollapsiblePanel({
+                            id: nanoid(),
+                            propertyName: 'pnlDownloadedFileFontStyles',
+                            label: 'Font',
+                            labelAlign: 'right',
+                            parentId: downloadedStylesPnlId,
+                            ghost: true,
+                            collapsible: 'header',
+                            content: {
+                              id: pnlDownloadedFileFontStylesId,
+                              components: [...new DesignerToolbarSettings()
+                                .addSettingsInputRow({
+                                  id: nanoid(),
+                                  parentId: pnlDownloadedFileFontStylesId,
+                                  inline: true,
+                                  propertyName: 'downloadedFileStyles.font',
+                                  inputs: [
+                                    {
+                                      type: 'dropdown',
+                                      id: nanoid(),
+                                      label: 'Family',
+                                      propertyName: 'downloadedFileStyles.font.type',
+                                      hideLabel: true,
+                                      dropdownOptions: fontTypes,
+                                    },
+                                    {
+                                      type: 'numberField',
+                                      id: nanoid(),
+                                      label: 'Size',
+                                      propertyName: 'downloadedFileStyles.font.size',
+                                      hideLabel: true,
+                                      width: 50,
+                                    },
+                                    {
+                                      type: 'dropdown',
+                                      id: nanoid(),
+                                      label: 'Weight',
+                                      propertyName: 'downloadedFileStyles.font.weight',
+                                      hideLabel: true,
+                                      tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                      dropdownOptions: fontWeightsOptions,
+                                      width: 100,
+                                    },
+                                    {
+                                      type: 'colorPicker',
+                                      id: nanoid(),
+                                      label: 'Color',
+                                      hideLabel: true,
+                                      propertyName: 'downloadedFileStyles.font.color',
+                                    },
+                                    {
+                                      type: 'dropdown',
+                                      id: nanoid(),
+                                      label: 'Align',
+                                      propertyName: 'downloadedFileStyles.font.align',
+                                      hideLabel: true,
+                                      width: 60,
+                                      dropdownOptions: textAlignOptions,
+                                    },
+                                  ],
+                                })
+                                .toJson()
+                              ]
+                            }
+                          })
+                          .addCollapsiblePanel({
+                            id: nanoid(),
+                            propertyName: 'pnlDownloadedFileCustomStylePanel',
+                            label: 'Custom Styles',
+                            labelAlign: 'right',
+                            ghost: true,
+                            parentId: downloadedStylesPnlId,
+                            collapsible: 'header',
+                            content: {
+                              id: 'pnlDownloadedFileCustomStylePanel',
+                              components: [...new DesignerToolbarSettings()
+                                .addSettingsInput({
+                                  id: nanoid(),
+                                  inputType: 'codeEditor',
+                                  propertyName: 'downloadedFileStyles.style',
+                                  hideLabel: false,
+                                  label: 'Style',
+                                  description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                  parentId: 'pnlDownloadedFileCustomStylePanel'
+                                })
+                                .toJson()
+                              ]
+                            }
+                          })
+                          .toJson()
+                        ]
                       }
                     })
                     .toJson()]

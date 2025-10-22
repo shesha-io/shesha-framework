@@ -19,7 +19,8 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
-import { containerDefaultStyles, defaultStyles } from './utils';
+import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles } from './utils';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -46,6 +47,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   hideFileName?: boolean;
   container?: IStyleType;
   primaryColor?: string;
+  downloadedFileStyles?: IStyleType;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -63,6 +65,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const pageContext = useDataContextManagerActions(false)?.getPageContext();
     const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
+    const {
+      fullStyle: downloadedFileFullStyle,
+    } = useFormComponentStyles(model.downloadedFileStyles ?? downloadedFileDefaultStyles());
+
     const enabled = !model.readOnly;
 
     const executeScript = (script, value) => {
@@ -79,7 +85,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         pageContext,
       });
     };
-    
+
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
@@ -126,6 +132,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 {...model}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
+                downloadedFileStyles={downloadedFileFullStyle}
               />
             </StoredFilesProvider>
           );
@@ -163,8 +170,13 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
     .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
-    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? ''}))
-    .add<IAttachmentsEditorProps>(9, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '', onChangeCustom: prev?.onFileChanged })),
+    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '' }))
+    .add<IAttachmentsEditorProps>(9, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '', onChangeCustom: prev?.onFileChanged }))
+    .add<IAttachmentsEditorProps>(10, (prev) => ({
+      ...prev, desktop: { ...prev.desktop, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
+      mobile: { ...prev.mobile, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
+      tablet: { ...prev.tablet, downloadedFileStyles: { ...downloadedFileDefaultStyles() } }
+    })),
 };
 
 export default AttachmentsEditor;
