@@ -135,28 +135,27 @@ namespace Shesha.Sessions
                         if (permissionMap.ContainsKey(permissionName))
                         {
                             var existing = permissionMap[permissionName];
-                            if (existing.PermissionedEntity.Any() || (!hasGlobalPermission && deduped.Any()))
+
+                            // Global grant always wins: check if hasGlobalPermission is true OR existing has empty PermissionedEntity (global)
+                            if (hasGlobalPermission || !existing.PermissionedEntity.Any())
                             {
-                                // Keep existing if it has entities, or update if current has entities and existing doesn't
-                                if (!existing.PermissionedEntity.Any() && deduped.Any())
+                                // Set to global permission (empty PermissionedEntity) and skip merging
+                                permissionMap[permissionName] = new GrantedPermissionDto
                                 {
-                                    permissionMap[permissionName] = new GrantedPermissionDto
-                                    {
-                                        Permission = permissionName,
-                                        PermissionedEntity = deduped
-                                    };
-                                }
-                                // If existing already has entities, merge them
-                                else if (existing.PermissionedEntity.Any() && deduped.Any())
+                                    Permission = permissionName,
+                                    PermissionedEntity = new List<EntityReferenceDto<string>>()  // Empty list = global permission
+                                };
+                            }
+                            else
+                            {
+                                // Merge existing.PermissionedEntity and deduped by { _className, Id }
+                                var mergedEntities = existing.PermissionedEntity.Concat(deduped)
+                                    .DistinctBy(e => new { e._className, e.Id }).ToList();
+                                permissionMap[permissionName] = new GrantedPermissionDto
                                 {
-                                    var mergedEntities = existing.PermissionedEntity.Concat(deduped)
-                                        .DistinctBy(e => new { e._className, e.Id }).ToList();
-                                    permissionMap[permissionName] = new GrantedPermissionDto
-                                    {
-                                        Permission = permissionName,
-                                        PermissionedEntity = mergedEntities
-                                    };
-                                }
+                                    Permission = permissionName,
+                                    PermissionedEntity = mergedEntities
+                                };
                             }
                         }
                         else
@@ -164,7 +163,7 @@ namespace Shesha.Sessions
                             permissionMap[permissionName] = new GrantedPermissionDto
                             {
                                 Permission = permissionName,
-                                PermissionedEntity = hasGlobalPermission && !deduped.Any()
+                                PermissionedEntity = hasGlobalPermission
                                     ? new List<EntityReferenceDto<string>>()  // Empty list = global permission
                                     : deduped  // Specific entities
                             };

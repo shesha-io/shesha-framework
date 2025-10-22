@@ -49,14 +49,14 @@ namespace Shesha.Authorization
             var appointments = (await _rolePersonRepository.GetAll().Where(x => x.Person == person && x.Role != null)
                 .ToListAsync())
                 .Where(x =>
-                    !x.PermissionedEntities.Any()
+                    x.PermissionedEntities == null || !x.PermissionedEntities.Any()
                     || x.PermissionedEntities.Any(pe => pe.Id == permissionedEntity.Id && pe._className == permissionedEntity._className));
             return appointments.SelectMany(x => x.Role?.Permissions ?? Enumerable.Empty<ShaRolePermission>()).Any(x => x.Permission == permissionName && x.IsGranted);
         }
 
         public bool IsGranted(long userId, string permissionName)
         {
-            return AsyncHelper.RunSync(async() => await IsGrantedAsync(userId, permissionName));
+            return AsyncHelper.RunSync(() => IsGrantedAsync(userId, permissionName));
         }
 
         public bool IsGranted(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)

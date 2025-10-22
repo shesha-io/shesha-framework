@@ -9,7 +9,7 @@ namespace Boxfusion.Authorization
     public static class RoleNames
     {
         /// <summary>
-        /// Data Administrator
+        /// System Administrator
         /// </summary>
         [Obsolete("Use Shesha.Authorization.Roles.StaticRoleNames.SystemAdministrator instead")]
         public const string SystemAdministrator = "System Administrator";
