@@ -105,7 +105,7 @@ namespace Shesha.Sessions
 
                         foreach (var roleAppointment in roleAppointmentsWithPermission)
                         {
-                            if (!roleAppointment.PermissionedEntities.Any())
+                            if (roleAppointment.PermissionedEntities == null || !roleAppointment.PermissionedEntities.Any())
                             {
                                 // If any role appointment has no PermissionedEntities, this is a global permission
                                 hasGlobalPermission = true;
@@ -122,7 +122,7 @@ namespace Shesha.Sessions
 
                         var deduped = permissionedEntities.DistinctBy(e => new { e._className, e.Id }).ToList();
 
-                        // Handle duplicates: prefer permissioned entities over global permissions
+                        // Handle duplicates
                         if (permissionMap.ContainsKey(permissionName))
                         {
                             var existing = permissionMap[permissionName];
