@@ -32,7 +32,7 @@ const NotConfiguredWarning: FC = () => {
 
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
-  const { id, items, useMultiselect, tableStyle, containerStyle } = props;
+  const { id, items, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
 
   const { formMode } = useForm();
   const { data: formData } = useFormData();
@@ -60,16 +60,53 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
   const finalStyle = useMemo(() => {
     if (props.allStyles) {
+      let baseStyle;
       if (!props.enableStyleOnReadonly && props.readOnly) {
-        return {
+        baseStyle = {
           ...props.allStyles.fontStyles,
           ...props.allStyles.dimensionsStyles,
         };
+      } else {
+        baseStyle = props.allStyles.fullStyle;
       }
-      return props.allStyles.fullStyle;
+
+      // Remove border properties from the outer container when border is being passed to DataTable
+      // This prevents double borders
+      if (props.border && baseStyle) {
+        const {
+          border,
+          borderTop,
+          borderRight,
+          borderBottom,
+          borderLeft,
+          borderWidth,
+          borderStyle,
+          borderColor,
+          borderRadius,
+          borderTopWidth,
+          borderRightWidth,
+          borderBottomWidth,
+          borderLeftWidth,
+          borderTopStyle,
+          borderRightStyle,
+          borderBottomStyle,
+          borderLeftStyle,
+          borderTopColor,
+          borderRightColor,
+          borderBottomColor,
+          borderLeftColor,
+          borderTopLeftRadius,
+          borderTopRightRadius,
+          borderBottomLeftRadius,
+          borderBottomRightRadius,
+          ...styleWithoutBorder
+        } = baseStyle;
+        return styleWithoutBorder;
+      }
+      return baseStyle;
     }
     return {};
-  }, [props.enableStyleOnReadonly, props.readOnly, props.allStyles]);
+  }, [props.enableStyleOnReadonly, props.readOnly, props.allStyles, props.border]);
 
   const {
     getRepository,
@@ -141,6 +178,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
           onMultiRowSelect={setMultiSelectedRow}
           selectedRowIndex={selectedRow?.index}
           useMultiselect={useMultiselect}
+          selectionMode={selectionMode}
           freezeHeaders={props.stickyHeader || props.freezeHeaders}
           allowReordering={allowReordering}
           tableStyle={getStyle(tableStyle, formData, globalState)}

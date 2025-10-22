@@ -4,6 +4,7 @@ import { IFlatComponentsStructure } from '@/providers/form/models';
 import React, { ReactNode, CSSProperties } from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { TableSelectionMode } from '../dataTable/interfaces';
 
 export interface IColumnWidth {
   id: React.Key;
@@ -81,6 +82,11 @@ export interface IReactTableProps extends ITableRowDragProps {
    * Whether the table should allow multi-select
    */
   useMultiSelect?: boolean;
+
+  /**
+   * Selection mode for the table
+   */
+  selectionMode?: TableSelectionMode;
 
   /**
    * Whether the table's headers should be frozen and you scroll under them

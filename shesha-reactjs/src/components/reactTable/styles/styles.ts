@@ -1,5 +1,6 @@
 import { createStyles, SerializedStyles } from 'antd-style';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 
 const tableClassNames = {
   shaTable: 'sha-table',
@@ -42,6 +43,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
+  border,
 }: {
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
@@ -77,6 +79,16 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaCellParentFW,
     shaSpanCenterVertically,
   } = tableClassNames;
+
+  // Generate border styles from the border configuration
+  const borderStyles = getBorderStyle(border || {}, {});
+  const hasBorderRadius = border?.radius && (
+    (border.radius.all && border.radius.all !== '0' && border.radius.all !== '0px') ||
+    (border.radius.topLeft && border.radius.topLeft !== '0' && border.radius.topLeft !== '0px') ||
+    (border.radius.topRight && border.radius.topRight !== '0' && border.radius.topRight !== '0px') ||
+    (border.radius.bottomLeft && border.radius.bottomLeft !== '0' && border.radius.bottomLeft !== '0px') ||
+    (border.radius.bottomRight && border.radius.bottomRight !== '0' && border.radius.bottomRight !== '0px')
+  );
 
   // var(--ant-primary-3)
   const hoverableRow = `
@@ -131,6 +143,18 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         border-spacing: 0;
         display: inline-block;
         min-width: 100%;
+
+        /* Apply border styles to the inner table */
+        ${Object.entries(borderStyles).map(([key, value]) => {
+          // Convert camelCase CSS properties to kebab-case
+          const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+          return `${cssKey}: ${value};`;
+        }).join('\n')}
+
+        /* When border-radius is present, ensure content respects the bounds */
+        ${hasBorderRadius ? `
+          overflow: hidden;
+        ` : ''}
 
         .${thead} {
           /* These styles are required for a scrollable body to align with the header properly */

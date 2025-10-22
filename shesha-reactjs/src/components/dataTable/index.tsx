@@ -89,6 +89,7 @@ export interface IExtendedModalProps extends ModalProps {
 
 export const DataTable: FC<Partial<IIndexTableProps>> = ({
   useMultiselect: useMultiSelect,
+  selectionMode,
   selectedRowIndex,
   onSelectRow,
   onDblClick,
@@ -385,8 +386,21 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [dblClickHandler, handleRowDoubleClick]);
 
   useEffect(() => {
-    if (handleSelectionChange && selectedIds?.length !== previousIds?.length) {
-      handleSelectionChange(selectedIds);
+    if (handleSelectionChange && previousIds !== undefined) {
+      // Check if the selection actually changed by comparing the arrays
+      const currentIds = selectedIds || [];
+      const prevIds = previousIds || [];
+
+      // Compare sorted arrays for efficient comparison
+      const currentSorted = [...currentIds].sort();
+      const prevSorted = [...prevIds].sort();
+
+      const hasChanged = currentSorted.length !== prevSorted.length ||
+                        currentSorted.some((id, index) => id !== prevSorted[index]);
+
+      if (hasChanged) {
+        handleSelectionChange(currentIds);
+      }
     }
   }, [selectedIds, handleSelectionChange, previousIds]);
 
@@ -910,12 +924,13 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     data: tableData,
     // Disable sorting if we're in create mode so that the new row is always the first
     defaultSorting: defaultSorting,
-    useMultiSelect,
+    useMultiSelect: selectionMode === 'multiple' || selectionMode === 'single' || (selectionMode === undefined && useMultiSelect),
+    selectionMode,
     freezeHeaders,
-    onSelectRow: onSelectRowLocal,
+    onSelectRow: selectionMode === 'none' ? undefined : onSelectRowLocal,
     onRowDoubleClick: combinedDblClickHandler,
-    onSelectedIdsChanged: changeSelectedIds,
-    onMultiRowSelect,
+    onSelectedIdsChanged: selectionMode === 'none' ? undefined : changeSelectedIds,
+    onMultiRowSelect: (selectionMode === 'multiple' || (selectionMode === undefined && useMultiSelect)) ? onMultiRowSelect : undefined,
     onSort, // Update it so that you can pass it as param. Quick fix for now
     columns: preparedColumns,
     selectedRowIndex,
