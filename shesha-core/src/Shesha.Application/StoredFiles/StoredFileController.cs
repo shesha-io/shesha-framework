@@ -1,11 +1,13 @@
-﻿using Abp.Dependency;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.ObjectMapping;
 using Abp.Reflection;
+using Abp.Runtime.Session;
 using Abp.Runtime.Validation;
 using Abp.UI;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.Domain;
@@ -38,10 +40,12 @@ namespace Shesha.StoredFiles
         private readonly IStoredFileService _fileService;
         private readonly IRepository<StoredFile, Guid> _fileRepository;
         private readonly IRepository<StoredFileVersion, Guid> _fileVersionRepository;
+        private readonly IRepository<StoredFileVersionDownload, Guid> _fileVersionDownloadRepository;
         private readonly IDynamicRepository _dynamicRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IShaTypeFinder _typeFinder;
+        private readonly IAbpSession _abpSession;
 
         /// <summary>
         /// Reference to the object to object mapper.
@@ -54,7 +58,7 @@ namespace Shesha.StoredFiles
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<Person, Guid> personRepository,
             IShaTypeFinder typeFinder
-            )
+, IAbpSession abpSession, IRepository<StoredFileVersionDownload, Guid> fileVersionDownloadRepository)
         {
             _fileService = fileService;
             _fileRepository = fileRepository;
@@ -63,6 +67,8 @@ namespace Shesha.StoredFiles
             _unitOfWorkManager = unitOfWorkManager;
             _personRepository = personRepository;
             _typeFinder = typeFinder;
+            _abpSession = abpSession;
+            _fileVersionDownloadRepository = fileVersionDownloadRepository;
         }
 
         [HttpGet, Route("Download")]
@@ -70,18 +76,32 @@ namespace Shesha.StoredFiles
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
 
-            if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
-                return StatusCode(304);
+            await _fileService.MarkDownloadedAsync(fileVersion);
 
+            if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
+            {
+                return StatusCode(304);
+            }
+                                
 #pragma warning disable IDISP001 // Dispose created. Note: this stream will be disposed by FileStreamResult
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
 #pragma warning restore IDISP001 // Dispose created
-            await _fileService.MarkDownloadedAsync(fileVersion);
 
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
             HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
 
             return File(fileContents, fileVersion.FileType.GetContentType(), fileVersion.FileName);
+        }
+
+        [HttpGet, Route("HasDownloaded")]
+        public async Task<ActionResult> HasDownloadedAsync(Guid storedFileId)
+        {
+            var currentLoggedInUserId = _abpSession.UserId;
+            var hasDownloaded = await _fileVersionDownloadRepository.GetAll()
+                .Where((x => x.FileVersion.File.Id == storedFileId && x.CreatorUserId == currentLoggedInUserId))
+               .AnyAsync();
+            return Ok(new { hasDownloaded });
+
         }
 
         [HttpGet, Route("Base64String")]
@@ -480,6 +500,10 @@ namespace Shesha.StoredFiles
 
             if (files?.Count > 0)
             {
+                    foreach (var file in files)
+                    {
+                        await _fileService.MarkDownloadedAsync(file.LastVersion());
+                    }
                 // todo: move zip support to the FileService, current implementation doesn't support Azure
                 var list = _fileService.MakeUniqueFileNames(files);
 
@@ -511,8 +535,23 @@ namespace Shesha.StoredFiles
                 ? await _fileService.GetLastVersionsOfAttachmentsAsync(id, type)
                 : await _fileService.GetLastVersionsOfAttachmentsAsync(id, type, input.FilesCategory.ToCamelCase());
 
-            var list = fileVersions.Select(v => GetFileDto(v)).WhereNotNull().ToList();
-            return list;
+            var currentUserId = _abpSession.UserId;
+
+            if (currentUserId == null)
+                return fileVersions.Select(GetFileDto).WhereNotNull().ToList();
+
+            var fileIds = fileVersions.Select(v => v.File.Id).ToList();
+            var downloadedFileIds = await _fileVersionDownloadRepository.GetAll()
+                .Where(x => x.CreatorUserId == currentUserId && fileIds.Contains(x.FileVersion.File.Id))
+                .Select(x => x.FileVersion.File.Id)
+                .ToListAsync();
+
+            return fileVersions.Select(v =>
+            {
+                var dto = GetFileDto(v);
+                dto!.UserHasDownloaded = downloadedFileIds.Contains(v.File.Id);
+                return dto;
+            }).ToList();
         }
 
         #region REST
@@ -654,10 +693,23 @@ namespace Shesha.StoredFiles
         {
             var storedFile = await _fileRepository.GetAsync(id);
 
-            return storedFile != null && !storedFile.IsDeleted
-                ? GetFileDto(storedFile.LastVersion())
-                : null;
+            if (storedFile == null || storedFile.IsDeleted)
+                return null;
+
+            var fileVersion = storedFile.LastVersion();
+            var dto = GetFileDto(fileVersion);
+
+            var currentUserId = _abpSession.UserId;
+            if (currentUserId.HasValue)
+            {
+                dto!.UserHasDownloaded = await _fileVersionDownloadRepository.GetAll()
+                    .AnyAsync(x => x.CreatorUserId == currentUserId.Value &&
+                                   x.FileVersion.File.Id == storedFile.Id);
+            }
+
+            return dto;
         }
+
 
         /// <summary>
         /// Get file as property of the entity
