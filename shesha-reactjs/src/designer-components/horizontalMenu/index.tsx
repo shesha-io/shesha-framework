@@ -13,7 +13,7 @@ import {
   useMainMenu,
   validateConfigurableComponentSettings,
 } from '@/index';
-import React, { useMemo } from 'react';
+import React, { CSSProperties, useMemo } from 'react';
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { ItemType } from "antd/es/menu/interface";
 
@@ -98,13 +98,16 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         "hoverItemColor",
         "hoverItemBackground",
       ]),
-      itemBackground: model.background?.color || model.itemBackground,
-      itemColor: model.font?.color || model.itemColor,
+      // Only set itemBackground for 'color' type or when no type is specified
+      // For other types (gradient, image, url, storedFile), let allStyles.backgroundStyles handle it
+      itemBackground: model.itemBackground || ((!model.background?.type || model.background?.type === 'color') ? model.background?.color : undefined),
+      itemColor: model.itemColor || model.font?.color,
     };
 
     const finalStyle = useMemo(() => {
       return {
         ...model.allStyles?.fullStyle,
+        ...model.allStyles?.backgroundStyles,
         ...(model.style ? getStyle(model.style, data) : {}),
       };
     }, [model.allStyles, model.style, data]);
@@ -113,7 +116,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       return {
         fontSize: model?.font?.size ? `${model.font.size}px` : `${fontSize}px`,
         fontFamily: model?.font?.type,
-        fontWeight: model?.font?.weight as any,
+        fontWeight: model?.font?.weight as CSSProperties['fontWeight'],
         color: model?.font?.color,
         textAlign: model?.font?.align as any,
       };
@@ -148,7 +151,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                 overflow={model.overflow}
                 width={width}
                 fontStyles={finalFontStyles as React.CSSProperties}
-                menuId={`horizontal-menu-${model.id}`}
+                menuId={model.id}
               />
             </div>
           );

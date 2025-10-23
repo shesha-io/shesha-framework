@@ -15,6 +15,8 @@ interface IProps {
   ) => void;
   colors?: ILayoutColor;
   fontStyles?: React.CSSProperties;
+  styleOnHover?: React.CSSProperties;
+  styleOnSelected?: React.CSSProperties;
   styleOnSubMenu?: React.CSSProperties;
   menuId?: string;
 }
@@ -25,6 +27,8 @@ const ShaMenuDrawer: FC<IProps> = ({
   onClose,
   colors,
   fontStyles,
+  styleOnHover,
+  styleOnSelected,
   styleOnSubMenu,
   menuId,
 }) => (
@@ -56,6 +60,8 @@ const ShaMenuDrawer: FC<IProps> = ({
     {colors && menuId && (
       <ScopedMenuStyles
         colors={colors}
+        styleOnHover={convertJsonToCss(styleOnHover)}
+        styleOnSelected={convertJsonToCss(styleOnSelected)}
         styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
         fontStyles={fontStyles}
         menuId={menuId}
