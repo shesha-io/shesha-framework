@@ -94,7 +94,7 @@ export const useStyles = createStyles(
         .${prefixCls}-menu-submenu, .${prefixCls}-menu-item {
           padding: ${padding?.y}px ${padding?.x}px;
           color: ${colors?.itemColor ?? BLACK_CLR};
-          ${colors?.itemBackground ? `background: ${colors.itemBackground};` : 'background: none;'}
+          ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
           font-family: ${fontStyles?.fontFamily};
           font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
           font-weight: ${fontStyles?.fontWeight};
