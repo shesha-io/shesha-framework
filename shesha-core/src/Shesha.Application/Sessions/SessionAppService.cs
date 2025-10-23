@@ -123,13 +123,13 @@ namespace Shesha.Sessions
                                 );
                             }
                         }
-                        var deduped = permissionedEntities.DistinctBy(e => new { e._className, e.Id }).ToList();
+
                         grantedPermissions.Add(new GrantedPermissionDto
                         {
                             Permission = permissionName,
                             PermissionedEntity = hasGlobalPermission
                                 ? new List<EntityReferenceDto<string>>()  // Empty list = global permission
-                                : deduped  // Specific entities
+                                : permissionedEntities.Distinct().ToList()  // Specific entities
                         });
                     }
                 }
