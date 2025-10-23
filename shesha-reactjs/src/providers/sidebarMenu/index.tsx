@@ -18,11 +18,13 @@ import {
   SidebarMenuActionsContext,
   SidebarMenuDefaultsContext,
   SidebarMenuStateContext,
+  ISidebarMenuDefaultsContext,
 } from './contexts';
 import { FormIdFullNameDto } from '@/apis/entityConfig';
 import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/formConfiguration';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useActualContextData } from '@/hooks';
+import { IAjaxErrorResponse } from '@/interfaces/ajaxResponse';
 
 export interface ISidebarMenuProviderProps {
   items: ISidebarMenuItem[];
@@ -138,7 +140,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
             });
             dispatch(setItemsAction([...localItems]));
           } else {
-            console.error(result.error);
+            console.error((result as IAjaxErrorResponse).error);
           }
         });
     }
@@ -208,7 +210,7 @@ function useSidebarMenuActions(require: boolean): ISidebarMenuActionsContext | u
   return context;
 }
 
-function useSidebarMenu(require: boolean = true): ISidebarMenuActionsContext | undefined {
+function useSidebarMenu(require: boolean = true): ISidebarMenuActionsContext & ISidebarMenuStateContext | undefined {
   const actionsContext = useSidebarMenuActions(require);
   const stateContext = useSidebarMenuState(require);
 
@@ -237,7 +239,7 @@ const SidebarMenuDefaultsProvider: FC<PropsWithChildren<ISidebarMenuDefaultsProv
   );
 };
 
-function useSidebarMenuDefaults(): ISidebarMenuDefaultsContext | undefined {
+function useSidebarMenuDefaults(): ISidebarMenuDefaultsContext {
   const context = useContext(SidebarMenuDefaultsContext);
 
   if (context === undefined) {
@@ -246,9 +248,6 @@ function useSidebarMenuDefaults(): ISidebarMenuDefaultsContext | undefined {
 
   return context;
 }
-
-//#endregion
-
 export {
   SidebarMenuDefaultsProvider,
   SidebarMenuProvider,
@@ -259,3 +258,4 @@ export {
   type IHeaderAction,
   type ISidebarMenuItem,
 };
+//#endregion

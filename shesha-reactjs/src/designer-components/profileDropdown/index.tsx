@@ -72,8 +72,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     const { globalState } = useGlobalState();
     const { executeAction } = useFormExpression();
 
-    const sidebar = useSidebarMenu(false);
-    const { accountDropdownListItems } = sidebar || {};
+    const { accountDropdownListItems } = useSidebarMenu(false) || {};
 
     const subTextStyling = {
       color: subTextColor,

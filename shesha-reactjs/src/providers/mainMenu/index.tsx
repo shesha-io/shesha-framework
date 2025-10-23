@@ -11,7 +11,7 @@ import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/fo
 import { FormIdFullNameDto } from '@/apis/entityConfig';
 import { settingsUpdateValue } from '@/apis/settings';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
-import { IAjaxResponse } from '@/interfaces/ajaxResponse';
+import { IAjaxErrorResponse } from '@/interfaces/ajaxResponse';
 
 export interface MainMenuProviderProps {
   mainMenuConfigKey?: string;
@@ -21,7 +21,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
   const [state, dispatch] = useReducer(uiReducer, { ...MAIN_MENU_CONTEXT_INITIAL_STATE });
 
   const { loadingState, value: fetchedMainMenu } = useSettingValue({ module: 'Shesha', name: 'Shesha.MainMenuSettings' });
-  const auth = useAuth(false);
+  const auth = useAuth();
 
   const { applicationKey, anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
   const allData = useAvailableConstantsData();
@@ -127,7 +127,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
             formPermissionedItems.current = [...items];
             dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
           } else {
-            console.error(result.error);
+            console.error((result as IAjaxErrorResponse).error);
           }
         });
     }
@@ -174,7 +174,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
     updateMainMenu(value);
   };
 
-  const saveMainMenu = (value: IConfigurableMainMenu): Promise<IAjaxResponse> => {
+  const saveMainMenu = (value: IConfigurableMainMenu): Promise<void> => {
     return settingsUpdateValue(
       {
         name: 'Shesha.MainMenuSettings',
@@ -206,7 +206,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
   );
 };
 
-function useMainMenuState(): IMainMenuStateContext | undefined {
+function useMainMenuState(): IMainMenuStateContext {
   const context = useContext(MainMenuStateContext);
 
   if (context === undefined) {
@@ -215,7 +215,7 @@ function useMainMenuState(): IMainMenuStateContext | undefined {
   return context;
 }
 
-function useMainMenuActions(): IMainMenuActionsContext | undefined {
+function useMainMenuActions(): IMainMenuActionsContext {
   const context = useContext(MainMenuActionsContext);
 
   if (context === undefined) {
@@ -225,7 +225,7 @@ function useMainMenuActions(): IMainMenuActionsContext | undefined {
   return context;
 }
 
-function useMainMenu(): IMainMenuActionsContext | undefined {
+function useMainMenu(): IMainMenuActionsContext & IMainMenuStateContext {
   return { ...useMainMenuState(), ...useMainMenuActions() };
 }
 
