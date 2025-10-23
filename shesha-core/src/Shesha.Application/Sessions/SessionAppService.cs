@@ -89,14 +89,20 @@ namespace Shesha.Sessions
                 {
                     if (await PermissionChecker.IsGrantedAsync(permissionName))
                     {
-                        var permissionRoles = roles.Where(x => x.Role.Permissions.Any(p => p.Permission == permissionName)).ToList();
+                        var permissionRoles = roles.Where(x => x.Role.Permissions.Any(p => p.Permission == permissionName && p.IsGranted)).ToList();
                         grantedPermissions.Add(new GrantedPermissionDto
                         {
                             Permission = permissionName,
-                            PermissionedEntity = permissionRoles.Any(x => !x.PermissionedEntities.Any())
+                            // treat as global if any granting role has no scoped entities
+                            PermissionedEntity = permissionRoles.Any(r => r.PermissionedEntities == null || !r.PermissionedEntities.Any())
                                 ? new List<EntityReferenceDto<string>>()
-                                : permissionRoles.SelectMany(x => x.PermissionedEntities).Distinct()
-                                    .Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className))
+                                : permissionRoles
+                                    .SelectMany(r => r.PermissionedEntities)
+                                    .GroupBy(pe => new { pe.Id, pe._className })
+                                    .Select(g => {
+                                        var first = g.First();
+                                        return new EntityReferenceDto<string>(g.Key.Id, first._displayName, g.Key._className);
+                                    })
                                     .ToList()
                         });
                     }
