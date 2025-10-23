@@ -85,51 +85,25 @@ namespace Shesha.Sessions
                 var roles = await _roleAppointmentRepository.GetAll().Where(a => a.Person == currentUser).ToListAsync();
                 var allPermissionNames = PermissionManager.GetAllPermissions(false).Select(p => p.Name).ToList();
 
-                // Group permissions by name and collect all associated PermissionedEntities
-                var permissionGroups = roles
-                    .SelectMany(role => role.Role.Permissions
-                        .Where(p => p.IsGranted)
-                        .Select(p => new { Permission = p.Permission, Role = role }))
-                    .GroupBy(x => x.Permission)
-                    .ToList();
-
-                foreach (var permissionGroup in permissionGroups)
+                foreach (var permissionName in allPermissionNames)
                 {
-                    var permissionName = permissionGroup.Key;
-
-                    // Check if user has this permission granted
                     if (await PermissionChecker.IsGrantedAsync(permissionName))
                     {
-                        var rolesWithPermission = permissionGroup.Select(x => x.Role).ToList();
-
-                        // Collect all PermissionedEntities from roles that have this permission
-                        var permissionedEntities = new List<EntityReferenceDto<string>>();
-                        var hasGlobalPermission = false;
-
-                        foreach (var role in rolesWithPermission)
-                        {
-                            if (!role.PermissionedEntities.Any())
-                            {
-                                // If any role has no PermissionedEntities, this is a global permission
-                                hasGlobalPermission = true;
-                                break;
-                            }
-                            else
-                            {
-                                // Add specific entities from this role
-                                permissionedEntities.AddRange(
-                                    role.PermissionedEntities.Select(x =>
-                                        new EntityReferenceDto<string>(x.Id, x._displayName, x._className))
-                                );
-                            }
-                        }
-                        var deduped = permissionedEntities.DistinctBy(e => new { e._className, e.Id }).ToList();
+                        var permissionRoles = roles.Where(x => x.Role.Permissions.Any(p => p.Permission == permissionName && p.IsGranted)).ToList();
                         grantedPermissions.Add(new GrantedPermissionDto
                         {
                             Permission = permissionName,
-                            PermissionedEntity = hasGlobalPermission
-                                ? new List<EntityReferenceDto<string>>()  // Empty list = global permission
-                                : deduped  // Specific entities
+                            // treat as global if any granting role has no scoped entities
+                            PermissionedEntity = permissionRoles.Any(r => r.PermissionedEntities == null || !r.PermissionedEntities.Any())
+                                ? new List<EntityReferenceDto<string>>()
+                                : permissionRoles
+                                    .SelectMany(r => r.PermissionedEntities)
+                                    .GroupBy(pe => new { pe.Id, pe._className })
+                                    .Select(g => {
+                                        var first = g.First();
+                                        return new EntityReferenceDto<string>(g.Key.Id, first._displayName, g.Key._className);
+                                    })
+                                    .ToList()
                         });
                     }
                 }
