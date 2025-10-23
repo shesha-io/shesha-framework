@@ -98,22 +98,7 @@ namespace Shesha.Sessions
                                 : permissionRoles.SelectMany(x => x.PermissionedEntities).Distinct()
                                     .Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className))
                                     .ToList()
-                        }); ;
-                    }
-                }
-
-                foreach(var role in roles)
-                {
-                    if (!role.Role.Permissions.Any())
-                        continue;
-
-                    foreach (var permission in role.Role.Permissions.Where(x => x.IsGranted))
-                    {
-                        var grantedPermission = new GrantedPermissionDto
-                        {
-                            Permission = permission.Permission,
-                            PermissionedEntity = role.PermissionedEntities.Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className)).ToList(),
-                        };
+                        });
                     }
                 }
             }
