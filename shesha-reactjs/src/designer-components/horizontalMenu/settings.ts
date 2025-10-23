@@ -14,6 +14,8 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
   const backgroundStylePnlId = nanoid();
+  const menuSpecificPnlId = nanoid();
+  const menuSpecificContentId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -510,7 +512,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       },
                     })
                     .addCollapsiblePanel({
-                      id: nanoid(),
+                      id: menuSpecificPnlId,
                       propertyName: 'pnlMenuSpecific',
                       label: 'Menu Specific',
                       parentId: styleRouterId,
@@ -518,11 +520,11 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       ghost: true,
                       collapsible: 'header',
                       content: {
-                        id: nanoid(),
+                        id: menuSpecificContentId,
                         components: [...new DesignerToolbarSettings()
                           .addSettingsInputRow({
                             id: nanoid(),
-                            parentId: styleRouterId,
+                            parentId: menuSpecificContentId,
                             inputs: [
                               {
                                 type: 'numberField',
