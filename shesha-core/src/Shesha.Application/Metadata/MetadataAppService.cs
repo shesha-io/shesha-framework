@@ -76,7 +76,7 @@ namespace Shesha.Metadata
                     (!string.IsNullOrWhiteSpace(e.Label) &&
                      e.Label.Contains(term, StringComparison.InvariantCultureIgnoreCase))
                 )
-                .OrderBy(e => e.Label)
+                .OrderBy(e => e.Label ?? e.Path)
                 .Take(10)
                 .ToList();
 
