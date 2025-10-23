@@ -16,16 +16,37 @@ export interface MainMenuProviderProps {
   mainMenuConfigKey?: string;
 }
 
-const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({children}) => {
-  const [state, dispatch] = useReducer(uiReducer, {...MAIN_MENU_CONTEXT_INITIAL_STATE});
+const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ children }) => {
+  const [state, dispatch] = useReducer(uiReducer, { ...MAIN_MENU_CONTEXT_INITIAL_STATE });
 
-  const { loadingState, value: fetchedMainMenu } = useSettingValue({module: 'Shesha', name: 'Shesha.MainMenuSettings'});
+  const { loadingState, value: fetchedMainMenu } = useSettingValue({ module: 'Shesha', name: 'Shesha.MainMenuSettings' });
   const auth = useAuth(false);
 
   const { applicationKey, anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
   const allData = useAvailableConstantsData();
 
   const formPermissionedItems = useRef<ISidebarMenuItem[]>([]);
+  const originalHiddenValues = useRef<Map<string, boolean>>(new Map());
+
+  const storeOriginalHiddenValues = (items: ISidebarMenuItem[]) => {
+    items.forEach((item) => {
+      if (!originalHiddenValues.current.has(item.id)) {
+        originalHiddenValues.current.set(item.id, item.hidden || false);
+      }
+      if (isSidebarGroup(item) && item.childItems) {
+        storeOriginalHiddenValues(item.childItems);
+      }
+    });
+  };
+
+  const updateOriginalHiddenValues = (items: ISidebarMenuItem[]) => {
+    items.forEach((item) => {
+      originalHiddenValues.current.set(item.id, item.hidden || false);
+      if (isSidebarGroup(item) && item.childItems) {
+        updateOriginalHiddenValues(item.childItems);
+      }
+    });
+  };
 
   const getActualItemsModel = (items: ISidebarMenuItem[]) => {
     const actualItems = items.map((item) => {
@@ -33,34 +54,48 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
       if (isSidebarGroup(actualItem) && actualItem.childItems && actualItem.childItems.length > 0) {
         actualItem.childItems = getActualItemsModel(actualItem.childItems);
       }
+
       if (actualItem.requiredPermissions?.length > 0)
         if (anyOfPermissionsGranted(actualItem?.requiredPermissions))
           return actualItem;
         else
-          return {...actualItem, hidden: true};
+          return { ...actualItem, hidden: true };
       return actualItem;
     });
 
     return actualItems;
   };
 
-  const updatetFormNamigationVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
-    if (
-      item.actionConfiguration?.actionOwner === 'shesha.common'
-      && item.actionConfiguration?.actionName === 'Navigate'
-      && item.actionConfiguration?.actionArguments?.navigationType === 'form'
-      && item.actionConfiguration?.actionArguments?.formId?.name
-      && item.actionConfiguration?.actionArguments?.formId?.module
-    ) {
-      // form navigation, check form permissions
-      const form = formsPermission.find(x =>
-        x.module === item.actionConfiguration?.actionArguments?.formId?.module
-        && x.name === item.actionConfiguration?.actionArguments?.formId?.name
-      );
-      const hiddenByPermissions = form && form.permissions ? !anyOfPermissionsGranted(form.permissions) : false;
-      const explicitlyHidden = (item as any).explicitlyHidden || false;
-      item.hidden = explicitlyHidden || hiddenByPermissions;
+  const findAndUpdateFormNavigationVisible = (items: ISidebarMenuItem[], targetItem: ISidebarMenuItem, formsPermission: FormPermissionsDto[]): boolean => {
+    for (const item of items) {
+      if (item.id === targetItem.id) {
+        if (
+          item.actionConfiguration?.actionOwner === 'shesha.common'
+          && item.actionConfiguration?.actionName === 'Navigate'
+          && item.actionConfiguration?.actionArguments?.navigationType === 'form'
+          && item.actionConfiguration?.actionArguments?.formId?.name
+          && item.actionConfiguration?.actionArguments?.formId?.module
+        ) {
+          // form navigation, check form permissions
+          const form = formsPermission.find(x =>
+            x.module === item.actionConfiguration?.actionArguments?.formId?.module
+            && x.name === item.actionConfiguration?.actionArguments?.formId?.name
+          );
+          const hiddenByFormPermissions = form && form.permissions ? !anyOfPermissionsGranted(form.permissions) : false;
+          const hiddenByRequiredPermissions = item.requiredPermissions?.length > 0 ? !anyOfPermissionsGranted(item.requiredPermissions) : false;
+          const originalHiddenValue = originalHiddenValues.current.get(item.id) || false;
+          // For form navigation items: respect original hidden setting OR any permission failure
+          item.hidden = originalHiddenValue || hiddenByFormPermissions || hiddenByRequiredPermissions;
+        }
+        return true;
+      }
+      if (isSidebarGroup(item) && item.childItems) {
+        if (findAndUpdateFormNavigationVisible(item.childItems, targetItem, formsPermission)) {
+          return true;
+        }
+      }
     }
+    return false;
   };
 
   const getItemsWithFormNavigation = (items: ISidebarMenuItem[]) => {
@@ -77,8 +112,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
         && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
         && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
       ) {
-        // Preserve explicit hidden state for form navigation items
-        (item as any).explicitlyHidden = item.hidden || false;
+        // Form navigation item - will be processed for permissions
         itemsToCheck.push(item);
       }
     });
@@ -93,7 +127,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
         .then((result) => {
           if (result.success) {
             itemsToCheck.forEach((item) => {
-              return updatetFormNamigationVisible(item, result.result);
+              findAndUpdateFormNavigationVisible(items, item, result.result);
             });
             formPermissionedItems.current = [...items];
             dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
@@ -107,11 +141,16 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
   const updateMainMenu = (value: IConfigurableMainMenu) => {
     const migratorInstance = new Migrator<IConfigurableMainMenu, IConfigurableMainMenu>();
     const fluent = mainMenuMigration(migratorInstance);
-    const versionedValue = {...value} as IHasVersion;
-    if (versionedValue.version === undefined) 
+    const versionedValue = { ...value } as IHasVersion;
+    if (versionedValue.version === undefined)
       versionedValue.version = -1;
     const model = fluent.migrator.upgrade(versionedValue, {});
     dispatch(setLoadedMenuAction(model as IConfigurableMainMenu));
+
+    // Store original hidden values on data load
+    if (model.items) {
+      storeOriginalHiddenValues(Array.isArray(model.items) ? model.items : [model.items]);
+    }
 
     const itemsToCheck = getItemsWithFormNavigation(model.items);
     if (itemsToCheck.length > 0) {
@@ -124,7 +163,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
 
   useDeepCompareEffect(() => {
     dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
-  }, [{...allData}]); // use spread to get the values of the ObservableProxy fields
+  }, [allData]);
 
   useEffect(() => {
     if (loadingState === 'ready') {
@@ -133,6 +172,10 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
   }, [loadingState, auth?.isLoggedIn]);
 
   const changeMainMenu = (value: IConfigurableMainMenu) => {
+    // Update original hidden values when menu configuration changes
+    if (value.items) {
+      updateOriginalHiddenValues(Array.isArray(value.items) ? value.items : [value.items]);
+    }
     updateMainMenu(value);
   };
 
