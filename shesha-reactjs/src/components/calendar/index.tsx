@@ -11,7 +11,7 @@ import { getLayerOptions, getLayerEvents, isDateDisabled, getDayStyles } from '.
 import { useCalendarStyles } from './styles/styles';
 import {
   evaluateString,
-  executeScript,
+  useActualContextExecution,
   useAvailableConstantsData,
   useConfigurableActionDispatcher,
   useTheme
@@ -46,8 +46,6 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
 
   const [events, setEvents] = useState<any>([]);
   const [defaultView, setDefaultView] = useState<View>(displayPeriod?.[0]);
-  const [internalStartDate, setInternalStartDate] = useState<string>(externalStartDate);
-  const [internalEndDate, setInternalEndDate] = useState<string>(externalEndDate);
 
   const clickTimeoutRef = useRef<number | null>(null);
   const lastClickedEventRef = useRef<ICalendarEvent | null>(null);
@@ -55,11 +53,14 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const primaryColor = theme.application.primaryColor;
   const defaultVisibleLayers = getLayerOptions(items)?.map((item) => item.value);
 
+  const startDate = useActualContextExecution(externalStartDate);
+  const endDate = useActualContextExecution(externalEndDate);
+
   const dummyEvent =
-    internalStartDate && internalEndDate
+    startDate && endDate
       ? (() => {
-        const s = new Date(internalStartDate);
-        const e = new Date(internalEndDate);
+        const s = new Date(startDate);
+        const e = new Date(endDate);
         return isNaN(s.getTime()) || isNaN(e.getTime()) ? null : { start: s, end: e, color: primaryColor };
       })()
       : null;
@@ -72,19 +73,6 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     [events]
   );
 
-  // Handle external date changes
-  useEffect(() => {
-    if (externalStartDate) {
-      executeScript(externalStartDate, allData).then(res => {
-        setInternalStartDate(res);
-      });
-    }
-    if (externalEndDate) {
-      executeScript(externalEndDate, allData).then(res => {
-        setInternalEndDate(res ? res : internalStartDate);
-      });
-    }
-  }, [externalStartDate, externalEndDate, allData, allData.data]);
 
   // Fetch initial data
   useEffect(() => {
@@ -262,10 +250,10 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const exposedData = useMemo(() => Promise.resolve({
     events: updatedEvents,
     defaultView,
-    startDate: internalStartDate,
-    endDate: internalEndDate,
+    startDate: startDate,
+    endDate: endDate,
     visibleLayers: defaultVisibleLayers,
-  }), [updatedEvents, defaultView, internalStartDate, internalEndDate, defaultVisibleLayers]);
+  }), [updatedEvents, defaultView, startDate, endDate, defaultVisibleLayers]);
 
   const calendarContent = () => {
     if (!displayPeriod?.length) {
