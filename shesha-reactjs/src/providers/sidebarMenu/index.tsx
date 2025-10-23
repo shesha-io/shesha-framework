@@ -44,6 +44,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   });
 
   const originalHiddenValues = useRef<Map<string, boolean>>(new Map());
+  const requiredPermissionsResults = useRef<Map<string, boolean>>(new Map());
   const actualItems = useActualContextData(items);
 
   const updateOriginalHiddenValues = (items: ISidebarMenuItem[]) => {
@@ -69,8 +70,19 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
       (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name &&
       (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
     ) {
-      // Form navigation item - will be processed for form permissions later
-      const newItem = { ...item, hidden: item.hidden || !availableByPermissions };
+      // Form navigation item - store original value and default to hidden until async check completes
+      // Still combine requiredPermissions for the async evaluation
+      const requiredPermissionsHidden = !availableByPermissions;
+      const originalHiddenValue = item.hidden || false;
+
+      // Store the original hidden value and required permissions result for async processing
+      if (!originalHiddenValues.current.has(item.id)) {
+        originalHiddenValues.current.set(item.id, originalHiddenValue);
+      }
+      requiredPermissionsResults.current.set(item.id, requiredPermissionsHidden);
+
+      // Default to hidden to prevent flicker, will be updated by async form permission check
+      const newItem = { ...item, hidden: true };
       itemsToCheck.push(newItem);
       return newItem;
     }
@@ -94,7 +106,8 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
             && x.name === item.actionConfiguration?.actionArguments?.formId?.name
           );
           const hiddenByFormPermissions = form && form.permissions ? !anyOfPermissionsGranted(form.permissions) : false;
-          const hiddenByRequiredPermissions = item.requiredPermissions?.length > 0 ? !anyOfPermissionsGranted(item.requiredPermissions) : false;
+          // Use stored required permissions result from initial processing
+          const hiddenByRequiredPermissions = requiredPermissionsResults.current.get(item.id) || false;
           const originalHiddenValue = originalHiddenValues.current.get(item.id) || false;
           // For form navigation items: respect original hidden setting OR any permission failure
           item.hidden = originalHiddenValue || hiddenByFormPermissions || hiddenByRequiredPermissions;
