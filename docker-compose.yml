@@ -1,0 +1,114 @@
+# Shesha Framework - Complete Local Development Setup
+# Comment out services you don't need for your development workflow
+
+services:
+  # ============================================================================
+  # FRONTEND - React/Next.js Application
+  # ============================================================================
+  shesha-frontend:
+    build:
+      context: ./shesha-reactjs
+      dockerfile: Dockerfile.dev  # Uses development mode with hot reload
+    container_name: shesha-reactjs-dev
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+      # For external SQL Server (comment out if using shesha-database service)
+      # - NEXT_APP_API_HOST=http://localhost:21021;https://localhost:44362
+      # For containerized API (uncomment if using shesha-database service)
+      - NEXT_APP_API_HOST=http://shesha-api:21021
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount source code for hot reload during development
+      - ./shesha-reactjs/src:/app/src:ro
+      - ./shesha-reactjs/public:/app/public:ro
+      - ./shesha-reactjs/pages:/app/pages:ro
+    depends_on:
+      - shesha-api
+    networks:
+      - shesha-network
+    restart: "no"  # Don't auto-restart during development
+
+  # ============================================================================
+  # BACKEND API - .NET Core Application
+  # ============================================================================
+  shesha-api:
+    build:
+      context: ./shesha-core
+      dockerfile: Dockerfile
+    container_name: shesha-core-dev
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:21021;https://0.0.0.0:44362
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_HTTPS_PORT=44362
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    ports:
+      - "21021:21021"
+      - "44362:44362"
+    volumes:
+      # Mount source code for development (optional - for file watching)
+      - ./shesha-core/src:/app/src:ro
+    depends_on:
+      shesha-database:
+        condition: service_healthy
+    networks:
+      - shesha-network
+    restart: "no"  # Don't auto-restart during development
+
+  # ============================================================================
+  # DATABASE - SQL Server with Automatic Import
+  # ============================================================================
+  # Comment out this entire service if you want to use external SQL Server
+  shesha-database:
+    build:
+      context: ./shesha-starter/database
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    container_name: shesha-sqlserver-dev
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=@123Shesha
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"  # Using different port to avoid conflicts with external SQL
+    volumes:
+      - sqlserver_dev_data:/var/opt/mssql
+    networks:
+      - shesha-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $$MSSQL_SA_PASSWORD -Q 'SELECT 1' && test -f /var/opt/mssql/import-completed"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 60s
+
+# ============================================================================
+# CONFIGURATION INSTRUCTIONS
+# ============================================================================
+#
+# OPTION 1: Use External SQL Server (Default)
+# - Keep shesha-database service commented out
+# - Ensure you have SQL Server running on localhost:1433
+# - Frontend connects to API via localhost:21021
+#
+# OPTION 2: Use Containerized SQL Server
+# - Uncomment the shesha-database service above
+# - Uncomment the depends_on in shesha-api service
+# - Change shesha-api connection string to use shesha-database
+# - Change shesha-frontend API host to http://shesha-api:21021
+#
+# SERVICES YOU CAN COMMENT OUT:
+# - shesha-frontend: If you're only working on backend/API
+# - shesha-database: If you have external SQL Server
+# - shesha-api: If you're only working on frontend (run API externally)
+
+volumes:
+  sqlserver_dev_data:
+    driver: local
+
+networks:
+  shesha-network:
+    driver: bridge

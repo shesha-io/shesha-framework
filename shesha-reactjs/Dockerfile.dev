@@ -1,0 +1,22 @@
+# Use Node.js 20 LTS as base image for development
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies first for better layer caching
+COPY package*.json ./
+RUN npm ci --include=dev
+
+# Copy source code
+COPY . .
+
+# Expose the development port
+EXPOSE 3000
+
+# Set development environment
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Start the development server with hot reload
+CMD ["npm", "run", "dev"]
