@@ -3,8 +3,6 @@ import { FormMetadataHelper } from "../formMetadataHelper";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { DesignerToolbarSettings, IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
-import { ISpecification } from "@/interfaces/metadata";
-import { ITableViewProps } from "@/providers/dataTable/filters/models";
 import { toCamelCase } from "@/utils/string";
 import { TableViewExtensionJson } from "../../models/TableViewExtensionJson";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
@@ -62,40 +60,15 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
 
     const builder = new DesignerToolbarSettings({});
 
-    // First filter: static title filter
-    const filters: ITableViewProps[] = [
-      {
+    builder.addTableViewSelector({
+      id: nanoid(),
+      hidden: false,
+      filters: [{
         id: nanoid(),
         name: title,
         sortOrder: 1,
         defaultSelected: true,
-      },
-    ];
-
-    // Add filters from IEntityMetadata specifications
-    if (entity.specifications?.length) {
-      entity.specifications.forEach((spec: ISpecification, index: number) => {
-        filters.push({
-          id: nanoid(),
-          name: spec.friendlyName,
-          sortOrder: index + 2,
-          expression: {
-            and: [
-              {
-                is_satisfied: {
-                  var: spec.name,
-                },
-              },
-            ],
-          },
-        });
-      });
-    }
-
-    builder.addTableViewSelector({
-      id: nanoid(),
-      hidden: false,
-      filters,
+      }],
     });
 
     if (titleContainer[0].components && Array.isArray(titleContainer[0].components)) {
