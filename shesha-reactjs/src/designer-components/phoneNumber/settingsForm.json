@@ -83,15 +83,20 @@
                         "propertyName": "valueFormat",
                         "parentId": "phone_display_content",
                         "label": "Value Format",
-                        "description": "Choose how the phone number value should be returned",
+                        "description": "Format for the returned phone number value",
                         "values": [
                             {
-                                "label": "Full Number (e.g. +27123456789)",
-                                "value": "fullNumber",
-                                "id": "phone_format_full"
+                                "label": "International (+27123456789)",
+                                "value": "string",
+                                "id": "phone_format_string"
                             },
                             {
-                                "label": "Object {number, dialCode, countryCode}",
+                                "label": "National (0123456789)",
+                                "value": "national",
+                                "id": "phone_format_national"
+                            },
+                            {
+                                "label": "Object",
                                 "value": "object",
                                 "id": "phone_format_object"
                             }
@@ -99,99 +104,22 @@
                         "dataSourceType": "values",
                         "version": 5,
                         "referenceListId": null,
-                        "valueFormat": "listItem"
+                        "valueFormat": "listItem",
+                        "defaultValue": "string"
                     },
                     {
-                        "id": "phone_country",
-                        "type": "textField",
-                        "propertyName": "country",
-                        "parentId": "phone_display_content",
-                        "label": "Country",
-                        "description": "ISO country code for initial country selection (e.g., us, gb, za)",
-                        "version": 3,
-                        "textType": "text"
-                    },
-                    {
-                        "id": "phone_default_country",
-                        "type": "textField",
-                        "propertyName": "defaultCountry",
-                        "parentId": "phone_display_content",
-                        "label": "Default Country",
-                        "description": "Fallback ISO country code if country is not specified (e.g., us, gb, za)",
-                        "version": 3,
-                        "textType": "text"
-                    },
-                    {
-                        "id": "phone_only_countries",
-                        "type": "editableTagGroup",
-                        "propertyName": "onlyCountries",
-                        "parentId": "phone_display_content",
-                        "label": "Only Countries",
-                        "description": "List of country codes to show (e.g., us, gb, za). Leave empty to show all.",
-                        "version": 2
-                    },
-                    {
-                        "id": "phone_exclude_countries",
-                        "type": "editableTagGroup",
-                        "propertyName": "excludeCountries",
-                        "parentId": "phone_display_content",
-                        "label": "Exclude Countries",
-                        "description": "List of country codes to exclude from the dropdown",
-                        "version": 2
-                    },
-                    {
-                        "id": "phone_preferred_countries",
-                        "type": "editableTagGroup",
-                        "propertyName": "preferredCountries",
-                        "parentId": "phone_display_content",
-                        "label": "Preferred Countries",
-                        "description": "List of country codes to show at the top of the dropdown (e.g., us, gb, za)",
-                        "version": 2
-                    },
-                    {
-                        "id": "phone_search_not_found",
-                        "type": "textField",
-                        "propertyName": "searchNotFound",
-                        "parentId": "phone_display_content",
-                        "label": "Search Not Found Text",
-                        "description": "Text to display when no country is found in search results",
-                        "version": 3,
-                        "textType": "text"
-                    },
-                    {
-                        "id": "phone_enable_search",
+                        "id": "phone_strip_country_code",
                         "type": "checkbox",
-                        "propertyName": "enableSearch",
+                        "propertyName": "stripCountryCode",
                         "parentId": "phone_display_content",
-                        "label": "Enable Search",
-                        "description": "Enable search functionality in country dropdown",
-                        "version": 2
-                    },
-                    {
-                        "id": "phone_enable_arrow",
-                        "type": "checkbox",
-                        "propertyName": "enableArrow",
-                        "parentId": "phone_display_content",
-                        "label": "Enable Arrow",
-                        "description": "Show arrow icon in country selector",
-                        "version": 2
-                    },
-                    {
-                        "id": "phone_disable_parentheses",
-                        "type": "checkbox",
-                        "propertyName": "disableParentheses",
-                        "parentId": "phone_display_content",
-                        "label": "Disable Parentheses",
-                        "description": "Remove parentheses from phone number formatting",
-                        "version": 2
-                    },
-                    {
-                        "id": "phone_allow_clear",
-                        "type": "checkbox",
-                        "propertyName": "allowClear",
-                        "parentId": "phone_display_content",
-                        "label": "Allow Clear",
-                        "version": 2
+                        "label": "Strip Country Code",
+                        "description": "When using International format, return the national format instead (e.g., +27123456789 becomes 0123456789 for ZA). The national format varies by country.",
+                        "version": 2,
+                        "hidden": {
+                            "_code": "return getSettingValue(data?.valueFormat) !== 'string';",
+                            "_mode": "code",
+                            "_value": false
+                        }
                     },
                     {
                         "id": "phone_hidden",
@@ -208,13 +136,180 @@
                         "parentId": "phone_display_content",
                         "label": "Hide Label",
                         "version": 2
+                    }
+                ]
+            },
+            "collapsible": "header",
+            "ghost": true,
+            "hideWhenEmpty": true,
+            "settingsValidationErrors": []
+        },
+        {
+            "id": "phone_country_panel",
+            "type": "collapsiblePanel",
+            "propertyName": "pnlCountry",
+            "label": "Country Settings",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 4,
+            "expandIconPosition": "start",
+            "header": {
+                "id": "phone_country_header",
+                "components": []
+            },
+            "content": {
+                "id": "phone_country_content",
+                "components": [
+                    {
+                        "id": "phone_default_country",
+                        "type": "textField",
+                        "propertyName": "defaultCountry",
+                        "parentId": "phone_country_content",
+                        "label": "Default Country",
+                        "description": "ISO country code (e.g., za, us, gb)",
+                        "version": 3,
+                        "textType": "text",
+                        "defaultValue": "za"
                     },
+                    {
+                        "id": "phone_preferred_countries",
+                        "type": "textField",
+                        "propertyName": "preferredCountries",
+                        "parentId": "phone_country_content",
+                        "label": "Preferred Countries",
+                        "description": "Comma-separated country codes to show at top (e.g., za,us,gb)",
+                        "version": 3,
+                        "textType": "text"
+                    },
+                    {
+                        "id": "phone_only_countries",
+                        "type": "textField",
+                        "propertyName": "onlyCountries",
+                        "parentId": "phone_country_content",
+                        "label": "Only Countries",
+                        "description": "Comma-separated country codes to include (e.g., za,us,gb). If set, only these will be shown",
+                        "version": 3,
+                        "textType": "text"
+                    },
+                    {
+                        "id": "phone_exclude_countries",
+                        "type": "textField",
+                        "propertyName": "excludeCountries",
+                        "parentId": "phone_country_content",
+                        "label": "Exclude Countries",
+                        "description": "Comma-separated country codes to exclude from list (e.g., us,ca)",
+                        "version": 3,
+                        "textType": "text"
+                    }
+                ]
+            },
+            "collapsible": "header",
+            "ghost": true,
+            "hideWhenEmpty": true,
+            "settingsValidationErrors": []
+        },
+        {
+            "id": "phone_behavior_panel",
+            "type": "collapsiblePanel",
+            "propertyName": "pnlBehavior",
+            "label": "Behavior",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 4,
+            "expandIconPosition": "start",
+            "header": {
+                "id": "phone_behavior_header",
+                "components": []
+            },
+            "content": {
+                "id": "phone_behavior_content",
+                "components": [
                     {
                         "id": "phone_edit_mode",
                         "type": "editModeSelector",
                         "propertyName": "editMode",
-                        "parentId": "phone_display_content",
+                        "parentId": "phone_behavior_content",
                         "label": "Edit mode"
+                    },
+                    {
+                        "id": "phone_allow_clear",
+                        "type": "checkbox",
+                        "propertyName": "allowClear",
+                        "parentId": "phone_behavior_content",
+                        "label": "Allow Clear",
+                        "version": 2
+                    },
+                    {
+                        "id": "phone_enable_arrow",
+                        "type": "checkbox",
+                        "propertyName": "enableArrow",
+                        "parentId": "phone_behavior_content",
+                        "label": "Enable Arrow",
+                        "defaultValue": true,
+                        "version": 2
+                    },
+                    {
+                        "id": "phone_enable_search",
+                        "type": "checkbox",
+                        "propertyName": "enableSearch",
+                        "parentId": "phone_behavior_content",
+                        "label": "Enable Search",
+                        "description": "Allow searching for countries in the dropdown",
+                        "defaultValue": true,
+                        "version": 2
+                    },
+                    {
+                        "id": "phone_distinct",
+                        "type": "checkbox",
+                        "propertyName": "distinct",
+                        "parentId": "phone_behavior_content",
+                        "label": "Show Distinct Country Codes",
+                        "description": "Display only distinct country codes in the dropdown",
+                        "version": 2
+                    },
+                    {
+                        "id": "phone_disable_dropdown",
+                        "type": "checkbox",
+                        "propertyName": "disableDropdown",
+                        "parentId": "phone_behavior_content",
+                        "label": "Disable Dropdown",
+                        "description": "Prevent users from changing the country via dropdown",
+                        "version": 2
+                    },
+                    {
+                        "id": "phone_disable_parentheses",
+                        "type": "checkbox",
+                        "propertyName": "disableParentheses",
+                        "parentId": "phone_behavior_content",
+                        "label": "Disable Parentheses",
+                        "description": "Remove parentheses from phone number input mask",
+                        "version": 2
+                    },
+                    {
+                        "id": "phone_search_placeholder",
+                        "type": "textField",
+                        "propertyName": "searchPlaceholder",
+                        "parentId": "phone_behavior_content",
+                        "label": "Search Placeholder",
+                        "description": "Placeholder text for country search input",
+                        "defaultValue": "Search country",
+                        "version": 3,
+                        "textType": "text"
+                    },
+                    {
+                        "id": "phone_search_not_found",
+                        "type": "textField",
+                        "propertyName": "searchNotFound",
+                        "parentId": "phone_behavior_content",
+                        "label": "Search Not Found Text",
+                        "description": "Text to display when no country matches the search",
+                        "defaultValue": "No country found",
+                        "version": 3,
+                        "textType": "text"
                     }
                 ]
             },
@@ -525,11 +620,142 @@
                                 "id": "phone_style_code",
                                 "type": "codeEditor",
                                 "propertyName": "style",
-                                "label": "Style",
+                                "label": "Style (All Elements)",
                                 "parentId": "phone_style_content",
                                 "validate": {},
                                 "settingsValidationErrors": [],
-                                "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+                                "description": "A script that returns the style applied to all phone input elements. This should conform to CSSProperties",
+                                "mode": "dialog",
+                                "exposedVariables": [
+                                    {
+                                        "name": "data",
+                                        "description": "Form values",
+                                        "type": "object"
+                                    }
+                                ],
+                                "version": 3,
+                                "language": "typescript",
+                                "placeholder": "",
+                                "wrapInTemplate": true,
+                                "templateSettings": {
+                                    "functionName": "getStyle"
+                                },
+                                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+                            },
+                            {
+                                "id": "phone_wrapper_style",
+                                "type": "codeEditor",
+                                "propertyName": "wrapperStyle",
+                                "label": "Wrapper Style",
+                                "parentId": "phone_style_content",
+                                "validate": {},
+                                "settingsValidationErrors": [],
+                                "description": "Style for .ant-phone-input-wrapper (outer wrapper)",
+                                "mode": "dialog",
+                                "exposedVariables": [
+                                    {
+                                        "name": "data",
+                                        "description": "Form values",
+                                        "type": "object"
+                                    }
+                                ],
+                                "version": 3,
+                                "language": "typescript",
+                                "placeholder": "",
+                                "wrapInTemplate": true,
+                                "templateSettings": {
+                                    "functionName": "getStyle"
+                                },
+                                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+                            },
+                            {
+                                "id": "phone_input_group_wrapper_style",
+                                "type": "codeEditor",
+                                "propertyName": "inputGroupWrapperStyle",
+                                "label": "Input Group Wrapper Style",
+                                "parentId": "phone_style_content",
+                                "validate": {},
+                                "settingsValidationErrors": [],
+                                "description": "Style for .ant-input-group-wrapper",
+                                "mode": "dialog",
+                                "exposedVariables": [
+                                    {
+                                        "name": "data",
+                                        "description": "Form values",
+                                        "type": "object"
+                                    }
+                                ],
+                                "version": 3,
+                                "language": "typescript",
+                                "placeholder": "",
+                                "wrapInTemplate": true,
+                                "templateSettings": {
+                                    "functionName": "getStyle"
+                                },
+                                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+                            },
+                            {
+                                "id": "phone_input_wrapper_style",
+                                "type": "codeEditor",
+                                "propertyName": "inputWrapperStyle",
+                                "label": "Input Wrapper Style",
+                                "parentId": "phone_style_content",
+                                "validate": {},
+                                "settingsValidationErrors": [],
+                                "description": "Style for .ant-input-wrapper",
+                                "mode": "dialog",
+                                "exposedVariables": [
+                                    {
+                                        "name": "data",
+                                        "description": "Form values",
+                                        "type": "object"
+                                    }
+                                ],
+                                "version": 3,
+                                "language": "typescript",
+                                "placeholder": "",
+                                "wrapInTemplate": true,
+                                "templateSettings": {
+                                    "functionName": "getStyle"
+                                },
+                                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+                            },
+                            {
+                                "id": "phone_input_group_style",
+                                "type": "codeEditor",
+                                "propertyName": "inputGroupStyle",
+                                "label": "Input Group Style",
+                                "parentId": "phone_style_content",
+                                "validate": {},
+                                "settingsValidationErrors": [],
+                                "description": "Style for .ant-input-group (contains flag and input)",
+                                "mode": "dialog",
+                                "exposedVariables": [
+                                    {
+                                        "name": "data",
+                                        "description": "Form values",
+                                        "type": "object"
+                                    }
+                                ],
+                                "version": 3,
+                                "language": "typescript",
+                                "placeholder": "",
+                                "wrapInTemplate": true,
+                                "templateSettings": {
+                                    "functionName": "getStyle"
+                                },
+                                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+                            },
+                            {
+                                "id": "phone_input_style",
+                                "type": "codeEditor",
+                                "propertyName": "inputStyle",
+                                "label": "Input Style",
+                                "parentId": "phone_style_content",
+                                "validate": {},
+                                "settingsValidationErrors": [],
+                                "description": "Style for .ant-input (the actual input field)",
+                                "mode": "dialog",
                                 "exposedVariables": [
                                     {
                                         "name": "data",
