@@ -67,7 +67,9 @@ namespace Shesha.Metadata
         {
             var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
             var entities = isPreselection
-                ? properties.Where(e => e.Label == selectedValue || e.Path == selectedValue).ToList()
+                ? properties.Where(e =>
+                    (e.Label != null && e.Label.Equals(selectedValue, StringComparison.InvariantCultureIgnoreCase)) ||
+                    e.Path.Equals(selectedValue, StringComparison.InvariantCultureIgnoreCase)).ToList()
                 : properties
                 .Where(e =>
                     string.IsNullOrWhiteSpace(term) ||
