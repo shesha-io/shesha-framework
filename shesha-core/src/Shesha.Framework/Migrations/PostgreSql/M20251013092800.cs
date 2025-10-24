@@ -33,19 +33,24 @@ BEGIN
     IF (ref_list_item_value IS NULL) THEN
         ret_val := '';
     ELSE
+        WITH CTE AS (
+            SELECT *
+            FROM frwk.vw_configuration_items_inheritance
+            WHERE name = ref_list_name
+                AND module_name = ref_list_module_name
+                AND item_type = 'reference-list'
+            ORDER BY module_level DESC
+            LIMIT 1
+        )
         SELECT
-            string_agg(item, separator) INTO concatenated_list
-        FROM
-            frwk.vw_reference_list_item_values ref_item_values
-            INNER JOIN frwk.vw_configuration_items_inheritance item_inheritance
-            ON item_inheritance.name = ref_list_name
-            AND item_inheritance.module_name = ref_list_module_name
-            AND item_inheritance.item_type = 'reference-list'
-        WHERE
-            ref_item_values.module = ref_list_module_name
-            AND item_inheritance.module_name = ref_list_module_name
-            AND item_inheritance.name = ref_list_name
-        AND (ref_item_values.item_value & ref_list_item_value) > 0;
+            string_agg(ref_item_values.item, separator) INTO concatenated_list
+        FROM CTE item_inheritance
+        INNER JOIN frwk.vw_reference_list_item_values ref_item_values
+            ON item_inheritance.name = ref_item_values.name
+            AND item_inheritance.module_name = ref_item_values.module
+        WHERE ref_item_values.name = ref_list_name
+            AND ref_item_values.module = ref_list_module_name
+            AND (ref_item_values.item_value & ref_list_item_value) > 0;
 
         ret_val := concatenated_list;
     END IF;

@@ -32,21 +32,21 @@ BEGIN
         SET @ret_val = ''
     ELSE
     BEGIN
-        SELECT
-            @concatenated_list = COALESCE(@concatenated_list + @separator, '') + ref_item_values.item
-            FROM
-                [frwk].[vw_reference_list_item_values] ref_item_values
-			INNER JOIN [frwk].[vw_configuration_items_inheritance] item_inheritance
-			ON item_inheritance.name = @ref_list_name
-			AND item_inheritance.module_name = @ref_list_module_name
-			AND item_inheritance.item_type = 'reference-list'
-            WHERE
-                ref_item_values.module = @ref_list_module_name
-			AND item_inheritance.module_name = @ref_list_module_name
-			AND item_inheritance.name = @ref_list_name
-            AND (ref_item_values.item_value & @ref_list_item_value) > 0
+	WITH CTE AS (SELECT TOP 1 *
+				FROM [frwk].[vw_configuration_items_inheritance]
+				WHERE name = @ref_list_name
+				AND module_name = @ref_list_module_name
+				AND item_type = 'reference-list'
+				ORDER BY module_level DESC)
 
-        SELECT @ret_val = substring(@concatenated_list, LEN(@separator) + 1, len(@concatenated_list))
+	SELECT @concatenated_list = COALESCE(@concatenated_list + @separator, '') + ref_item_values.item
+	FROM CTE item_inheritance
+	INNER JOIN [frwk].[vw_reference_list_item_values] ref_item_values
+	ON item_inheritance.name = ref_item_values.name AND item_inheritance.module_name = ref_item_values.module
+	WHERE ref_item_values.name = @ref_list_name AND ref_item_values.module = @ref_list_module_name
+	AND (ref_item_values.item_value & @ref_list_item_value) > 0
+
+    SELECT @ret_val = substring(@concatenated_list, LEN(@separator) + 1, len(@concatenated_list))
     END
 
 
