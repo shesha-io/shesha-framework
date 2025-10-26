@@ -14,7 +14,7 @@ import {
   useGlobalState,
   useHttpClient,
   useMetadata,
-  useShaFormInstance,
+  useShaFormInstanceOrUndefined,
   useSheshaApplication,
 } from '@/providers';
 import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
@@ -391,7 +391,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [selectedIds, handleSelectionChange, previousIds]);
 
   const toolboxComponents = useFormDesignerComponents();
-  const shaForm = useShaFormInstance(false);
+  const shaForm = useShaFormInstanceOrUndefined();
 
   const onNewRowInitializeExecuter = useMemo<Function>(() => {
     return props.onNewRowInitialize

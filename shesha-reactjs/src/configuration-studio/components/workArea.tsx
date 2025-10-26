@@ -20,7 +20,15 @@ type TabContextMenuState = {
 };
 
 export const WorkArea: FC = () => {
-  const { docs, renderedDocs, activeDocId, navigateToDocument, closeDoc, closeMultipleDocs } = useCsTabs();
+  const {
+    docs,
+    renderedDocs,
+    activeDocId,
+    navigateToDocumentAsync,
+    closeDocumentAsync,
+    reloadDocumentAsync,
+    closeMultipleDocumentsAsync,
+  } = useCsTabs();
   const { styles } = useStyles();
   const [contextMenuState, setContextMenuState] = useState<TabContextMenuState>();
 
@@ -28,20 +36,22 @@ export const WorkArea: FC = () => {
     {
       key: 'close',
       label: 'Close',
-      onClick: (): void => closeDoc(doc.itemId),
+      onClick: (): void => {
+        void closeDocumentAsync(doc.itemId);
+      },
     },
     {
       key: 'closeOthers',
       label: 'Close Others',
       onClick: (): void => {
-        closeMultipleDocs((d) => (d !== doc));
+        closeMultipleDocumentsAsync((d) => (d !== doc));
       },
     },
     {
       key: 'closeToTheRight',
       label: 'Close to the Right',
       onClick: (): void => {
-        closeMultipleDocs((_, index) => {
+        closeMultipleDocumentsAsync((_, index) => {
           const docIndex = docs.indexOf(doc);
           return index > docIndex;
         });
@@ -51,7 +61,15 @@ export const WorkArea: FC = () => {
       key: 'closeAll',
       label: 'Close All',
       onClick: (): void => {
-        closeMultipleDocs((_) => (true));
+        closeMultipleDocumentsAsync((_) => (true));
+      },
+    },
+    { type: 'divider' },
+    {
+      key: 'reload',
+      label: 'Reload',
+      onClick: (): void => {
+        reloadDocumentAsync(doc.itemId);
       },
     },
   ];
@@ -91,7 +109,7 @@ export const WorkArea: FC = () => {
 
   const handleEdit: OnEdit = (e, action) => {
     if (action === 'remove' && typeof (e) === 'string') {
-      closeDoc(e);
+      closeDocumentAsync(e);
     }
   };
 
@@ -108,7 +126,7 @@ export const WorkArea: FC = () => {
         type="editable-card"
         size="small"
         {...isDefined(activeDocId) ? { activeKey: activeDocId } : {}}
-        onChange={navigateToDocument}
+        onChange={navigateToDocumentAsync}
         onEdit={handleEdit}
         items={treeTabs}
         destroyOnHidden={false}

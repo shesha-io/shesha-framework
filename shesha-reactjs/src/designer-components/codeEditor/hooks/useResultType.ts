@@ -3,7 +3,7 @@ import { GetResultTypeFunc } from "../interfaces";
 import { useCallback } from "react";
 import { IMetadata, useMetadataBuilderFactory } from "@/utils";
 import { executeScript } from '@/providers/form/utils';
-import { useFormData, useShaFormInstance } from '@/providers';
+import { useFormData, useShaFormInstanceOrUndefined } from '@/providers';
 
 export interface UseResultTypeEvaluatorArgs {
   resultTypeExpression?: string | GetResultTypeFunc;
@@ -14,7 +14,7 @@ export type ResultTypeEvaluator = () => Promise<IMetadata>;
 export const useResultTypeEvaluator = (model: UseResultTypeEvaluatorArgs): ResultTypeEvaluator => {
   const metadataBuilderFactory = useMetadataBuilderFactory();
   const { data: formData } = useFormData();
-  const shaFormInstance = useShaFormInstance(false);
+  const shaFormInstance = useShaFormInstanceOrUndefined();
 
   const resultTypeExpression = Boolean(model.resultTypeExpression) && !isEmptyString(model.resultTypeExpression)
     ? model.resultTypeExpression

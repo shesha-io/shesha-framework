@@ -149,11 +149,11 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds full auditing fields to a table. See <see cref="IFullAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithFullAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null, bool indexed = false)
         {
             return table
-                .WithAuditColumns(names)
-                .WithDeletionAuditColumns(names);
+                .WithAuditColumns(names, indexed)
+                .WithDeletionAuditColumns(names, indexed);
         }
 
         public static ICreateTableColumnOptionOrWithColumnSyntax WithFullAuditedEntityWithExternalSyncColumns(this ICreateTableWithColumnSyntax table)
@@ -207,11 +207,11 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds auditing fields to a table. See <see cref="IAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null, bool indexed = false)
         {
             return table
-                .WithCreationAuditColumns(names)
-                .WithModificationAuditColumns(names);
+                .WithCreationAuditColumns(names, indexed)
+                .WithModificationAuditColumns(names, indexed);
         }
 
         /// <summary>
@@ -227,11 +227,14 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds creation auditing fields to a table. See <see cref="ICreationAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithCreationAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithCreationAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null, bool indexed = false)
         {
-            return table
-                .WithCreationTimeColumn(names)
-                .WithCreatorUserIdColumn(names);
+            var result = table.WithCreationTimeColumn(names);
+
+            result = result.WithCreatorUserIdColumn(names);
+            if (indexed)
+                result = result.Indexed();
+            return result;
         }
 
         /// <summary>
@@ -256,11 +259,15 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds modification auditing fields to a table. See <see cref="IModificationAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithModificationAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithModificationAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null, bool indexed = false)
         {
-            return table
-                .WithLastModificationTimeColumn(names)
-                .WithLastModifierUserIdColumn(names);
+            var result = table.WithLastModificationTimeColumn(names);
+
+            result = result.WithLastModifierUserIdColumn(names);
+            if (indexed)
+                result = result.Indexed();
+
+            return result;
         }
 
         /// <summary>
@@ -275,12 +282,15 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Adds deletion auditing columns to a table. See <see cref="IModificationAudited"/>.
         /// </summary>
-        public static ICreateTableColumnOptionOrWithColumnSyntax WithDeletionAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null)
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithDeletionAuditColumns(this ICreateTableWithColumnSyntax table, IDbObjectNames? names = null, bool indexed = false)
         {
-            return table
+            var result = table
                 .WithIsDeletedColumn(names)
-                .WithDeletionTimeColumn(names)
-                .WithDeleterUserIdColumn(names);
+                .WithDeletionTimeColumn(names);
+            result = result.WithDeleterUserIdColumn(names);
+            if (indexed)
+                result = result.Indexed();
+            return result;
         }
 
         /// <summary>

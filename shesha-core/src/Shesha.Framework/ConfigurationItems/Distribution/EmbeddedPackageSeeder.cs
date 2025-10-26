@@ -4,9 +4,11 @@ using Abp.Domain.Uow;
 using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
 using Shesha.Extensions;
+using Shesha.Startup;
 using Shesha.Utilities;
 using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -22,12 +24,21 @@ namespace Shesha.ConfigurationItems.Distribution
         private readonly IRepository<ConfigurationPackageImportResult, Guid> _importResultRepository;
         private readonly IConfigurationPackageManager _packageManager;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly IApplicationStartupSession _startupSession;
+        private IRepository<ApplicationStartupAssembly, Guid> _startupAssemblyRepository;
 
-        public EmbeddedPackageSeeder(IRepository<ConfigurationPackageImportResult, Guid> importResultRepository, IConfigurationPackageManager packageManager, IUnitOfWorkManager unitOfWorkManager)
+        public EmbeddedPackageSeeder(IRepository<ConfigurationPackageImportResult, Guid> importResultRepository, 
+            IConfigurationPackageManager packageManager, 
+            IUnitOfWorkManager unitOfWorkManager, 
+            IApplicationStartupSession startupSession,
+            IRepository<ApplicationStartupAssembly, Guid> startupAssemblyRepository
+        )
         {
             _importResultRepository = importResultRepository;
             _packageManager = packageManager;
             _unitOfWorkManager = unitOfWorkManager;
+            _startupSession = startupSession;
+            _startupAssemblyRepository = startupAssemblyRepository;
         }
 
         public async Task<bool> SeedEmbeddedPackagesAsync(EmbeddedPackageSeedingContext context)
@@ -75,6 +86,8 @@ namespace Shesha.ConfigurationItems.Distribution
                     using (var uow = _unitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew)) 
                     {
                         var importResult = await _packageManager.CreateImportResultAsync(stream, embeddedPackage.ResourceName);
+                        importResult.ApplicationStartupAssembly = await GetCurrentStartupAssemblyAsync(context);
+                        await _importResultRepository.UpdateAsync(importResult);
 
                         using (var package = await _packageManager.ReadPackageAsync(stream, readPackageContext))
                         {
@@ -85,6 +98,7 @@ namespace Shesha.ConfigurationItems.Distribution
                                 CreateModules = false,
                                 Logger = context.Logger,
                                 ImportResult = importResult,
+                                IsMigrationImport = true,
                             };
                             try
                             {
@@ -105,6 +119,18 @@ namespace Shesha.ConfigurationItems.Distribution
             }
 
             return imported;
+        }
+
+        private async Task<ApplicationStartupAssembly?> GetCurrentStartupAssemblyAsync(EmbeddedPackageSeedingContext context) 
+        {
+            if (_startupSession.CurrentStartup == null)
+                return null;
+
+            var fileName = Path.GetFileName(context.Assembly.Location);
+            var filePath = Path.GetDirectoryName(context.Assembly.Location);
+
+            return await _startupAssemblyRepository.GetAll().Where(e => e.ApplicationStartup.Id == _startupSession.CurrentStartup.Id && e.FileName == fileName && e.FilePath == filePath)
+                .FirstOrDefaultAsync();
         }
 
         protected EmbeddedPackageInfo? TryGetPackageInfo(Assembly assembly, string resourceName)

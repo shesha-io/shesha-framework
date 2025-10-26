@@ -1,14 +1,17 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
     /// <summary>
     /// Version of the <see cref="StoredFile"/>
     /// </summary>
+    [SnakeCaseNaming]
+    [Table("stored_file_versions", Schema = "frwk")]
     [Entity(TypeShortAlias = "Shesha.Framework.StoredFileVersion", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class StoredFileVersion : FullAuditedEntity<Guid>, IMayHaveTenant
     {
@@ -37,12 +40,13 @@ namespace Shesha.Domain
         /// <summary>
         /// File type (extension)
         /// </summary>
+        [MaxLength(50)]
         public virtual string FileType { get; set; }
 
         /// <summary>
         /// Description
         /// </summary>
-        public virtual string Description { get; set; }
+        public virtual string? Description { get; set; }
 
         /// <summary>
         /// Indicated is version signed or not

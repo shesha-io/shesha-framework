@@ -19,7 +19,7 @@ import {
   usePermissionDelete,
 } from '@/apis/permission';
 import { GuidEntityReferenceDto } from '@/apis/common';
-import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormInstanceOrUndefined } from '@/providers/form/providers/shaFormProvider';
 import { ShaSpin, useAvailableConstantsData } from '@/index';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
@@ -86,7 +86,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   const deleteRequest = usePermissionDelete();
   const { loading: isDeleting, error: deleteDataError } = deleteRequest;
 
-  const shaForm = useShaFormInstance(false);
+  const shaForm = useShaFormInstanceOrUndefined();
   const { setFormMode } = shaForm ?? {};
 
   const { executeAction } = useConfigurableActionDispatcher();

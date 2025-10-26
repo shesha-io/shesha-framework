@@ -41,12 +41,14 @@ const useShaFormRef = <Values extends object = object>(): MutableRefObject<IShaF
 
 const useShaFormDataUpdate = (): object => useContext(ShaFormDataUpdateContext);
 
-const useShaFormInstance = (required: boolean = true): IShaFormInstance | undefined => {
-  const context = useContext(ShaFormInstanceContext);
+const useShaFormInstanceOrUndefined = (): IShaFormInstance | undefined => {
+  return useContext(ShaFormInstanceContext);
+};
 
-  if (required && context === undefined) {
+const useShaFormInstance = (): IShaFormInstance => {
+  const context = useShaFormInstanceOrUndefined();
+  if (context === undefined)
     throw new Error('useShaFormInstance must be used within a ShaFormProvider');
-  }
 
   return context;
 };
@@ -66,6 +68,7 @@ const useShaFormSubscription = (subscriptionType: ShaFormSubscriptionType): obje
 export {
   FormProviderWithDelayedUpdates as ShaFormProvider,
   useShaFormInstance,
+  useShaFormInstanceOrUndefined,
   useShaFormDataUpdate,
   useShaFormRef,
   useShaFormSubscription,

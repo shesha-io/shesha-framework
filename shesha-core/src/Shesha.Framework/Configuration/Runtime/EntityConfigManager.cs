@@ -1,6 +1,5 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Runtime.Session;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
@@ -16,8 +15,6 @@ namespace Shesha.Configuration.Runtime
     public class EntityConfigManager : ConfigurationItemManager<EntityConfig>, IEntityConfigManager, ITransientDependency
     {
         private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
-
-        public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
         public EntityConfigManager(IRepository<EntityProperty, Guid> propertyConfigRepo) : base()
         {

@@ -67,4 +67,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ConfigurationItems\Distribution\" />
+  </ItemGroup>
 </Project>

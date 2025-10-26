@@ -13,6 +13,7 @@ using Castle.Core.Logging;
 using NHibernate;
 using NHibernate.Collection;
 using NHibernate.SqlCommand;
+using NHibernate.Transaction;
 using NHibernate.Type;
 using Shesha.NHibernate.UoW;
 using Shesha.Reflection;
@@ -20,6 +21,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Shesha.NHibernate.Interceptors
 {
@@ -430,30 +433,54 @@ namespace Shesha.NHibernate.Interceptors
 
         #region post transaction actions
 
-        private Stack<Action> AfterTransactionActions { get; set; } = new Stack<Action>();
-
         /// <summary>
         /// Add action that should be executed after completion of the current transaction
         /// </summary>
         /// <param name="action"></param>
         public void AddAfterTransactionAction(Action action)
         {
-            AfterTransactionActions.Push(action);
+            Session.NotNull("No active session");
+
+            #pragma warning disable IDISP001 // Dispose created
+            var transaction = Session.GetCurrentTransaction();
+            #pragma warning restore IDISP001 // Dispose created
+
+            if (transaction == null || !transaction.IsActive)
+                throw new InvalidOperationException("No active transaction");
+
+            transaction.RegisterSynchronization(new TransactionCompletionSynchronization(action));
         }
 
-        /// inheritedDoc
-        public override void AfterTransactionCompletion(ITransaction tx)
+        private class TransactionCompletionSynchronization : ITransactionCompletionSynchronization
         {
-            if (tx != null && tx.WasCommitted) 
+            private readonly Action _action;
+
+            public TransactionCompletionSynchronization(Action action)
             {
-                while (AfterTransactionActions.Any())
-                {
-                    var action = AfterTransactionActions.Pop();
-                    action.Invoke();
-                }
+                _action = action;
             }
 
-            base.AfterTransactionCompletion(tx);
+            public void ExecuteAfterTransactionCompletion(bool success)
+            {
+                if (success)
+                    _action();
+            }
+
+            public Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+            {
+                if (success)
+                    _action();
+                return Task.CompletedTask;
+            }
+
+            public void ExecuteBeforeTransactionCompletion()
+            {
+            }
+
+            public Task ExecuteBeforeTransactionCompletionAsync(CancellationToken cancellationToken)
+            {
+                return Task.CompletedTask;
+            }
         }
 
         #endregion
