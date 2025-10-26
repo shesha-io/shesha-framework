@@ -112,7 +112,7 @@ namespace Shesha.Domain
         }
 
         [MemberNotNull(nameof(LatestRevision))]
-        public virtual ConfigurationItemRevision MakeNewRevision()
+        public virtual ConfigurationItemRevision MakeNewRevision(ConfigurationItemRevisionCreationMethod creationMethod)
         {
             var prevRevision = LatestRevision;
             var newVersionNo = prevRevision != null
@@ -123,6 +123,7 @@ namespace Shesha.Domain
                 ConfigurationItem = this,
                 VersionNo = newVersionNo,
                 ParentRevision = prevRevision,
+                CreationMethod = creationMethod,
             };
             return LatestRevision;
         }
@@ -143,5 +144,9 @@ namespace Shesha.Domain
         {
 
         }
+
+        public virtual string FullName => Module != null
+                ? $"{Module.Name}.{Name}"
+                : Name;
     }
 }

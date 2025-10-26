@@ -21,10 +21,6 @@ namespace Shesha.Domain
         
         public override string ItemType => ItemTypeName;
 
-        public virtual string FullName => Module != null
-                ? $"{Module.Name}.{Name}"
-                : Name;
-
         /// <summary>
         /// Form markup
         /// </summary>

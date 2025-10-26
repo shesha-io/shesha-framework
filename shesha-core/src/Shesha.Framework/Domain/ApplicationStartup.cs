@@ -12,7 +12,7 @@ namespace Shesha.Domain
     /// Stores information about application start including all loaded dlls
     /// </summary>
     [SnakeCaseNaming]
-    [Table("frwk_application_startups")]
+    [Table("application_startups", Schema = "frwk")]
     public class ApplicationStartup: Entity<Guid>
     {
         [MaxLength(100)]

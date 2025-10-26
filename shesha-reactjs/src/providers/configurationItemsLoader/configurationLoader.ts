@@ -15,6 +15,7 @@ export interface GetConfigurationArgs {
   type: string;
   id: ConfigurableItemIdentifier;
   topLevelModule?: string;
+  skipCache: boolean;
 };
 
 type FetchConfigurationArgs<TId> = {
@@ -24,7 +25,7 @@ type FetchConfigurationArgs<TId> = {
   md5: string | null;
 };
 
-type FetchConfigurationPayload = GetConfigurationArgs & {
+type FetchConfigurationPayload = Omit<GetConfigurationArgs, 'skipCache'> & {
   cachedConfiguration: IConfigurationItemDto | undefined;
 };
 
@@ -343,11 +344,13 @@ export class ConfigurationLoader implements IConfigurationLoader {
   };
 
   getCurrentConfigAsync = <TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): PromisedValue<TConfigDto> => {
-    const existingRequest = this.getExistingConfigRequest(args);
-    if (existingRequest)
-      return existingRequest as PromisedValue<TConfigDto>;
+    const { id, type, topLevelModule, skipCache } = args;
 
-    const { id, type, topLevelModule } = args;
+    if (!skipCache) {
+      const existingRequest = this.getExistingConfigRequest(args);
+      if (existingRequest)
+        return existingRequest as PromisedValue<TConfigDto>;
+    }
 
     const wrappedPromise = new StatefulPromise<TConfigDto>((resolve, reject) => {
       this.getCachedConfigAsync(args)

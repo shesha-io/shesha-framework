@@ -141,6 +141,7 @@ export type CIDocument = DocumentBase & {
   itemType: string;
   definition: DocumentDefinition;
   loadingState: LoadingStatus;
+  isDataModified: boolean;
   isHistoryVisible: boolean;
   flags: DocumentFlags;
   moduleId: string;
@@ -167,9 +168,13 @@ export type ItemEditorRenderer<TDoc extends IDocumentInstance> = (props: ItemEdi
 export type ProviderRendererProps<TDoc extends IDocumentInstance = IDocumentInstance> = PropsWithChildren<ItemEditorProps<TDoc>>;
 export type ProviderRenderer<TDoc extends IDocumentInstance> = (props: ProviderRendererProps<TDoc>) => ReactNode;
 
+export type DocumentDataLoader = () => Promise<void>;
+
 export interface IDocumentInstance extends CIDocument {
   // state
   toolbarForceRender?: ForceRenderFunc;
+  reloadDocumentAsync: () => Promise<void>;
+  setLoader: (loader: DocumentDataLoader | undefined) => void;
 };
 
 export type DocumentInstanceFactoryArgs = {

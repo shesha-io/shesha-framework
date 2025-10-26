@@ -1,11 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Shesha.Domain.Attributes;
+﻿using Shesha.Domain.Attributes;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
     /// <summary>
     /// Version definition of a versioned field
     /// </summary>
+    [SnakeCaseNaming]
+    [Table("versioned_field_versions", Schema = "frwk")]
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class VersionedFieldVersion : FullPowerEntity
     {
@@ -25,6 +28,5 @@ namespace Shesha.Domain
         /// Note: updated by triggers in sql server side
         /// </summary>
         public virtual bool IsLast { get; protected set; }
-
     }
 }

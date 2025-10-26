@@ -23,7 +23,7 @@ import { getPlainValue } from '@/utils';
 import { getColumnAnchored } from '@/utils/datatable';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstance } from '@/providers/index';
+import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstanceOrUndefined } from '@/providers';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
@@ -117,7 +117,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const { setDragState } = useDataTableStore();
 
-  const shaForm = useShaFormInstance(false);
+  const shaForm = useShaFormInstanceOrUndefined();
   const canvasState = useCanvasState(false);
 
   const { allColumns, allRows } = componentState;

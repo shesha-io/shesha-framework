@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Shesha.Authorization.Users;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -61,5 +62,10 @@ namespace Shesha.Domain
         /// </summary>
         [StringLength(int.MaxValue)]
         public virtual string ConfigurationJson { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Creation method (manual/manual import/migration import)
+        /// </summary>
+        public virtual ConfigurationItemRevisionCreationMethod CreationMethod { get; set; } = ConfigurationItemRevisionCreationMethod.Manual;
     }
 }

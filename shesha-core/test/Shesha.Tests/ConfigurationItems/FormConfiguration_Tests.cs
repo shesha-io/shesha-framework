@@ -10,6 +10,7 @@ using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Reflection;
@@ -182,7 +183,7 @@ namespace Shesha.Tests.ConfigurationItems
                 dstForm.ModelType = "dst-test-modelType";
                 dstForm.Markup = "dst-markup";
 
-                var revision = dstForm.MakeNewRevision();
+                var revision = dstForm.MakeNewRevision(ConfigurationItemRevisionCreationMethod.Manual);
                 
                 await dstRevisionRepo.InsertAsync(revision);
                 await dstFormRepo.UpdateAsync(dstForm);
@@ -273,7 +274,7 @@ namespace Shesha.Tests.ConfigurationItems
                 dstForm.ModelType = "dst-test-modelType";
                 dstForm.Markup = "dst-markup";
 
-                var revision = dstForm.MakeNewRevision();
+                var revision = dstForm.MakeNewRevision(ConfigurationItemRevisionCreationMethod.Manual);
                 
                 await dstFormRevisionRepo.InsertAsync(revision);
                 await dstFormRepo.UpdateAsync(dstForm);
@@ -476,7 +477,7 @@ namespace Shesha.Tests.ConfigurationItems
             {
                 Id = id,
             };
-            formConfig.MakeNewRevision();
+            formConfig.MakeNewRevision(ConfigurationItemRevisionCreationMethod.Manual);
 
             if (initAction != null)
                 await initAction.Invoke(formConfig);

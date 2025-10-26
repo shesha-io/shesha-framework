@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using System;
 
 namespace Shesha.ConfigurationStudio.Dtos
@@ -9,6 +10,16 @@ namespace Shesha.ConfigurationStudio.Dtos
     /// </summary>
     public class ConfigurationItemRevisionDto: EntityDto<Guid>
     {
+        /// <summary>
+        /// Module name
+        /// </summary>
+        public string ModuleName { get; set; }
+
+        /// <summary>
+        /// If true, indicates that revision is editable 
+        /// </summary>
+        public bool IsEditable { get; set; }        
+
         /// <summary>
         /// Version number
         /// </summary>
@@ -42,11 +53,21 @@ namespace Shesha.ConfigurationStudio.Dtos
         /// <summary>
         /// Creator user id
         /// </summary>
-        public virtual long? CreatorUserId { get; set; }
+        public long? CreatorUserId { get; set; }
 
         /// <summary>
         /// Creator user name
         /// </summary>
-        public virtual string CreatorUserName { get; set; }
+        public string CreatorUserName { get; set; }
+
+        /// <summary>
+        /// Creation method (manual/manual import/migration import)
+        /// </summary>
+        public ConfigurationItemRevisionCreationMethod CreationMethod { get; set; }
+
+        /// <summary>
+        /// Version number of the DLL. Applicable when <see cref="CreationMethod"/> is <see cref="ConfigurationItemRevisionCreationMethod.MigrationImport"/>
+        /// </summary>
+        public string? DllVersionNo { get; set; }
     }
 }

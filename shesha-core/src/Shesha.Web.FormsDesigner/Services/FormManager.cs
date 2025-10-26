@@ -1,6 +1,4 @@
 ﻿using Abp.Dependency;
-using Abp.Domain.Entities;
-using Abp.Runtime.Session;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
@@ -9,7 +7,6 @@ using Shesha.Dto.Interfaces;
 using Shesha.Permissions;
 using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Models;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -26,8 +23,6 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             _permissionedObjectManager = permissionedObjectManager;
         }
-
-        public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
         public static string GetFormPermissionedObjectName(string? module, string name)
         {
