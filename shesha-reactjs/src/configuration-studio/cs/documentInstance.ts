@@ -54,11 +54,17 @@ export class DocumentInstance implements IDocumentInstance {
   };
 
   reloadDocumentAsync = async (): Promise<void> => {
-    this.loadingState = 'loading';
-    if (this._loader)
-      await this._loader();
-
-    this.loadingState = 'ready';
+    if (this._loader) {
+      this.loadingState = 'loading';
+      try {
+        await this._loader();
+      } catch (error) {
+        this.loadingState = 'failed';
+        throw error;
+      }
+      this.loadingState = 'ready';
+    } else
+      this.loadingState = 'ready';
   };
 
   toolbarForceRender?: ForceRenderFunc;

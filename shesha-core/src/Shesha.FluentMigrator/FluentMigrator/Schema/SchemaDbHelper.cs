@@ -1,5 +1,4 @@
 ﻿using FluentMigrator;
-using System;
 using System.Data;
 
 namespace Shesha.FluentMigrator.Modules
@@ -69,16 +68,6 @@ ON DELETE {key.DeleteRule};",
             };
 
             ExecuteNonQuery(sql);
-        }
-
-        private void AddParameter(IDbCommand command, string name, string? value)
-        {
-            var parameter = command.CreateParameter();
-            parameter.ParameterName = name;
-            parameter.Value = value;
-            if (value != null)
-                parameter.DbType = DbType.String;
-            command.Parameters.Add(parameter);
         }
 
         private IEnumerable<ConstraintInfo> RetrieveDependedKeys(string? oldSchema, string oldTable, string oldColumn)
