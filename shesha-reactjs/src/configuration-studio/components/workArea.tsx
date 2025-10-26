@@ -36,7 +36,9 @@ export const WorkArea: FC = () => {
     {
       key: 'close',
       label: 'Close',
-      onClick: (): void => closeDocumentAsync(doc.itemId),
+      onClick: (): void => {
+        void closeDocumentAsync(doc.itemId);
+      },
     },
     {
       key: 'closeOthers',
