@@ -81,10 +81,10 @@ export type UseCsTabsResponse = {
   readonly renderedDocs: Map<string, ReactNode>;
   readonly activeDocId: string | undefined;
   readonly activeDocument: IDocumentInstance | undefined;
-  readonly navigateToDocumentAsync: (docId: string) => void;
-  readonly closeDocumentAsync: (tabId: string) => void;
-  readonly reloadDocumentAsync: (tabId: string) => void;
-  readonly closeMultipleDocumentsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => void;
+  readonly navigateToDocumentAsync: (docId: string) => Promise<void>;
+  readonly closeDocumentAsync: (tabId: string) => Promise<void>;
+  readonly reloadDocumentAsync: (tabId: string) => Promise<void>;
+  readonly closeMultipleDocumentsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => Promise<void>;
 };
 export const useCsTabs = (): UseCsTabsResponse => {
   const cs = useConfigurationStudio();

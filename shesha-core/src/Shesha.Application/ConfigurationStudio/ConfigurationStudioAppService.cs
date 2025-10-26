@@ -245,7 +245,7 @@ namespace Shesha.ConfigurationStudio
         [HttpPut]
         public async Task RenameRevisionAsync(RenameRevisionRequest request) 
         { 
-            var revision = await RevisionRepo.GetAsync(request.Id);
+            var revision = await RevisionRepo.GetAsync(request.RevisionId);
             revision.ConfigurationItem.Module?.EnsureEditable();
 
             revision.VersionName = request.VersionName;
@@ -260,6 +260,8 @@ namespace Shesha.ConfigurationStudio
             item.Module?.EnsureEditable();
 
             var revision = await RevisionRepo.GetAsync(request.RevisionId);
+            if (revision.ConfigurationItem != item)
+                throw new AbpValidationException("Selected revision doesn't belong to the item");
             
             var manager = CiHelper.GetManager(item.ItemType);
 

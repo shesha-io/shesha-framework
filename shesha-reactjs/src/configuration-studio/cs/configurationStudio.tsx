@@ -164,12 +164,12 @@ export interface IConfigurationStudio {
   activeDocId: string | undefined;
   activeDocument: IDocumentInstance | undefined;
 
-  navigateToDocumentAsync: (docId: string) => void;
+  navigateToDocumentAsync: (docId: string) => Promise<void>;
   activateDocumentById: (docId: string | undefined) => void;
   openDocumentByIdAsync: (docId: string) => Promise<void>;
-  closeDocumentAsync: (docId: string) => void;
+  closeDocumentAsync: (docId: string) => Promise<void>;
   reloadDocumentAsync: (docId: string) => Promise<void>;
-  closeMultipleDocumentsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => void;
+  closeMultipleDocumentsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => Promise<void>;
   //#endregion
 
   //#region crud operations

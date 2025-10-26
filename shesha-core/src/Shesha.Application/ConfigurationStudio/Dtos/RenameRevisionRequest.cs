@@ -7,7 +7,7 @@ namespace Shesha.ConfigurationStudio.Dtos
     /// </summary>
     public class RenameRevisionRequest
     {
-        public Guid Id { get; set; }
+        public Guid RevisionId { get; set; }
         public string? VersionName { get; set; }
     }
 }
