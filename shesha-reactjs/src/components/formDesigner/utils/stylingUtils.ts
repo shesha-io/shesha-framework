@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import { ComponentTypeInfo } from './componentTypeUtils';
-import { addPx, hasNumber } from '@/utils/style';
+import { addPx, canAddToCalc, parseDimension } from '@/utils/style';
 
 export interface StyleConfig {
   marginTop?: number | string;
@@ -13,6 +13,38 @@ export interface StyleConfig {
   paddingRight?: number | string;
 }
 
+/**
+ * Helper to safely create calc expressions for dimensions with margins
+ * @param dimension - The base dimension value (e.g., "50vw", "100%", 300)
+ * @param additions - Array of margin values to add (e.g., ["5px", "3px"])
+ * @returns Formatted dimension string with calc() if needed, or original value
+ */
+const createCalcDimension = (
+  dimension: string | number | undefined,
+  ...additions: (string | undefined)[]
+): string | number | undefined => {
+  if (!canAddToCalc(dimension)) {
+    return dimension; // Return as-is for 'auto', undefined, etc.
+  }
+
+  // Filter out zero margins
+  const nonZeroAdditions = additions.filter((add) => {
+    if (!add) return false;
+    const parsed = parseDimension(add);
+    return parsed && parsed.value !== 0;
+  });
+
+  // If no margins to add, return original dimension with proper unit
+  if (nonZeroAdditions.length === 0) {
+    return addPx(dimension);
+  }
+
+  // Create calc expression
+  const dimensionStr = addPx(dimension);
+  const additionsStr = nonZeroAdditions.join(' + ');
+  return `calc(${dimensionStr} + ${additionsStr})`;
+};
+
 export const createRootContainerStyle = (
   dimensions: CSSProperties,
   stylingBox: StyleConfig,
@@ -24,10 +56,10 @@ export const createRootContainerStyle = (
   };
 
   const margins = {
-    marginTop: addPx(stylingBox?.marginTop || '0px'),
-    marginBottom: addPx(stylingBox?.marginBottom || '0px'),
-    marginLeft: addPx(stylingBox?.marginLeft || '0px'),
-    marginRight: addPx(stylingBox?.marginRight || '0px'),
+    marginTop: addPx(stylingBox?.marginTop || 0),
+    marginBottom: addPx(stylingBox?.marginBottom || 0),
+    marginLeft: addPx(stylingBox?.marginLeft || 0),
+    marginRight: addPx(stylingBox?.marginRight || 0),
   };
 
   const {
@@ -40,12 +72,18 @@ export const createRootContainerStyle = (
   return {
     ...baseStyle,
     ...originalDimensions,
-    width: hasNumber(dimensions.width) ? `calc(${dimensions.width} + ${marginLeft} + ${marginRight})` : dimensions.width,
-    maxWidth: hasNumber(dimensions.maxWidth) ? `calc(${dimensions.maxWidth} + ${marginLeft} + ${marginRight})` : dimensions.maxWidth,
-    minWidth: hasNumber(dimensions.minWidth) ? `calc(${dimensions.minWidth} + ${marginLeft} + ${marginRight})` : dimensions.minWidth,
-    height: isInput ? 'max-content' : hasNumber(dimensions.height) ? `calc(${dimensions.height} + ${marginTop} + ${marginBottom})` : dimensions.height,
-    minHeight: isInput ? originalDimensions.minHeight : hasNumber(dimensions.minHeight) ? `calc(${dimensions.minHeight} + ${marginTop} + ${marginBottom})` : dimensions.minHeight,
-    maxHeight: isInput ? originalDimensions.maxHeight : hasNumber(dimensions.maxHeight) ? `calc(${dimensions.maxHeight} + ${marginTop} + ${marginBottom})` : dimensions.maxHeight,
+    width: createCalcDimension(dimensions.width, marginLeft, marginRight),
+    maxWidth: createCalcDimension(dimensions.maxWidth, marginLeft, marginRight),
+    minWidth: createCalcDimension(dimensions.minWidth, marginLeft, marginRight),
+    height: isInput
+      ? 'max-content'
+      : createCalcDimension(dimensions.height, marginTop, marginBottom),
+    minHeight: isInput
+      ? originalDimensions.minHeight
+      : createCalcDimension(dimensions.minHeight, marginTop, marginBottom),
+    maxHeight: isInput
+      ? originalDimensions.maxHeight
+      : createCalcDimension(dimensions.maxHeight, marginTop, marginBottom),
     flexBasis: dimensions.flexBasis,
   };
 };

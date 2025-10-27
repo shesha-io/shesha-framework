@@ -1,5 +1,6 @@
 import { CSSProperties } from 'react';
 import { ComponentTypeInfo } from './componentTypeUtils';
+import { addPx } from '@/utils/style';
 
 export interface DimensionConfig {
   width?: string;
@@ -19,20 +20,20 @@ export const getComponentDimensions = (
 
   const width = isDataTableContext
     ? '100%'
-    : dimensionsStyles?.width || 'auto';
+    : addPx(dimensionsStyles?.width) || 'auto';
 
   const height = isDataTableContext
     ? '100%'
     : isInput
       ? 'auto'
-      : dimensionsStyles?.height;
+      : addPx(dimensionsStyles?.height);
 
-  const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number => {
+  const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number | undefined => {
     if (isDataTableContext) return '100%';
-    return dimensionsStyles?.[dimensionType];
+    return addPx(dimensionsStyles?.[dimensionType]);
   };
 
-  const flexBasis = dimensionsStyles?.maxWidth || dimensionsStyles?.width;
+  const flexBasis = addPx(dimensionsStyles?.maxWidth || dimensionsStyles?.width);
 
   return {
     width,
@@ -50,7 +51,6 @@ export const getDeviceDimensions = (
   dimensionsStyles: CSSProperties,
 ): CSSProperties => {
   const { isInput } = typeInfo;
-  // const {marginBottom, marginTop, marginLeft, margingRight} = stylingBox;
 
   return {
     width: '100%',

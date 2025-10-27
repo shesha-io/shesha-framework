@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }, layout) => {
+export const useStyles = createStyles(({ css, cx }, layout: 'vertical' | 'horizontal' | 'inline' | undefined) => {  
   const formItem = cx(css`
         --ant-form-item-margin-bottom: 0px !important;
         .ant-form-item-row {

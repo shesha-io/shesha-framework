@@ -18,5 +18,5 @@ export const getStyleChangeValue = (
 
 export const getStyleValue = (type: keyof IValue, direction: keyof IInputDirection, value: string): string => {
   const v = jsonSafeParse(value || '{}') as IValue;
-  return (v || {})[`${type}${capitalizeFirstLetter(direction)}`] || 0;
+  return (v || {})[`${type}${capitalizeFirstLetter(direction)}`] || '0';
 };

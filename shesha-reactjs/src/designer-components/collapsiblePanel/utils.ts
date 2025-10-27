@@ -23,7 +23,7 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType
       radius: { all: borderRadius || 8 },
     },
     shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
-    stylingBox: '{"marginBottom":"5","paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8"}',
+    stylingBox: '{"paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8","marginLeft":"0","marginBottom":"0","marginTop":"0","marginRight":"0"}',
   };
 };
 

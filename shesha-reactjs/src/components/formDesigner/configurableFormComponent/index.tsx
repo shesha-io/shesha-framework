@@ -133,7 +133,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       // ...(formMode === 'designer' ? {stylingBox: paddingStyles} : {stylingBox: JSON.stringify({...stylingBoxPadding, ...stylingBoxMargin})}),
       flexBasis: getDeviceFlexBasis(dimensionsStyles),
     };
-  }, [componentModel, desktopConfig, paddingStyles, originalDimensions, formMode, typeInfo]);
+  }, [componentModel, desktopConfig, paddingStyles, originalDimensions, formMode, typeInfo, activeDevice, dimensionsStyles]);
 
   const rootContainerStyle = useMemo(() => {
     return createRootContainerStyle(

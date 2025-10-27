@@ -7,6 +7,7 @@ import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { useStyles } from './styles';
+import { addPx } from '@/utils/style';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -23,27 +24,35 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const shaForm = useShaFormInstance();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
 
-  const layout = useMemo(() => {
-    // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
+  const colLayout = useMemo(() => {
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
-  }, [formItemlabelCol, formItemWrapperCol]);
-  const settings = shaForm.settings;
-  const { styles } = useStyles(layout);
+  }, [formItemlabelCol, formItemWrapperCol, labelCol, wrapperCol]);
 
+  const settings = shaForm.settings;
+  const { styles } = useStyles(settings.layout);
   const defaultMargins = settings?.formItemMargin || {};
   const { top, left, right, bottom } = defaultMargins;
-  const {
-    marginTop = top ?? 5,
-    marginBottom = bottom ?? 5,
-    marginRight = right ?? 3,
-    marginLeft = left ?? 3,
-    width,
-    height,
-    minWidth,
-    minHeight,
-    maxWidth,
-    maxHeight,
-  } = model?.allStyles?.fullStyle || {};
+  const componentStyles = model?.allStyles?.fullStyle || {};
+
+  // Apply default margins from form settings, but allow component-specific overrides
+  const marginTop = componentStyles.marginTop ?? top ?? 5;
+  const marginBottom = componentStyles.marginBottom ?? bottom ?? 5;
+  const marginRight = componentStyles.marginRight ?? right ?? 3;
+  const marginLeft = componentStyles.marginLeft ?? left ?? 3;
+
+  // Build style object with proper units
+  const formItemStyle = {
+    marginBottom: addPx(marginBottom),
+    marginRight: addPx(marginRight),
+    marginLeft: addPx(marginLeft),
+    marginTop: addPx(marginTop),
+    width: addPx(componentStyles.width),
+    height: addPx(componentStyles.height),
+    minWidth: addPx(componentStyles.minWidth),
+    minHeight: addPx(componentStyles.minHeight),
+    maxWidth: addPx(componentStyles.maxWidth),
+    maxHeight: addPx(componentStyles.maxHeight),
+  };
 
   const { hideLabel, hidden } = model;
   if (hidden) return null;
@@ -53,7 +62,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     : model.propertyName;
 
   const formItemProps: FormItemProps = {
-    className: classNames(className, styles.formItem, layout),
+    className: classNames(className, styles.formItem, settings?.layout),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
@@ -61,11 +70,11 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     initialValue: initialValue,
     tooltip: model.description || undefined,
     rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
-    labelCol: layout?.labelCol,
-    wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
+    labelCol: colLayout?.labelCol,
+    wrapperCol: hideLabel ? { span: 24 } : colLayout?.wrapperCol,
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
-    style: { marginBottom, marginRight, marginLeft, marginTop, width, height, minHeight, minWidth, maxHeight, maxWidth },
+    style: formItemStyle,
   };
 
   if (typeof children === 'function') {
