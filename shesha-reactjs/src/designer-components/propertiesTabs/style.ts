@@ -20,9 +20,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       }
     }
     
-    * {
+    ant-form-item {
       font-size: 12px;
-      --ant-control-height: 0 !important;
     }
     
     .ant-tabs-tab {

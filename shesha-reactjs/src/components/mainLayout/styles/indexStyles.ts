@@ -80,7 +80,7 @@ export const GlobalSheshaStyles = createGlobalStyle`
     margin: auto 0;
   }
 
-  [data-sha-c-type="textArea"] {
+  [data-sha-c-type="textArea"], [data-sha-c-type="attachmentsEditor"]  {
     .${(p) => p.theme.prefixCls}-form-item-label  { 
       margin: unset;
     }

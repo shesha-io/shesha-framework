@@ -24,10 +24,10 @@ export const createRootContainerStyle = (
   };
 
   const margins = {
-    marginTop: addPx(stylingBox?.marginTop || '0px'),
-    marginBottom: addPx(stylingBox?.marginBottom || '0px'),
-    marginLeft: addPx(stylingBox?.marginLeft || '0px'),
-    marginRight: addPx(stylingBox?.marginRight || '0px'),
+    marginTop: addPx(stylingBox?.marginTop || 0),
+    marginBottom: addPx(stylingBox?.marginBottom || 0),
+    marginLeft: addPx(stylingBox?.marginLeft || 0),
+    marginRight: addPx(stylingBox?.marginRight || 0),
   };
 
   const {

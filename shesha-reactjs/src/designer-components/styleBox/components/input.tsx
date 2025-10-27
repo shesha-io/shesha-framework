@@ -1,4 +1,4 @@
-import { Input } from 'antd';
+import { Input, Tooltip } from 'antd';
 import React, { FC } from 'react';
 import { IInputDirection, IValue } from '../interfaces';
 import { getStyleChangeValue, getStyleValue } from './utils';
@@ -24,15 +24,22 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value }) =>
     }
   };
 
+  const currentValue = getStyleValue(type, direction, value) ?? defaultMargins[direction];
+  const isEmpty = !currentValue || currentValue === '0';
+
   return (
-    <Input
-      className={getStyleClassName(type, direction)}
-      onChange={onModifyChange}
-      value={getStyleValue(type, direction, value) ?? defaultMargins[direction]}
-      type="number"
-      disabled={readOnly}
-      placeholder="auto"
-    />
+    <Tooltip
+      title={isEmpty ? "Leave empty or '0' for auto" : undefined}
+      placement="top"
+    >
+      <Input
+        className={getStyleClassName(type, direction)}
+        onChange={onModifyChange}
+        value={currentValue}
+        disabled={readOnly}
+        style={isEmpty ? { color: '#bfbfbf', fontStyle: 'italic' } : undefined}
+      />
+    </Tooltip>
   );
 };
 

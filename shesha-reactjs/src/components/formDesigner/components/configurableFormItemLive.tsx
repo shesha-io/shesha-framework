@@ -28,7 +28,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, formItemWrapperCol]);
   const settings = shaForm.settings;
-  const { styles } = useStyles(layout);
+  const { styles } = useStyles(settings.layout);
 
   const defaultMargins = settings?.formItemMargin || {};
   const { top, left, right, bottom } = defaultMargins;
@@ -53,7 +53,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     : model.propertyName;
 
   const formItemProps: FormItemProps = {
-    className: classNames(className, styles.formItem, layout),
+    className: classNames(className, styles.formItem, settings.layout),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,

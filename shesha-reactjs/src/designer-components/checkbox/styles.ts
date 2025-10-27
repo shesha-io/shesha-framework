@@ -40,7 +40,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
                 inset-inline-start: unset;
             }
             input {
-              widht: 100%;
+              width: 100%;
               height: 100%;
             }
         }
