@@ -35,7 +35,7 @@ BEGIN
             WHERE name = ref_list_name
                 AND module_name = ref_list_module_name
                 AND item_type = 'reference-list'
-            ORDER BY module_level DESC
+            ORDER BY module_level ASC
             LIMIT 1
         )
         SELECT
