@@ -8,12 +8,15 @@ using Shesha.Extensions;
 using Shesha.Reflection;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
     /// <summary>
     /// Stored file
     /// </summary>
+    [SnakeCaseNaming]
+    [Table("stored_files", Schema = "frwk")]
     [Entity(TypeShortAlias = "Shesha.Framework.StoredFile", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class StoredFile : FullAuditedEntity<Guid>, IMayHaveTenant
     {
@@ -28,8 +31,10 @@ namespace Shesha.Domain
         [EntityDisplayName]
         public virtual string FileName { get; set; }
 
+        [MaxLength(50)]
         public virtual string FileType { get; set; }
 
+        [MaxLength(1000)]
         public virtual string? Category { get; set; }
 
         [DataType(DataType.MultilineText)]
@@ -40,7 +45,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Parent file. It can be set for generated files (points to template) or otherwise connected files.
         /// </summary>
-        public virtual StoredFile ParentFile { get; set; }
+        public virtual StoredFile? ParentFile { get; set; }
 
         /// <summary>
         /// The setter is private as it should be set once on creation and not changed.
@@ -58,7 +63,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Owner of file
         /// </summary>
-        public virtual GenericEntityReference Owner { get; set; }
+        public virtual GenericEntityReference? Owner { get; set; }
 
         /// <summary>
         /// Creates new file for the specified owner

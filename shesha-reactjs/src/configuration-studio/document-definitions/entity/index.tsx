@@ -1,15 +1,22 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { DocumentDefinition, ItemEditorProps, ProviderRendererProps, ITEM_TYPES } from "@/configuration-studio/models";
 
 import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
 import { EntityToolbar } from "./toolbar";
 import { Form } from "antd";
 import ModelConfiguratorRenderer from "@/components/modelConfigurator/renderer";
-import { ModelConfiguratorProvider } from "@/providers";
+import { ModelConfiguratorProvider, useModelConfigurator } from "@/providers";
 
 export const EntityDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.ENTITY,
-  Editor: (_props: ItemEditorProps): ReactNode => {
+  Editor: ({ doc }: ItemEditorProps): ReactNode => {
+    const { load } = useModelConfigurator();
+    useEffect(() => {
+      doc.setLoader(() => {
+        load();
+        return Promise.resolve();
+      });
+    }, [doc, load]);
     return (
       <div>
         <ModelConfiguratorRenderer />

@@ -5,13 +5,22 @@ import { DesignerMainArea } from "@/components/formDesigner/designerMainArea";
 import { useMainStyles } from "@/components/formDesigner/styles/styles";
 import { CanvasConfig } from "@/components/formDesigner/toolbar/canvasConfig";
 import { Space } from "antd";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { FormToolbar } from "./toolbar";
+import { useFormPersister } from "@/providers/formPersisterProvider";
 
 export const FormDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.FORM,
-  Editor: (_props: ItemEditorProps): ReactNode => {
+  Editor: (props: ItemEditorProps): ReactNode => {
     const { styles } = useMainStyles();
+    const { loadForm } = useFormPersister();
+    const { doc } = props;
+    useEffect(() => {
+      doc.setLoader(async () => {
+        await loadForm({ skipCache: true });
+      });
+    }, [doc, loadForm]);
+
     return (
       <div className={styles.formDesigner}>
         <DesignerMainArea viewType="configStudio" />

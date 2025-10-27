@@ -101,14 +101,14 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren> = ({
   })).current;
 
   const getForm = async (payload: IGetFormPayload): Promise<IFormDto> => {
-    const form = await loader.getCurrentConfigAsync({ type: ConfigurationType.Form, id: payload.formId });
+    const form = await loader.getCurrentConfigAsync({ type: ConfigurationType.Form, id: payload.formId, skipCache: payload.skipCache });
     const formDto = form as FormConfigurationDto;
     const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(formDto), designerComponents);
     return dto;
   };
 
   const getRefList = (payload: IGetRefListPayload): PromisedValue<ReferenceListDto> => {
-    const promise = loader.getCurrentConfigAsync<ReferenceListDto>({ type: ConfigurationType.ReferenceList, id: payload.refListId });
+    const promise = loader.getCurrentConfigAsync<ReferenceListDto>({ type: ConfigurationType.ReferenceList, id: payload.refListId, skipCache: payload.skipCache });
     return promise;
   };
 

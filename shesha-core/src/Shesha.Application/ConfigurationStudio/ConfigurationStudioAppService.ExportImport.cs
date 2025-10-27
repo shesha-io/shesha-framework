@@ -78,7 +78,7 @@ namespace Shesha.ConfigurationStudio
 
                 var importContext = new PackageImportContext
                 {
-                    CreateModules = true,
+                    CreateModules = false,
                     CreateFrontEndApplications = true,
                     ShouldImportItem = item => input.ItemsToImport.Contains(item.Id),
                 };

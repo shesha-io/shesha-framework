@@ -47,17 +47,18 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
     documentType: itemType,
 
     Provider: (props: ProviderRendererProps): ReactNode => {
-      const { children } = props;
+      const { children, doc } = props;
       const [form] = Form.useForm();
       const [shaForm] = useShaForm({
         form: undefined,
         antdForm: form,
-        init: (_instance) => {
-          _instance.setLogEnabled(true);
-          /*
-           *instance.setFormMode(props.mode);
-           *instance.setParentFormValues(parentFormValues);
-           */
+        init: (instance) => {
+          instance.setLogEnabled(false);
+
+          doc.setLoader(async (): Promise<void> => {
+            await instance.reloadMarkup();
+            await instance.fetchData();
+          });
         },
       });
 

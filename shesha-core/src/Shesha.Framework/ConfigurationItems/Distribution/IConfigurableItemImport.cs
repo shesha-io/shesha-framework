@@ -24,10 +24,16 @@ namespace Shesha.ConfigurationItems.Distribution
         Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context);
 
         /// <summary>
-        /// Read item from json
+        /// Read item from json stream
         /// </summary>
         /// <returns></returns>
         Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream);
+
+        /// <summary>
+        /// Read item from json
+        /// </summary>
+        /// <returns></returns>
+        Task<DistributedConfigurableItemBase> ReadFromJsonAsync(string json);
 
         /// <summary>
         /// Sort items to import in specific order
