@@ -205,7 +205,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     customRequest(options: any) {
       // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
-      uploadFile({ file: options.file, ownerId, ownerType });
+      // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
+      const fileName = options?.file?.name.split(".").map((sub: string, i) => i === 0 ? sub : sub.toLocaleLowerCase()).join(".");
+
+      const normalizedFile = new File([options.file], fileName, { type: options.file.type });
+
+      uploadFile({ file: normalizedFile, ownerId, ownerType });
     },
     beforeUpload(file: RcFile) {
       const { type, size } = file;
