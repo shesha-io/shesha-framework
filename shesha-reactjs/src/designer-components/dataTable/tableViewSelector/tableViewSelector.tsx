@@ -137,10 +137,8 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
           <Popover
             placement="right"
             title="Hint:"
-            overlayClassName="sha-table-view-selector-hint-popover"
-            overlayInnerStyle={{
-              backgroundColor: '#D9DCDC',
-            }}
+            classNames={{ root: "sha-table-view-selector-hint-popover" }}
+            styles={{ body: { backgroundColor: '#D9DCDC' } }}
             content={(
               <p>The Table View Selector needs at least<br />one filter configured to be functional.<br />Add filters in the component settings.
                 <br />
