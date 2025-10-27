@@ -206,7 +206,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     customRequest(options: any) {
       // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
       // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
-      const fileName = options?.file?.name.split(".").map((sub: string, i) => i === 0 ? sub : sub.toLocaleLowerCase()).join(".");
+      const lastDotIndex = options?.file?.name.lastIndexOf(".");
+      const fileName = options?.file?.name.substring(0, lastDotIndex) + options?.file?.name.substring(lastDotIndex).toLowerCase();
 
       const normalizedFile = new File([options.file], fileName, { type: options.file.type });
 
