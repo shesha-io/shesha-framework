@@ -15,19 +15,18 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 
 const settingsFormMarkup = settingsFormJson as FormMarkup;
 
-/**
- * Helper to sanitize CSS values to prevent injection attacks
- */
 const sanitizeCssValue = (value: any): string => {
     if (typeof value !== 'string') return String(value);
-    // Remove potentially dangerous characters: braces, comments, semicolons outside of expected contexts
     return value
         .replace(/[{}]/g, '') // Remove braces
         .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
         .replace(/<!--[\s\S]*?-->/g, '') // Remove HTML comments
+        .replace(/url\s*\(/gi, '') // Remove url() functions
+        .replace(/@import/gi, '') // Remove @import
+        .replace(/expression\s*\(/gi, '') // Remove expression()
+        .replace(/javascript:/gi, '') // Remove javascript: protocol
         .trim();
 };
-
 /**
  * Helper to convert style object to CSS string
  */
@@ -513,7 +512,7 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
             valueFormat: prev.valueFormat === 'fullNumber' ? 'string' : (prev.valueFormat || 'string'),
             stripCountryCode: prev.stripCountryCode !== undefined ? prev.stripCountryCode : false,
             defaultCountry: prev.defaultCountry || 'za',
-            enableArrow: prev.enableArrow !== undefined ? prev.enableArrow : false,
+            enableArrow: prev.enableArrow !== undefined ? prev.enableArrow : true,
         })),
 };
 
