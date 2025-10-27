@@ -16,6 +16,35 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 const settingsFormMarkup = settingsFormJson as FormMarkup;
 
 /**
+ * Helper to sanitize CSS values to prevent injection attacks
+ */
+const sanitizeCssValue = (value: any): string => {
+    if (typeof value !== 'string') return String(value);
+    // Remove potentially dangerous characters: braces, comments, semicolons outside of expected contexts
+    return value
+        .replace(/[{}]/g, '') // Remove braces
+        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
+        .replace(/<!--[\s\S]*?-->/g, '') // Remove HTML comments
+        .trim();
+};
+
+/**
+ * Helper to convert style object to CSS string
+ */
+const styleToCss = (styleObj: any): string => {
+    if (!styleObj || Object.keys(styleObj).length === 0) return '';
+    const rules: string[] = [];
+    Object.entries(styleObj).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+            const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+            const sanitizedValue = sanitizeCssValue(value);
+            rules.push(`${cssKey}: ${sanitizedValue} !important`);
+        }
+    });
+    return rules.join('; ');
+};
+
+/**
  * Helper function to intelligently split a national phone number into area code and phone number
  * Uses libphonenumber-js example numbers to determine the proper area code length for a country
  * @param nationalNumber The national phone number (without country code)
@@ -72,26 +101,19 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
         country,
         defaultCountry,
         allowClear,
-        enableArrow = true,
-        enableSearch = true,
+        enableArrow = false,
         distinct,
         disableParentheses,
         disableDropdown,
         onlyCountries,
         excludeCountries,
         preferredCountries,
-        searchNotFound,
-        searchPlaceholder,
         placeholder,
         size,
         style,
         valueFormat,
         stripCountryCode = false,
-        wrapperStyle,
-        inputGroupWrapperStyle,
-        inputWrapperStyle,
-        inputGroupStyle,
-        inputStyle,
+        styles,
         ...model
     } = props;
 
@@ -128,9 +150,10 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
     const parsedPreferredCountries = parseCountryCodes(preferredCountries);
 
     // Evaluate style with form data to support dynamic styling
-    const componentStyle = getStyle(style, formData, allData?.globalState) || {};
-
-
+    const componentStyle = useMemo(() =>
+        getStyle(style, formData, allData?.globalState) || {},
+        [style, formData, allData?.globalState]
+    );
 
     const onChangeInternal = (phoneNumber: any) => {
         // Extract the raw value - phoneNumber can be:
@@ -349,41 +372,32 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
     // Generate unique class name for this instance
     const uniqueClass = useMemo(() => `phone-input-${nanoid()}`, []);
 
-    // Evaluate individual styles with form data
-    const evaluatedWrapperStyle = getStyle(wrapperStyle, formData, allData?.globalState) || {};
-    const evaluatedInputGroupWrapperStyle = getStyle(inputGroupWrapperStyle, formData, allData?.globalState) || {};
-    const evaluatedInputWrapperStyle = getStyle(inputWrapperStyle, formData, allData?.globalState) || {};
-    const evaluatedInputGroupStyle = getStyle(inputGroupStyle, formData, allData?.globalState) || {};
-    const evaluatedInputStyle = getStyle(inputStyle, formData, allData?.globalState) || {};
+    // Evaluate unified styles with form data
+    const evaluatedStyles = useMemo(() => {
+        const result = getStyle(styles, formData, allData?.globalState);
+        if (!result) return {};
 
-    // Helper to sanitize CSS values to prevent injection attacks
-    const sanitizeCssValue = (value: any): string => {
-        if (typeof value !== 'string') return String(value);
-        // Remove potentially dangerous characters: braces, comments, semicolons outside of expected contexts
-        return value
-            .replace(/[{}]/g, '') // Remove braces
-            .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
-            .replace(/<!--[\s\S]*?-->/g, '') // Remove HTML comments
-            .trim();
-    };
+        // Check if it's a unified styles object with specific element keys
+        const hasElementKeys = 'wrapper' in result || 'inputGroupWrapper' in result ||
+            'inputWrapper' in result || 'inputGroup' in result || 'input' in result;
 
-    // Helper to convert style object to CSS string
-    const styleToCss = (styleObj: any) => {
-        if (!styleObj || Object.keys(styleObj).length === 0) return '';
-        const rules: string[] = [];
-        Object.entries(styleObj).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-                const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
-                const sanitizedValue = sanitizeCssValue(value);
-                rules.push(`${cssKey}: ${sanitizedValue} !important`);
-            }
-        });
-        return rules.join('; ');
-    };
+        if (hasElementKeys) {
+            return result as any;
+        }
+
+        // Otherwise, treat it as a single style object to apply to all elements
+        return {
+            wrapper: result,
+            inputGroupWrapper: result,
+            inputWrapper: result,
+            inputGroup: result,
+            input: result
+        };
+    }, [styles, formData, allData?.globalState]);
 
     // Convert CSSProperties to CSS string - target specific elements individually
     // Design: componentStyle acts as a base style applied to all child elements,
-    // while specific style props (wrapperStyle, inputStyle, etc.) allow targeted overrides
+    // while the unified styles prop allows targeted overrides for specific elements
     const cssString = useMemo(() => {
         const rules: string[] = [];
 
@@ -401,25 +415,25 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
             }
         }
 
-        // Apply specific styles to individual elements
-        if (Object.keys(evaluatedWrapperStyle).length > 0) {
-            rules.push(`.${uniqueClass} .ant-phone-input-wrapper { ${styleToCss(evaluatedWrapperStyle)} }`);
+        // Apply specific styles to individual elements from unified styles
+        if (evaluatedStyles.wrapper && Object.keys(evaluatedStyles.wrapper).length > 0) {
+            rules.push(`.${uniqueClass} .ant-phone-input-wrapper { ${styleToCss(evaluatedStyles.wrapper)} }`);
         }
-        if (Object.keys(evaluatedInputGroupWrapperStyle).length > 0) {
-            rules.push(`.${uniqueClass} .ant-input-group-wrapper { ${styleToCss(evaluatedInputGroupWrapperStyle)} }`);
+        if (evaluatedStyles.inputGroupWrapper && Object.keys(evaluatedStyles.inputGroupWrapper).length > 0) {
+            rules.push(`.${uniqueClass} .ant-input-group-wrapper { ${styleToCss(evaluatedStyles.inputGroupWrapper)} }`);
         }
-        if (Object.keys(evaluatedInputWrapperStyle).length > 0) {
-            rules.push(`.${uniqueClass} .ant-input-wrapper { ${styleToCss(evaluatedInputWrapperStyle)} }`);
+        if (evaluatedStyles.inputWrapper && Object.keys(evaluatedStyles.inputWrapper).length > 0) {
+            rules.push(`.${uniqueClass} .ant-input-wrapper { ${styleToCss(evaluatedStyles.inputWrapper)} }`);
         }
-        if (Object.keys(evaluatedInputGroupStyle).length > 0) {
-            rules.push(`.${uniqueClass} .ant-input-group { ${styleToCss(evaluatedInputGroupStyle)} }`);
+        if (evaluatedStyles.inputGroup && Object.keys(evaluatedStyles.inputGroup).length > 0) {
+            rules.push(`.${uniqueClass} .ant-input-group { ${styleToCss(evaluatedStyles.inputGroup)} }`);
         }
-        if (Object.keys(evaluatedInputStyle).length > 0) {
-            rules.push(`.${uniqueClass} .ant-input { ${styleToCss(evaluatedInputStyle)} }`);
+        if (evaluatedStyles.input && Object.keys(evaluatedStyles.input).length > 0) {
+            rules.push(`.${uniqueClass} .ant-input { ${styleToCss(evaluatedStyles.input)} }`);
         }
 
         return rules.join('\n');
-    }, [componentStyle, uniqueClass, evaluatedWrapperStyle, evaluatedInputGroupWrapperStyle, evaluatedInputWrapperStyle, evaluatedInputGroupStyle, evaluatedInputStyle]);
+    }, [componentStyle, uniqueClass, evaluatedStyles]);
 
     return readOnly ? (
         <ReadOnlyDisplayFormItem
@@ -440,15 +454,12 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
                     onChange={onChangeInternal}
                     onBlur={onBlurInternal}
                     onFocus={onFocusInternal}
-                    enableSearch={enableSearch}
                     enableArrow={enableArrow}
                     distinct={distinct}
                     disableParentheses={disableParentheses}
                     disableDropdown={disableDropdown}
                     country={country || defaultCountry || 'za'}
                     status={!isValid ? 'error' : undefined}
-                    searchNotFound={searchNotFound}
-                    searchPlaceholder={searchPlaceholder}
                     onlyCountries={parsedOnlyCountries}
                     excludeCountries={parsedExcludeCountries}
                     preferredCountries={parsedPreferredCountries}
@@ -479,7 +490,7 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
         if (model.hidden) return null;
 
         return (
-            <ConfigurableFormItem model={model}>
+            <ConfigurableFormItem model={model} initialValue={model.initialValue}>
                 {(value, onChange) => (
                     <PhoneNumberControl {...model} value={value} onChange={onChange} />
                 )}
@@ -494,7 +505,6 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
         stripCountryCode: model.stripCountryCode !== undefined ? model.stripCountryCode : false,
         defaultCountry: model.defaultCountry || 'za',
         enableArrow: model.enableArrow !== undefined ? model.enableArrow : true,
-        enableSearch: model.enableSearch !== undefined ? model.enableSearch : true,
         labelAlign: model.labelAlign || 'left',
     }),
     migrator: (m) => m
@@ -503,7 +513,7 @@ const PhoneNumberInputComponent: IToolboxComponent<IPhoneNumberInputComponentPro
             valueFormat: prev.valueFormat === 'fullNumber' ? 'string' : (prev.valueFormat || 'string'),
             stripCountryCode: prev.stripCountryCode !== undefined ? prev.stripCountryCode : false,
             defaultCountry: prev.defaultCountry || 'za',
-            enableArrow: prev.enableArrow !== undefined ? prev.enableArrow : true,
+            enableArrow: prev.enableArrow !== undefined ? prev.enableArrow : false,
         })),
 };
 

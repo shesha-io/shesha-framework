@@ -218,6 +218,7 @@
             "labelAlign": "right",
             "parentId": "root",
             "hidden": false,
+            "defaultValue": true,
             "isDynamic": false,
             "version": 4,
             "expandIconPosition": "start",
@@ -249,17 +250,7 @@
                         "propertyName": "enableArrow",
                         "parentId": "phone_behavior_content",
                         "label": "Enable Arrow",
-                        "defaultValue": true,
-                        "version": 2
-                    },
-                    {
-                        "id": "phone_enable_search",
-                        "type": "checkbox",
-                        "propertyName": "enableSearch",
-                        "parentId": "phone_behavior_content",
-                        "label": "Enable Search",
-                        "description": "Allow searching for countries in the dropdown",
-                        "defaultValue": true,
+                        "description": "Display arrow icons in the phone input",
                         "version": 2
                     },
                     {
@@ -288,28 +279,6 @@
                         "label": "Disable Parentheses",
                         "description": "Remove parentheses from phone number input mask",
                         "version": 2
-                    },
-                    {
-                        "id": "phone_search_placeholder",
-                        "type": "textField",
-                        "propertyName": "searchPlaceholder",
-                        "parentId": "phone_behavior_content",
-                        "label": "Search Placeholder",
-                        "description": "Placeholder text for country search input",
-                        "defaultValue": "Search country",
-                        "version": 3,
-                        "textType": "text"
-                    },
-                    {
-                        "id": "phone_search_not_found",
-                        "type": "textField",
-                        "propertyName": "searchNotFound",
-                        "parentId": "phone_behavior_content",
-                        "label": "Search Not Found Text",
-                        "description": "Text to display when no country matches the search",
-                        "defaultValue": "No country found",
-                        "version": 3,
-                        "textType": "text"
                     }
                 ]
             },
@@ -643,132 +612,53 @@
                                 "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
                             },
                             {
-                                "id": "phone_wrapper_style",
+                                "id": "phone_styles",
                                 "type": "codeEditor",
-                                "propertyName": "wrapperStyle",
-                                "label": "Wrapper Style",
+                                "propertyName": "styles",
+                                "label": "Component Styles",
                                 "parentId": "phone_style_content",
                                 "validate": {},
                                 "settingsValidationErrors": [],
-                                "description": "Style for .ant-phone-input-wrapper (outer wrapper)",
+                                "description": "Define styles for phone input elements. Return a CSSProperties object to apply to all elements, or return an object with specific keys: { wrapper, inputGroupWrapper, inputWrapper, inputGroup, input }",
                                 "mode": "dialog",
                                 "exposedVariables": [
                                     {
                                         "name": "data",
                                         "description": "Form values",
                                         "type": "object"
-                                    }
-                                ],
-                                "version": 3,
-                                "language": "typescript",
-                                "placeholder": "",
-                                "wrapInTemplate": true,
-                                "templateSettings": {
-                                    "functionName": "getStyle"
-                                },
-                                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
-                            },
-                            {
-                                "id": "phone_input_group_wrapper_style",
-                                "type": "codeEditor",
-                                "propertyName": "inputGroupWrapperStyle",
-                                "label": "Input Group Wrapper Style",
-                                "parentId": "phone_style_content",
-                                "validate": {},
-                                "settingsValidationErrors": [],
-                                "description": "Style for .ant-input-group-wrapper",
-                                "mode": "dialog",
-                                "exposedVariables": [
+                                    },
                                     {
-                                        "name": "data",
-                                        "description": "Form values",
-                                        "type": "object"
-                                    }
-                                ],
-                                "version": 3,
-                                "language": "typescript",
-                                "placeholder": "",
-                                "wrapInTemplate": true,
-                                "templateSettings": {
-                                    "functionName": "getStyle"
-                                },
-                                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
-                            },
-                            {
-                                "id": "phone_input_wrapper_style",
-                                "type": "codeEditor",
-                                "propertyName": "inputWrapperStyle",
-                                "label": "Input Wrapper Style",
-                                "parentId": "phone_style_content",
-                                "validate": {},
-                                "settingsValidationErrors": [],
-                                "description": "Style for .ant-input-wrapper",
-                                "mode": "dialog",
-                                "exposedVariables": [
+                                        "name": "wrapper",
+                                        "description": "Style for .ant-phone-input-wrapper (outermost container)",
+                                        "type": "React.CSSProperties"
+                                    },
                                     {
-                                        "name": "data",
-                                        "description": "Form values",
-                                        "type": "object"
-                                    }
-                                ],
-                                "version": 3,
-                                "language": "typescript",
-                                "placeholder": "",
-                                "wrapInTemplate": true,
-                                "templateSettings": {
-                                    "functionName": "getStyle"
-                                },
-                                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
-                            },
-                            {
-                                "id": "phone_input_group_style",
-                                "type": "codeEditor",
-                                "propertyName": "inputGroupStyle",
-                                "label": "Input Group Style",
-                                "parentId": "phone_style_content",
-                                "validate": {},
-                                "settingsValidationErrors": [],
-                                "description": "Style for .ant-input-group (contains flag and input)",
-                                "mode": "dialog",
-                                "exposedVariables": [
+                                        "name": "inputGroupWrapper",
+                                        "description": "Style for .ant-input-group-wrapper",
+                                        "type": "React.CSSProperties"
+                                    },
                                     {
-                                        "name": "data",
-                                        "description": "Form values",
-                                        "type": "object"
-                                    }
-                                ],
-                                "version": 3,
-                                "language": "typescript",
-                                "placeholder": "",
-                                "wrapInTemplate": true,
-                                "templateSettings": {
-                                    "functionName": "getStyle"
-                                },
-                                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
-                            },
-                            {
-                                "id": "phone_input_style",
-                                "type": "codeEditor",
-                                "propertyName": "inputStyle",
-                                "label": "Input Style",
-                                "parentId": "phone_style_content",
-                                "validate": {},
-                                "settingsValidationErrors": [],
-                                "description": "Style for .ant-input (the actual input field)",
-                                "mode": "dialog",
-                                "exposedVariables": [
+                                        "name": "inputWrapper",
+                                        "description": "Style for .ant-input-wrapper",
+                                        "type": "React.CSSProperties"
+                                    },
                                     {
-                                        "name": "data",
-                                        "description": "Form values",
-                                        "type": "object"
+                                        "name": "inputGroup",
+                                        "description": "Style for .ant-input-group (contains flag dropdown and input)",
+                                        "type": "React.CSSProperties"
+                                    },
+                                    {
+                                        "name": "input",
+                                        "description": "Style for .ant-input (the actual phone number input field)",
+                                        "type": "React.CSSProperties"
                                     }
                                 ],
                                 "version": 3,
                                 "language": "typescript",
-                                "placeholder": "",
+                                "placeholder": "// Apply same styles to all elements:\nreturn { width: '100%', fontSize: '14px' };\n\n// Or target specific elements:\nreturn {\n  wrapper: { backgroundColor: '#f0f0f0' },\n  input: { color: 'blue', fontWeight: 'bold' }\n};",
                                 "wrapInTemplate": true,
                                 "templateSettings": {
-                                    "functionName": "getStyle"
+                                    "functionName": "getStyles"
                                 },
                                 "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
                             },
