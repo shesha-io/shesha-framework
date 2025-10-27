@@ -177,8 +177,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     );
   };
 
-
-
   if (range) {
     return (
       <RangePicker

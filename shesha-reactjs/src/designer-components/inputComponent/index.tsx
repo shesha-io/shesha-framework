@@ -34,6 +34,7 @@ import { CustomLabelValueEditorInputs, getEditor } from './utils';
 import EditModeSelector from '@/components/editModeSelector';
 import Icon from '@/components/icon/Icon';
 import { DatePickerWrapper } from '../dateField/datePickerWrapper';
+import LayerSelectorSettingsModal from '@/components/layerEditor/modal';
 
 const { Password } = Input;
 
@@ -51,7 +52,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
 
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true, settings } = props;
 
     const allData = useAvailableConstantsData();
 
@@ -336,6 +337,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
         case 'date':
             return <DatePickerWrapper {...props} />;
+
+        case 'layerSelectorSettingsModal':
+            return <LayerSelectorSettingsModal value={value} onChange={onChange} readOnly={readOnly} settings={settings} />;
 
         default:
             return <Input
