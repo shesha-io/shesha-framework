@@ -647,11 +647,23 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const newData = payload.getNew();
     const oldIdx = payload.oldIndex ?? -1;
     const newIdx = payload.newIndex ?? -1;
-    const movedRow = oldIdx >= 0 ? oldData[oldIdx] : null;
 
-    // Execute OnBeforeRowReorder event
+    // Validate indices
+    if (oldIdx < 0 || oldIdx >= oldData.length || newIdx < 0 || newIdx >= oldData.length) {
+      console.warn(
+        `Invalid reorder indices: oldIndex=${oldIdx}, newIndex=${newIdx}, data length=${oldData.length}. Resetting to original order.`
+      );
+      payload.applyOrder(oldData);
+      throw new Error(
+        `Reordering cancelled: indices out of bounds (oldIndex=${oldIdx}, newIndex=${newIdx}, valid range=0-${oldData.length - 1})`
+      );
+    }
+
+    const movedRow = oldData[oldIdx];
+
+    // Execute onBeforeRowReorder event (if configured)
     if (onBeforeRowReorder) {
-      try {
+      await new Promise<void>((resolve, reject) => {
         const beforeArgs: IBeforeRowReorderArguments = {
           oldIndex: oldIdx,
           newIndex: newIdx,
@@ -667,20 +679,25 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           moment,
         };
 
-        // Execute the before event action
-        await executeAction({
-          actionConfiguration: onBeforeRowReorder,
+        executeAction({
+          actionConfiguration: {
+            ...onBeforeRowReorder,
+          },
           argumentsEvaluationContext: evaluationContext,
+          success: () => {
+            resolve();
+          },
+          fail: (error) => {
+            console.error('OnBeforeRowReorder event error:', error);
+            payload.applyOrder(oldData);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            reject(new Error(errorMessage));
+          },
         });
-
-      } catch (error) {
-        console.error('OnBeforeRowReorder event error:', error);
-        // Reset to original order on error
-        payload.applyOrder(oldData);
-        throw new Error('Reordering cancelled due to validation error: ' + error.message);
-      }
+      });
     }
 
+    // Prepare reorder payload
     const reorderPayload: RowsReorderPayload = {
       ...payload,
       propertyName: strictSortBy,
@@ -691,7 +708,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       // Execute the actual reorder operation
       const apiResponse = await repository.reorder(reorderPayload);
 
-      // Execute OnAfterRowReorder event
+      // Execute onAfterRowReorder event (if configured)
       if (onAfterRowReorder) {
         try {
           const afterArgs: IAfterRowReorderArguments = {
@@ -722,8 +739,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         }
       }
     } catch (error) {
-      // Reset to original order on API error
-      payload.applyOrder(oldData);
       throw error;
     }
   };
