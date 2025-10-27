@@ -100,7 +100,7 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Dump current state of the configuration item to a revision
         /// </summary>
-        Task<ConfigurationItemRevision> SaveToRevisionAsync(ConfigurationItem item);
+        Task<ConfigurationItemRevision> SaveToRevisionAsync(ConfigurationItem item, Action<ConfigurationItemRevision>? revisionCustomizer = null);
 
         /// <summary>
         /// Restore configuration item state from a revision
