@@ -131,6 +131,8 @@ namespace Shesha.ConfigurationStudio
                 Module = module,
                 Folder = folder,
                 Name = request.Name,
+                Label = request.Label,
+                Description = request.Description,
             });
 
             var dto = await manager.MapToDtoAsync(item);

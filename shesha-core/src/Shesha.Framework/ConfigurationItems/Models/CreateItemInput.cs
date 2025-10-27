@@ -1,5 +1,4 @@
 ﻿using Shesha.Domain;
-using System;
 
 namespace Shesha.ConfigurationItems.Models
 {

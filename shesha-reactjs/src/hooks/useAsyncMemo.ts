@@ -12,9 +12,10 @@ export function useAsyncMemo<T>(factory: () => Promise<T> | undefined | null, de
         /* nop*/
       };
 
-    promise.then((val) => {
+    promise.then((newVal) => {
       if (!cancel) {
-        setVal(val);
+        if (newVal !== val)
+          setVal(newVal);
       }
     });
 

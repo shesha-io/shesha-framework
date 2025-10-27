@@ -1,4 +1,5 @@
-﻿using Shesha.ConfigurationItems.Distribution.Models;
+﻿using Microsoft.AspNetCore.Http;
+using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
 using System.IO;
 using System.Threading.Tasks;
@@ -51,5 +52,13 @@ namespace Shesha.ConfigurationItems.Distribution
         /// </summary>
         /// <returns></returns>
         Task<ConfigurationPackageImportResult> CreateImportResultAsync(Stream packageStream, string fileName);
+
+        /// <summary>
+        /// Merge packages
+        /// </summary>
+        /// <param name="packages">Packages to merge</param>
+        /// <param name="stream">Output stream</param>
+        /// <returns></returns>
+        Task MergePackagesAsync(IFormFile[] packages, Stream stream);
     }
 }
