@@ -440,6 +440,7 @@ export const getSettings = () => {
                                             mode: 'dialog',
                                             wrapInTemplate: true,
                                             templateSettings: {
+                                                useAsyncDeclaration: true,
                                                 functionName: 'onValuesUpdate'
                                             },
                                             language: 'typescript'

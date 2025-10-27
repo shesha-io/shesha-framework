@@ -27,7 +27,8 @@ const getBeforeDataLoad = (onInitialized: string): string => {
 
 const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): string => {
     if (!initialValues || initialValues.length === 0)
-        return null;
+        // Return onDataLoaded if it exists, even when no initial values are present
+        return onDataLoaded || null;
 
     // Convert to JSON
     const initialData = {};
@@ -60,10 +61,10 @@ const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): st
     return result;
 };
 
-export const migrateDefaults = (settings: IFormSettings, context: IFormMigrationContext) => {
+export const migrateDefaults = (settings: IFormSettings, context: IFormMigrationContext): IFormSettings => {
     const initialData: IKeyValue[] = [];
     const flatStructure = convertFormMarkupToFlatStructure(context.form.markup, settings, context.designerComponents);
-    for(const id in flatStructure.allComponents) {
+    for (const id in flatStructure.allComponents) {
         if (!flatStructure.allComponents.hasOwnProperty(id)) continue;
         const component = flatStructure.allComponents[id];
         if (component.defaultValue !== undefined)
@@ -89,9 +90,16 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
         preparedValues,
         onInitialized,
         onDataLoaded,
+        onAfterDataLoad,
         onUpdate,
+        onValuesUpdate,
+        onPrepareSubmitData,
+        onBeforeSubmit,
+        onSubmitSuccess,
+        onSubmitFailed,
         ...restSettings
     } = settings;
+
 
     /*
     load/submit settings
@@ -127,23 +135,23 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
     const lifecycleSettings: IFormLifecycleSettings = {
         dataLoaderType: 'gql',
         dataLoadersSettings: {
-            'gql': gqlLoaderSettings,
+            gql: gqlLoaderSettings,
         },
 
         dataSubmitterType: 'gql',
         dataSubmittersSettings: {
-            'gql': gqlSubmitterSettings,
+            gql: gqlSubmitterSettings,
         },
 
         onBeforeDataLoad: getBeforeDataLoad(onInitialized),
-        onAfterDataLoad: getAfterDataLoad(onDataLoaded, initialValues),
+        onAfterDataLoad: onAfterDataLoad || getAfterDataLoad(onDataLoaded, initialValues),
 
-        onValuesUpdate: onUpdate,
+        onValuesUpdate: onValuesUpdate || onUpdate,
 
-        onPrepareSubmitData: getPrepareSubmitData(preparedValues),
-        onBeforeSubmit: null,
-        onSubmitSuccess: null,
-        onSubmitFailed: null,
+        onPrepareSubmitData: onPrepareSubmitData || getPrepareSubmitData(preparedValues),
+        onBeforeSubmit: onBeforeSubmit || null,
+        onSubmitSuccess: onSubmitSuccess || null,
+        onSubmitFailed: onSubmitFailed || null,
     };
 
     const result: IFormSettings = {
