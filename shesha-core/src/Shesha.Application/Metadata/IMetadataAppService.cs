@@ -45,7 +45,7 @@ namespace Shesha.Metadata
         /// <summary>
         /// Get properties of the specified container excluding framework-related properties (e.g. CreationTime, DeletionTime etc)
         /// </summary>
-        Task<List<PropertyMetadataDto>> GetNonFrameworkRelatedPropertiesAsync(string container);
+        Task<List<AutocompleteItemDto>> GetNonFrameworkRelatedPropertiesAsync(string container, string? term, string? selectedValue);
 
         /// <summary>
         /// Get full metadata of the specified container
