@@ -1,5 +1,6 @@
 import { CSSProperties } from 'react';
 import { ComponentTypeInfo } from './componentTypeUtils';
+import { addPx } from '@/utils/style';
 
 export interface DimensionConfig {
   width?: string;
@@ -50,7 +51,6 @@ export const getDeviceDimensions = (
   dimensionsStyles: CSSProperties,
 ): CSSProperties => {
   const { isInput } = typeInfo;
-  // const {marginBottom, marginTop, marginLeft, margingRight} = stylingBox;
 
   return {
     width: '100%',

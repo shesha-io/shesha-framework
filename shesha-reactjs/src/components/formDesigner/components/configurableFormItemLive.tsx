@@ -7,6 +7,7 @@ import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { useStyles } from './styles';
+import { addPx } from '@/utils/style';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
