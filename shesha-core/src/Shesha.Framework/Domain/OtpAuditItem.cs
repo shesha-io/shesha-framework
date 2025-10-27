@@ -1,11 +1,14 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
+    [SnakeCaseNaming]
+    [Table("otp_audit_items", Schema = "frwk")]
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class OtpAuditItem: FullAuditedEntity<Guid>
     {
@@ -23,7 +26,7 @@ namespace Shesha.Domain
         [MaxLength(100)]
         public virtual string? RecipientType { get; set; }
         
-        [MaxLength(40)]
+        [MaxLength(100)]
         public virtual string? RecipientId { get; set; }
 
         /// <summary>

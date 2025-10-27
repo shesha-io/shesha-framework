@@ -2,6 +2,7 @@
 using Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto;
 using NHibernate.Linq;
 using Shesha;
+using Shesha.DelayedUpdate;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Notifications;
@@ -18,23 +19,55 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         private readonly IRepository<NotificationTypeConfig, Guid> _notificationTypeRepository;
         private readonly IRepository<StoredFile, Guid> _storedFileRepository;
         
-        public NotificationTestAppService(INotificationSender notificationService, 
+        public NotificationTestAppService(
+            INotificationSender notificationService,
             IRepository<NotificationChannelConfig, Guid> notificationChannelRepository,
             IRepository<Person, Guid> personRepository,
-            IRepository<NotificationTypeConfig, Guid> notificationTypeRepository, 
-            IRepository<StoredFile, Guid> storedFileService
-
-            )
+            IRepository<NotificationTypeConfig, Guid> notificationTypeRepository,
+            IRepository<StoredFile, Guid> storedFileRepository
+        )
         {
             _notificationService = notificationService;
             _notificationChannelRepository = notificationChannelRepository;
             _personRepository = personRepository;
             _notificationTypeRepository = notificationTypeRepository;
-            _storedFileRepository = storedFileService;
+            _storedFileRepository = storedFileRepository;
+        }
+
+        private async Task<List<NotificationAttachmentDto>> GetAttachmentsAsync(DelayedUpdateGroup[]? delayedUpdate)
+        {
+            List<NotificationAttachmentDto> attachments = new List<NotificationAttachmentDto>();
+
+            var payloadFiles = delayedUpdate?.FirstOrDefault(x => x.Name == "storedFiles");
+
+            if (payloadFiles != null && payloadFiles.Items.Count > 0)
+            {
+                foreach (var payloadFile in payloadFiles.Items)
+                {
+                    var id = payloadFile.Id.ToString();
+
+                    if (string.IsNullOrEmpty(id))
+                        continue;
+
+                    var file = await _storedFileRepository.GetAsync(Guid.Parse(id));
+                    if (file != null)
+                    {
+                        attachments.Add(new NotificationAttachmentDto()
+                        {
+                            FileName = file.FileName,
+                            StoredFileId = file.Id,
+                        });
+                    }
+                }
+            }
+
+            return attachments;
         }
 
         public async Task TestNotificationAsync(NotificationDto notification)
         {
+            var attachments = await GetAttachmentsAsync(notification._delayedUpdate);
+
             if (notification.Type == null)
                 throw new ArgumentException($"{nameof(notification.Type)} must not be  null");
 
@@ -73,7 +106,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 recipient,                
                 data,
                 notification.Priority,
-                notification.NotificationAttachments,
+                attachments,
                 notification.Cc,
                 null,
                 channel
@@ -100,6 +133,8 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             if (senderPerson == null)
                 throw new InvalidOperationException("Current person could not be determined. Ensure the user is logged in.");
 
+            var attachments = await GetAttachmentsAsync(notification._delayedUpdate);
+
             var sender = new PersonMessageParticipant(senderPerson);
 
             if (notification.RecipientTexts != null)
@@ -113,7 +148,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         receiver,
                         data,
                         notification.Priority,
-                        notification.NotificationAttachments,
+                        attachments,
                         null,
                         null,
                         channel
@@ -134,7 +169,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         receiver,
                         data,
                         notification.Priority,
-                        notification.NotificationAttachments,
+                        attachments,
                         null,
                         null,
                         channel

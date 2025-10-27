@@ -76,8 +76,8 @@ namespace Shesha.NHibernate.Maps
                         id.Generator(NHGens.HighLow, g => g.Params(
                             new
                             {
-                                table = "Frwk_HiLoSequences".DoubleQuote(), // Important: NH doesn't apply Naming Strategy specified in the configuration, we have to quote names manually here
-                                column = "NextValue".DoubleQuote(),
+                                table = "\"frwk\".\"hi_lo_sequences\"", // Important: NH doesn't apply Naming Strategy specified in the configuration, we have to quote names manually here
+                                column = "next_value".DoubleQuote(),
                                 sequence = "FrameworkSequence",
                                 max_lo = "100"
                             }));

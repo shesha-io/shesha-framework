@@ -15,7 +15,7 @@ type EditorProps = {
 
 export const Editor = ({ settings, onCancel, onSave }: EditorProps): JSX.Element => (
   <ComponentSettingsModal
-    title="Sidebar Menu Configuration"
+    title="Menu Configuration"
     settings={settings ?? EmptySidebarProps}
     onSave={onSave}
     onCancel={onCancel}

@@ -39,11 +39,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
             position: relative;
             bottom: -2px;
             }
-
-            +.sha-required-mark {
-                position: relative;
-                bottom: -8px;
-            }
     `);
 
   const jsSwitch = cx(css`

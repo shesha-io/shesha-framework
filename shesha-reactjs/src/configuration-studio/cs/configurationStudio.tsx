@@ -1,6 +1,6 @@
 import ConfigurationItemsExport, { IExportInterface } from "@/components/configurationFramework/itemsExport";
 import { ConfigurationItemsImport, IImportInterface } from "@/components/configurationFramework/itemsImport";
-import { IErrorInfo } from "@/interfaces";
+import { IAjaxResponse, IErrorInfo } from "@/interfaces";
 import { FormFullName, HttpClientApi } from "@/providers";
 import { IShaRouter } from "@/providers/shaRouting/contexts";
 import { ConfigurationItemsExportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-export";
@@ -8,7 +8,7 @@ import { ConfigurationItemsImportFooter } from "@/providers/sheshaApplication/co
 import { buildUrl } from "@/utils/url";
 import React, { MutableRefObject, ReactNode } from "react";
 import { isDefined, isNullOrWhiteSpace } from "../../utils/nullables";
-import { deleteConfigurationItemAsync, deleteFolderAsync, duplicateItemAsync, fetchFlatTreeAsync, fetchItemTypesAsync, MoveNodePayload, moveTreeNodeAsync } from "../apis";
+import { deleteConfigurationItemAsync, deleteFolderAsync, duplicateItemAsync, fetchFlatTreeAsync, fetchItemTypesAsync, getRevisionJsonAsync, MoveNodePayload, moveTreeNodeAsync, restoreItemRevisionAsync } from "../apis";
 import { getUnknownDocumentDefinition } from "../document-definitions/configurable-editor/genericDefinition";
 import {
   CIDocument,
@@ -67,13 +67,14 @@ type DynamicProperties<K extends string | number | symbol, T> = {
   [P in K]: T;
 };
 
-type FormIds = 'CREATE_FOLDER' | 'RENAME_FOLDER' | 'EXPOSE_EXISTING';
+type FormIds = 'CREATE_FOLDER' | 'RENAME_FOLDER' | 'EXPOSE_EXISTING' | 'RENAME_REVISION';
 
 const FORMS: DynamicProperties<FormIds, FormFullName> = {
   // TODO: move to metadata
   CREATE_FOLDER: { module: 'Shesha', name: 'cs-folder-create' },
   RENAME_FOLDER: { module: 'Shesha', name: 'cs-folder-rename' },
   EXPOSE_EXISTING: { module: 'Shesha', name: 'cs-expose-existing' },
+  RENAME_REVISION: { module: 'Shesha', name: 'cs-revision-rename' },
 };
 
 const STORAGE_KEYS = {
@@ -115,6 +116,21 @@ export type ExportPackageArgs = {
   folderId: string | undefined;
 };
 
+export type RenameRevisionArgs = {
+  id: string;
+  versionName: string | null;
+};
+
+export type GetRevisionJsonAsyncArgs = {
+  id: string;
+};
+
+export type RestoreRevisionArgs = {
+  itemId: string;
+  revisionId: string;
+  revisionFriendlyName: string;
+};
+
 export interface IConfigurationStudio {
   readonly treeNodes: TreeNode[];
   readonly treeLoadingState: ProcessingState;
@@ -148,11 +164,12 @@ export interface IConfigurationStudio {
   activeDocId: string | undefined;
   activeDocument: IDocumentInstance | undefined;
 
-  navigateToDocumentAsync: (docId: string) => void;
-  activateDocById: (docId: string | undefined) => void;
+  navigateToDocumentAsync: (docId: string) => Promise<void>;
+  activateDocumentById: (docId: string | undefined) => void;
   openDocumentByIdAsync: (docId: string) => Promise<void>;
-  closeDocAsync: (docId?: string) => void;
-  closeMultipleDocsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => void;
+  closeDocumentAsync: (docId: string) => Promise<void>;
+  reloadDocumentAsync: (docId: string) => Promise<void>;
+  closeMultipleDocumentsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => Promise<void>;
   //#endregion
 
   //#region crud operations
@@ -171,6 +188,11 @@ export interface IConfigurationStudio {
   exposeExistingAsync: (args: ExposeArgs) => Promise<void>;
   importPackageAsync: (args: ImportPackageArgs) => Promise<void>;
   exportPackageAsync: (args: ExportPackageArgs) => Promise<void>;
+
+  renameItemRevisionAsync: (args: RenameRevisionArgs) => Promise<boolean>;
+  restoreRevisionAsync: (args: RestoreRevisionArgs) => Promise<boolean>;
+
+  downloadRevisionJsonAsync: (args: GetRevisionJsonAsyncArgs) => Promise<void>;
   //#endregion
 
   //#region document definitions
@@ -286,6 +308,29 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.shaRouter = args.shaRouter;
     this.rootPath = this.shaRouter.router.path;
   }
+
+  renameItemRevisionAsync = async (args: RenameRevisionArgs): Promise<boolean> => {
+    const response = await this.modalApi.showModalFormAsync<IAjaxResponse<void>>({
+      title: 'Name Revision',
+      formId: FORMS.RENAME_REVISION,
+      formArguments: {
+        id: args.id,
+        versionName: args.versionName,
+      },
+    });
+    return response?.success === true;
+  };
+
+  restoreRevisionAsync = async (args: RestoreRevisionArgs): Promise<boolean> => {
+    if (!await this.modalApi.confirmYesNo({ title: 'Confirm Revision Restore', content: `Are you sure you want to restore revision '${args.revisionFriendlyName}'?` }))
+      return false;
+    await restoreItemRevisionAsync(this.httpClient, { itemId: args.itemId, revisionId: args.revisionId });
+    return true;
+  };
+
+  downloadRevisionJsonAsync = async (args: GetRevisionJsonAsyncArgs): Promise<void> => {
+    await getRevisionJsonAsync(this.httpClient, { id: args.id });
+  };
 
   registerDocumentDefinition = (definition: DocumentDefinition): void => {
     this._documentDefinitions.set(definition.documentType, definition);
@@ -601,7 +646,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       : buildUrl(this.rootPath, { docId: docId });
   };
 
-  activateDocById = async (docId: string | undefined): Promise<void> => {
+  activateDocumentById = async (docId: string | undefined): Promise<void> => {
     if (this.activeDocId === docId)
       return;
 
@@ -613,8 +658,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
     return this.docs.some((t) => t.itemId === docId);
   };
 
-  closeDocAsync = async (docId?: string): Promise<void> => {
-    if (!isDefined(docId) || !this.isDocOpened(docId))
+  closeDocumentAsync = async (docId: string): Promise<void> => {
+    if (!this.isDocOpened(docId))
       return;
 
     // TODO: check for unsaved changes, ask user to confirm
@@ -644,11 +689,11 @@ export class ConfigurationStudio implements IConfigurationStudio {
     }
   };
 
-  closeMultipleDocsAsync = async (predicate: (doc: IDocumentInstance, index: number) => boolean): Promise<void> => {
+  closeMultipleDocumentsAsync = async (predicate: (doc: IDocumentInstance, index: number) => boolean): Promise<void> => {
     // TODO: check for unsaved changes, ask user to confirm
     const docsToClose = this.docs.filter(predicate);
     for (const doc of docsToClose) {
-      await this.closeDocAsync(doc.itemId);
+      await this.closeDocumentAsync(doc.itemId);
     }
   };
 
@@ -844,6 +889,15 @@ export class ConfigurationStudio implements IConfigurationStudio {
     }
   };
 
+  reloadDocumentAsync = async (docId: string): Promise<void> => {
+    const doc = this.getDocumenById(docId);
+    if (!doc)
+      return;
+
+    this.log('reloadItemAsync', docId);
+    await doc.reloadDocumentAsync();
+  };
+
   createItemAsync = async ({ moduleId, folderId, itemType, prevItemId }: CreateItemArgs): Promise<void> => {
     this.log(`create item of type '${itemType}'`, { moduleId, folderId });
 
@@ -894,7 +948,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       await deleteConfigurationItemAsync(this.httpClient, { itemId: docId });
 
       if (this.isDocOpened(docId))
-        this.closeDocAsync(docId);
+        this.closeDocumentAsync(docId);
 
       await this.loadTreeAsync();
     } catch (error) {

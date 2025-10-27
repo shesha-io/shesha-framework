@@ -103,17 +103,15 @@ namespace Shesha.NHibernate.EntityHistory
             var typeOfEntity = entity.GetType().StripCastleProxyType();
 
             if (!IsTypeOfEntity(typeOfEntity))
-            {
                 return null;
-            }
-
-            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(typeOfEntity.Namespace.NotNull(), typeOfEntity.Name));
 
             var isTracked = IsTypeOfTrackedEntity(typeOfEntity);
             if (isTracked != null && !isTracked.Value) return null;
 
             var isAudited = IsTypeOfAuditedEntity(typeOfEntity);
             if (isAudited != null && !isAudited.Value) return null;
+
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(typeOfEntity.Namespace.NotNull(), typeOfEntity.Name));
 
             if (entityConfig != null && isAudited == null && isTracked == null)
             {

@@ -1,5 +1,5 @@
 import React, { useContext, FC, PropsWithChildren, useMemo, useId, useRef, useEffect } from "react";
-import { ConfigurableActionDispatcherProvider, DataContextManager, DataContextProvider, FormMode, IConfigurableFormComponent, IFlatComponentsStructure, useShaFormInstance } from "../index";
+import { ConfigurableActionDispatcherProvider, DataContextManager, DataContextProvider, FormMode, IConfigurableFormComponent, IFlatComponentsStructure, useShaFormInstanceOrUndefined } from "../index";
 import { createNamedContext } from "@/utils/react";
 import ConditionalWrap from "@/components/conditionalWrapper";
 import ValidateProvider from "../validateProvider";
@@ -59,7 +59,7 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
     isScope = false,
   } = props;
 
-  const form = useShaFormInstance(false);
+  const form = useShaFormInstanceOrUndefined();
   const parent = useParent(false);
   const id = useId();
 

@@ -178,7 +178,7 @@ const buildConfigurationItemNodeContextMenu = (args: BuildNodeMenuArgs<ConfigIte
       label: "Open",
       key: "open",
       onClick: () => {
-        configurationStudio.activateDocById(node.id);
+        configurationStudio.activateDocumentById(node.id);
       },
     });
   result.push({

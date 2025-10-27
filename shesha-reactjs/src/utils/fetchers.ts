@@ -124,14 +124,14 @@ export const mutate = <
   }).then((res) => res.json());
 };
 
-export const getFileNameFromContentDisposition = (disposition: string): string => {
-  if (!disposition) return null;
+export const getFileNameFromContentDisposition = (disposition: string): string | undefined => {
+  if (!disposition)
+    return undefined;
   const utf8FilenameRegex = /filename\*=UTF-8''([\w%\-\.]+)(?:; ?|$)/i;
   const asciiFilenameRegex = /^filename=(["']?)(.*?[^\\])\1(?:; ?|$)/i;
 
-  let fileName: string = null;
   if (utf8FilenameRegex.test(disposition)) {
-    fileName = decodeURIComponent(utf8FilenameRegex.exec(disposition)[1]);
+    return decodeURIComponent(utf8FilenameRegex.exec(disposition)[1]);
   } else {
     // prevent ReDos attacks by anchoring the ascii regex to string start and
     //  slicing off everything before 'filename='
@@ -140,14 +140,14 @@ export const getFileNameFromContentDisposition = (disposition: string): string =
       const partialDisposition = disposition.slice(filenameStart);
       const matches = asciiFilenameRegex.exec(partialDisposition);
       if (matches != null && matches[2]) {
-        fileName = matches[2];
+        return matches[2];
       }
     }
   }
-  return fileName;
+  return undefined;
 };
 
-export const getFileNameFromResponse = (fileResponse: HttpResponse<any>): string => {
+export const getFileNameFromResponse = (fileResponse: HttpResponse<any>): string | undefined => {
   return getFileNameFromContentDisposition(fileResponse.headers['content-disposition']);
 };
 

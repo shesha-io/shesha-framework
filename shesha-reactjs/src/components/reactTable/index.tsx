@@ -23,7 +23,7 @@ import { getPlainValue } from '@/utils';
 import { getColumnAnchored } from '@/utils/datatable';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstance } from '@/providers/index';
+import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstanceOrUndefined } from '@/providers';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
@@ -117,7 +117,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const { setDragState } = useDataTableStore();
 
-  const shaForm = useShaFormInstance(false);
+  const shaForm = useShaFormInstanceOrUndefined();
   const canvasState = useCanvasState(false);
 
   const { allColumns, allRows } = componentState;
@@ -320,12 +320,31 @@ export const ReactTable: FC<IReactTableProps> = ({
         return typedRow.original !== rows[index].original;
       });
       if (changedIndex) {
+        const oldRows = rows.map((row) => row.original);
+        const newRows = newState.map((row) => row.original);
+
+        let oldIndex = -1;
+        let newIndex = -1;
+
+        for (let i = 0; i < oldRows.length; i++) {
+          if (oldRows[i] !== newRows[i]) {
+            if (oldIndex === -1) {
+              const movedItem = newRows[i];
+              oldIndex = oldRows.findIndex((item) => item === movedItem);
+              newIndex = i;
+              break;
+            }
+          }
+        }
+
         const payload: OnRowsReorderedArgs = {
           getOld: () => rows.map((row) => row.original),
           getNew: () => newState.map((row) => row.original),
           applyOrder: (orderedItems) => {
             setComponentState((prev) => ({ ...prev, allRows: orderedItems }));
           },
+          oldIndex: oldIndex >= 0 ? oldIndex : undefined,
+          newIndex: newIndex >= 0 ? newIndex : undefined,
         };
 
         onRowsReordered(payload).catch((error) => {

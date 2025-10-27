@@ -35,6 +35,7 @@ import EditModeSelector from '@/components/editModeSelector';
 import Icon from '@/components/icon/Icon';
 import { IQueryBuilderComponentProps } from '../queryBuilder/interfaces';
 import { IDynamicActionsConfiguratorComponentProps } from '../dynamicActionsConfigurator/interfaces';
+import { DatePickerWrapper } from '../dateField/datePickerWrapper';
 
 const { Password } = Input;
 
@@ -52,7 +53,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
 
     propertyName, tooltip: description, onChangeSetting, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-    allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true } = props;
+    allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true, id } = props;
 
   const allData = useAvailableConstantsData();
 
@@ -393,6 +394,29 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
           size={size}
           readOnly={readOnly}
           variant={variant}
+        />
+      );
+
+    case 'date':
+      return (
+        <DatePickerWrapper
+          type="date"
+          id={id}
+          propertyName={propertyName}
+          value={value}
+          defaultValue={defaultValue}
+          onChange={onChange}
+          readOnly={readOnly}
+          hideBorder={false}
+          range={false}
+          showTime={false}
+          showNow={false}
+          picker="date"
+          defaultToMidnight={false}
+          resolveToUTC={false}
+          dateFormat={undefined}
+          timeFormat={undefined}
+          additionalStyles={undefined}
         />
       );
     default:

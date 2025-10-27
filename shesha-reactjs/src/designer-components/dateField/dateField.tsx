@@ -1,5 +1,5 @@
 import { CalendarOutlined } from '@ant-design/icons';
-import React, { Fragment } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customDateEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
@@ -29,6 +29,10 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
+    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
+      ...model.allStyles.fontStyles,
+      ...model.allStyles.dimensionsStyles,
+    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
     return (
       <Fragment>
@@ -41,7 +45,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
                 onChange(...args);
             };
 
-            return <DatePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
+            return <DatePickerWrapper {...model} additionalStyles={finalStyle} {...customEvent} value={value} onChange={onChangeInternal} />;
           }}
         </ConfigurableFormItem>
       </Fragment>

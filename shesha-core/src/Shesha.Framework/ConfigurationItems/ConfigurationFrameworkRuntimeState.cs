@@ -16,5 +16,26 @@ namespace Shesha.ConfigurationItems
         /// Current module (top level)
         /// </summary>
         public string? CurrentModule { get; set; }
+
+        /// <summary>
+        /// If true, indicates that configuration changes tracking is enabled and any changes made on the configuration items are treated as manual and tracked automatically
+        /// </summary>
+        public bool IsConfigurationTrackingEnabled { get; set; }
+
+        public ConfigurationFrameworkRuntimeState()
+        {
+            IsConfigurationTrackingEnabled = true;
+        }
+
+        /// <summary>
+        /// Create new state as a copy of existing one
+        /// </summary>
+        /// <param name="prevState"></param>
+        public ConfigurationFrameworkRuntimeState(ConfigurationFrameworkRuntimeState prevState)
+        {
+            FrontEndApplication = prevState.FrontEndApplication;
+            CurrentModule = prevState.CurrentModule;
+            IsConfigurationTrackingEnabled = prevState.IsConfigurationTrackingEnabled;
+        }
     }
 }

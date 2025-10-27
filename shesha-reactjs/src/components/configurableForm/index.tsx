@@ -21,7 +21,7 @@ export type ConfigurableFormProps<Values extends object = object> = Omit<IConfig
   // TODO: merge with formRef
   shaFormRef?: MutableRefObject<IShaFormInstance<Values>>;
   isSettingsForm?: boolean;
-  externalShaForm?: IShaFormInstance<Values>;
+  externalShaForm?: IShaFormInstance<Values> | undefined;
 } & SheshaFormProps;
 
 // export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {

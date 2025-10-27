@@ -18,6 +18,7 @@ import {
   ISortingItem,
   FilterExpression,
 } from './interfaces';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IHasModelType, IRepository } from './repository/interfaces';
 import { createNamedContext } from '@/utils/react';
 
@@ -171,6 +172,8 @@ export interface IDataTableStateContext
   dragState?: DragState;
 
   customReorderEndpoint?: string;
+  onBeforeRowReorder?: IConfigurableActionConfiguration;
+  onAfterRowReorder?: IConfigurableActionConfiguration;
 }
 
 export type DragState = 'started' | 'finished' | null;
@@ -269,6 +272,8 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   selectedRows: [],
   permanentFilter: null,
   allowReordering: false,
+  onBeforeRowReorder: undefined,
+  onAfterRowReorder: undefined,
   customReorderEndpoint: null,
 };
 

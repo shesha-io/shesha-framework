@@ -11,7 +11,8 @@ using Shesha.Domain.Attributes;
 
 namespace Shesha.Domain
 {
-    [Table("Frwk_UserLoginAttempts")]
+    [SnakeCaseNaming]
+    [Table("user_login_attempts", Schema = "frwk")]
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class ShaUserLoginAttempt : Entity<Guid>, IHasCreationTime, IMayHaveTenant
     {
@@ -66,19 +67,19 @@ namespace Shesha.Domain
         /// IP address of the client.
         /// </summary>
         [MaxLength(MaxClientIpAddressLength)]
-        public virtual string ClientIpAddress { get; set; }
+        public virtual string? ClientIpAddress { get; set; }
 
         /// <summary>
         /// Name (generally computer name) of the client.
         /// </summary>
         [MaxLength(MaxClientNameLength)]
-        public virtual string ClientName { get; set; }
+        public virtual string? ClientName { get; set; }
 
         /// <summary>
         /// Browser information if this method is called in a web request.
         /// </summary>
         [MaxLength(MaxBrowserInfoLength)]
-        public virtual string BrowserInfo { get; set; }
+        public virtual string? BrowserInfo { get; set; }
 
         /// <summary>
         /// Login attempt result.
