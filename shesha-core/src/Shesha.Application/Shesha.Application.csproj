@@ -97,6 +97,7 @@
         <None Remove="ConfigMigrations\package20251026_1129.shaconfig" />
         <None Remove="ConfigMigrations\package20251026_1137.shaconfig" />
         <None Remove="ConfigMigrations\package20251027_1520.shaconfig" />
+        <None Remove="ConfigMigrations\package20251027_1622.shaconfig" />
         <None Remove="Excel\template.xlsx" />
         <None Remove="ConfigMigrations\package20230324_1835.shaconfig" />
         <None Remove="ConfigMigrations\package20230411_1238.shaconfig" />
@@ -146,7 +147,7 @@
         <EmbeddedResource Include="ConfigMigrations\package20250704_1203.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20250801_0955.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20250805_0851.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20251027_1520.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20251027_1622.shaconfig" />
         <EmbeddedResource Include="Excel\template.xlsx" />
         <EmbeddedResource Include="ConfigMigrations\package20230324_1835.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20230411_1238.shaconfig" />

@@ -30,7 +30,7 @@ namespace Shesha.Utilities
             }
             catch
             {
-                // Log warning but don't throw in dispose
+                // Leave temp files for OS to clean up, don't throw in dispose
             }
         }
     }

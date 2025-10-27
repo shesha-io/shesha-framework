@@ -406,11 +406,11 @@ namespace Shesha.ConfigurationItems.Distribution
 
             using (var tempFolder = new TempFolder()) 
             {
-                foreach (var packageFile in packages)
+                foreach (var packageInfo in packageInfos)
                 {
-                    using (var packegeStream = packageFile.OpenReadStream())
+                    using (var packageStream = packageInfo.File.OpenReadStream())
                     {
-                        using (var zip = new ZipArchive(packegeStream, ZipArchiveMode.Read))
+                        using (var zip = new ZipArchive(packageStream, ZipArchiveMode.Read))
                         {
                             zip.ExtractToDirectory(tempFolder.Path, overwriteFiles: true);
                         }
