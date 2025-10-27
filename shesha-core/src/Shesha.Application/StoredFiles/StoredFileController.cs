@@ -71,11 +71,14 @@ namespace Shesha.StoredFiles
         }
 
         [HttpGet, Route("Download")]
-        public async Task<ActionResult> DownloadAsync(Guid id, int? versionNo)
+        public async Task<ActionResult> DownloadAsync(Guid id, int? versionNo, Boolean skipMarkDownload = false)
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
 
-            await _fileService.MarkDownloadedAsync(fileVersion);
+            if(skipMarkDownload == false)
+            {
+                await _fileService.MarkDownloadedAsync(fileVersion);
+            }
 
             if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
             {

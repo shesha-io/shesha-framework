@@ -6,7 +6,7 @@ import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from
 import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { addPx } from '@/utils/style';
-import { DownloadOutlined, FileZipOutlined, UploadOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
   App,
@@ -139,7 +139,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     });
 
   const fetchStoredFile = (url: string) => {
-    const response = fetch(`${url}`,
+    const response = fetch(`${url}&skipMarkDownload=true`,
       { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
       .then((response) => {
         return response.blob();
