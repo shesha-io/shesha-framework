@@ -7,6 +7,7 @@ import { widthRelativeToCanvas } from "@/providers/canvas/utils";
 
 const getDimension = (main: string | number, canvasWidth?): string | number => {
   const width = canvasWidth ? widthRelativeToCanvas(main, canvasWidth) : main;
+
   return !hasNumber(main) ? main : `calc(${addPx(width)})`;
 };
 

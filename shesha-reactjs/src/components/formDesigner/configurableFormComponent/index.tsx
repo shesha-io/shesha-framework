@@ -122,7 +122,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const componentDimensions = getComponentDimensions(typeInfo, dimensionsStyles);
 
   const renderComponentModel = useMemo(() => {
-    const deviceDimensions = getDeviceDimensions(typeInfo, dimensionsStyles);
+    const deviceDimensions = getDeviceDimensions( stylingBoxMargin);
 
     return {
       ...componentModel,
@@ -140,7 +140,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       componentDimensions,
       { ...JSON.parse(marginStyles) },
       originalDimensions,
-      typeInfo.isInput,
     );
   }, [componentDimensions, marginTop, marginBottom, marginLeft, marginRight, originalDimensions, hasLabel]);
 

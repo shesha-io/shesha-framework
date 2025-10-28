@@ -17,7 +17,6 @@ export const createRootContainerStyle = (
   dimensions: CSSProperties,
   stylingBox: StyleConfig,
   originalDimensions: CSSProperties,
-  isInput: boolean,
 ): CSSProperties => {
   const baseStyle = {
     boxSizing: 'border-box' as const,
@@ -43,43 +42,11 @@ export const createRootContainerStyle = (
     width: hasNumber(dimensions.width) ? `calc(${dimensions.width} + ${marginLeft} + ${marginRight})` : dimensions.width,
     maxWidth: hasNumber(dimensions.maxWidth) ? `calc(${dimensions.maxWidth} + ${marginLeft} + ${marginRight})` : dimensions.maxWidth,
     minWidth: hasNumber(dimensions.minWidth) ? `calc(${dimensions.minWidth} + ${marginLeft} + ${marginRight})` : dimensions.minWidth,
-    height: isInput ? 'max-content' : hasNumber(dimensions.height) ? `calc(${dimensions.height} + ${marginTop} + ${marginBottom})` : dimensions.height,
-    minHeight: isInput ? originalDimensions.minHeight : hasNumber(dimensions.minHeight) ? `calc(${dimensions.minHeight} + ${marginTop} + ${marginBottom})` : dimensions.minHeight,
-    maxHeight: isInput ? originalDimensions.maxHeight : hasNumber(dimensions.maxHeight) ? `calc(${dimensions.maxHeight} + ${marginTop} + ${marginBottom})` : dimensions.maxHeight,
+    height: hasNumber(dimensions.height) ? `calc(${dimensions.height} + ${marginTop} + ${marginBottom})` : dimensions.height,
+    minHeight: hasNumber(dimensions.minHeight) ? `calc(${dimensions.minHeight} + ${marginTop} + ${marginBottom})` : dimensions.minHeight,
+    maxHeight: hasNumber(dimensions.maxHeight) ? `calc(${dimensions.maxHeight} + ${marginTop} + ${marginBottom})` : dimensions.maxHeight,
     flexBasis: dimensions.flexBasis,
   };
 };
 
-export const createFormItemStyle = (
-  stylingBox: StyleConfig,
-  formMode: string,
-  dimensionsStyles: React.CSSProperties,
-  typeInfo: ComponentTypeInfo,
-): CSSProperties => {
-  const { isDataTableContext, isInput } = typeInfo;
-  const {
-    marginLeft,
-    marginRight,
-    marginBottom,
-    marginTop,
-  } = stylingBox;
 
-  return {
-    ...(formMode !== 'designer' && {
-      marginLeft,
-      marginRight,
-      marginBottom,
-      marginTop,
-    }),
-    ...dimensionsStyles,
-    flexBasis: 'auto',
-    width: isDataTableContext
-      ? '100%'
-      : dimensionsStyles?.width || 'auto',
-    height: isDataTableContext
-      ? '100%'
-      : isInput
-        ? ''
-        : dimensionsStyles?.height,
-  };
-};

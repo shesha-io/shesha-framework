@@ -16,7 +16,7 @@ export const getComponentDimensions = (
   typeInfo: ComponentTypeInfo,
   dimensionsStyles: CSSProperties,
 ): CSSProperties => {
-  const { isDataTableContext, isInput } = typeInfo;
+  const { isDataTableContext } = typeInfo;
 
   const width = isDataTableContext
     ? '100%'
@@ -24,9 +24,7 @@ export const getComponentDimensions = (
 
   const height = isDataTableContext
     ? '100%'
-    : isInput
-      ? 'auto'
-      : dimensionsStyles?.height;
+    : dimensionsStyles?.height || 'auto';
 
   const getDimensionValue = (dimensionType: keyof DimensionConfig): string | number => {
     if (isDataTableContext) return '100%';
@@ -47,14 +45,12 @@ export const getComponentDimensions = (
 };
 
 export const getDeviceDimensions = (
-  typeInfo: ComponentTypeInfo,
-  dimensionsStyles: CSSProperties,
+  stylingBoxMargin: CSSProperties
 ): CSSProperties => {
-  const { isInput } = typeInfo;
 
   return {
-    width: '100%',
-    height: isInput ? dimensionsStyles?.height : '100%',
+    width: `calc(100% - ${stylingBoxMargin?.marginLeft || '0px'} - ${stylingBoxMargin?.marginRight || '0px'} )`,
+    height: `calc(100% - ${stylingBoxMargin?.marginTop || '0px'} - ${stylingBoxMargin?.marginBottom || '0px'} )`,
   };
 };
 

@@ -68,9 +68,6 @@ export const canAddToCalc = (dimensionValue: string | number | undefined): boole
   return true;
 };
 
-/**
- * @deprecated Use parseDimension instead for more detailed information
- */
 export const hasNumber = (str: string | number): boolean => typeof str === 'number' ? true : /\d/.test(str);
 
 export const getTagStyle = (style: React.CSSProperties = {}, hasColor: boolean = false): React.CSSProperties => {

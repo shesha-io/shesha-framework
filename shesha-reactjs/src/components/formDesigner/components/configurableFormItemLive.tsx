@@ -8,6 +8,7 @@ import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { useStyles } from './styles';
 import { addPx } from '@/utils/style';
+import { getDeviceDimensions } from '../utils/dimensionUtils';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -31,13 +32,14 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const settings = shaForm.settings;
   const { styles } = useStyles(settings.layout);
 
+  const isInDesigner = shaForm.formMode === 'designer';
   const defaultMargins = settings?.formItemMargin || {};
   const { top, left, right, bottom } = defaultMargins;
   const {
-    marginTop = top ?? 5,
-    marginBottom = bottom ?? 5,
-    marginRight = right ?? 3,
-    marginLeft = left ?? 3,
+    marginTop = top ?? "5px",
+    marginBottom = bottom ?? "5px",
+    marginRight = right ?? "3px",
+    marginLeft = left ?? "3px",
     width,
     height,
     minWidth,
@@ -53,6 +55,8 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
+  const dimensions = getDeviceDimensions({marginTop, marginBottom, marginLeft, marginRight});
+  console.log("D(MS >>", dimensions);
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem, settings.layout),
     label: hideLabel ? null : model.label,
@@ -66,7 +70,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
-    style: { marginBottom, marginRight, marginLeft, marginTop, width, height, minHeight, minWidth, maxHeight, maxWidth },
+    style: { marginBottom, marginRight, marginLeft, marginTop, width: isInDesigner ? dimensions.width : width, height: isInDesigner ? dimensions.height : height, minHeight, minWidth, maxHeight: maxHeight, maxWidth },
   };
 
   if (typeof children === 'function') {

@@ -103,7 +103,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
                 type="number"
                 value={value ?? model?.defaultValue}
                 {...inputProps}
-                style={{ ...model.allStyles.fullStyle, width: '100%' }}
+                style={{ ...model.allStyles.fullStyle, width: '100%', height: "100%" }}
                 className={styles.numberField}
                 onChange={onChangeInternal}
               />
