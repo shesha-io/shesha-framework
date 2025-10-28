@@ -100,6 +100,13 @@ export const getSettings = (data: any) => {
                                         }
                                     ]
                                 })
+                                .addSettingsInput({
+                                    inputType: 'colorPicker',
+                                    id: nanoid(),
+                                    propertyName: 'dummyEventColor',
+                                    label: 'Dummy Event Color',
+                                    parentId: commonTabId,
+                                })
                                 .toJson(),
                         ],
                     },
