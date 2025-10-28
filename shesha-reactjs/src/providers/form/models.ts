@@ -13,6 +13,7 @@ import { IBorderValue } from '@/designer-components/_settings/utils/border/inter
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { ColorValueType } from 'antd/es/color-picker/interface';
+import { PickerFocusEventHandler } from 'rc-picker/lib/interface';
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
 export const TOOLBOX_DATA_ITEM_DROPPABLE_KEY: string = 'toolboxDataItem';
@@ -132,6 +133,8 @@ export type ConfigurableFormComponentTypes =
   | 'queryBuilder'
   | 'labelValueEditor';
 
+
+
 export interface IComponentLabelProps {
   /** The label for this field that will appear next to it. */
   label?: string | React.ReactNode;
@@ -142,12 +145,13 @@ export interface IComponentLabelProps {
   labelAlign?: LabelAlign;
 }
 
+
 export interface IComponentRuntimeProps {
   /**/
   settingsValidationErrors?: IAsyncValidationError[];
 
   /** Custom onBlur handler */
-  onBlurCustom?: any;
+  onBlurCustom?: PickerFocusEventHandler;
 
   /** Custom onChange handler */
   onChangeCustom?: string;
@@ -156,7 +160,7 @@ export interface IComponentRuntimeProps {
   onClickCustom?: string;
 
   /** Custom onFocus handler */
-  onFocusCustom?: any;
+  onFocusCustom?: PickerFocusEventHandler;
 }
 
 export interface IComponentBindingProps {
