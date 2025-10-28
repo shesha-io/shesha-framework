@@ -39,9 +39,9 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
             bottom: -2px;
             }
 
+            
             +.sha-required-mark {
-                position: relative !important;
-                bottom: -4px !important;
+            margin-bottom: -16px !important;
             }
     `);
 
