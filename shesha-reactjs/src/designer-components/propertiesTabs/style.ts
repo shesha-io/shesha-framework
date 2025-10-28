@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const searchField = cx(css`
     width: 100%;
     background: #fff;
@@ -9,6 +9,19 @@ export const useStyles = createStyles(({ css, cx }) => {
   const content = cx(css`
     .ant-tabs-tab, .ant-tabs-nav-operations {
       height: 30px;
+    }
+
+    .${prefixCls}-form-item {
+      margin: 0 !important;
+      .${prefixCls}-row {
+        &.${prefixCls}-form-item-row {
+          margin: 0 !important;
+        }
+      }
+    }
+    
+    ant-form-item {
+      font-size: 12px;
     }
     
     .ant-tabs-tab {

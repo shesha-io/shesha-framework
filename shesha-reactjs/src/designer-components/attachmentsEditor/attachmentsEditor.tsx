@@ -159,7 +159,33 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
     .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
-    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged })),
+    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged }))
+    .add<IAttachmentsEditorProps>(9, (prev) => {
+      // Migration to restructure styles:
+      // 1. Move styles from model.container to model (root level)
+      // 2. Move styles that were in model to thumbnail
+
+      const migrateStyleLevel = (prevStyles: any): any => {
+        if (!prevStyles) return prevStyles;
+
+        const containerStyles = prevStyles.container || {};
+        const rootStyles = { ...prevStyles };
+        delete rootStyles.container;
+
+        return {
+          ...rootStyles,
+          ...containerStyles,
+          thumbnail: rootStyles,
+        };
+      };
+
+      return {
+        ...prev,
+        desktop: migrateStyleLevel(prev.desktop),
+        mobile: migrateStyleLevel(prev.mobile),
+        tablet: migrateStyleLevel(prev.tablet),
+      };
+    }),
 };
 
 export default AttachmentsEditor;

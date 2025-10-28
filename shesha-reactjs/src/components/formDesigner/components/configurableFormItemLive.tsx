@@ -6,6 +6,9 @@ import { useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
+import { useStyles } from './styles';
+import { addPx } from '@/utils/style';
+import { getDeviceDimensions } from '../utils/dimensionUtils';
 
 export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   children,
@@ -19,12 +22,31 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   const { getPublicFormApi } = useShaFormInstance();
   const getFormData = getPublicFormApi().getFormData;
   const formItem = useFormItem();
+  const shaForm = useShaFormInstance();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, formItemWrapperCol]);
+  const settings = shaForm.settings;
+  const { styles } = useStyles(settings.layout);
+
+  const isInDesigner = shaForm.formMode === 'designer';
+  const defaultMargins = settings?.formItemMargin || {};
+  const { top, left, right, bottom } = defaultMargins;
+  const {
+    marginTop = top ?? "5px",
+    marginBottom = bottom ?? "5px",
+    marginRight = right ?? "3px",
+    marginLeft = left ?? "3px",
+    width,
+    height,
+    minWidth,
+    minHeight,
+    maxWidth,
+    maxHeight,
+  } = model?.allStyles?.fullStyle || {};
 
   const { hideLabel, hidden } = model;
   if (hidden) return null;
@@ -33,8 +55,10 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
+  const dimensions = getDeviceDimensions({marginTop, marginBottom, marginLeft, marginRight});
+  console.log("D(MS >>", dimensions);
   const formItemProps: FormItemProps = {
-    className: classNames(className),
+    className: classNames(className, styles.formItem, settings.layout),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
@@ -46,6 +70,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
+    style: { marginBottom, marginRight, marginLeft, marginTop, width: isInDesigner ? dimensions.width : width, height: isInDesigner ? dimensions.height : height, minHeight, minWidth, maxHeight: maxHeight, maxWidth },
   };
 
   if (typeof children === 'function') {

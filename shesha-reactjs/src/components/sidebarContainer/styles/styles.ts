@@ -21,12 +21,27 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
-      overflow-x: hidden;
+      overflow: hidden;
 
       .${sidebarContainerMainAreaBody}{
         overflow: auto;
         height: 100%;
 
+        background: #fff;
+
+         > div {
+          height: -webkit-fill-available;
+            .ant-spin-nested-loading {
+              height: 100%;
+              .ant-spin-container {
+                height: 100%;
+
+              > form {
+                  height: 100%;
+                }
+              }
+            }
+         }
       }
     
       .${sidebarContainerHeader} {

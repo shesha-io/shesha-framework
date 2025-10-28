@@ -103,7 +103,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const model = rest;
   const hasFiles = !!fileList.length;
 
-  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
+  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS, fontStyles } = useFormComponentStyles({ ...model });
+  const { fullStyle, dimensionsStyles } = useFormComponentStyles({ ...model.thumbnail });
 
   const { styles } = useStyles({
     containerStyles: {
@@ -114,10 +115,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ...stylingBoxAsCSS,
     },
     style: enableStyleOnReadonly && disabled
-      ? { ...(model?.allStyles?.dimensionsStyles ?? {}), ...(model?.allStyles?.fontStyles ?? {}) }
-      : { ...(model?.allStyles?.fullStyle ?? {}) },
-    model: {
-      gap: addPx(gap),
+      ? { ...dimensionsStyles, ...fontStyles }
+      : { ...fullStyle, ...fontStyles },
+    model: { gap: addPx(gap),
       layout: listType === 'thumbnail' && !isDragger,
       hideFileName: rest.hideFileName && listType === 'thumbnail',
       isDragger,

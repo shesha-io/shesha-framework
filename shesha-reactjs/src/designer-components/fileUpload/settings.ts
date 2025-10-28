@@ -17,13 +17,17 @@ export const getSettings = (): FormRawMarkup =>
         id: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
         components: [...new DesignerToolbarSettings()
           .addContextPropertyAutocomplete({
-            id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+            id: nanoid(),
             propertyName: 'propertyName',
+            label: 'Property Name',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            label: 'Property name',
+            description: "If left empty, the field will not be included in the submitted payload",
+            size: 'small',
+            styledLabel: true,
             validate: {
               required: true,
             },
+            jsSetting: true,
           })
           .addTextField({
             id: '46d07439-4c18-468c-89e1-60c002ce96c5',

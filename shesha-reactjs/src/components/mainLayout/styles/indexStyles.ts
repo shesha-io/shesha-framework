@@ -77,13 +77,19 @@ export const GlobalSheshaStyles = createGlobalStyle`
   .${(p) => p.theme.prefixCls}-form-item-label  {
     white-space: normal;
     font-weight: bold;
+    margin: auto 0;
   }
-  .${(p) => p.theme.prefixCls}-form-item {
-    margin-bottom: 0 !important;
+
+  [data-sha-c-type="textArea"], [data-sha-c-type="attachmentsEditor"]  {
+    .${(p) => p.theme.prefixCls}-form-item-label  { 
+      margin: unset;
+    }
+  }
   
+
+  .${(p) => p.theme.prefixCls}-form-item {
     .${(p) => p.theme.prefixCls}-row {
       &.${(p) => p.theme.prefixCls}-form-item-row {
-        margin-bottom: 5px;
       }
     }
   }
