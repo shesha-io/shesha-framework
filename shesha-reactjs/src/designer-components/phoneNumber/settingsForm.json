@@ -589,11 +589,11 @@
                                 "id": "phone_style_code",
                                 "type": "codeEditor",
                                 "propertyName": "style",
-                                "label": "Style (All Elements)",
+                                "label": "Style",
                                 "parentId": "phone_style_content",
                                 "validate": {},
                                 "settingsValidationErrors": [],
-                                "description": "A script that returns the style applied to all phone input elements. This should conform to CSSProperties",
+                                "description": "Style applied to the wrapper. Inheritable properties (color, fontSize, fontFamily) cascade to all elements. Use for general styling that affects the entire component.",
                                 "mode": "dialog",
                                 "exposedVariables": [
                                     {
@@ -604,61 +604,10 @@
                                 ],
                                 "version": 3,
                                 "language": "typescript",
-                                "placeholder": "",
+                                "placeholder": "// Inheritable properties cascade to all child elements:\nreturn { \n  color: 'blue', \n  fontSize: '16px', \n  fontFamily: 'Arial'\n};",
                                 "wrapInTemplate": true,
                                 "templateSettings": {
                                     "functionName": "getStyle"
-                                },
-                                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
-                            },
-                            {
-                                "id": "phone_styles",
-                                "type": "codeEditor",
-                                "propertyName": "styles",
-                                "label": "Component Styles",
-                                "parentId": "phone_style_content",
-                                "validate": {},
-                                "settingsValidationErrors": [],
-                                "description": "Define styles for phone input elements. Return a CSSProperties object to apply to all elements, or return an object with specific keys: { wrapper, inputGroupWrapper, inputWrapper, inputGroup, input }",
-                                "mode": "dialog",
-                                "exposedVariables": [
-                                    {
-                                        "name": "data",
-                                        "description": "Form values",
-                                        "type": "object"
-                                    },
-                                    {
-                                        "name": "wrapper",
-                                        "description": "Style for .ant-phone-input-wrapper (outermost container)",
-                                        "type": "React.CSSProperties"
-                                    },
-                                    {
-                                        "name": "inputGroupWrapper",
-                                        "description": "Style for .ant-input-group-wrapper",
-                                        "type": "React.CSSProperties"
-                                    },
-                                    {
-                                        "name": "inputWrapper",
-                                        "description": "Style for .ant-input-wrapper",
-                                        "type": "React.CSSProperties"
-                                    },
-                                    {
-                                        "name": "inputGroup",
-                                        "description": "Style for .ant-input-group (contains flag dropdown and input)",
-                                        "type": "React.CSSProperties"
-                                    },
-                                    {
-                                        "name": "input",
-                                        "description": "Style for .ant-input (the actual phone number input field)",
-                                        "type": "React.CSSProperties"
-                                    }
-                                ],
-                                "version": 3,
-                                "language": "typescript",
-                                "placeholder": "// Apply same styles to all elements:\nreturn { width: '100%', fontSize: '14px' };\n\n// Or target specific elements:\nreturn {\n  wrapper: { backgroundColor: '#f0f0f0' },\n  input: { color: 'blue', fontWeight: 'bold' }\n};",
-                                "wrapInTemplate": true,
-                                "templateSettings": {
-                                    "functionName": "getStyles"
                                 },
                                 "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
                             },

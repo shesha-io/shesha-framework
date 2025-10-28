@@ -24,7 +24,6 @@ export interface IPhoneNumberInputComponentProps extends IConfigurableFormCompon
     excludeCountries?: string[] | string;
     preferredCountries?: string[] | string;
     size?: 'small' | 'middle' | 'large';
-    styles?: string;
     onChangeCustom?: string;
     onBlurCustom?: string;
     onFocusCustom?: string;

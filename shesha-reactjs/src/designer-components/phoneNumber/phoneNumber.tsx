@@ -7,41 +7,13 @@ import { useFormData } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import { IPhoneNumberInputComponentProps, IPhoneNumberValue } from './interface';
 import PhoneInput from 'antd-phone-input';
-import { nanoid } from '@/utils/uuid';
 import { parsePhoneNumberFromString, CountryCode, getExampleNumber } from 'libphonenumber-js';
 import examples from 'libphonenumber-js/mobile/examples';
 import settingsFormJson from './settingsForm.json';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { useStyles } from './styles';
 
 const settingsFormMarkup = settingsFormJson as FormMarkup;
-
-const sanitizeCssValue = (value: any): string => {
-    if (typeof value !== 'string') return String(value);
-    return value
-        .replace(/[{}]/g, '') // Remove braces
-        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
-        .replace(/<!--[\s\S]*?-->/g, '') // Remove HTML comments
-        .replace(/url\s*\(/gi, '') // Remove url() functions
-        .replace(/@import/gi, '') // Remove @import
-        .replace(/expression\s*\(/gi, '') // Remove expression()
-        .replace(/javascript:/gi, '') // Remove javascript: protocol
-        .trim();
-};
-/**
- * Helper to convert style object to CSS string
- */
-const styleToCss = (styleObj: any): string => {
-    if (!styleObj || Object.keys(styleObj).length === 0) return '';
-    const rules: string[] = [];
-    Object.entries(styleObj).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-            const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
-            const sanitizedValue = sanitizeCssValue(value);
-            rules.push(`${cssKey}: ${sanitizedValue} !important`);
-        }
-    });
-    return rules.join('; ');
-};
 
 /**
  * Helper function to intelligently split a national phone number into area code and phone number
@@ -112,7 +84,6 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
         style,
         valueFormat,
         stripCountryCode = false,
-        styles,
         ...model
     } = props;
 
@@ -122,6 +93,7 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
     const prevValueRef = useRef(value);
     const { data: formData } = useFormData();
     const allData = useAvailableConstantsData();
+    const { styles: styleClasses } = useStyles();
 
     // Only trigger remount when value transitions from having content to null/empty
     useEffect(() => {
@@ -368,113 +340,40 @@ const PhoneNumberControl: FC<IPhoneNumberInputComponentProps & { value?: any; on
 
     const displayValue = typeof value === 'string' ? value : (value as IPhoneNumberValue)?.number;
 
-    // Generate unique class name for this instance
-    const uniqueClass = useMemo(() => `phone-input-${nanoid()}`, []);
-
-    // Evaluate unified styles with form data
-    const evaluatedStyles = useMemo(() => {
-        const result = getStyle(styles, formData, allData?.globalState);
-        if (!result) return {};
-
-        // Check if it's a unified styles object with specific element keys
-        const hasElementKeys = 'wrapper' in result || 'inputGroupWrapper' in result ||
-            'inputWrapper' in result || 'inputGroup' in result || 'input' in result;
-
-        if (hasElementKeys) {
-            return result as any;
-        }
-
-        // Otherwise, treat it as a single style object to apply to all elements
-        return {
-            wrapper: result,
-            inputGroupWrapper: result,
-            inputWrapper: result,
-            inputGroup: result,
-            input: result
-        };
-    }, [styles, formData, allData?.globalState]);
-
-    // Convert CSSProperties to CSS string - target specific elements individually
-    // Design: componentStyle acts as a base style applied to all child elements,
-    // while the unified styles prop allows targeted overrides for specific elements
-    const cssString = useMemo(() => {
-        const rules: string[] = [];
-
-        // Apply general style to all elements if provided
-        if (componentStyle && Object.keys(componentStyle).length > 0) {
-            const generalStyles = styleToCss(componentStyle);
-            if (generalStyles) {
-                rules.push(`
-                    .${uniqueClass} .ant-phone-input-wrapper { ${generalStyles} }
-                    .${uniqueClass} .ant-input-group-wrapper { ${generalStyles} }
-                    .${uniqueClass} .ant-input-wrapper { ${generalStyles} }
-                    .${uniqueClass} .ant-input-group { ${generalStyles} }
-                    .${uniqueClass} .ant-input { ${generalStyles} }
-                `);
-            }
-        }
-
-        // Apply specific styles to individual elements from unified styles
-        if (evaluatedStyles.wrapper && Object.keys(evaluatedStyles.wrapper).length > 0) {
-            rules.push(`.${uniqueClass} .ant-phone-input-wrapper { ${styleToCss(evaluatedStyles.wrapper)} }`);
-        }
-        if (evaluatedStyles.inputGroupWrapper && Object.keys(evaluatedStyles.inputGroupWrapper).length > 0) {
-            rules.push(`.${uniqueClass} .ant-input-group-wrapper { ${styleToCss(evaluatedStyles.inputGroupWrapper)} }`);
-        }
-        if (evaluatedStyles.inputWrapper && Object.keys(evaluatedStyles.inputWrapper).length > 0) {
-            rules.push(`.${uniqueClass} .ant-input-wrapper { ${styleToCss(evaluatedStyles.inputWrapper)} }`);
-        }
-        if (evaluatedStyles.inputGroup && Object.keys(evaluatedStyles.inputGroup).length > 0) {
-            rules.push(`.${uniqueClass} .ant-input-group { ${styleToCss(evaluatedStyles.inputGroup)} }`);
-        }
-        if (evaluatedStyles.input && Object.keys(evaluatedStyles.input).length > 0) {
-            rules.push(`.${uniqueClass} .ant-input { ${styleToCss(evaluatedStyles.input)} }`);
-        }
-
-        return rules.join('\n');
-    }, [componentStyle, uniqueClass, evaluatedStyles]);
-
     return readOnly ? (
         <ReadOnlyDisplayFormItem
             value={displayValue}
             disabled={readOnly}
         />
     ) : (
-        <>
-            {cssString && <style>{cssString}</style>}
-            <div className={uniqueClass} style={componentStyle}>
-                <PhoneInput
-                    key={clearKey}
-                    placeholder={placeholder}
-                    size={size}
-                    disabled={readOnly}
-                    allowClear={allowClear}
-                    value={phoneInputValue}
-                    onChange={onChangeInternal}
-                    onBlur={onBlurInternal}
-                    onFocus={onFocusInternal}
-                    enableArrow={enableArrow}
-                    distinct={distinct}
-                    disableParentheses={disableParentheses}
-                    disableDropdown={disableDropdown}
-                    country={country || defaultCountry || 'za'}
-                    status={!isValid ? 'error' : undefined}
-                    onlyCountries={parsedOnlyCountries}
-                    excludeCountries={parsedExcludeCountries}
-                    preferredCountries={parsedPreferredCountries}
-                />
-                {validationMessage && (
-                    <div style={{
-                        color: '#ff4d4f',
-                        fontSize: '14px',
-                        marginTop: '4px',
-                        lineHeight: '1.5715'
-                    }}>
-                        {validationMessage}
-                    </div>
-                )}
-            </div>
-        </>
+        <div className={styleClasses.shaPhoneNumberWrapper}>
+            <PhoneInput
+                key={clearKey}
+                placeholder={placeholder}
+                size={size}
+                disabled={readOnly}
+                allowClear={allowClear}
+                value={phoneInputValue}
+                onChange={onChangeInternal}
+                onBlur={onBlurInternal}
+                onFocus={onFocusInternal}
+                enableArrow={enableArrow}
+                distinct={distinct}
+                disableParentheses={disableParentheses}
+                disableDropdown={disableDropdown}
+                country={country || defaultCountry || 'za'}
+                status={!isValid ? 'error' : undefined}
+                onlyCountries={parsedOnlyCountries}
+                excludeCountries={parsedExcludeCountries}
+                preferredCountries={parsedPreferredCountries}
+                style={componentStyle}
+            />
+            {validationMessage && (
+                <div className={styleClasses.shaPhoneNumberValidationMessage}>
+                    {validationMessage}
+                </div>
+            )}
+        </div>
     );
 };
 
