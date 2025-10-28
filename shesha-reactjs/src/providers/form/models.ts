@@ -147,7 +147,7 @@ export interface IComponentRuntimeProps {
   settingsValidationErrors?: IAsyncValidationError[];
 
   /** Custom onBlur handler */
-  onBlurCustom?: string;
+  onBlurCustom?: any;
 
   /** Custom onChange handler */
   onChangeCustom?: string;
@@ -156,7 +156,7 @@ export interface IComponentRuntimeProps {
   onClickCustom?: string;
 
   /** Custom onFocus handler */
-  onFocusCustom?: string;
+  onFocusCustom?: any;
 }
 
 export interface IComponentBindingProps {
