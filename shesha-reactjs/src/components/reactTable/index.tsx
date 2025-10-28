@@ -33,7 +33,7 @@ import { ErrorDetails } from '@/utils/configurationFramework/actions';
 import axios from 'axios';
 import { isAxiosResponse } from '@/interfaces/ajaxResponse';
 import { getBorderStyle } from '@/designer-components/_settings/utils/index';
-import { useCanvasState } from '@/providers/canvas';
+import { useCanvasStateOrUndefined } from '@/providers/canvas';
 
 interface IReactTableState {
   allRows: any[];
@@ -118,7 +118,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   const { setDragState } = useDataTableStore();
 
   const shaForm = useShaFormInstanceOrUndefined();
-  const canvasState = useCanvasState(false);
+  const canvasState = useCanvasStateOrUndefined();
 
   const { allColumns, allRows } = componentState;
 

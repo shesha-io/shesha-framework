@@ -1,7 +1,6 @@
 export { useDataTableFluentColumns } from './useDataTableFluentColumns';
 export { useDeepCompareMemo, useDeepCompareMemoKeepReference } from './useDeepCompareMemo';
 export { useDeepCompareMemoize } from './useDeepCompareMemoize';
-export { useDelete } from './useDelete';
 export { type GetDataError, type UseGetProps, useGet } from './useGet';
 export { useIsSsr } from './useIsSsr';
 export { useLocalStorage } from './useLocalStorage';

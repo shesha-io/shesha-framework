@@ -1,10 +1,11 @@
 import React from "react";
 import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
-export const getBackgroundImageUrl = async (propertyName: IBackgroundValue, backendUrl: string, httpHeaders: object): Promise<string> => {
+export const getBackgroundImageUrl = async (propertyName: IBackgroundValue | undefined, backendUrl: string, httpHeaders: object): Promise<string> => {
   return (
-    propertyName?.storedFile?.id && propertyName?.type === 'storedFile'
-      ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${propertyName?.storedFile?.id}`, {
+    isDefined(propertyName) && propertyName.storedFile?.id && propertyName.type === 'storedFile'
+      ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${propertyName.storedFile.id}`, {
         headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
       })
         .then((response) => {
@@ -17,36 +18,50 @@ export const getBackgroundImageUrl = async (propertyName: IBackgroundValue, back
   );
 };
 
-export const getBackgroundStyle = (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): React.CSSProperties => {
+export const getBackgroundStyle = (input: IBackgroundValue | undefined, jsStyle: React.CSSProperties | undefined, url?: string): React.CSSProperties => {
   const style: React.CSSProperties = {};
+  if (!isDefined(input))
+    return style;
 
-  if (input?.size) {
-    style.backgroundSize = input?.size;
+  if (input.size) {
+    style.backgroundSize = input.size;
   }
 
-  if (input?.position) {
-    style.backgroundPosition = input?.position;
+  if (input.position) {
+    style.backgroundPosition = input.position;
   }
 
-  if (input?.repeat) {
-    style.backgroundRepeat = input?.repeat;
+  if (isDefined(input.repeat)) {
+    style.backgroundRepeat = input.repeat;
   }
 
-  if (!input || jsStyle?.background || jsStyle?.backgroundColor || jsStyle?.backgroundImage) return style;
+  if (isDefined(jsStyle) && (jsStyle.background || jsStyle.backgroundColor || jsStyle.backgroundImage))
+    return style;
 
-  if (input?.type === 'color') {
-    style.backgroundColor = input?.color;
-  } else if (input?.type === 'gradient') {
-    const colors = input?.gradient?.colors || [];
-    const colorsString = Object.values(colors).filter((color) => color !== undefined && color !== '').join(', ');
-    style.backgroundImage = input?.gradient?.direction === 'radial' ? `radial-gradient(${colorsString})` : `linear-gradient(${input?.gradient?.direction || 'to right'}, ${colorsString})`;
-  } else if (input?.type === 'url') {
-    style.backgroundImage = `url(${input?.url})`;
-  } else if (input?.type === 'image') {
-    const uploadFile = input?.uploadFile;
-    style.backgroundImage = `url(${uploadFile?.url || uploadFile})`;
-  } else if (input?.type === 'storedFile') {
-    style.backgroundImage = `url(${url})`;
+  switch (input.type) {
+    case 'color': {
+      style.backgroundColor = input.color;
+      break;
+    }
+    case 'gradient': {
+      const colors = input.gradient?.colors || [];
+      const colorsString = Object.values(colors).filter((color) => !isNullOrWhiteSpace(color)).join(', ');
+      style.backgroundImage = input.gradient?.direction === 'radial' ? `radial-gradient(${colorsString})` : `linear-gradient(${input.gradient?.direction || 'to right'}, ${colorsString})`;
+      break;
+    }
+    case 'url': {
+      style.backgroundImage = `url(${input.url})`;
+      break;
+    }
+    case 'image': {
+      const uploadFile = input.uploadFile;
+      style.backgroundImage = `url(${uploadFile?.url || uploadFile})`;
+      break;
+    }
+    case 'storedFile': {
+      style.backgroundImage = `url(${url})`;
+      break;
+    }
   }
 
   return style;

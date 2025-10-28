@@ -8,10 +8,12 @@ import useStyles from './styles';
 import { getURLChartDataRefetchParams, renderChart } from './utils';
 import ChartLoader from './components/chartLoader';
 import { useTheme } from '@/providers/theme';
+import { IAjaxResponse } from '@/interfaces';
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { url, chartType, requestTimeout = 5000 } = props;
-  const { refetch } = useGet({ path: '', lazy: true });
+  const { refetch } = useGet<IAjaxResponse<object>>({ path: '', lazy: true });
   const state = useChartDataStateContext();
   const { setIsLoaded, setUrlTypeData } = useChartDataActionsContext();
   const { theme } = useTheme();
@@ -54,11 +56,11 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     isFetchingRef.current = true;
 
     refetch({ ...getURLChartDataRefetchParams(transformedUrl), signal: newController.signal })
-      .then((data) => {
-        if (!data?.result) {
-          throw new Error(data?.error?.details ?? 'Invalid response structure, please check the URL and try again.');
-        }
-        setUrlTypeData(data.result ?? { labels: [], datasets: [] });
+      .then((response) => {
+        if (!isAjaxSuccessResponse(response))
+          throw new Error(response.error.details ?? 'Invalid response structure, please check the URL and try again.');
+
+        setUrlTypeData(response.result ?? { labels: [], datasets: [] });
         setIsLoaded(true);
       })
       .catch((err: Error) => {

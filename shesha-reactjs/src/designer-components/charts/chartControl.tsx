@@ -47,7 +47,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     ...state
   } = useChartDataStateContext();
 
-  const { refetch } = useGet({ path: '', lazy: true });
+  const { refetch } = useGet<IAbpWrappedGetEntityListResponse>({ path: '', lazy: true });
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsLoaded, setAxisPropertyLabel, setValuePropertyLabel } = useChartDataActionsContext();
