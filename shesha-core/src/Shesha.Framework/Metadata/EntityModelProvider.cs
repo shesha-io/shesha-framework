@@ -68,7 +68,7 @@ namespace Shesha.Metadata
                     {
                         Id = entityConfig.Id.ToString(),
                         Suppress = entityConfig.Suppress,
-                        ClassName = entityConfig.FullClassName,
+                        FullClassName = entityConfig.FullClassName,
                         Name = entityConfig.ClassName,
                         Type = config.EntityType,
                         Description = entityConfig.Description ?? (config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),

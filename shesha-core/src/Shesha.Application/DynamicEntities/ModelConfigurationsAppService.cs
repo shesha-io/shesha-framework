@@ -39,9 +39,9 @@ namespace Shesha.DynamicEntities
         }
 
         [HttpGet, Route("")]
-        public async Task<ModelConfigurationDto> GetByNameAsync(string className, string @namespace)
+        public async Task<ModelConfigurationDto> GetByNameAsync(string className, string? @namespace, string? module = null, bool useExposed = true)
         {
-            var dto = await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(@namespace, className);
+            var dto = await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(module, @namespace, className, useExposed);
             if (dto == null)
             {
                 var exception = new EntityNotFoundException("Model configuration not found");
@@ -63,7 +63,6 @@ namespace Shesha.DynamicEntities
                 throw exception;
             }
 
-            // ToDo: AS - V1, check if we can use not cached values
             return await _modelConfigurationManager.GetModelConfigurationOrNullAsync(modelConfig);
             //return await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(modelConfig.Namespace.NotNull(), modelConfig.ClassName);
         }
@@ -85,7 +84,7 @@ namespace Shesha.DynamicEntities
         }
 
         //[HttpGet, Route("RefreshControllers")]
-        public async Task RefreshControllersAsync()
+        private async Task RefreshControllersAsync()
         {
             await Task.CompletedTask;
 

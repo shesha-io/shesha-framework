@@ -188,11 +188,16 @@ namespace Shesha.ConfigurationItems
             return await ExposeAsync((TItem)item, module);
         }
 
-        public async Task<ConfigurationItem> ResolveItemAsync(string module, string name)
+        public async Task<ConfigurationItemInheritance> GetActualIheritanceOrNullAsync(string module, string name)
         {
-            var actualItem = await InheritanceRepository.GetAll().Where(e => e.ItemType == Discriminator && e.ModuleName == module && e.Name == name)
+            return await InheritanceRepository.GetAll().Where(e => e.ItemType == Discriminator && e.ModuleName == module && e.Name == name)
                 .OrderBy(e => e.ModuleLevel)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<ConfigurationItem> ResolveItemAsync(string module, string name)
+        {
+            var actualItem = await GetActualIheritanceOrNullAsync(module, name);
 
             if (actualItem == null)
                 throw new ConfigurationItemNotFoundException(Discriminator, module, name, null);

@@ -60,7 +60,15 @@ namespace Shesha.ConfigurationItems
         Task<ConfigurationItem> ExposeAsync(ConfigurationItem item, Module module);
 
         /// <summary>
-        /// Resolved configuration item by pair: module and name. Note that 
+        /// Get actual inheritance of configuration item by pair: module and name
+        /// </summary>
+        /// <param name="module">Module name</param>
+        /// <param name="name">Item name</param>
+        /// <returns></returns>
+        Task<ConfigurationItemInheritance> GetActualIheritanceOrNullAsync(string module, string name);
+
+        /// <summary>
+        /// /// Resolved configuration item by pair: module and name. Note that
         /// </summary>
         /// <param name="module">Module name</param>
         /// <param name="name">Item name</param>

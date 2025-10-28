@@ -4,8 +4,8 @@ import { ICacheProvider, ISyncEntitiesContext, ModuleSyncRequest, SyncAllRequest
 import { isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
 
 const CACHE = {
-  ENTITIES: 'entities',
-  ENTITIES_LOOKUP: 'entities_lookup',
+  ENTITIES: 'entity',
+  ENTITIES_LOOKUP: 'entity_lookup',
   MISC: 'misc',
 };
 
@@ -22,7 +22,7 @@ const URLS = {
 
 export const getEntityMetadataCacheKey = (id: IEntityTypeIndentifier): string => {
   const moduleAccessor = wrapModuleName(id.module);
-  return `${moduleAccessor}/${id.name}`;
+  return `${moduleAccessor}:${id.name}`;
 };
 
 const getEntitiesSyncVersion = (cacheProvider: ICacheProvider): Promise<string | null> => {
@@ -103,14 +103,16 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
 
             if (isEntityOutOfDateResponse(e)) {
               const meta = {
-                ...e.metadata,
-                entityType: e.metadata.className, // TODO: remove after refactoring
-                name: e.metadata.className, // TODO: remove after refactoring
+                cacheMd5: e.metadata.md5,
+                configuration: {
+                  ...e.metadata,
+                  entityType: e.metadata.fullClassName,
+                },
               };
 
               promises.push(metadataCache.setItem(key, meta));
 
-              const aliases = [...e.metadata.aliases ?? [], e.metadata.className];
+              const aliases = [...e.metadata.aliases ?? [], e.metadata.fullClassName];
               aliases.forEach((alias) => {
                 context.typesMap.register(alias, { module: m.accessor, name: e.accessor });
               });
@@ -125,16 +127,37 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
         });
 
         const lookupCache = context.cacheProvider.getCache(CACHE.ENTITIES_LOOKUP);
-        lookupCache.clear().then(_ => {
+        lookupCache.clear().then((_) => {
           data.lookups.forEach((m) => {
-            const key = getEntityMetadataCacheKey({ module: m.module, name: m.name });
+            if (m.items.length) {
+              const key = getEntityMetadataCacheKey({ module: m.module ?? "", name: m.name ?? "" });
 
-            const data = {} as {[key: string]: string};
-            m.items.forEach((e) => {
-              data[e.module] = e.match;
-            });
+              const data = {} as { [key: string]: string };
+              m.items.forEach((e) => {
+                data[e.module] = e.match;
+              });
 
-            promises.push(lookupCache.setItem(key, data));
+              // Add lookup for full config name
+              promises.push(lookupCache.setItem(key, data));
+
+              // Add lookup for Full Class Name
+              if (m.id)
+                promises.push(lookupCache.setItem(m.id, { module: data['_default'], name: m.name }));
+              if (m.aliases?.length) {
+                m.aliases.forEach((alias) => {
+                  promises.push(lookupCache.setItem(alias, { module: data['_default'], name: m.name }));
+                });
+              }
+            } else {
+              // Add lookup for Full Class Name without lookup data
+              if (m.id)
+                promises.push(lookupCache.setItem(m.id, { module: m.module ?? "", name: m.name ?? "" }));
+              if (m.aliases?.length) {
+                m.aliases.forEach((alias) => {
+                  promises.push(lookupCache.setItem(alias, { module: m.module ?? "", name: m.name ?? "" }));
+                });
+              }
+            }
           });
         });
         return Promise.all(promises).then();

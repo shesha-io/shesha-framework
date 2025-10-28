@@ -75,6 +75,7 @@ namespace Shesha.Metadata
 
             var dto = new MetadataDto
             {
+                EntityConfigType = entityConfig?.EntityConfigType ?? Domain.Enums.EntityConfigTypes.Class,
                 IsExposed = entityConfig?.IsExposed ?? false,
                 DataType = isEntity
                     ? DataTypes.EntityReference
@@ -83,7 +84,7 @@ namespace Shesha.Metadata
                 Specifications = await GetSpecificationsAsync(containerType),
                 Methods = await GetMethodsAsync(containerType),
                 ApiEndpoints = await GetApiEndpointsAsync(containerType),
-                ClassName = containerType.GetRequiredFullName(),
+                FullClassName = containerType.GetRequiredFullName(),
                 ChangeTime = changeTime,
                 Module = entityConfig?.Module?.Name ?? null,
                 ModuleAccessor = entityConfig?.Module?.Accessor ?? null,
@@ -278,11 +279,15 @@ namespace Shesha.Metadata
 
             var result = new List<PropertyMetadataDto>();
 
-            // ToDo: AS - V1 use cached models
-            //var modelConfig = await _modelConfigurationProvider.GetCachedModelConfigurationOrNullAsync(containerType.Namespace.NotNull(), containerType.Name, hardCodedProps);
-            var modelConfig = entityConfig != null
-                ? await _modelConfigurationProvider.GetModelConfigurationOrNullAsync(entityConfig, hardCodedProps)
-                : await _modelConfigurationProvider.GetCachedModelConfigurationOrNullAsync(containerType.Namespace.NotNull(), containerType.Name, hardCodedProps);
+            var modelConfig = entityConfig == null
+                ? await _modelConfigurationProvider.GetCachedModelConfigurationOrNullAsync(
+                    null,
+                    containerType.Namespace,
+                    containerType.Name,
+                    false,
+                    hardCodedProps)
+                : await _modelConfigurationProvider.GetCachedModelConfigurationOrNullAsync(entityConfig, false, hardCodedProps);
+
             // try to get data-driven configuration
             if (modelConfig != null)
             {
@@ -345,7 +350,7 @@ namespace Shesha.Metadata
         public async Task<Type?> GetContainerTypeOrNullAsync(string? moduleName, string container)
         {
             var allModels = await GetAllModelsAsync();
-            var models = allModels.Where(m => m.Alias == container || m.ClassName == container).ToList();
+            var models = allModels.Where(m => m.Alias == container || m.FullClassName == container).ToList();
             if (!string.IsNullOrWhiteSpace(moduleName))
             {
                 var moduleInfos = _moduleManager.GetModuleInfos();
@@ -403,8 +408,8 @@ namespace Shesha.Metadata
             private string GetTextForHash(ModelDto obj)
             {
                 return (obj is EntityModelDto entityDto)
-                    ? $"{entityDto.ModuleAccessor}/{entityDto.ClassName}"
-                    : obj.ClassName;
+                    ? $"{entityDto.ModuleAccessor}/{entityDto.FullClassName}"
+                    : obj.FullClassName;
             }
         }
 
@@ -427,8 +432,8 @@ namespace Shesha.Metadata
             private string GetTextForHash(ModelDto obj)
             {
                 return (obj is EntityModelDto entityDto)
-                    ? $"{entityDto.ModuleAccessor}/{entityDto.ClassName}"
-                    : obj.ClassName;
+                    ? $"{entityDto.ModuleAccessor}/{entityDto.FullClassName}"
+                    : obj.FullClassName;
             }
         }
     }

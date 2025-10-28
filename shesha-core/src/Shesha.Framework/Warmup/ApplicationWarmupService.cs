@@ -1,24 +1,37 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.Events.Bus.Handlers;
 using Castle.Core.Logging;
+using Shesha.Domain;
 using Shesha.DynamicEntities;
 using Shesha.Reflection;
 using Shesha.Swagger;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Shesha.Warmup
 {
     public class ApplicationWarmupService : IAsyncEventHandler<DatabaseInitializedEventData>, ITransientDependency
     {
-        private readonly IModelConfigurationManager _entityConfigs;
+        private readonly IModelConfigurationManager _modelConfigurationManager;
         private readonly SheshaFrameworkModule _frameworkModule;
-        public ILogger Logger = NullLogger.Instance;        
+        private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
+        public ILogger Logger = NullLogger.Instance;
 
-        public ApplicationWarmupService(IModelConfigurationManager entityConfigs, SheshaFrameworkModule frameworkModule)
+        public ApplicationWarmupService(
+            IModelConfigurationManager modelConfigurationManager,
+            SheshaFrameworkModule frameworkModule,
+            IRepository<EntityConfig, Guid> entityConfigRepository,
+            IUnitOfWorkManager unitOfWorkManager
+        )
         {
-            _entityConfigs = entityConfigs;
+            _modelConfigurationManager = modelConfigurationManager;
             _frameworkModule = frameworkModule;
+            _entityConfigRepository = entityConfigRepository;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
         public Task HandleEventAsync(DatabaseInitializedEventData eventData)
@@ -40,12 +53,20 @@ namespace Shesha.Warmup
             return Task.CompletedTask;
         }
 
-        private async Task ProcessAsync() 
+        private async Task ProcessAsync()
         {
-            var entityTypes = SwaggerHelper.EntityTypesFunc();
-            foreach (var entityType in entityTypes)
+            using var uow = _unitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew);
+            try
             {
-                await _entityConfigs.GetCachedModelConfigurationOrNullAsync(entityType.Namespace.NotNull(), entityType.Name);
+                var entityConfigs = await _entityConfigRepository.GetAllListAsync();
+                foreach (var entityConfig in entityConfigs)
+                {
+                    await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(entityConfig, false);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"{e.Message}", e);
             }
         }
     }

@@ -15,11 +15,11 @@ namespace Shesha.Configuration.Runtime
     /// inheritedDoc
     public class EntityConfigManager : ConfigurationItemManager<EntityConfig>, IEntityConfigManager, ITransientDependency
     {
-        private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
+        public readonly IRepository<EntityProperty, Guid> PropertyConfigRepo;
 
         public EntityConfigManager(IRepository<EntityProperty, Guid> propertyConfigRepo) : base()
         {
-            _propertyConfigRepo = propertyConfigRepo;
+            PropertyConfigRepo = propertyConfigRepo;
         }
 
         public async Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig>? query = null, bool? implemented = null)
@@ -106,7 +106,7 @@ namespace Shesha.Configuration.Runtime
 
                 property.ItemsType = await CopyPropertiesAsync(src.Properties, destination, property);
 
-                await _propertyConfigRepo.InsertOrUpdateAsync(property);
+                await PropertyConfigRepo.InsertOrUpdateAsync(property);
 
                 if (src == srcItemsType)
                     itemsType = property;
@@ -128,6 +128,7 @@ namespace Shesha.Configuration.Runtime
             destination.ClassName = source.ClassName;
             destination.Namespace = source.Namespace;
             destination.EntityConfigType = source.EntityConfigType;
+            destination.InheritedFrom = source.InheritedFrom;
 
             destination.TypeShortAlias = source.TypeShortAlias;
             destination.HardcodedPropertiesMD5 = source.HardcodedPropertiesMD5;
@@ -136,7 +137,7 @@ namespace Shesha.Configuration.Runtime
             destination.Source = source.Source;
             destination.Accessor = source.Accessor;
 
-            var properties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfig == source && x.ParentProperty == null);
+            var properties = await PropertyConfigRepo.GetAllListAsync(x => x.EntityConfig == source && x.ParentProperty == null);
             await CopyPropertiesAsync(properties, destination);
         }
     }

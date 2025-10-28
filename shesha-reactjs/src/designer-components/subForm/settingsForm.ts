@@ -165,11 +165,9 @@ export const getSettings = (data: ISubFormComponentProps): FormMarkupWithSetting
                 inputs: [
                   {
                     id: nanoid(),
-                    type: "autocomplete",
+                    type: "entityTypeAutocomplete",
                     propertyName: "entityType",
                     label: "Entity Type",
-                    dataSourceType: "url",
-                    dataSourceUrl: "/api/services/app/Metadata/TypeAutocomplete",
                     jsSetting: true,
                   },
                 ],

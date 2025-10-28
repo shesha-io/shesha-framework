@@ -10,7 +10,7 @@ namespace Shesha.Metadata.Dtos
         public string Id { get; set; }
         public string? Module { get; set; }
         public string Name { get; set; }
-        public string ClassName { get; set; }
+        public string FullClassName { get; set; }
         public string? Alias { get; set; }
         public string? Description { get; set; }
         public Type Type { get; set; }

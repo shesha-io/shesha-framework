@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
@@ -161,47 +162,67 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
         var entityModelProvider = IocManager.Resolve<IEntityModelProvider>();
         var models = await entityModelProvider.GetModelsAsync();
-        var groupped = models.GroupBy(e => e.ModuleAccessor, (moduleAccessor, entities) =>
+        var groupped = models.GroupBy(e => e.Module, (module, entities) =>
         {
             return new
             {
-                Module = moduleAccessor,
+                Module = module,
                 Entities = entities,
             };
         }).ToList();
+        
+        var lookups = new List<LookupSyncResponse>();
 
         var lookupData = (await _configItemInheritanceRepository.GetAll()
             .Where(x => x.ItemType == "entity" && x.ModuleId != x.ExposedInModuleId)
+            .Select(x => new { x.ItemId, x.Name, x.ModuleName, x.ExposedInModuleName, x.ModuleLevel })
+            .ToListAsync())
             .Select(x => new
             {
                 x.ItemId,
                 x.Name,
                 x.ModuleName,
                 x.ExposedInModuleName,
-                x.ModuleLevel
+                x.ModuleLevel,
+                models.FirstOrDefault(m => m.Id == x.ItemId.ToString())?.FullClassName,
             })
-            .ToListAsync())
-            .GroupBy(x => new { x.ModuleName, x.Name });
+            .ToList();
 
-        var lookups = new List<LookupSyncResponse>();
-        foreach (var module in lookupData)
+        foreach (var model in models)
         {
-            var items = module
-                .Select(x => new LookupItemSyncResponse
-                {
-                    Module = x.ExposedInModuleName == module.OrderBy(x => x.ModuleLevel).First().ExposedInModuleName
-                        ? "_default"
-                        : x.ExposedInModuleName,
-                    Match = x.ExposedInModuleName,
-                }).ToList();
-            lookups.Add(new LookupSyncResponse()
+            var aliases = (new [] { model.Alias ?? "", model.Accessor ?? "" }).Where(x => x != "" && x != model.Name).ToArray();
+            var modelLookup = lookupData.Where(x => x.FullClassName == model.FullClassName).ToList();
+            if (modelLookup.Any())
             {
-                Module = module.Key.ModuleName,
-                Name = models.FirstOrDefault(x => x.Id == module.First().ItemId.ToString())?.Accessor ?? "",
-                Items = items,
-            });
+                var items = modelLookup
+                    .Select(x => new LookupItemSyncResponse
+                    {
+                        Module = x.ExposedInModuleName == modelLookup.OrderBy(x => x.ModuleLevel).First().ExposedInModuleName
+                            ? "_default"
+                            : x.ExposedInModuleName,
+                        Match = x.ExposedInModuleName,
+                    }).ToList();
+                lookups.Add(new LookupSyncResponse()
+                {
+                    Id = model.FullClassName,
+                    Aliases = aliases,
+                    Module = model.Module,
+                    Name = model.Name,
+                    Items = items,
+                });
+            }
+            else
+            {
+                lookups.Add(new LookupSyncResponse()
+                {
+                    Id = model.FullClassName,
+                    Aliases = aliases,
+                    Module = model.Module,
+                    Name = model.Name,
+                    Items = new List<LookupItemSyncResponse>(),
+                });
+            }
         }
-
 
         var response = new SyncAllResponse()
         {
@@ -219,16 +240,16 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
             {
                 foreach (var entity in module.Entities)
                 {
-                    var backendEntity = backendModule.Entities.FirstOrDefault(e => e.Accessor == entity.Accessor && e.ModuleAccessor == module.Accessor);
+                    var backendEntity = backendModule.Entities.FirstOrDefault(e => e.Accessor == entity.Accessor && e.Module == module.Accessor);
                     if (backendEntity != null)
                     {
                         if (backendEntity.Md5 == entity.Md5 && backendEntity.ModificationTime == entity.ModificationTime)
                         {
-                            /*responseModule.Entities.Add(new BaseEntitySyncResponse
-                            {
-                                Accessor = entity.Accessor,
-                                Status = SyncStatus.UpToDate,
-                            });*/
+                            //responseModule.Entities.Add(new BaseEntitySyncResponse
+                            //{
+                            //    Accessor = entity.Accessor,
+                            //    Status = SyncStatus.UpToDate,
+                            //});
                         }
                         else
                         {
@@ -276,19 +297,20 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
                 response.Modules.Add(responseModule);
 
                 var moduleInfo = !string.IsNullOrWhiteSpace(module.Module)
-                    ? moduleInfos.First(m => m.GetModuleAccessor() == module.Module)
+                    //? moduleInfos.First(m => m.GetModuleAccessor() == module.Module) // ToDo: AS - remove after implementation
+                    ? moduleInfos.First(m => m.Name == module.Module)
                     : null;
 
                 foreach (var entity in module.Entities)
                 {
-                    var entityType = await metadataService.GetContainerTypeOrNullAsync(moduleInfo?.Name, entity.ClassName);
+                    var entityType = await metadataService.GetContainerTypeOrNullAsync(moduleInfo?.Name, entity.FullClassName);
                     if (entityType != null)
                     {
                         responseModule.Entities.Add(new OutOfDateEntitySyncResponse
                         {
                             Accessor = entity.Accessor,
                             Status = SyncStatus.OutOfDate,
-                            Metadata = entity.Metadata // await metadataService.GetAsync(entityType), ToDo: AS - V1 remove after final implementation
+                            Metadata = entity.Metadata
                         });
                     }
                     else

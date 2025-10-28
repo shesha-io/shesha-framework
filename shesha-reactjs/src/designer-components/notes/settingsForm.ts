@@ -135,13 +135,10 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     {
                       id: nanoid(),
                       propertyName: 'ownerType',
-                      type: 'autocomplete',
+                      type: 'entityTypeAutocomplete',
                       parentId: nanoid(),
                       label: 'Owner Type',
                       labelAlign: 'right',
-                      dataSourceType: 'url',
-                      dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
-                      mode: 'single',
                       jsSetting: true,
                       validate: {
                         required: true,

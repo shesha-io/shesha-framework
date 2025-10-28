@@ -98,7 +98,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: 'autocomplete',
+                  inputType: 'entityTypeAutocomplete',
                   allowClear: true,
                   propertyName: 'entityType',
                   label: 'Entity Type',
@@ -106,11 +106,8 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                   labelAlign: 'right',
                   parentId: dataTabId,
                   hidden: false,
-                  dataSourceType: 'url',
                   validate: { required: true },
-                  dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
                   settingsValidationErrors: [],
-                  useRawValues: true,
                   width: '100%',
                   jsSetting: true,
                 })

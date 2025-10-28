@@ -94,6 +94,14 @@ export interface SpecificationDto {
  */
 export interface MetadataDto {
   /**
+   * Id
+   */
+  id: string;
+  /**
+   * Name
+   * */
+  name: string;
+  /**
    * Data type
    */
   dataType: string;
@@ -125,8 +133,11 @@ export interface MetadataDto {
    */
   apiEndpoints?: IDictionary<ApiEndpointDto> | null;
 
-  className: string;
+  fullClassName: string;
+  
   aliases?: string[];
+
+  md5?: string | null;
 }
 
 export type MetadataDtoAjaxResponse = IAjaxResponse<MetadataDto>;
