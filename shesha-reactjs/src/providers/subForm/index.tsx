@@ -55,6 +55,8 @@ interface IFormLoadingState {
   error: any;
 }
 
+const EMPTY_OBJECT = {};
+
 const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) => {
   const {
     formSelectionMode,
@@ -95,10 +97,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const designerComponents = useFormDesignerComponents();
 
-  const actualQueryParams = useActualContextExecution(props.queryParams);
-  const actualGetUrl = useActualContextExecution(props.getUrl);
-  const actualPostUrl = useActualContextExecution(props.postUrl);
-  const actualPutUrl = useActualContextExecution(props.putUrl);
+  const actualQueryParams = useActualContextExecution(props.queryParams, undefined, EMPTY_OBJECT);
+  const actualGetUrl = useActualContextExecution(props.getUrl, undefined, "");
+  const actualPostUrl = useActualContextExecution(props.postUrl, undefined, "");
+  const actualPutUrl = useActualContextExecution<string>(props.putUrl, undefined, "");
 
   var parentFormApi = parent?.formApi ?? form.shaForm.getPublicFormApi();
 
@@ -200,12 +202,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     }
   }, [value]);
 
-  const { mutate: postHttpInternal, loading: isPosting, error: postError } = useMutate();
+  const { mutate: postHttpInternal, loading: isPosting, error: postError } = useMutate<unknown, IAjaxResponse<unknown>>();
   const postHttp = (data): Promise<IAjaxResponse<unknown>> => {
     return postHttpInternal({ url: actualPostUrl, httpVerb: 'POST' }, data);
   };
 
-  const { mutate: putHttpInternal, loading: isUpdating, error: updateError } = useMutate();
+  const { mutate: putHttpInternal, loading: isUpdating, error: updateError } = useMutate<unknown, IAjaxResponse<unknown>>();
   const putHttp = (data): Promise<IAjaxResponse<unknown>> => {
     return putHttpInternal({ url: actualPutUrl, httpVerb: 'PUT' }, data);
   };
@@ -518,8 +520,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         errors: {
           ...state.errors,
           getForm: formLoadingState.error,
-          postData: postError,
-          putData: updateError,
+          // TODO: review error types
+          postData: postError as GetDataError<unknown>,
+          putData: updateError as GetDataError<unknown>,
         },
         loading: {
           ...state.loading,

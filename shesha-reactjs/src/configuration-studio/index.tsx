@@ -48,7 +48,7 @@ const ConfigurationStudio: FC = () => {
         </Layout.Header>
         <Layout.Content className={styles.csContent}>
           <Splitter onResizeEnd={(sizes) => {
-            canvas?.setConfigTreePanelSize(sizes[0] || 0);
+            canvas.setConfigTreePanelSize(sizes[0] || 0);
           }}
           >
             <Splitter.Panel

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { DependencyList, useCallback, useEffect } from 'react';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 
 /**
@@ -11,10 +11,12 @@ import { useDeepCompareMemoize } from './useDeepCompareMemoize';
  *
  * @see https://gist.github.com/kentcdodds/fb8540a05c43faf636dd68647747b074#gistcomment-2830503
  */
-export function useDeepCompareEffect<T>(effect: React.EffectCallback, deps: T): void {
+export function useDeepCompareEffect(effect: React.EffectCallback, deps?: DependencyList): void {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(effect, useDeepCompareMemoize(deps));
 }
 
-export function useDeepCompareCallback<T extends (...args: any[]) => any>(callback: T, deps: readonly any[]): T {
+export function useDeepCompareCallback<T extends (...args: unknown[]) => unknown>(callback: T, deps?: DependencyList): T {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useCallback(callback, useDeepCompareMemoize(deps));
 }

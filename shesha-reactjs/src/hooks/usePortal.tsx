@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, PropsWithChildren, ReactNode, useEffect, useRef, useState } from 'react';
+import { FC, PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
 
@@ -9,8 +9,8 @@ import { ReactElement } from 'react-markdown/lib/react-markdown';
  * @param container - The DOM element to portal into (defaults to document.body)
  * @returns A Portal component that renders children into the specified container
  */
-export function usePortal(container?: HTMLElement | null): FC<PropsWithChildren> {
-  const [targetContainer, setTargetContainer] = useState(container || document.body);
+export function usePortal(container: HTMLElement | null): FC<PropsWithChildren> {
+  const [targetContainer, setTargetContainer] = useState<HTMLElement>(container || document.body);
   const portalRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function usePortal(container?: HTMLElement | null): FC<PropsWithChildren>
   /**
    * Portal component that renders children into the target container
    */
-  const Portal = ({ children }: { children: ReactNode }): ReactElement => {
+  const Portal: FC<PropsWithChildren> = ({ children }): ReactElement => {
     if (!portalRef.current) {
       portalRef.current = document.createElement('div');
       portalRef.current.setAttribute('data-portal', 'true');
@@ -30,7 +30,7 @@ export function usePortal(container?: HTMLElement | null): FC<PropsWithChildren>
     useEffect(() => {
       if (!portalRef.current) return undefined;
 
-      const containerToUse = targetContainer || document.body;
+      const containerToUse = targetContainer;
       containerToUse.appendChild(portalRef.current);
 
       return () => {
@@ -38,9 +38,9 @@ export function usePortal(container?: HTMLElement | null): FC<PropsWithChildren>
           containerToUse.removeChild(portalRef.current);
         }
       };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [targetContainer]);
 
-    if (!portalRef.current) return null;
     return createPortal(children, portalRef.current);
   };
 
