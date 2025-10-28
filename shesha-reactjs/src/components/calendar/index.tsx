@@ -36,6 +36,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     styles,
     componentName,
     id,
+    dummyEventColor,
   } = props;
 
   const { executeAction } = useConfigurableActionDispatcher();
@@ -61,7 +62,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       ? (() => {
         const s = new Date(startDate);
         const e = new Date(endDate);
-        return isNaN(s.getTime()) || isNaN(e.getTime()) ? null : { start: s, end: e, color: primaryColor };
+        return isNaN(s.getTime()) || isNaN(e.getTime()) ? null : { start: s, end: e, color: dummyEventColor || primaryColor };
       })()
       : null;
 

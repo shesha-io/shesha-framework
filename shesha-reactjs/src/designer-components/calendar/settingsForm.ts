@@ -103,6 +103,13 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
                     },
                   ],
                 })
+                .addSettingsInput({
+                    inputType: 'colorPicker',
+                    id: nanoid(),
+                    propertyName: 'dummyEventColor',
+                    label: 'Dummy Event Color',
+                    parentId: commonTabId,
+                })
                 .toJson(),
             ],
           },
