@@ -54,7 +54,7 @@ export const get = <
   _TPathParams = any,
 >(
   path: string,
-  queryParams: TQueryParams,
+  queryParams: TQueryParams | undefined,
   props: Omit<GetProps<TData, TError, TQueryParams, _TPathParams>, 'queryParams'>,
   signal?: RequestInit['signal'],
 ): Promise<TData | null> => {

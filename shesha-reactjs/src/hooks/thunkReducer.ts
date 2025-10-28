@@ -38,7 +38,7 @@ export function useThunkReducer<S, A>(
   const state = useRef(hookState);
   const getState = useCallback(() => state.current, [state]);
   const setState = useCallback(
-    (newState) => {
+    (newState: S) => {
       state.current = newState;
       setHookState(newState);
     },
@@ -47,7 +47,7 @@ export function useThunkReducer<S, A>(
 
   // Reducer.
   const reduce = useCallback(
-    (action) => {
+    (action: A) => {
       return reducer(getState(), action);
     },
     [reducer, getState],
@@ -55,7 +55,7 @@ export function useThunkReducer<S, A>(
 
   // Augmented dispatcher.
   const dispatch = useCallback(
-    (action) => {
+    <Action extends (dispatch: ThunkDispatch<S, A>, getState: () => S) => unknown>(action: Action) => {
       return typeof action === 'function' ? action(dispatch, getState) : setState(reduce(action));
     },
     [getState, setState, reduce],

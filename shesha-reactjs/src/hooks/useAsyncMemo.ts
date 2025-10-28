@@ -22,6 +22,7 @@ export function useAsyncMemo<T>(factory: () => Promise<T> | undefined | null, de
     return () => {
       cancel = true;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   return val;
