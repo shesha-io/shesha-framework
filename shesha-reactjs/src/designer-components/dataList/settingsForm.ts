@@ -432,7 +432,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     templateSettings: {
                       useAsyncDeclaration: true,
                       functionName: 'onListItemSave',
-                  },
+                    },
                     tooltip: 'Custom business logic executed when saving list items (validation, calculations, etc.)',
                   }],
                   hideLabel: true,
