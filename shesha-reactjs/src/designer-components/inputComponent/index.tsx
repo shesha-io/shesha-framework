@@ -55,8 +55,6 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true, settings, templateSettings } = props;
 
     const allData = useAvailableConstantsData();
-        console.log("si", templateSettings)
-
 
     const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
         if (!availableConstantsExpression?.trim())
