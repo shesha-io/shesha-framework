@@ -429,6 +429,10 @@ export const getSettings = (data: any) => {
                   label: 'On List Item Save',
                   jsSetting: false,
                   tooltip: 'Custom business logic executed when saving list items (validation, calculations, etc.)',
+                  templateSettings: {
+                      useAsyncDeclaration: true,
+                      functionName: 'onListItemSave',
+                  },
                 }
                 ],
                 hideLabel: true,
@@ -457,6 +461,10 @@ export const getSettings = (data: any) => {
                 hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
                 description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                 exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
+                templateSettings: {
+                  useAsyncDeclaration: true,
+                  functionName: 'onRowSave',
+                },
               })
               .addConfigurableActionConfigurator({
                 id: nanoid(),
