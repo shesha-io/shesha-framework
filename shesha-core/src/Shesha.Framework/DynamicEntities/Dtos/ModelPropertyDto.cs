@@ -37,7 +37,7 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Data type
         /// </summary>
-        public string DataType { get; set; }
+        public string? DataType { get; set; }
 
         /// <summary>
         /// Data format
@@ -94,7 +94,7 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Child properties, applicable for complex data types (e.g. object, array)
         /// </summary>
-        public List<ModelPropertyDto>? Properties { get; set; } = new List<ModelPropertyDto>();
+        public List<ModelPropertyDto> Properties { get; set; } = new List<ModelPropertyDto>();
 
         /// <summary>
         /// If true, indicates that current property is a framework-related (e.g. <see cref="ISoftDelete.IsDeleted"/>, <see cref="IHasModificationTime.LastModificationTime"/>)

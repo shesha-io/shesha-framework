@@ -35,7 +35,7 @@ export interface IMetadataDispatcher {
   getPropertiesMetadata: (payload: IGetPropertiesMetadataPayload) => Promise<IDictionary<IPropertyMetadata>>;
   isEntityType: (modelType: string) => Promise<boolean>;
   getContainerProperties: (payload: IGetNestedPropertiesPayload) => Promise<IPropertyMetadata[]>;
-  getContainerMetadata: (payload: IGetNestedPropertiesPayload) => Promise<IModelMetadata>;
+  getContainerMetadata: (payload: IGetNestedPropertiesPayload) => Promise<IModelMetadata | null>;
   registerModel: (modeltype: string, model: Promise<IModelMetadata>) => void;
   updateModel: (modeltype: string, model: Promise<IModelMetadata>) => void;
 }

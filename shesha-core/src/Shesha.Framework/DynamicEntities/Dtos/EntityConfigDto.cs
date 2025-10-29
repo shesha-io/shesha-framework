@@ -55,7 +55,7 @@ namespace Shesha.DynamicEntities.Dtos
         private bool? _notImplemented;
         public bool NotImplemented => _notImplemented ??=
             Source != MetadataSourceType.UserDefined
-            && StaticContext.IocManager.Resolve<IEntityConfigurationStore>().GetOrNull(FullClassName) == null;
+            && StaticContext.IocManager.Resolve<IEntityTypeConfigurationStore>().GetOrNull(FullClassName) == null;
 
         // ToDo: AS - review getting FullClassName
         [JsonIgnore]

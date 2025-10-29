@@ -26,8 +26,10 @@ namespace Shesha.DynamicEntities.Dtos
         public string? InheritedFromClassName { get; set; }
         public string? InheritedFromNamespace { get; set; }
 
+        public bool IsExposed { get; set; }
+
         public string ClassName { get; set; }
-        public string Namespace { get; set; }
+        public string? Namespace { get; set; }
 
         public bool GenerateAppService { get; set; }
 

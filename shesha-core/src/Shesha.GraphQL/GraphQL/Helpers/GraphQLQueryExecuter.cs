@@ -33,7 +33,7 @@ namespace Shesha.GraphQL.Helpers
         public ISchemaContainer SchemaContainer { get; set; }
         public IGraphQLSerializer Serializer { get; set; }
         public IEntityConfigCache EntityConfigCache { get; set; }
-        public IEntityConfigurationStore EntityConfigurationStore { get; set; }
+        public IEntityTypeConfigurationStore EntityConfigurationStore { get; set; }
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 

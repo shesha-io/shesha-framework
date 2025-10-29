@@ -36,6 +36,7 @@ import Icon from '@/components/icon/Icon';
 import { IQueryBuilderComponentProps } from '../queryBuilder/interfaces';
 import { IDynamicActionsConfiguratorComponentProps } from '../dynamicActionsConfigurator/interfaces';
 import { DatePickerWrapper } from '../dateField/datePickerWrapper';
+import { EntityTypeAutocomplete } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 
 const { Password } = Input;
 
@@ -360,11 +361,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       );
     case 'configurableActionConfigurator':
       return <ConfigurableActionConfigurator value={value} onChange={internalOnChange} editorConfig={null} level={0} label={label} allowedActions={props.allowedActions} hideLabel={props.hideLabel} />;
-    case 'typeAutoComplete':
+    case 'entityTypeAutocomplete':
       return (
-        <Autocomplete
-          dataSourceType="url"
-          dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
+        <EntityTypeAutocomplete
+          type={props.entityAutocompleteType}
           readOnly={readOnly}
           size={size}
           value={value}

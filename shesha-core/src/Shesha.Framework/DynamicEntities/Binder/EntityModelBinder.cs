@@ -44,7 +44,7 @@ namespace Shesha.DynamicEntities.Binder
         private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IIocManager _iocManager;
         private readonly IShaTypeFinder _typeFinder;
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly IObjectValidatorManager _objectValidatorManager;
         private readonly IModelConfigurationManager _modelConfigurationManager;
 
@@ -55,9 +55,9 @@ namespace Shesha.DynamicEntities.Binder
             IHardcodeMetadataProvider metadataProvider,
             IIocManager iocManager,
             IShaTypeFinder typeFinder,
-            IEntityConfigurationStore entityConfigurationStore,
+            IEntityTypeConfigurationStore entityConfigurationStore,
             IObjectValidatorManager propertyValidatorManager,
-            ModelConfigurationManager modelConfigurationManager
+            IModelConfigurationManager modelConfigurationManager
             )
         {
             _dynamicRepository = dynamicRepository;
@@ -116,9 +116,8 @@ namespace Shesha.DynamicEntities.Binder
             if (!string.IsNullOrWhiteSpace(entityIdValue) && entityIdValue != Guid.Empty.ToString())
                 properties = properties.Where(p => p.Name != "Id").ToList();
 
-            var config = await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(entityType.Namespace.NotNull(), entityType.Name);
-
             context.LocalValidationResult = new List<ValidationResult>();
+            context.ModelConfiguration ??= await _modelConfigurationManager.GetCachedModelConfigurationOrNullAsync(null, entityType.Namespace.NotNull(), entityType.Name, true);
 
             var formFieldsInternal = GetFormFields(jobject, formFields);
             formFieldsInternal = formFieldsInternal.Select(x => x.ToCamelCase()).ToList();
@@ -187,7 +186,7 @@ namespace Shesha.DynamicEntities.Binder
                         if (property.IsReadOnly())
                             continue;
 
-                        var propConfig = config?.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == jName);
+                        var propConfig = context.ModelConfiguration?.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == jName);
 
                         if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
                             continue;
@@ -673,7 +672,7 @@ namespace Shesha.DynamicEntities.Binder
             var props = entityType.GetProperties();
             var result = false;
 
-            var config = await _modelConfigurationManager.GetCachedModelConfigurationAsync(entityType.Namespace.NotNull(), entityType.Name);
+            var config = await _modelConfigurationManager.GetCachedModelConfigurationAsync(null, entityType.Namespace.NotNull(), entityType.Name, true);
             foreach (var prop in props)
             {
                 var propConfig = config.Properties.FirstOrDefault(x => x.Name == prop.Name);
