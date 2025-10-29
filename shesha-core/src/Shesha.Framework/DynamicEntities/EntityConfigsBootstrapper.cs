@@ -394,8 +394,9 @@ namespace Shesha.DynamicEntities
 
             // Override properties only for dynamic entities or Exposed entity
             var inherited = _dbAllConfigs.Where(x =>
-                x.InheritedFrom == propertyEntityConfig && x.Source == MetadataSourceType.UserDefined
-                || x.ExposedFrom == propertyEntityConfig
+                !x.IsDeleted
+                && (x.InheritedFrom == propertyEntityConfig && x.Source == MetadataSourceType.UserDefined
+                    || x.ExposedFrom == propertyEntityConfig)
                 ).ToList();
 
             foreach (var config in inherited)
@@ -474,7 +475,11 @@ namespace Shesha.DynamicEntities
                         .FirstOrDefault();
 
                     var inheritedFrom = parentProp == null && entityConfig.InheritedFrom != null
-                        ? _dbAllProperties.Where(p => p.EntityConfig == entityConfig.InheritedFrom && p.Name.Equals(cp.Path, StringComparison.InvariantCultureIgnoreCase))
+                        ? _dbAllProperties.Where(p => 
+                                p.EntityConfig == entityConfig.InheritedFrom 
+                                && p.ParentProperty == null
+                                && p.Name.Equals(cp.Path, StringComparison.InvariantCultureIgnoreCase)
+                            )
                             .OrderBy(p => !p.IsDeleted ? 0 : 1)
                             .ThenByDescending(p => p.CreationTime)
                             .FirstOrDefault()
@@ -587,10 +592,12 @@ namespace Shesha.DynamicEntities
                     EntityConfig = dbp.EntityConfig,
                 };
 
+                itemsTypeProp.InheritedFrom = dbp.InheritedFrom?.ItemsType;
+
                 itemsTypeProp.EntityConfig = dbp.EntityConfig;
                 // keep label and description???
-                cp.ItemsType.Label = itemsTypeProp.Label;
-                cp.ItemsType.Description = itemsTypeProp.Description;
+                itemsTypeProp.Label = cp.ItemsType.Label;
+                itemsTypeProp.Description = cp.ItemsType.Description;
 
                 MapProperty(cp.ItemsType, itemsTypeProp);
 
