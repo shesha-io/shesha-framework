@@ -99,6 +99,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 
   const effectiveValue = mode === 'inline' ? value : internalValue;
 
+  console.log("TS::",props?.templateSettings)
   const renderCodeEditor = () => (
     <BaseCodeEditor
       value={effectiveValue}
