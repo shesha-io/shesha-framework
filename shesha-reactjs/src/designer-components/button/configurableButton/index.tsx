@@ -88,7 +88,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       style={{
         ...props?.style,
         ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }),
-        ...(buttonDisabled && { pointerEvents: "none"}),
+        ...(buttonDisabled && { pointerEvents: "none" }),
       }}
     >
       {props.label}
