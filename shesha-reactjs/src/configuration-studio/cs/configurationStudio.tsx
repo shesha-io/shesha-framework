@@ -170,6 +170,7 @@ export interface IConfigurationStudio {
   closeDocumentAsync: (docId: string) => Promise<void>;
   reloadDocumentAsync: (docId: string) => Promise<void>;
   closeMultipleDocumentsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => Promise<void>;
+  reorderDocumentsAsync: (fromIndex: number, toIndex: number) => Promise<void>;
   //#endregion
 
   //#region crud operations
@@ -308,6 +309,20 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.shaRouter = args.shaRouter;
     this.rootPath = this.shaRouter.router.path;
   }
+
+  reorderDocumentsAsync = async (fromIndex: number, toIndex: number): Promise<void> => {
+    const doc = this.docs[fromIndex];
+    if (!doc)
+      throw new Error("Could not find document to move");
+
+    const newDocs = [...this.docs];
+    newDocs.splice(fromIndex, 1);
+    newDocs.splice(toIndex, 0, doc);
+    this.docs = newDocs;
+    this.notifySubscribers(["tabs"]);
+
+    await this.saveOpenedDocsAsync();
+  };
 
   renameItemRevisionAsync = async (args: RenameRevisionArgs): Promise<boolean> => {
     const response = await this.modalApi.showModalFormAsync<IAjaxResponse<void>>({
