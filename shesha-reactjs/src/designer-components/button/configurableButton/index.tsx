@@ -75,6 +75,8 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       title={props.tooltip}
       block={props.block}
       disabled={buttonDisabled}
+      aria-disabled={buttonDisabled}
+      tabIndex={buttonDisabled ? -1 : undefined}
       loading={buttonLoading}
       onClick={onButtonClick}
       type={props.buttonType}
@@ -86,6 +88,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       style={{
         ...props?.style,
         ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }),
+        ...(buttonDisabled && { pointerEvents: "none"})
       }}
     >
       {props.label}
