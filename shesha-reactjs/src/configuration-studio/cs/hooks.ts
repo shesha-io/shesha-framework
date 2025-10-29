@@ -85,6 +85,7 @@ export type UseCsTabsResponse = {
   readonly closeDocumentAsync: (tabId: string) => Promise<void>;
   readonly reloadDocumentAsync: (tabId: string) => Promise<void>;
   readonly closeMultipleDocumentsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => Promise<void>;
+  readonly reorderDocumentsAsync: (fromIndex: number, toIndex: number) => Promise<void>;
 };
 export const useCsTabs = (): UseCsTabsResponse => {
   const cs = useConfigurationStudio();
@@ -98,6 +99,7 @@ export const useCsTabs = (): UseCsTabsResponse => {
     closeDocumentAsync: cs.closeDocumentAsync,
     reloadDocumentAsync: cs.reloadDocumentAsync,
     closeMultipleDocumentsAsync: cs.closeMultipleDocumentsAsync,
+    reorderDocumentsAsync: cs.reorderDocumentsAsync,
     renderedDocs: cs.renderedDocs,
   };
 };
