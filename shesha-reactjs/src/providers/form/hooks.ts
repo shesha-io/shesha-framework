@@ -56,7 +56,7 @@ export const useFormDesignerComponentGetter = (): FormDesignerComponentGetter =>
 
 const getDesignerUrl = (designerUrl: string, fId: FormIdentifier): string | null => {
   return typeof fId === 'string'
-    ? `${designerUrl}?id=${fId}`
+    ? `${designerUrl}?docId=${fId}`
     : Boolean(fId?.name)
       ? `${designerUrl}?module=${fId.module}&name=${fId.name}`
       : null;
@@ -64,5 +64,5 @@ const getDesignerUrl = (designerUrl: string, fId: FormIdentifier): string | null
 
 export const useFormDesignerUrl = (formId: FormIdentifier): string => {
   const app = useSheshaApplication();
-  return getDesignerUrl(app.routes.formsDesigner, formId);
+  return getDesignerUrl(app.routes.configurationStudio, formId);
 };

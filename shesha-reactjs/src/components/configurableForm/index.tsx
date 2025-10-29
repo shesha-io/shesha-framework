@@ -111,7 +111,7 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
   }, [shaForm, onSubmitted]);
   //#endregion shaForm sync
 
-  const canConfigure = Boolean(app.routes.formsDesigner) && Boolean(formId);
+  const canConfigure = Boolean(app.routes.configurationStudio) && Boolean(formId);
   const { router } = useShaRoutingOrUndefined() ?? {};
 
   const formDesignerUrl = useFormDesignerUrl(formId);

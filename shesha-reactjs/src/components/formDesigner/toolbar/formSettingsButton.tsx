@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { Button } from 'antd';
 import { FormSettingsEditor } from '../formSettingsEditor';
 import { SettingOutlined } from '@ant-design/icons';
@@ -17,6 +17,9 @@ export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText, s
   const onSettingsClick = (): void => {
     setSettingsVisible(true);
   };
+  const onClose = useCallback(() => {
+    setSettingsVisible(false);
+  }, [setSettingsVisible]);
 
   return (
     <>
@@ -26,9 +29,7 @@ export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText, s
       <FormSettingsEditor
         readOnly={readOnly}
         isVisible={settingsVisible}
-        close={() => {
-          setSettingsVisible(false);
-        }}
+        close={onClose}
       />
     </>
   );
