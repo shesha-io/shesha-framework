@@ -28,7 +28,7 @@ namespace Shesha.Services.StoredFiles
         /// </summary>
         protected readonly IRepository<StoredFileVersion, Guid> VersionRepository;
         /// <summary>
-        /// 
+        /// Repository for tracking file version downloads
         /// </summary>
         protected readonly IRepository<StoredFileVersionDownload, Guid> StoredFileVersionDownloadRepository;
 
@@ -271,6 +271,9 @@ namespace Shesha.Services.StoredFiles
 
         public async Task MarkDownloadedAsync(StoredFileVersion fileVersion)
         {
+            if (fileVersion == null)
+                throw new ArgumentNullException(nameof(fileVersion));
+
             var download = new StoredFileVersionDownload()
             {
                 FileVersion = fileVersion

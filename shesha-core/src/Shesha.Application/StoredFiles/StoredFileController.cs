@@ -76,8 +76,6 @@ namespace Shesha.StoredFiles
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
 
-            await _fileService.MarkDownloadedAsync(fileVersion);
-
             if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
             {
                 return StatusCode(304);
@@ -86,6 +84,8 @@ namespace Shesha.StoredFiles
 #pragma warning disable IDISP001 // Dispose created. Note: this stream will be disposed by FileStreamResult
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
 #pragma warning restore IDISP001 // Dispose created
+
+            await _fileService.MarkDownloadedAsync(fileVersion);
 
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
             HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
@@ -96,6 +96,10 @@ namespace Shesha.StoredFiles
         [HttpGet, Route("HasDownloaded")]
         public async Task<ActionResult> HasDownloadedAsync(Guid storedFileId)
         {
+            var file = await _fileRepository.GetAll().FirstOrDefaultAsync(f => f.Id == storedFileId);
+            if (file == null)
+                throw new UserFriendlyException("File not found");
+
             var currentLoggedInUserId = _abpSession.UserId;
             var hasDownloaded = await _fileVersionDownloadRepository.GetAll()
                 .Where((x => x.FileVersion.File.Id == storedFileId && x.CreatorUserId == currentLoggedInUserId))
@@ -502,7 +506,9 @@ namespace Shesha.StoredFiles
             {
                     foreach (var file in files)
                     {
-                        await _fileService.MarkDownloadedAsync(file.LastVersion());
+                        var lastVersion = file.LastVersion();
+                        if (lastVersion != null)
+                        await _fileService.MarkDownloadedAsync(lastVersion);
                     }
                 // todo: move zip support to the FileService, current implementation doesn't support Azure
                 var list = _fileService.MakeUniqueFileNames(files);
