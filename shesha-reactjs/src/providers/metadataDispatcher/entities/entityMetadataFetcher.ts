@@ -78,7 +78,7 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
     await this.#ensureSynchronized();
     const metadata = await this.#configurationItemsLoader.getCachedConfig<IEntityMetadata>({ type: 'entity', id: className, skipCache: false });
     return metadata
-      ? await this.#convertMetadata(metadata.configuration, this.getByClassName)
+      ? this.#convertMetadata(metadata.configuration, this.getByClassName)
       : null;
   };
 
@@ -86,7 +86,7 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
     await this.#ensureSynchronized();
     const metadata = await this.#configurationItemsLoader.getCachedConfig<IEntityMetadata>({ type: 'entity', id: typeId, skipCache: false });
     return metadata
-      ? await this.#convertMetadata(metadata.configuration, this.getByClassName)
+      ? this.#convertMetadata(metadata.configuration, this.getByClassName)
       : null;
   };
 

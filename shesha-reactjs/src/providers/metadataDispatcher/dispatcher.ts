@@ -85,7 +85,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
     if (dataType === DataTypes.entityReference || dataType === DataTypes.object || dataType === null) {
       const promise = this.#entityMetaFetcher.isEntity(modelType).then((isEntity) => {
         if (isEntity)
-          return this.#entityMetaFetcher.getByClassName(modelType) as Promise<IModelMetadata>;
+          return this.#entityMetaFetcher.getByClassName(modelType);
 
         const mapProperty = (property: PropertyMetadataDto, prefix: string = ''): IPropertyMetadata => {
           const { properties, itemsType, ...rest } = property;

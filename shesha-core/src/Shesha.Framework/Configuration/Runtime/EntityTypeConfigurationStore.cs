@@ -83,7 +83,7 @@ namespace Shesha.Configuration.Runtime
         public string? GetEntityTypeAlias(Type entityType)
         {
             var entityConfig = Get(entityType);
-            return entityConfig?.TypeShortAlias;
+            return entityConfig?.SafeTypeShortAlias;
         }
 
         private Type? GetTypeOrNull(string nameOrAlias) 

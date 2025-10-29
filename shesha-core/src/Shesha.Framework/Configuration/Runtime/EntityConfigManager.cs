@@ -104,7 +104,7 @@ namespace Shesha.Configuration.Runtime
                 if (parentProperty != null)
                     parentProperty.Properties.Add(property);
 
-                property.ItemsType = await CopyPropertiesAsync(src.Properties, destination, property);
+                property.ItemsType = await CopyPropertiesAsync(src.Properties, destination, property, src.ItemsType);
 
                 await PropertyConfigRepo.InsertOrUpdateAsync(property);
 

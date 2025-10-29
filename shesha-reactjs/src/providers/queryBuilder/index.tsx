@@ -98,7 +98,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
 
     const promises = containers.map((prefix) =>
       getContainerMetadata({ metadata: metadata, containerPath: prefix })
-        .then((response) => getPropertiesFromMeta(response, prefix)),
+        .then((response) => Boolean(response) ? getPropertiesFromMeta(response, prefix) : []),
     );
 
     Promise.allSettled(promises).then((results) => {
@@ -132,7 +132,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
     const promise = getContainerMetadata({ metadata: metadata, containerPath: containerPath });
 
     promise.then((response) => {
-      const properties = getPropertiesFromMeta(response, containerPath);
+      const properties = Boolean(response) ? getPropertiesFromMeta(response, containerPath) : [];
       const missingProperties = properties.filter((prop) => !state.fields.find((p) => p.propertyName === prop.propertyName));
       if (missingProperties.length > 0) {
         const newFields = [...state.fields, ...missingProperties];

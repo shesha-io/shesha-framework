@@ -206,32 +206,15 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
     return undefined;
   }, [fetchedItems]);
 
-  const options = useMemo<IOption[]>(() => {
-    if (fetchedOptions) {
-      return fetchedOptions;
-    } else {
-      if (value) {
-        const values = Array.isArray(value) ? value : [value];
-        return values.map((v) => ({
-          label: getDisplayText(v),
-          value: getDisplayText(v),
-          rawValue: v,
-          optionData: undefined,
-        }));
-      }
-    }
-    return [];
-  }, [fetchedOptions, value]);
-
   const loading = listFetcher.loading;
-  const loadingInitialItem = loading && value && !selectedItem;
+  const loadingInitialItem = loading && Boolean(value) && !selectedItem;
 
   return (
     <Select<string, IOption>
       allowClear
       notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No matches" />}
       style={{ width: '100%' }}
-      options={options}
+      options={fetchedOptions}
       showSearch={true}
       onSearch={onSearch}
       onChange={onSelect}
@@ -239,7 +222,10 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
       onClear={onClear}
       placeholder={loadingInitialItem ? 'Loading...' : 'Type to search'}
       disabled={loadingInitialItem || readOnly}
-      value={selectedItem?.key}
+      value={selectedItem?.key ??
+        (typeof value === 'string'
+          ? value
+          : (value ? getEntityIdentifier(value as ConfigurableItemFullName) ?? undefined : undefined))}
       size={size}
 
       optionRender={(option) => {

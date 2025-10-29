@@ -65,10 +65,10 @@ namespace Shesha.ConfigurationItems
         /// <param name="module">Module name</param>
         /// <param name="name">Item name</param>
         /// <returns></returns>
-        Task<ConfigurationItemInheritance> GetActualIheritanceOrNullAsync(string module, string name);
+        Task<ConfigurationItemInheritance> GetActualInheritanceOrNullAsync(string module, string name);
 
         /// <summary>
-        /// /// Resolved configuration item by pair: module and name. Note that
+        /// Resolved configuration item by pair: module and name. Note that
         /// </summary>
         /// <param name="module">Module name</param>
         /// <param name="name">Item name</param>

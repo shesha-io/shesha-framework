@@ -227,6 +227,8 @@ namespace Shesha.DynamicEntities
 
             var modelDto = new ModelConfigurationDto
             {
+                IsExposed = false,
+
                 InheritedFromId = inheritedFrom?.Id,
                 InheritedFromClassName = inheritedFrom?.ClassName,
                 InheritedFromNamespace = inheritedFrom?.Namespace,
@@ -770,7 +772,7 @@ namespace Shesha.DynamicEntities
             if (useExposed)
             {
                 // Find Module of exposed Entity if needed
-                var inheritance = await GetActualIheritanceOrNullAsync(entityModuleName.NotNull(), $"{className}");
+                var inheritance = await GetActualInheritanceOrNullAsync(entityModuleName.NotNull(), $"{className}");
                 entityModuleName = inheritance?.ExposedInModuleName ?? entityModuleName;
             }
 
@@ -845,7 +847,7 @@ namespace Shesha.DynamicEntities
             if (useExposed && !entityModuleName.IsNullOrEmpty())
             {
                 // Find Module of exposed Entity if needed
-                var inheritance = await GetActualIheritanceOrNullAsync(entityModuleName.NotNull(), $"{className}");
+                var inheritance = await GetActualInheritanceOrNullAsync(entityModuleName.NotNull(), $"{className}");
                 entityModuleName = inheritance?.ExposedInModuleName ?? entityModuleName;
             }
 

@@ -71,7 +71,7 @@ namespace Shesha.Metadata
             var isPreselection = selectedValue.IsNullOrWhiteSpace();
 
             var (selectedFullClassName, selectedModule, selectedClass) = ParseInputData(selectedValue);
-            var (searchFullClassName, searchModule, searchClass) = ParseInputData(selectedValue);
+            var (searchFullClassName, searchModule, searchClass) = ParseInputData(term);
 
             var entities = models
                 .Where(e => (
