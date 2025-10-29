@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Entities.Auditing;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
 using System;
 using System.Collections.Generic;
@@ -13,8 +14,10 @@ namespace Shesha.Domain
     /// Tracks when a user downloads a specific file version
     /// </summary>
     [Entity(TypeShortAlias = "Shesha.Framework.StoredFileVersionDownload")]
-    public class StoredFileVersionDownload : FullAuditedEntity<Guid>
+    public class StoredFileVersionDownload : FullAuditedEntity<Guid>, IMayHaveTenant
     {
+        /// <summary>Tenant Id</summary>
+        public virtual int? TenantId { get; set; }
         /// <summary>
         /// The file version that was downloaded
         /// </summary>

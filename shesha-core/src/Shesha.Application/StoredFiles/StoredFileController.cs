@@ -72,7 +72,7 @@ namespace Shesha.StoredFiles
         }
 
         [HttpGet, Route("Download")]
-        public async Task<ActionResult> DownloadAsync(Guid id, int? versionNo)
+        public async Task<ActionResult> DownloadAsync(Guid id, int? versionNo, Boolean skipMarkDownload = false)
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
 
@@ -80,12 +80,15 @@ namespace Shesha.StoredFiles
             {
                 return StatusCode(304);
             }
-                                
+
 #pragma warning disable IDISP001 // Dispose created. Note: this stream will be disposed by FileStreamResult
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
 #pragma warning restore IDISP001 // Dispose created
 
-            await _fileService.MarkDownloadedAsync(fileVersion);
+            if (skipMarkDownload == false)
+            {
+                await _fileService.MarkDownloadedAsync(fileVersion);
+            }
 
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
             HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
@@ -156,7 +159,7 @@ namespace Shesha.StoredFiles
 
             if (validationResults.Any())
                 throw new AbpValidationException("An error occured", validationResults);
-        
+
             #endregion
 
             input.EnsureFile();
@@ -241,7 +244,7 @@ namespace Shesha.StoredFiles
                         }
                         else
                         {
-                            if (!string.IsNullOrWhiteSpace(input.OwnerType))
+                            if (string.IsNullOrWhiteSpace(input.OwnerType))
                             {
                                 // otherwise - mark as temporary
                                 file.Temporary = true;
@@ -416,7 +419,7 @@ namespace Shesha.StoredFiles
                 validationResults.Add($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')", [nameof(input.OwnerId)]);
 
             PropertyInfo? property = null;
-            if (owner != null && !string.IsNullOrWhiteSpace(input.PropertyName)) 
+            if (owner != null && !string.IsNullOrWhiteSpace(input.PropertyName))
             {
                 var accessor = ReflectionHelper.GetPropertyValueAccessor(owner, input.PropertyName);
                 if (accessor.PropInfo == null)
@@ -424,7 +427,7 @@ namespace Shesha.StoredFiles
 
                 if (property != null && !typeof(StoredFile).IsAssignableFrom(property.PropertyType))
                     validationResults.Add($"Wrong type of '{owner.GetType().Name}.{input.PropertyName}' property (actual: '{property.PropertyType.FullName}', expected: '{nameof(StoredFile)}')", [nameof(input.PropertyName)]);
-                
+
                 owner = accessor.Parent;
                 property = accessor.PropInfo;
             }
@@ -504,12 +507,6 @@ namespace Shesha.StoredFiles
 
             if (files?.Count > 0)
             {
-                    foreach (var file in files)
-                    {
-                        var lastVersion = file.LastVersion();
-                        if (lastVersion != null)
-                        await _fileService.MarkDownloadedAsync(lastVersion);
-                    }
                 // todo: move zip support to the FileService, current implementation doesn't support Azure
                 var list = _fileService.MakeUniqueFileNames(files);
 
@@ -517,6 +514,12 @@ namespace Shesha.StoredFiles
                 var compressedStream = await CompressionService.CompressFilesAsync(list);
 #pragma warning restore IDISP001 // Dispose created
 
+                foreach (var file in files)
+                {
+                    var lastVersion = file.LastVersion();
+                    if (lastVersion != null)
+                        await _fileService.MarkDownloadedAsync(lastVersion);
+                }
                 return File(compressedStream, "multipart/x-zip", "files.zip");
             }
 
@@ -804,15 +807,12 @@ namespace Shesha.StoredFiles
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
 
-            if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
+            var etagValue = $"{fileVersion.Id:N}:{width}:{height}:{(int)fitOption}".ToLowerInvariant();
+            var ifNoneMatch = HttpContext.Request.Headers.IfNoneMatch.ToString().Trim('\"');
+            if (string.Equals(etagValue, ifNoneMatch, StringComparison.Ordinal))
                 return StatusCode(304);
 
             using var fileContents = await _fileService.GetStreamAsync(fileVersion);
-
-            // Get the file name
-            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileVersion.FileName);
-            string fileExtension = Path.GetExtension(fileVersion.FileName);
-            string fileName = $"{fileNameWithoutExtension}_w{width}h{height}{fileExtension}";
 
             // Read stream and reset position
             using var stream = new MemoryStream();
@@ -821,11 +821,13 @@ namespace Shesha.StoredFiles
 
             // Decode the image
             using var originalImage = SKBitmap.Decode(stream);
+            if (originalImage == null)
+                throw new UserFriendlyException("File is not a valid image.");
 
             // Generate the thumbnail
             using var resizedImage = GenerateThumbnail(originalImage, width, height, fitOption);
 
-            // Convert the resized image to a byte array
+            // Convert the resized image to a byte array (PNG)
             using var skImage = SKImage.FromBitmap(resizedImage);
             using var data = skImage.Encode(SKEncodedImageFormat.Png, 100);
 
@@ -838,9 +840,12 @@ namespace Shesha.StoredFiles
 
             // Set response headers
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; // Ten minutes cache
-            HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
+            HttpContext.Response.Headers.ETag = $"\"{etagValue}\"";
 
-            return File(resultStream, fileVersion.FileType.GetContentType(), fileName);
+            // Always PNG
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileVersion.FileName);
+            string fileName = $"{fileNameWithoutExtension}_w{width}h{height}.png";
+            return File(resultStream, "image/png", fileName);
         }
 
         private static SKBitmap GenerateThumbnail(SKBitmap originalImage, int width, int height, FitOptions fitOption)
