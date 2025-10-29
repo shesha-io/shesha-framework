@@ -30,7 +30,6 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, formItemWrapperCol]);
   const settings = shaForm.settings;
-  const { styles } = useStyles(settings.layout);
 
   const isInDesigner = shaForm.formMode === 'designer';
   const defaultMargins = settings?.formItemMargin || {};
@@ -49,14 +48,14 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   } = model?.allStyles?.fullStyle || {};
 
   const { hideLabel, hidden } = model;
+  const hasLabel = !hideLabel && !!model.label;
+  const { styles } = useStyles({ layout: settings.layout, hasLabel });
   if (hidden) return null;
 
   const propName = namePrefix && !model.initialContext
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-  const dimensions = getDeviceDimensions({marginTop, marginBottom, marginLeft, marginRight});
-  console.log("D(MS >>", dimensions);
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem, settings.layout),
     label: hideLabel ? null : model.label,
@@ -70,7 +69,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
-    style: { marginBottom, marginRight, marginLeft, marginTop, width: isInDesigner ? dimensions.width : width, height: isInDesigner ? dimensions.height : height, minHeight, minWidth, maxHeight: maxHeight, maxWidth },
+    style: { marginBottom, marginRight, marginLeft, marginTop, width: isInDesigner ? `calc(100% - ${marginLeft} - ${marginRight})` : width, height: isInDesigner ? `calc(100% - ${marginBottom} - ${marginTop})` : height, minHeight, minWidth, maxHeight: maxHeight, maxWidth },
   };
 
   if (typeof children === 'function') {

@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
-import { DataContextTopLevels, EditMode, IConfigurableFormComponent, useCanvas, useShaFormInstance } from '@/providers';
+import { DataContextTopLevels, EditMode, IConfigurableFormComponent, useCanvas } from '@/providers';
 import {
   EditOutlined,
   EyeInvisibleOutlined,
@@ -28,7 +28,7 @@ import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getComponentTypeInfo } from '../utils/componentTypeUtils';
 import { getComponentDimensions, getDeviceDimensions, getDeviceFlexBasis } from '../utils/dimensionUtils';
-import { createRootContainerStyle } from '../utils/stylingUtils';
+import { createRootContainerStyle, removeMarginsFromStylingBox } from '../utils/stylingUtils';
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
@@ -49,7 +49,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { styles } = useStyles();
   const getToolboxComponent = useFormDesignerComponentGetter();
   const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
-  const { formMode } = useShaFormInstance();
   const { activeDevice } = useCanvas();
 
   const component = getToolboxComponent(componentModel?.type);
@@ -57,10 +56,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { dimensionsStyles, stylingBoxAsCSS } = useFormComponentStyles({ ...componentModel, ...componentModel?.[activeDevice] });
   const { top, left, bottom, right } = formSettings?.formItemMargin || {};
   const desktopConfig = componentModel?.[activeDevice] || {};
-  const originalDimensions = dimensionsStyles;
-  const originalStylingBox = stylingBoxAsCSS;
 
-  const hasLabel = componentModel.label && componentModel.label.toString().length > 0;
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
   const invalidConfiguration = componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
 
@@ -96,52 +92,44 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return result;
   }, [isSelected]);
 
-  const { marginLeft = left, marginRight = right, marginBottom = bottom, marginTop = top } = stylingBoxAsCSS;
+  // Extract margins from component styling, with fallback to form defaults
+  const margins = useMemo(() => ({
+    marginTop: stylingBoxAsCSS?.marginTop ?? top ?? 0,
+    marginBottom: stylingBoxAsCSS?.marginBottom ?? bottom ?? 0,
+    marginLeft: stylingBoxAsCSS?.marginLeft ?? left ?? 0,
+    marginRight: stylingBoxAsCSS?.marginRight ?? right ?? 0,
+  }), [stylingBoxAsCSS?.marginTop, stylingBoxAsCSS?.marginBottom, stylingBoxAsCSS?.marginLeft, stylingBoxAsCSS?.marginRight, top, bottom, left, right]);
 
-  const stylingBoxPadding = useMemo(() => {
-    return {
-      paddingBottom: originalStylingBox.paddingBottom,
-      paddingLeft: originalStylingBox.paddingLeft,
-      paddingRight: originalStylingBox.paddingRight,
-      paddingTop: originalStylingBox.paddingTop,
-    };
-  }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
+  // Get component dimensions (handles special cases like DataTable context)
+  const componentDimensions = useMemo(() =>
+    getComponentDimensions(typeInfo, dimensionsStyles),
+    [typeInfo, dimensionsStyles]
+  );
 
-  const stylingBoxMargin = useMemo(() => {
-    return {
-      marginTop: marginTop ? top : marginTop,
-      marginBottom: marginBottom ? bottom : marginBottom,
-      marginLeft: marginLeft ? left : marginLeft,
-      marginRight: marginRight ? right : marginRight,
-    };
-  }, [formMode, originalStylingBox, desktopConfig.stylingBox]);
-
-  const paddingStyles = JSON.stringify(stylingBoxPadding);
-  const marginStyles = JSON.stringify(stylingBoxMargin);
-
-  const componentDimensions = getComponentDimensions(typeInfo, dimensionsStyles);
-
+  // Create the model for rendering - components receive 100% dimensions
+  // and no margins (since wrapper handles margins as padding)
   const renderComponentModel = useMemo(() => {
-    const deviceDimensions = getDeviceDimensions( stylingBoxMargin);
+    const deviceDimensions = getDeviceDimensions();
+    const stylingBoxWithoutMargins = removeMarginsFromStylingBox(componentModel.stylingBox);
 
     return {
       ...componentModel,
+      dimensions: deviceDimensions,
+      stylingBox: stylingBoxWithoutMargins,
       [activeDevice]: {
         ...desktopConfig,
         dimensions: deviceDimensions,
+        stylingBox: stylingBoxWithoutMargins,
       },
-      // ...(formMode === 'designer' ? {stylingBox: paddingStyles} : {stylingBox: JSON.stringify({...stylingBoxPadding, ...stylingBoxMargin})}),
       flexBasis: getDeviceFlexBasis(dimensionsStyles),
     };
-  }, [componentModel, desktopConfig, paddingStyles, originalDimensions, formMode, typeInfo, activeDevice, dimensionsStyles]);
+  }, [componentModel, desktopConfig, activeDevice, dimensionsStyles]);
 
-  const rootContainerStyle = useMemo(() => {
-    return createRootContainerStyle(
-      componentDimensions,
-      { ...JSON.parse(marginStyles) },
-      originalDimensions,
-    );
-  }, [componentDimensions, marginTop, marginBottom, marginLeft, marginRight, originalDimensions, hasLabel]);
+  // Create wrapper style - owns dimensions and margins
+  const rootContainerStyle = useMemo(() =>
+    createRootContainerStyle(componentDimensions, margins, component.isInput),
+    [componentDimensions, margins, component.isInput]
+  );
 
   return (
     <div

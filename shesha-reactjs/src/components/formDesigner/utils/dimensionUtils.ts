@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 import { ComponentTypeInfo } from './componentTypeUtils';
-import { addPx } from '@/utils/style';
+import { IStyleType } from '@/index';
 
 export interface DimensionConfig {
   width?: string;
@@ -44,13 +44,14 @@ export const getComponentDimensions = (
   };
 };
 
-export const getDeviceDimensions = (
-  stylingBoxMargin: CSSProperties
-): CSSProperties => {
-
+/**
+ * Returns 100% dimensions for components wrapped in the root container.
+ * The wrapper handles actual sizing, so components fill 100% of the wrapper.
+ */
+export const getDeviceDimensions = (): IStyleType['dimensions'] => {
   return {
-    width: `calc(100% - ${stylingBoxMargin?.marginLeft || '0px'} - ${stylingBoxMargin?.marginRight || '0px'} )`,
-    height: `calc(100% - ${stylingBoxMargin?.marginTop || '0px'} - ${stylingBoxMargin?.marginBottom || '0px'} )`,
+    width: '100%',
+    height: '100%',
   };
 };
 
