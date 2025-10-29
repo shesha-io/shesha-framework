@@ -230,7 +230,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
       const lookup = await this.getConfigRawIdLookupAsync(type, id);
       if (!lookup)
         return undefined;
-      return await this.getCachedConfigAsync({ ...args, id: lookup });
+      return await this.getCachedConfigAsync<TConfigDto>({ ...args, id: lookup });
     }
 
     throw new Error('Unknown configuration item identifier');
@@ -353,7 +353,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
     }
 
     const wrappedPromise = new StatefulPromise<TConfigDto>((resolve, reject) => {
-      this.getCachedConfigAsync(args)
+      this.getCachedConfigAsync<TConfigDto>(args)
         .then((cachedConfig) => {
           this.fetchConfigFromBackendAsync({ type, id, cachedConfiguration: cachedConfig })
             .then((response) => {

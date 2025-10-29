@@ -121,7 +121,7 @@ namespace Shesha.DynamicEntities
             return $"{entityModuleName}|{entityNamespace}|{className}";
         }
 
-        private async Task RemoveCaheItemAsync(string? moduleName, string? @namespace, string className)
+        private async Task RemoveCacheItemAsync(string? moduleName, string? @namespace, string className)
         {
             await _modelConfigsCache.RemoveAsync(GetCacheKey(moduleName, null, className));
             await _modelConfigsCache.RemoveAsync(GetCacheKey(moduleName, @namespace, className));
@@ -268,7 +268,7 @@ namespace Shesha.DynamicEntities
             // todo: add validation
 
             var res = await CreateOrUpdateAsync(entityConfig, input, false);
-            await RemoveCaheItemAsync(res.Module, res.Namespace, res.ClassName);
+            await RemoveCacheItemAsync(res.Module, res.Namespace, res.ClassName);
 
             return res;
         }
@@ -529,7 +529,7 @@ namespace Shesha.DynamicEntities
                                 new List<EntityProperty> { dbProp }
                             );
 
-                            await RemoveCaheItemAsync(inheritedEntity.Module?.Name, inheritedEntity.Namespace, inheritedEntity.ClassName);
+                            await RemoveCacheItemAsync(inheritedEntity.Module?.Name, inheritedEntity.Namespace, inheritedEntity.ClassName);
                         }
                     }
                     // Update inherited entities
@@ -551,7 +551,7 @@ namespace Shesha.DynamicEntities
                                 new List<EntityProperty> { dbProp }
                             );
 
-                            await RemoveCaheItemAsync(inheritedProperty.EntityConfig.Module?.Name, inheritedProperty.EntityConfig.Namespace, inheritedProperty.EntityConfig.ClassName);
+                            await RemoveCacheItemAsync(inheritedProperty.EntityConfig.Module?.Name, inheritedProperty.EntityConfig.Namespace, inheritedProperty.EntityConfig.ClassName);
                         }
                     }
                 }

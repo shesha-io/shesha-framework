@@ -11,7 +11,7 @@ namespace Shesha.Migrations
 
             // Rename duplicates after change Entities namespaces
 
-            IfDatabase("SqlServer").Execute.Sql(@"
+            Execute.Sql(@"
 with aa as (
     select
         ci.id,
@@ -23,25 +23,6 @@ with aa as (
     from frwk.configuration_items ci
     inner join frwk.entity_configs ec on ec.id = ci.id
     where ci.item_type = 'entity'
-)
-update ec set ec.class_name = CONCAT(ec.class_name, '_')
-from frwk.entity_configs ec
-inner join aa on aa.id = ec.id
-where aa.cou > 1 and aa.rn > 1;
-");
-            IfDatabase("PostgreSql").Execute.Sql(@"
-with aa as (
-    select
-        ci.id,
-        ci.module_id,
-        ec.class_name,
-        ci.creation_time,
-        row_number() over (partition by ec.class_name, ci.module_id order by ci.creation_time desc) as rn,
-        count(1) as cou
-    from frwk.configuration_items ci
-    inner join frwk.entity_configs ec on ec.id = ci.id
-    where ci.item_type = 'entity'
-    group by ci.id, ci.module_id, ec.class_name, ci.creation_time, rn
 )
 update frwk.entity_configs set class_name = concat(class_name, '_')
 where id in (select id from aa where cou > 1 and rn > 1)

@@ -203,7 +203,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
       });
       return result;
     }
-    return undefined;
+    return [];
   }, [fetchedItems]);
 
   const loading = listFetcher.loading;

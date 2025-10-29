@@ -171,19 +171,19 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
     });
 };
 
-const getEntityCaheItem = (key: string, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> =>
+const getEntityCacheItem = (key: string, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> =>
   context.cacheProvider.getCache(CACHE.ENTITIES).getItem<IConfigurationItemDto<IEntityMetadata>>(key).then((item) => item?.configuration);
 
 export const getEntityMetadata = async (accessor: IEntityTypeIndentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
   await syncEntities(context);
 
   const key = getEntityMetadataCacheKey(accessor);
-  return getEntityCaheItem(key, context);
+  return getEntityCacheItem(key, context);
 };
 
 export const getCachedMetadataByTypeId = (typeId: IEntityTypeIndentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
   const key = getEntityMetadataCacheKey(typeId);
-  return getEntityCaheItem(key, context);
+  return getEntityCacheItem(key, context);
 };
 
 export const getCachedMetadataByClassName = (className: string, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
@@ -192,5 +192,5 @@ export const getCachedMetadataByClassName = (className: string, context: ISyncEn
     throw new Error(`Failed to resolve type id for class ${className}`);
   }
   const key = getEntityMetadataCacheKey(typeId);
-  return getEntityCaheItem(key, context);
+  return getEntityCacheItem(key, context);
 };

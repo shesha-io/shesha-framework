@@ -224,11 +224,10 @@ namespace Shesha.DynamicEntities
 
                 await _entityConfigRepository.UpdateAsync(config.db);
 
-                if (config.db.HardcodedPropertiesMD5 != config.code.PropertiesMD5)
-                    if (config.db.HardcodedPropertiesMD5 != config.code.PropertiesMD5
-                        || (config.db.EntityConfigType == EntityConfigTypes.Class && config.dbProperties.Any(x => x.ColumnName == null))
-                        || ForceUpdate)
-                        await UpdatePropertiesAsync(config.db, config.code.Config.EntityType, config.code.Properties, config.code.PropertiesMD5);
+                if (config.db.HardcodedPropertiesMD5 != config.code.PropertiesMD5
+                    || (config.db.EntityConfigType == EntityConfigTypes.Class && config.dbProperties.Any(x => x.ColumnName == null))
+                    || ForceUpdate)
+                    await UpdatePropertiesAsync(config.db, config.code.Config.EntityType, config.code.Properties, config.code.PropertiesMD5);
             }
 
             // Add news configs
