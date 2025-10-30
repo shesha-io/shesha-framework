@@ -20,8 +20,6 @@ import { ICalendarProps } from '@/designer-components/calendar/interfaces';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { ICalendarEvent } from '@/providers/layersProvider/models';
 
-moment.locale('en-za');
-const localizer = momentLocalizer(moment);
 
 export const CalendarControl: FC<ICalendarProps> = (props) => {
   const {
@@ -37,6 +35,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     componentName,
     id,
     dummyEventColor,
+    momentLocale = 'en-za',
   } = props;
 
   const { executeAction } = useConfigurableActionDispatcher();
@@ -47,6 +46,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
 
   const [events, setEvents] = useState<any>([]);
   const [defaultView, setDefaultView] = useState<View>(displayPeriod?.[0]);
+  const [localeLoaded, setLocaleLoaded] = useState(false);
 
   const clickTimeoutRef = useRef<number | null>(null);
   const lastClickedEventRef = useRef<ICalendarEvent | null>(null);
@@ -56,6 +56,27 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
 
   const startDate = useActualContextExecution(externalStartDate);
   const endDate = useActualContextExecution(externalEndDate);
+
+  // Dynamically load locale and create localizer
+  useEffect(() => {
+    const loadLocale = async () => {
+      try {
+        // Dynamically import the locale file
+        await import(`moment/locale/${momentLocale}.js`);
+        moment.locale(momentLocale);
+        setLocaleLoaded(true);
+      } catch (error) {
+        console.error(`Locale ${momentLocale} not found, ${error}`);
+        moment.locale('en');
+        setLocaleLoaded(true);
+      }
+    };
+
+    setLocaleLoaded(false);
+    loadLocale();
+  }, [momentLocale]);
+
+  const localizer = useMemo(() => momentLocalizer(moment), [localeLoaded]);
 
   const dummyEvent =
     startDate
@@ -189,9 +210,16 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       return;
     }
 
+    // react-big-calendar sets end date to the start of the next day
+    // Adjust to get the actual last selected day
+    const adjustedSlotInfo = {
+      ...slotInfo,
+      end: moment(slotInfo.end).subtract(1, 'day').endOf('day').toDate(),
+    };
+
     const evaluationContext = {
       ...allData,
-      event: slotInfo,
+      event: adjustedSlotInfo,
     };
     executeAction({
       actionConfiguration: onSlotClick,
