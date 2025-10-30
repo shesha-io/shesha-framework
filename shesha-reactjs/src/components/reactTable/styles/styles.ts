@@ -44,12 +44,32 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
   border,
+  backgroundColor,
+  headerFontSize,
+  headerFontWeight,
+  headerBackgroundColor,
+  headerTextColor,
+  rowHeight,
+  rowPadding,
+  rowBorder,
+  boxShadow,
+  sortableIndicatorColor,
 }: {
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
   border?: IBorderValue;
+  backgroundColor?: string;
+  headerFontSize?: string;
+  headerFontWeight?: string;
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
+  rowHeight?: string;
+  rowPadding?: string;
+  rowBorder?: string;
+  boxShadow?: string;
+  sortableIndicatorColor?: string;
 }) => {
   const {
     shaTable,
@@ -83,11 +103,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   // Generate border styles from the border configuration
   const borderStyles = getBorderStyle(border || {}, {});
   const hasBorderRadius = border?.radius && (
-    (border.radius.all && border.radius.all !== '0' && border.radius.all !== '0px') ||
-    (border.radius.topLeft && border.radius.topLeft !== '0' && border.radius.topLeft !== '0px') ||
-    (border.radius.topRight && border.radius.topRight !== '0' && border.radius.topRight !== '0px') ||
-    (border.radius.bottomLeft && border.radius.bottomLeft !== '0' && border.radius.bottomLeft !== '0px') ||
-    (border.radius.bottomRight && border.radius.bottomRight !== '0' && border.radius.bottomRight !== '0px')
+    (border.radius.all && parseFloat(String(border.radius.all)) !== 0) ||
+    (border.radius.topLeft && parseFloat(String(border.radius.topLeft)) !== 0) ||
+    (border.radius.topRight && parseFloat(String(border.radius.topRight)) !== 0) ||
+    (border.radius.bottomLeft && parseFloat(String(border.radius.bottomLeft)) !== 0) ||
+    (border.radius.bottomRight && parseFloat(String(border.radius.bottomRight)) !== 0)
   );
 
   // var(--ant-primary-3)
@@ -143,6 +163,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         border-spacing: 0;
         display: inline-block;
         min-width: 100%;
+        background-color: ${backgroundColor}
+        ${boxShadow ? `box-shadow: ${boxShadow};` : ''}
 
         /* Apply border styles to the inner table */
         ${Object.entries(borderStyles).map(([key, value]) => {
@@ -213,13 +235,25 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
         .${tr} {
-          height: 100%; 
+          ${rowHeight ? `height: ${rowHeight};` : 'height: 100%;'}
+          ${rowBorder ? `border: ${rowBorder};` : ''}
+
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
+            ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : `background-color: ${backgroundColor} !important;`}
+            ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
+            ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
+            ${headerTextColor ? `color: ${headerTextColor};` : ''}
+
+            /* Apply header background to relative columns within headers */
+            .${relativeColumn} {
+              ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : `background-color: ${backgroundColor} !important;`}
+            }
           }
 
           &.${trBody} {
             ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
+            ${rowPadding ? `padding: ${rowPadding};` : ''}
           }
 
           .${shaCrudCell} {
@@ -367,12 +401,18 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           margin-right: 5px;
         }
         .${th} {
+          ${rowPadding ? `padding: ${rowPadding};` : ''}
+          ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : ''}
+          ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
+          ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
+          ${headerTextColor ? `color: ${headerTextColor};` : ''}
+
           &.${sortedAsc} {
-            border-top: 3px solid ${token.colorPrimary};
+            border-top: 3px solid ${sortableIndicatorColor || token.colorPrimary};
             padding-top: 5px;
           }
           &.${sortedDesc} {
-            border-bottom: 3px solid ${token.colorPrimary};
+            border-bottom: 3px solid ${sortableIndicatorColor || token.colorPrimary};
           }
           &.${fixedColumn} {
             display: inline-block;
@@ -384,7 +424,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             display: inline-block;
             position: relative;
             z-index: -100;
-
+            background-color: ${backgroundColor} !important;
           }
 
           &.${boxShadowLeft} {
@@ -406,7 +446,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           overflow: hidden;
           text-overflow: ellipsis;
           margin: 0;
-          padding: 0.5rem;
+          ${rowPadding ? `padding: ${rowPadding};` : 'padding: 0.5rem;'}
           border-right: 1px solid rgba(0, 0, 0, 0.05);
 
           /* In this example we use an absolutely position resizer, so this is required. */
@@ -445,6 +485,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             display: inline-block;
             position: relative;
             z-index: 0;
+            background-color: ${backgroundColor} !important;
           }
           &.${boxShadowLeft} {
             box-shadow: 5px 0 3px -2px #ccc;

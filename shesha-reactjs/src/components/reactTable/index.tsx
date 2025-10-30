@@ -32,7 +32,6 @@ import { EmptyState } from '..';
 import { ErrorDetails } from '@/utils/configurationFramework/actions';
 import axios from 'axios';
 import { isAxiosResponse } from '@/interfaces/ajaxResponse';
-import { getBorderStyle } from '@/designer-components/_settings/utils/index';
 import { useCanvasStateOrUndefined } from '@/providers/canvas';
 
 interface IReactTableState {
@@ -96,7 +95,17 @@ export const ReactTable: FC<IReactTableProps> = ({
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
+  backgroundColor,
   border,
+  headerFontSize,
+  headerFontWeight,
+  headerBackgroundColor,
+  headerTextColor,
+  rowHeight,
+  rowPadding,
+  rowBorder,
+  boxShadow,
+  sortableIndicatorColor,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -114,6 +123,16 @@ export const ReactTable: FC<IReactTableProps> = ({
     rowHoverBackgroundColor,
     rowSelectedBackgroundColor,
     border,
+    backgroundColor,
+    headerFontSize,
+    headerFontWeight,
+    headerBackgroundColor,
+    headerTextColor,
+    rowHeight,
+    rowPadding,
+    rowBorder,
+    boxShadow,
+    sortableIndicatorColor,
   });
 
   const { setDragState } = useDataTableStore();
@@ -178,11 +197,9 @@ export const ReactTable: FC<IReactTableProps> = ({
           <span className={styles.shaSpanCenterVertically}>
             <IndeterminateCheckbox
               {...row.getToggleRowSelectedProps()}
-              onChange={
-                selectionMode === 'single'
-                  ? onSingleRowToggle(row.getToggleRowSelectedProps().onChange, row)
-                  : onChangeHeader(row.getToggleRowSelectedProps().onChange, row)
-              }
+              onChange={selectionMode === 'single'
+                ? onSingleRowToggle(row.getToggleRowSelectedProps().onChange, row)
+                : onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
             />
           </span>
         ),
@@ -211,7 +228,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
       return 0;
     });
-  }, [allColumns, allowReordering, useMultiSelect]);
+  }, [allColumns, allowReordering, useMultiSelect, selectionMode]);
 
   const getColumnAccessor = (cid): string => {
     const column = columns.find((c) => c.id === cid);

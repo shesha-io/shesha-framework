@@ -229,12 +229,27 @@ export interface IReactTableProps extends ITableRowDragProps {
   noDataIcon?: string;
   showExpandedView?: boolean;
 
+  // Header styling
+  headerFontSize?: string;
+  headerFontWeight?: string;
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
+
+  // Table body styling
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
+  rowHeight?: string;
+  rowPadding?: string;
+  rowBorder?: string;
+
+  // Overall table styling
   borderRadius?: string;
   border?: IBorderValue;
+  backgroundColor?: string;
+  boxShadow?: string;
+  sortableIndicatorColor?: string;
 
   canDeleteInline?: boolean;
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;

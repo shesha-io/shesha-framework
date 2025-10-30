@@ -32,13 +32,27 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   hoverHighlight?: boolean;
   stickyHeader?: boolean;
 
+  // Header styling
+  headerFontSize?: string;
+  headerFontWeight?: string;
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
+
+  // Table body styling
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
+  rowHeight?: string;
+  rowPadding?: string;
+  rowBorder?: string;
+
+  // Overall table styling
   borderRadius?: string;
   border?: IBorderValue;
-
+  backgroundColor?: string;
+  boxShadow?: string;
+  sortableIndicatorColor?: string;
   enableStyleOnReadonly?: boolean;
 }
 

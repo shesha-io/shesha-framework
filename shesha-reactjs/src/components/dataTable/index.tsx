@@ -82,6 +82,22 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   borderRadius?: string;
   border?: IBorderValue;
   hoverHighlight?: boolean;
+  backgroundColor?: string;
+
+  // Header styling
+  headerFontSize?: string;
+  headerFontWeight?: string;
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
+
+  // Table body styling
+  rowHeight?: string;
+  rowPadding?: string;
+  rowBorder?: string;
+
+  // Overall table styling
+  boxShadow?: string;
+  sortableIndicatorColor?: string;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -128,6 +144,16 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   onRowHover,
   onRowSelect,
   onSelectionChange,
+  backgroundColor,
+  headerFontSize,
+  headerFontWeight,
+  headerBackgroundColor,
+  headerTextColor,
+  rowHeight,
+  rowPadding,
+  rowBorder,
+  boxShadow,
+  sortableIndicatorColor,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -998,6 +1024,16 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowHoverBackgroundColor: hoverHighlight ? rowHoverBackgroundColor : undefined,
     rowSelectedBackgroundColor,
     border,
+    backgroundColor,
+    headerFontSize,
+    headerFontWeight,
+    headerBackgroundColor,
+    headerTextColor,
+    rowHeight,
+    rowPadding,
+    rowBorder,
+    boxShadow,
+    sortableIndicatorColor,
 
     onRowClick: handleRowClick,
     onRowHover: handleRowHover,

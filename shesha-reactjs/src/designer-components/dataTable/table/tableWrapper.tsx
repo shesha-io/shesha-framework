@@ -56,6 +56,16 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     rowHoverBackgroundColor: props?.rowHoverBackgroundColor,
     rowSelectedBackgroundColor: props?.rowSelectedBackgroundColor,
     border: props?.border,
+    backgroundColor: props?.background.color,
+    headerFontSize: props?.headerFontSize,
+    headerFontWeight: props?.headerFontWeight,
+    headerBackgroundColor: props?.headerBackgroundColor,
+    headerTextColor: props?.headerTextColor,
+    rowHeight: props?.rowHeight,
+    rowPadding: props?.rowPadding,
+    rowBorder: props?.rowBorder,
+    boxShadow: props?.boxShadow,
+    sortableIndicatorColor: props?.sortableIndicatorColor,
   });
 
   const finalStyle = useMemo(() => {
@@ -216,6 +226,16 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
           rowSelectedBackgroundColor={props.rowSelectedBackgroundColor}
           border={props.border}
           hoverHighlight={props.hoverHighlight}
+          backgroundColor={props.background.color}
+          headerFontSize={props.headerFontSize}
+          headerFontWeight={props.headerFontWeight}
+          headerBackgroundColor={props.headerBackgroundColor}
+          headerTextColor={props.headerTextColor}
+          rowHeight={props.rowHeight}
+          rowPadding={props.rowPadding}
+          rowBorder={props.rowBorder}
+          boxShadow={props.boxShadow}
+          sortableIndicatorColor={props.sortableIndicatorColor}
         />
       </div>
     </SidebarContainer>
