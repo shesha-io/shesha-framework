@@ -58,10 +58,10 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const endDate = useActualContextExecution(externalEndDate, {}, undefined);
 
   const dummyEvent =
-    startDate && endDate
+    startDate
       ? (() => {
         const s = new Date(startDate);
-        const e = new Date(endDate);
+        const e = new Date(endDate || startDate);
         return isNaN(s.getTime()) || isNaN(e.getTime()) ? null : { start: s, end: e, color: dummyEventColor || primaryColor };
       })()
       : null;
