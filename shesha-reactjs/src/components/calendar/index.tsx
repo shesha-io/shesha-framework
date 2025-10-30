@@ -1,6 +1,6 @@
 import { DownOutlined } from '@ant-design/icons';
 import { Checkbox, Dropdown, Empty, Menu } from 'antd';
-import moment from 'moment';
+import moment from 'moment/min/moment-with-locales';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, momentLocalizer, SlotInfo, View } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -57,23 +57,18 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const startDate = useActualContextExecution(externalStartDate, {}, undefined);
   const endDate = useActualContextExecution(externalEndDate, {}, undefined);
 
-  // Dynamically load locale and create localizer
+  // Set locale (all locales bundled via moment-with-locales)
   useEffect(() => {
-    const loadLocale = async () => {
-      try {
-        // Dynamically import the locale file
-        await import(`moment/locale/${momentLocale}.js`);
-        moment.locale(momentLocale);
-        setLocaleLoaded(true);
-      } catch (error) {
-        console.error(`Locale ${momentLocale} not found, ${error}`);
-        moment.locale('en');
-        setLocaleLoaded(true);
+    const setMomentLocale = () => {
+      const result = moment.locale(momentLocale);
+      if (result !== momentLocale) {
+        console.warn(`Locale ${momentLocale} not available, using fallback: ${result}`);
       }
+      setLocaleLoaded(true);
     };
 
     setLocaleLoaded(false);
-    loadLocale();
+    setMomentLocale();
   }, [momentLocale]);
 
   const localizer = useMemo(() => momentLocalizer(moment), [localeLoaded]);
