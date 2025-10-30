@@ -15,4 +15,5 @@ export interface ICalendarProps extends IConfigurableFormComponent {
   onSlotClick?: IConfigurableActionConfiguration;
   onViewChange?: IConfigurableActionConfiguration;
   dummyEventColor?: string;
+  momentLocale?: string;
 }

@@ -128,6 +128,14 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
                   hideLabel: true,
                   settings: getCalendarLayersSettings(),
                 })
+                .addSettingsInput({
+                    inputType: 'textField',
+                    id: nanoid(),
+                    parentId: dataTabId,
+                    propertyName: 'momentLocale',
+                    label: 'Moment Locale',
+                    tooltip: 'Sets the locale of the calendar using moment.js locales (e.g. en, en-gb, fr, de, etc.)',
+                })
                 .toJson(),
             ],
           },
