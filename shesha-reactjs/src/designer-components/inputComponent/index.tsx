@@ -37,6 +37,7 @@ import { IQueryBuilderComponentProps } from '../queryBuilder/interfaces';
 import { IDynamicActionsConfiguratorComponentProps } from '../dynamicActionsConfigurator/interfaces';
 import { DatePickerWrapper } from '../dateField/datePickerWrapper';
 import { EntityTypeAutocomplete } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
+import CalendarSelectorSettingsModal from '@/components/calendar/options/modal';
 
 const { Password } = Input;
 
@@ -419,6 +420,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
           additionalStyles={undefined}
         />
       );
+
+      case 'calendarSelectorSettingsModal':
+        return <CalendarSelectorSettingsModal value={value} onChange={(e) => onChange(e)} readOnly={readOnly} />;
+
     default:
       return (
         <Input
