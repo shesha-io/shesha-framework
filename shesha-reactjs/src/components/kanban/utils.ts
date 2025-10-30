@@ -1,4 +1,5 @@
 import { useMutate } from '@/hooks';
+import { IAjaxResponse } from '@/interfaces';
 
 export type KanbanActions = {
   updateKanban: (payload: any, url: string) => Promise<any>;
@@ -9,7 +10,7 @@ export type KanbanActions = {
 };
 
 export const useKanbanActions = (): KanbanActions => {
-  const { mutate } = useMutate<any>();
+  const { mutate } = useMutate<any, IAjaxResponse<any>>();
 
   const updateUserSettings = async (updatedSettings: any, descriminator: string): Promise<any> => {
     try {

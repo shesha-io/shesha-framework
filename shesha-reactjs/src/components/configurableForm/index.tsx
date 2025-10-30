@@ -21,7 +21,7 @@ export type ConfigurableFormProps<Values extends object = object> = Omit<IConfig
   // TODO: merge with formRef
   shaFormRef?: MutableRefObject<IShaFormInstance<Values>>;
   isSettingsForm?: boolean;
-  externalShaForm?: IShaFormInstance<Values>;
+  externalShaForm?: IShaFormInstance<Values> | undefined;
 } & SheshaFormProps;
 
 // export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
@@ -111,7 +111,7 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
   }, [shaForm, onSubmitted]);
   //#endregion shaForm sync
 
-  const canConfigure = Boolean(app.routes.formsDesigner) && Boolean(formId);
+  const canConfigure = Boolean(app.routes.configurationStudio) && Boolean(formId);
   const { router } = useShaRoutingOrUndefined() ?? {};
 
   const formDesignerUrl = useFormDesignerUrl(formId);

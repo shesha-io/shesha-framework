@@ -1,6 +1,5 @@
 ﻿using Abp.Domain.Uow;
 using NHibernate;
-using Shesha.NHibernate.Session;
 using Shesha.NHibernate.UoW;
 using System;
 
@@ -27,26 +26,6 @@ namespace Shesha.NHibernate
             action.Invoke();
 
             session.FlushMode = previousFlushMode;
-        }
-
-        /// <summary>
-        /// Add an action that should be executed after successful completion of the current transaction
-        /// </summary>
-        public static void DoAfterTransaction(this IActiveUnitOfWork unitOfWork, Action action)
-        {
-            var nhUow = GetNhUnitOfWork(unitOfWork);
-
-            nhUow.GetSession().DoAfterTransaction(action);
-        }
-
-        private static NhUnitOfWork GetNhUnitOfWork(IActiveUnitOfWork unitOfWork)
-        {
-            if (unitOfWork == null)
-                throw new ArgumentNullException(nameof(unitOfWork));
-
-            return unitOfWork is NhUnitOfWork nhUnitOfWork
-                ? nhUnitOfWork
-                : throw new ArgumentException("unitOfWork is not type of " + typeof(NhUnitOfWork).FullName, "unitOfWork");
         }
     }
 }

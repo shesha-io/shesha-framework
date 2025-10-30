@@ -11,7 +11,7 @@ export * from './dataTable';
 export * from './dynamicModal';
 export { DynamicModalRenderer } from './dynamicModal/renderer';
 export * from './form';
-export { useShaFormInstance } from './form/providers/shaFormProvider';
+export { useShaFormInstance, useShaFormInstanceOrUndefined } from './form/providers/shaFormProvider';
 export * from './formManager';
 export * from './form/models';
 export { useFormDesignerComponents } from './form/hooks';

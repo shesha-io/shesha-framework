@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { useEntityTemplates } from '../utils';
-import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator';
+import { ButtonGroupItemProps, IButtonGroupItem } from '@/providers/buttonGroupConfigurator';
 import {
   DynamicActionsProvider,
   DynamicItemsEvaluationHook,
@@ -14,16 +14,24 @@ import { useGet } from '@/hooks';
 import { IDataSourceArguments } from '../model';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { getSettings } from './entitySettings';
+import { IAjaxResponse } from '@/interfaces';
+import { extractAjaxResponse } from '@/interfaces/ajaxResponse';
+import { ButtonType } from 'antd/lib/button';
 
 const settingsMarkup = getSettings() as FormMarkup;
 
+type ArrayOrObjectWithItems<T> = T[] | {
+  items: T[];
+};
+type FetchResponse = ArrayOrObjectWithItems<IButtonGroupItem>;
+
 const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
   const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter, buttonType: buttonTypeSetting } = settings ?? {};
-  const { refetch } = useGet({ path: '', lazy: true });
+  const { refetch } = useGet<IAjaxResponse<FetchResponse>>({ path: '', lazy: true });
   const { getEntityTemplateState } = useEntityTemplates(settings);
   const { data: FormData } = useFormData();
   const { globalState } = useGlobalState();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<IButtonGroupItem[] | undefined>(undefined);
   const pageContext = useDataContextManagerActionsOrUndefined()?.getPageContext();
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityTypeShortAlias);
   const evaluatedFilters = useFormEvaluatedFilter({
@@ -33,7 +41,9 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
 
   const fetchTemplateData = async (): Promise<void> => {
     const response = await refetch(getEntityTemplateState(evaluatedFilters));
-    const result = Array.isArray(response.result) ? response.result : response.result.items;
+    const responseData = extractAjaxResponse(response);
+
+    const result = Array.isArray(responseData) ? responseData : responseData.items;
     setData(result);
   };
 
@@ -50,7 +60,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
 
-    const result = data?.map((p) => ({
+    const result = data.map<ButtonGroupItemProps>((p) => ({
       id: p.id,
       name: p.name,
       label: p[`${labelProperty}`] || 'Not Configured Properly',
@@ -60,7 +70,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
       sortOrder: 0,
       dynamicItem: p,
       permissions: p.permissions ?? item.permissions ?? [],
-      buttonType: p.buttonType ?? item.buttonType ?? buttonTypeSetting,
+      buttonType: p.buttonType ?? item.buttonType ?? (buttonTypeSetting as ButtonType),
       size: item.size,
       background: p.background ?? item.background,
       border: p.border ?? item.border,

@@ -391,6 +391,10 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                       tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
                       description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                       exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
+                      templateSettings: {
+                        useAsyncDeclaration: true,
+                        functionName: 'onRowSave',
+                      },
                     },
                   ],
                 })

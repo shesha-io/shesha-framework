@@ -70,7 +70,7 @@ import { IFormApi } from './formApi';
 import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IShaFormInstance } from './store/interfaces';
-import { useShaFormInstance, useShaFormDataUpdate } from './providers/shaFormProvider';
+import { useShaFormInstanceOrUndefined, useShaFormDataUpdate } from './providers/shaFormProvider';
 import { QueryStringParams } from '@/utils/url';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
 import { jsonSafeParse } from '@/utils/object';
@@ -201,7 +201,7 @@ export const useAvailableConstantsContextsNoRefresh = (): AvailableConstantsCont
   const dcm = useDataContextManagerActionsOrUndefined();
 
   const parent = useParent(false);
-  const form = useShaFormInstance(false);
+  const form = useShaFormInstanceOrUndefined();
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
   baseContext.closestShaFormApi = closestShaFormApi;
   baseContext.dcm = dcm;
@@ -215,7 +215,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   useShaFormDataUpdate();
 
   const parent = useParent(false);
-  const form = useShaFormInstance(false);
+  const form = useShaFormInstanceOrUndefined();
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
   baseContext.closestShaFormApi = closestShaFormApi;
   baseContext.dcm = dcm;
@@ -333,7 +333,7 @@ export const isCommonContext = (name: string): boolean => {
   return r.filter((i) => i === name)?.length > 0;
 };
 
-export const getParentReadOnly = (parent: IParentProviderProps, allData: unknown): boolean => {
+export const getParentReadOnly = (parent: IParentProviderProps | undefined, allData: unknown): boolean => {
   // TODO: review type of allData
   const form = typeof allData === 'object' && "form" in allData ? allData.form : undefined;
   const formMode: FormMode | undefined = isDefined(form) && "formMode" in form ? form.formMode as FormMode : undefined;

@@ -122,17 +122,18 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           hideLabel: true,
           hidden: false,
           componentName: "keyInformationBar",
-          columns: keyInfoProperties.map((prop) => {
+          columns: keyInfoProperties.map((prop, index) => {
             const keyInfoBuilder = new DesignerToolbarSettings({});
+            const count = index + 1;
 
             keyInfoBuilder.addText({
               id: nanoid(),
-              propertyName: 'text1',
+              propertyName: `text${count}`,
               label: prop.label,
               editMode: 'inherited' as EditMode,
               hideLabel: true,
               hidden: false,
-              componentName: 'text1',
+              componentName: `text${count}`,
               content: prop.label || '',
               contentDisplay: 'content',
               textType: "span",

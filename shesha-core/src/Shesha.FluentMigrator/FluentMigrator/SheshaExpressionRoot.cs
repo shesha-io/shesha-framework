@@ -6,6 +6,7 @@ using Shesha.FluentMigrator.Modules;
 using Shesha.FluentMigrator.Notifications;
 using Shesha.FluentMigrator.ReferenceLists;
 using Shesha.FluentMigrator.Settings;
+using System.Reflection;
 
 namespace Shesha.FluentMigrator
 {
@@ -195,6 +196,24 @@ namespace Shesha.FluentMigrator
             return moduleId != null
                 ? moduleId.Value
                 : throw new Exception($"Failed to get/create module '{name}'");
+        }
+
+        #endregion
+
+        #region Foreign keys
+
+        public void MoveForeignKeys(string oldTable, string? oldSchema, string oldColumn, string newTable, string? newSchema, string newColumn)
+        {
+            var processor = _context.ServiceProvider.GetRequiredService<IMigrationProcessor>();
+            var exp = new PerformDBOperationExpression()
+            {
+                Operation = (connection, transaction) =>
+                {
+                    var helper = new SchemaDbHelper(DbmsType, connection, transaction, _context.QuerySchema);
+                    helper.MoveForeignKeys(oldTable, oldSchema, oldColumn, newTable, newSchema, newColumn);
+                }
+            };
+            processor.Process(exp);
         }
 
         #endregion

@@ -42,6 +42,13 @@ namespace Shesha.ConfigurationItems.Distribution
             return distributedItem;
         }
 
+        public async Task<string> ExportItemToJsonAsync(ConfigurationItem item) 
+        { 
+            var dto = await ExportItemAsync(item);
+            var json = JsonConvert.SerializeObject(dto, Formatting.Indented);
+            return json;
+        }
+
         protected abstract Task MapCustomPropsAsync(TItem item, TDistributedItem result);
 
         protected TDistributedItem GetBaseDistributedItem(TItem item, ConfigurationItem revision)
@@ -60,8 +67,6 @@ namespace Shesha.ConfigurationItems.Distribution
                 Description = item.Description,
             };
         }
-
-        //public abstract Task<TDistributedItem> ExportAsync(TItem item);
 
         public virtual async Task WriteToJsonAsync(TDistributedItem item, Stream jsonStream)
         {

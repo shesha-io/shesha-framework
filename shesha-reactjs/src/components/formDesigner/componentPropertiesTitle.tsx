@@ -3,6 +3,7 @@ import { Button } from 'antd';
 import { CopyOutlined, DeleteFilled } from '@ant-design/icons';
 import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
+import { isDefined } from '@/utils/nullables';
 
 export const ComponentPropertiesTitle: FC = ({}) => {
   const selectedComponentId = useFormDesignerStateSelector((x) => x.selectedComponentId);
@@ -11,7 +12,11 @@ export const ComponentPropertiesTitle: FC = ({}) => {
   const { deleteComponent, duplicateComponent } = useFormDesignerActions();
   const { styles } = useStyles();
 
-  const componentLabel = formFlatMarkup?.allComponents?.[selectedComponentId]?.label ?? 'Properties';
+  const component = formFlatMarkup?.allComponents?.[selectedComponentId];
+  // TODO: calculate actual component label
+  const componentLabel = isDefined(component) && typeof (component.label) === 'string'
+    ? component.label
+    : 'Properties';
 
   const onDeleteClick = (): void => {
     if (!readOnly)

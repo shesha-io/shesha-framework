@@ -3,11 +3,13 @@ using Abp.Domain.Entities.Auditing;
 using Abp.Timing;
 using Shesha.Domain.Attributes;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
-    [Table("Frwk_UserRegistration")]
+    [SnakeCaseNaming]
+    [Table("user_registrations", Schema = "frwk")]
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class ShaUserRegistration : Entity<Guid>, IHasCreationTime
     {
@@ -19,6 +21,7 @@ namespace Shesha.Domain
         /// <summary>
         /// User name or email address
         /// </summary>
+        [MaxLength(255)]
         public virtual string UserNameOrEmailAddress { get; set; }
 
         /// <summary>

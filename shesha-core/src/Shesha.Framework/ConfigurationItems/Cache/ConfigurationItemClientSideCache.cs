@@ -10,7 +10,10 @@ using System.Threading.Tasks;
 namespace Shesha.ConfigurationItems.Cache
 {
     /// inhertiedDoc
-    public sealed class ConfigurationItemClientSideCache : IConfigurationItemClientSideCache, IAsyncEventHandler<EntityChangedEventData<ConfigurationItem>>, IAsyncEventHandler<EntityChangedEventData<ConfigurationItemRevision>>, ISingletonDependency, IDisposable
+    public sealed class ConfigurationItemClientSideCache : IConfigurationItemClientSideCache, 
+        IAsyncEventHandler<EntityChangedEventData<ConfigurationItem>>, 
+        ISingletonDependency, 
+        IDisposable
     {
         private readonly ICacheManager _cacheManager;
         private bool _disposed;
@@ -64,11 +67,15 @@ namespace Shesha.ConfigurationItems.Cache
         /// inhertiedDoc
         public Task<string?> GetCachedMd5Async(string itemType, string? applicationKey, string? module, string name)
         {
-            var key = GetCacheKey(applicationKey, module, name);
+            var key = GetCacheKey(name);
 
             return UsingCacheAsync(itemType, async(cache) => {
                 var value = await cache.TryGetValueAsync(key);
-                return value.HasValue ? value.Value.Md5 : null;
+                var subKey = GetSubKey(applicationKey, module);
+
+                return value.HasValue && value.Value.NestedMd5s.TryGetValue(subKey, out var md5)
+                    ? md5
+                    : null;
             });
         }
         
@@ -86,30 +93,47 @@ namespace Shesha.ConfigurationItems.Cache
         /// inhertiedDoc
         public Task SetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, string? md5)
         {
-            var key = GetCacheKey(applicationKey, module, name);
             return UsingCacheAsync(itemType, async (cache) => {
-                await cache.SetAsync(key, new ConfigurationItemCacheItem { Md5 = md5 });
+                var key = GetCacheKey(name);
+                var subKey = GetSubKey(applicationKey, module);
+                var cacheItem = await cache.GetOrDefaultAsync(key) ?? new ConfigurationItemCacheItem();
+
+                cacheItem.NestedMd5s[subKey] = md5;
+
+                await cache.SetAsync(key, cacheItem);
             });
+        }
+
+        private string GetSubKey(string? applicationKey, string? module) 
+        { 
+            return string.IsNullOrWhiteSpace(applicationKey) && string.IsNullOrWhiteSpace(module) 
+                ? "" 
+                : $"{applicationKey}/{module}";
         }
 
         /// inhertiedDoc
         public Task SetCachedMd5Async(string itemType, Guid id, string md5)
         {
-            var key = GetCacheKey(id);
             return UsingCacheAsync(itemType, async (cache) => {
-                await cache.SetAsync(key, new ConfigurationItemCacheItem { Md5 = md5 });
+                var key = GetCacheKey(id);
+                var cacheItem = await cache.GetOrDefaultAsync(key) ?? new ConfigurationItemCacheItem();
+
+                cacheItem.Md5 = md5;
+
+                await cache.SetAsync(key, cacheItem);
             });
         }
 
-        private string GetCacheKey(string? applicationKey, string? module, string name)
+        private string GetCacheKey(ConfigurationItem configItem)
         {
-            var key = $"{module}|{name}";
-
-            if (!string.IsNullOrWhiteSpace(applicationKey))
-                key = applicationKey + "/" + key;
-            
-            return key.ToLower(); 
+            return GetCacheKey(configItem.Name); 
         }
+
+        private string GetCacheKey(string itemName) 
+        {
+            return itemName.ToLower();
+        }
+
         private string GetCacheKey(Guid id)
         {
             return id.ToString();
@@ -133,16 +157,6 @@ namespace Shesha.ConfigurationItems.Cache
             }
         }
 
-        public async Task HandleEventAsync(EntityChangedEventData<ConfigurationItemRevision> eventData)
-        {
-            var configItem = eventData.Entity?.ConfigurationItem;
-
-            if (configItem == null || string.IsNullOrWhiteSpace(configItem.ItemType))
-                return;
-
-            await ClearCacheForItemAsync(configItem);
-        }
-
         public async Task HandleEventAsync(EntityChangedEventData<ConfigurationItem> eventData)
         {
             var configItem = eventData.Entity;
@@ -156,8 +170,9 @@ namespace Shesha.ConfigurationItems.Cache
         public async Task ClearCacheForItemAsync(ConfigurationItem configItem) 
         {
             await UsingCacheAsync(configItem.ItemType, async (cache) => {
+                
                 await cache.RemoveAsync(GetCacheKey(configItem.Id));
-                await cache.RemoveAsync(GetCacheKey(configItem.Application?.AppKey, configItem.Module?.Name, configItem.Name));
+                await cache.RemoveAsync(GetCacheKey(configItem));
             });
         }
     }

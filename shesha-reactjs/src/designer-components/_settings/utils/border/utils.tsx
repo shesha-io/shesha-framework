@@ -16,7 +16,7 @@ import { humanizeString } from "@/utils/string";
 import { FormRawMarkup, IConfigurableTheme } from "@/providers";
 import { readThemeColor } from "@/components/colorPicker";
 
-export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties, theme?: IConfigurableTheme): React.CSSProperties => {
+export const getBorderStyle = (input: IBorderValue | undefined, jsStyle: React.CSSProperties, theme?: IConfigurableTheme): React.CSSProperties => {
   if (!input) return {};
 
   const style: React.CSSProperties = {};

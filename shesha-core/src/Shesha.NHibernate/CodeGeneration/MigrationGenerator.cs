@@ -6,8 +6,11 @@ using FluentMigrator.Builders.Alter.Table;
 using FluentMigrator.Builders.Create.Table;
 using FluentMigrator.Infrastructure;
 using FluentMigrator.Model;
+using NHibernate.Type;
+using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.FluentMigrator;
 using Shesha.Migrations;
@@ -41,23 +44,102 @@ namespace Shesha.CodeGeneration
                     var isRoot = MappingHelper.IsRootEntity(entityType);
                     var migration = GenerateTableMigration(entityType,
                         isRoot ? DdlStatement.Create : DdlStatement.Alter, 
-                        prop => !prop.PropertyType.IsEntityType());
+                        prop => true
+                    );
                     if (!string.IsNullOrWhiteSpace(migration))
                         sb.AppendLine(migration);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
+                    sb.AppendLine($"            // ⚠ failed to generate migration for {entityType.FullName}");
+                    sb.AppendLine($"            // Error message: {e.Message}");
+                    sb.AppendLine("");
                 }
             }
             
             // step 2: handle foreign keys
             foreach (var entityType in types)
             {
-                var migration = GenerateTableMigration(entityType, DdlStatement.Alter, prop => prop.PropertyType.IsEntityType());
-                if (!string.IsNullOrWhiteSpace(migration))
-                    sb.AppendLine(migration);
+                var helpersColumns = GetHelpers().Values.SelectMany(e => e).Distinct().ToList();
+
+                var isRoot = MappingHelper.IsRootEntity(entityType);
+                var allProps = GetPersistedProperties(entityType, !isRoot);
+                var props = allProps.Where(prop =>
+                {
+                    if (!prop.PropertyType.IsEntityType())
+                        return false;
+
+                    var specialNames = new string[] {
+                        nameof(ICreationAudited<User>.CreatorUser),
+                        nameof(IAudited<User>.LastModifierUser),
+                        nameof(IDeletionAudited<User>.DeleterUser),
+                    };
+
+                    return !(prop.PropertyType.IsAssignableTo(typeof(User)) && specialNames.Contains(prop.Name));
+                }).ToList();
+
+                foreach (var prop in props)
+                {
+                    var migration = GenerateForeignKeyMigration(entityType, prop);
+                    if (!string.IsNullOrWhiteSpace(migration))
+                        sb.AppendLine(migration);
+                }            
             }
+
+            return sb.ToString();
+        }
+
+        private string GenerateForeignKeyMigration(Type entityType, PropertyInfo property)
+        {
+            if (!property.PropertyType.IsEntityType())
+                return string.Empty;
+
+            var sb = new StringBuilder();
+            
+            var masterIdProp = property.PropertyType.GetRequiredProperty(nameof(Entity.Id));
+
+            var primaryTable = MappingHelper.GetTableName(property.PropertyType);
+            var primaryTableSchema = MappingHelper.GetSchemaName(property.PropertyType);
+            var primaryIdName = MappingHelper.GetColumnName(masterIdProp);
+
+            var fkColumn = MappingHelper.GetForeignKeyColumn(property);
+            var schema = MappingHelper.GetSchemaName(entityType);
+
+            var fk = new ForeignKeyDefinition()
+            {
+                ForeignTableSchema = schema,
+                ForeignTable = MappingHelper.GetTableName(entityType),
+                ForeignColumns = new[] { fkColumn },
+
+                PrimaryTableSchema = primaryTableSchema,
+                PrimaryTable = primaryTable,
+                PrimaryColumns = new[] { primaryIdName },
+            };
+            var fkName = GetDefaultForeignKeyName(fk);
+
+            sb.Append($"            Create.ForeignKey(\"{fkName}\")");
+            sb.Append($".FromTable(\"{fk.ForeignTable}\")");
+            
+            if (!string.IsNullOrWhiteSpace(fk.ForeignTableSchema))
+                sb.Append($".InSchema(\"{fk.ForeignTableSchema}\")");
+            
+            if (fk.ForeignColumns.Count == 1)
+                sb.Append($".ForeignColumn({fk.ForeignColumns.Single().DoubleQuote()})");
+            else
+                sb.Append($".ForeignColumns({(fk.ForeignColumns.Select(c => c.DoubleQuote()).Delimited(", "))})");
+            
+
+            sb.Append($".ToTable(\"{fk.PrimaryTable}\")");
+
+            if (!string.IsNullOrWhiteSpace(fk.PrimaryTableSchema))
+                sb.Append($".InSchema(\"{fk.PrimaryTableSchema}\")");
+
+            if (fk.PrimaryColumns.Count == 1)
+                sb.Append($".PrimaryColumn({fk.PrimaryColumns.Single().DoubleQuote()})");
+            else
+                sb.Append($".PrimaryColumns({(fk.PrimaryColumns.Select(c => c.DoubleQuote()).Delimited(", "))})");
+            sb.Append(";");
+            sb.AppendLine();
 
             return sb.ToString();
         }
@@ -144,8 +226,11 @@ namespace Shesha.CodeGeneration
                         var discriminatorColumn = MappingHelper.GetDiscriminatorColumn(entityType);
                         if (!string.IsNullOrWhiteSpace(discriminatorColumn))
                         {
+                            var columnName = discriminatorColumn == "Frwk_Discriminator"
+                                ? null
+                                : discriminatorColumn.DoubleQuote();
                             sb.AppendLine();
-                            sb.Append($@"                .{nameof(SheshaFluentMigratorExtensions.WithDiscriminator)}()");
+                            sb.Append($@"                .{nameof(SheshaFluentMigratorExtensions.WithDiscriminator)}({columnName})");
                         }
                         sb.AppendLine(";");
                     }
@@ -237,9 +322,11 @@ namespace Shesha.CodeGeneration
                 sb.AppendLine();
                 if (property.PropertyType.IsEntityType())
                 {
+                    var masterIdProp = property.PropertyType.GetRequiredProperty(nameof(Entity.Id));
+
                     var primaryTable = MappingHelper.GetTableName(property.PropertyType);
                     var primaryTableSchema = MappingHelper.GetSchemaName(property.PropertyType);
-                    var primaryIdName = MappingHelper.GetColumnName(property.PropertyType.GetRequiredProperty(nameof(Entity.Id)));
+                    var primaryIdName = MappingHelper.GetColumnName(masterIdProp);
 
                     var fkColumn = MappingHelper.GetForeignKeyColumn(property);
                     var schema = MappingHelper.GetSchemaName(entityType);
@@ -267,8 +354,16 @@ namespace Shesha.CodeGeneration
                         var method = statement == DdlStatement.Create
                             ? nameof(ICreateTableWithColumnSyntax.WithColumn)
                             : nameof(IAlterTableAddColumnOrAlterColumnSyntax.AddColumn);
-                        
-                        sb.Append($@"                .{method}(""{fkColumn}"").AsGuid().Nullable().ForeignKey(""{fkName}"", ""{primaryTableSchema}"", ""{primaryTable}"", ""{primaryIdName}"").Indexed()");
+
+                        var masterIdType = masterIdProp.PropertyType;
+                        var typeClause = masterIdType == typeof(Guid) 
+                            ? "AsGuid()" 
+                            : masterIdType == typeof(Int64) 
+                                ? "AsInt64()"
+                                : throw new NotSupportedException($"Id of type {masterIdType.FullName} is not supported");
+
+                        var nullableClause = property.IsNullable() ? "Nullable()" : "NotNullable()";
+                        sb.Append($@"                .{method}(""{fkColumn}"").{typeClause}.{nullableClause}.Indexed()");
                     }
                 } else 
                 {
@@ -278,24 +373,33 @@ namespace Shesha.CodeGeneration
 
                     var columnName = MappingHelper.GetColumnName(property);
 
+                    var propUnderlyingType = property.PropertyType.GetUnderlyingTypeIfNullable();
+                    var treatAsString = false;
+
                     sb.Append($@"                .{method}(""{columnName}"")");
 
-                    if (property.PropertyType == typeof(string))
+                    if (propUnderlyingType == typeof(string))
                     {
-                        var maxLength = property.GetAttributeOrNull<StringLengthAttribute>()?.MaximumLength;
+                        treatAsString = true;
+                        var maxLength1 = property.GetAttributeOrNull<StringLengthAttribute>()?.MaximumLength;
+                        var maxLength2 = property.GetAttributeOrNull<MaxLengthAttribute>()?.Length;
+                        if (maxLength1.HasValue && maxLength2.HasValue && maxLength1 != maxLength2)
+                            throw new NotSupportedException("MaxLengthAttribute and StringLengthAttribute have different values");
+                        var maxLength = maxLength1 ?? maxLength2;
+
                         sb.Append(maxLength != null && maxLength < int.MaxValue
                             ? $@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsString)}({maxLength})"
                             : $@".{nameof(SheshaFluentMigratorExtensions.AsStringMax)}()");
                     }
-                    else if (property.PropertyType == typeof(int) || property.PropertyType == typeof(int?))
+                    else if (propUnderlyingType == typeof(int))
                     {
                         sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsInt32)}()");
                     }
-                    else if (property.PropertyType == typeof(Int64) || property.PropertyType == typeof(Int64?) || property.PropertyType.IsEnumType())
+                    else if (propUnderlyingType == typeof(Int64) || property.PropertyType.IsEnumType())
                     {
                         sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsInt64)}()");
                     }
-                    else if (property.PropertyType == typeof(decimal) || property.PropertyType == typeof(decimal?))
+                    else if (propUnderlyingType == typeof(decimal))
                     {
                         var precisionAttribute = property.GetAttributeOrNull<PrecisionAndScaleAttribute>();
                         if (precisionAttribute != null)
@@ -303,43 +407,49 @@ namespace Shesha.CodeGeneration
                         else
                             sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsDecimal)}()");
                     }
-                    else if (property.PropertyType == typeof(float) || property.PropertyType == typeof(float?))
+                    else if (propUnderlyingType == typeof(float))
                     {
                         sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsFloat)}()");
                     }
-                    else if (property.PropertyType == typeof(double) || property.PropertyType == typeof(double?))
+                    else if (propUnderlyingType == typeof(double))
                     {
                         sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsDouble)}()");
                     }
-                    else if (property.PropertyType == typeof(bool) || property.PropertyType == typeof(bool?))
+                    else if (propUnderlyingType == typeof(bool))
                     {
                         sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsBoolean)}()");
                     }
-                    else if (property.PropertyType == typeof(DateTime) || property.PropertyType == typeof(DateTime?))
+                    else if (propUnderlyingType == typeof(DateTime))
                     {
                         sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsDateTime)}()");
                     }
-                    else if (property.PropertyType == typeof(Guid) || property.PropertyType == typeof(Guid?))
+                    else if (propUnderlyingType == typeof(Guid))
                     {
                         sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsGuid)}()");
                     }
-                    else if (property.PropertyType == typeof(TimeSpan) || property.PropertyType == typeof(TimeSpan?))
+                    else if (propUnderlyingType == typeof(TimeSpan))
                     {
                         sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsInt64)}()");
                     }
-                    else if (property.PropertyType == typeof(FormIdentifier))
+                    else if (propUnderlyingType == typeof(FormIdentifier))
                     {
                         sb.Append($@".{nameof(IColumnTypeSyntax<IFluentSyntax>.AsInt64)}()");
                     }
-                    else if (property.HasAttribute<SaveAsJsonAttribute>()) 
+                    else if (property.HasAttribute<SaveAsJsonAttribute>())
                     {
+                        treatAsString = true;
+                        sb.Append($@".{nameof(SheshaFluentMigratorExtensions.AsStringMax)}()");
+                    }
+                    else if (propUnderlyingType.IsJsonEntityType()) 
+                    {
+                        treatAsString = true;
                         sb.Append($@".{nameof(SheshaFluentMigratorExtensions.AsStringMax)}()");
                     }
                     else
                         throw new NotSupportedException($"unsupported property type: '{property.PropertyType.FullName}'");
 
                     if (property.PropertyType.IsNullableType() 
-                        || property.PropertyType == typeof(string) && property.IsNullable()
+                        || treatAsString && property.IsNullable()
                         || property.DeclaringType?.BaseType != null && property.DeclaringType.BaseType.IsEntityType() /*property declared in the subclass*/)
                         sb.Append($@".{nameof(IColumnOptionSyntax<IFluentSyntax, IFluentSyntax>.Nullable)}()");
                 }
@@ -358,34 +468,21 @@ namespace Shesha.CodeGeneration
                 sb.Append("_");
                 sb.Append(foreignColumn);
             }
-            /*
-            sb.Append("_");
-            sb.Append(foreignKey.PrimaryTable);
-
-            foreach (string primaryColumn in foreignKey.PrimaryColumns)
-            {
-                sb.Append("_");
-                sb.Append(primaryColumn);
-            }
-            */
 
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Process framework helpers and return list of unprocessed properties
-        /// </summary>
-        private static List<PropertyInfo> ProcessFrameworkColumns(Type entityType, StringBuilder sb, List<PropertyInfo> properties, DdlStatement statement)
+        private static Dictionary<string, List<string>> GetHelpers() 
         {
-            var helpers = new Dictionary<string, List<string>>()
+            return new Dictionary<string, List<string>>()
             {
-                { nameof(SheshaFluentMigratorExtensions.WithFullAuditColumns), 
+                { nameof(SheshaFluentMigratorExtensions.WithFullAuditColumns),
                     new List<string>
                     {
                         nameof(ISoftDelete.IsDeleted),
                         nameof(IDeletionAudited.DeleterUserId),
                         nameof(IHasDeletionTime.DeletionTime),
-                        
+
                         nameof(ICreationAudited.CreatorUserId),
                         nameof(IHasCreationTime.CreationTime),
                         nameof(IModificationAudited.LastModifierUserId),
@@ -424,6 +521,14 @@ namespace Shesha.CodeGeneration
                     }
                 }
             };
+        }
+
+        /// <summary>
+        /// Process framework helpers and return list of unprocessed properties
+        /// </summary>
+        private static List<PropertyInfo> ProcessFrameworkColumns(Type entityType, StringBuilder sb, List<PropertyInfo> properties, DdlStatement statement)
+        {
+            var helpers = GetHelpers();
 
             var objectNamesExpression = MappingHelper.GetDbNamesExpression(entityType);
 
@@ -461,23 +566,56 @@ namespace Shesha.CodeGeneration
                 }
             }
 
-            var formIdProperties = properties.Where(p => p.PropertyType == typeof(FormIdentifier)).ToList();
-            foreach (var formProperty in formIdProperties) 
+            var propertiesCopy = properties.ToList();
+            foreach (var property in propertiesCopy) 
             {
-                properties.Remove(formProperty);
+                var propUnderlyingType = property.PropertyType.GetUnderlyingTypeIfNullable();
+                var isNullable = property.IsNullable();
 
-                var prefix = MappingHelper.GetColumnPrefix(formProperty.DeclaringType.NotNull());
-                var moduleColumn = MappingHelper.GetNameForMember(formProperty, prefix, formProperty.Name, nameof(FormIdentifier.Module));
-                var nameColumn = MappingHelper.GetNameForMember(formProperty, prefix, formProperty.Name, nameof(FormIdentifier.Name));
+                if (propUnderlyingType == typeof(FormIdentifier))
+                {
+                    properties.Remove(property);
 
-                // apply helper
-                sb.AppendLine();
-                sb.Append($@"                .WithColumn(""{moduleColumn}"").AsString(200).Nullable()");
-                sb.AppendLine();
-                sb.Append($@"                .WithColumn(""{nameColumn}"").AsString(200).Nullable()");
+                    var prefix = MappingHelper.GetColumnPrefix(property.DeclaringType.NotNull());
+                    var moduleColumn = MappingHelper.GetNameForMember(property, prefix, property.Name, nameof(FormIdentifier.Module));
+                    var nameColumn = MappingHelper.GetNameForMember(property, prefix, property.Name, nameof(FormIdentifier.Name));
+
+                    // apply helper
+                    sb.AppendLine();
+                    sb.Append($@"                .WithColumn(""{moduleColumn}"").AsString(200).Nullable()");
+                    sb.AppendLine();
+                    sb.Append($@"                .WithColumn(""{nameColumn}"").AsString(200).Nullable()");
+                }
+
+                if (propUnderlyingType == typeof(GenericEntityReference)) 
+                {
+                    properties.Remove(property);
+
+                    var prefix = MappingHelper.GetColumnPrefix(property.DeclaringType.NotNull());
+
+                    var attr = property.GetCustomAttribute<EntityReferenceAttribute>();
+                    var idn = attr?.IdColumnName ?? MappingHelper.GetNameForMember(property, prefix, property.Name, "Id");
+                    var cnn = attr?.ClassNameColumnName ?? MappingHelper.GetNameForMember(property, prefix, property.Name, "ClassName");
+                    var dnn = attr?.DisplayNameColumnName ?? MappingHelper.GetNameForMember(property, prefix, property.Name, "DisplayName");
+
+                    var nullableClause = property.IsNullable() ? "Nullable()" : "NotNullable()";
+
+                    // apply helper
+                    sb.AppendLine();
+                    sb.Append($@"                .WithColumn(""{idn}"").AsString(100).{nullableClause}");
+                    sb.AppendLine();
+                    sb.Append($@"                .WithColumn(""{cnn}"").AsString(1000).{nullableClause}");
+
+                    if (attr != null && attr.StoreDisplayName && !string.IsNullOrWhiteSpace(dnn))
+                    {
+                        sb.AppendLine();
+                        sb.Append($@"                .WithColumn(""{dnn}"").AsString(1000).Nullable()"); // display name is always nullable
+                    }                    
+                }
             }
 
             return properties;
         }
     }
 }
+ 

@@ -3,6 +3,7 @@ import { DataTypes, ObjectFormats } from "./dataTypes";
 import { IDictionary } from "./shesha";
 import { DataTypeInfo } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { isDefined } from "@/utils/nullables";
+import { ConfigurationDto } from "@/providers/configurationItemsLoader/models";
 
 export interface IMemberType {
   dataType: string;
@@ -178,7 +179,7 @@ export interface IPropertyMetadata extends IMemberMetadata {
   isNullable?: boolean;
   prefix?: string;
   isVisible?: boolean;
-  itemsType?: IPropertyMetadata;
+  itemsType?: IPropertyMetadata | undefined;
 
   columnName?: string | null;
   createdInDb?: boolean;
@@ -266,7 +267,7 @@ export interface IObjectMetadata extends IMetadata, IContainerWithNestedProperti
 
 }
 
-export interface IEntityMetadata extends IObjectMetadata, IHasEntityType {
+export interface IEntityMetadata extends ConfigurationDto, Omit<IObjectMetadata, 'name' | 'description'>, IHasEntityType {
   md5?: string;
   changeTime?: Date;
   aliases?: string[];

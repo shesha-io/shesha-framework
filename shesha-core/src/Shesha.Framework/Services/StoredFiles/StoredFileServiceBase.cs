@@ -31,7 +31,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// Entity configuration store
         /// </summary>
-        public IEntityConfigurationStore EntityConfigurationStore { get; set; }
+        public IEntityTypeConfigurationStore EntityConfigurationStore { get; set; }
 
         protected StoredFileServiceBase(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService)
         {
@@ -209,24 +209,24 @@ namespace Shesha.Services.StoredFiles
         private IQueryable<StoredFile> GetAttachmentsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>>? filterPredicate = null)
         {
             IQueryable<StoredFile>? query = null;
-            var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
+            var ecs = StaticContext.IocManager.Resolve<IEntityTypeConfigurationStore>();
             var config = ecs.Get(typeShortAlias);
             var stringId = id?.ToString().NotNullOrWhiteSpace();
             if (config != null)
             {
                 var className = config.EntityType.FullName;
 
-                query = FileRepository.GetAll().Where(e => e.Owner.Id == stringId);
+                query = FileRepository.GetAll().Where(e => e.Owner != null && e.Owner.Id == stringId);
                 query = config.HasTypeShortAlias
-                    ? query.Where(e => e.Owner._className == className || e.Owner._className == config.TypeShortAlias)
-                    : query.Where(e => e.Owner._className == className);
+                    ? query.Where(e => e.Owner != null && (e.Owner._className == className || e.Owner._className == config.TypeShortAlias))
+                    : query.Where(e => e.Owner != null && e.Owner._className == className);
 
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }
             else
             {
-                query = FileRepository.GetAll().Where(e => e.Owner.Id == stringId && e.Owner._className == typeShortAlias);
+                query = FileRepository.GetAll().Where(e => e.Owner != null && e.Owner.Id == stringId && e.Owner._className == typeShortAlias);
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }
@@ -238,7 +238,7 @@ namespace Shesha.Services.StoredFiles
         {
             IQueryable<StoredFileVersion> query = VersionRepository.GetAll().Where(e => e.IsLast);
 
-            var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
+            var ecs = StaticContext.IocManager.Resolve<IEntityTypeConfigurationStore>();
             var config = ecs.Get(typeShortAlias);
             var stringId = id?.ToString().NotNullOrWhiteSpace();
 
@@ -246,17 +246,17 @@ namespace Shesha.Services.StoredFiles
             {
                 var className = config.EntityType.FullName;
 
-                query = VersionRepository.GetAll().Where(e => e.File.Owner.Id == stringId);
+                query = VersionRepository.GetAll().Where(e => e.File.Owner != null && e.File.Owner.Id == stringId);
                 query = config.HasTypeShortAlias
-                    ? query.Where(e => e.File.Owner._className == className || e.File.Owner._className == config.TypeShortAlias)
-                    : query.Where(e => e.File.Owner._className == className);
+                    ? query.Where(e => e.File.Owner != null && (e.File.Owner._className == className || e.File.Owner._className == config.TypeShortAlias))
+                    : query.Where(e => e.File.Owner != null && e.File.Owner._className == className);
 
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }
             else
             {
-                query = VersionRepository.GetAll().Where(e => e.File.Owner.Id == stringId && e.File.Owner._className == typeShortAlias);
+                query = VersionRepository.GetAll().Where(e => e.File.Owner != null && e.File.Owner.Id == stringId && e.File.Owner._className == typeShortAlias);
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }

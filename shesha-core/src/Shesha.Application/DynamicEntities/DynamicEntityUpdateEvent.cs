@@ -30,13 +30,13 @@ namespace Shesha.DynamicEntities
                 await cachedProvider.ClearCacheAsync();
 
             var genOptions = RevolveOrNull<IOptions<SwaggerGenOptions>>();
-            if (genOptions != null)
-                genOptions.Value.AddDocumentsPerService();
-
             var swaggerOptions = RevolveOrNull<IConfigureOptions<SwaggerGeneratorOptions>>();
             var options = RevolveOrNull<IOptions<SwaggerGeneratorOptions>>();
-            if (swaggerOptions != null && options != null)
+            if (genOptions != null && swaggerOptions != null && options != null)
+            {
+                genOptions.Value.AddDocumentsPerService();
                 swaggerOptions.Configure(options.Value);
+            }
         }
 
         private T? RevolveOrNull<T>() where T: class

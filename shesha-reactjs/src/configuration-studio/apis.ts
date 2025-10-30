@@ -9,6 +9,8 @@ import useSWR, { SWRResponse } from "swr";
 import { flatNode2TreeNode } from "./tree-utils";
 import { isDefined } from "@/utils/nullables";
 import { extractAjaxResponse } from "@/interfaces/ajaxResponse";
+import { getFileNameFromResponse } from "@/utils/fetchers";
+import FileSaver from "file-saver";
 
 export const CS_URLS = {
   GET_FLAT_TREE: '/api/services/app/ConfigurationStudio/GetFlatTree',
@@ -19,6 +21,8 @@ export const CS_URLS = {
   ITEM_DELETE: '/api/services/app/ConfigurationStudio/DeleteItem',
   ITEM_DUPLICATE: '/api/services/app/ConfigurationStudio/DuplicateItem',
   GET_ITEM_REVISION_HISTORY: '/api/services/app/ConfigurationStudio/GetItemRevisions',
+  ITEM_REVISION_RESTORE: '/api/services/app/ConfigurationStudio/RestoreItemRevision',
+  REVISION_GET_JSON: '/api/services/app/ConfigurationStudio/GetRevisionJson',
 };
 
 //#region Move Tree Node
@@ -138,4 +142,20 @@ export const duplicateItemAsync = (httpClient: HttpClientApi, payload: Duplicate
 export const fetchItemTypesAsync = async (httpClient: HttpClientApi): Promise<ItemTypeBackendDefinition[]> => {
   const response = await httpClient.get<IAjaxResponse<ItemTypeBackendDefinition[]>>(CS_URLS.GET_ITEM_TYPES);
   return extractAjaxResponse(response.data);
+};
+
+export type RestoreItemRevisionPayload = {
+  itemId: string;
+  revisionId: string;
+};
+
+export const restoreItemRevisionAsync = async (httpClient: HttpClientApi, payload: RestoreItemRevisionPayload): Promise<void> => {
+  await httpClient.post<RestoreItemRevisionPayload, IAjaxResponse<void>>(CS_URLS.ITEM_REVISION_RESTORE, payload);
+};
+
+export const getRevisionJsonAsync = async (httpClient: HttpClientApi, payload: { id: string }): Promise<void> => {
+  const url = `${CS_URLS.REVISION_GET_JSON}?id=${payload.id}`;
+  const response = await httpClient.get(url, { responseType: 'blob' });
+  const fileName = getFileNameFromResponse(response) ?? 'revision.json';
+  FileSaver.saveAs(new Blob([response.data]), fileName);
 };

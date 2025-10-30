@@ -10,7 +10,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
 {
     public interface IDynamicEntityTypeBuilder
     {
-        List<Type> GenerateTypes(IEntityConfigurationStore entityConfigurationStore);
+        List<Type> GenerateTypes(IEntityTypeConfigurationStore entityConfigurationStore);
 
         /*List<Type> CreateTypes(ModuleBuilder moduleBuilder, List<EntityConfig> configs, EntityTypeBuilderContext context);
 

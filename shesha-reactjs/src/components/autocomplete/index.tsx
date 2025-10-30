@@ -1,18 +1,21 @@
-import React, { FC, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { DataTableProvider, evaluateString, getUrlKeyParam, useActualContextData, useDataTableStore, useDeepCompareMemo, useNestedPropertyMetadatAccessor, useShaFormInstance } from '@/index';
-import { Select, Spin, Typography } from 'antd';
-import { useDebouncedCallback } from 'use-debounce';
-import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAutocompleteBaseProps, IAutocompleteProps, ISelectOption, KayValueFunc, OutcomeValueFunc, getColumns } from './models';
-import QueryString from 'qs';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
-import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
-import { getValueByPropertyName, unsafeGetValueByPropertyName } from '@/utils/object';
-import { isDataColumn } from '@/providers/dataTable/interfaces';
-import { ValueRenderer } from '../valueRenderer';
-import { isEqual, uniqWith } from 'lodash';
+import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
-import { useStyles } from './style';
+import { DataTableProvider, useDataTableStore, useNestedPropertyMetadatAccessor, useShaFormInstanceOrUndefined } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
+import { isDataColumn } from '@/providers/dataTable/interfaces';
+import { evaluateString } from '@/providers/form/utils';
+import { getUrlKeyParam } from '@/utils';
+import { getValueByPropertyName, unsafeGetValueByPropertyName } from '@/utils/object';
+import { Select, Spin, Typography } from 'antd';
+import { isEqual, uniqWith } from 'lodash';
+import QueryString from 'qs';
+import React, { FC, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
+import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
+import { ValueRenderer } from '../valueRenderer';
+import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAutocompleteBaseProps, IAutocompleteProps, ISelectOption, KayValueFunc, OutcomeValueFunc, getColumns } from './models';
+import { useStyles } from './style';
 
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
   const { allowClear = true, style = {} } = props;
@@ -309,7 +312,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 };
 
 const Autocomplete: FC<IAutocompleteProps> = (props: IAutocompleteProps) => {
-  const { formData } = useShaFormInstance(false) ?? {};
+  const { formData } = useShaFormInstanceOrUndefined() ?? {};
   const [disableRefresh, setDisableRefresh] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>('');
   const uid = useId();
@@ -443,9 +446,7 @@ AutocompleteInterface.Raw = RawAutocomplete;
 AutocompleteInterface.EntityDto = EntityDtoAutocomplete;
 
 export {
-  AutocompleteInterface as Autocomplete,
-  type IAutocompleteProps,
+  AutocompleteInterface as Autocomplete, type AutocompleteDataSourceType, type IAutocompleteProps,
   type ISelectOption,
-  type AutocompleteDataSourceType,
-  // type CustomLabeledValue
 };
+

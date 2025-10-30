@@ -19,7 +19,7 @@ namespace Shesha.Modules
 
             var context = new EmbeddedPackageSeedingContext(this.GetType().Assembly) 
             { 
-                Logger = this.Logger,
+                Logger = this.Logger,                
             };
             return seeder != null
                 ? await seeder.SeedEmbeddedPackagesAsync(context)

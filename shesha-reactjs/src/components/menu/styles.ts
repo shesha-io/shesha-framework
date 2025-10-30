@@ -16,7 +16,9 @@ interface IStyleProps {
 
 interface IGlobalMenuProps {
   colors: ILayoutColor;
-  styleOnSubMenu: string;
+  styleOnHover?: string;
+  styleOnSelected?: string;
+  styleOnSubMenu?: string;
   fontStyles?: React.CSSProperties;
   menuId?: string;
 }
@@ -41,7 +43,7 @@ export const useStyles = createStyles(
   ) => {
     const menuContainer = css`
       display: flex;
-      background: ${colors?.itemBackground};
+      ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
       flex-direction: row;
       white-space: nowrap;
       align-items: center;
@@ -75,7 +77,7 @@ export const useStyles = createStyles(
       css`
         border: none;
         width: ${width};
-        background: ${colors?.itemBackground ?? "transparent"};
+        ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
         font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
         font-weight: ${fontStyles?.fontWeight};
         font-family: ${fontStyles?.fontFamily};
@@ -92,7 +94,7 @@ export const useStyles = createStyles(
         .${prefixCls}-menu-submenu, .${prefixCls}-menu-item {
           padding: ${padding?.y}px ${padding?.x}px;
           color: ${colors?.itemColor ?? BLACK_CLR};
-          background: ${colors?.itemBackground ?? "transparent"};
+          ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
           font-family: ${fontStyles?.fontFamily};
           font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
           font-weight: ${fontStyles?.fontWeight};
@@ -102,7 +104,7 @@ export const useStyles = createStyles(
             font-family: ${fontStyles?.fontFamily};
             font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
             font-weight: ${fontStyles?.fontWeight};
-  
+
             .${prefixCls}-icon {
               font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
               color: ${colors?.itemColor ?? BLACK_CLR};
@@ -118,41 +120,41 @@ export const useStyles = createStyles(
           }
 
           &:hover {
-            background: ${colors?.hoverItemBackground
-              ? `${colors.hoverItemBackground} !important`
-              : "transparent"};
-            color: ${colors?.hoverItemColor
-              ? `${colors.hoverItemColor} !important`
-              : BLACK_CLR};
-
-            ${styleOnHover}
+            ${styleOnHover ? styleOnHover : `
+              background: ${colors?.hoverItemBackground
+                ? `${colors.hoverItemBackground} !important`
+                : "transparent"};
+              color: ${colors?.hoverItemColor
+                ? `${colors.hoverItemColor} !important`
+                : BLACK_CLR};
+            `}
           }
         }
 
         .${prefixCls}-menu-submenu-active {
-          background: ${colors?.hoverItemBackground
-            ? `${colors.hoverItemBackground} !important`
-            : "transparent"};
+          ${styleOnHover ? styleOnHover : `
+            background: ${colors?.hoverItemBackground
+              ? `${colors.hoverItemBackground} !important`
+              : "transparent"};
 
-          .${prefixCls}-menu-submenu-title {
-            color: ${colors?.hoverItemColor ?? BLACK_CLR};
-            font-family: ${fontStyles?.fontFamily};
-            font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
-            font-weight: ${fontStyles?.fontWeight};
-          }
-
-          ${styleOnHover}
+            .${prefixCls}-menu-submenu-title {
+              color: ${colors?.hoverItemColor ?? BLACK_CLR};
+              font-family: ${fontStyles?.fontFamily};
+              font-size: ${fontSize ? `${fontSize}px` : fontStyles?.fontSize};
+              font-weight: ${fontStyles?.fontWeight};
+            }
+          `}
         }
 
         .${prefixCls}-menu-item-selected {
-          background: ${colors?.selectedItemBackground
-            ? `${colors.selectedItemBackground} !important`
-            : "transparent"};
-          color: ${colors?.selectedItemColor
-            ? `${colors.selectedItemColor} !important`
-            : BLACK_CLR};
-
-          ${styleOnSelected}
+          ${styleOnSelected ? styleOnSelected : `
+            background: ${colors?.selectedItemBackground
+              ? `${colors.selectedItemBackground} !important`
+              : "transparent"};
+            color: ${colors?.selectedItemColor
+              ? `${colors.selectedItemColor} !important`
+              : BLACK_CLR};
+          `}
         }
 
         ::-webkit-scrollbar {
@@ -173,7 +175,7 @@ export const useStyles = createStyles(
       width: 80px;
       display: flex;
       height: 100%;
-      background: ${colors?.itemBackground ?? "#fff"};
+      ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
       color: ${colors?.itemColor};
       flex-direction: row;
       justify-content: center;
@@ -220,31 +222,39 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
   .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
 
     ${(p: GlobalMenuType) => p?.styleOnSubMenu};
-    
-    background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'transparent'} !important;
+
+    ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
     border: none !important;
     box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
     font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
     font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
     text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
 
+    .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
+      display: none !important;
+    }
+
     .${(p) => p?.theme.prefixCls}-menu-item {
       color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
-      background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'transparent'} !important;
+      ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
       border: none !important;
       margin: 0 !important;
       font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
       font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
       text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
-      
+
       &:hover {
-        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
-        background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'transparent'} !important;
+        ${(p: GlobalMenuType) => p?.styleOnHover || `
+          color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
+          background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
+        `}
       }
-      
+
       &.${(p) => p?.theme.prefixCls}-menu-item-selected {
-        color: ${(p: GlobalMenuType) => p?.colors?.selectedItemColor || BLACK_CLR} !important;
-        background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+        ${(p: GlobalMenuType) => p?.styleOnSelected || `
+          color: ${p?.colors?.selectedItemColor || BLACK_CLR} !important;
+          background: ${p?.colors?.selectedItemBackground || 'transparent'} !important;
+        `}
       }
     }
 
@@ -252,7 +262,7 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     .${(p) => p?.theme.prefixCls}-menu-submenu {
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
         color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
-        background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'transparent'} !important;
+        ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
         border: none !important;
         margin: 0 !important;
         font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
@@ -260,8 +270,10 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
         text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
 
         &:hover {
-          color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
-          background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'transparent'} !important;
+          ${(p: GlobalMenuType) => p?.styleOnHover || `
+            color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
+            background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
+          `}
         }
 
         .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
@@ -271,40 +283,44 @@ export const GlobalMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
       &.${(p) => p?.theme.prefixCls}-menu-submenu-selected {
         .${(p) => p?.theme.prefixCls}-menu-submenu-title {
-          color: ${(p: GlobalMenuType) => p?.colors.selectedItemColor || BLACK_CLR} !important;
-          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+          ${(p: GlobalMenuType) => p?.styleOnSelected || `
+            color: ${p?.colors.selectedItemColor || BLACK_CLR} !important;
+            background: ${p?.colors?.selectedItemBackground || 'transparent'} !important;
+          `}
         }
       }
     }
 
     .${(p) => p?.theme.prefixCls}-menu-item-active {
-      color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
-      background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'transparent'} !important;
+      ${(p: GlobalMenuType) => p?.styleOnHover || `
+        color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
+        background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
+      `}
     }
 
     .${(p) => p?.theme.prefixCls}-menu-submenu-active {
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
-        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor} !important;
-        background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground} !important;
+        ${(p: GlobalMenuType) => p?.styleOnHover || `
+          color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
+          background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
+        `}
       }
-      
+
       .${(p) => p?.theme.prefixCls}-menu-title-content {
-        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor} !important;
+        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
       }
     }
   }
 `;
 
-
 export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGlobalStyle`
   .horizontal-menu-drawer-${(p: GlobalMenuType) => p?.menuId}.${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer {
     .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-content-wrapper,
     .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-content {
-      background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'transparent'} !important;
+      ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
     }
-
     .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-header {
-      background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'transparent'} !important;
+      ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
       color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
       font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
       font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
@@ -320,7 +336,7 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
     }
 
     .${(p: GlobalMenuType) => p?.theme.prefixCls}-drawer-body {
-      background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'transparent'} !important;
+      ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
       padding: 0 !important;
     }
   }
@@ -333,37 +349,46 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
   .horizontal-menu-${(p: GlobalMenuType) => p?.menuId} .${(p: GlobalMenuType) => p?.theme.prefixCls}-menu {
 
     ${(p: GlobalMenuType) => p?.styleOnSubMenu};
-    
-    background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'transparent'} !important;
+
+    ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
     border: none !important;
     font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
     font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
     text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
 
+    /* Hide submenu arrows */
+    .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
+      display: none !important;
+    }
+
     .${(p) => p?.theme.prefixCls}-menu-item {
       color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
-      background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'transparent'} !important;
+      ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
       border: none !important;
       margin: 0 !important;
       font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
       font-weight: ${(p: GlobalMenuType) => p?.fontStyles?.fontWeight} !important;
       text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
-      
+
       &:hover {
-        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
-        background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'transparent'} !important;
+        ${(p: GlobalMenuType) => p?.styleOnHover || `
+          color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
+          background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
+        `}
       }
-      
+
       &.${(p) => p?.theme.prefixCls}-menu-item-selected {
-        color: ${(p: GlobalMenuType) => p?.colors.selectedItemColor || BLACK_CLR} !important;
-        background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+        ${(p: GlobalMenuType) => p?.styleOnSelected || `
+          color: ${p?.colors.selectedItemColor || BLACK_CLR} !important;
+          background: ${p?.colors?.selectedItemBackground || 'transparent'} !important;
+        `}
       }
     }
 
     .${(p) => p?.theme.prefixCls}-menu-submenu {
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
         color: ${(p: GlobalMenuType) => p?.colors?.itemColor || BLACK_CLR} !important;
-        background: ${(p: GlobalMenuType) => p?.colors?.itemBackground || 'transparent'} !important;
+        ${(p: GlobalMenuType) => p?.colors?.itemBackground ? `background: ${p.colors.itemBackground} !important;` : ''}
         border: none !important;
         margin: 0 !important;
         font-family: ${(p: GlobalMenuType) => p?.fontStyles?.fontFamily} !important;
@@ -371,8 +396,10 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
         text-align: ${(p: GlobalMenuType) => p?.fontStyles?.textAlign} !important;
 
         &:hover {
-          color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
-          background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'transparent'} !important;
+          ${(p: GlobalMenuType) => p?.styleOnHover || `
+            color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
+            background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
+          `}
         }
 
         .${(p) => p?.theme.prefixCls}-menu-submenu-arrow {
@@ -382,25 +409,31 @@ export const ScopedMenuStyles: NamedExoticComponent<IGlobalMenuProps> = createGl
 
       &.${(p) => p?.theme.prefixCls}-menu-submenu-selected {
         .${(p) => p?.theme.prefixCls}-menu-submenu-title {
-          color: ${(p: GlobalMenuType) => p?.colors.selectedItemColor || BLACK_CLR} !important;
-          background: ${(p: GlobalMenuType) => p?.colors?.selectedItemBackground || 'transparent'} !important;
+          ${(p: GlobalMenuType) => p?.styleOnSelected || `
+            color: ${p?.colors.selectedItemColor || BLACK_CLR} !important;
+            background: ${p?.colors?.selectedItemBackground || 'transparent'} !important;
+          `}
         }
       }
     }
 
     .${(p) => p?.theme.prefixCls}-menu-item-active {
-      color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
-      background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground || 'transparent'} !important;
+      ${(p: GlobalMenuType) => p?.styleOnHover || `
+        color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
+        background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
+      `}
     }
 
     .${(p) => p?.theme.prefixCls}-menu-submenu-active {
       .${(p) => p?.theme.prefixCls}-menu-submenu-title {
-        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor} !important;
-        background: ${(p: GlobalMenuType) => p?.colors?.hoverItemBackground} !important;
+        ${(p: GlobalMenuType) => p?.styleOnHover || `
+          color: ${p?.colors?.hoverItemColor || BLACK_CLR} !important;
+          background: ${p?.colors?.hoverItemBackground || 'transparent'} !important;
+        `}
       }
-      
+
       .${(p) => p?.theme.prefixCls}-menu-title-content {
-        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor} !important;
+        color: ${(p: GlobalMenuType) => p?.colors?.hoverItemColor || BLACK_CLR} !important;
       }
     }
   }

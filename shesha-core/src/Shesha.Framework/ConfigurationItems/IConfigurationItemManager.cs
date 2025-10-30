@@ -60,12 +60,20 @@ namespace Shesha.ConfigurationItems
         Task<ConfigurationItem> ExposeAsync(ConfigurationItem item, Module module);
 
         /// <summary>
-        /// Get configuration item by pair: module and name
+        /// Get actual inheritance of configuration item by pair: module and name
         /// </summary>
         /// <param name="module">Module name</param>
         /// <param name="name">Item name</param>
         /// <returns></returns>
-        Task<ConfigurationItem> GetItemAsync(string module, string name);
+        Task<ConfigurationItemInheritance> GetActualInheritanceOrNullAsync(string module, string name);
+
+        /// <summary>
+        /// Resolved configuration item by pair: module and name. Note that
+        /// </summary>
+        /// <param name="module">Module name</param>
+        /// <param name="name">Item name</param>
+        /// <returns></returns>
+        Task<ConfigurationItem> ResolveItemAsync(string module, string name);
 
         /// <summary>
         /// Get configuration item by id
@@ -73,6 +81,13 @@ namespace Shesha.ConfigurationItems
         /// <param name="id">Item id</param>
         /// <returns></returns>
         Task<ConfigurationItem> GetAsync(Guid id);
+
+        /// <summary>
+        /// Get configuration item by pair: module and name
+        /// </summary>
+        /// <param name="module">Module name</param>
+        /// <param name="name">Item name</param>
+        Task<ConfigurationItem> GetAsync(string module, string name);
 
         Task<ConfigurationItem> CreateItemAsync(CreateItemInput input);
 
@@ -89,5 +104,15 @@ namespace Shesha.ConfigurationItems
         /// <param name="name"></param>
         /// <returns></returns>
         Task<bool> CurrentUserHasAccessToAsync(string module, string name);
+
+        /// <summary>
+        /// Dump current state of the configuration item to a revision
+        /// </summary>
+        Task<ConfigurationItemRevision> SaveToRevisionAsync(ConfigurationItem item, Action<ConfigurationItemRevision>? revisionCustomizer = null);
+
+        /// <summary>
+        /// Restore configuration item state from a revision
+        /// </summary>
+        Task RestoreRevisionAsync(ConfigurationItemRevision revision);
     }
 }

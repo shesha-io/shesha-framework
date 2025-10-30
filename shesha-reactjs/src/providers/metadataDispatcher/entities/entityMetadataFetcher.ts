@@ -2,9 +2,10 @@ import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { IEntityTypesMap, IEntityMetadataFetcher, ISyncEntitiesContext, ICacheProvider } from "./models";
 import { DataTypes, IPropertyMetadata } from "@/interfaces";
 import { IEntityMetadata, NestedProperties, isIHasEntityType, isPropertiesArray } from "@/interfaces/metadata";
-import { getCachedMetadataByClassName, getCachedMetadataByTypeId, syncEntities } from "./utils";
+import { syncEntities } from "./utils";
 import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { EntityTypesMap } from "./entityTypesMap";
+import { IConfigurationItemsLoaderActionsContext } from "@/providers/configurationItemsLoader/contexts";
 
 type EntityMetadataByClassNameFetcher = (className: string) => Promise<IEntityMetadata | null>;
 
@@ -17,10 +18,13 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
 
   #cacheProvider: ICacheProvider;
 
-  constructor(httpClient: HttpClientApi, cacheProvider: ICacheProvider) {
+  #configurationItemsLoader: IConfigurationItemsLoaderActionsContext;
+
+  constructor(configurationItemsLoader: IConfigurationItemsLoaderActionsContext, httpClient: HttpClientApi, cacheProvider: ICacheProvider) {
     this.#httpClient = httpClient;
     this.#typesMap = new EntityTypesMap();
     this.#cacheProvider = cacheProvider;
+    this.#configurationItemsLoader = configurationItemsLoader;
   }
 
   #ensureSynchronized = (): Promise<void> => {
@@ -33,9 +37,9 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
   #mapProperty = (property: IPropertyMetadata, byClassNameGetter: EntityMetadataByClassNameFetcher, prefix: string = ''): IPropertyMetadata => {
     const nestedProperties: NestedProperties = isPropertiesArray(property.properties)
       ? property.dataType === DataTypes.entityReference && isIHasEntityType(property)
-        ? () => byClassNameGetter(property.entityType).then((m) => m.properties as IPropertyMetadata[])
+        ? () => byClassNameGetter(property.entityType).then((m) => (m?.properties ?? []) as IPropertyMetadata[])
         : property.properties.map((child) => this.#mapProperty(child, byClassNameGetter, property.path))
-      : property.properties;
+      : (property.properties ?? null);
 
     return {
       ...property,
@@ -57,6 +61,7 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
       httpClient: this.#httpClient,
       cacheProvider: this.#cacheProvider,
       typesMap: this.#typesMap,
+      configurationItemsLoader: this.#configurationItemsLoader,
     };
   };
 
@@ -71,16 +76,18 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
 
   getByClassName = async (className: string): Promise<IEntityMetadata | null> => {
     await this.#ensureSynchronized();
-    const metadata = await getCachedMetadataByClassName(className, this.#syncContext);
+    const metadata = await this.#configurationItemsLoader.getCachedConfig<IEntityMetadata>({ type: 'entity', id: className, skipCache: false });
     return metadata
-      ? await this.#convertMetadata(metadata, this.getByClassName)
+      ? this.#convertMetadata(metadata.configuration, this.getByClassName)
       : null;
   };
 
-  getByTypeId = (typeId: IEntityTypeIndentifier): Promise<IEntityMetadata> => {
-    return this.#ensureSynchronized().then(() => {
-      return getCachedMetadataByTypeId(typeId, this.#syncContext).then((m) => this.#convertMetadata(m, this.getByClassName));
-    });
+  getByTypeId = async (typeId: IEntityTypeIndentifier): Promise<IEntityMetadata | null> => {
+    await this.#ensureSynchronized();
+    const metadata = await this.#configurationItemsLoader.getCachedConfig<IEntityMetadata>({ type: 'entity', id: typeId, skipCache: false });
+    return metadata
+      ? this.#convertMetadata(metadata.configuration, this.getByClassName)
+      : null;
   };
 
   isEntity = (className: string): Promise<boolean> => {

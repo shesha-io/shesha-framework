@@ -200,7 +200,7 @@ namespace Shesha.Domain
                     || (propertyConfig.DataType == DataTypes.Array && propertyConfig.DataFormat == ArrayFormats.MultivalueReferenceList)
                     ? "Lkp"
                     : null;
-            return $"{GetColumnPrefix(propertyConfig.EntityConfig, moduleList)}{propertyConfig.Name}{suffix}";
+            return $"{GetColumnPrefix(propertyConfig.EntityConfig, moduleList)}{propertyConfig.Name.Trim()}{suffix}";
 
         }
 

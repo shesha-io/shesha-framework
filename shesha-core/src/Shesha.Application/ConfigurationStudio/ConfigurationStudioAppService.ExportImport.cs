@@ -78,7 +78,7 @@ namespace Shesha.ConfigurationStudio
 
                 var importContext = new PackageImportContext
                 {
-                    CreateModules = true,
+                    CreateModules = false,
                     CreateFrontEndApplications = true,
                     ShouldImportItem = item => input.ItemsToImport.Contains(item.Id),
                 };
@@ -89,6 +89,30 @@ namespace Shesha.ConfigurationStudio
 
             // todo: return statistic
             return new PackageImportResult();
+        }
+
+
+        [HttpPost]
+        [Consumes("multipart/form-data")]
+        public async Task<FileStreamResult> MergePackagesAsync([FromForm] MergePackagesInput input) 
+        {
+            if (input.Packages == null || input.Packages.Length == 0)
+                throw new UserFriendlyException("Please upload at least one package (.shaconfig).");
+
+            if (input.Packages.Any(f => !f.FileName.EndsWith(".shaconfig", StringComparison.OrdinalIgnoreCase)))
+                throw new UserFriendlyException("Only .shaconfig files are supported.");
+
+#pragma warning disable IDISP001 // Dispose created
+            var zipStream = new MemoryStream();
+#pragma warning restore IDISP001 // Dispose created
+
+            await PackageManager.MergePackagesAsync(input.Packages, zipStream);
+
+            var fileName = $"package{DateTime.Now:yyyyMMdd_HHmm}.shaconfig";
+            return new ShaFileStreamResult(zipStream, fileName.GetContentType())
+            {
+                FileDownloadName = fileName,
+            };
         }
     }
 }

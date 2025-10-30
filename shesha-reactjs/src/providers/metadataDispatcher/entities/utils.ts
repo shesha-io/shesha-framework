@@ -2,9 +2,11 @@ import { IAjaxResponse, IEntityMetadata } from "@/interfaces";
 import { IEntityTypeIndentifier } from "../../sheshaApplication/publicApi/entities/models";
 import { ICacheProvider, ISyncEntitiesContext, ModuleSyncRequest, SyncAllRequest, SyncAllResponse, isEntityOutOfDateResponse } from "./models";
 import { isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
+import { IConfigurationItemDto } from "@/providers/configurationItemsLoader/models";
 
 const CACHE = {
-  ENTITIES: 'entities',
+  ENTITIES: 'entity',
+  ENTITIES_LOOKUP: 'entity_lookup',
   MISC: 'misc',
 };
 
@@ -21,7 +23,7 @@ const URLS = {
 
 export const getEntityMetadataCacheKey = (id: IEntityTypeIndentifier): string => {
   const moduleAccessor = wrapModuleName(id.module);
-  return `${moduleAccessor}/${id.name}`;
+  return `${moduleAccessor}:${id.name}`;
 };
 
 const getEntitiesSyncVersion = (cacheProvider: ICacheProvider): Promise<string | null> => {
@@ -90,7 +92,7 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
   const request = await getEntitiesSyncRequest(context);
 
   await context.httpClient.post<IAjaxResponse<SyncAllResponse>>(URLS.SYNC_ENTITIES, request)
-    .then((response) => {
+    .then(async (response) => {
       if (isAjaxSuccessResponse(response.data)) {
         const promises: Promise<unknown>[] = [];
         const data = response.data.result;
@@ -101,15 +103,17 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
             const key = getEntityMetadataCacheKey({ module: m.accessor, name: e.accessor });
 
             if (isEntityOutOfDateResponse(e)) {
-              const meta = {
-                ...e.metadata,
-                entityType: e.metadata.className, // TODO: remove after refactoring
-                name: e.metadata.className, // TODO: remove after refactoring
+              const meta: IConfigurationItemDto<IEntityMetadata> = {
+                cacheMd5: e.metadata.md5 ?? "",
+                configuration: {
+                  ...e.metadata,
+                  entityType: e.metadata.fullClassName,
+                },
               };
 
               promises.push(metadataCache.setItem(key, meta));
 
-              const aliases = [...e.metadata.aliases ?? [], e.metadata.className];
+              const aliases = [...e.metadata.aliases ?? [], e.metadata.fullClassName];
               aliases.forEach((alias) => {
                 context.typesMap.register(alias, { module: m.accessor, name: e.accessor });
               });
@@ -122,7 +126,44 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
             }
           });
         });
-        return Promise.all(promises).then();
+
+        const lookupCache = context.cacheProvider.getCache(CACHE.ENTITIES_LOOKUP);
+        await lookupCache.clear().catch((error) => {
+          console.error('Failed to populate lookup cache', error);
+          return Promise.reject(error);
+        });
+        data.lookups.forEach((m) => {
+          if (m.items.length) {
+            const key = getEntityMetadataCacheKey({ module: m.module ?? '', name: m.name ?? '' });
+
+            const data = {} as { [key: string]: string };
+            m.items.forEach((e) => {
+              data[e.module] = e.match;
+            });
+
+            // Add lookup for full config name
+            promises.push(lookupCache.setItem(key, data));
+
+            // Add lookup for Full Class Name
+            if (m.id)
+              promises.push(lookupCache.setItem(m.id, { module: data['_default'] ?? '', name: m.name }));
+            if (m.aliases?.length) {
+              m.aliases.forEach((alias) => {
+                promises.push(lookupCache.setItem(alias, { module: data['_default'] ?? '', name: m.name }));
+              });
+            }
+          } else {
+            // Add lookup for Full Class Name without lookup data
+            if (m.id)
+              promises.push(lookupCache.setItem(m.id, { module: m.module ?? '', name: m.name ?? '' }));
+            if (m.aliases?.length) {
+              m.aliases.forEach((alias) => {
+                promises.push(lookupCache.setItem(alias, { module: m.module ?? '', name: m.name ?? '' }));
+              });
+            }
+          }
+        });
+        return await Promise.all(promises);
       } else {
         console.error('Failed to sync entities', response.data.error);
         return Promise.reject(response.data.error);
@@ -130,23 +171,26 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
     });
 };
 
-export const getEntityMetadata = async (accessor: IEntityTypeIndentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata | null> => {
+const getEntityCacheItem = (key: string, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> =>
+  context.cacheProvider.getCache(CACHE.ENTITIES).getItem<IConfigurationItemDto<IEntityMetadata>>(key).then((item) => item?.configuration);
+
+export const getEntityMetadata = async (accessor: IEntityTypeIndentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
   await syncEntities(context);
 
   const key = getEntityMetadataCacheKey(accessor);
-  return context.cacheProvider.getCache(CACHE.ENTITIES).getItem<IEntityMetadata>(key);
+  return getEntityCacheItem(key, context);
 };
 
-export const getCachedMetadataByTypeId = (typeId: IEntityTypeIndentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata | null> => {
+export const getCachedMetadataByTypeId = (typeId: IEntityTypeIndentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
   const key = getEntityMetadataCacheKey(typeId);
-  return context.cacheProvider.getCache(CACHE.ENTITIES).getItem<IEntityMetadata>(key);
+  return getEntityCacheItem(key, context);
 };
 
-export const getCachedMetadataByClassName = (className: string, context: ISyncEntitiesContext): Promise<IEntityMetadata | null> => {
+export const getCachedMetadataByClassName = (className: string, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
   const typeId = context.typesMap.resolve(className);
   if (!typeId) {
     throw new Error(`Failed to resolve type id for class ${className}`);
   }
   const key = getEntityMetadataCacheKey(typeId);
-  return context.cacheProvider.getCache(CACHE.ENTITIES).getItem<IEntityMetadata>(key);
+  return getEntityCacheItem(key, context);
 };

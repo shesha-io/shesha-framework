@@ -1,6 +1,8 @@
 ﻿using Abp.Authorization;
+using Abp.Events.Bus;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Dtos;
+using Shesha.ConfigurationItems.Events;
 using Shesha.Exceptions;
 using System.Threading.Tasks;
 
@@ -12,17 +14,14 @@ namespace Shesha.ConfigurationItems
     public class ConfigurationItemAppService: SheshaAppServiceBase
     {
         private readonly IConfigurationItemClientSideCache _clientSideCache;
-        private readonly IModuleManager _moduleManager;
         private readonly IConfigurationItemHelper _ciHelper;
 
         public ConfigurationItemAppService(
             IConfigurationItemClientSideCache clientSideCache,
-            IModuleManager moduleManager,
             IConfigurationItemHelper ciHelper
         )
         {
             _clientSideCache = clientSideCache;
-            _moduleManager = moduleManager;
             _ciHelper = ciHelper;
         }
 
@@ -38,7 +37,7 @@ namespace Shesha.ConfigurationItems
 
             var manager = _ciHelper.GetManager(input.ItemType);
 
-            var resolvedItem = await manager.GetItemAsync(input.Module, input.Name);
+            var resolvedItem = await manager.ResolveItemAsync(input.Module, input.Name);
 
             var hasAccess = await manager.CurrentUserHasAccessToAsync(input.Module, input.Name);
             if (!hasAccess)
@@ -86,6 +85,37 @@ namespace Shesha.ConfigurationItems
                 Configuration = dto,
                 CacheMd5 = cacheMd5,
             };
+        }
+
+
+        public Task TriggerConfigurationChangedEventAsync(TriggerConfigurationChangedEventRequest  request)
+        {
+            var bus = IocManager.Resolve<IEventBus>();
+            var data = new ConfigurationStateUpdatedEventData(
+                request.ConfigurationType,
+                request.ModuleName,
+                request.ItemName
+            );
+            bus.Trigger(data);
+
+            return Task.CompletedTask;
+        }
+        public class TriggerConfigurationChangedEventRequest 
+        {
+            /// <summary>
+            /// Type of configuration that was updated (form, reflist etc.)
+            /// </summary>
+            public string ConfigurationType { get; init; }
+
+            /// <summary>
+            /// Module name configuration belongs to
+            /// </summary>
+            public string ModuleName { get; init; }
+
+            /// <summary>
+            /// Configuration name
+            /// </summary>
+            public string ItemName { get; init; }
         }
     }
 }

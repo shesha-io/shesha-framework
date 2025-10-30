@@ -41,10 +41,30 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
 
         private async Task ImportTemplatesAsync(NotificationTypeConfig item, List<DistributedNotificationTemplateDto> templates)
         {
+            var dbTemplates = await _templateRepo.GetAll().Where(e => e.PartOf == item).ToListAsync();
+
             foreach (var templateDto in templates) 
             {
-                var template = new NotificationTemplate { PartOf = item }.CopyTemplatePropsFrom(templateDto);
-                await _templateRepo.InsertAsync(template);
+                var dbTemplate = dbTemplates.FirstOrDefault(dbt => dbt.TitleTemplate == templateDto.TitleTemplate &&
+                    dbt.BodyTemplate == templateDto.BodyTemplate &&
+                    dbt.MessageFormat == templateDto.MessageFormat);
+                if (dbTemplate != null)
+                {
+                    // template exists - remove from the list to keep only the ones that need to be deleted
+                    dbTemplates.Remove(dbTemplate);
+                }
+                else 
+                {
+                    // template is missing - create
+                    var template = new NotificationTemplate { PartOf = item }.CopyTemplatePropsFrom(templateDto);
+                    await _templateRepo.InsertAsync(template);
+                }                    
+            }
+
+            // remove templates that need to be deleted
+            foreach (var dbTemplate in dbTemplates)
+            {
+                await _templateRepo.DeleteAsync(dbTemplate);
             }
         }
 
@@ -61,15 +81,19 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
                 return false;
 
             // compare templates
-            var templates = await _templateRepo.GetAll().Where(e => e.PartOf == item).ToListAsync();
-            if (templates.Count() != distributedItem.Templates.Count)
+            var dbTemplates = await _templateRepo.GetAll().Where(e => e.PartOf == item).ToListAsync();
+            if (dbTemplates.Count() != distributedItem.Templates.Count)
                 return false;
 
-            foreach (var template in templates) 
+            var unprocessedTemplates = distributedItem.Templates.ToList();
+            foreach (var dbTemplate in dbTemplates)
             {
-                if (distributedItem.Templates.Any(dt => dt.TitleTemplate == template.TitleTemplate &&
-                    dt.BodyTemplate == template.BodyTemplate &&
-                    dt.MessageFormat == template.MessageFormat))
+                var template = unprocessedTemplates.FirstOrDefault(dt => dt.TitleTemplate == dbTemplate.TitleTemplate &&
+                    dt.BodyTemplate == dbTemplate.BodyTemplate &&
+                    dt.MessageFormat == dbTemplate.MessageFormat);
+                if (template != null)
+                    unprocessedTemplates.Remove(template);
+                else
                     return false;
             }
             return true;

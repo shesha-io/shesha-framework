@@ -1,6 +1,7 @@
 ﻿using Shesha.Domain.Attributes;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
@@ -8,6 +9,8 @@ namespace Shesha.Domain
     /// Import session
     /// </summary>
     [Discriminator]
+    [Table("import_results", Schema = "frwk")]
+    [SnakeCaseNaming]
     public class ImportResult : FullPowerEntity
     {
         /// <summary>
@@ -28,7 +31,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Error message
         /// </summary>
-        public virtual string ErrorMessage { get; set; }
+        public virtual string ErrorMessage { get; set; } = string.Empty;
 
         /// <summary>
         /// Number of affected rows
@@ -71,7 +74,7 @@ namespace Shesha.Domain
         /// Comment
         /// </summary>
         [MaxLength(300)]
-        public virtual string Comment { get; set; }
+        public virtual string Comment { get; set; } = string.Empty;
 
         /// <summary>
         /// Log file of the import
@@ -95,6 +98,6 @@ namespace Shesha.Domain
         public virtual RefListImportSourceType? SourceType { get; set; }
 
         [MaxLength(300)]
-        public virtual string LogFilePath { get; set; }
+        public virtual string LogFilePath { get; set; } = string.Empty;
     }
 }

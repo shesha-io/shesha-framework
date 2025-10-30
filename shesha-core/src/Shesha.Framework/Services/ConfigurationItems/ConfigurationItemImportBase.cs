@@ -1,8 +1,10 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Newtonsoft.Json;
+using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,6 +20,7 @@ namespace Shesha.Services.ConfigurationItems
         protected IRepository<Module, Guid> ModuleRepo { get; private set; }
         protected IRepository<FrontEndApp, Guid> FrontendAppRepo { get; private set; }
         public IUnitOfWorkManager UnitOfWorkManager { get; set; } = default!;
+        public IConfigurationFrameworkRuntime CfRuntime { get; set; }
 
         public ConfigurationItemImportBase(IRepository<Module, Guid> _moduleRepo, IRepository<FrontEndApp, Guid> _frontendAppRepo)
         {
@@ -101,23 +104,42 @@ namespace Shesha.Services.ConfigurationItems
             Repository = repository;
         }
 
+        /// <summary>
+        /// Reads configuration item from json stream
+        /// </summary>
         public virtual async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)
         {
             using (var reader = new StreamReader(jsonStream))
             {
                 var json = await reader.ReadToEndAsync();
 
-                var result = !string.IsNullOrWhiteSpace(json)
-                    ? JsonConvert.DeserializeObject<TDistributedItem>(json)
-                    : null;
-
-                if (result == null)
-                    throw new Exception($"Failed to read {typeof(TDistributedItem).FullName} from json");
-
-                return result;
+                return await ReadFromJsonAsync(json);
             }
         }
 
+        /// <summary>
+        /// Reads configuration item from json
+        /// </summary>
+        public virtual Task<DistributedConfigurableItemBase> ReadFromJsonAsync(string json) 
+        {
+            var result = !string.IsNullOrWhiteSpace(json)
+                    ? JsonConvert.DeserializeObject<TDistributedItem>(json)
+                    : null;
+
+            if (result == null)
+                throw new Exception($"Failed to read {typeof(TDistributedItem).FullName} from json");
+
+            return Task.FromResult<DistributedConfigurableItemBase>(result);
+        }
+
+        /// <summary>
+        /// Imports configuration item
+        /// </summary>
+        /// <param name="item">Item to import</param>
+        /// <param name="context">Import context</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
         public async Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
         {
             if (item == null)
@@ -131,39 +153,49 @@ namespace Shesha.Services.ConfigurationItems
 
         protected virtual async Task<TItem> ImportAsync(TDistributedItem distributedItem, IConfigurationItemsImportContext context) 
         {
-            // check if form exists
-            var item = await Repository.FirstOrDefaultAsync(f => f.Name == distributedItem.Name && (f.Module == null && distributedItem.ModuleName == null || f.Module != null && f.Module.Name == distributedItem.ModuleName));
-
-            if (await SkipImportAsync(item, distributedItem))
-                return item;
-
-            if (item == null)
+            using (CfRuntime.DisableConfigurationTracking()) 
             {
-                item = new TItem
+                // check if form exists
+                var item = await Repository.FirstOrDefaultAsync(f => f.Name == distributedItem.Name && (f.Module == null && distributedItem.ModuleName == null || f.Module != null && f.Module.Name == distributedItem.ModuleName));
+
+                if (await SkipImportAsync(item, distributedItem))
+                    return item;
+
+                var isNew = item == null;
+                if (item == null)
                 {
-                    Module = await GetModuleAsync(distributedItem.ModuleName, context),
-                    Application = await GetFrontEndAppAsync(distributedItem.FrontEndApplication, context),
-                    Name = distributedItem.Name,
-                };
+                    item = new TItem
+                    {
+                        Module = await GetModuleAsync(distributedItem.ModuleName, context),
+                        Application = await GetFrontEndAppAsync(distributedItem.FrontEndApplication, context),
+                        Name = distributedItem.Name,
+                    };
+                }
+
+                await MapStandardPropsToItemAsync(item, distributedItem);
+                await MapCustomPropsToItemAsync(item, distributedItem);
+
+                item.Normalize();
+                if (isNew)
+                    await Repository.InsertAsync(item);
+                else
+                    await Repository.UpdateAsync(item);
+
+                var revision = item.MakeNewRevision(context.IsMigrationImport
+                    ? ConfigurationItemRevisionCreationMethod.MigrationImport
+                    : ConfigurationItemRevisionCreationMethod.ManualImport
+                );
+                revision.CreatedByImport = context.ImportResult;
+
+                await RevisionRepository.InsertAsync(revision);
+
+                item.LatestImportedRevisionId = revision.Id;
+                await Repository.UpdateAsync(item);
+
+                await AfterImportAsync(item, distributedItem, context);
+
+                return item;
             }
-
-            await MapStandardPropsToItemAsync(item, distributedItem);
-            await MapCustomPropsToItemAsync(item, distributedItem);
-            
-            item.Normalize();
-            await Repository.InsertOrUpdateAsync(item);
-
-            var revision = item.MakeNewRevision();
-            revision.CreatedByImport = context.ImportResult;
-
-            await RevisionRepository.InsertAsync(revision);
-
-            item.LatestImportedRevisionId = revision.Id;
-            await Repository.UpdateAsync(item);
-
-            await AfterImportAsync(item, distributedItem, context);
-
-            return item;
         }
 
         protected virtual Task AfterImportAsync(TItem item, 

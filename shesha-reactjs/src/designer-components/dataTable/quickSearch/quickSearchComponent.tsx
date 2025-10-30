@@ -38,7 +38,11 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...dimensionsStyles,
     });
-    const finalStyle = removeUndefinedProps({ ...additionalStyles });
+    const finalStyle = removeUndefinedProps({
+      ...additionalStyles,
+      // Ensure consistent width when outside DataTableContext
+      ...(store ? {} : { width: additionalStyles.width ?? '360px' }),
+    });
 
     return hidden
       ? null
