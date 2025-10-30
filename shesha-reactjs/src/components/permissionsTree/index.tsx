@@ -19,7 +19,7 @@ import {
   usePermissionDelete,
 } from '@/apis/permission';
 import { GuidEntityReferenceDto } from '@/apis/common';
-import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormInstanceOrUndefined } from '@/providers/form/providers/shaFormProvider';
 import { ShaSpin, useAvailableConstantsData } from '@/index';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 
@@ -62,6 +62,10 @@ export interface IPermissionsTreeProps {
 const emptyId = '_';
 const withoutModule = '[no-module]';
 
+const getErrorMessageOrDefault = (error: unknown, defaultMessage: string = "Unknown error"): string => {
+  return typeof (error) === 'object' && 'message' in error && typeof (error.message) === 'string' ? error.message : defaultMessage;
+};
+
 export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, onSelectAction, ...rest }) => {
   const { message } = App.useApp();
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaPermissions.toolbox.objects.openedKeys', ['']);
@@ -86,7 +90,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   const deleteRequest = usePermissionDelete();
   const { loading: isDeleting, error: deleteDataError } = deleteRequest;
 
-  const shaForm = useShaFormInstance(false);
+  const shaForm = useShaFormInstanceOrUndefined();
   const { setFormMode } = shaForm ?? {};
 
   const { executeAction } = useConfigurableActionDispatcher();
@@ -279,7 +283,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   useEffect(() => {
     if (!isDeleting && Boolean(selected[0]) && selected.length > 0) {
       if (deleteDataError) {
-        message.error(deleteDataError.message);
+        message.error(getErrorMessageOrDefault(deleteDataError));
       } else {
         deletePermission();
       }
@@ -289,7 +293,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   useEffect(() => {
     if (!isParentUpdating && Boolean(dragInfo)) {
       if (updateParentDataError) {
-        message.error(updateParentDataError.message);
+        message.error(getErrorMessageOrDefault(updateParentDataError));
       } else {
         const newItems = [...allItems];
         const dragItem = findItem(newItems, dragInfo.dragNode.key);

@@ -1,9 +1,15 @@
 ﻿using Abp;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
+using Abp.Runtime.Session;
+using Abp.Timing;
 using Newtonsoft.Json;
+using Shesha.ConfigurationItems.Distribution;
+using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Exceptions;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using Shesha.Dto;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
@@ -29,12 +35,15 @@ namespace Shesha.ConfigurationItems
 
         private string? _discriminator;
         public string Discriminator => _discriminator ?? (_discriminator = ConfigurationItemHelper.GetDiscriminator(ItemType));
+        public IIocResolver IocResolver { get; set; }
         public IRepository<TItem, Guid> Repository { get; set; }
         public IRepository<ConfigurationItemRevision, Guid> RevisionRepository { get; set; }
         public IRepository<Module, Guid> ModuleRepository { get; set; }
         public IConfigurationItemHelper ConfigurationItemHelper { get; set; }
         public IModuleHierarchyProvider HierarchyProvider { get; set; }
         public IRepository<ConfigurationItemInheritance, string> InheritanceRepository { get; set; }
+        public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
+        public IConfigurationFrameworkRuntime CfRuntime { get; set; }
 
         public ConfigurationItemManager()
         {
@@ -89,14 +98,6 @@ namespace Shesha.ConfigurationItems
             duplicate.Normalize();
             await Repository.InsertAsync(duplicate);
 
-            var duplicateRevision = duplicate.MakeNewRevision();
-
-            /* TODO: process new revision*/
-            duplicateRevision.CreatedByImport = null;
-            duplicateRevision.ParentRevision = null;
-            
-            await Repository.UpdateAsync(duplicate);
-
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             await AfterItemDuplicatedAsync(item, duplicate);
@@ -140,32 +141,33 @@ namespace Shesha.ConfigurationItems
         /// inheritedDoc
         public virtual async Task<TItem> ExposeAsync(TItem item, Module module)
         {
-            var srcRevision = item.LatestRevision;
+            ArgumentNullException.ThrowIfNull(item.Module);
 
-            var exposedConfig = new TItem
+            using (CfRuntime.DisableConfigurationTracking())
             {
-                Name = item.Name,
-                Module = module,
-                ExposedFrom = item,
-                ExposedFromRevision = srcRevision,
-                SurfaceStatus = Domain.Enums.RefListSurfaceStatus.Overridden,
-            };
-            await CopyItemPropertiesAsync(item, exposedConfig);
-            await Repository.InsertAsync(exposedConfig);
+                var srcRevision = item.LatestRevision;
 
-            var exposedRevision = exposedConfig.MakeNewRevision();
+                var exposedConfig = new TItem
+                {
+                    Name = item.Name,
+                    Module = module,
+                	Label = item.Label,
+                	Description = item.Description,
+                    ExposedFrom = item,
+                    ExposedFromRevision = srcRevision,
+                    SurfaceStatus = RefListSurfaceStatus.Overridden,
+                };
+                await CopyItemPropertiesAsync(item, exposedConfig);
+                await Repository.InsertAsync(exposedConfig);
 
-            if (srcRevision != null)
-                await CopyRevisionPropertiesBaseAsync(srcRevision, exposedRevision);
-            exposedRevision.VersionNo = 1;
-            exposedRevision.VersionName = null;
+                await SaveToRevisionAsync(exposedConfig, revision => { 
+                    revision.Comments = $"Exposed from {item.Module.Name}";
+                });
 
-            await RevisionRepository.InsertAsync(exposedRevision);
-            await Repository.UpdateAsync(exposedConfig);
+                await UnitOfWorkManager.Current.SaveChangesAsync();
 
-            await UnitOfWorkManager.Current.SaveChangesAsync();
-
-            return exposedConfig;
+                return exposedConfig;
+            }            
         }
 
         public async Task<ConfigurationItem> DuplicateAsync(ConfigurationItem item)
@@ -186,11 +188,16 @@ namespace Shesha.ConfigurationItems
             return await ExposeAsync((TItem)item, module);
         }
 
-        public async Task<ConfigurationItem> GetItemAsync(string module, string name)
+        public async Task<ConfigurationItemInheritance> GetActualInheritanceOrNullAsync(string module, string name)
         {
-            var actualItem = await InheritanceRepository.GetAll().Where(e => e.ItemType == Discriminator && e.ModuleName == module && e.Name == name)
+            return await InheritanceRepository.GetAll().Where(e => e.ItemType == Discriminator && e.ModuleName == module && e.Name == name)
                 .OrderBy(e => e.ModuleLevel)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<ConfigurationItem> ResolveItemAsync(string module, string name)
+        {
+            var actualItem = await GetActualInheritanceOrNullAsync(module, name);
 
             if (actualItem == null)
                 throw new ConfigurationItemNotFoundException(Discriminator, module, name, null);
@@ -311,6 +318,85 @@ namespace Shesha.ConfigurationItems
         public async Task<ConfigurationItem> GetAsync(Guid id)
         {
             return await Repository.GetAsync(id);
+        }
+
+        /// <summary>
+        /// Get configuration item by pair: module and name
+        /// </summary>
+        /// <param name="module">Module name</param>
+        /// <param name="name">Item name</param>
+        public async Task<ConfigurationItem> GetAsync(string module, string name) 
+        {
+            var item = await Repository.GetByByFullName(module, name).FirstOrDefaultAsync();
+            if (item == null) {
+                var itemType = ConfigurationItemHelper.GetDiscriminator(typeof(TItem));
+                throw new ConfigurationItemNotFoundException(itemType, module, name, null);
+            }                
+
+            return item;
+        }
+
+        /// <summary>
+        /// Dump current state of the configuration item to a revision
+        /// </summary>
+        public async Task<ConfigurationItemRevision> SaveToRevisionAsync(ConfigurationItem item, Action<ConfigurationItemRevision>? revisionCustomizer = null)
+        {
+            var exporter = IocResolver.GetItemExporter(ItemType);
+            if (exporter == null)
+                throw new ExporterNotFoundException(item.ItemType);
+
+            var json = await exporter.ExportItemToJsonAsync(item);
+            var configHash = json.ToMd5Fingerprint();
+
+            var latestRevision = item.LatestRevision;
+            if (latestRevision != null && latestRevision.ConfigHash == configHash)
+                return latestRevision;
+
+            var isNewRevision = NewRevisionRequired(item);
+            var revision = isNewRevision
+                ? item.MakeNewRevision(ConfigurationItemRevisionCreationMethod.Manual)
+                : latestRevision.NotNull();
+
+            revision.ConfigurationJson = json;
+            revision.ConfigHash = configHash;
+
+            revisionCustomizer?.Invoke(revision);
+
+            if (isNewRevision)
+                await RevisionRepository.InsertAsync(revision);
+            else
+                await RevisionRepository.UpdateAsync(revision);
+
+            return revision;
+        }
+        private bool NewRevisionRequired(ConfigurationItem configurationItem)
+        {
+            /*
+            A new version should automatically be created whenever one of the following occurs:
+            1.	a new configuration item is imported from a package, 
+            2.	a configuration change is made more than 15 minutes after the last recorded change
+            3.	a configuration change is made by a user which is different from the user who made the previous configuration change, regardless of the time since the last change.
+             */
+            var newRevisionRequired = configurationItem.LatestRevision == null ||
+                configurationItem.LatestRevision.CreationTime < Clock.Now.AddMinutes(-15) ||
+                configurationItem.LatestRevision.CreatorUserId != AbpSession.UserId;
+            return newRevisionRequired;
+        }
+
+        public async Task RestoreRevisionAsync(ConfigurationItemRevision revision)
+        {
+            revision.ConfigurationItem.Module?.EnsureEditable();
+
+            if (revision == revision.ConfigurationItem.LatestRevision)
+                return;
+
+            var importer = IocResolver.GetItemImporter(ItemType);
+            if (importer == null)
+                throw new ImporterNotFoundException(revision.ConfigurationItem.ItemType);
+
+            var distributedItem = await importer.ReadFromJsonAsync(revision.ConfigurationJson);
+
+            await importer.ImportItemAsync(distributedItem, new PackageImportContext());
         }
     }
 }

@@ -3,7 +3,7 @@ import { GetAvailableConstantsFunc } from "../interfaces";
 import { useCallback } from "react";
 import { useMetadataBuilderFactory } from "@/utils";
 import { executeScript } from '@/providers/form/utils';
-import { useFormData, useShaFormInstance } from '@/providers';
+import { useFormData, useShaFormInstanceOrUndefined } from '@/providers';
 import { IObjectMetadata } from "@/interfaces";
 
 export interface UseResultTypeEvaluatorArgs {
@@ -15,7 +15,7 @@ export type ConstantsEvaluator = () => Promise<IObjectMetadata>;
 export const useConstantsEvaluator = (model: UseResultTypeEvaluatorArgs): ConstantsEvaluator => {
   const metadataBuilderFactory = useMetadataBuilderFactory();
   const { data: formData } = useFormData();
-  const shaFormInstance = useShaFormInstance(false);
+  const shaFormInstance = useShaFormInstanceOrUndefined();
 
   const availableConstantsExpression = Boolean(model.availableConstantsExpression) && !isEmptyString(model.availableConstantsExpression)
     ? model.availableConstantsExpression

@@ -26,6 +26,11 @@ namespace Shesha.ConfigurationItems.Distribution
         Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItem item);
 
         /// <summary>
+        /// Export configurable item to JSON
+        /// </summary>
+        Task<string> ExportItemToJsonAsync(ConfigurationItem item);
+
+        /// <summary>
         /// Write item to json
         /// </summary>
         /// <returns></returns>

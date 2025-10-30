@@ -2,8 +2,6 @@
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
-using Abp.Timing;
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Exceptions;
@@ -14,12 +12,15 @@ using Shesha.Dto.Interfaces;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
+using Shesha.Mvc;
 using Shesha.Reflection;
+using Shesha.Utilities;
 using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.ConfigurationStudio
@@ -34,6 +35,7 @@ namespace Shesha.ConfigurationStudio
         public IConfigurationItemHelper CiHelper { get; set; }
         public IRepository<ConfigurationItem, Guid> ItemRepo { get; set; }
         public IRepository<ConfigurationItemRevision, Guid> RevisionRepo { get; set; }
+        public IRepository<ConfigurationItemHistoryItem, Guid> HistoryRepo { get; set; }        
 
         /// <summary>
         /// Expose Item
@@ -81,12 +83,15 @@ namespace Shesha.ConfigurationStudio
              */
             var itemsToExpose = await ItemRepo.GetListInBatchesAsync(request.ItemIds);
 
-            foreach (var item in itemsToExpose) 
+            using (CfRuntime.DisableConfigurationTracking()) 
             {
-                var manager = CiHelper.GetManager(item);
-                var newItem = await manager.ExposeAsync(item, module);
-                newItem.Folder = folder;
-                await ItemRepo.UpdateAsync(newItem);
+                foreach (var item in itemsToExpose)
+                {
+                    var manager = CiHelper.GetManager(item);
+                    var newItem = await manager.ExposeAsync(item, module);
+                    newItem.Folder = folder;
+                    await ItemRepo.UpdateAsync(newItem);
+                }
             }
         }
 
@@ -96,7 +101,7 @@ namespace Shesha.ConfigurationStudio
 
             var manager = CiHelper.GetManager(request.ItemType);
 
-            var item = await manager.GetItemAsync(request.Module, request.Name);
+            var item = await manager.ResolveItemAsync(request.Module, request.Name);
 
             var dto = await manager.MapToDtoAsync(item);
 
@@ -126,6 +131,8 @@ namespace Shesha.ConfigurationStudio
                 Module = module,
                 Folder = folder,
                 Name = request.Name,
+                Label = request.Label,
+                Description = request.Description,
             });
 
             var dto = await manager.MapToDtoAsync(item);
@@ -215,18 +222,20 @@ namespace Shesha.ConfigurationStudio
 
         public async Task<GetItemRevisionsResponse> GetItemRevisionsAsync(GetItemRevisionsRequest request) 
         {
-            var item = await ItemRepo.GetAsync(request.ItemId);
-
-            var revisions = await RevisionRepo.GetAll().Where(e => e.ConfigurationItem == item).OrderByDescending(e => e.CreationTime).ToListAsync();
+            var revisions = await HistoryRepo.GetAll().Where(e => e.ConfigurationItemId == request.ItemId).OrderByDescending(e => e.CreationTime).ToListAsync();
 
             var dtos = revisions.Select(e => new ConfigurationItemRevisionDto
             {
                 Id = e.Id,
+                ModuleName = e.ModuleName,
+                IsEditable = e.IsEditable,
                 VersionNo = e.VersionNo,
                 VersionName = e.VersionName,
                 Comments = e.Comments,
                 ConfigHash = e.ConfigHash,
                 IsCompressed = e.IsCompressed,
+                CreationMethod = e.CreationMethod,
+                DllVersionNo = e.DllVersionNo,
 
                 CreationTime = e.CreationTime,
                 CreatorUserId = e.CreatorUserId,
@@ -236,6 +245,49 @@ namespace Shesha.ConfigurationStudio
             return new GetItemRevisionsResponse { 
                 Revisions = dtos
             };
+        }
+
+        [HttpPut]
+        public async Task RenameRevisionAsync(RenameRevisionRequest request) 
+        { 
+            var revision = await RevisionRepo.GetAsync(request.RevisionId);
+            revision.ConfigurationItem.Module?.EnsureEditable();
+
+            revision.VersionName = request.VersionName;
+
+            await RevisionRepo.UpdateAsync(revision);
+        }
+
+        [HttpPost]
+        public async Task RestoreItemRevisionAsync(RestoreItemRevisionRequest request) 
+        {
+            var item = await ItemRepo.GetAsync(request.ItemId);
+            item.Module?.EnsureEditable();
+
+            var revision = await RevisionRepo.GetAsync(request.RevisionId);
+            if (revision.ConfigurationItem != item)
+                throw new AbpValidationException("Selected revision doesn't belong to the item");
+            
+            var manager = CiHelper.GetManager(item.ItemType);
+
+            await manager.RestoreRevisionAsync(revision);
+        }
+
+        /// <summary>
+        /// Get revision in JSON format
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<FileContentResult> GetRevisionJsonAsync(Guid id)
+        {
+            var revision = await RevisionRepo.GetAsync(id);
+
+            var bytes = Encoding.UTF8.GetBytes(revision.ConfigurationJson ?? "");
+
+            var fileName = $"{revision.ConfigurationItem.FullName} (revision {revision.VersionNo})".RemovePathIllegalCharacters() + ".json";
+
+            return new ShaFileContentResult(bytes, "application/json") { FileDownloadName = fileName };
         }
     }
 }

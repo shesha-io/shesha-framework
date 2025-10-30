@@ -113,19 +113,14 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         inputs: [
                           {
                             id: nanoid(),
-                            type: 'autocomplete',
+                            type: 'entityTypeAutocomplete',
                             propertyName: 'entityType',
                             label: 'Entity Type',
                             description: 'The entity type you want to use.',
                             labelAlign: 'right',
                             parentId: dataTabId,
                             hidden: false,
-                            dataSourceType: 'url',
-                            validate: {},
-                            dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
-                            settingsValidationErrors: [],
                             jsSetting: true,
-                            useRawValues: true,
                             width: '100%',
                           },
                         ],
@@ -540,6 +535,48 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             useRawValues: true,
                             jsSetting: true,
                             width: '100%',
+                            placeholder: '',
+                          },
+                        ],
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: dataTabId,
+                        hidden: {
+                          _value: false,
+                          _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
+                          _mode: "code",
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'onBeforeRowReorder',
+                            label: 'On Before Row Reorder',
+                            hideLabel: true,
+                            parentId: dataTabId,
+                            type: 'configurableActionConfigurator',
+                            description: 'Action to execute before row reorder. Can be used for validation and cancellation.',
+                            placeholder: '',
+                          },
+                        ],
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: dataTabId,
+                        hidden: {
+                          _value: false,
+                          _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
+                          _mode: "code",
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'onAfterRowReorder',
+                            label: 'On After Row Reorder',
+                            parentId: dataTabId,
+                            hideLabel: true,
+                            type: 'configurableActionConfigurator',
+                            description: 'Action to execute after row reorder. Receives the API response data.',
                             placeholder: '',
                           },
                         ],

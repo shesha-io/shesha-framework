@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useReducer } from 'react';
 import { useLocalStorage } from '@/hooks';
 import { PERM_APP_CONFIGURATOR } from '@/shesha-constants';
 import {
@@ -106,25 +106,37 @@ const AppConfiguratorProvider: FC<PropsWithChildren> = ({ children }) => {
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const toggleShowInfoBlock = (visible: boolean): void => {
+  const toggleShowInfoBlock = useCallback((visible: boolean): void => {
     configuratorSettings.setIsInformerVisible(visible);
-  };
+  }, [configuratorSettings]);
 
-  const switchApplicationMode = (mode: ApplicationMode): void => {
+  const switchApplicationMode = useCallback((mode: ApplicationMode): void => {
     dispatch(switchApplicationModeAction(mode));
-  };
+  }, [dispatch]);
 
-  const toggleEditModeConfirmation = (visible: boolean): void => {
+  const toggleEditModeConfirmation = useCallback((visible: boolean): void => {
     dispatch(toggleEditModeConfirmationAction(visible));
-  };
+  }, [dispatch]);
 
-  const toggleCloseEditModeConfirmation = (visible: boolean): void => {
+  const toggleCloseEditModeConfirmation = useCallback((visible: boolean): void => {
     dispatch(toggleCloseEditModeConfirmationAction(visible));
-  };
+  }, [dispatch]);
 
-  const softToggleInfoBlock = (softInfoBlock: boolean): void => {
+  const softToggleInfoBlock = useCallback((softInfoBlock: boolean): void => {
     dispatch(softToggleInfoBlockAction(softInfoBlock));
-  };
+  }, [dispatch]);
+
+  const actions: IAppActionsContext = useMemo(() => ({
+    switchApplicationMode,
+    toggleEditModeConfirmation,
+    toggleCloseEditModeConfirmation,
+    toggleShowInfoBlock,
+    softToggleInfoBlock,
+  }), [switchApplicationMode,
+    toggleEditModeConfirmation,
+    toggleCloseEditModeConfirmation,
+    toggleShowInfoBlock,
+    softToggleInfoBlock]);
 
   return (
     <AppConfiguratorStateContext.Provider value={{
@@ -133,13 +145,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren> = ({ children }) => {
     }}
     >
       <AppConfiguratorActionsContext.Provider
-        value={{
-          switchApplicationMode,
-          toggleEditModeConfirmation,
-          toggleCloseEditModeConfirmation,
-          toggleShowInfoBlock,
-          softToggleInfoBlock,
-        }}
+        value={actions}
       >
         {children}
       </AppConfiguratorActionsContext.Provider>

@@ -70,7 +70,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     const { loginInfo, logoutUser } = useAuth();
     const { formData } = useForm();
     const { globalState } = useGlobalState();
-    const { executeAction } = useFormExpression();
+    const { executeActionViaConfiguration } = useFormExpression();
 
     const sidebar = useSidebarMenu(false);
     const { accountDropdownListItems } = sidebar || {};
@@ -99,7 +99,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       return getItemsWithResolved(evaluation.items);
     }, [evaluation.items, numResolved]);
 
-    const menuItems = getMenuItem(finalItems, executeAction);
+    const menuItems = getMenuItem(finalItems, executeActionViaConfiguration);
 
     const accountMenuItems = getAccountMenuItems(accountDropdownListItems, logoutUser);
 

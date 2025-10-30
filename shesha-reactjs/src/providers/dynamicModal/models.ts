@@ -69,7 +69,7 @@ export interface IModalWithConfigurableFormProps<Values = any> extends IModalBas
 
   onFailed?: (errorInfo: ValidateErrorEntity<any>) => void;
 
-  footerButtons?: ModalFooterButtons;
+  footerButtons?: ModalFooterButtons | undefined;
 
   buttons?: ButtonGroupItemProps[];
 

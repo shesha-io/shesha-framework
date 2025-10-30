@@ -27,7 +27,7 @@ const getBeforeDataLoad = (onInitialized: string): string => {
 
 const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): string => {
   if (!initialValues || initialValues.length === 0)
-    return null;
+    return onDataLoaded || null;
 
   // Convert to JSON
   const initialData = {};
@@ -89,6 +89,7 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
     preparedValues,
     onInitialized,
     onDataLoaded,
+    onAfterDataLoad,
     onUpdate,
     ...restSettings
   } = settings;
@@ -136,7 +137,7 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
     },
 
     onBeforeDataLoad: getBeforeDataLoad(onInitialized),
-    onAfterDataLoad: getAfterDataLoad(onDataLoaded, initialValues),
+    onAfterDataLoad: onAfterDataLoad || getAfterDataLoad(onDataLoaded, initialValues),
 
     onValuesUpdate: onUpdate,
 

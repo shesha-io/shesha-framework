@@ -35,7 +35,7 @@ namespace Shesha.Domain
     }
 
     [SnakeCaseNaming]
-    [Table("frwk_bootstrapper_startups")]
+    [Table("bootstrapper_startups", Schema = "frwk")]
     public class BootstrapperStartup: Entity<Guid>
     {
         public virtual DateTime CreationTime { get; set; }

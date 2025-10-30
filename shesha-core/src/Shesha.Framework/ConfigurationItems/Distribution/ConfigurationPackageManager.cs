@@ -1,6 +1,8 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Timing;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
@@ -11,10 +13,13 @@ using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Shesha.ConfigurationItems.Distribution
@@ -387,6 +392,65 @@ namespace Shesha.ConfigurationItems.Distribution
                     return Task.FromResult(AnalyzePackageResponse.PackageItemStatus.Updated);
                 }
             }                
-        }        
+        }
+
+        public async Task MergePackagesAsync(IFormFile[] packages, Stream stream)
+        {
+            var packageInfos = packages.Select(p => {
+                var date = TryGetPackageDate(p.FileName);
+                return date.HasValue ? new { Date = date.Value, File = p } : null;
+            })
+            .WhereNotNull()
+            .OrderBy(p => p.Date)
+            .ToList();
+
+            using (var tempFolder = new TempFolder()) 
+            {
+                foreach (var packageInfo in packageInfos)
+                {
+                    using (var packageStream = packageInfo.File.OpenReadStream())
+                    {
+                        using (var zip = new ZipArchive(packageStream, ZipArchiveMode.Read))
+                        {
+                            zip.ExtractToDirectory(tempFolder.Path, overwriteFiles: true);
+                        }
+                    }
+                }
+
+                var files = Directory.GetFiles(tempFolder.Path, "*.*", new EnumerationOptions() { RecurseSubdirectories = true }).ToList();
+                using (var zip = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true))
+                {
+                    foreach (var fileToZip in files)
+                    {
+                        using (var fileData = new FileStream(fileToZip, FileMode.Open))
+                        {
+                            var zipFilename = Path.GetRelativePath(tempFolder.Path, fileToZip);
+                            var entry = zip.CreateEntry(zipFilename);
+
+                            using (var dstStream = entry.Open())
+                            {
+                                await fileData.CopyToAsync(dstStream);
+                            }
+                        }
+                    }
+                }
+                stream.Position = 0;
+            }
+        }
+
+        private DateTime? TryGetPackageDate(string fileName)
+        {
+            var packageRegex = new Regex(@"[.]*package(?'year'\d{4})(?'month'\d{2})(?'day'\d{2})_(?'hour'\d{2})(?'minute'\d{2})\.shaconfig");
+            var match = packageRegex.Match(fileName);
+
+            if (!match.Success)
+                return null;
+
+            var version = $"{match.Groups["year"]}{match.Groups["month"]}{match.Groups["day"]}{match.Groups["hour"]}{match.Groups["minute"]}";
+
+            return DateTime.TryParseExact(version, "yyyyMMddHHmm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
+                ? date
+                : null;
+        }
     }
 }

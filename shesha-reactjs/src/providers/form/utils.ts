@@ -3,11 +3,9 @@ import Schema, { Rules, ValidateSource } from 'async-validator';
 import camelcase from 'camelcase';
 import Mustache from 'mustache';
 import { nanoid } from '@/utils/uuid';
-import nestedProperty from 'nested-property';
 import { CSSProperties, useRef } from 'react';
 import {
   DataTypes,
-  IPropertySetting,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
@@ -39,7 +37,7 @@ import {
   SILENT_KEY,
   FormRawMarkup,
 } from './models';
-import { isPropertySettings, updateJsSettingsForComponents } from '@/designer-components/_settings/utils';
+import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils';
 import {
   IDataContextManagerActionsContext,
   IDataContextManagerFullInstance,
@@ -69,15 +67,38 @@ import { IParentProviderProps, useParent } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { toCamelCase } from '@/utils/string';
 import { IFormApi } from './formApi';
-import { makeObservableProxy, ObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
+import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IShaFormInstance } from './store/interfaces';
-import { useShaFormInstance, useShaFormDataUpdate } from './providers/shaFormProvider';
+import { useShaFormInstanceOrUndefined, useShaFormDataUpdate } from './providers/shaFormProvider';
 import { QueryStringParams } from '@/utils/url';
-import { TouchableProxy } from './touchableProxy';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
-import { jsonSafeParse, unproxyValue } from '@/utils/object';
+import { jsonSafeParse } from '@/utils/object';
 import { isDefined } from '@/utils/nullables';
+import { getActualModel, getActualPropertyValue } from './utils/js-settings';
+import {
+  executeScriptSync,
+  executeExpression,
+  FunctionExecutor,
+  getFunctionExecutor,
+  executeScript,
+  IExpressionExecuterArguments,
+  IExpressionExecuterFailedHandler,
+} from './utils/scripts';
+
+export {
+  // prop settings
+  getActualModel,
+  getActualPropertyValue,
+  // scripts
+  executeScriptSync,
+  executeExpression,
+  getFunctionExecutor,
+  executeScript,
+  type FunctionExecutor,
+  type IExpressionExecuterArguments,
+  type IExpressionExecuterFailedHandler,
+};
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value extends object = object> {
@@ -88,11 +109,11 @@ export interface IApplicationContext<Value extends object = object> {
 
   form?: IFormApi<Value>;
   /** Contexts datas */
-  contexts: IDataContextsData;
+  contexts: IDataContextsData | undefined;
   /** Global state */
-  globalState: any;
+  globalState: IAnyObject | undefined;
   /** Table selection */
-  selectedRow: ISelectionProps;
+  selectedRow: ISelectionProps | undefined;
   /** Moment function */
   moment: Function;
   /** Http Client */
@@ -114,11 +135,11 @@ export interface IApplicationContext<Value extends object = object> {
   /**
    * Initial form values. Is used for backward compatibility only
    */
-  initialValues: any;
+  initialValues?: object | undefined;
   /**
    * Parent form values. Is used for backward compatibility only
    */
-  parentFormValues: any;
+  parentFormValues?: object | undefined;
 
   /**
    * Function for testing
@@ -133,21 +154,16 @@ export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
 };
 
 export type AvailableConstantsContext = {
-  closestShaFormApi: IFormApi;
-  selectedRow?: ISelectionProps;
-  dcm: IDataContextManagerActionsContext;
-  closestContextId: string;
-  globalState: IAnyObject;
+  closestShaFormApi: IFormApi | undefined;
+  selectedRow?: ISelectionProps | undefined;
+  dcm: IDataContextManagerActionsContext | undefined;
+  closestContextId: string | undefined;
+  globalState: IAnyObject | undefined;
   setGlobalState: (payload: ISetStatePayload) => void;
   message: MessageInstance;
   httpClient: HttpClientApi;
-  test: any;
 };
 
-
-const AsyncFunction = Object.getPrototypeOf(async function () {
-  // nop
-}).constructor;
 
 export const toBase64 = (file: Blob): Promise<string> => new Promise<string>((resolve, reject) => {
   const reader = new FileReader();
@@ -155,49 +171,6 @@ export const toBase64 = (file: Blob): Promise<string> => new Promise<string>((re
   reader.onload = () => resolve(reader.result as string);
   reader.onerror = reject;
 });
-
-export function executeScript<TResult = any>(
-  expression: string,
-  expressionArgs: IExpressionExecuterArguments,
-): Promise<TResult> {
-  return new Promise<TResult>((resolve, reject) => {
-    if (!expression) reject('Expression must be defined');
-
-    try {
-      let argsDefinition = '';
-      const argList: any[] = [];
-      for (const argumentName in expressionArgs) {
-        if (expressionArgs.hasOwnProperty(argumentName)) {
-          argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-          argList.push(expressionArgs[argumentName]);
-        }
-      }
-
-      const asyncFn = new AsyncFunction(argsDefinition, expression);
-      const result = asyncFn.apply(null, argList);
-      resolve(result);
-    } catch (e) {
-      reject(e);
-    }
-  });
-}
-
-export function executeScriptSync<TResult = any>(expression: string, context: IExpressionExecuterArguments): TResult {
-  if (!expression) throw new Error('Expression must be defined');
-
-  try {
-    const functionBody = `
-    with(context) {
-      ${expression}
-    }
-  `;
-    const dynamicFunction = new Function('context', functionBody);
-    return dynamicFunction(context);
-  } catch (error) {
-    console.error(`executeScriptSync error`, error);
-    return null;
-  }
-}
 
 const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
@@ -210,23 +183,14 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const httpClient = useHttpClient();
 
   const result: AvailableConstantsContext = {
-    closestShaFormApi: null,
+    closestShaFormApi: undefined,
     selectedRow,
-    dcm: null,
+    dcm: undefined,
     closestContextId,
     globalState,
     setGlobalState,
     httpClient,
     message,
-    // for testing purposes
-    test: {
-      getArguments: (args) => {
-        var fArgs = args.length === 1 ? args[0] : args;
-        return fArgs._propAccessors !== undefined
-          ? Array.from(fArgs._propAccessors, ([n, v]: [string, any]) => ({ n, v: v() && v()['getData'] ? v().getData() : v() }))
-          : Array.from(fArgs, (v: any) => (v && v['getData'] ? v.getData() : v));
-      },
-    },
   };
   return result;
 };
@@ -237,7 +201,7 @@ export const useAvailableConstantsContextsNoRefresh = (): AvailableConstantsCont
   const dcm = useDataContextManagerActionsOrUndefined();
 
   const parent = useParent(false);
-  const form = useShaFormInstance(false);
+  const form = useShaFormInstanceOrUndefined();
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
   baseContext.closestShaFormApi = closestShaFormApi;
   baseContext.dcm = dcm;
@@ -251,7 +215,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   useShaFormDataUpdate();
 
   const parent = useParent(false);
-  const form = useShaFormInstance(false);
+  const form = useShaFormInstanceOrUndefined();
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
   baseContext.closestShaFormApi = closestShaFormApi;
   baseContext.dcm = dcm;
@@ -274,9 +238,8 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     setGlobalState,
     httpClient,
     message,
-    test,
   } = fullContext;
-  const shaFormInstance = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues>;
+  const shaFormInstance = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
 
   const accessors: ProxyPropertiesAccessors<IApplicationContext<TValues>> = {
     application: () => {
@@ -287,11 +250,13 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     },
     contexts: () => {
       const tcId = topContextId || closestContextId;
-      return { ...dcm?.getDataContextsData(tcId) };
+      return isDefined(dcm)
+        ? { ...dcm.getDataContextsData(tcId) }
+        : undefined;
     },
     pageContext: () => {
       // get page context
-      const pc = dcm.getPageContext();
+      const pc = dcm?.getPageContext();
       // get full page context data
       const pageContext = pc?.getFull();
       return pageContext;
@@ -308,7 +273,6 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     query: () => queryStringGetter?.() ?? {},
     initialValues: () => shaFormInstance?.initialValues,
     parentFormValues: () => shaFormInstance?.parentFormValues,
-    test: () => test,
   };
   return accessors;
 };
@@ -355,86 +319,7 @@ export const useApplicationContextData = (): object | undefined => {
     ?.getData();
 };
 
-const getSettingValue = (
-  propertyName: string,
-  value: any,
-  allData: any,
-  calcFunction: (setting: IPropertySetting, allData: any) => any,
-  parentReadOnly?: boolean,
-  propertyFilter?: (name: string, value: any) => boolean,
-  processedObjects?: any[],
-): unknown => {
-  if (!processedObjects)
-    processedObjects = [];
-
-  const unproxiedValue = unproxyValue(value);
-
-  if (!unproxiedValue || (typeof propertyFilter === 'function' && !propertyFilter(propertyName, value)))
-    return value;
-
-  if (typeof unproxiedValue === 'object' &&
-    processedObjects.indexOf(unproxiedValue) === -1 // skip already processed objects to avoid infinite loop
-  ) {
-    // If array - update all items
-    if (Array.isArray(unproxiedValue)) {
-      const v = unproxiedValue.length === 0
-        ? unproxiedValue
-        : unproxiedValue.map((x) => {
-          // TODO: review and enable rule
-          // eslint-disable-next-line @typescript-eslint/no-use-before-define
-          return getActualModel(x, allData, parentReadOnly, propertyFilter, processedObjects);
-        });
-      processedObjects.push(v);
-      return v;
-    }
-
-
-    // update setting value to actual
-    if (isPropertySettings(unproxiedValue)) {
-      const v = unproxiedValue._mode === 'code'
-        ? Boolean(unproxiedValue._code) ? calcFunction(unproxiedValue, allData) : undefined
-        : unproxiedValue._mode === 'value'
-          ? unproxiedValue._value
-          : undefined;
-      const upv = unproxyValue(v);
-      processedObjects.push(upv);
-      return upv;
-    }
-
-    // update nested objects
-
-    // TODO: review and enable rule
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    const v = getActualModel(unproxiedValue, allData, parentReadOnly, propertyFilter, processedObjects);
-    processedObjects.push(v);
-    return v;
-  }
-  return value;
-};
-
-const getValue = (val: any, allData: any, calcValue: (setting: IPropertySetting, allData: any) => unknown): unknown => {
-  return getSettingValue('', val, allData, calcValue);
-};
-
-const calcValue = (setting: IPropertySetting, allData: any): unknown => {
-  const getSettingValueInScript = (val: any): unknown => getValue(val, allData, calcValue);
-  try {
-    if (allData.addAccessor && (allData instanceof TouchableProxy || allData instanceof ObservableProxy)) {
-      allData.addAccessor('staticValue', () => setting?._value);
-      allData.addAccessor('getSettingValue', () => getSettingValueInScript);
-    } else {
-      allData.staticValue = setting?._value;
-      allData.getSettingValue = getSettingValueInScript;
-    }
-    const res = executeScriptSync(setting?._code, allData);
-    return res;
-  } catch (error) {
-    console.error("calcValue failed", error);
-    return undefined;
-  }
-};
-
-export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean): boolean => {
+export const getReadOnlyBool = (editMode: EditMode | undefined, parentReadOnly: boolean): boolean => {
   return (
     editMode === false || // check exact condition
     editMode === 'readOnly' ||
@@ -443,62 +328,17 @@ export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean): bo
   );
 };
 
-/**
- * Convert model to values calculated from JS code if provided (for each fields)
- *
- * @param model - model
- * @param allData - all form, contexts data and other data/objects/functions needed to calculate Actual Model
- * @returns - converted model
- */
-export const getActualModel = <T extends object = object>(
-  model: T,
-  allData: object,
-  parentReadOnly?: boolean,
-  propertyFilter?: (name: string, value: any) => boolean,
-  processedObjects?: any[],
-): T => {
-  if (!processedObjects)
-    processedObjects = [];
-
-  if (Array.isArray(model)) {
-    return getSettingValue('', model, allData, calcValue, parentReadOnly, propertyFilter, processedObjects) as T;
-  }
-
-  if (typeof model !== 'object' || model === null || model === undefined)
-    return model;
-
-  const m = {} as T;
-  for (var propName in model) {
-    if (!model.hasOwnProperty(propName)) continue;
-    m[propName] = getSettingValue(propName, model[propName], allData, calcValue, parentReadOnly, propertyFilter, processedObjects) as any;
-  }
-
-  const readOnly = typeof parentReadOnly === 'undefined'
-    ? "formMode" in allData ? allData?.formMode === 'readonly' : undefined // TODO: review type of allData and update condition
-    : parentReadOnly;
-
-  // update ReadOnly if exists
-  if (m.hasOwnProperty('editMode')) m['readOnly'] = getReadOnlyBool(m['editMode'], readOnly);
-
-  return m;
-};
-
 export const isCommonContext = (name: string): boolean => {
   const r = RootContexts;
   return r.filter((i) => i === name)?.length > 0;
 };
 
-export const getParentReadOnly = (parent: IParentProviderProps, allData: unknown): boolean => {
+export const getParentReadOnly = (parent: IParentProviderProps | undefined, allData: unknown): boolean => {
   // TODO: review type of allData
   const form = typeof allData === 'object' && "form" in allData ? allData.form : undefined;
   const formMode: FormMode | undefined = isDefined(form) && "formMode" in form ? form.formMode as FormMode : undefined;
   return formMode !== 'designer' &&
     (parent?.model?.readOnly as boolean ?? (parent?.formMode === 'readonly' || formMode === 'readonly'));
-};
-
-// TODO: Alex, please review this. Purpose of the function is not clear from its name
-export const getActualPropertyValue = <T>(model: T, allData: unknown, propertyName: string): T => {
-  return { ...model, [propertyName]: getSettingValue(propertyName, model[propertyName], allData, calcValue) } as T;
 };
 
 // const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
@@ -981,54 +821,6 @@ export const evaluateComplexStringWithResult = (
   return { result, success, unevaluatedExpressions: Array.from(new Set(unevaluatedExpressions)) };
 };
 
-export interface IExpressionExecuterArguments {
-  [key: string]: any;
-}
-export type IExpressionExecuterFailedHandler<TResult> = (error: any) => TResult;
-export function executeExpression<TResult>(
-  expression: string,
-  expressionArgs: IExpressionExecuterArguments,
-  defaultValue: TResult,
-  onFail: IExpressionExecuterFailedHandler<TResult>,
-): TResult {
-  if (expression) {
-    try {
-      let argsDefinition = '';
-      const argList: any[] = [];
-      for (const argumentName in expressionArgs) {
-        if (expressionArgs.hasOwnProperty(argumentName)) {
-          argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-          argList.push(expressionArgs[argumentName]);
-        }
-      }
-
-      const expressionExecuter = new Function(argsDefinition, expression);
-
-      return expressionExecuter.apply(null, argList);
-    } catch (e) {
-      if (!!onFail)
-        return onFail(e);
-    }
-  }
-  return defaultValue;
-}
-
-interface FunctionArgument {
-  name: string;
-  description?: string;
-}
-export type FunctionExecutor<TResult = any> = (...args: any) => TResult;
-export const getFunctionExecutor = <TResult = any>(
-  expression: string,
-  expressionArguments: FunctionArgument[]): FunctionExecutor<TResult> => {
-  if (!expression) throw new Error('Expression must be defined');
-
-  const argumentsList = (expressionArguments ?? []).map((a) => a.name).join(", ");
-
-  const expressionExecuter = new Function(argumentsList, expression);
-  return expressionExecuter as FunctionExecutor<TResult>;
-};
-
 export const isComponentFiltered = (
   component: IConfigurableFormComponent,
   propertyFilter?: (name: string) => boolean,
@@ -1038,25 +830,6 @@ export const isComponentFiltered = (
     if (filteredOut === false) return false;
   }
   return true;
-};
-
-/**
- * Return ids of filtered components according to the custom visibility
- */
-export const getFilteredComponentIds = (
-  components: IComponentsDictionary,
-  propertyFilter?: (name: string) => boolean,
-): string[] => {
-  const visibleComponents: string[] = [];
-  for (const key in components) {
-    if (components.hasOwnProperty(key)) {
-      const component = components[key] as IConfigurableFormComponent;
-
-      if (isComponentFiltered(component, propertyFilter))
-        visibleComponents.push(key);
-    }
-  }
-  return visibleComponents;
 };
 
 /**
@@ -1151,41 +924,6 @@ const DICTIONARY_ACCESSOR_REGEX = /(^[\s]*\{(?<key>[\w]+)\.(?<accessor>[^\}]+)\}
 const NESTED_ACCESSOR_REGEX = /((?<key>[\w]+)\.(?<accessor>[^\}]+))/;
 
 /**
- * Evaluates an string expression and returns the evaluated value.
- *
- * Example: Given
- *  let const person = { name: 'First', surname: 'Last' };
- *  let expression = 'Full name is {{name}} {{surname}}';
- *
- * evaluateExpression(expression, person) will display 'Full name is First Last';
- *
- * @param expression the expression to evaluate
- * @param data the data to use to evaluate the expression
- * @returns
- */
-export const evaluateStringLiteralExpression = (expression: string, data: object): string => {
-  return expression.replace(/\$\{(.*?)\}/g, (_, token) => nestedProperty.get(data, token));
-};
-
-/**
- * Evaluates an string expression and returns the evaluated value.
- *
- * Example: Given
- *  let const person = { name: 'First', surname: 'Last' };
- *  let expression = 'Full name is {{name}} {{surname}}';
- *
- * evaluateExpression(expression, person) will display 'Full name is First Last';
- *
- * @param expression the expression to evaluate
- * @param data the data to use to evaluate the expression
- * @returns
- */
-
-export const evaluateExpression = (expression: string, data: object): string => {
-  return expression.replace(/\{\{(.*?)\}\}/g, (_, token) => nestedProperty.get(data, token)) as string;
-};
-
-/**
  * Remove zero-width space characters from a string.
  *
  * Unicode has the following zero-width characters:
@@ -1231,24 +969,6 @@ export const evaluateValue = (value: string, dictionary: object): unknown => {
 export const evaluateValueAsString = (value: string, dictionary: object): string | undefined => {
   const evaluated = evaluateValue(value, dictionary);
   return evaluated ? evaluated.toString() : undefined;
-};
-
-const TAGS_REGEX = /{(?<key>[\w]+)\.(?<accessor>[^\}]+)\}/;
-
-export const replaceTags = (value: string, dictionary: object): string | null => {
-  if (!value) return value;
-
-  const match = value.match(TAGS_REGEX);
-  if (!match) return value;
-
-  if (!dictionary) return null;
-
-  const result = value.replace(TAGS_REGEX, (_match, key, accessor) => {
-    const container = dictionary[key] || {};
-    return container[accessor] || '';
-  });
-
-  return result;
 };
 
 export const findToolboxComponent = (
@@ -1454,95 +1174,10 @@ export const createComponentModelForDataProperty = (
   return componentModel;
 };
 
-interface IKeyValue {
-  key: string;
-  value: string;
-}
-
-export const evaluateKeyValuesToObject = (arr: IKeyValue[], data: object): IAnyObject => {
-  const queryParamObj: IAnyObject = {};
-
-  if (arr?.length) {
-    arr?.forEach(({ key, value }) => {
-      if (key?.length && value.length) {
-        queryParamObj[key] = evaluateString(value, data);
-      }
-    });
-
-    return queryParamObj;
-  }
-
-  return {};
-};
-
 export interface IMatchData {
   match: string;
   data: any;
 }
-
-export const getMatchData = (dictionary: IMatchData[], name: string): any => {
-  const item = dictionary.find((i) => i.match === name);
-  return item?.data;
-};
-
-const convertToKeyValues = (obj: IAnyObject): IKeyValue[] => {
-  return Object.keys(obj).map((key) => ({
-    key,
-    value: obj[key],
-  }));
-};
-
-export const evaluateKeyValuesToObjectMatchedData = <T extends any>(
-  obj: IKeyValue[] | IAnyObject,
-  matches: IMatchData[],
-): T => {
-  const queryParamObj: IAnyObject = {};
-
-  if (!obj) {
-    return {} as T;
-  }
-
-  const valuesArray = Array.isArray(obj) ? obj : convertToKeyValues(obj);
-
-  if (valuesArray?.length) {
-    valuesArray?.forEach(({ key, value }) => {
-      if (key?.length && value.length) {
-        let matchedKey = '';
-
-        const data =
-          matches?.find(({ match }) => {
-            const isMatch = value?.includes(match);
-
-            if (isMatch) {
-              matchedKey = match;
-            }
-
-            return isMatch;
-          })?.data || {};
-
-        queryParamObj[key] = evaluateString(value, matchedKey ? { [matchedKey]: data } : data);
-      }
-    });
-
-    return queryParamObj as T;
-  }
-
-  return {} as T;
-};
-
-export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: string[]): IAnyObject => {
-  const response: IAnyObject = {};
-
-  if (includedProps?.length) {
-    includedProps?.forEach((key) => {
-      if (obj[key]) {
-        response[key] = obj[key];
-      }
-    });
-  }
-
-  return response;
-};
 
 export const pickStyleFromModel = (model: StyleBoxValue, ...args: any[]): CSSProperties => {
   let style = {};
@@ -1583,10 +1218,6 @@ export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: 
   }
 };
 
-export const getString = (expression: string, formData: any = {}, globalState: any = {}): string | null => {
-  if (!expression) return null;
-  return new Function('data, globalState', expression)(formData, globalState);
-};
 export const filterFormData = <TData extends object = object>(data: TData): TData => {
   if (typeof data === 'object' && Object.getOwnPropertyNames(data || {}).length) {
     return Object.entries(data)
@@ -1663,7 +1294,7 @@ export const isFormRawId = (formId: FormIdentifier): formId is FormUid => {
 };
 
 export const isFormFullName = (formId: FormIdentifier): formId is FormFullName => {
-  return formId && Boolean((formId as FormFullName)?.name);
+  return isDefined(formId) && typeof (formId) === 'object' && "name" in formId && typeof (formId.name) === 'string';
 };
 
 export const isSameFormIds = (id1: FormIdentifier, id2: FormIdentifier): boolean => {
@@ -1783,42 +1414,6 @@ export const getFormActionArguments = (
     }
     resolve(actionArgs);
   });
-};
-
-export const executeCustomExpression = (expression: string, returnBoolean = false, formData = {}, globalState = {}): boolean => {
-  if (!expression) {
-    if (returnBoolean) {
-      return true;
-    } else {
-      console.error('Expected expression to be defined but it was found to be empty.');
-
-      return false;
-    }
-  }
-
-  /* tslint:disable:function-constructor */
-  const evaluated = new Function('data, globalState', expression)(formData, globalState);
-
-  // tslint:disable-next-line:function-constructor
-  return typeof evaluated === 'boolean' ? evaluated : true;
-};
-
-export const executeCustomExpressionV2 = (expression: string, context: object, returnBoolean = false): boolean => {
-  if (!expression) {
-    if (returnBoolean) {
-      return true;
-    } else {
-      console.error('Expected expression to be defined but it was found to be empty.');
-
-      return false;
-    }
-  }
-
-  /* tslint:disable:function-constructor */
-  const evaluated = new Function(Object.keys(context)?.join(','), expression)(...Object.values(context));
-
-  // tslint:disable-next-line:function-constructor
-  return typeof evaluated === 'boolean' ? evaluated : true;
 };
 
 type ComponentByTypePredicate = (component: IConfigurableFormComponent) => boolean;

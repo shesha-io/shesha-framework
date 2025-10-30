@@ -4,7 +4,7 @@ import { renderCsTreeNode } from "@/configuration-studio/tree-utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { useMemo } from "react";
 
-const emptyNodes = [];
+const emptyNodes: TreeNode[] = [];
 export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string): TreeNode[] => {
   const filteredTreeNodes = useMemo<TreeNode[]>(() => {
     if (treeNodes.length === 0)
@@ -20,9 +20,7 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string
           if (isDefined(newTitle))
             result.push({
               ...node,
-              title: (data: TreeNode) => {
-                return renderCsTreeNode(data, newTitle);
-              },
+              title: renderCsTreeNode(node, newTitle),
             });
         }
 

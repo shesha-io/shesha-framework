@@ -19,7 +19,6 @@ import { Button, Menu } from "antd";
 import classNames from "classnames";
 import React, {
   FC,
-  Fragment,
   useCallback,
   useEffect,
   useRef,
@@ -93,6 +92,9 @@ export const LayoutMenu: FC<IProps> = ({
     menuId,
     colors,
     fontStyles,
+    style,
+    styleOnHover,
+    styleOnSelected,
     styleOnSubMenu,
   });
 
@@ -218,7 +220,7 @@ export const LayoutMenu: FC<IProps> = ({
 
   if (overflow === "menu")
     return (
-      <Fragment>
+      <div className={styles.menuContainer} style={style}>
         <Button type="link" icon={<MenuOutlined />} onClick={onClick} />
         <ShaMenuDrawer
           items={menuItems}
@@ -226,17 +228,21 @@ export const LayoutMenu: FC<IProps> = ({
           onClose={onClose}
           colors={colors}
           fontStyles={fontStyles}
+          styleOnHover={styleOnHover}
+          styleOnSelected={styleOnSelected}
           styleOnSubMenu={styleOnSubMenu}
           menuId={menuId}
         />
-      </Fragment>
+      </div>
     );
 
   return (
-    <div className={styles.menuContainer}>
+    <div className={styles.menuContainer} style={style}>
       {menuId ? (
         <ScopedMenuStyles
           colors={colors}
+          styleOnHover={convertJsonToCss(styleOnHover)}
+          styleOnSelected={convertJsonToCss(styleOnSelected)}
           styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
           fontStyles={fontStyles}
           menuId={menuId}
@@ -244,6 +250,8 @@ export const LayoutMenu: FC<IProps> = ({
       ) : (
         <GlobalMenuStyles
           colors={colors}
+          styleOnHover={convertJsonToCss(styleOnHover)}
+          styleOnSelected={convertJsonToCss(styleOnSelected)}
           styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
           fontStyles={fontStyles}
         />
@@ -266,7 +274,7 @@ export const LayoutMenu: FC<IProps> = ({
           overflowedIndicator={<OverflowedIndicator className={styles.shaHamburgerItem} />}
           overflowedIndicatorPopupClassName={menuId ? `horizontal-menu-${menuId}-dropdown` : undefined}
           disabledOverflow={isScrolling}
-          style={style}
+          style={{ background: 'none' }}
         />
       </div>
 

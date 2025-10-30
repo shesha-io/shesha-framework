@@ -181,8 +181,6 @@ export const Dropdown: FC<IDropdownProps> = ({
     allowClear,
     onChange,
     value: selectedValue,
-    disabledValues: disabledValues,
-    ignoredValues: ignoredValues,
     defaultValue,
     variant: 'borderless' as 'borderless' | 'filled' | 'outlined',
     disabled: readOnly,

@@ -13,6 +13,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
+  const backgroundStylePnlId = nanoid();
+  const menuSpecificPnlId = nanoid();
+  const menuSpecificContentId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -297,12 +300,12 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       parentId: styleRouterId,
                       collapsible: 'header',
                       content: {
-                        id: nanoid(),
+                        id: backgroundStylePnlId,
                         components: [
                           ...new DesignerToolbarSettings()
                             .addSettingsInput({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: backgroundStylePnlId,
                               label: "Type",
                               jsSetting: false,
                               propertyName: "background.type",
@@ -312,7 +315,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: backgroundStylePnlId,
                               inputs: [{
                                 type: 'colorPicker',
                                 id: nanoid(),
@@ -325,7 +328,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: backgroundStylePnlId,
                               inputs: [{
                                 type: 'multiColorPicker',
                                 id: nanoid(),
@@ -338,7 +341,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: backgroundStylePnlId,
                               inputs: [{
                                 type: 'textField',
                                 id: nanoid(),
@@ -350,7 +353,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: backgroundStylePnlId,
                               inputs: [{
                                 type: 'imageUploader',
                                 id: nanoid(),
@@ -362,7 +365,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: backgroundStylePnlId,
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
@@ -376,7 +379,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: backgroundStylePnlId,
                               inline: true,
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               inputs: [
@@ -403,7 +406,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
-                              parentId: styleRouterId,
+                              parentId: backgroundStylePnlId,
                               inputs: [{
                                 type: 'radio',
                                 id: nanoid(),
@@ -509,87 +512,82 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       },
                     })
                     .addCollapsiblePanel({
-                      id: nanoid(),
-                      propertyName: 'customStyle',
-                      label: 'Custom Styles',
+                      id: menuSpecificPnlId,
+                      propertyName: 'pnlMenuSpecific',
+                      label: 'Menu Specific',
+                      parentId: styleRouterId,
                       labelAlign: 'right',
                       ghost: true,
+                      collapsible: 'header',
+                      content: {
+                        id: menuSpecificContentId,
+                        components: [...new DesignerToolbarSettings()
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            parentId: menuSpecificContentId,
+                            inputs: [
+                              {
+                                type: 'numberField',
+                                id: nanoid(),
+                                propertyName: 'gap',
+                                label: 'Gap',
+                                jsSetting: true,
+                                min: 1,
+                                max: 100,
+                                defaultValue: 12,
+                              },
+                            ],
+                          })
+                          .toJson(),
+                        ],
+                      },
+                    })
+                    .addCollapsiblePanel({
+                      id: nanoid(),
+                      propertyName: 'pnlCustomStyle',
+                      label: 'Custom Styles',
                       parentId: styleRouterId,
+                      labelAlign: 'right',
+                      ghost: true,
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
                         components: [...new DesignerToolbarSettings()
-                          // Menu-specific style properties
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
                             propertyName: 'style',
                             label: 'Style',
+                            mode: 'dialog',
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                           })
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
                             propertyName: 'styleOnHover',
                             label: 'Style On Hover',
-                            description: 'Style applied when menu item is hovered',
+                            mode: 'dialog',
+                            description: 'A script that returns the hover style of the element as an object. This should conform to CSSProperties',
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                           })
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
                             propertyName: 'styleOnSelected',
                             label: 'Style On Selected',
-                            description: 'Style applied when menu item is selected',
+                            mode: 'dialog',
+                            description: 'A script that returns the selected style of the element as an object. This should conform to CSSProperties',
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                           })
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
                             propertyName: 'styleOnSubMenu',
                             label: 'Style On Sub Menu',
-                            description: 'Style applied to submenu items',
-                          })
-                          // Menu color properties
-                          .addColorPicker({
-                            id: nanoid(),
-                            propertyName: 'selectedItemColor',
-                            label: 'Selected Item Color',
-                            allowClear: true,
-                            jsSetting: true,
-                          })
-                          .addColorPicker({
-                            id: nanoid(),
-                            propertyName: 'selectedItemBackground',
-                            label: 'Selected Item Background',
-                            allowClear: true,
-                            jsSetting: true,
-                          })
-                          .addColorPicker({
-                            id: nanoid(),
-                            propertyName: 'itemColor',
-                            label: 'Item Color',
-                            allowClear: true,
-                            jsSetting: true,
-                          })
-                          .addColorPicker({
-                            id: nanoid(),
-                            propertyName: 'itemBackground',
-                            label: 'Item Background',
-                            allowClear: true,
-                            jsSetting: true,
-                          })
-                          .addColorPicker({
-                            id: nanoid(),
-                            propertyName: 'hoverItemColor',
-                            label: 'Hover Item Color',
-                            allowClear: true,
-                            jsSetting: true,
-                          })
-                          .addColorPicker({
-                            id: nanoid(),
-                            propertyName: 'hoverItemBackground',
-                            label: 'Hover Background Color',
-                            allowClear: true,
-                            jsSetting: true,
+                            mode: 'dialog',
+                            description: 'A script that returns the sub menu style of the element as an object. This should conform to CSSProperties',
+                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                           })
                           .toJson(),
                         ],

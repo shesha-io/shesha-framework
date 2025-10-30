@@ -66,15 +66,15 @@ namespace Shesha.Tests.ModuleHierarchy
                 await uowManager.Current.SaveChangesAsync();
 
                 // 4. Resolve Shesha form (expect ModuleA form)
-                var resolvedSheshaForm = await formManager.GetItemAsync(SheshaFrameworkModule.ModuleName, formName);
+                var resolvedSheshaForm = await formManager.ResolveItemAsync(SheshaFrameworkModule.ModuleName, formName);
                 resolvedSheshaForm.ShouldBe(exposedInA, $"Manager must resolve form `{SheshaFrameworkModule.ModuleName}/{formName}` as `{SheshaTestsModuleA.ModuleName}/{formName}`");
 
                 // 5. Resolve ModuleB form (expect ModuleA form)
-                var resolvedModuleBForm = await formManager.GetItemAsync(SheshaTestsModuleB.ModuleName, formName);
+                var resolvedModuleBForm = await formManager.ResolveItemAsync(SheshaTestsModuleB.ModuleName, formName);
                 resolvedModuleBForm.ShouldBe(exposedInB, $"Manager must resolve form `{SheshaTestsModuleB.ModuleName}/{formName}` as `{SheshaTestsModuleB.ModuleName}/{formName}`");
 
                 // 6. Resolve ModuleA form (expect ModuleA form)
-                var resolvedModuleAForm = await formManager.GetItemAsync(SheshaTestsModuleA.ModuleName, formName);
+                var resolvedModuleAForm = await formManager.ResolveItemAsync(SheshaTestsModuleA.ModuleName, formName);
                 resolvedModuleAForm.ShouldBe(exposedInA, $"Manager must resolve form `{SheshaTestsModuleA.ModuleName}/{formName}` as `{SheshaTestsModuleA.ModuleName}/{formName}`");
             });
         }
@@ -129,15 +129,15 @@ namespace Shesha.Tests.ModuleHierarchy
                 await uowManager.Current.SaveChangesAsync();
 
                 // 4. Resolve Shesha form (expect ModuleA form)
-                var resolvedSheshaForm = await formManager.GetItemAsync(SheshaFrameworkModule.ModuleName, formName);
+                var resolvedSheshaForm = await formManager.ResolveItemAsync(SheshaFrameworkModule.ModuleName, formName);
                 resolvedSheshaForm.ShouldBe(moduleAForm, $"Manager must resolve form `{SheshaFrameworkModule.ModuleName}/{formName}` as `{SheshaTestsModuleA.ModuleName}/{formName}`");
 
                 // 5. Resolve ModuleB form (expect ModuleA form)
-                var resolvedModuleBForm = await formManager.GetItemAsync(SheshaTestsModuleB.ModuleName, formName);
+                var resolvedModuleBForm = await formManager.ResolveItemAsync(SheshaTestsModuleB.ModuleName, formName);
                 resolvedModuleBForm.ShouldBe(moduleAForm, $"Manager must resolve form `{SheshaTestsModuleB.ModuleName}/{formName}` as `{SheshaTestsModuleA.ModuleName}/{formName}`");
 
                 // 6. Resolve ModuleA form (expect ModuleA form)
-                var resolvedModuleAForm = await formManager.GetItemAsync(SheshaTestsModuleA.ModuleName, formName);
+                var resolvedModuleAForm = await formManager.ResolveItemAsync(SheshaTestsModuleA.ModuleName, formName);
                 resolvedModuleAForm.ShouldBe(moduleAForm, $"Manager must resolve form `{SheshaTestsModuleA.ModuleName}/{formName}` as `{SheshaTestsModuleA.ModuleName}/{formName}`");
             });
         }
@@ -190,11 +190,11 @@ namespace Shesha.Tests.ModuleHierarchy
                 await uowManager.Current.SaveChangesAsync();
 
                 // 3. Resolve Shesha form (expect Shesha form)
-                var resolvedSheshaForm = await formManager.GetItemAsync(SheshaFrameworkModule.ModuleName, formName);
+                var resolvedSheshaForm = await formManager.ResolveItemAsync(SheshaFrameworkModule.ModuleName, formName);
                 resolvedSheshaForm.ShouldBe(sheshaForm, $"Manager must resolve form `{SheshaFrameworkModule.ModuleName}/{formName}` as `{SheshaFrameworkModule.ModuleName}/{formName}`");
 
                 // 4. Resolve ModuleB form (expect ModuleA form)
-                var resolvedModuleBForm = await formManager.GetItemAsync(SheshaTestsModuleB.ModuleName, formName);
+                var resolvedModuleBForm = await formManager.ResolveItemAsync(SheshaTestsModuleB.ModuleName, formName);
                 resolvedModuleBForm.ShouldBe(moduleBForm, $"Manager must resolve form `{SheshaTestsModuleB.ModuleName}/{formName}` as `{SheshaTestsModuleB.ModuleName}/{formName}`");
             });
         }
@@ -243,11 +243,11 @@ namespace Shesha.Tests.ModuleHierarchy
                 await uowManager.Current.SaveChangesAsync();
 
                 // 3. Resolve Shesha form (expect TestModule form)
-                var resolvedSheshaForm = await formManager.GetItemAsync(SheshaFrameworkModule.ModuleName, formName);
+                var resolvedSheshaForm = await formManager.ResolveItemAsync(SheshaFrameworkModule.ModuleName, formName);
                 resolvedSheshaForm.ShouldBe(exposedInTestModule, $"Manager must resolve form `{SheshaFrameworkModule.ModuleName}/{formName}` as `{SheshaTestModule.ModuleName}/{formName}`");
 
                 // 5. Resolve TestModule form (expect TestModule form)
-                var resolvedTestModuleForm = await formManager.GetItemAsync(SheshaTestModule.ModuleName, formName);
+                var resolvedTestModuleForm = await formManager.ResolveItemAsync(SheshaTestModule.ModuleName, formName);
                 resolvedTestModuleForm.ShouldBe(exposedInTestModule, $"Manager must resolve form `{SheshaTestModule.ModuleName}/{formName}` as `{SheshaTestModule.ModuleName}/{formName}`");
             });
         }

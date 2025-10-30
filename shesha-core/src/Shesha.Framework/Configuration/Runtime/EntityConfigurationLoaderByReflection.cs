@@ -20,7 +20,7 @@ namespace Shesha.Configuration.Runtime
     /// </summary>
     public class EntityConfigurationLoaderByReflection
     {
-        public void LoadConfiguration([NotNull]EntityConfiguration config)
+        public void LoadConfiguration([NotNull]EntityTypeConfiguration config)
         {
             LoadEntityConfiguration(config);
 
@@ -55,7 +55,7 @@ namespace Shesha.Configuration.Runtime
             }
         }
 
-        private void LoadEntityConfiguration(EntityConfiguration config)
+        private void LoadEntityConfiguration(EntityTypeConfiguration config)
         {
             var entityAtt = config.EntityType.GetUniqueAttribute<EntityAttribute>();
 
@@ -132,7 +132,7 @@ namespace Shesha.Configuration.Runtime
             return propConfig;
         }
 
-        private void LoadChangeLoggingConfiguration(EntityConfiguration config)
+        private void LoadChangeLoggingConfiguration(EntityTypeConfiguration config)
         {
             return;
             /* todo: check ABP audit logging and uncomment/remove

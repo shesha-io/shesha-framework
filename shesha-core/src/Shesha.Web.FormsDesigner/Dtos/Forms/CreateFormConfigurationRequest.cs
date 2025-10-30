@@ -27,15 +27,5 @@ namespace Shesha.Web.FormsDesigner.Dtos.Forms
         /// Template that is used for the form creation
         /// </summary>
         public Guid? TemplateId { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string? Label { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string? Description { get; set; }
     }
 }

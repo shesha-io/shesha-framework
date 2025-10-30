@@ -29,7 +29,7 @@ namespace Shesha.DynamicEntities
 {
     public class EntitiesAppService : SheshaAppServiceBase
     {
-        private readonly IEntityConfigurationStore _entityConfigStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigStore;
         private readonly IExcelUtility _excelUtility;
         private readonly IObjectPermissionChecker _objectPermissionChecker;
         private readonly ISpecificationsFinder _specificationsFinder;
@@ -37,7 +37,7 @@ namespace Shesha.DynamicEntities
         public IObjectMapper AutoMapper { get; set; }
 
         public EntitiesAppService(
-            IEntityConfigurationStore entityConfigStore,
+            IEntityTypeConfigurationStore entityConfigStore,
             IExcelUtility excelUtility,
             IObjectPermissionChecker objectPermissionChecker,
             ISpecificationsFinder specificationsFinder
@@ -49,7 +49,7 @@ namespace Shesha.DynamicEntities
             _specificationsFinder = specificationsFinder;
         }
 
-        protected async Task CheckPermissionAsync(EntityConfiguration entityConfig, string method)
+        protected async Task CheckPermissionAsync(EntityTypeConfiguration entityConfig, string method)
         {
             var crudMethod = PermissionedObjectManager.GetCrudMethod(method, method);
             await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.GetRequiredFullName(), crudMethod.NotNull(), ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);

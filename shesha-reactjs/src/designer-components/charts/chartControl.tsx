@@ -47,7 +47,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     ...state
   } = useChartDataStateContext();
 
-  const { refetch } = useGet({ path: '', lazy: true });
+  const { refetch } = useGet<IAbpWrappedGetEntityListResponse>({ path: '', lazy: true });
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsLoaded, setAxisPropertyLabel, setValuePropertyLabel } = useChartDataActionsContext();
@@ -143,7 +143,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
       // Get metadata first to identify reference list properties
       const metaData = await getMetadata({ modelType: entityType, dataType: 'entity' });
 
-      const faultyPropertiesInner = validateEntityProperties(metaData?.properties as IPropertyMetadata[], axisProperty, valueProperty, groupingProperty);
+      const faultyPropertiesInner = validateEntityProperties((metaData?.properties ?? []) as IPropertyMetadata[], axisProperty, valueProperty, groupingProperty);
 
       // Instead of blocking the chart, just warn about invalid properties
       if (faultyPropertiesInner.length > 0) {

@@ -14,7 +14,7 @@ import {
   useGlobalState,
   useHttpClient,
   useMetadata,
-  useShaFormInstance,
+  useShaFormInstanceOrUndefined,
   useSheshaApplication,
 } from '@/providers';
 import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
@@ -57,6 +57,7 @@ import { adjustWidth } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { getFormApi } from '@/providers/form/formApi';
+import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -162,6 +163,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     strictSortBy,
     setColumnWidths,
     customReorderEndpoint,
+    onBeforeRowReorder,
+    onAfterRowReorder,
   } = store;
 
   const { backendUrl } = useSheshaApplication();
@@ -388,7 +391,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [selectedIds, handleSelectionChange, previousIds]);
 
   const toolboxComponents = useFormDesignerComponents();
-  const shaForm = useShaFormInstance(false);
+  const shaForm = useShaFormInstanceOrUndefined();
 
   const onNewRowInitializeExecuter = useMemo<Function>(() => {
     return props.onNewRowInitialize
@@ -808,14 +811,106 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (supported !== true)
       throw new Error(typeof supported === 'string' ? supported : 'Reordering is not supported');
 
+    // Get current data state
+    const oldData = payload.getOld();
+    const newData = payload.getNew();
+    const oldIdx = payload.oldIndex ?? -1;
+    const newIdx = payload.newIndex ?? -1;
 
+    // Validate indices
+    if (oldIdx < 0 || oldIdx >= oldData.length || newIdx < 0 || newIdx >= oldData.length) {
+      console.warn(
+        `Invalid reorder indices: oldIndex=${oldIdx}, newIndex=${newIdx}, data length=${oldData.length}. Resetting to original order.`,
+      );
+      payload.applyOrder(oldData);
+      throw new Error(
+        `Reordering cancelled: indices out of bounds (oldIndex=${oldIdx}, newIndex=${newIdx}, valid range=0-${oldData.length - 1})`,
+      );
+    }
+
+    const movedRow = oldData[oldIdx];
+
+    // Execute onBeforeRowReorder event (if configured)
+    if (onBeforeRowReorder) {
+      await new Promise<void>((resolve, reject) => {
+        const beforeArgs: IBeforeRowReorderArguments = {
+          oldIndex: oldIdx,
+          newIndex: newIdx,
+          rowData: movedRow,
+          allData: oldData,
+        };
+
+        const evaluationContext = {
+          data: beforeArgs,
+          formData,
+          globalState,
+          setGlobalState,
+          http: httpClient,
+          moment,
+        };
+
+        executeAction({
+          actionConfiguration: {
+            ...onBeforeRowReorder,
+          },
+          argumentsEvaluationContext: evaluationContext,
+          success: () => {
+            resolve();
+          },
+          fail: (error) => {
+            console.error('OnBeforeRowReorder event error:', error);
+            payload.applyOrder(oldData);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            reject(new Error(errorMessage));
+          },
+        });
+      });
+    }
+
+    // Prepare reorder payload
     const reorderPayload: RowsReorderPayload = {
       ...payload,
       propertyName: strictSortBy,
       customReorderEndpoint: customReorderEndpoint,
     };
 
-    await repository.reorder(reorderPayload);
+    try {
+      // Execute the actual reorder operation
+      const apiResponse = await repository.reorder(reorderPayload);
+
+      // Execute onAfterRowReorder event (if configured)
+      if (onAfterRowReorder) {
+        try {
+          const afterArgs: IAfterRowReorderArguments = {
+            oldIndex: oldIdx,
+            newIndex: newIdx,
+            rowData: movedRow,
+            allData: newData,
+            response: apiResponse,
+          };
+
+          const evaluationContext = {
+            data: afterArgs,
+            formData,
+            globalState,
+            setGlobalState,
+            http: httpClient,
+            moment,
+          };
+
+          // Execute the after event action
+          await executeAction({
+            actionConfiguration: onAfterRowReorder,
+            argumentsEvaluationContext: evaluationContext,
+          });
+        } catch (error) {
+          console.error('OnAfterRowReorder event error:', error);
+          // Note: We don't throw here as the reorder has already completed successfully
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
   };
 
   const onResizedChange = (columns: ColumnInstance[], _columnSizes: IColumnResizing): void => {

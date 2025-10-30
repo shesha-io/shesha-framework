@@ -4,13 +4,15 @@ import React, { FC, PropsWithChildren, useContext, useState } from 'react';
 import { EntityMetadataFetcher } from './entityMetadataFetcher';
 import { IEntityMetadataFetcher } from './models';
 import { createNamedContext } from '@/utils/react';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 
 export const EntityMetadataFetcherContext = createNamedContext<IEntityMetadataFetcher | undefined>(undefined, "EntityMetadataFetcherContext");
 
 export const EntityMetadataFetcherProvider: FC<PropsWithChildren> = ({ children }) => {
   const httpClient = useHttpClient();
   const cacheProvider = useCacheProvider();
-  const [fetcher] = useState(() => new EntityMetadataFetcher(httpClient, cacheProvider));
+  const configurationItemsLoader = useConfigurationItemsLoader();
+  const [fetcher] = useState(() => new EntityMetadataFetcher(configurationItemsLoader, httpClient, cacheProvider));
 
   return (
     <EntityMetadataFetcherContext.Provider value={fetcher}>

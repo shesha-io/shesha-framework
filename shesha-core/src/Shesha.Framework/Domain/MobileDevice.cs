@@ -10,6 +10,8 @@ namespace Shesha.Domain
     /// <summary>
     /// Registered mobile device. Is used to restrict access and identify 
     /// </summary>
+    [SnakeCaseNaming]
+    [Table("mobile_devices", Schema = "frwk")]
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     [Discriminator]
     public class MobileDevice: FullAuditedEntity<Guid>
@@ -34,9 +36,8 @@ namespace Shesha.Domain
         /// <summary>
         /// A user who created the device
         /// </summary>
-        [ForeignKey("CreatorUserId")]
+        [ForeignKey("creator_user_id")]
         public virtual User CreatorUser { get; set; }
-
 
         /// <summary>
         /// The timestamp of the last heartbeat received from the device.

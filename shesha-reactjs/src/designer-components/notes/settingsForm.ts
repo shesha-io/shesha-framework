@@ -135,13 +135,10 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     {
                       id: nanoid(),
                       propertyName: 'ownerType',
-                      type: 'autocomplete',
+                      type: 'entityTypeAutocomplete',
                       parentId: nanoid(),
                       label: 'Owner Type',
                       labelAlign: 'right',
-                      dataSourceType: 'url',
-                      dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
-                      mode: 'single',
                       jsSetting: true,
                       validate: {
                         required: true,
@@ -163,13 +160,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         required: true,
                       },
                     },
-                    {
-                      id: nanoid(),
-                      propertyName: 'category',
-                      label: 'Category',
-                      type: 'textField',
-                      jsSetting: true,
-                    },
                   ],
                 })
                 .toJson(),
@@ -184,12 +174,11 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'codeEditor',
-                  propertyName: 'onCreated',
+                  propertyName: 'onCreateAction',
                   label: 'On Create',
                   labelAlign: 'right',
                   parentId: eventsTabId,
                   tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
-                  exposedVariables: [` { name: 'createdNotes', description: 'Created note', type: 'array' },`],
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -199,7 +188,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   labelAlign: 'right',
                   parentId: eventsTabId,
                   tooltip: 'Triggered after successfully updating a note',
-                  exposedVariables: [` { name: 'note', description: 'Updated note', type: 'object' },`],
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -209,7 +197,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   labelAlign: 'right',
                   parentId: eventsTabId,
                   tooltip: 'Triggered after successfully deleting a note',
-                  exposedVariables: [` { name: 'note', description: 'delete note', type: 'object' },`],
                 })
                 .toJson(),
             ],

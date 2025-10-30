@@ -35,6 +35,8 @@ import EditModeSelector from '@/components/editModeSelector';
 import Icon from '@/components/icon/Icon';
 import { IQueryBuilderComponentProps } from '../queryBuilder/interfaces';
 import { IDynamicActionsConfiguratorComponentProps } from '../dynamicActionsConfigurator/interfaces';
+import { DatePickerWrapper } from '../dateField/datePickerWrapper';
+import { EntityTypeAutocomplete } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 
 const { Password } = Input;
 
@@ -52,7 +54,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
 
     propertyName, tooltip: description, onChangeSetting, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-    allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true } = props;
+    allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true, id, templateSettings } = props;
 
   const allData = useAvailableConstantsData();
 
@@ -77,7 +79,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     wrapInTemplate: props.wrapInTemplate ?? true,
     value: value,
     onChange: onChange,
-    templateSettings: props.templateSettings ?? { functionName: functionName },
+    templateSettings: templateSettings ?? { functionName: functionName },
     exposedVariables: defaultExposedVariables,
   };
 
@@ -359,11 +361,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       );
     case 'configurableActionConfigurator':
       return <ConfigurableActionConfigurator value={value} onChange={internalOnChange} editorConfig={null} level={0} label={label} allowedActions={props.allowedActions} hideLabel={props.hideLabel} />;
-    case 'typeAutoComplete':
+    case 'entityTypeAutocomplete':
       return (
-        <Autocomplete
-          dataSourceType="url"
-          dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
+        <EntityTypeAutocomplete
+          type={props.entityAutocompleteType}
           readOnly={readOnly}
           size={size}
           value={value}
@@ -393,6 +394,29 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
           size={size}
           readOnly={readOnly}
           variant={variant}
+        />
+      );
+
+    case 'date':
+      return (
+        <DatePickerWrapper
+          type="date"
+          id={id}
+          propertyName={propertyName}
+          value={value}
+          defaultValue={defaultValue}
+          onChange={onChange}
+          readOnly={readOnly}
+          hideBorder={false}
+          range={false}
+          showTime={false}
+          showNow={false}
+          picker="date"
+          defaultToMidnight={false}
+          resolveToUTC={false}
+          dateFormat={undefined}
+          timeFormat={undefined}
+          additionalStyles={undefined}
         />
       );
     default:

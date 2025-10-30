@@ -29,26 +29,26 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Get manager for the specified type of the <see cref="ConfigurationItem"/>
         /// </summary>
-        public static IConfigurationItemManager? GetItemManager(this IIocManager iocManager, Type itemType)
+        public static IConfigurationItemManager? GetItemManager(this IIocResolver iocResolver, Type itemType)
         {
             itemType = itemType.StripCastleProxyType();
             var managerType = typeof(ConfigurationItem).IsAssignableFrom(itemType)
                 ? typeof(IConfigurationItemManager<>).MakeGenericType(itemType)
                 : null;
 
-            return managerType != null && iocManager.IsRegistered(managerType)
-                ? iocManager.Resolve(managerType) as IConfigurationItemManager
+            return managerType != null && iocResolver.IsRegistered(managerType)
+                ? iocResolver.Resolve(managerType) as IConfigurationItemManager
                 : itemType.BaseType != null
-                    ? iocManager.GetItemManager(itemType.BaseType)
+                    ? iocResolver.GetItemManager(itemType.BaseType)
                     : null;
         }
 
         /// <summary>
         /// Get manager for the specified <paramref name="item"/>
         /// </summary>
-        public static IConfigurationItemManager? GetItemManager(this IIocManager iocManager, ConfigurationItem item) 
+        public static IConfigurationItemManager? GetItemManager(this IIocResolver iocResolver, ConfigurationItem item) 
         {
-            return iocManager.GetItemManager(item.GetType());
+            return iocResolver.GetItemManager(item.GetType());
         }
         
 
@@ -69,42 +69,42 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Get exporter for specified type of the ConfigurationItem
         /// </summary>
-        /// <param name="iocManager">IocManager instance</param>
+        /// <param name="iocResolver">IocManager instance</param>
         /// <param name="itemType">Type of the <see cref="ConfigurationItem"/></param>
         /// <returns></returns>
-        public static IConfigurableItemExport? GetItemExporter(this IIocManager iocManager, Type itemType)
+        public static IConfigurableItemExport? GetItemExporter(this IIocResolver iocResolver, Type itemType)
         {
             var exporterType = typeof(IConfigurableItemExport<>).MakeGenericType(itemType);
 
-            return iocManager.IsRegistered(exporterType)
-                ? iocManager.Resolve(exporterType) as IConfigurableItemExport
+            return iocResolver.IsRegistered(exporterType)
+                ? iocResolver.Resolve(exporterType) as IConfigurableItemExport
                 : itemType.BaseType != null
-                    ? iocManager.GetItemExporter(itemType.BaseType)
+                    ? iocResolver.GetItemExporter(itemType.BaseType)
                     : null;
         }
 
         /// <summary>
         /// Register items importer
         /// </summary>
-        public static IIocManager RegisterConfigurableItemImport<TItem, TInterface, TImplementation>(this IIocManager iocManager)
+        public static IIocManager RegisterConfigurableItemImport<TItem, TInterface, TImplementation>(this IIocManager iocResolver)
             where TItem : ConfigurationItem
             where TInterface : IConfigurableItemImport<TItem>
             where TImplementation : IConfigurableItemImport<TItem>
         {
-            iocManager.IocContainer.Register(
+            iocResolver.IocContainer.Register(
                 Component.For<IConfigurableItemImport>().Forward<IConfigurableItemImport<TItem>>().Forward<TInterface>().Forward<TImplementation>().ImplementedBy<TImplementation>().LifestyleTransient()
             );
-            return iocManager;
+            return iocResolver;
         }
 
-        public static IConfigurableItemImport? GetItemImporter(this IIocManager iocManager, Type itemType)
+        public static IConfigurableItemImport? GetItemImporter(this IIocResolver iocResolver, Type itemType)
         {
             var importerType = typeof(IConfigurableItemImport<>).MakeGenericType(itemType);
 
-            return iocManager.IsRegistered(importerType)
-                ? iocManager.Resolve(importerType) as IConfigurableItemImport
+            return iocResolver.IsRegistered(importerType)
+                ? iocResolver.Resolve(importerType) as IConfigurableItemImport
                 : itemType.BaseType != null
-                    ? iocManager.GetItemImporter(itemType.BaseType)
+                    ? iocResolver.GetItemImporter(itemType.BaseType)
                     : null;
         }
     }

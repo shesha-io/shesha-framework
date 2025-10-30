@@ -28,7 +28,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
                 id: nanoid(),
-                inputType: 'typeAutoComplete',
+                inputType: 'entityTypeAutocomplete',
                 propertyName: 'modelType',
                 label: 'Model Type',
                 parentId: dataTabId,

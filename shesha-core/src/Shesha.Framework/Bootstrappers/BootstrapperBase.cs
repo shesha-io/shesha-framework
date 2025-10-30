@@ -2,7 +2,6 @@
 using Castle.Core.Logging;
 using Shesha.Domain;
 using Shesha.Reflection;
-using Shesha.Services;
 using Shesha.Startup;
 using System;
 using System.Reflection;

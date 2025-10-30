@@ -21,7 +21,7 @@ namespace Shesha.DynamicEntities.DbGenerator
 
         public abstract string SchemaName { get; }
 
-        public string TableName => SchemaName.IsNullOrEmpty() ? CurrentTable.NotNull("Table name should not be null") : $"{SchemaName}.{CurrentTable.NotNull("Table name should not be null")}";
+        public virtual string TableName => SchemaName.IsNullOrEmpty() ? CurrentTable.NotNull("Table name should not be null") : $"{SchemaName}.{CurrentTable.NotNull("Table name should not be null")}";
 
         public BaseDbMetadataActions(
             IUnitOfWorkManager unitOfWorkManager
