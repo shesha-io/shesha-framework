@@ -91,11 +91,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   );
 
   // var(--ant-primary-3)
-  const hoverableRow = `
+  const hoverableRow = rowHoverBackgroundColor ? `
         &:not(.${trSelected}) {
-            background: ${rowHoverBackgroundColor || token.colorPrimaryBgHover} !important;
+            background: ${rowHoverBackgroundColor} !important;
         }
-    `;
+    ` : '';
 
   const groupBorder = '1px solid lightgray';
   const nestedPaddings = (indexStart: number, index: number): SerializedStyles | null => {

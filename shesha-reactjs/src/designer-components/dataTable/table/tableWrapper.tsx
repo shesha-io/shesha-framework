@@ -215,6 +215,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
           rowHoverBackgroundColor={props.rowHoverBackgroundColor}
           rowSelectedBackgroundColor={props.rowSelectedBackgroundColor}
           border={props.border}
+          hoverHighlight={props.hoverHighlight}
         />
       </div>
     </SidebarContainer>

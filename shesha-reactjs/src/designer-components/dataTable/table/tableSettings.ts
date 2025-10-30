@@ -937,6 +937,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                                 type: 'switch',
                                 tooltip: 'Enable alternating row colors',
                                 jsSetting: true,
+                                defaultValue: true,
                               },
                               {
                                 id: nanoid(),

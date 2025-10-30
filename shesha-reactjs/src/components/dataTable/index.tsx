@@ -81,6 +81,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   rowSelectedBackgroundColor?: string;
   borderRadius?: string;
   border?: IBorderValue;
+  hoverHighlight?: boolean;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -121,6 +122,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
   border,
+  hoverHighlight,
   onRowClick,
   onRowDoubleClick,
   onRowHover,
@@ -396,7 +398,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       const prevSorted = [...prevIds].sort();
 
       const hasChanged = currentSorted.length !== prevSorted.length ||
-                        currentSorted.some((id, index) => id !== prevSorted[index]);
+        currentSorted.some((id, index) => id !== prevSorted[index]);
 
       if (hasChanged) {
         handleSelectionChange(currentIds);
@@ -977,7 +979,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     rowBackgroundColor,
     rowAlternateBackgroundColor,
-    rowHoverBackgroundColor,
+    rowHoverBackgroundColor: hoverHighlight ? rowHoverBackgroundColor : undefined,
     rowSelectedBackgroundColor,
     border,
 
