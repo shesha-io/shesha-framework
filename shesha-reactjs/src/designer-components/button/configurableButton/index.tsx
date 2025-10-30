@@ -74,17 +74,21 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       href={navigationUrl}
       title={props.tooltip}
       block={props.block}
+      disabled={buttonDisabled}
+      aria-disabled={buttonDisabled}
+      tabIndex={buttonDisabled ? -1 : undefined}
       loading={buttonLoading}
       onClick={onButtonClick}
       type={props.buttonType}
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
       iconPosition={props.iconPosition}
-      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton, buttonDisabled && styles.disabled)}
+      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton)}
       size={props?.size}
       style={{
         ...props?.style,
         ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }),
+        ...(buttonDisabled && { pointerEvents: "none" }),
       }}
     >
       {props.label}
