@@ -78,13 +78,14 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
           <Button
             title={tooltip}
             type={buttonType}
+            disabled={readOnly}
             danger={danger}
             icon={icon ? <ShaIcon iconName={icon as IconType} /> : undefined}
             iconPosition={iconPosition}
             className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
             size={size}
             block={block}
-            style={{ ...newStyles, ...(readOnly && { cursor: 'not-allowed' }) }}
+            style={{ ...newStyles}}
           >
             {label}
           </Button>
