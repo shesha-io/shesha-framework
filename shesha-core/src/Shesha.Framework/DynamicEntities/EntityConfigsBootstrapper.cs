@@ -342,10 +342,10 @@ namespace Shesha.DynamicEntities
 
         private async Task<EntityProperty> OverrideChildAsync(EntityProperty property, EntityProperty parentProperty)
         {
-            var prop = parentProperty.Properties.FirstOrDefault(x => x.Name == property.Name);
+            var prop = parentProperty.Properties.FirstOrDefault(x => !x.IsDeleted && x.Name == property.Name);
             if (prop == null)
             {
-                var sortOrder = parentProperty.Properties.Max(x => x.SortOrder);
+                var sortOrder = parentProperty.Properties.Where(x => !x.IsDeleted).Max(x => x.SortOrder);
 
                 prop = new EntityProperty()
                 {
@@ -401,10 +401,10 @@ namespace Shesha.DynamicEntities
 
             foreach (var config in inherited)
             {
-                var prop = _dbAllProperties.FirstOrDefault(x => x.EntityConfig == config && x.Name == property.Name && x.ParentProperty == null);
+                var prop = _dbAllProperties.FirstOrDefault(x => !x.IsDeleted && x.EntityConfig == config && x.Name == property.Name && x.ParentProperty == null);
                 if (prop == null)
                 {
-                    var sortOrder = _dbAllProperties.Where(x => x.EntityConfig == config).Max(x => x.SortOrder);
+                    var sortOrder = _dbAllProperties.Where(x => !x.IsDeleted && x.EntityConfig == config).Max(x => x.SortOrder);
 
                     prop = new EntityProperty()
                     {
