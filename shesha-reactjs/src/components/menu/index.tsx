@@ -92,7 +92,6 @@ export const LayoutMenu: FC<IProps> = ({
     menuId,
     colors,
     fontStyles,
-    style,
     styleOnHover,
     styleOnSelected,
     styleOnSubMenu,

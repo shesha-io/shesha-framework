@@ -93,15 +93,14 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       ...filterObjFromKeys(model, [
         "selectedItemColor",
         "selectedItemBackground",
-        "itemColor",
-        "itemBackground",
         "hoverItemColor",
         "hoverItemBackground",
       ]),
-      // Only set itemBackground for 'color' type or when no type is specified
+      // Use font.color as the source of truth for item text color
+      itemColor: model.font?.color,
+      // Use background.color as the source of truth for item background when type is 'color'
       // For other types (gradient, image, url, storedFile), let allStyles.backgroundStyles handle it
-      itemBackground: model.itemBackground || ((!model.background?.type || model.background?.type === 'color') ? model.background?.color : undefined),
-      itemColor: model.itemColor || model.font?.color,
+      itemBackground: (!model.background?.type || model.background?.type === 'color') ? model.background?.color : undefined,
     };
 
     const finalStyle = useMemo(() => {
@@ -136,23 +135,25 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
               <BlockOverlay>
                 <EditOutlined className="sha-configurable-sidemenu-button-wrapper" />
               </BlockOverlay>
-              <LayoutMenu
-                colors={colors}
-                fontSize={typeof fontSize === 'string' ? fontSize : String(fontSize)}
-                padding={{ x: gap, y: height }}
-                style={{
-                  ...finalStyle,
-                  ...finalFontStyles,
-                  width: width,
-                } as React.CSSProperties}
-                styleOnHover={getStyle(model?.styleOnHover, data)}
-                styleOnSelected={getStyle(model?.styleOnSelected, data)}
-                styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
-                overflow={model.overflow}
-                width={width}
-                fontStyles={finalFontStyles as React.CSSProperties}
-                menuId={model.id}
-              />
+              <div className="edit-mode">
+                <LayoutMenu
+                  colors={colors}
+                  fontSize={typeof fontSize === 'string' ? fontSize : String(fontSize)}
+                  padding={{ x: gap, y: height }}
+                  style={{
+                    ...finalStyle,
+                    ...finalFontStyles,
+                    width: width,
+                  } as React.CSSProperties}
+                  styleOnHover={getStyle(model?.styleOnHover, data)}
+                  styleOnSelected={getStyle(model?.styleOnSelected, data)}
+                  styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
+                  overflow={model.overflow}
+                  width={width}
+                  fontStyles={finalFontStyles as React.CSSProperties}
+                  menuId={model.id}
+                />
+              </div>
             </div>
           );
         }}
