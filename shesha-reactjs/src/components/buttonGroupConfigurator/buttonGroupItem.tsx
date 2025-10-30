@@ -85,7 +85,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
             className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
             size={size}
             block={block}
-            style={{ ...newStyles}}
+            style={{ ...newStyles }}
           >
             {label}
           </Button>
