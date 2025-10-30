@@ -213,16 +213,18 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     // Detect if this is an all-day selection (month view)
     // react-big-calendar sets end date to midnight of the next day for all-day selections
     // We need to adjust only for all-day selections, not time-based selections
-    const isAllDayRange =
-      moment(slotInfo.start).startOf('day').isSame(slotInfo.start) &&
-      moment(slotInfo.end).startOf('day').isSame(slotInfo.end) &&
-      moment(slotInfo.end).diff(slotInfo.start, 'hours') >= 24;
+    const startIsMidnight = moment(slotInfo.start).isSame(moment(slotInfo.start).startOf('day'));
+    const endIsMidnight = moment(slotInfo.end).isSame(moment(slotInfo.end).startOf('day'));
+    const spansWholeDays =
+      moment(slotInfo.end).startOf('day').diff(moment(slotInfo.start).startOf('day'), 'days') >= 1;
+
+    const isAllDayRange = startIsMidnight && endIsMidnight && spansWholeDays;
 
     const adjustedSlotInfo = isAllDayRange
       ? {
-          ...slotInfo,
-          end: moment(slotInfo.end).subtract(1, 'day').endOf('day').toDate(),
-        }
+        ...slotInfo,
+        end: moment(slotInfo.end).subtract(1, 'day').endOf('day').toDate(),
+      }
       : slotInfo;
 
     const evaluationContext = {
