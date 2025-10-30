@@ -169,6 +169,24 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   };
 
+  const toggleAllRowsRef = useRef<((value?: boolean) => void) | null>(null);
+
+  const createOnSingleRowToggle = (callback: (...args: any) => void, row: Row<any>) => (e: ChangeEvent) => {
+    const isSelected = !!(e.target as any)?.checked;
+
+    // For single selection mode, first clear all selections if this row is being selected
+    if (isSelected && selectionMode === 'single' && toggleAllRowsRef.current) {
+      // Clear all other selections first
+      toggleAllRowsRef.current(false);
+    }
+
+    callback(e);
+
+    if (onMultiRowSelect) {
+      const selectedRows = { ...getPlainValue(row), isSelected };
+      onMultiRowSelect(selectedRows);
+    }
+  };
 
   const preparedColumns = useMemo(() => {
     const localColumns = [...allColumns];
@@ -198,7 +216,7 @@ export const ReactTable: FC<IReactTableProps> = ({
             <IndeterminateCheckbox
               {...row.getToggleRowSelectedProps()}
               onChange={selectionMode === 'single'
-                ? onSingleRowToggle(row.getToggleRowSelectedProps().onChange, row)
+                ? createOnSingleRowToggle(row.getToggleRowSelectedProps().onChange, row)
                 : onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
             />
           </span>
@@ -307,22 +325,10 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const { pageIndex, pageSize, selectedRowIds, sortBy } = state;
 
-  const onSingleRowToggle = (callback: (...args: any) => void, row: Row<any>) => (e: ChangeEvent) => {
-    const isSelected = !!(e.target as any)?.checked;
-
-    // For single selection mode, first clear all selections if this row is being selected
-    if (isSelected && selectionMode === 'single') {
-      // Clear all other selections first
-      toggleAllRowsSelected(false);
-    }
-
-    callback(e);
-
-    if (onMultiRowSelect) {
-      const selectedRows = { ...getPlainValue(row), isSelected };
-      onMultiRowSelect(selectedRows);
-    }
-  };
+  // Assign the toggleAllRowsSelected function to the ref so it can be used in createOnSingleRowToggle
+  useEffect(() => {
+    toggleAllRowsRef.current = toggleAllRowsSelected;
+  }, [toggleAllRowsSelected]);
 
   const previousSortBy = usePrevious(sortBy);
 
