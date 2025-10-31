@@ -25,7 +25,7 @@ export interface IModelItem {
   /**
    * Entity type. Aplicable for entity references
    */
-  entityType?: string | null;
+  entityType?: ModelTypeIdentifier | string | null;
   /**
    * Reference list Id
    */
