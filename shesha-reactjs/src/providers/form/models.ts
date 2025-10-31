@@ -13,7 +13,6 @@ import { IBorderValue } from '@/designer-components/_settings/utils/border/inter
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { ColorValueType } from 'antd/es/color-picker/interface';
-import { PickerFocusEventHandler } from 'rc-picker/lib/interface';
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
 export const TOOLBOX_DATA_ITEM_DROPPABLE_KEY: string = 'toolboxDataItem';
@@ -151,7 +150,7 @@ export interface IComponentRuntimeProps {
   settingsValidationErrors?: IAsyncValidationError[];
 
   /** Custom onBlur handler */
-  onBlurCustom?: PickerFocusEventHandler;
+  onBlurCustom?: any;
 
   /** Custom onChange handler */
   onChangeCustom?: string;
@@ -160,7 +159,7 @@ export interface IComponentRuntimeProps {
   onClickCustom?: string;
 
   /** Custom onFocus handler */
-  onFocusCustom?: PickerFocusEventHandler;
+  onFocusCustom?: any;
 }
 
 export interface IComponentBindingProps {
