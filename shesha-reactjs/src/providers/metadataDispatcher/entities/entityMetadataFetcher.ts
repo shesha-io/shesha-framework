@@ -90,9 +90,11 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
       : null;
   };
 
-  isEntity = (className: string): Promise<boolean> => {
+  isEntity = (modelType: string | IEntityTypeIndentifier): Promise<boolean> => {
     return this.#ensureSynchronized().then(() => {
-      const typeId = this.#typesMap.resolve(className);
+      const typeId = typeof modelType === 'string'
+        ? this.#typesMap.resolve(modelType)
+        : this.#typesMap.identifierExists(modelType);
       return Boolean(typeId);
     });
   };

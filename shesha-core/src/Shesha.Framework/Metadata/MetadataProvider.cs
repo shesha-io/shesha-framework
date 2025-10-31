@@ -350,13 +350,11 @@ namespace Shesha.Metadata
         public async Task<Type?> GetContainerTypeOrNullAsync(string? moduleName, string container)
         {
             var allModels = await GetAllModelsAsync();
-            var models = allModels.Where(m => m.Alias == container || m.FullClassName == container).ToList();
+            var models = allModels.Where(m => m.Name == container || m.Alias == container || m.FullClassName == container).ToList();
             if (!string.IsNullOrWhiteSpace(moduleName))
             {
-                var moduleInfos = _moduleManager.GetModuleInfos();
-                var moduleInfo = moduleInfos.First(m => m.Name == moduleName);
                 models = models.Where(m => m is EntityModelDto em
-                        ? em.ModuleAccessor == moduleInfo.GetModuleAccessor()
+                        ? em.Module == moduleName || em.ModuleAccessor == moduleName
                         : m.Type.GetConfigurableModuleName() == moduleName
                     )
                     .ToList();
