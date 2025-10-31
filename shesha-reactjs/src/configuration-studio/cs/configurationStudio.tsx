@@ -996,7 +996,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       await deleteConfigurationItemAsync(this.httpClient, { itemId: docId });
 
       if (this.isDocOpened(docId))
-        this.closeDocumentAsync(docId, false, true);
+        await this.closeDocumentAsync(docId, false, true);
 
       await this.loadTreeAsync();
     } catch (error) {

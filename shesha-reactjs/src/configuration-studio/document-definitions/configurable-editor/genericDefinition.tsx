@@ -94,7 +94,6 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
       return (
         <ConfigurableEditor
           formId={formId}
-          itemId={document.itemId}
           doc={document}
         />
       );

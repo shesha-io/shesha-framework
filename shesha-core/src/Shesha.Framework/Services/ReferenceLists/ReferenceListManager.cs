@@ -79,6 +79,7 @@ namespace Shesha.Services.ReferenceLists
                 Name = refList.Name,
                 Label = refList.Label,
                 Description = refList.Description,
+                Suppress = refList.Suppress,
             };
 
             dto.Items = await _refListHelper.GetItemsAsync(refList.Id);

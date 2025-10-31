@@ -6,7 +6,6 @@ import React, { FC, useMemo } from 'react';
 
 export interface IConfigurableEditorProps {
   doc: IDocumentInstance;
-  itemId: string;
   formId: FormFullName;
 }
 

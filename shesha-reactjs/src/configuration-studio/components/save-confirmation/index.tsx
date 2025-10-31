@@ -1,6 +1,6 @@
 import { IModalApi } from '@/configuration-studio/cs/modalApi';
 import { IDocumentInstance, SaveDocumentResponse } from '@/configuration-studio/models';
-import { Button, Typography } from 'antd';
+import { App, Button, Typography } from 'antd';
 import React, { FC } from 'react';
 
 type SaveConfirmationBodyProps = {
@@ -11,10 +11,10 @@ const SaveConfirmationBody: FC<SaveConfirmationBodyProps> = ({ doc }) => {
   return (
     <div>
       <Typography.Paragraph>
-        Do you want to save the changes you made to `{doc.label}`?
+        Do you want to save the changes you made to &apos;{doc.label}&apos;?
       </Typography.Paragraph>
       <Typography.Paragraph>
-        <Typography.Text type="secondary">Your changes will be lost if you don`t save them.</Typography.Text>
+        <Typography.Text type="secondary">Your changes will be lost if you don&apos;t save them.</Typography.Text>
       </Typography.Paragraph>
     </div>
   );
@@ -28,6 +28,7 @@ type SaveConfirmationFooterProps = {
 
 const SaveConfirmationFooter: FC<SaveConfirmationFooterProps> = ({ onResponse, doc }) => {
   const [isSaving, setIsSaving] = React.useState(false);
+  const { message } = App.useApp();
   const onSaveClick = async (): Promise<void> => {
     setIsSaving(true);
     try {
@@ -36,13 +37,14 @@ const SaveConfirmationFooter: FC<SaveConfirmationFooterProps> = ({ onResponse, d
       onResponse('save');
     } catch (error) {
       console.error('Failed to save document', error);
+      message.error('Failed to save document. Please try again.');
       setIsSaving(false);
     }
   };
   return (
     <>
       <Button type="primary" onClick={onSaveClick} loading={isSaving}>Save</Button>
-      <Button type="default" onClick={() => onResponse('dont-save')} disabled={isSaving}>Don`t Save</Button>
+      <Button type="default" onClick={() => onResponse('dont-save')} disabled={isSaving}>Don&apos;t Save</Button>
       <Button type="default" onClick={() => onResponse('cancel')} disabled={isSaving}>Cancel</Button>
     </>
   );
@@ -60,5 +62,5 @@ export const confirmSaveDocumentAsync = async (doc: IDocumentInstance, modalApi:
       content: <SaveConfirmationBody doc={doc} />,
       footer: <SaveConfirmationFooter doc={doc} onResponse={onResponse} />,
     };
-  }, { width: '416x', showCloseIcon: false });
+  }, { width: '416px', showCloseIcon: false });
 };

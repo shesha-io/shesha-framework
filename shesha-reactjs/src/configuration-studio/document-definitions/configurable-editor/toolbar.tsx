@@ -6,7 +6,7 @@ import { useShaFormDataModified, useShaFormInstance } from '@/providers/form/pro
 
 export type IGenericToolbarProps = ItemEditorProps;
 
-export const GenericToolbar: FC<IGenericToolbarProps> = ({ }) => {
+export const GenericToolbar: FC<IGenericToolbarProps> = () => {
   const shaForm = useShaFormInstance();
   const dataModified = useShaFormDataModified();
 

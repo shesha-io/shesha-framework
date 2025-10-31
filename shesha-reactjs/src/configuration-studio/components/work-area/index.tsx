@@ -98,7 +98,7 @@ export const WorkArea: FC = () => {
 
   const handleEdit: OnEdit = (e, action) => {
     if (action === 'remove' && typeof (e) === 'string') {
-      closeDocumentAsync(e, true, true);
+      void closeDocumentAsync(e, true, true);
     }
   };
 

@@ -16,14 +16,14 @@ export const getContextMenuItems = (tabsApi: UseCsTabsResponse, doc: IDocumentIn
     key: 'closeOthers',
     label: 'Close Others',
     onClick: (): void => {
-      tabsApi.closeMultipleDocumentsAsync((d) => (d !== doc), true);
+      void tabsApi.closeMultipleDocumentsAsync((d) => (d !== doc), true);
     },
   },
   {
     key: 'closeToTheRight',
     label: 'Close to the Right',
     onClick: (): void => {
-      tabsApi.closeMultipleDocumentsAsync((_, index) => {
+      void tabsApi.closeMultipleDocumentsAsync((_, index) => {
         const docIndex = tabsApi.docs.indexOf(doc);
         return index > docIndex;
       }, true);
@@ -33,7 +33,7 @@ export const getContextMenuItems = (tabsApi: UseCsTabsResponse, doc: IDocumentIn
     key: 'closeSaved',
     label: 'Close Saved',
     onClick: (): void => {
-      tabsApi.closeMultipleDocumentsAsync((doc) => {
+      void tabsApi.closeMultipleDocumentsAsync((doc) => {
         return !doc.isDataModified;
       }, true);
     },
@@ -42,7 +42,7 @@ export const getContextMenuItems = (tabsApi: UseCsTabsResponse, doc: IDocumentIn
     key: 'closeAll',
     label: 'Close All',
     onClick: (): void => {
-      tabsApi.closeMultipleDocumentsAsync((_) => (true), true);
+      void tabsApi.closeMultipleDocumentsAsync((_) => (true), true);
     },
   },
   { type: 'divider' },
@@ -50,7 +50,7 @@ export const getContextMenuItems = (tabsApi: UseCsTabsResponse, doc: IDocumentIn
     key: 'reload',
     label: 'Reload',
     onClick: (): void => {
-      tabsApi.reloadDocumentAsync(doc.itemId);
+      void tabsApi.reloadDocumentAsync(doc.itemId);
     },
   },
 ];
