@@ -12,14 +12,17 @@ import { deleteConfigurationItemAsync, deleteFolderAsync, duplicateItemAsync, fe
 import { getUnknownDocumentDefinition } from "../document-definitions/configurable-editor/genericDefinition";
 import {
   CIDocument,
+  CloseDocumentResponse,
   ConfigItemTreeNode,
   DocumentBase,
   DocumentDefinition, DocumentDefinitions,
   FolderTreeNode,
   ForceRenderFunc,
   IDocumentInstance,
+  isCIDocument,
   isConfigItemTreeNode,
   isFolderTreeNode, isModuleTreeNode, isSpecialTreeNode, ItemTypeDefinition,
+  SaveDocumentResponse,
   SpecialTreeNode,
   StoredDocumentInfo,
   TreeNode, TreeNodeType,
@@ -30,6 +33,7 @@ import { IModalApi } from "./modalApi";
 import { INotificationApi } from "./notificationApi";
 import { createManualRef } from "./utils";
 import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
+import { confirmSaveDocumentAsync } from "../components/save-confirmation";
 
 export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
 export interface ProcessingState {
@@ -167,9 +171,9 @@ export interface IConfigurationStudio {
   navigateToDocumentAsync: (docId: string) => Promise<void>;
   activateDocumentById: (docId: string | undefined) => void;
   openDocumentByIdAsync: (docId: string) => Promise<void>;
-  closeDocumentAsync: (docId: string) => Promise<void>;
+  closeDocumentAsync: (docId: string, confirmUnsavedChanges: boolean, activateNextTab: boolean) => Promise<CloseDocumentResponse>;
   reloadDocumentAsync: (docId: string) => Promise<void>;
-  closeMultipleDocumentsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => Promise<void>;
+  closeMultipleDocumentsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean, confirmUnsavedChanges: boolean) => Promise<void>;
   reorderDocumentsAsync: (fromIndex: number, toIndex: number) => Promise<void>;
   //#endregion
 
@@ -182,6 +186,7 @@ export interface IConfigurationStudio {
   deleteItemAsync: (node: ConfigItemTreeNode) => Promise<void>;
   renameItemAsync: (node: ConfigItemTreeNode) => Promise<void>;
   duplicateItemAsync: (node: ConfigItemTreeNode) => Promise<void>;
+  setDocumentModified: (docId: string, isModified: boolean) => void;
 
   showRevisionHistoryAsync: (node: ConfigItemTreeNode) => Promise<void>;
   hideRevisionHistoryAsync: (docId: string) => Promise<void>;
@@ -337,7 +342,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   restoreRevisionAsync = async (args: RestoreRevisionArgs): Promise<boolean> => {
-    if (!await this.modalApi.confirmYesNo({ title: 'Confirm Revision Restore', content: `Are you sure you want to restore revision '${args.revisionFriendlyName}'?` }))
+    if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Revision Restore', content: `Are you sure you want to restore revision '${args.revisionFriendlyName}'?` }))
       return false;
     await restoreItemRevisionAsync(this.httpClient, { itemId: args.itemId, revisionId: args.revisionId });
     return true;
@@ -533,6 +538,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
           return undefined;
 
         return definition.documentInstanceFactory({
+          // cs: this,
           itemId: d.itemId,
           label: node.name,
           moduleId: node.moduleId,
@@ -673,12 +679,20 @@ export class ConfigurationStudio implements IConfigurationStudio {
     return this.docs.some((t) => t.itemId === docId);
   };
 
-  closeDocumentAsync = async (docId: string): Promise<void> => {
+  closeDocumentAsync = async (docId: string, confirmUnsavedChanges: boolean, activateNextTab: boolean): Promise<CloseDocumentResponse> => {
     if (!this.isDocOpened(docId))
-      return;
+      return 'closed';
 
-    // TODO: check for unsaved changes, ask user to confirm
-    // TODO: unload document
+    if (confirmUnsavedChanges) {
+      const doc = this.findDocumentById(docId);
+      if (isDefined(doc) && isCIDocument(doc) && doc.isDataModified) {
+        await this.navigateToDocumentAsync(doc.itemId);
+        const result = await this.confirmSaveDocumentAsync(doc.itemId);
+        if (result === 'cancel')
+          return 'cancelled';
+      }
+    }
+
     const index = this.docs.findIndex((t) => t.itemId === docId);
     const isActive = this.activeDocId === docId;
 
@@ -688,7 +702,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.notifySubscribers(['tabs', 'doc']);
 
     // if the document was active - activate next if available
-    if (isActive) {
+    if (activateNextTab && isActive) {
       const indexToSwitch = this.docs.length - 1 >= index
         ? index
         : index - 1;
@@ -702,14 +716,33 @@ export class ConfigurationStudio implements IConfigurationStudio {
         await this.clearDocumentSelectionAsync();
       }
     }
+    return 'closed';
   };
 
-  closeMultipleDocumentsAsync = async (predicate: (doc: IDocumentInstance, index: number) => boolean): Promise<void> => {
-    // TODO: check for unsaved changes, ask user to confirm
-    const docsToClose = this.docs.filter(predicate);
+  closeMultipleDocumentsAsync = async (predicate: (doc: IDocumentInstance, index: number) => boolean, confirmUnsavedChanges: boolean): Promise<void> => {
+    const activeDoc = this.activeDocument;
+    // build list of reversed docs with active one on top of it
+    const allDocs = activeDoc
+      ? [...this.docs.filter((t) => t !== activeDoc), activeDoc]
+      : [...this.docs];
+    allDocs.reverse();
+
+    const docsToClose = allDocs.filter(predicate);
+
+    const last = docsToClose.at(-1);
     for (const doc of docsToClose) {
-      await this.closeDocumentAsync(doc.itemId);
+      const closeResponse = await this.closeDocumentAsync(doc.itemId, confirmUnsavedChanges, doc === last);
+      if (closeResponse === 'cancelled')
+        return;
     }
+  };
+
+  confirmSaveDocumentAsync = async (docId: string): Promise<SaveDocumentResponse | undefined> => {
+    const doc = this.findDoc(docId);
+    if (doc && doc.isDataModified) {
+      return await confirmSaveDocumentAsync(doc, this.modalApi);
+    }
+    return undefined;
   };
 
   getDocumentDefinition = (itemType: string): DocumentDefinition | undefined => {
@@ -875,7 +908,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   deleteFolderAsync = async (node: FolderTreeNode): Promise<void> => {
-    if (!await this.modalApi.confirmYesNo({ title: 'Confirm Deletion', content: `Are you sure you want to delete '${node.name}'?` }))
+    if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete '${node.name}'?` }))
       return;
 
     try {
@@ -955,7 +988,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   deleteItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
     const definition = this.getItemTypeDefinition(node.itemType);
-    if (!await this.modalApi.confirmYesNo({ title: 'Confirm Deletion', content: `Are you sure you want to delete ${definition.friendlyName} '${node.name}'?` }))
+    if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete ${definition.friendlyName} '${node.name}'?` }))
       return;
 
     const docId = node.id;
@@ -963,7 +996,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       await deleteConfigurationItemAsync(this.httpClient, { itemId: docId });
 
       if (this.isDocOpened(docId))
-        this.closeDocumentAsync(docId);
+        this.closeDocumentAsync(docId, false, true);
 
       await this.loadTreeAsync();
     } catch (error) {
@@ -1022,6 +1055,14 @@ export class ConfigurationStudio implements IConfigurationStudio {
         console.error(`Item creation API didn't return expected id of a new item. Item type = '${node.itemType}'`);
     } catch (error) {
       this.showError(`Failed to duplicate ${definition.friendlyName} '${node.name}'`, error);
+    }
+  };
+
+  setDocumentModified = (docId: string, isModified: boolean): void => {
+    const doc = this.getDocumenById(docId);
+    if (doc && doc.isDataModified !== isModified) {
+      doc.isDataModified = isModified;
+      this.notifySubscribers(['doc', 'tabs']);
     }
   };
 

@@ -1,17 +1,18 @@
 
 import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dropdown, Empty, MenuProps, Tabs, TabsProps } from 'antd';
-import { useCsTabs } from '../cs/hooks';
-import { DocumentEditor } from './documentEditor';
-import { useStyles } from '../styles';
-import { TabLabel } from './tab-label';
-import { IDocumentInstance } from '../models';
+import { Dropdown, Empty, Tabs, TabsProps } from 'antd';
+import { useCsTabs } from '../../cs/hooks';
+import { DocumentEditor } from '../documentEditor';
+import { useStyles } from '../../styles';
+import { TabLabel } from '../tab-label';
+import { IDocumentInstance } from '../../models';
 import { isDefined } from '@/utils/nullables';
-import { DraggableTabWithGapPlaceholder, TabsDragState, TabPosition } from './draggableTab';
+import { DraggableTabWithGapPlaceholder, TabsDragState, TabPosition } from '../draggable-tab';
+import { CloseIcon } from './closeIcon';
+import { getContextMenuItems } from './utils';
 
 type Tab = Required<TabsProps>['items'][number];
 type OnEdit = TabsProps['onEdit'];
-type MenuItem = Required<MenuProps>['items'][number];
 type RenderTabBar = Required<TabsProps>['renderTabBar'];
 
 type TabContextMenuState = {
@@ -22,60 +23,17 @@ type TabContextMenuState = {
 };
 
 export const WorkArea: FC = () => {
+  const tabsApi = useCsTabs();
   const {
     docs,
     renderedDocs,
     activeDocId,
     navigateToDocumentAsync,
     closeDocumentAsync,
-    reloadDocumentAsync,
-    closeMultipleDocumentsAsync,
     reorderDocumentsAsync,
-  } = useCsTabs();
+  } = tabsApi;
   const { styles } = useStyles();
   const [contextMenuState, setContextMenuState] = useState<TabContextMenuState>();
-
-  const getContextMenuItems = (doc: IDocumentInstance): MenuItem[] => [
-    {
-      key: 'close',
-      label: 'Close',
-      onClick: (): void => {
-        void closeDocumentAsync(doc.itemId);
-      },
-    },
-    {
-      key: 'closeOthers',
-      label: 'Close Others',
-      onClick: (): void => {
-        closeMultipleDocumentsAsync((d) => (d !== doc));
-      },
-    },
-    {
-      key: 'closeToTheRight',
-      label: 'Close to the Right',
-      onClick: (): void => {
-        closeMultipleDocumentsAsync((_, index) => {
-          const docIndex = docs.indexOf(doc);
-          return index > docIndex;
-        });
-      },
-    },
-    {
-      key: 'closeAll',
-      label: 'Close All',
-      onClick: (): void => {
-        closeMultipleDocumentsAsync((_) => (true));
-      },
-    },
-    { type: 'divider' },
-    {
-      key: 'reload',
-      label: 'Reload',
-      onClick: (): void => {
-        reloadDocumentAsync(doc.itemId);
-      },
-    },
-  ];
 
   const [dragState, setDragState] = useState<TabsDragState>({
     isDragging: false,
@@ -107,6 +65,7 @@ export const WorkArea: FC = () => {
         key: doc.itemId,
         label: <TabLabel doc={doc} onContextMenu={(e) => handleContextMenu(e, doc)} />,
         children: tabContent,
+        closeIcon: <CloseIcon doc={doc} />,
       });
     });
     // remove stale docs
@@ -139,7 +98,7 @@ export const WorkArea: FC = () => {
 
   const handleEdit: OnEdit = (e, action) => {
     if (action === 'remove' && typeof (e) === 'string') {
-      closeDocumentAsync(e);
+      closeDocumentAsync(e, true, true);
     }
   };
 
@@ -245,7 +204,7 @@ export const WorkArea: FC = () => {
           open={contextMenuState.isVisible}
           onOpenChange={(visible) => setContextMenuState({ ...contextMenuState, isVisible: visible })}
           menu={{
-            items: getContextMenuItems(contextMenuState.doc),
+            items: getContextMenuItems(tabsApi, contextMenuState.doc),
           }}
           trigger={['contextMenu']}
           align={{ points: ['tl', 'tr'] }}
