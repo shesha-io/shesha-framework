@@ -60,18 +60,33 @@ namespace Shesha.Metadata
         }
 
         [HttpGet]
-        public async Task<List<MetadataAutocompleteDto>> AutocompleteAsync(string? type, string? term, string? selectedValue)
+        public async Task<List<MetadataAutocompleteDto>> AutocompleteAsync(string? type, string? term, string? selectedValue, string? baseModel)
         {
-            var models = (await _entityModelProvider.GetModelsAsync())
-                .Where(m => !m.IsExposed)
-                .WhereIf(type == "Entity", x => x.Metadata.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
-                .WhereIf(type == "JsonEntity", x => x.Metadata.EntityConfigType == Domain.Enums.EntityConfigTypes.Interface)
-                .ToList();
-
+            var allModels = await _entityModelProvider.GetModelsAsync();
             var isPreselection = selectedValue.IsNullOrWhiteSpace();
 
             var (selectedFullClassName, selectedModule, selectedClass) = ParseInputData(selectedValue);
             var (searchFullClassName, searchModule, searchClass) = ParseInputData(term);
+
+            EntityModelDto? baseEntity = null;
+            if (!baseModel.IsNullOrWhiteSpace())
+            {
+                var (baseFullClassName, baseModule, baseClass) = ParseInputData(term);
+
+                baseEntity = allModels.FirstOrDefault(e => (
+                    !string.IsNullOrWhiteSpace(e.Alias) && e.Alias == baseFullClassName
+                    || (baseFullClassName != null && e.FullClassName == baseFullClassName)
+                    || (baseModule != null && e.Name == baseClass && e.Module == baseModule)
+                ));
+            }
+
+            var models = allModels
+                .Where(m => !m.IsExposed)
+                .WhereIf(type == "Entity", x => x.Metadata.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
+                .WhereIf(type == "JsonEntity", x => x.Metadata.EntityConfigType == Domain.Enums.EntityConfigTypes.Interface)
+                .WhereIf(baseEntity != null, x => x.Type.IsAssignableTo(baseEntity?.Type))
+                .ToList();
+
 
             var entities = models
                 .Where(e => (
