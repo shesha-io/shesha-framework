@@ -44,7 +44,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
                 onChange(...args);
             };
 
-            return <DatePickerWrapper {...model} additionalStyles={finalStyle} {...customEvent} value={value} onChange={onChangeInternal} />;
+            return <DatePickerWrapper {...model} additionalStyles={finalStyle} {...customEvent} onFocusCustom={customEvent.onFocus} onBlurCustom={customEvent.onBlur} value={value} onChange={onChangeInternal} />;
           }}
         </ConfigurableFormItem>
       </Fragment>
