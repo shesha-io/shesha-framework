@@ -177,7 +177,8 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
 };
 
 export type ShaFormSubscription<Values extends object = object> = (cs: IShaFormInstance<Values>) => void;
-export type ShaFormSubscriptionType = 'data' | 'data-loading' | 'data-submit';
+export type ShaFormSubscriptionType = 'data-modified';
+
 
 class ShaFormInstance<Values extends object = object> implements IShaFormInstance<Values> {
   private forceRootUpdate: ForceUpdateTrigger;
@@ -278,25 +279,31 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.events = {};
     this.formData = {};
     this.isDataModified = false;
-    this.subscriptions = new Map<ShaFormSubscriptionType, ShaFormSubscription<Values>>();
+    this.subscriptions = new Map<ShaFormSubscriptionType, Set<ShaFormSubscription<Values>>>();
   }
 
   //#region subscriptions
 
-  private subscriptions: Map<ShaFormSubscriptionType, ShaFormSubscription<Values>>;
+  private subscriptions: Map<ShaFormSubscriptionType, Set<ShaFormSubscription<Values>>>;
 
   subscribe(type: ShaFormSubscriptionType, callback: () => void): () => void {
-    this.subscriptions.set(type, callback);
-    return () => this.unsubscribe(type);
+    const current = this.subscriptions.get(type) ?? new Set<ShaFormSubscription<Values>>();
+    current.add(callback);
+    this.subscriptions.set(type, current);
+    return () => this.unsubscribe(type, callback);
   }
 
-  private unsubscribe(type: ShaFormSubscriptionType): void {
-    this.subscriptions.delete(type);
+  private unsubscribe(type: ShaFormSubscriptionType, callback: () => void): void {
+    const current = this.subscriptions.get(type);
+    if (!current)
+      return;
+    current.delete(callback);
+    this.subscriptions.set(type, current);
   }
 
   notifySubscribers(type: ShaFormSubscriptionType): void {
-    const callback = this.subscriptions.get(type);
-    callback?.(this);
+    const callbacks = this.subscriptions.get(type);
+    callbacks?.forEach((callback) => callback(this));
   }
 
   //#endregion
@@ -327,6 +334,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     }
 
     this.isDataModified = value;
+    this.notifySubscribers('data-modified');
   };
 
   #setInternalFormData = (values: any): void => {
@@ -738,7 +746,6 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
         this.dataSubmitState = { status: 'ready', hint: null };
         this.#setIsDataModified(false);
-        this.notifySubscribers('data-loading');
         this.forceRootUpdate();
 
         return result;

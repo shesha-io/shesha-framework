@@ -1,5 +1,4 @@
 ﻿using FluentMigrator;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations.ConfigurationStudio

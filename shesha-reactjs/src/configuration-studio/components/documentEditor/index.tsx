@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { CustomErrorBoundary } from '@/components';
-import { IDocumentInstance, isCIDocument, isCustomDocument } from '../models';
-import { useStyles } from '../styles';
-import { DocumentInstanceProvider } from '../document-instance/provider';
+import { IDocumentInstance, isCIDocument, isCustomDocument } from '../../models';
+import { useStyles } from '../../styles';
+import { DocumentInstanceProvider } from '../../document-instance/provider';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { DocumentToolbar } from './documentToolbar';
-import { RevisionHistoryDrawer } from './revision-history/drawer';
+import { DocumentToolbar } from '../document-toolbar';
+import { RevisionHistoryDrawer } from '../revision-history/drawer';
 import { isDefined } from '@/utils/nullables';
 
 export interface IItemEditorProps {
