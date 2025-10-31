@@ -3,11 +3,14 @@ using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations.ConfigurationStudio
 {
-    [Migration(20251123114499)]
-    public class M20251123114499 : OneWayMigration
+    [Migration(20251023114499)]
+    public class M20251023114499 : OneWayMigration
     {
         public override void Up()
         {
+            if (this.Shesha().MigrationApplied(20251123114499))
+                return;
+
             Execute.Sql(@"INSERT INTO frwk.user_login_attempts
 	(id, tenant_id, browser_info, client_ip_address, client_name, creation_time, device_name, imei, login_attempt_number, result_lkp, tenancy_name, user_id, user_name_or_email_address)
 select ""Id""

@@ -3,11 +3,14 @@ using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations.ConfigurationStudio
 {
-	[Migration(20251124165499)]
-    public class M20251124165499 : OneWayMigration
+	[Migration(20251024165499)]
+    public class M20251024165499 : OneWayMigration
     {
         public override void Up()
         {
+            if (this.Shesha().MigrationApplied(20251124165499))
+                return;
+
             Execute.Sql(@"create view frwk.vw_configuration_item_history_items as
 with revisions as (
 	select 
