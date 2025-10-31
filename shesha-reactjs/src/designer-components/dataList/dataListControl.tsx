@@ -130,7 +130,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     if (!onListItemSave) return (data) => Promise.resolve(data);
 
     // Create an AsyncFunction constructor to support await in user code
-    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+    const AsyncFunction = Object.getPrototypeOf(async function () { /* noop */ }).constructor;
     const executer = new AsyncFunction('data, form, contexts, globalState, http, moment', onListItemSave);
     return (data, form, contexts, globalState) => {
       // AsyncFunction already returns a Promise, so we just return it directly

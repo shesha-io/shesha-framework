@@ -367,7 +367,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!onRowSave) return (data) => Promise.resolve(data);
 
     // Create an AsyncFunction constructor to support await in user code
-    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+    const AsyncFunction = Object.getPrototypeOf(async function () { /* noop */ }).constructor;
     const executer = new AsyncFunction('data, form, globalState, http, moment, application', onRowSave);
     return (data, formApi, globalState) => {
       // AsyncFunction already returns a Promise, so we just return it directly
