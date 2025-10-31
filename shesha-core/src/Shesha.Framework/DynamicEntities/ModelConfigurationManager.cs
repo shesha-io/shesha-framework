@@ -204,6 +204,17 @@ namespace Shesha.DynamicEntities
                 }
             }
 
+            if (input.Properties.All(x => x.Name.ToLower() != "id"))
+            {
+                input.Properties.Add(new ModelPropertyDto()
+                {
+                    Name = "Id",
+                    ColumnName = "id",
+                    DataType = DataTypes.Guid,
+                    IsFrameworkRelated = true,
+                });
+            }
+
             var modelConfig = new EntityConfig()
             {
                 InheritedFrom = inheritedFrom,

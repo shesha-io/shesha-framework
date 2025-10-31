@@ -74,6 +74,7 @@ export interface ICache {
 
 export interface IEntityTypesMap {
   resolve: (className: string) => IEntityTypeIndentifier | undefined;
+  identifierExists: (model: IEntityTypeIndentifier) => boolean;
   register: (className: string, accessor: IEntityTypeIndentifier) => void;
   clear: () => void;
 }
@@ -89,5 +90,5 @@ export interface IEntityMetadataFetcher {
   syncAll: () => Promise<void>;
   getByTypeId: (typeId: IEntityTypeIndentifier) => Promise<IEntityMetadata | null>;
   getByClassName: (className: string) => Promise<IEntityMetadata | null>;
-  isEntity: (className: string) => Promise<boolean>;
+  isEntity: (modelType: string | IEntityTypeIndentifier) => Promise<boolean>;
 }

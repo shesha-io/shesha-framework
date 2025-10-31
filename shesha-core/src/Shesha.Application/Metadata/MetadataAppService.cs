@@ -159,14 +159,25 @@ namespace Shesha.Metadata
             return result;
         }
 
+        private (string? module, string name) ParseContainer(string container)
+        {
+            if (string.IsNullOrWhiteSpace(container))
+                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
+
+            var parts = container.Split(':');
+
+            if (parts.Length > 2)
+                throw new AbpValidationException($"Incorrect container format '{nameof(container)}'. Should be 'module:name' or 'className'");
+
+            return (parts.Length > 1 ? parts[0] : null, parts.Last());
+        }
+
         /// inheritedDoc
         [HttpGet]
         public async Task<List<PropertyMetadataDto>> GetPropertiesAsync(string container)
         {
-            if (string.IsNullOrWhiteSpace(container))
-                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
-            
-            var containerType = await _metadataProvider.GetContainerTypeAsync(null, container);
+            var (module, name) = ParseContainer(container);
+            var containerType = await _metadataProvider.GetContainerTypeAsync(module, name);
             var properties = await _metadataProvider.GetPropertiesAsync(containerType);
             return properties;
         }
@@ -175,10 +186,8 @@ namespace Shesha.Metadata
         [HttpGet]
         public async Task<List<AutocompleteItemDto>> GetNonFrameworkRelatedPropertiesAsync(string container, string? term, string? selectedValue)
         {
-            if (string.IsNullOrWhiteSpace(container))
-                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
-
-            var containerType = await _metadataProvider.GetContainerTypeAsync(null, container);
+            var (module, name) = ParseContainer(container);
+            var containerType = await _metadataProvider.GetContainerTypeAsync(module, name);
             var properties = await _metadataProvider.GetPropertiesAsync(containerType);
             var nonFrameworkRelatedProperties = properties.Where(x => x.IsFrameworkRelated == false).ToList();
             return FilterProperties(nonFrameworkRelatedProperties, term, selectedValue);
@@ -188,11 +197,8 @@ namespace Shesha.Metadata
         [HttpGet]
         public async Task<MetadataDto> GetAsync(string container)
         {
-            if (string.IsNullOrWhiteSpace(container))
-                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
-
-            var containerType = await _metadataProvider.GetContainerTypeAsync(null, container);
-
+            var (module, name) = ParseContainer(container);
+            var containerType = await _metadataProvider.GetContainerTypeAsync(module, name);
             return await _metadataProvider.GetAsync(containerType);
         }
 

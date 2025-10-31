@@ -194,3 +194,6 @@ export const getCachedMetadataByClassName = (className: string, context: ISyncEn
   const key = getEntityMetadataCacheKey(typeId);
   return getEntityCacheItem(key, context);
 };
+
+export const isEntityTypeIdentifier = (modelType: string | IEntityTypeIndentifier): modelType is IEntityTypeIndentifier =>
+  typeof modelType === 'object' && modelType !== null && 'name' in modelType && 'module' in modelType;

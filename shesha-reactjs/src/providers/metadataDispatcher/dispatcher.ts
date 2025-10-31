@@ -9,6 +9,7 @@ import { HttpClientApi } from "@/publicJsApis/httpClient";
 import qs from "qs";
 import { isAjaxErrorResponse } from "@/interfaces/ajaxResponse";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { isEntityTypeIdentifier } from "./entities/utils";
 
 interface IPropertyPathWithMetadata {
   path: string;
@@ -79,13 +80,16 @@ export class MetadataDispatcher implements IMetadataDispatcher {
 
   getMetadata = async (payload: IGetMetadataPayload): Promise<IModelMetadata | null> => {
     const { modelType, dataType } = payload;
-    const loadedModel = this.#models[modelType]; // TODO: split list by types
+    const container = isEntityTypeIdentifier(modelType) ? `${modelType.module}:${modelType.name}` : modelType;
+    const loadedModel = this.#models[container]; // TODO: split list by types
     if (loadedModel) return loadedModel;
 
     if (dataType === DataTypes.entityReference || dataType === DataTypes.object || dataType === null) {
       const promise = this.#entityMetaFetcher.isEntity(modelType).then((isEntity) => {
         if (isEntity)
-          return this.#entityMetaFetcher.getByClassName(modelType);
+          return isEntityTypeIdentifier(modelType)
+            ? this.#entityMetaFetcher.getByTypeId(modelType)
+            : this.#entityMetaFetcher.getByClassName(modelType);
 
         const mapProperty = (property: PropertyMetadataDto, prefix: string = ''): IPropertyMetadata => {
           const { properties, itemsType, ...rest } = property;
@@ -100,7 +104,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
           };
         };
 
-        const url = `/api/services/app/Metadata/Get?${qs.stringify({ container: modelType })}`;
+        const url = `/api/services/app/Metadata/Get?${qs.stringify({ container })}`;
         return this.#httpClient.get<MetadataDtoAjaxResponse>(url).then((rawResponse) => {
           const response = rawResponse.data;
           if (isAjaxErrorResponse(response))
@@ -108,24 +112,28 @@ export class MetadataDispatcher implements IMetadataDispatcher {
 
           const properties = response.result.properties.map<IPropertyMetadata>((p) => mapProperty(p));
           const meta: IModelMetadata = {
-            entityType: modelType,
+            entityType: container,
             dataType: response.result.dataType,
-            name: modelType, // TODO: fetch name from server
+            name: response.result.name,
+            module: response.result.module,
+            label: response.result.label,
+            description: response.result.description,
             properties,
           };
           return meta;
         }).catch((error) => {
           console.error(`Failed to fetch metadata of type "${modelType}"`, error);
           const meta: IModelMetadata = {
-            entityType: modelType,
+            entityType: container,
             dataType: 'object',
-            name: modelType, // TODO: fetch name from server
+            name: isEntityTypeIdentifier(modelType) ? modelType.name : modelType,
+            module: isEntityTypeIdentifier(modelType) ? modelType.module ?? '' : '',
             properties: [],
           };
           return meta;
         });
       });
-      this.#models[payload.modelType] = promise;
+      this.#models[container] = promise;
       return await promise;
     }
 
