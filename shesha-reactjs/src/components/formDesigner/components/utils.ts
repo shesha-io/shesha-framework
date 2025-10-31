@@ -105,7 +105,7 @@ export const customDateEventHandler = (
   },
 
   onFocus: (event: FocusEvent<HTMLInputElement>) => {
-    const expression = model?.onFocusCustom;
+    const expression = model?.onFocusCustom as unknown as string;
     if (Boolean(expression)) {
       return executeScriptSync(
         expression,
@@ -115,7 +115,7 @@ export const customDateEventHandler = (
   },
 
   onBlur: (event: FocusEvent<HTMLInputElement>) => {
-    const expression = model?.onBlurCustom;
+    const expression = model?.onBlurCustom as unknown as string;
     if (Boolean(expression)) {
       return executeScriptSync(
         expression,
