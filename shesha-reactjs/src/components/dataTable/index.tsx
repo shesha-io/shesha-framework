@@ -535,12 +535,12 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onRowSave) return (data) => Promise.resolve(data);
 
-    const executer = new Function('data, form, globalState, http, moment, application', onRowSave);
+    const AsyncFunction = Object.getPrototypeOf(async function () { /* noop */ }).constructor;
+    const executer = new AsyncFunction('data, form, globalState, http, moment, application', onRowSave);
     return (data, formApi, globalState) => {
-      const preparedData = executer(data, formApi, globalState, httpClient, moment, appContextData);
-      return Promise.resolve(preparedData);
+      return executer(data, formApi, globalState, httpClient, moment, appContextData);
     };
-  }, [onRowSave, httpClient]);
+  }, [onRowSave, httpClient, appContextData]);
 
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
