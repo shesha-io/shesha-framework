@@ -136,4 +136,5 @@ export interface ISettingsInputProps extends IComponentLabelProps,
   defaultChecked?: boolean;
   hidden?: boolean | IPropertySetting;
   entityAutocompleteType?: EntityTypeAutocompleteType;
+  regExp?: string;
 };

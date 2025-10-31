@@ -52,9 +52,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   const metadataBuilderFactory = useMetadataBuilderFactory();
   const { formData, setFormData } = useShaFormInstance();
   const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
-
     propertyName, tooltip: description, onChangeSetting, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-    allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true, id, templateSettings } = props;
+    allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor,
+    referenceList, textType, defaultChecked, showSearch = true, id, templateSettings, regExp,
+  } = props;
 
   const allData = useAvailableConstantsData();
 
@@ -423,7 +424,12 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       return (
         <Input
           size={size}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            const regExpObj = regExp ? new RegExp(regExp) : null;
+            const inputValue: string | undefined = e.target.value?.toString();
+            const newValue = regExpObj ? inputValue?.replace(regExpObj, '') : inputValue;
+            onChange(newValue);
+          }}
           readOnly={readOnly}
           defaultValue={defaultValue}
           variant={variant}

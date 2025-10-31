@@ -69,8 +69,12 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: any[]): void => {
-            customEvents.onChange({ value: args[0].currentTarget.value }, args[0]);
-            if (typeof onChange === 'function') onChange(...args);
+            const regExp = model.regExp ? new RegExp(model.regExp) : null;
+            const inputValue: string | undefined = args[0]?.currentTarget?.value?.toString();
+            const newValue = regExp ? inputValue?.replace(regExp, '') : inputValue;
+
+            const changedValue = customEvents.onChange({ value: newValue }, args[0]);
+            if (typeof onChange === 'function') onChange(changedValue !== undefined ? changedValue : newValue);
           };
 
           return inputProps.readOnly

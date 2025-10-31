@@ -57,6 +57,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({ parentId: commonTabId, inputType: 'switch', propertyName: 'suppress', label: 'Hidden' })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textField', propertyName: 'name', label: 'Name', validate: { required: true },
+                regExp: '(?!^)[^a-zA-Z0-9_-]|^[^a-zA-Z]',
                 editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
               })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textField', propertyName: 'label', label: 'Label', validate: { required: true } })
