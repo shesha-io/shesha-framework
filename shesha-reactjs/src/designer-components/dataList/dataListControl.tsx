@@ -129,10 +129,12 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onListItemSave) return (data) => Promise.resolve(data);
 
-    const executer = new Function('data, form, contexts, globalState, http, moment', onListItemSave);
+    // Create an AsyncFunction constructor to support await in user code
+    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+    const executer = new AsyncFunction('data, form, contexts, globalState, http, moment', onListItemSave);
     return (data, form, contexts, globalState) => {
-      const preparedData = executer(data, form, contexts, globalState, allData.http, allData.moment);
-      return Promise.resolve(preparedData);
+      // AsyncFunction already returns a Promise, so we just return it directly
+      return executer(data, form, contexts, globalState, allData.http, allData.moment);
     };
   }, [onListItemSave]);
 
