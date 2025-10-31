@@ -79,9 +79,8 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
 
                 .addContainer({ id: entityFormatId, parentId: dataTabId, hidden: { _code: 'return data?.dataType !== \'entity\';', _mode: 'code', _value: false },
                   components: [...new DesignerToolbarSettings()
-                    .addSettingsInput({ parentId: entityFormatId, inputType: 'autocomplete', propertyName: 'entityType',
-                      label: 'Entity Type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/EntityTypeAutocomplete",
-                      queryParams: { _value: '', _mode: 'code', _code: 'return { baseClass:data.baseEntityType};' } as any,
+                    .addSettingsInput({ parentId: entityFormatId, inputType: 'entityTypeAutocomplete', propertyName: 'entityType',
+                      label: 'Entity Type', entityAutocompleteType: 'Entity',
                       editMode: { _value: 'inherited', _mode: 'code', _code: 'return !(data.createdInDb && !data.inheritedFromId) && data.source != 1;' } as any,
                     })
                     .addSettingsInput({ parentId: entityFormatId, inputType: 'queryBuilder', propertyName: 'formatting.filter', label: 'Filter',
@@ -103,9 +102,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
                       ],
                     })
                     .addSettingsInputRow({ parentId: objectRefFormatId, inputs: [
-                      { type: 'autocomplete', propertyName: 'entityType', label: 'Part Of Entity Type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/JsonEntityTypeAutocomplete",
-                        queryParams: { baseClass: "{{data.baseEntityType}}" },
-                      },
+                      { type: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Part Of Entity Type', entityAutocompleteType: 'JsonEntity' },
                     ],
                     hidden: { _code: 'return data?.dataFormat !== \'interface\';', _mode: 'code', _value: false },
                     editMode: { _value: 'inherited', _mode: 'code', _code: 'return !(data.createdInDb && !data.inheritedFromId) && data.source != 1;' } as any,
@@ -151,7 +148,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
                   // Referencing entities and Entities (many-entity )
 
                     .addSettingsInputRow({ parentId: listFormatId, inputs: [
-                      { type: 'autocomplete', propertyName: 'entityType', label: 'Entity Type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/EntityTypeAutocomplete" },
+                      { type: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type', entityAutocompleteType: 'Entity' },
                     ],
                     hidden: { _code: 'const d = data?.dataFormat; return d !== \'many-entity\' && d !== \'entity\';', _mode: 'code', _value: false },
                     editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
@@ -176,7 +173,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
                     hidden: { _code: 'return data?.dataFormat !== \'object\';', _mode: 'code', _value: false },
                     })
                     .addSettingsInputRow({ parentId: listFormatId, inputs: [
-                      { type: 'autocomplete', propertyName: 'entityType', label: 'Part Of Entity Type', dataSourceType: "url", dataSourceUrl: "/api/services/app/Metadata/JsonEntityTypeAutocomplete" },
+                      { type: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Part Of Entity Type', entityAutocompleteType: 'JsonEntity' },
                     ],
                     hidden: { _code: 'return data?.dataFormat !== \'object\' || data?.itemsType?.dataFormat !== \'interface\';', _mode: 'code', _value: false },
                     editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
