@@ -1,12 +1,14 @@
 ﻿using FluentMigrator;
 using FluentMigrator.Expressions;
 using FluentMigrator.Infrastructure;
+using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
 using Shesha.FluentMigrator.Modules;
 using Shesha.FluentMigrator.Notifications;
 using Shesha.FluentMigrator.ReferenceLists;
 using Shesha.FluentMigrator.Settings;
 using System.Reflection;
+using System.Text;
 
 namespace Shesha.FluentMigrator
 {
@@ -199,6 +201,15 @@ namespace Shesha.FluentMigrator
         }
 
         #endregion
+
+        public bool MigrationApplied(long version) 
+        {
+            var runner = _context.ServiceProvider.GetRequiredService<IMigrationRunner>();
+            if (runner is not MigrationRunner standardRunner)
+                throw new NotSupportedException($"Only {nameof(MigrationRunner)} is supported");
+
+            return standardRunner.VersionLoader.VersionInfo.HasAppliedMigration(version);            
+        }
 
         #region Foreign keys
 

@@ -146,7 +146,7 @@ namespace Shesha.FluentMigrator
 
             var invalidMigrationVersions = migrations.Keys
                 .Select(v => v.ToString())
-                .Where(v => v.Length != MigrationVersionFormat.Length || !DateTime.TryParseExact(v, MigrationVersionFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var migrationDate))
+                .Where(v => v.Length != MigrationVersionFormat.Length || !DateTime.TryParseExact(v, MigrationVersionFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var migrationDate) || migrationDate > DateTime.Now)
                 .ToList();
             if (invalidMigrationVersions.Any())
                 throw new WrongMigrationVersionsFoundException(MigrationVersionFormat, invalidMigrationVersions);
