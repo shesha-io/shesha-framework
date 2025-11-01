@@ -47,11 +47,13 @@ import { addFile, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } 
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
+import { getEntityTypeName } from '../metadataDispatcher/entities/utils';
 
 export interface IStoredFilesProviderProps {
   name?: string;
   ownerId: string;
-  ownerType: string;
+  ownerType: string | IEntityTypeIndentifier;
   ownerName?: string;
   filesCategory?: string;
   propertyName?: string;
@@ -188,7 +190,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     const { file } = payload;
 
     formData.append('ownerId', payload.ownerId || ownerId);
-    formData.append('ownerType', payload.ownerType || ownerType);
+    formData.append('ownerType', getEntityTypeName(payload.ownerType || ownerType));
     formData.append('ownerName', payload.ownerName || ownerName);
     formData.append('file', file);
     if (filesCategory)

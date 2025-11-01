@@ -134,7 +134,7 @@ namespace Shesha.GraphQL.Helpers
                     else
                         return; // todo: implement other types
                 case DataTypes.EntityReference:
-                    if (fullReference || property.EntityType.IsNullOrWhiteSpace())
+                    if (fullReference || property.EntityFullClassName.IsNullOrWhiteSpace())
                     {
                         // GenericEntityReference
                         //sb.AppendLine($"{propertyName}: {propertyName}");
@@ -207,7 +207,7 @@ namespace Shesha.GraphQL.Helpers
                         if (brace > 0) innerProps.Add(propList[i]);
                         i++;
                     }
-                    if (propConfig?.EntityType.IsNullOrWhiteSpace() ?? true)
+                    if (propConfig?.EntityFullClassName.IsNullOrWhiteSpace() ?? true)
                         sb.Append(prop + " { " + string.Join(" ", innerProps) + " } ");
                     else
                     {
@@ -216,7 +216,7 @@ namespace Shesha.GraphQL.Helpers
                         if (propConfig.DataType != DataTypes.Object)
                         {
                             sb.Append(" { id ");
-                            await AppendPropertiesAsync(sb, propConfig.EntityType, innerProps.Where(x => !x.IsNullOrWhiteSpace()).ToList());
+                            await AppendPropertiesAsync(sb, propConfig.EntityFullClassName, innerProps.Where(x => !x.IsNullOrWhiteSpace()).ToList());
                             sb.Append(" } ");
                         }
                         else
