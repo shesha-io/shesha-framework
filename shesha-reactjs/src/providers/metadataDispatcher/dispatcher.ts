@@ -3,13 +3,14 @@ import { IGetMetadataPayload, IGetNestedPropertiesPayload, IGetPropertiesMetadat
 import { IModelsDictionary } from "./models";
 import { IEntityMetadataFetcher } from "./entities/models";
 import camelcase from 'camelcase';
-import { asPropertiesArray, isDataPropertyMetadata, isEntityReferenceArrayPropertyMetadata, isObjectReferencePropertyMetadata } from "@/interfaces/metadata";
+import { asPropertiesArray, IHasEntityType, isDataPropertyMetadata, isEntityReferenceArrayPropertyMetadata, isObjectReferencePropertyMetadata } from "@/interfaces/metadata";
 import { MetadataDtoAjaxResponse, PropertyMetadataDto } from "@/apis/metadata";
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 import qs from "qs";
 import { isAjaxErrorResponse } from "@/interfaces/ajaxResponse";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { isEntityTypeIdentifier } from "./entities/utils";
+import { IEntityTypeIndentifier } from "../sheshaApplication/publicApi/entities/models";
 
 interface IPropertyPathWithMetadata {
   path: string;
@@ -35,9 +36,13 @@ export class MetadataDispatcher implements IMetadataDispatcher {
     return properties.find((p) => camelcase(p.path) === name);
   };
 
+  #getEntityTypeId = (property: IHasEntityType): IEntityTypeIndentifier =>
+    ({ name: property.entityType, module: property.entityModule ?? null });
+
+
   #extractNestedProperty = (mainProperty: IPropertyMetadata, name: string): Promise<IPropertyMetadata | undefined> => {
     return isEntityReferencePropertyMetadata(mainProperty)
-      ? this.getMetadata({ dataType: mainProperty.dataType, modelType: mainProperty.entityType }).then((entityMeta) => {
+      ? this.getMetadata({ dataType: mainProperty.dataType, modelType: this.#getEntityTypeId(mainProperty) }).then((entityMeta) => {
         return entityMeta && isPropertiesArray(entityMeta.properties)
           ? this.#getPropertyByName(entityMeta.properties, name)
           : undefined;
@@ -54,13 +59,13 @@ export class MetadataDispatcher implements IMetadataDispatcher {
     if (!propMeta) return Promise.reject(`property '${propName}' not found`);
 
     if (isEntityReferencePropertyMetadata(propMeta))
-      return this.getMetadata({ dataType: DataTypes.entityReference, modelType: propMeta.entityType });
+      return this.getMetadata({ dataType: DataTypes.entityReference, modelType: this.#getEntityTypeId(propMeta) });
 
     if (isEntityReferenceArrayPropertyMetadata(propMeta))
-      return this.getMetadata({ dataType: DataTypes.entityReference, modelType: propMeta.entityType });
+      return this.getMetadata({ dataType: DataTypes.entityReference, modelType: this.#getEntityTypeId(propMeta) });
 
     if (isObjectReferencePropertyMetadata(propMeta)) {
-      return this.getMetadata({ dataType: DataTypes.object, modelType: propMeta.entityType });
+      return this.getMetadata({ dataType: DataTypes.object, modelType: this.#getEntityTypeId(propMeta) });
     }
 
     if (isDataPropertyMetadata(propMeta) && propMeta.dataType === DataTypes.object) {
@@ -210,7 +215,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
     });
   };
 
-  isEntityType = (modelType: string): Promise<boolean> => {
+  isEntityType = (modelType: string | IEntityTypeIndentifier): Promise<boolean> => {
     if (!modelType) return Promise.resolve(false);
 
     return this.getMetadata({ dataType: null, modelType: modelType }).then((m) => {
