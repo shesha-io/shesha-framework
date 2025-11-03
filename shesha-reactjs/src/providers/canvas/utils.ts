@@ -97,7 +97,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   }
 
   const guttersAndScrollersSize = 14;
-  const windowWidth = window.screen.availWidth;
+  const windowWidth = window.innerWidth;
 
   // Determine the offset based on view type
   let offset: number;
@@ -126,7 +126,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   }
 
   const optimalZoom = (availableWidth / canvasWidth) * 100;
-  return Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, Math.round(optimalZoom)));
+  return Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, Math.floor(optimalZoom)));
 }
 
 export const usePinchZoom = (

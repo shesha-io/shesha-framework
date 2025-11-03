@@ -65,6 +65,13 @@ const useShaFormSubscription = (subscriptionType: ShaFormSubscriptionType): obje
   return dummy;
 };
 
+const useShaFormDataModified = (): boolean => {
+  const shaForm = useShaFormInstance();
+  useShaFormDataUpdate();
+  useShaFormSubscription('data-modified');
+  return shaForm.isDataModified;
+};
+
 export {
   FormProviderWithDelayedUpdates as ShaFormProvider,
   useShaFormInstance,
@@ -72,4 +79,5 @@ export {
   useShaFormDataUpdate,
   useShaFormRef,
   useShaFormSubscription,
+  useShaFormDataModified,
 };

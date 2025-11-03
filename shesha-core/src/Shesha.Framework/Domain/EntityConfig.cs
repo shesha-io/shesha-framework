@@ -51,9 +51,8 @@ namespace Shesha.Domain
 
         public virtual EntityConfigTypes? EntityConfigType { get; set; } = EntityConfigTypes.Class;
 
-        [NotMapped]
         [ReadonlyProperty]
-        public virtual string FullClassName => $"{Namespace}.{ClassName}";
+        public virtual string FullClassName {  get; set; }
 
         [MaxLength(100)]
         public virtual string? TypeShortAlias { get; set; }

@@ -15,4 +15,5 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent, II
   mobile?: IInputStyles;
   tablet?: IInputStyles;
   spellCheck?: boolean;
+  regExp?: string;
 }

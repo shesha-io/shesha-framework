@@ -132,31 +132,33 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     const canRenderForm = formArguments ? formIdentifier : (formMarkup && formData);
 
     return canRenderForm ? (
-      <FormItemProvider namePrefix={undefined}>
-        <MetadataProvider id="dynamic" modelType={formArguments ? className : formMarkup?.formSettings.modelType}>
-          <ParentProvider
-            formMode="readonly"
-            model={{ editMode: 'readOnly', readOnly: true } /* force readonly to show popup dialog always read only */}
-          >
-            <ConfigurableForm
-              mode="readonly"
-              {...formItemLayout}
-              // Use formId when available to enable proper data loading (same as dialog mode)
-              formId={formArguments ? formIdentifier : undefined}
-              // Fall back to markup when not using formArguments (backward compatibility)
-              markup={formArguments ? undefined : formMarkup}
-              // Use formArguments to enable form's data loader (same as dialog mode)
-              formArguments={formArguments}
-              // Only use initialValues when formArguments is not provided (backward compatibility)
-              initialValues={formArguments ? undefined : getQuickViewInitialValues(formData, dataProperties)}
-            />
-          </ParentProvider>
-        </MetadataProvider>
-      </FormItemProvider>
+      <div className={cx(styles.quickViewContent)}>
+        <FormItemProvider namePrefix={undefined}>
+          <MetadataProvider id="dynamic" modelType={formArguments ? className : formMarkup?.formSettings.modelType}>
+            <ParentProvider
+              formMode="readonly"
+              model={{ editMode: 'readOnly', readOnly: true } /* force readonly to show popup dialog always read only */}
+            >
+              <ConfigurableForm
+                mode="readonly"
+                {...formItemLayout}
+                // Use formId when available to enable proper data loading (same as dialog mode)
+                formId={formArguments ? formIdentifier : undefined}
+                // Fall back to markup when not using formArguments (backward compatibility)
+                markup={formArguments ? undefined : formMarkup}
+                // Use formArguments to enable form's data loader (same as dialog mode)
+                formArguments={formArguments}
+                // Only use initialValues when formArguments is not provided (backward compatibility)
+                initialValues={formArguments ? undefined : getQuickViewInitialValues(formData, dataProperties)}
+              />
+            </ParentProvider>
+          </MetadataProvider>
+        </FormItemProvider>
+      </div>
     ) : (
       <></>
     );
-  }, [formMarkup, formData, dataProperties, formArguments, formIdentifier, className]);
+  }, [formMarkup, formData, dataProperties, formArguments, formIdentifier, className, cx, styles.quickViewContent]);
 
   const render = (): ReactNode => {
     if (children) {
@@ -214,16 +216,19 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   return (
     <Popover
       styles={{
-        root: typeof width === 'string' && /%$/.test(width as string) ? { width } : undefined,
+        root: typeof width === 'string' && /%$/.test(width as string)
+          ? { width, maxWidth: '90vw' }
+          : undefined,
         body: typeof width === 'string' && /%$/.test(width as string)
-          ? { width: '100%', maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }
-          : { width, minWidth: width, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' },
+          ? { width: '100%', maxWidth: '90vw', maxHeight: '80vh', overflowY: 'auto', overflowX: 'hidden' }
+          : { width, minWidth: width, maxWidth: '90vw', maxHeight: '80vh', overflowY: 'auto', overflowX: 'hidden' },
       }}
       content={formContent}
       title={(
         <div
           style={{
             width: typeof width === 'string' && /%$/.test(width) ? '100%' : (width as number | string),
+            maxWidth: '100%',
             textOverflow: 'ellipsis',
             overflow: 'hidden',
             whiteSpace: 'nowrap',

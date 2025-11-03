@@ -322,7 +322,9 @@ namespace Shesha.DynamicEntities
             dst.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
             dst.DataFormat = src.DataFormat;
             dst.DataType = src.DataType;
+            dst.EntityFullClassName = src.EntityFullClassName;
             dst.EntityType = src.EntityType;
+            dst.EntityModule = src.EntityModule;
 
             dst.Max = src.Max;
             dst.MaxLength = src.MaxLength;
@@ -565,10 +567,10 @@ namespace Shesha.DynamicEntities
                 // todo: handle inactive flag
                 var dbProperties = _dbAllProperties.Where(p => p.EntityConfig == entityConfig).ToList();
 
-                var duplicates = codeProperties.GroupBy(p => p.Path.ToCamelCase(), (p, items) => new { Path = p, Items = items }).Where(g => g.Items.Count() > 1).ToList();
+                /*var duplicates = codeProperties.GroupBy(p => p.Path.ToCamelCase(), (p, items) => new { Path = p, Items = items }).Where(g => g.Items.Count() > 1).ToList();
                 if (duplicates.Any())
                 {
-                }
+                }*/
 
                 await UpdatePropertiesAsync(entityType, entityConfig, codeProperties, dbProperties);
 
@@ -670,7 +672,9 @@ namespace Shesha.DynamicEntities
 
             dst.Name = src.Path;
             dst.DataType = src.DataType;
+            dst.EntityFullClassName = src.EntityFullClassName;
             dst.EntityType = src.EntityType;
+            dst.EntityModule = src.EntityModule;
             dst.ReferenceListName = src.ReferenceListName;
             dst.ReferenceListModule = src.ReferenceListModule;
             dst.IsFrameworkRelated = src.IsFrameworkRelated;

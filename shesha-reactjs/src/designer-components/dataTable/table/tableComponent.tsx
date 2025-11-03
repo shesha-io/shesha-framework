@@ -57,6 +57,7 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
           ...prev,
           items: items,
           useMultiselect: prev['useMultiselect'] ?? false,
+          selectionMode: prev['selectionMode'] ?? 'none',
           crud: prev['crud'] ?? false,
           flexibleHeight: prev['flexibleHeight'] ?? false,
         };

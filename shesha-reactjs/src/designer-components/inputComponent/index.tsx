@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Switch } from "antd";
 import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, ColorPicker, FormAutocomplete, LabelValueEditor, PermissionAutocomplete } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
@@ -53,9 +53,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   const metadataBuilderFactory = useMetadataBuilderFactory();
   const { formData, setFormData } = useShaFormInstance();
   const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
-
     propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-    allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true, settings, templateSettings, id, onChangeSetting } = props;
+    allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor,
+    referenceList, textType, defaultChecked, showSearch = true, settings, templateSettings, regExp, id, onChangeSetting,
+  } = props;
 
   const allData = useAvailableConstantsData();
 
@@ -67,6 +68,16 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
     return executeScript<IObjectMetadata>(availableConstantsExpression, { data: formData, metadataBuilder });
   }, [availableConstantsExpression, metadataBuilderFactory, formData]);
+
+  const regExpObj = useMemo(() => {
+    if (!regExp) return null;
+    try {
+      return new RegExp(regExp, 'g');
+    } catch (error) {
+      console.warn('Invalid regExp pattern:', regExp, error);
+      return null;
+    }
+  }, [regExp]);
 
   const functionName = `get${camelcase(label ?? propertyName, { pascalCase: true })}`;
 
@@ -434,7 +445,13 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       return (
         <Input
           size={size}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            const inputValue: string | undefined = e.target.value?.toString();
+            if (regExpObj && inputValue)
+              onChange(inputValue.replace(regExpObj, ''));
+            else
+              onChange(inputValue);
+          }}
           readOnly={readOnly}
           defaultValue={defaultValue}
           variant={variant}

@@ -90,7 +90,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                 var schema = entityProperty.EntityConfig.SchemaName ?? "";
                 await UseSchemaAsync(schema);
                 var tableName = entityProperty.ListConfiguration?.DbMapping?.ManyToManyTableName;
-                var refConfig = (await _entityConfigCache.GetDynamicSafeEntityConfigAsync(entityProperty.EntityType.NotNull())).NotNull();
+                var refConfig = (await _entityConfigCache.GetDynamicSafeEntityConfigAsync(entityProperty.EntityFullClassName.NotNull())).NotNull();
                 var create = true;
                 if (tableName.IsNullOrEmpty())
                 {
@@ -99,7 +99,7 @@ namespace Shesha.DynamicEntities.DbGenerator
 
                     if (!(entityProperty.ListConfiguration.ForeignProperty).IsNullOrEmpty())
                     {
-                        var refProperties = (await _entityConfigCache.GetDynamicSafeEntityPropertiesAsync(entityProperty.EntityType.NotNull())).NotNull();
+                        var refProperties = (await _entityConfigCache.GetDynamicSafeEntityPropertiesAsync(entityProperty.EntityFullClassName.NotNull())).NotNull();
                         var refProp = refProperties.FirstOrDefault(x => x.Name.ToCamelCase() == entityProperty.ListConfiguration.ForeignProperty.ToCamelCase());
                         if (!(refProp?.ListConfiguration?.DbMapping?.ManyToManyTableName).IsNullOrEmpty())
                         {
@@ -162,7 +162,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                 var referenceConfig = (await _entityConfigCache.GetDynamicSafeEntityConfigAsync(
                     entityProperty.DataType == DataTypes.File
                         ? typeof(StoredFile).FullName.NotNull()
-                        : entityProperty.EntityType.NotNull()
+                        : entityProperty.EntityFullClassName.NotNull()
                 )).NotNull();
                 var primaryTable = entityProperty.DataType == DataTypes.File
                     ? MappingHelper.GetTableName(typeof(StoredFile))
@@ -286,7 +286,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                 case DataTypes.Time: return new DbColumnType(DbColumnTypeEnum.Time);
                 case DataTypes.DateTime: return new DbColumnType(DbColumnTypeEnum.DateTime);
                 case DataTypes.EntityReference:
-                    return entityProperty.EntityType.IsNullOrEmpty()
+                    return entityProperty.EntityFullClassName.IsNullOrEmpty()
                     ? new DbColumnType(DbColumnTypeEnum.GenericEntityReference)
                     : new DbColumnType(DbColumnTypeEnum.EntityReference);
                 case DataTypes.File: return new DbColumnType(DbColumnTypeEnum.EntityReference);

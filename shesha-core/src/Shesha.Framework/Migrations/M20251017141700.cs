@@ -75,9 +75,7 @@ where ci.item_type = 'entity'");
 update frwk.configuration_items ci
 set name = ec.class_name
 from frwk.entity_configs ec
-where ec.id = ci.id and ci.item_type = 'entity'");
-
-            Insert.ForceBootstrapper("EntityConfigsBootstrapper");
+where ec.id = ci.id and ci.item_type = 'entity'");            
         }
     }
 }

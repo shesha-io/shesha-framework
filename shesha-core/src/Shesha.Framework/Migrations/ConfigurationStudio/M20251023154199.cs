@@ -3,8 +3,8 @@ using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations.ConfigurationStudio
 {
-    [Migration(20251123154199)]
-    public class M20251123154199 : OneWayMigration
+    [Migration(20251023154199)]
+    public class M20251023154199 : OneWayMigration
     {
         private void MoveFks(string oldTable, string newTable) 
         {
@@ -13,6 +13,9 @@ namespace Shesha.Migrations.ConfigurationStudio
 
         public override void Up()
         {
+            if (this.Shesha().MigrationApplied(20251123154199))
+                return;
+
             MoveFks("Frwk_UserLoginAttempts", "user_login_attempts");
             MoveFks("Frwk_UserRegistration", "user_registrations");
             MoveFks("Frwk_StoredFiles", "stored_files");
