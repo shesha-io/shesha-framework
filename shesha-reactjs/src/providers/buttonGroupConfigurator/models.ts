@@ -3,6 +3,7 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
 import { EditMode } from '@/index';
+import { IFullAuditedEntity } from '@/publicJsApis/entities';
 
 type ButtonGroupItemType = 'item' | 'group';
 
@@ -61,6 +62,7 @@ export interface IButtonGroupItem extends IButtonGroupItemBase {
 
 export interface IButtonItem extends IButtonGroupItem {
   actionConfiguration?: IConfigurableActionConfiguration;
+  dynamicItem?: IFullAuditedEntity;
 }
 
 export const isItem = (item: IButtonGroupItemBase): item is IButtonGroupItem => {
