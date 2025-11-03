@@ -122,7 +122,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
         return false;
 
       if (group.hideWhenEmpty) {
-        const firstVisibleItem = group.childItems?.find(item => {
+        const firstVisibleItem = group.childItems?.find((item) => {
           // analyze buttons and groups only
           const isButton = isItem(item) && (item.itemSubType === 'button');
           return (isButton || isGroup(item)) && itemVisibilityFunc(item);
@@ -135,7 +135,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     };
 
     const getIsVisible = (item: ButtonGroupItemProps): boolean => {
-      return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item, getIsVisible);
+      return (isItem(item) && isVisibleBase(item)) || (isGroup(item) && isGroupVisible(item, getIsVisible));
     };
 
     const menuItems = getMenuItem(finalItems, executeActionViaConfiguration, getIsVisible);

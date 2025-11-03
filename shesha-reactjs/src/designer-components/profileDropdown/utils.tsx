@@ -23,7 +23,7 @@ type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
 
 const filterVisibleItems = (
   items: ButtonGroupItemProps[] = [],
-  visibilityChecker: ItemVisibilityFunc
+  visibilityChecker: ItemVisibilityFunc,
 ): ButtonGroupItemProps[] => {
   return items.reduce<ButtonGroupItemProps[]>((acc, item) => {
     if (!visibilityChecker(item)) {
@@ -47,7 +47,7 @@ const filterVisibleItems = (
 export const getMenuItem = (
   items: ButtonGroupItemProps[] = [],
   execute: (payload: IConfigurableActionConfiguration) => void,
-  visibilityChecker?: ItemVisibilityFunc
+  visibilityChecker?: ItemVisibilityFunc,
 ): ItemType[] => {
   // Filter items based on visibility if checker is provided
   const visibleItems = visibilityChecker ? filterVisibleItems(items, visibilityChecker) : items;
