@@ -117,12 +117,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       };
     }
 
-    // TODO: Remove this legacy mode flag after testing
-    const useLegacyMode = false; // Set to true to temporarily revert to old behavior for debugging
-
-    const executer = useLegacyMode
-      ? new Function('data, form, contexts, globalState, http, moment', onListItemSave)
-      : new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onListItemSave);
+    const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onListItemSave);
 
     return (data, form, contexts, globalState) => {
       try {
@@ -143,21 +138,19 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         // Safely get page context - fallback to empty object if not available
         const pageContext = dataContextManager?.getPageContext?.() || {};
 
-        const preparedData = useLegacyMode
-          ? executer(data, form, contexts, globalState, allData.http, allData.moment)
-          : executer(
-            data,
-            contextData,
-            fileSaver,
-            form,
-            globalState,
-            allData.http || null,
-            message || null,
-            allData.moment,
-            pageContext,
-            selectedRow || null,
-            allData.setGlobalState
-          );
+        const preparedData = executer(
+          data,
+          contextData,
+          fileSaver,
+          form,
+          globalState,
+          allData.http || null,
+          message || null,
+          allData.moment,
+          pageContext,
+          selectedRow || null,
+          allData.setGlobalState
+        );
 
         // Validate and sanitize the returned data
         if (preparedData === undefined || preparedData === null) {
