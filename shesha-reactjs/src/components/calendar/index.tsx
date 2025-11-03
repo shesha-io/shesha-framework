@@ -1,6 +1,6 @@
 import { DownOutlined } from '@ant-design/icons';
 import { Checkbox, Dropdown, Empty, Menu } from 'antd';
-import moment from 'moment';
+import moment from 'moment/min/moment-with-locales';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, momentLocalizer, SlotInfo, View } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -20,8 +20,6 @@ import { ICalendarProps } from '@/designer-components/calendar/interfaces';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { ICalendarEvent } from '@/providers/layersProvider/models';
 
-moment.locale('en-za');
-const localizer = momentLocalizer(moment);
 
 export const CalendarControl: FC<ICalendarProps> = (props) => {
   const {
@@ -35,7 +33,9 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     externalEndDate,
     styles,
     componentName,
-    id
+    id,
+    dummyEventColor,
+    momentLocale = 'en-za',
   } = props;
 
   const { executeAction } = useConfigurableActionDispatcher();
@@ -46,6 +46,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
 
   const [events, setEvents] = useState<any>([]);
   const [defaultView, setDefaultView] = useState<View>(displayPeriod?.[0]);
+  const [localeLoaded, setLocaleLoaded] = useState(false);
 
   const clickTimeoutRef = useRef<number | null>(null);
   const lastClickedEventRef = useRef<ICalendarEvent | null>(null);
@@ -56,12 +57,28 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const startDate = useActualContextExecution(externalStartDate);
   const endDate = useActualContextExecution(externalEndDate);
 
+  // Set locale (all locales bundled via moment-with-locales)
+  useEffect(() => {
+    const setMomentLocale = () => {
+      const result = moment.locale(momentLocale);
+      if (result !== momentLocale) {
+        console.warn(`Locale ${momentLocale} not available, using fallback: ${result}`);
+      }
+      setLocaleLoaded(true);
+    };
+
+    setLocaleLoaded(false);
+    setMomentLocale();
+  }, [momentLocale]);
+
+  const localizer = useMemo(() => momentLocalizer(moment), [localeLoaded]);
+
   const dummyEvent =
-    startDate && endDate
+    startDate
       ? (() => {
         const s = new Date(startDate);
-        const e = new Date(endDate);
-        return isNaN(s.getTime()) || isNaN(e.getTime()) ? null : { start: s, end: e, color: primaryColor };
+        const e = new Date(endDate || startDate);
+        return isNaN(s.getTime()) || isNaN(e.getTime()) ? null : { start: s, end: e, color: dummyEventColor || primaryColor };
       })()
       : null;
 
@@ -188,9 +205,26 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       return;
     }
 
+    // Detect if this is an all-day selection (month view)
+    // react-big-calendar sets end date to midnight of the next day for all-day selections
+    // We need to adjust only for all-day selections, not time-based selections
+    const startIsMidnight = moment(slotInfo.start).isSame(moment(slotInfo.start).startOf('day'));
+    const endIsMidnight = moment(slotInfo.end).isSame(moment(slotInfo.end).startOf('day'));
+    const spansWholeDays =
+      moment(slotInfo.end).startOf('day').diff(moment(slotInfo.start).startOf('day'), 'days') >= 1;
+
+    const isAllDayRange = startIsMidnight && endIsMidnight && spansWholeDays;
+
+    const adjustedSlotInfo = isAllDayRange
+      ? {
+        ...slotInfo,
+        end: moment(slotInfo.end).subtract(1, 'day').endOf('day').toDate(),
+      }
+      : slotInfo;
+
     const evaluationContext = {
       ...allData,
-      event: slotInfo,
+      event: adjustedSlotInfo,
     };
     executeAction({
       actionConfiguration: onSlotClick,
