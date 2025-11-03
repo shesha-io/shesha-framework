@@ -114,8 +114,9 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
 
     // Return the visibility state of a button. A button is visible if it's not hidden and the user is permitted to view it
     const getIsVisible = (item: ButtonGroupItemProps): boolean => {
-      if (isDesignMode)
-        return true; // show all items in design mode
+      
+      // if (isDesignMode)
+      //   return true;
 
       return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item, getIsVisible);
     };
