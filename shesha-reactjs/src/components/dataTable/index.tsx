@@ -422,7 +422,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
         // Create fileSaver API with safe error handling
         const fileSaver = {
-          saveAs: (data: object | string, filename?: string, options?: object) => {
+          saveAs: (data: object | string, filename?: string, _?: object) => {
             try {
               FileSaver.saveAs(new Blob([typeof data === 'string' ? data : JSON.stringify(data)]), filename || 'download.txt');
             } catch (error) {
