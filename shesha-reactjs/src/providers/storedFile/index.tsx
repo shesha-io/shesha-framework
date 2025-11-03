@@ -166,7 +166,8 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
   }, [uploadMode, value]);
 
   useEffect(() => {
-    if (!isFetchingFileInfo && uploadMode === 'async') {
+    // Process fetch responses for async mode OR when we manually fetched in sync mode for existing files
+    if (!isFetchingFileInfo) {
       if (isAjaxSuccessResponse(fetchingFileInfoResponse)) {
         const fetchedFile = fetchingFileInfoResponse.result;
         if (fetchedFile) {
