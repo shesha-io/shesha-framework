@@ -117,14 +117,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const [visibleColumns, setVisibleColumns] = useState<number>(0);
   const appContextData = useApplicationContextData();
 
-  // Safely get message API - may not be available in all contexts
-  let message = null;
-  try {
-    const app = App.useApp();
-    message = app.message;
-  } catch (error) {
-    console.warn('Message API not available in current context');
-  }
+  // Get message API if available - component must be wrapped in App provider
+  const app = App.useApp();
+  const message = app?.message || null;
 
   const dataContextManager = useDataContextManager(false);
 
