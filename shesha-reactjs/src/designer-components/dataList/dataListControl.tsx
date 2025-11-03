@@ -69,7 +69,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   try {
     const app = App.useApp();
     message = app.message;
-  } catch (error) {
+  } catch {
     console.warn('Message API not available in current context');
   }
 
@@ -113,7 +113,6 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     if (!onListItemSave) {
       // No custom handler - just pass through the data unchanged
       return (data) => {
-        console.log('OnListItemSave - No handler defined, returning original data:', data);
         return Promise.resolve(data);
       };
     }
@@ -127,15 +126,12 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
     return (data, form, contexts, globalState) => {
       try {
-        // Debug: Log the original data structure to help identify serialization issues
-        console.log('OnListItemSave - Original data:', data);
-
         // Safely get contexts data - fallback to empty object if not available
         const contextData = dataContextManager?.getDataContextsData?.() || {};
 
         // Create fileSaver API with safe error handling
         const fileSaver = {
-          saveAs: (data: object | string, filename?: string, options?: object) => {
+          saveAs: (data: object | string, filename?: string, _?: object) => {
             try {
               FileSaver.saveAs(new Blob([typeof data === 'string' ? data : JSON.stringify(data)]), filename || 'download.txt');
             } catch (error) {
@@ -150,21 +146,18 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         const preparedData = useLegacyMode
           ? executer(data, form, contexts, globalState, allData.http, allData.moment)
           : executer(
-              data,
-              contextData,
-              fileSaver,
-              form,
-              globalState,
-              allData.http || null,
-              message || null,
-              allData.moment,
-              pageContext,
-              selectedRow || null,
-              allData.setGlobalState
-            );
-
-        // Debug: Log the prepared data structure
-        console.log('OnListItemSave - Prepared data:', preparedData);
+            data,
+            contextData,
+            fileSaver,
+            form,
+            globalState,
+            allData.http || null,
+            message || null,
+            allData.moment,
+            pageContext,
+            selectedRow || null,
+            allData.setGlobalState
+          );
 
         // Validate and sanitize the returned data
         if (preparedData === undefined || preparedData === null) {
