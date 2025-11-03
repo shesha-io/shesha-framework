@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter, Layout } from 'antd';
-import { WorkArea } from '@/configuration-studio/components/workArea';
+import { WorkArea } from '@/configuration-studio/components/work-area';
 import { NewButton } from '@/configuration-studio/components/new-button';
 import { ConfigurationItemMenu } from '@/configuration-studio/components/item-menu';
 import { ConfigurationStudioProvider } from '@/configuration-studio/cs/contexts';
@@ -48,7 +48,7 @@ const ConfigurationStudio: FC = () => {
         </Layout.Header>
         <Layout.Content className={styles.csContent}>
           <Splitter onResizeEnd={(sizes) => {
-            canvas?.setConfigTreePanelSize(sizes[0] || 0);
+            canvas.setConfigTreePanelSize(sizes[0] || 0);
           }}
           >
             <Splitter.Panel

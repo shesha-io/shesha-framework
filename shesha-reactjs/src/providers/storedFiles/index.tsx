@@ -42,16 +42,18 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
-import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { addFile, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
+import { getEntityTypeName } from '../metadataDispatcher/entities/utils';
 
 export interface IStoredFilesProviderProps {
   name?: string;
   ownerId: string;
-  ownerType: string;
+  ownerType: string | IEntityTypeIndentifier;
   ownerName?: string;
   filesCategory?: string;
   propertyName?: string;
@@ -119,7 +121,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     lazy: true,
   });
 
-  const { mutate: uploadFileHttp } = useMutate();
+  const { mutate: uploadFileHttp } = useMutate<FormData, IAjaxResponse<IStoredFile>>();
 
   // Initialize fileList from value prop when component mounts or value changes
   useEffect(() => {
@@ -188,7 +190,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     const { file } = payload;
 
     formData.append('ownerId', payload.ownerId || ownerId);
-    formData.append('ownerType', payload.ownerType || ownerType);
+    formData.append('ownerType', getEntityTypeName(payload.ownerType || ownerType));
     formData.append('ownerName', payload.ownerName || ownerName);
     formData.append('file', file);
     if (filesCategory)
@@ -215,7 +217,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
     uploadFileHttp(uploadFileEndpoint, formData)
       .then((response) => {
-        const responseFile = response.result as IStoredFile;
+        const responseFile = extractAjaxResponse(response);
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
         onChange?.(addFile(responseFile, fileListRef.current));

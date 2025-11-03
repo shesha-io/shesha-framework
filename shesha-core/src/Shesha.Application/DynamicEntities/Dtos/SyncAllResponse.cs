@@ -8,5 +8,6 @@ namespace Shesha.DynamicEntities.Dtos
     public class SyncAllResponse
     {
         public List<ModuleSyncResponse> Modules { get; set; } = new List<ModuleSyncResponse>();
+        public List<LookupSyncResponse> Lookups { get; set; } = new List<LookupSyncResponse>();
     }
 }

@@ -22,7 +22,7 @@ namespace Shesha.FluentMigrator
         /// </summary>
         public static void ForceBootstrapper(this IInsertExpressionRoot insert, string bootstrapperName)
         {
-            insert.IntoTable("frwk_bootstrapper_startups")
+            insert.IntoTable("bootstrapper_startups").InSchema("frwk")
                 .Row(new Dictionary<string, object>
                 {
                     { "id", Guid.NewGuid() },

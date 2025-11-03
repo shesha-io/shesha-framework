@@ -33,11 +33,11 @@ namespace Shesha.DynamicEntities
         where TOrderIndex: IComparable<TOrderIndex>, INumber<TOrderIndex>
     {
         private readonly IRepository<T, TId> _repository;
-        private readonly IEntityConfigurationStore _entityConfigStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigStore;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         public IEventBus EventBus { get; set; }
 
-        public EntityReorderer(IUnitOfWorkManager unitOfWorkManager, IRepository<T, TId> repository, IEntityConfigurationStore entityConfigStore)
+        public EntityReorderer(IUnitOfWorkManager unitOfWorkManager, IRepository<T, TId> repository, IEntityTypeConfigurationStore entityConfigStore)
         {
             _repository = repository;
             _entityConfigStore = entityConfigStore;

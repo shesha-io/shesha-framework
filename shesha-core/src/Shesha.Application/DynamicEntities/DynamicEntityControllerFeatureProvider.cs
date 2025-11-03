@@ -31,7 +31,7 @@ namespace Shesha.DynamicEntities
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
         {
-            var entityConfigurationStore = _iocManager.Resolve<IEntityConfigurationStore>();
+            var entityConfigurationStore = _iocManager.Resolve<IEntityTypeConfigurationStore>();
 
             var existingControllers = feature.Controllers.ToDictionary(MvcHelper.GetControllerName).OrderBy(x => x.Key).ToDictionary();
 

@@ -30,7 +30,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const formMode = useForm(false).formMode;
 
-  const { executeBooleanExpression, executeAction } = useFormExpression();
+  const { executeBooleanExpression, executeActionViaPayload } = useFormExpression();
 
   const {
     componentName: actionOwnerName,
@@ -108,7 +108,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     const actionConfiguration = currentStep?.onBeforeRenderActionConfiguration;
 
     if (!!actionConfiguration?.actionName) {
-      executeAction({
+      executeActionViaPayload({
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext,
       });
@@ -154,7 +154,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         () => {
           const afterAction = afterAccessor(currentStep);
           if (!!afterAction?.actionName)
-            executeAction({
+            executeActionViaPayload({
               actionConfiguration: afterAction,
               argumentsEvaluationContext,
             });
@@ -167,7 +167,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       return;
     }
 
-    executeAction({
+    executeActionViaPayload({
       actionConfiguration: beforeAction,
       argumentsEvaluationContext,
       success: successFunc,

@@ -1,8 +1,9 @@
 import { IDictionary } from '@/interfaces';
 import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';
+import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
 
 export interface IGetMetadataPayload {
-  modelType: string;
+  modelType: string | IEntityTypeIndentifier;
   dataType: string | null;
 }
 
@@ -35,7 +36,7 @@ export interface IMetadataDispatcher {
   getPropertiesMetadata: (payload: IGetPropertiesMetadataPayload) => Promise<IDictionary<IPropertyMetadata>>;
   isEntityType: (modelType: string) => Promise<boolean>;
   getContainerProperties: (payload: IGetNestedPropertiesPayload) => Promise<IPropertyMetadata[]>;
-  getContainerMetadata: (payload: IGetNestedPropertiesPayload) => Promise<IModelMetadata>;
+  getContainerMetadata: (payload: IGetNestedPropertiesPayload) => Promise<IModelMetadata | null>;
   registerModel: (modeltype: string, model: Promise<IModelMetadata>) => void;
   updateModel: (modeltype: string, model: Promise<IModelMetadata>) => void;
 }

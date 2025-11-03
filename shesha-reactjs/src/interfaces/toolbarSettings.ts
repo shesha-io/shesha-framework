@@ -47,6 +47,7 @@ import { nanoid } from '@/utils/uuid';
 import { IDateFieldProps } from '@/designer-components/dateField/interfaces';
 import { ITimePickerProps } from '@/designer-components/timeField/models';
 import { IFileUploadProps } from '@/designer-components/fileUpload';
+import { IEntityTypeAutocompleteComponentProps } from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'id' | 'hidden' | 'type'> {
   id?: string;
@@ -85,6 +86,8 @@ type TextAreaType = ToolbarSettingsProp & Omit<ITextAreaComponentProps, 'hidden'
 type IconPickerType = ToolbarSettingsProp & Omit<IIconPickerComponentProps, 'hidden' | 'type'>;
 
 type AutocompleteType = ToolbarSettingsProp & Omit<IAutocompleteComponentProps, 'hidden' | 'type'>;
+
+type EntityTypeAutocompleteType = ToolbarSettingsProp & Omit<IEntityTypeAutocompleteComponentProps, 'hidden' | 'type'>;
 
 type EndpointsAutocompleteType = ToolbarSettingsProp & Omit<IEndpointsAutocompleteComponentProps, 'hidden' | 'type'>;
 
@@ -269,6 +272,10 @@ export class DesignerToolbarSettings<T extends object = object> {
 
   public addAutocomplete(props: AutocompleteType | ((data: T) => AutocompleteType)): this {
     return this.addProperty(props, 'autocomplete');
+  }
+
+  public addEntityTypeAutocomplete(props: EntityTypeAutocompleteType | ((data: T) => EntityTypeAutocompleteType)): this {
+    return this.addProperty(props, 'entityTypeAutocomplete');
   }
 
   public addEndpointsAutocomplete(props: EndpointsAutocompleteType | ((data: T) => EndpointsAutocompleteType)): this {

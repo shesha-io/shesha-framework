@@ -12,12 +12,12 @@ import {
   IGetRefListPayload,
   IUpdateComponentPayload,
 } from './contexts';
-import { FormConfigurationDto, ReferenceListDto } from './models';
+import { ConfigurationDto, FormConfigurationDto, IConfigurationItemDto, ReferenceListDto } from './models';
 import { migrateFormSettings } from '../form/migration/formSettingsMigrations';
 import { extractAjaxResponse } from '@/interfaces/ajaxResponse';
 import { buildUrl } from '@/utils/url';
 import { IComponentSettings } from '../appConfigurator/models';
-import { ConfigurationLoader, IConfigurationLoader } from './configurationLoader';
+import { ConfigurationLoader, GetConfigurationArgs, IConfigurationLoader } from './configurationLoader';
 import { useCacheProvider } from '@/hooks/useCache';
 import { useRefInitialized } from '@/hooks';
 
@@ -30,6 +30,7 @@ export const URLS = {
 enum ConfigurationType {
   ReferenceList = 'reference-list',
   Form = 'form',
+  Entity = 'entity',
 }
 
 const ConfigurationItemsLoaderProvider: FC<PropsWithChildren> = ({
@@ -116,6 +117,11 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren> = ({
     loader.clearCacheAsync(ConfigurationType.Form, payload.formId);
   };
 
+  const getCachedConfig = <TConfigDto extends ConfigurationDto = ConfigurationDto>(payload: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined> => {
+    const promise = loader.getCachedConfigAsync<TConfigDto>(payload);
+    return promise;
+  };
+
   const loaderActions: IConfigurationItemsLoaderActionsContext = {
     getForm: getForm,
     clearFormCache,
@@ -123,6 +129,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren> = ({
     getComponent,
     updateComponent,
     getEntityFormId,
+    getCachedConfig,
   };
 
   return (

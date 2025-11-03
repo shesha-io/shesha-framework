@@ -1,5 +1,7 @@
-﻿using Abp.Dependency;
+﻿using Abp.Collections.Extensions;
+using Abp.Dependency;
 using Abp.Domain.Entities;
+using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
@@ -16,28 +18,28 @@ namespace Shesha.Validations
 {
     public abstract class EntityPropertyValidator<TEntity, TId> : IPropertyValidator where TEntity : class, IEntity<TId>
     {
-        public async Task<bool> ValidateObjectAsync(object obj, List<ValidationResult> validationResult, List<string>? propertiesToValidate = null)
+        public async Task<bool> ValidateObjectAsync(object obj, List<ValidationResult> validationResult, List<string>? propertiesToValidate = null, ModelConfigurationDto? modelConfig = null)
         {
             if (obj is TEntity entity)
             {
-                return await ValidateEntityAsync(entity, validationResult, propertiesToValidate);
+                return await ValidateEntityAsync(entity, validationResult, propertiesToValidate, modelConfig);
             }
             return true;
         }
-        public virtual async Task<bool> ValidateEntityAsync(TEntity entity, List<ValidationResult> validationResult, List<string>? propertiesToValidate = null)
+        public virtual async Task<bool> ValidateEntityAsync(TEntity entity, List<ValidationResult> validationResult, List<string>? propertiesToValidate = null, ModelConfigurationDto? modelConfig = null)
         {
             return await Task.FromResult(true);
         }
 
-        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object? value, List<ValidationResult> validationResult)
+        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object? value, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
         {
             if (obj is TEntity entity)
             {
-                return await ValidateEntityPropertyAsync(entity, propertyName, value, validationResult);
+                return await ValidateEntityPropertyAsync(entity, propertyName, value, validationResult, modelConfig);
             }
             return true;
         }
-        public virtual async Task<bool> ValidateEntityPropertyAsync(TEntity entity, string propertyName, object? value, List<ValidationResult> validationResult)
+        public virtual async Task<bool> ValidateEntityPropertyAsync(TEntity entity, string propertyName, object? value, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
         {
             return await Task.FromResult(true);
         }
@@ -46,20 +48,25 @@ namespace Shesha.Validations
 
     public class EntityPropertyValidator : IPropertyValidator, ITransientDependency
     {
-        private IEntityConfigCache _entityConfigCache;
+        private IModelConfigurationManager _configurationManager;
 
-        public EntityPropertyValidator(IEntityConfigCache entityConfigCache)
+        public EntityPropertyValidator(IModelConfigurationManager configurationManager)
         {
-            _entityConfigCache = entityConfigCache;
+            _configurationManager = configurationManager;
         }
 
-        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object? value, List<ValidationResult> validationResult)
+        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object? value, List<ValidationResult> validationResult, ModelConfigurationDto? modelConfig = null)
         {
             if (!obj.GetType().IsEntityType() 
                 && !obj.GetType().IsJsonEntityType())
                 return true;
 
-            var props = await _entityConfigCache.GetEntityPropertiesAsync(obj.GetType());
+            var entityType = obj.GetType();
+
+            var props = (modelConfig == null
+                ? await _configurationManager.GetCachedModelConfigurationOrNullAsync(null, entityType.Namespace, entityType.Name, true)
+                : modelConfig
+                )?.Properties;
 
             if (props == null || !props.Any())
                 return true;
@@ -67,13 +74,13 @@ namespace Shesha.Validations
             return Validate(obj, propertyName, value, validationResult, props, true);
         }
 
-        public Task<bool> ValidateObjectAsync(object obj, List<ValidationResult> validationResult, List<string>? propertiesToValidate = null)
+        public Task<bool> ValidateObjectAsync(object obj, List<ValidationResult> validationResult, List<string>? propertiesToValidate = null, ModelConfigurationDto? modelConfig = null)
         {
             return Task.FromResult(true);
         }
 
         public bool Validate(object obj, string propertyName, object? value, List<ValidationResult> validationResult,
-            List<EntityPropertyDto> props, bool useNewValue)
+            List<ModelPropertyDto> props, bool useNewValue)
         {
             var parts = propertyName.Split('.').Select(x => x.ToCamelCase()).ToArray();
 
@@ -84,7 +91,7 @@ namespace Shesha.Validations
             var propInfo = obj.GetType().GetProperties().First(x => x.Name.ToCamelCase() == parts[0]);
             var innerObj = propInfo.GetValue(obj, null);
 
-            var friendlyNameList = new List<string>() { propConfig.Label };
+            var friendlyNameList = new List<string?>() { propConfig.Label };
 
             var i = 1;
             while (i < parts.Length && propInfo != null && propConfig != null)
@@ -109,7 +116,7 @@ namespace Shesha.Validations
 
             var hasMessage = !string.IsNullOrWhiteSpace(propConfig.ValidationMessage);
 
-            if (value == null && propConfig.Required && !propConfig.Suppress)
+            if ((value?.ToString()).IsNullOrEmpty() && (propConfig.Required ?? false) && !(propConfig.Suppress ?? false))
             {
                 validationResult.Add(new ValidationResult(hasMessage
                     ? propConfig.ValidationMessage
@@ -120,13 +127,13 @@ namespace Shesha.Validations
             if (useNewValue && prevValue == value)
                 return true;
 
-            if (useNewValue && propConfig.Suppress)
+            if (useNewValue && (propConfig.Suppress ?? false))
             {
                 validationResult.Add(new ValidationResult($"Property '{friendlyName}' is suppressed."));
                 return false;
             }
 
-            if (useNewValue && propConfig.ReadOnly)
+            if (useNewValue && (propConfig.ReadOnly ?? false))
             {
                 validationResult.Add(new ValidationResult($"Property '{friendlyName}' is readonly."));
                 return false;

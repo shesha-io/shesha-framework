@@ -13,15 +13,15 @@ export function useAsyncMemo<T>(factory: () => Promise<T> | undefined | null, de
       };
 
     promise.then((newVal) => {
-      if (!cancel) {
-        if (newVal !== val)
-          setVal(newVal);
+      if (!cancel && newVal !== val) {
+        setVal(newVal);
       }
     });
 
     return () => {
       cancel = true;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   return val;
@@ -38,9 +38,9 @@ export function useAsyncDeepCompareMemo<T>(factory: () => Promise<T> | undefined
         /* nop*/
       };
 
-    promise.then((val) => {
-      if (!cancel) {
-        setVal(val);
+    promise.then((newVal) => {
+      if (!cancel && newVal !== val) {
+        setVal(newVal);
       }
     });
 

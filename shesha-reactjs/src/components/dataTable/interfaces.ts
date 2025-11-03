@@ -8,6 +8,8 @@ import { CellStyleFunc, IAnchoredDirection, IDataTableInstance, ITableColumn } f
 import { InlineEditMode, InlineSaveMode, ITableRowDragProps, NewRowCapturePosition } from '../reactTable/interfaces';
 import { IFormApi } from '@/providers/form/formApi';
 
+export type TableSelectionMode = 'none' | 'single' | 'multiple';
+
 export interface ITableActionColumns {
   icon?: ReactNode;
   onClick?: (id: string, context: IDataTableInstance, row: IAnyObject) => string | void | Promise<any>;
@@ -79,6 +81,7 @@ export interface IShaDataTableInlineEditableProps {
 
 export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInlineEditableProps {
   useMultiselect?: boolean;
+  selectionMode?: TableSelectionMode;
   freezeHeaders?: boolean;
   disableCustomFilters?: boolean;
   /**

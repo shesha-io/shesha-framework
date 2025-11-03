@@ -4,6 +4,8 @@ using NHibernate;
 using Shesha.DynamicEntities.DbGenerator;
 using Shesha.NHibernate.UoW;
 using Shesha.Reflection;
+using Shesha.Utilities;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,6 +14,9 @@ namespace Shesha.DbActions
     public class DbMsSqlGenerateActions : BaseDbMetadataActions
     {
         public override string SchemaName => CurrentSchema.IsNullOrEmpty() ? "dbo" : CurrentSchema.NotNull();
+        public override string TableName => SchemaName.IsNullOrEmpty() 
+            ? $"[{CurrentTable.NotNull("Table name should not be null")}]" 
+            : $"[{SchemaName}].[{CurrentTable.NotNull("Table name should not be null")}]";
 
         public DbMsSqlGenerateActions(
             IUnitOfWorkManager unitOfWorkManager
@@ -54,6 +59,30 @@ namespace Shesha.DbActions
                 .ExecuteUpdateAsync();
         }
 
+        private (string? schema, string table, string schemaTable, string snakedSchemaTable) ParseTableName(string tableName)
+        {
+            var unbracked = tableName.Replace("[", "").Replace("]", "");
+            var names = unbracked.Split(".");
+
+            if (names.Length > 2)
+                throw new ArgumentException($"Invalid table name format: {tableName}. Expected 'table' or 'schema.table'");
+
+            var schema = names.Length == 1 ? null : names[0];
+            var table = names.Length == 1 ? names[0] : names[1];
+
+            if (string.IsNullOrWhiteSpace(table))
+                throw new ArgumentException($"Invalid table name format: {tableName}. Table name cannot be empty.");
+            if (schema != null && string.IsNullOrWhiteSpace(schema))
+                throw new ArgumentException($"Invalid table name format: {tableName}. Schema name cannot be empty or use 'table' format (without 'schema.').");
+
+            return (
+                schema,
+                table,
+                schema == null ? $"[{table}]" : $"[{schema}].[{table}]",
+                unbracked.Replace(".", "_")
+            );
+        }
+
         protected override async Task CreateInternalManyToManyTableAsync(
             string tableName,
             string primaryTableName, string foreignTableName,
@@ -63,19 +92,24 @@ namespace Shesha.DbActions
         {
             var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
 
-            var names = tableName.Split(".");
-            var table = names.Length == 1 ? tableName : names[1];
+            var (_, table, schemaTable, _) = ParseTableName(tableName);
+            var (_, _, primarySchemaTable, snakedPrimarySchemaTable) = ParseTableName(primaryTableName);
+            var (_, _, foreignSchemaTable, snakedForeignSchemaTable) = ParseTableName(foreignTableName);
 
             await session
-                .CreateSQLQuery(@$"CREATE TABLE {tableName} ([{keyColumnName}] [uniqueidentifier] NOT NULL, [{foreignColumnName}] [uniqueidentifier] NOT NULL)")
+                .CreateSQLQuery(@$"CREATE TABLE {schemaTable} ([{keyColumnName}] [uniqueidentifier] NOT NULL, [{foreignColumnName}] [uniqueidentifier] NOT NULL)")
                 .ExecuteUpdateAsync();
 
             await session
-                .CreateSQLQuery($"ALTER TABLE {tableName} WITH CHECK ADD CONSTRAINT [FK_{table}_{keyColumnName}_{primaryTableName.Replace(".", "_")}] FOREIGN KEY([{keyColumnName}]) REFERENCES {primaryTableName} ([{primaryIdName}])")
+                .CreateSQLQuery($@"
+ALTER TABLE {schemaTable} WITH CHECK ADD CONSTRAINT [FK_{table}_{keyColumnName}_{snakedPrimarySchemaTable}] 
+FOREIGN KEY([{keyColumnName}]) REFERENCES {primarySchemaTable} ([{primaryIdName}])")
                 .ExecuteUpdateAsync();
 
             await session
-                .CreateSQLQuery($"ALTER TABLE {tableName} WITH CHECK ADD CONSTRAINT [FK_{table}_{foreignColumnName}_{foreignTableName.Replace(".", "_")}] FOREIGN KEY([{foreignColumnName}]) REFERENCES {foreignTableName} ([{foreignIdName}])")
+                .CreateSQLQuery($@"
+ALTER TABLE {schemaTable} WITH CHECK ADD CONSTRAINT [FK_{table}_{foreignColumnName}_{snakedForeignSchemaTable}] 
+FOREIGN KEY([{foreignColumnName}]) REFERENCES {foreignSchemaTable} ([{foreignIdName}])")
                 .ExecuteUpdateAsync();
         }
 
@@ -99,12 +133,14 @@ CREATE TABLE {TableName} (
 CONSTRAINT PK_{CurrentTable} PRIMARY KEY CLUSTERED ({NC("Id")} ASC))")
                 .ExecuteUpdateAsync();
 
+            var (_, _, _, snakedSchemaTable) = ParseTableName(TableName);
+
             await session
-                .CreateSQLQuery($"ALTER TABLE {TableName} ADD CONSTRAINT [{NC($"DF_{CurrentTable}_CreationTime")}] DEFAULT (getdate()) FOR [{NC("CreationTime")}]")
+                .CreateSQLQuery($"ALTER TABLE {TableName} ADD CONSTRAINT [{NC($"DF_{snakedSchemaTable}_CreationTime")}] DEFAULT (getdate()) FOR [{NC("CreationTime")}]")
                 .ExecuteUpdateAsync();
 
             await session
-                .CreateSQLQuery($"ALTER TABLE {TableName} ADD CONSTRAINT [{NC($"DF_{CurrentTable}_IsDeleted")}] DEFAULT ((0)) FOR [{NC("IsDeleted")}]")
+                .CreateSQLQuery($"ALTER TABLE {TableName} ADD CONSTRAINT [{NC($"DF_{snakedSchemaTable}_IsDeleted")}] DEFAULT ((0)) FOR [{NC("IsDeleted")}]")
                 .ExecuteUpdateAsync();
         }
 
@@ -118,13 +154,17 @@ CONSTRAINT PK_{CurrentTable} PRIMARY KEY CLUSTERED ({NC("Id")} ASC))")
 
         public override async Task CreateCurrentEntityReferenceColumnAsync(string primaryTableName, string primaryColumnName)
         {
-            var primaryTable = primaryTableName.Split('.').Last();
+            var (_, _, _, snakedSchemaTable) = ParseTableName(TableName);
+            var (_, _, primarySchemaTable, snakedPrimarySchemaTable) = ParseTableName(primaryTableName);
+
             var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
             await session
                 .CreateSQLQuery($"ALTER TABLE {TableName} ADD {CurrentColumn} uniqueidentifier Null")
                 .ExecuteUpdateAsync();
             await session
-                .CreateSQLQuery($"ALTER TABLE {TableName} WITH CHECK ADD CONSTRAINT [{NC($"FK_{CurrentTable}_{CurrentColumn}_{primaryTable}")}] FOREIGN KEY([{CurrentColumn}]) REFERENCES {primaryTableName} ({primaryColumnName})")
+                .CreateSQLQuery($@"
+ALTER TABLE {TableName} WITH CHECK ADD CONSTRAINT [{NC($"FK_{snakedSchemaTable}_{CurrentColumn}_{snakedPrimarySchemaTable}")}] 
+FOREIGN KEY([{CurrentColumn}]) REFERENCES {primarySchemaTable} ({primaryColumnName})")
                 .ExecuteUpdateAsync();
         }
 

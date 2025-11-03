@@ -75,7 +75,9 @@ namespace Shesha.DynamicEntities.Distribution
             property.Description = src.Description;
             property.DataType = src.DataType;
             property.DataFormat = src.DataFormat;
+            property.EntityFullClassName = src.EntityFullClassName;
             property.EntityType = src.EntityType;
+            property.EntityModule = src.EntityModule;
             property.ReferenceListName = src.ReferenceListName;
             property.ReferenceListModule = src.ReferenceListModule;
             property.Source = src.Source;

@@ -37,7 +37,7 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Data type
         /// </summary>
-        public string DataType { get; set; }
+        public string? DataType { get; set; }
 
         /// <summary>
         /// Data format
@@ -47,27 +47,17 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Entity type. Aplicable for entity references
         /// </summary>
-        public string? EntityType { get; set; }
+        public EntityTypeIdentifier? EntityType { get; set; }
 
         /// <summary>
         /// Entity type. Aplicable for entity references
         /// </summary>
-        public string? BaseEntityType { get; set; }
-
-        /// <summary>
-        /// Module the entity belongs to. Aplicable for entity references
-        /// </summary>
-        public string? EntityModule { get; set; }
+        public EntityTypeIdentifier? BaseEntityType { get; set; }
 
         /// <summary>
         /// Type accessor
         /// </summary>
-        public string? TypeAccessor { get; set; }
-
-        /// <summary>
-        /// Module accessor
-        /// </summary>
-        public string? ModuleAccessor { get; set; }
+        public EntityTypeIdentifier? Accessor { get; set; }
 
         /// <summary>
         /// Reference list name
@@ -94,7 +84,7 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Child properties, applicable for complex data types (e.g. object, array)
         /// </summary>
-        public List<ModelPropertyDto>? Properties { get; set; } = new List<ModelPropertyDto>();
+        public List<ModelPropertyDto> Properties { get; set; } = new List<ModelPropertyDto>();
 
         /// <summary>
         /// If true, indicates that current property is a framework-related (e.g. <see cref="ISoftDelete.IsDeleted"/>, <see cref="IHasModificationTime.LastModificationTime"/>)

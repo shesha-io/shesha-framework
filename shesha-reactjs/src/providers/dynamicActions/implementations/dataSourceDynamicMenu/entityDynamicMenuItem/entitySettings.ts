@@ -11,15 +11,12 @@ export const getSettings = (): FormMarkupWithSettings => {
         inputs: [
           {
             id: nanoid(),
-            type: 'autocomplete',
+            type: 'entityTypeAutocomplete',
             propertyName: 'entityTypeShortAlias',
             label: 'Entity Type',
             labelAlign: 'right',
             hidden: false,
-            dataSourceType: 'url',
             validate: {},
-            dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
-            useRawValues: true,
           },
           {
             id: nanoid(),

@@ -12,7 +12,7 @@ namespace Shesha.Configuration.Runtime.Exceptions
     {
         public List<ModelDto> Duplicates { get; set; } = new List<ModelDto>();
 
-        public DuplicateModelsException(List<ModelDto> duplicates) : base($"Found multiple models with the same {nameof(ModelDto.ClassName)} or {nameof(ModelDto.Alias)}")
+        public DuplicateModelsException(List<ModelDto> duplicates) : base($"Found multiple models with the same {nameof(ModelDto.FullClassName)} or {nameof(ModelDto.Alias)}")
         {
             Duplicates = duplicates;
         }
@@ -23,7 +23,7 @@ namespace Shesha.Configuration.Runtime.Exceptions
             for (int i = 0; i < Duplicates.Count; i++)
             {
                 sb.AppendLine($"{i}#:   name: `{Duplicates[i].Name}`");
-                sb.AppendLine($"        className: `{Duplicates[i].ClassName}`");
+                sb.AppendLine($"        className: `{Duplicates[i].FullClassName}`");
                 sb.AppendLine($"        alias: `{Duplicates[i].Alias}`");
                 sb.AppendLine($"        type: `{Duplicates[i].Type.FullName}`");
                 sb.AppendLine($"        assembly: `{Duplicates[i].Type.Assembly.FullName}`");

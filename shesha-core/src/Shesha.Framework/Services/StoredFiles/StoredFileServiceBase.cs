@@ -31,7 +31,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// Entity configuration store
         /// </summary>
-        public IEntityConfigurationStore EntityConfigurationStore { get; set; }
+        public IEntityTypeConfigurationStore EntityConfigurationStore { get; set; }
 
         protected StoredFileServiceBase(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService)
         {
@@ -209,7 +209,7 @@ namespace Shesha.Services.StoredFiles
         private IQueryable<StoredFile> GetAttachmentsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>>? filterPredicate = null)
         {
             IQueryable<StoredFile>? query = null;
-            var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
+            var ecs = StaticContext.IocManager.Resolve<IEntityTypeConfigurationStore>();
             var config = ecs.Get(typeShortAlias);
             var stringId = id?.ToString().NotNullOrWhiteSpace();
             if (config != null)
@@ -238,7 +238,7 @@ namespace Shesha.Services.StoredFiles
         {
             IQueryable<StoredFileVersion> query = VersionRepository.GetAll().Where(e => e.IsLast);
 
-            var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
+            var ecs = StaticContext.IocManager.Resolve<IEntityTypeConfigurationStore>();
             var config = ecs.Get(typeShortAlias);
             var stringId = id?.ToString().NotNullOrWhiteSpace();
 
