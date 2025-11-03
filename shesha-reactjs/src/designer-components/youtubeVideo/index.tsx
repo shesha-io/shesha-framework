@@ -196,14 +196,23 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
           return;
         }
 
+        if (event.source !== playerRef.current?.contentWindow) {
+          return;
+        }
+
         // Parse event data - might be string or already parsed
-        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        let data;
+        try {
+          data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        } catch (e) {
+          // Ignore malformed messages
+          return;
+        }
 
         // Ignore messages that aren't YouTube player events
         if (!data || !data.event) {
           return;
         }
-
         // Create evaluation context with video and form data
         const evaluationContext = {
           videoId,
@@ -415,6 +424,13 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
                           event: 'command',
                           func: 'addEventListener',
                           args: ['onStateChange'],
+                          id: videoId,
+                          channel: 'widget',
+                        }), privacyMode ? 'https://www.youtube-nocookie.com' : 'https://www.youtube.com');
+                        playerRef.current.contentWindow.postMessage(JSON.stringify({
+                          event: 'command',
+                          func: 'addEventListener',
+                          args: ['onReady'],
                           id: videoId,
                           channel: 'widget',
                         }), privacyMode ? 'https://www.youtube-nocookie.com' : 'https://www.youtube.com');
