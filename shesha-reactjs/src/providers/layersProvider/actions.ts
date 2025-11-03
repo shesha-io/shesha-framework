@@ -7,7 +7,7 @@ export enum LayerGroupActionEnums {
   UpdateItem = 'UPDATE_ITEM',
   SelectItem = 'SELECT_ITEM',
   UpdateChildItems = 'UPDATE_CHILD_ITEMS',
-  SetRefreshTrigger = "SET_REFRESH_TRIGGER"
+  SetRefreshTrigger = "SET_REFRESH_TRIGGER",
 }
 
 export const addLayerAction = createAction(LayerGroupActionEnums.AddLayer);
@@ -18,16 +18,16 @@ export const selectItemAction = createAction<string, string>(LayerGroupActionEnu
 
 export const updateItemAction = createAction<IUpdateItemSettingsPayload, IUpdateItemSettingsPayload>(
   LayerGroupActionEnums.UpdateItem,
-  (p) => p
+  (p) => p,
 );
 
 export const updateChildItemsAction = createAction<IUpdateChildItemsPayload, IUpdateChildItemsPayload>(
   LayerGroupActionEnums.UpdateChildItems,
-  (p) => p
+  (p) => p,
 );
 
 export const setRefreshTriggerAction = createAction<{ refreshTrigger: number }, number>(LayerGroupActionEnums.SetRefreshTrigger,
   (refreshTrigger) => ({
     refreshTrigger,
-  })
+  }),
 );

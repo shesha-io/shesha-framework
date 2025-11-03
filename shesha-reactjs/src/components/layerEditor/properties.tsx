@@ -24,7 +24,8 @@ export const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
   }, [selectedItemId]);
 
   const debouncedSave = useDebouncedCallback(
-    (_changedValues, allValues) => {
+    // Using any type for parameters because useDebouncedCallback doesn't provide strict typing for form values
+    (_changedValues: any, allValues: any): void => {
       // Use ref to get the current selectedItemId, not the stale closure value
       updateItem({ id: selectedItemIdRef.current, settings: allValues });
     },
@@ -42,7 +43,7 @@ export const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
     }
   }, [selectedItemId]);
 
-  const getEditor = () => {
+  const getEditor = (): JSX.Element | null => {
     if (!selectedItemId) return null;
 
     const item = getItem(selectedItemId);
@@ -63,7 +64,7 @@ export const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
           initialValues={{ ...componentModel, dataSource: componentModel.dataSource || 'entity' }}
           onValuesChange={debouncedSave}
           isSettingsForm={true}
-          className={'vertical-settings'}
+          className="vertical-settings"
         />
       </MetadataProvider>
     );
@@ -78,9 +79,7 @@ export const LayerProperties: FC<ILayerPropertiesProps> = ({ settings }) => {
       <div>
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={
-            readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'
-          }
+          description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'}
         />
       </div>
     );

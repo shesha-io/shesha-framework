@@ -54,8 +54,8 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
   const { formData, setFormData } = useShaFormInstance();
   const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
 
-        propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true, settings } = props;
+    propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
+    allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true, settings, templateSettings, id, onChangeSetting } = props;
 
   const allData = useAvailableConstantsData();
 
@@ -420,12 +420,15 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
           additionalStyles={undefined}
         />
       );
-      case 'layerSelectorSettingsModal':
-        return (<LayerSelectorSettingsModal 
-        value={value} 
-        onChange={(e) => onChange(e)} 
-        readOnly={readOnly} 
-        />);
+    case 'layerSelectorSettingsModal':
+      return (
+        <LayerSelectorSettingsModal
+          value={value}
+          onChange={(e) => onChange(e)}
+          readOnly={readOnly}
+          settings={settings}
+        />
+      );
 
     default:
       return (

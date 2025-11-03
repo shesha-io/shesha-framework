@@ -38,18 +38,18 @@ const LayerGroupConfiguratorProvider: FC<PropsWithChildren<ILayerGroupConfigurat
     readOnly: !!readOnly,
   });
 
-  const addLayer = () => {
+  const addLayer = (): void => {
     if (!state.readOnly) dispatch(addLayerAction());
   };
 
-  const deleteLayer = (uid: string) => {
+  const deleteLayer = (uid: string): void => {
     if (!state.readOnly) dispatch(deleteLayerAction(uid));
   };
-  const selectItem = (uid: string) => {
+  const selectItem = (uid: string): void => {
     dispatch(selectItemAction(uid));
   };
 
-  const updateItem = (payload: IUpdateItemSettingsPayload) => {
+  const updateItem = (payload: IUpdateItemSettingsPayload): void => {
     if (!state.readOnly) dispatch(updateItemAction(payload));
   };
 
@@ -57,11 +57,11 @@ const LayerGroupConfiguratorProvider: FC<PropsWithChildren<ILayerGroupConfigurat
     return getItemById(state.items ?? [], uid);
   };
 
-  const updateChildItems = (payload: IUpdateChildItemsPayload) => {
+  const updateChildItems = (payload: IUpdateChildItemsPayload): void => {
     if (!state.readOnly) dispatch(updateChildItemsAction(payload));
   };
 
-  const setRefreshTrigger = (payload: number | ((prev: number) => number)) => {
+  const setRefreshTrigger = (payload: number | ((prev: number) => number)): void => {
     if (typeof payload === 'function') {
       dispatch(setRefreshTriggerAction(payload(state.refreshTrigger)));
     } else {
@@ -88,7 +88,7 @@ const LayerGroupConfiguratorProvider: FC<PropsWithChildren<ILayerGroupConfigurat
   );
 };
 
-function useLayerGroupConfiguratorState() {
+function useLayerGroupConfiguratorState(): typeof LAYER_GROUP_CONTEXT_INITIAL_STATE {
   const context = useContext(LayerGroupConfiguratorStateContext);
 
   if (context === undefined) {
@@ -98,7 +98,15 @@ function useLayerGroupConfiguratorState() {
   return context;
 }
 
-function useLayerGroupConfiguratorActions() {
+function useLayerGroupConfiguratorActions(): {
+  addLayer: () => void;
+  deleteLayer: (uid: string) => void;
+  selectItem: (uid: string) => void;
+  updateItem: (payload: IUpdateItemSettingsPayload) => void;
+  getItem: (uid: string) => LayerGroupItemProps | null;
+  updateChildItems: (payload: IUpdateChildItemsPayload) => void;
+  setRefreshTrigger: (payload: number | ((prev: number) => number)) => void;
+} {
   const context = useContext(LayerGroupConfiguratorActionsContext);
 
   if (context === undefined) {
@@ -108,7 +116,7 @@ function useLayerGroupConfiguratorActions() {
   return context;
 }
 
-function useLayerGroupConfigurator() {
+function useLayerGroupConfigurator(): ReturnType<typeof useLayerGroupConfiguratorState> & ReturnType<typeof useLayerGroupConfiguratorActions> {
   return { ...useLayerGroupConfiguratorState(), ...useLayerGroupConfiguratorActions() };
 }
 

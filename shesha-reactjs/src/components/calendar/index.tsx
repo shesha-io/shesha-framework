@@ -14,7 +14,7 @@ import {
   useActualContextExecution,
   useAvailableConstantsData,
   useConfigurableActionDispatcher,
-  useTheme
+  useTheme,
 } from '@/index';
 import { ICalendarProps } from '@/designer-components/calendar/interfaces';
 import { DataContextProvider } from '@/providers/dataContextProvider';
@@ -35,7 +35,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     externalEndDate,
     styles,
     componentName,
-    id
+    id,
   } = props;
 
   const { executeAction } = useConfigurableActionDispatcher();
@@ -44,17 +44,17 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const { styles: calendarStyles } = useCalendarStyles();
   const { layerEvents, fetchData, fetchDefaultCalendarView, updateDefaultCalendarView } = useCalendarLayers(items);
 
-  const [points, setPoints] = useState<any>([]);
+  const [events, setEvents] = useState<any>([]);
   const [defaultView, setDefaultView] = useState<View>(displayPeriod?.[0]);
 
   const clickTimeoutRef = useRef<number | null>(null);
   const lastClickedEventRef = useRef<ICalendarEvent | null>(null);
 
   const primaryColor = theme.application.primaryColor;
-  const defaultChecked = getLayerMarkerOptions(items)?.map((item) => item.value);
+  const defaultVisibleLayers = getLayerOptions(items)?.map((item) => item.value);
 
-  const startDate = useActualContextExecution(externalStartDate);
-  const endDate = useActualContextExecution(externalEndDate);
+  const startDate = useActualContextExecution(externalStartDate, {}, undefined);
+  const endDate = useActualContextExecution(externalEndDate, {}, undefined);
 
   const dummyEvent =
     startDate && endDate
@@ -65,12 +65,12 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       })()
       : null;
 
-  const updatedPoints = useMemo(() =>
-    points.map((point: any) => ({
-      ...point,
-      title: evaluateString(point.title, point),
+  const updatedEvents = useMemo(() =>
+    events.map((event: any) => ({
+      ...event,
+      title: evaluateString(event.title, event),
     })),
-    [points]
+  [events],
   );
 
 
@@ -93,10 +93,10 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     }
   }, [displayPeriod, defaultView]);
 
-  // Update points when layer markers change
+  // Update events when layer events change
   useDeepCompareEffect(() => {
-    setPoints(getMarkerPoints(layerMarkers, defaultChecked));
-  }, [layerMarkers]);
+    setEvents(getLayerEvents(layerEvents, defaultVisibleLayers));
+  }, [layerEvents]);
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -111,7 +111,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     setEvents(getLayerEvents(layerEvents, checked as string[]));
   }, [layerEvents]);
 
-  const handleCustomSelect = (event: ICalendarEvent) => {
+  const handleCustomSelect = (event: ICalendarEvent): void => {
     // Prevent selection if the event date is disabled
     if (event.start && isDateDisabled(event.start, minDate, maxDate)) {
       return;
@@ -126,12 +126,12 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     }
 
     // Set a timeout to execute the single click action after a delay
-    clickTimeoutRef.current = window.setTimeout(() => {
+    clickTimeoutRef.current = window.setTimeout((): void => {
       // Only execute if this is still the last clicked event (no double click occurred)
       if (lastClickedEventRef.current === event) {
         const evaluationContext = {
           ...allData,
-          points,
+          events,
           selectedRow: event,
         };
 
@@ -143,7 +143,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     }, 300); // 300ms delay to detect double clicks
   };
 
-  const handleCustomDoubleClick = (event: ICalendarEvent) => {
+  const handleCustomDoubleClick = (event: ICalendarEvent): void => {
     // Prevent double click if the event date is disabled
     if (event.start && isDateDisabled(event.start, minDate, maxDate)) {
       return;
@@ -160,7 +160,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
 
     const evaluationContext = {
       ...allData,
-      points,
+      events,
       selectedRow: event,
       event,
     };
@@ -171,7 +171,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     });
   };
 
-  const handleViewChange = (view: View) => {
+  const handleViewChange = (view: View): void => {
     const evaluationContext = {
       ...allData,
       event: view,
@@ -182,7 +182,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     });
   };
 
-  const handleSlotClick = (slotInfo: SlotInfo) => {
+  const handleSlotClick = (slotInfo: SlotInfo): void => {
     // Prevent slot click if the date is disabled
     if (isDateDisabled(slotInfo.start, minDate, maxDate)) {
       return;
@@ -208,10 +208,10 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
         <Checkbox.Group options={getLayerOptions(items)} onChange={onChange} defaultValue={defaultVisibleLayers} />
       </Menu>
     ),
-    [calendarStyles.calendarMenu, items, onChange, defaultVisibleLayers]
+    [calendarStyles.calendarMenu, items, onChange, defaultVisibleLayers],
   );
 
-  const renderLegend = () => (
+  const renderLegend = (): JSX.Element => (
     <div className={calendarStyles.calendarLegendContainer}>
       {items?.map((layer) =>
         layer.showLegend ? (
@@ -231,23 +231,29 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
             />
             <span className={calendarStyles.calendarLegendLabel}>{layer.label}</span>
           </div>
-        ) : null
+        ) : null,
       )}
     </div>
   );
 
-  const renderHeader = () => (
+  const renderHeader = (): JSX.Element => (
     <div className={calendarStyles.calendarHeader}>
       {renderLegend()}
-      <Dropdown menu={menuItems} dropdownRender={() => dropdownContent}>
-        <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+      <Dropdown menu={menuItems} dropdownRender={(): JSX.Element => dropdownContent}>
+        <a className="ant-dropdown-link" onClick={(e): void => e.preventDefault()}>
           Views <DownOutlined />
         </a>
       </Dropdown>
     </div>
   );
 
-  const exposedData = useMemo(() => Promise.resolve({
+  const exposedData = useMemo((): Promise<{
+    events: any[];
+    defaultView: View;
+    startDate: string;
+    endDate: string;
+    visibleLayers: string[];
+  }> => Promise.resolve({
     events: updatedEvents,
     defaultView,
     startDate: startDate,
@@ -255,7 +261,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     visibleLayers: defaultVisibleLayers,
   }), [updatedEvents, defaultView, startDate, endDate, defaultVisibleLayers]);
 
-  const calendarContent = () => {
+  const calendarContent = (): JSX.Element => {
     if (!displayPeriod?.length) {
       return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Selected Calendar Views!" />;
     }

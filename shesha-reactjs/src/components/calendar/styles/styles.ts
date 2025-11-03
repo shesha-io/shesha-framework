@@ -1,16 +1,16 @@
 import { createStyles } from "antd-style";
 
 export const useCalendarStyles = createStyles(({ css, cx }) => {
-    const calendarMenu = "calendar-menu";
-    const calendarLegendContainer = "calendar-legend-container";
-    const calendarLegendItem = "calendar-legend-item";
-    const calendarLegendColor = "calendar-legend-color";
-    const calendarLegendLabel = "calendar-legend-label";
-    const calendarHeader = "calendar-header";
-    const calendarDisabledDay = "calendar-disabled-day";
-    const calendarDisabledDayPast = "calendar-disabled-day-past";
+  const calendarMenu = "calendar-menu";
+  const calendarLegendContainer = "calendar-legend-container";
+  const calendarLegendItem = "calendar-legend-item";
+  const calendarLegendColor = "calendar-legend-color";
+  const calendarLegendLabel = "calendar-legend-label";
+  const calendarHeader = "calendar-header";
+  const calendarDisabledDay = "calendar-disabled-day";
+  const calendarDisabledDayPast = "calendar-disabled-day-past";
 
-    const calendarStyles = cx("calendar-styles", css`
+  const calendarStyles = cx("calendar-styles", css`
         .${calendarMenu} {
             display: block;
             padding: 20px;
@@ -60,15 +60,15 @@ export const useCalendarStyles = createStyles(({ css, cx }) => {
         }
     `);
 
-    return {
-        calendarStyles,
-        calendarMenu,
-        calendarLegendContainer,
-        calendarLegendItem,
-        calendarLegendColor,
-        calendarLegendLabel,
-        calendarHeader,
-        calendarDisabledDay,
-        calendarDisabledDayPast,
-    };
+  return {
+    calendarStyles,
+    calendarMenu,
+    calendarLegendContainer,
+    calendarLegendItem,
+    calendarLegendColor,
+    calendarLegendLabel,
+    calendarHeader,
+    calendarDisabledDay,
+    calendarDisabledDayPast,
+  };
 });

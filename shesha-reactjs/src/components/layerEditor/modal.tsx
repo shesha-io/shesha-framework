@@ -18,7 +18,7 @@ const LayersListInner: FC<Omit<IFiltersListProps, 'layers'>> = ({ showModal, rea
   const { styles } = useStyles();
   const { items, addLayer: addButton, selectItem } = useLayerGroupConfigurator();
 
-  const onConfigClick = (localSelectedId: string) => {
+  const onConfigClick = (localSelectedId: string): void => {
     selectItem(localSelectedId);
 
     showModal();
@@ -56,7 +56,7 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
     onChange(items);
   }, [items]);
 
-  const updateFilters = () => {
+  const updateFilters = (): void => {
     if (typeof onChange === 'function') onChange(items);
     hideModal();
   };
@@ -82,9 +82,9 @@ export const LayerSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal
 ) => {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const showModal = () => setModalVisible(true);
+  const showModal = (): void => setModalVisible(true);
 
-  const hideModal = () => setModalVisible(false);
+  const hideModal = (): void => setModalVisible(false);
 
   const items = Array.isArray(props.value) ? (props.value as ILayerFormModel[]) : [];
 

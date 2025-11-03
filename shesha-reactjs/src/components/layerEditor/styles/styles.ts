@@ -1,23 +1,23 @@
 import { createStyles } from "antd-style";
 
 export const useStyles = createStyles(({ css, cx }) => {
-    const shaActionButtons = "sha-action-buttons";
-    const sidebarContainerMainArea = "sidebar-container-main-area";
-    const shaToolbarConfiguratorAlert = "sha-toolbar-configurator-alert";
-    const shaToolbarConfiguratorBodyTabs = "sha-toolbar-configurator-body-tabs";
-    const shaToolbarItemDragHandle = "sha-toolbar-item-drag-handle";
-    const shaToolbarItem = "sha-toolbar-item";
-    const shaToolbarItemControls = "sha-toolbar-item-controls";
-    const shaToolbarItemHeader = "sha-toolbar-item-header";
-    const shaToolbarGroupHeader = "sha-toolbar-group-header";
-    const shaToolbarGroupContainer = "sha-toolbar-group-container";
-    const shaToolbarItemGhost = "sha-toolbar-item-ghost";
-    const shaTooltipIcon = "sha-tooltip-icon";
-    const shaToolbarItemName = "sha-toolbar-item-name";
-    const shaHelpIcon = "sha-help-icon";
-    const shaLayersEmptyState = "sha-layers-empty-state";
+  const shaActionButtons = "sha-action-buttons";
+  const sidebarContainerMainArea = "sidebar-container-main-area";
+  const shaToolbarConfiguratorAlert = "sha-toolbar-configurator-alert";
+  const shaToolbarConfiguratorBodyTabs = "sha-toolbar-configurator-body-tabs";
+  const shaToolbarItemDragHandle = "sha-toolbar-item-drag-handle";
+  const shaToolbarItem = "sha-toolbar-item";
+  const shaToolbarItemControls = "sha-toolbar-item-controls";
+  const shaToolbarItemHeader = "sha-toolbar-item-header";
+  const shaToolbarGroupHeader = "sha-toolbar-group-header";
+  const shaToolbarGroupContainer = "sha-toolbar-group-container";
+  const shaToolbarItemGhost = "sha-toolbar-item-ghost";
+  const shaTooltipIcon = "sha-tooltip-icon";
+  const shaToolbarItemName = "sha-toolbar-item-name";
+  const shaHelpIcon = "sha-help-icon";
+  const shaLayersEmptyState = "sha-layers-empty-state";
 
-    const shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
+  const shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
     .${shaActionButtons} {
         margin: 8px 0;
         .ant-btn {
@@ -123,22 +123,22 @@ export const useStyles = createStyles(({ css, cx }) => {
     }
 `);
 
-    return {
-        shaToolbarConfigurator,
-        shaActionButtons,
-        sidebarContainerMainArea,
-        shaToolbarConfiguratorAlert,
-        shaToolbarConfiguratorBodyTabs,
-        shaToolbarItemDragHandle,
-        shaToolbarItem,
-        shaToolbarItemControls,
-        shaToolbarItemHeader,
-        shaToolbarGroupHeader,
-        shaToolbarGroupContainer,
-        shaToolbarItemGhost,
-        shaTooltipIcon,
-        shaToolbarItemName,
-        shaHelpIcon,
-        shaLayersEmptyState,
-    };
+  return {
+    shaToolbarConfigurator,
+    shaActionButtons,
+    sidebarContainerMainArea,
+    shaToolbarConfiguratorAlert,
+    shaToolbarConfiguratorBodyTabs,
+    shaToolbarItemDragHandle,
+    shaToolbarItem,
+    shaToolbarItemControls,
+    shaToolbarItemHeader,
+    shaToolbarGroupHeader,
+    shaToolbarGroupContainer,
+    shaToolbarItemGhost,
+    shaTooltipIcon,
+    shaToolbarItemName,
+    shaHelpIcon,
+    shaLayersEmptyState,
+  };
 });

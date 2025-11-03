@@ -1,7 +1,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-big-calendar';
-import { evaluateFilters, getCalendarRefetchParams, getLayerMarkers, getResponseListToState } from './utils';
+import { evaluateFilters, getCalendarRefetchParams, getLayerEventsData, getResponseListToState } from './utils';
 import { useGet, useMutate } from '@/hooks';
 
 import { DataTypes } from '@/interfaces';
@@ -22,10 +22,10 @@ interface ISettingResponse {
   result: View;
 }
 
-type NestedPropertyMetadatAccessor = ReturnType<typeof useNestedPropertyMetadatAccessor>;
+export type NestedPropertyMetadatAccessor = ReturnType<typeof useNestedPropertyMetadatAccessor>;
 
 
-export const useMetaMapMarker = (layers: ICalendarLayersProps[]): IGetData => {
+export const useCalendarLayers = (layers: ICalendarLayersProps[]): IGetData => {
   const { refreshTrigger } = useLayerGroupConfigurator();
   const [state, setState] = useState<Pick<IGetData, 'layerData'>>({
     layerData: [],
@@ -41,7 +41,7 @@ export const useMetaMapMarker = (layers: ICalendarLayersProps[]): IGetData => {
 
   const { refetch } = useGet({ path: '', lazy: true });
 
-  const layerMarkers = getLayerMarkers(layers, layerData) || [];
+  const layerEvents = getLayerEventsData(layers, layerData) || [];
 
   const dispatcher = useMetadataDispatcher();
 
@@ -52,10 +52,10 @@ export const useMetaMapMarker = (layers: ICalendarLayersProps[]): IGetData => {
   };
 
   const layerWithMetadata = useMemo(() =>
-    layers?.map(obj => ({
+    layers?.map((obj) => ({
       ...obj,
-      metadata: getMetadataAccessor(obj.entityType)
-    })), [layers, dispatcher]
+      metadata: getMetadataAccessor(obj.entityType),
+    })), [layers, dispatcher],
   );
 
   const fetchData = useCallback(() => {
@@ -66,7 +66,7 @@ export const useMetaMapMarker = (layers: ICalendarLayersProps[]): IGetData => {
           const evalCustomUrl = evaluateString(item.customUrl, { data: formData, globalState });
 
           const response = await refetch(
-            getCalendarRefetchParams({ ...item, customUrl: evalCustomUrl, overfetch: item.overfetch }, filter)
+            getCalendarRefetchParams({ ...item, customUrl: evalCustomUrl, overfetch: item.overfetch }, filter),
           );
 
           return response;
@@ -81,7 +81,7 @@ export const useMetaMapMarker = (layers: ICalendarLayersProps[]): IGetData => {
         // Filter out rejected promises and null results from failed layers
         const successfulData = results
           .filter((result): result is PromiseFulfilledResult<any> =>
-            result.status === 'fulfilled' && result.value != null
+            result.status === 'fulfilled' && result.value != null,
           )
           .map((result) => result.value);
 
@@ -95,7 +95,7 @@ export const useMetaMapMarker = (layers: ICalendarLayersProps[]): IGetData => {
   }, [layerWithMetadata, formData, globalState, refetch, refreshTrigger]);
 
 
-  const updateDefaultCalendarView = useCallback(async (value: string) => {
+  const updateDefaultCalendarView = useCallback(async (value: string): Promise<ISettingResponse | null> => {
     try {
       const response = await mutate(
         {
@@ -107,12 +107,13 @@ export const useMetaMapMarker = (layers: ICalendarLayersProps[]): IGetData => {
           module: 'Shesha',
           value: value,
           datatype: 'string',
-        }
-      );
+        },
+      ) as ISettingResponse;
 
       if (response?.success) {
         return response;
       }
+      return null;
     } catch (error) {
       console.error('Error updating user settings:', error);
       return null;
@@ -125,32 +126,32 @@ export const useMetaMapMarker = (layers: ICalendarLayersProps[]): IGetData => {
       const response = await mutate(
         {
           url: '/api/services/app/Settings/GetUserValue',
-          httpVerb: 'POST'
+          httpVerb: 'POST',
         },
         {
           name: 'Calendar View',
-          module: 'Shesha'
-        }
-      );
+          module: 'Shesha',
+        },
+      ) as ISettingResponse;
 
       if (response?.success && response?.result !== undefined) {
         return response;
       } else {
         console.warn('Unexpected response format or result missing');
-        return null;  // Return null as a fallback
+        return null; // Return null as a fallback
       }
     } catch (error) {
       console.error('Error fetching default calendar view:', error);
-      return null;  // Return null in case of error
+      return null; // Return null in case of error
     }
   }, [mutate]);
 
   return {
     fetchData,
-    layerMarkers,
+    layerEvents,
     layerData,
     fetchDefaultCalendarView,
-    updateDefaultCalendarView
+    updateDefaultCalendarView,
   };
 };
 

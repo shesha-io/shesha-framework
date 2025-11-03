@@ -17,11 +17,11 @@ export const LayerItem: FC<ILayerGroupItemProps> = (props) => {
   const { styles } = useStyles();
   const { deleteLayer, selectedItemId, readOnly } = useLayerGroupConfigurator();
 
-  const onDeleteClick = () => {
+  const onDeleteClick = (): void => {
     deleteLayer(props.id);
   };
 
-  const onEditBtnClick = () => {
+  const onEditBtnClick = (): void => {
     if (props.onConfigClick) {
       props.onConfigClick(props.id);
     }
@@ -29,7 +29,7 @@ export const LayerItem: FC<ILayerGroupItemProps> = (props) => {
 
   return (
     <div className={classNames(styles.shaToolbarItem, { selected: selectedItemId === props.id })}>
-      <div className={classNames(styles.shaToolbarItemHeader)} style={{ display: 'flex'}}>
+      <div className={classNames(styles.shaToolbarItemHeader)} style={{ display: 'flex' }}>
         <DragHandle id={props.id} />
         <span className={styles.shaToolbarItemName}>
           {props.icon && <ShaIcon iconName={props.icon as IconType} />}

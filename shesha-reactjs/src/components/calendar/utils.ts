@@ -1,24 +1,21 @@
-import { evaluateDynamicFilters, IMatchData } from "@/index";
+import { IMatchData } from "@/index";
+import { evaluateDynamicFilters } from "@/utils/datatable";
 import { IAnyObject } from "@/interfaces";
 import { ICalendarLayersProps } from "@/providers/layersProvider/models";
 import { UseEvaluatedFilterArgs } from "@/providers/dataTable/filters/evaluateFilter";
 import { IStoredFilter } from "@/providers/dataTable/interfaces";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
 import { executeScriptSync } from "@/providers/form/utils";
+import { ILayerWithMetadata } from "./interfaces";
 
-export const parseIntOrDefault = (input: any, defaultValue: number = 0): number => {
-  const parsed = parseInt(String(input), 10);
-  return isNaN(parsed) ? defaultValue : parsed;
-};
-
-export const getLayerMarkerPoints = (
+export const getLayerEventItems = (
   item: ICalendarLayersProps,
   layerDataItem: { [x: string]: any }[] | { [x: string]: any },
-) => {
+): ICalendarLayersProps => {
   let events;
-  const { startTime, endTime, title, icon, iconColor, showIcon, color, onDblClick, onSelect, } = item;
+  const { startTime, endTime, title, icon, iconColor, showIcon, color, onDblClick, onSelect } = item;
   if (Array.isArray(layerDataItem)) {
-    markers = layerDataItem
+    events = layerDataItem
       .filter((i) => i?.[startTime] && i?.[endTime])
       .map((j) => {
         const startDate = new Date(j?.[startTime]);
@@ -41,7 +38,7 @@ export const getLayerMarkerPoints = (
           onSelect,
         };
       })
-      .filter(event => event !== null);
+      .filter((event) => event !== null);
   } else {
     const startDate = new Date(layerDataItem?.[startTime]);
     const endDate = new Date(layerDataItem?.[endTime]);
@@ -66,17 +63,17 @@ export const getLayerMarkerPoints = (
       ];
     }
   }
-  return { ...item, markers };
+  return { ...item, events };
 };
 
-export const getLayerMarkers = (layers: ICalendarLayersProps[], layerData: { [x: string]: any }[]): ICalendarLayersProps[] =>
-  (layers || []).map((item, index) => {
+export const getLayerEventsData = (layers: ICalendarLayersProps[], layerData: { [x: string]: any }[]): ICalendarLayersProps[] =>
+  (layers || []).map((item, index): ICalendarLayersProps => {
     const layerDataItem = (layerData[index] as any[]) || [];
 
-    return getLayerMarkerPoints(item, layerDataItem);
+    return getLayerEventItems(item, layerDataItem);
   });
 
-export const getLayerMarkerOptions = (layers: ICalendarLayersProps[]) =>
+export const getLayerOptions = (layers: ICalendarLayersProps[]): Array<{ label: string; value: string; disabled: boolean }> =>
   (layers || [])
     .filter((item) => item.visible)
     .map((i) => ({
@@ -85,7 +82,7 @@ export const getLayerMarkerOptions = (layers: ICalendarLayersProps[]) =>
       disabled: !i.allowChangeVisibility,
     }));
 
-export const getQueryProperties = ({ startTime, endTime, propertyList }: ICalendarLayersProps) => {
+export const getQueryProperties = ({ startTime, endTime, propertyList }: ICalendarLayersProps): string => {
   const properties = new Set<string>(['id']);
   if (startTime?.trim()) {
     properties.add(startTime);
@@ -103,7 +100,7 @@ export const getQueryProperties = ({ startTime, endTime, propertyList }: ICalend
   return Array.from(properties).join(' ');
 };
 
-export const getCalendarRefetchParams = (param: ICalendarLayersProps, filter: string) => {
+export const getCalendarRefetchParams = (param: ICalendarLayersProps, filter: string): { path: string; queryParams?: { entityType: string; properties: string | null; maxResultCount: number; filter: string } } => {
   const { customUrl, dataSource, entityType, overfetch } = param;
 
   if (dataSource === 'custom') {
@@ -125,28 +122,28 @@ export const getCalendarRefetchParams = (param: ICalendarLayersProps, filter: st
 
 export const getLayerEvents = (
   layerEvents: ICalendarLayersProps[],
-  checked: string[]
-) => {
+  checked: string[],
+): any[] => {
   return checked
     .map((item) => {
       const found = layerEvents.find(({ id }) => id === item);
       // Map each event to include the layer's properties
-      return found?.events?.map(event => ({
+      return found?.events?.map((event) => ({
         ...event,
         color: event.color ?? found.color,
         icon: event.icon ?? found.icon,
         showIcon: event.showIcon ?? found.showIcon,
-        iconColor: event.iconColor ?? found.iconColor
+        iconColor: event.iconColor ?? found.iconColor,
       })) as any[];
     })
     .filter((i) => i)
     .reduce((prev, curr) => [...(prev || []), ...(curr || [])], []);
 };
 
-export const getResponseListToState = (res: { [key in string]: any }[]) =>
+export const getResponseListToState = (res: { [key in string]: any }[]): any[] =>
   res.map((res) => (res?.result?.items ? res.result.items : res?.result));
 
-export const addPx = (value: string) => {
+export const addPx = (value: string): string => {
   value = value ?? "100%";
   return /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
 };
@@ -174,9 +171,11 @@ export const evaluateFilterAsync = async (args: UseEvaluatedFilterArgs): Promise
   return JSON.stringify(response[0]?.expression) || '';
 };
 
+// Using any types for item and formData parameters because these are dynamic objects
+// with unknown structure that depend on the form/application context
 export const evaluateFilters = async (
-  item: any,
-  formData: any,
+  item: ILayerWithMetadata,
+  formData: object,
   globalState: IAnyObject,
   propertyMetadataAccessor: NestedPropertyMetadatAccessor,
 ): Promise<string> => {
@@ -200,10 +199,12 @@ export const evaluateFilters = async (
   return evaluatedFilters;
 };
 
+// Using any types for formData, globalState, and item parameters because these are dynamic objects
+// with unknown structure that depend on the form/application context
 export const getIcon = (
   icon: string,
-  formData: any = {},
-  globalState: any = {},
+  formData: object = {},
+  globalState: IAnyObject = {},
   item: any = {},
   defaultIcon: string = 'UserOutlined',
 ): any => {
@@ -240,7 +241,7 @@ export const isDateDisabled = (date: Date, minDate?: string, maxDate?: string): 
   return false;
 };
 
-export const getDayStyles = (newDate: Date, minDate?: string, maxDate?: string) => {
+export const getDayStyles = (newDate: Date, minDate?: string, maxDate?: string): { style?: { backgroundColor: string; color: string; cursor: string; opacity?: number } } => {
   const dateToCheck = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate());
   const minDateObj = minDate ? new Date(minDate) : null;
   const maxDateObj = maxDate ? new Date(maxDate) : null;

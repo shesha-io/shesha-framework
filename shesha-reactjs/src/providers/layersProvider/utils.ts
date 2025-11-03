@@ -30,7 +30,7 @@ export const getItemById = (items: LayerGroupItemProps[], id: string): LayerGrou
   return position ? position.ownerArray[position.index] : null;
 };
 
-export const getComponentModel = (item: LayerGroupItemProps) => ({
+export const getComponentModel = (item: LayerGroupItemProps): LayerGroupItemProps & { visible: boolean; allowChangeVisibility: boolean } => ({
   ...item,
   visible: true,
   allowChangeVisibility: true,

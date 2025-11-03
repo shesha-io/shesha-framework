@@ -1,6 +1,20 @@
 import { FormIdentifier, IConfigurableActionConfiguration } from '@/providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
+export interface ICalendarEvent {
+  id: string;
+  start: Date;
+  end: Date;
+  title: string;
+  icon?: string;
+  showIcon?: boolean;
+  color?: string;
+  iconColor?: string;
+  onDblClick?: IConfigurableActionConfiguration;
+  onSelect?: IConfigurableActionConfiguration;
+  [key: string]: any; // For additional layer-specific properties
+}
+
 export type LayerGroupItemProps = ILayerFormModel | ILayerGroup;
 
 export interface ILayerGroupItemBase {
@@ -75,7 +89,7 @@ export interface ICalendarLayersProps {
   filters: { [key in string]: any };
   useQuickView?: boolean;
   quickViewForm?: FormIdentifier;
-  markers?: any[];
+  events?: ICalendarEvent[];
   onSelect?: IConfigurableActionConfiguration;
   onDblClick?: IConfigurableActionConfiguration;
   onSlotClick?: IConfigurableActionConfiguration;

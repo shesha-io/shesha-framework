@@ -1,9 +1,9 @@
 
-import { DesignerToolbarSettings } from '@/index';
+import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/es/form/Form';
 
-export const getSettings = () => {
+export const getSettings = (): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -41,9 +41,9 @@ export const getSettings = () => {
                       id: nanoid(),
                       propertyName: 'allowChangeVisibility',
                       label: 'Allow Change Visibility',
-                      description: 'If enabled, the user can change the visibility of the layer'
-                    }
-                  ]
+                      description: 'If enabled, the user can change the visibility of the layer',
+                    },
+                  ],
                 })
                 .addSettingsInput({
                   inputType: 'switch',
@@ -71,11 +71,11 @@ export const getSettings = () => {
                       validate: {
                         required: true,
                       },
-                    }
-                  ]
+                    },
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
 
           },
           {
@@ -116,9 +116,9 @@ export const getSettings = () => {
                       validate: {},
                       jsSetting: true,
                       dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                      useRawValues: true
-                    }
-                  ]
+                      useRawValues: true,
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -136,8 +136,8 @@ export const getSettings = () => {
                         _value: false,
                       } as any,
                       fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -154,8 +154,8 @@ export const getSettings = () => {
                         _value: false,
                       } as any,
                       jsSetting: false,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -197,8 +197,8 @@ export const getSettings = () => {
                       modelType: '{{data.entityType}}',
                       autoFillProps: false,
                       jsSetting: false,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInput({
                   inputType: 'switch',
@@ -227,11 +227,11 @@ export const getSettings = () => {
                         _mode: 'code',
                         _value: false,
                       } as any,
-                    }
-                  ]
+                    },
+                  ],
                 })
-                .toJson()
-            ]
+                .toJson(),
+            ],
           },
           {
             key: '3',
@@ -256,8 +256,8 @@ export const getSettings = () => {
                       id: nanoid(),
                       propertyName: 'showIcon',
                       label: 'Show Icon',
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -271,7 +271,7 @@ export const getSettings = () => {
                       hidden: {
                         _code: "return getSettingValue(data?.showIcon) !== true",
                         _mode: "code",
-                        _value: false
+                        _value: false,
                       } as any,
                       description: 'Set the icon of your nodes',
                       exposedVariables: [
@@ -294,8 +294,8 @@ export const getSettings = () => {
                           type: 'object',
                         },
                       ],
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -311,10 +311,10 @@ export const getSettings = () => {
                       hidden: {
                         _code: "return getSettingValue(data?.showIcon) !== true",
                         _mode: "code",
-                        _value: false
+                        _value: false,
                       } as any,
-                    }
-                  ]
+                    },
+                  ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -337,20 +337,20 @@ export const getSettings = () => {
                       description: 'Action to be executed when the event is double clicked',
                       jsSetting: false,
                       hideLabel: true,
-                    }
-                  ]
+                    },
+                  ],
                 })
-                .toJson()
-            ]
-          }
-        ]
+                .toJson(),
+            ],
+          },
+        ],
 
       }).toJson(),
     formSettings: {
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
-      wrapperCol: { span: 24 }
-    }
+      wrapperCol: { span: 24 },
+    },
   };
 };

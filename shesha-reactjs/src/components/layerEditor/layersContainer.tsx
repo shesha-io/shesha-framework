@@ -17,7 +17,7 @@ export const LayerItemsContainer: FC<ILayerItemsContainerProps> = (props) => {
   const { styles } = useStyles();
   const { readOnly, updateChildItems } = useLayerGroupConfigurator();
 
-  const onSetList = (newState: ItemInterface[]) => {
+  const onSetList = (newState: ItemInterface[]): void => {
     const listChanged = true;
 
     if (listChanged) {

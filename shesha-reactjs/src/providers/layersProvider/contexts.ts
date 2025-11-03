@@ -26,17 +26,17 @@ export interface ILayerGroupConfiguratorActionsContext {
   updateItem: (payload: IUpdateItemSettingsPayload) => void;
   getItem: (uid: string) => LayerGroupItemProps | null;
   updateChildItems: (payload: IUpdateChildItemsPayload) => void;
-  setRefreshTrigger?: (payload: number | ((prev: number) => number)) => void;
+  setRefreshTrigger: (payload: number | ((prev: number) => number)) => void;
 }
 
 export const LAYER_GROUP_CONTEXT_INITIAL_STATE: ILayerGroupConfiguratorStateContext = {
   items: [],
   readOnly: false,
-  refreshTrigger: 0
+  refreshTrigger: 0,
 };
 
 export const LayerGroupConfiguratorStateContext = createContext<ILayerGroupConfiguratorStateContext>(
-  LAYER_GROUP_CONTEXT_INITIAL_STATE
+  LAYER_GROUP_CONTEXT_INITIAL_STATE,
 );
 
 export const LayerGroupConfiguratorActionsContext = createContext<ILayerGroupConfiguratorActionsContext | undefined>(undefined);

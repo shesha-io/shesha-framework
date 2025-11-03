@@ -40,7 +40,7 @@ const CalendarComponent: IToolboxComponent<ICalendarProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   migrator: (m) =>
     m.add<any>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-      .add<ICalendarProps>(1, (prev) => ({ ...prev, displayPeriod: ['month', 'week', 'work_week', 'day', 'agenda'] }))
+      .add<ICalendarProps>(1, (prev) => ({ ...prev, displayPeriod: ['month', 'week', 'work_week', 'day', 'agenda'] })),
 
 };
 
