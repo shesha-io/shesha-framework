@@ -1,4 +1,5 @@
 import {
+  IConfigurableActionConfiguration,
   ConfigurableForm,
   FormIdentifier,
   IConfigurableFormComponent,
@@ -11,6 +12,7 @@ import {
 } from '@/index';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
+import { IFullAuditedEntity } from '@/publicJsApis/entities';
 import {
   ButtonGroupItemProps,
   IButtonGroup,
@@ -141,7 +143,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     };
 
     // Custom execute function that includes dynamicItem in the context
-    const executeActionWithDynamicContext = (actionConfiguration: any, dynamicItem?: any) => {
+    const executeActionWithDynamicContext = (actionConfiguration: IConfigurableActionConfiguration, dynamicItem?: IFullAuditedEntity) => {
       if (actionConfiguration) {
         executeAction({
           actionConfiguration,
