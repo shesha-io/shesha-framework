@@ -135,20 +135,27 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
 
   useEffect(() => {
     if (uploadMode === 'sync' && value) {
-      const fileInfo: IStoredFile = value
-        ? {
-            //id: value.uid,
-            uid: value.uid,
-            url: null,
-            status: 'done',
-            name: value.name,
-            size: value.size,
-            type: value.type,
-            originFileObj: null,
-          }
-        : null;
+      // Check if value is a File object (new upload) or just an ID/object (existing file)
+      const isFileObject = value instanceof File || (value?.uid && value?.name && value?.size);
 
-      dispatch(fetchFileInfoSuccessAction(fileInfo));
+      if (isFileObject) {
+        // New file upload - use file properties directly
+        const fileInfo: IStoredFile = {
+          uid: value.uid,
+          url: null,
+          status: 'done',
+          name: value.name,
+          size: value.size,
+          type: value.type,
+          originFileObj: null,
+        };
+        dispatch(fetchFileInfoSuccessAction(fileInfo));
+      } else {
+        // Existing file - fetch full info from server
+        if (newFileId) {
+          fileFetcher.refetch({ queryParams: { id: newFileId } });
+        }
+      }
     }
     if (uploadMode === 'sync' && !Boolean(value)) {
       dispatch(deleteFileSuccessAction());
@@ -156,7 +163,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
   }, [uploadMode, value]);
 
   useEffect(() => {
-    if (!isFetchingFileInfo && uploadMode === 'async') {
+    if (!isFetchingFileInfo) {
       if (fetchingFileInfoResponse) {
         const fetchedFile = fetchingFileInfoResponse?.result;
         if (fetchedFile) {
