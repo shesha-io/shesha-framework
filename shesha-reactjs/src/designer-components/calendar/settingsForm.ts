@@ -104,11 +104,11 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
                   ],
                 })
                 .addSettingsInput({
-                    inputType: 'colorPicker',
-                    id: nanoid(),
-                    propertyName: 'dummyEventColor',
-                    label: 'Dummy Event Color',
-                    parentId: commonTabId,
+                  inputType: 'colorPicker',
+                  id: nanoid(),
+                  propertyName: 'dummyEventColor',
+                  label: 'Dummy Event Color',
+                  parentId: commonTabId,
                 })
                 .toJson(),
             ],
@@ -129,12 +129,12 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
                   settings: getCalendarLayersSettings(),
                 })
                 .addSettingsInput({
-                    inputType: 'textField',
-                    id: nanoid(),
-                    parentId: dataTabId,
-                    propertyName: 'momentLocale',
-                    label: 'Moment Locale',
-                    tooltip: 'Sets the locale of the calendar using moment.js locales (e.g. en, en-gb, fr, de, etc.)',
+                  inputType: 'textField',
+                  id: nanoid(),
+                  parentId: dataTabId,
+                  propertyName: 'momentLocale',
+                  label: 'Moment Locale',
+                  tooltip: 'Sets the locale of the calendar using moment.js locales (e.g. en, en-gb, fr, de, etc.)',
                 })
                 .toJson(),
             ],

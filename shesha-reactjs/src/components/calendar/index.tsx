@@ -59,7 +59,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
 
   // Set locale (all locales bundled via moment-with-locales)
   useEffect(() => {
-    const setMomentLocale = () => {
+    const setMomentLocale = (): void => {
       const result = moment.locale(momentLocale);
       if (result !== momentLocale) {
         console.warn(`Locale ${momentLocale} not available, using fallback: ${result}`);
