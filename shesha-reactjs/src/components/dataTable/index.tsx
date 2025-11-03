@@ -405,7 +405,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!onRowSave) {
       // No custom handler - just pass through the data unchanged
       return (data) => {
-        console.log('OnRowSave - No handler defined, returning original data:', data);
         return Promise.resolve(data);
       };
     }
@@ -434,9 +433,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
         // Safely get page context - fallback to empty object if not available
         const pageContext = dataContextManager?.getPageContext?.() || {};
-
-        // Debug: Log the original data structure to help identify serialization issues
-        console.log('OnRowSave - Original data:', data);
 
         const preparedData = useLegacyMode
           ? executer(data, formApi, globalState, httpClient, moment, appContextData)
@@ -480,7 +476,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         return Promise.resolve(data);
       }
     };
-  }, [onRowSave, httpClient, dataContextManager, message, selectedRow, setGlobalState]);
+  }, [onRowSave, httpClient, dataContextManager, message, selectedRow, setGlobalState, appContextData]);
 
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowDeleteSuccessAction)
