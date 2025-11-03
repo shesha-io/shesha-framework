@@ -52,7 +52,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       subText,
     });
     const { loginInfo, logoutUser } = useAuth();
-    const { formData, formMode } = useForm();
+    const { formData } = useForm();
     const { globalState } = useGlobalState();
     const { executeAction } = useFormExpression();
     const { anyOfPermissionsGranted } = useSheshaApplication();
@@ -81,7 +81,6 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       return getItemsWithResolved(evaluation.items);
     }, [evaluation.items, numResolved]);
 
-    const isDesignMode = formMode === 'designer';
 
     // Visibility checker functions (similar to ButtonGroup)
     const isVisibleBase = (item: ButtonGroupItemProps): boolean => {
@@ -114,10 +113,6 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
 
     // Return the visibility state of a button. A button is visible if it's not hidden and the user is permitted to view it
     const getIsVisible = (item: ButtonGroupItemProps): boolean => {
-      
-      // if (isDesignMode)
-      //   return true;
-
       return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item, getIsVisible);
     };
 

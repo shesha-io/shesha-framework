@@ -25,21 +25,23 @@ const filterVisibleItems = (
   items: ButtonGroupItemProps[] = [],
   visibilityChecker: ItemVisibilityFunc
 ): ButtonGroupItemProps[] => {
-  return items.filter(item => {
+  return items.reduce<ButtonGroupItemProps[]>((acc, item) => {
     if (!visibilityChecker(item)) {
-      return false;
+      return acc;
     }
 
-    // For groups, recursively filter child items
     if (isGroup(item)) {
-      const group = item as IButtonGroup;
-      if (group.childItems) {
-        group.childItems = filterVisibleItems(group.childItems, visibilityChecker);
-      }
+      const filteredChildren = item.childItems
+        ? filterVisibleItems(item.childItems, visibilityChecker)
+        : undefined;
+
+      acc.push({ ...item, childItems: filteredChildren });
+      return acc;
     }
 
-    return true;
-  });
+    acc.push(item);
+    return acc;
+  }, []);
 };
 
 export const getMenuItem = (
