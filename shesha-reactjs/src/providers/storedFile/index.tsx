@@ -140,9 +140,10 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
 
   useEffect(() => {
     if (uploadMode === 'sync' && value) {
-      const fileInfo: IStoredFile = value
-        ? {
-          // id: value.uid,
+      const isFileObject = value instanceof File || (value?.uid && value?.name && value?.size);
+
+      if (isFileObject) {
+        const fileInfo: IStoredFile = {
           uid: value.uid,
           url: null,
           status: 'done',
@@ -150,10 +151,14 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
           size: value.size,
           type: value.type,
           originFileObj: null,
-        }
-        : null;
+        };
+        dispatch(fetchFileInfoSuccessAction(fileInfo));
+      } else {
 
-      dispatch(fetchFileInfoSuccessAction(fileInfo));
+        if (newFileId) {
+          fileFetcher.refetch({ queryParams: { id: newFileId } });
+        }
+      }
     }
     if (uploadMode === 'sync' && !Boolean(value)) {
       dispatch(deleteFileSuccessAction());
