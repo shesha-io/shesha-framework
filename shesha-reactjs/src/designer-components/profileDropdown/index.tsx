@@ -3,11 +3,12 @@ import {
   IToolboxComponent,
   useAuth,
   useForm,
-  useFormExpression,
   useGlobalState,
   useSidebarMenu,
   useSheshaApplication,
 } from '@/index';
+import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import {
   ButtonGroupItemProps,
   IButtonGroup,
@@ -54,8 +55,9 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     const { loginInfo, logoutUser } = useAuth();
     const { formData } = useForm();
     const { globalState } = useGlobalState();
-    const { executeAction } = useFormExpression();
+    const { executeAction } = useConfigurableActionDispatcher();
     const { anyOfPermissionsGranted } = useSheshaApplication();
+    const allData = useAvailableConstantsData();
 
     const sidebar = useSidebarMenu(false);
     const { accountDropdownListItems } = sidebar || {};
@@ -116,7 +118,17 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item, getIsVisible);
     };
 
-    const menuItems = getMenuItem(finalItems, executeAction, getIsVisible);
+    // Custom execute function that includes dynamicItem in the context
+    const executeActionWithDynamicContext = (actionConfiguration: any, dynamicItem?: any) => {
+      if (actionConfiguration) {
+        executeAction({
+          actionConfiguration,
+          argumentsEvaluationContext: { ...allData, dynamicItem }
+        });
+      }
+    };
+
+    const menuItems = getMenuItem(finalItems, executeActionWithDynamicContext, getIsVisible);
 
     const accountMenuItems = getAccountMenuItems(accountDropdownListItems, logoutUser);
 
