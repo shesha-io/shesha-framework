@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Switch } from "antd";
 import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, ColorPicker, FormAutocomplete, LabelValueEditor, PermissionAutocomplete } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
@@ -69,16 +68,6 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
     return executeScript<IObjectMetadata>(availableConstantsExpression, { data: formData, metadataBuilder });
   }, [availableConstantsExpression, metadataBuilderFactory, formData]);
-
-  const regExpObj = useMemo(() => {
-    if (!regExp) return null;
-    try {
-      return new RegExp(regExp, 'g');
-    } catch (error) {
-      console.warn('Invalid regExp pattern:', regExp, error);
-      return null;
-    }
-  }, [regExp]);
 
   const regExpObj = useMemo(() => {
     if (!regExp) return null;
@@ -456,13 +445,6 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
       return (
         <Input
           size={size}
-          onChange={(e) => {
-            const inputValue: string | undefined = e.target.value?.toString();
-            if (regExpObj && inputValue)
-              onChange(inputValue.replace(regExpObj, ''));
-            else
-              onChange(inputValue);
-          }}
           onChange={(e) => {
             const inputValue: string | undefined = e.target.value?.toString();
             if (regExpObj && inputValue)
