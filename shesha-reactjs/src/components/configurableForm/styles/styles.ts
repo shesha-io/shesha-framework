@@ -67,7 +67,7 @@ export const ShaFormStyles = createGlobalStyle`
         position: absolute;
         top: 0px;
         left: -2px;
-        overflow-x: hidden;
+        overflow: hidden;
     }
 
     .${formClassNames.shaFormInfoCard} {       
