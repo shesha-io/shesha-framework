@@ -206,7 +206,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
           data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
         } catch (e) {
           // Ignore malformed messages
-          return;
+          return e;
         }
 
         // Ignore messages that aren't YouTube player events
@@ -289,9 +289,9 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
           validator: `
               // Custom validator for watch completion
               if (value === true) {
-                return callback();
+                return Promise.resolve();
               }
-              return callback('You must watch the entire video to continue');
+               return Promise.reject(new Error('You must watch the entire video to continue'));
             `,
         },
       }
