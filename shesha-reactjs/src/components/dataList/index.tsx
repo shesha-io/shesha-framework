@@ -1,5 +1,6 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
-import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Alert, Button, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
@@ -538,19 +539,18 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           </Checkbox>
           <Divider />
         </Show>
-        {// Use Configurable Action
-        /*<Show when={canAddInline}>
-          <Button 
-            type='link' 
-            shape="round" 
-            title='Add new item' 
-            icon={<PlusCircleOutlined />} 
+        <Show when={canAddInline}>
+          <Button
+            type='link'
+            shape="round"
+            title='Add new item'
+            icon={<PlusCircleOutlined />}
             className="sha-link"
             onClick={onCreateClick}
           >
             Add new item...
           </Button>
-        </Show>*/}
+        </Show>
       </div>
       <FormInfo visible={formInfoBlockVisible} formProps={{...(persistedFormProps as IPersistedFormProps)}}>
       <ShaSpin spinning={isFetchingTableData} tip={isFetchingTableData ? 'Loading...' : 'Submitting...'}>

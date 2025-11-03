@@ -64,12 +64,15 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const allData = useAvailableConstantsData();
   const isDesignMode = allData.form?.formMode === 'designer';
 
-  // Additional hooks for missing variables
-  const appContext = App.useApp();
-  const message = appContext?.message ?? null;
-  if (!message) {
-    console.warn('Message API not available in current context');
+  // Additional hooks for missing variables - with safe error handling for mode switches
+  let message = null;
+  try {
+    const appContext = App.useApp();
+    message = appContext?.message ?? null;
+  } catch {
+    console.warn('Message API not available in current context during mode switch');
   }
+
   const dataContextManager = useDataContextManager(false);
 
   const repository = getRepository();
@@ -231,7 +234,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     const repository = getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, allData.data ?? {}, allData.contexts ?? {}, allData.globalState).then((preparedData) => {
+    return performOnRowSave(rowData, allData.form, allData.contexts ?? {}, allData.globalState).then((preparedData) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customCreateUrl } as ICreateOptions)
@@ -300,13 +303,17 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  if (isDesignMode
-    && (
-      !repository
-      || !props.formId && props.formSelectionMode === "name"
-      || !props.formType && props.formSelectionMode === "view"
-      || !props.formIdExpression && props.formSelectionMode === "expression"
-    )) return <NotConfiguredWarning />;
+  // Only show configuration warning in design mode when truly misconfigured
+  if (isDesignMode && !repository) {
+    return <NotConfiguredWarning />;
+  }
+
+  // Form configuration warnings - only in design mode and when specific selection modes are used
+  if (isDesignMode) {
+    if (props.formSelectionMode === "name" && !props.formId) return <NotConfiguredWarning />;
+    if (props.formSelectionMode === "view" && !props.formType) return <NotConfiguredWarning />;
+    if (props.formSelectionMode === "expression" && !props.formIdExpression) return <NotConfiguredWarning />;
+  }
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
