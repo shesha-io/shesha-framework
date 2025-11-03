@@ -65,14 +65,11 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const isDesignMode = allData.form?.formMode === 'designer';
 
   // Additional hooks for missing variables
-  let message = null;
-  try {
-    const app = App.useApp();
-    message = app.message;
-  } catch {
+  const appContext = App.useApp();
+  const message = appContext?.message ?? null;
+  if (!message) {
     console.warn('Message API not available in current context');
   }
-
   const dataContextManager = useDataContextManager(false);
 
   const repository = getRepository();
