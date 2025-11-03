@@ -46,8 +46,8 @@ const filterVisibleItems = (
 
 export const getMenuItem = (
   items: ButtonGroupItemProps[] = [],
-  execute: (payload: IConfigurableActionConfiguration) => void,
-  visibilityChecker?: ItemVisibilityFunc,
+  execute: (payload: IConfigurableActionConfiguration, dynamicItem?: any) => void,
+  visibilityChecker?: ItemVisibilityFunc
 ): ItemType[] => {
   // Filter items based on visibility if checker is provided
   const visibleItems = visibilityChecker ? filterVisibleItems(items, visibilityChecker) : items;
@@ -55,6 +55,7 @@ export const getMenuItem = (
   return visibleItems.map((item) => {
     const { id, icon, label } = item;
     const childItems = isGroup(item) ? (item as IButtonGroup).childItems : undefined;
+    const dynamicItem = (item as any)?.dynamicItem;
 
     return {
       key: id,
@@ -64,7 +65,7 @@ export const getMenuItem = (
         </Fragment>
       ),
       children: childItems ? getMenuItem(childItems, execute, visibilityChecker) : undefined,
-      onClick: () => execute((item as IButtonItem)?.actionConfiguration),
+      onClick: () => execute((item as IButtonItem)?.actionConfiguration, dynamicItem),
     };
   });
 };
