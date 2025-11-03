@@ -1,3 +1,4 @@
+import { isDefined } from '@/utils/nullables';
 import { useState } from 'react';
 
 export function useWebStorage<T>(
@@ -9,15 +10,16 @@ export function useWebStorage<T>(
   // State to store our value
   // Pass initial state function to useState so logic is only executed once
   const [storedValue, setStoredValue] = useState<T>(() => {
-    let item: any;
     try {
       // Get from local storage by key
-      item = window ? window[storage].getItem(key) : undefined;
+      const item = typeof (window) !== 'undefined'
+        ? window[storage].getItem(key)
+        : undefined;
       // Parse stored json or if none return initialValue
       return item ? JSON.parse(item) : initialValue;
     } catch {
       // If error also return initialValue
-      return item;
+      return initialValue;
     }
   });
 
@@ -25,23 +27,21 @@ export function useWebStorage<T>(
   // ... persists the new value to 'localStorage' | 'sessionStorage'.
   const setValue = (value: T): void => {
     try {
-      // Allow value to be a function so we have same API as useState
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      if (isDefined(ignoredKeys) && ignoredKeys.length && typeof value === 'object') {
+        const intermediateValue = { ...value };
 
-      if (ignoredKeys?.length && typeof valueToStore === 'object') {
-        const intermediateValue = { ...valueToStore };
-
-        ignoredKeys?.forEach((localKey) => {
+        ignoredKeys.forEach((localKey) => {
           delete intermediateValue[localKey];
         });
 
         setStoredValue(intermediateValue);
       } else {
-        setStoredValue(valueToStore);
+        setStoredValue(value);
       }
 
       // Save to local storage
-      if (window) window[storage].setItem(key, JSON.stringify(valueToStore));
+      if (typeof (window) != 'undefined')
+        window[storage].setItem(key, JSON.stringify(value));
     } catch (error) {
       // A more advanced implementation would handle the error case
       console.error(error);

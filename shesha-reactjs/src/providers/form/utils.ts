@@ -333,7 +333,7 @@ export const isCommonContext = (name: string): boolean => {
   return r.filter((i) => i === name)?.length > 0;
 };
 
-export const getParentReadOnly = (parent: IParentProviderProps, allData: unknown): boolean => {
+export const getParentReadOnly = (parent: IParentProviderProps | undefined, allData: unknown): boolean => {
   // TODO: review type of allData
   const form = typeof allData === 'object' && "form" in allData ? allData.form : undefined;
   const formMode: FormMode | undefined = isDefined(form) && "formMode" in form ? form.formMode as FormMode : undefined;

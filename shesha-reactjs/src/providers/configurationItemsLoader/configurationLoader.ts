@@ -30,6 +30,7 @@ type FetchConfigurationPayload = Omit<GetConfigurationArgs, 'skipCache'> & {
 };
 
 export interface IConfigurationLoader {
+  getCachedConfigAsync<TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined>;
   getCurrentConfigAsync<TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): PromisedValue<TConfigDto>;
   clearCacheAsync: (type: string, id: ConfigurableItemIdentifier) => Promise<void>;
 };
@@ -211,7 +212,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
     await cache.removeItem(id);
   };
 
-  getCachedConfigAsync = async (args: GetConfigurationArgs): Promise<IConfigurationItemDto | undefined> => {
+  getCachedConfigAsync = async <TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined> => {
     const { type, id, topLevelModule } = args;
 
     const cache = this.#cacheProvider.getCache(type);
@@ -222,15 +223,14 @@ export class ConfigurationLoader implements IConfigurationLoader {
       const resolvedModule = lookupModule ?? module;
 
       const key = this.getCacheKeyByFullName(resolvedModule, name);
-      const config = await cache.getItem<IConfigurationItemDto>(key);
-      return config ?? undefined;
+      return (await cache.getItem<IConfigurationItemDto<TConfigDto>>(key)) as IConfigurationItemDto<TConfigDto> | undefined;
     }
 
     if (isConfigurableItemRawId(id)) {
       const lookup = await this.getConfigRawIdLookupAsync(type, id);
       if (!lookup)
         return undefined;
-      return await this.getCachedConfigAsync({ ...args, id: lookup });
+      return await this.getCachedConfigAsync<TConfigDto>({ ...args, id: lookup });
     }
 
     throw new Error('Unknown configuration item identifier');
@@ -353,7 +353,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
     }
 
     const wrappedPromise = new StatefulPromise<TConfigDto>((resolve, reject) => {
-      this.getCachedConfigAsync(args)
+      this.getCachedConfigAsync<TConfigDto>(args)
         .then((cachedConfig) => {
           this.fetchConfigFromBackendAsync({ type, id, cachedConfiguration: cachedConfig })
             .then((response) => {

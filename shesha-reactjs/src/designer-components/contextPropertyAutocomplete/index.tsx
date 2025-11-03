@@ -14,6 +14,7 @@ import SettingsControl from '../_settings/settingsControl';
 import { getValueFromPropertySettings } from '../_settings/utils';
 import { useStyles } from '../_settings/styles/styles';
 import { ConfigurableFormItem } from '@/components';
+import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -32,7 +33,7 @@ export interface IContextPropertyAutocompleteProps extends Omit<IContextProperty
   contextName: string;
   style?: CSSProperties;
   dropdownStyle?: CSSProperties;
-  defaultModelType: string;
+  defaultModelType: string | IEntityTypeIndentifier;
   onValuesChange?: (changedValues: any) => void;
 }
 
@@ -178,7 +179,7 @@ interface IContextPropertyAutocompleteCalculatedModel {
   contextName: string;
   style: CSSProperties;
   dropdownStyle: CSSProperties;
-  modelType: string;
+  modelType: string | IEntityTypeIndentifier;
   setFieldsValue: (values: any) => void;
 }
 

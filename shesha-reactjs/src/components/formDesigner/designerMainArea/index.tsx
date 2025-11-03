@@ -1,6 +1,6 @@
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { DataContextProvider, MetadataProvider, useShaFormInstance } from '@/providers';
+import { DataContextProvider, MetadataProvider, useDataContextManager, useShaFormInstance } from '@/providers';
 import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import ParentProvider from '@/providers/parentProvider';
 import React, { FC, useMemo, useEffect } from 'react';
@@ -26,6 +26,8 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   const shaForm = useShaFormInstance();
   const { antdForm: form } = shaForm;
   const { styles } = useStyles();
+
+  const noPageContext = !Boolean(useDataContextManager().getPageContext());
 
   useEffect(() => {
     if (shaForm) {
@@ -70,7 +72,14 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
         >
           <ParentProvider model={null} formMode="designer">
             {/* pageContext has added only to customize the designed form. It is not used as a data context.*/}
-            <DataContextProvider id="pageContext" name="pageContext" type="page" webStorageType="sessionStorage">
+            <ConditionalWrap
+              condition={noPageContext}
+              wrap={(children) => (
+                <DataContextProvider id="pageContext" name="pageContext" type="page" webStorageType="sessionStorage">
+                  {children}
+                </DataContextProvider>
+              )}
+            >
               <DataContextProvider
                 id="designerFormContext"
                 name={SheshaCommonContexts.FormContext}
@@ -85,7 +94,7 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
                 </ConfigurableFormRenderer>
 
               </DataContextProvider>
-            </DataContextProvider>
+            </ConditionalWrap>
           </ParentProvider>
         </ConditionalWrap>
 

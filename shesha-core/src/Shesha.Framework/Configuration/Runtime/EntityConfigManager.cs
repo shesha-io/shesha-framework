@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
@@ -14,11 +15,11 @@ namespace Shesha.Configuration.Runtime
     /// inheritedDoc
     public class EntityConfigManager : ConfigurationItemManager<EntityConfig>, IEntityConfigManager, ITransientDependency
     {
-        private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
+        public readonly IRepository<EntityProperty, Guid> PropertyConfigRepo;
 
         public EntityConfigManager(IRepository<EntityProperty, Guid> propertyConfigRepo) : base()
         {
-            _propertyConfigRepo = propertyConfigRepo;
+            PropertyConfigRepo = propertyConfigRepo;
         }
 
         public async Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig>? query = null, bool? implemented = null)
@@ -52,62 +53,94 @@ namespace Shesha.Configuration.Runtime
                 : result;
         }
 
-        protected async Task CopyPropertiesAsync(EntityConfig source, EntityConfig destination)
+        protected async Task<EntityProperty?> CopyPropertiesAsync(
+            IList<EntityProperty> properties,
+            EntityConfig destination,
+            EntityProperty? parentProperty = null,
+            EntityProperty? srcItemsType = null
+        )
         {
-            var properties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfig == source);
+            EntityProperty? itemsType = null;
+
             foreach (var src in properties)
             {
-                var property = new EntityProperty 
-                { 
+                var property = new EntityProperty
+                {
                     EntityConfig = destination,
                     Name = src.Name,
-                    DataType = src.DataType
+                    DataType = src.DataType,
+                    ParentProperty = parentProperty,
+                    Label = src.Label,
+                    Description = src.Description,
+                    DataFormat = src.DataFormat,
+                    EntityFullClassName = src.EntityFullClassName,
+                    EntityType = src.EntityType,
+                    EntityModule = src.EntityModule,
+                    ReferenceListName = src.ReferenceListName,
+                    ReferenceListModule = src.ReferenceListModule,
+                    IsFrameworkRelated = src.IsFrameworkRelated,
+
+                    Min = src.Min,
+                    Max = src.Max,
+                    MinLength = src.MinLength,
+                    MaxLength = src.MaxLength,
+                    Suppress = src.Suppress,
+                    Audited = src.Audited,
+                    Required = src.Required,
+                    ReadOnly = src.ReadOnly,
+                    RegExp = src.RegExp,
+                    ValidationMessage = src.ValidationMessage,
+
+                    CascadeCreate = src.CascadeCreate,
+                    CascadeUpdate = src.CascadeUpdate,
+                    CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced,
+
+                    ColumnName = src.ColumnName,
+                    CreatedInDb = src.CreatedInDb,
+                    Formatting = src.Formatting,
+                    InheritedFrom = src.InheritedFrom,
+                    ListConfiguration = src.ListConfiguration,
+                    SortOrder = src.SortOrder,
+                    Source = src.Source,
                 };
+                if (parentProperty != null)
+                    parentProperty.Properties.Add(property);
 
-                property.Label = src.Label;
-                property.Description = src.Description;
-                property.DataType = src.DataType;
-                property.DataFormat = src.DataFormat;
-                property.EntityType = src.EntityType;
-                property.ReferenceListName = src.ReferenceListName;
-                property.ReferenceListModule = src.ReferenceListModule;
-                property.IsFrameworkRelated = src.IsFrameworkRelated;
+                property.ItemsType = await CopyPropertiesAsync(src.Properties, destination, property, src.ItemsType);
 
-                property.Min = src.Min;
-                property.Max = src.Max;
-                property.MinLength = src.MinLength;
-                property.MaxLength = src.MaxLength;
-                property.Suppress = src.Suppress;
-                property.Audited = src.Audited;
-                property.Required = src.Required;
-                property.ReadOnly = src.ReadOnly;
-                property.RegExp = src.RegExp;
-                property.ValidationMessage = src.ValidationMessage;
+                await PropertyConfigRepo.InsertOrUpdateAsync(property);
 
-                property.CascadeCreate = src.CascadeCreate;
-                property.CascadeUpdate = src.CascadeUpdate;
-                property.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
-
-                await _propertyConfigRepo.InsertOrUpdateAsync(property);
+                if (src == srcItemsType)
+                    itemsType = property;
             }
+
+            return itemsType;
         }
 
         protected override async Task CopyItemPropertiesAsync(EntityConfig source, EntityConfig destination)
         {
+
+            destination.Label = source.Label;
+            destination.Description = source.Description;
+
+            destination.SchemaName = source.SchemaName;
+            destination.TableName = source.TableName;
+            destination.DiscriminatorValue = source.DiscriminatorValue;
+
             destination.ClassName = source.ClassName;
             destination.Namespace = source.Namespace;
-            destination.DiscriminatorValue = source.DiscriminatorValue;
-            destination.TableName = source.TableName;
             destination.EntityConfigType = source.EntityConfigType;
+            destination.InheritedFrom = source.InheritedFrom;
 
             destination.TypeShortAlias = source.TypeShortAlias;
             destination.HardcodedPropertiesMD5 = source.HardcodedPropertiesMD5;
-            destination.ViewConfigurations = source.ViewConfigurations.Select(v => v.Clone()).ToList();
+            destination.ViewConfigurations = source.ViewConfigurations?.Select(v => v.Clone()).ToList() ?? new List<EntityViewConfigurationDto>();
             destination.GenerateAppService = source.GenerateAppService;
             destination.Source = source.Source;
             destination.Accessor = source.Accessor;
 
-            await CopyPropertiesAsync(source, destination);
+            var properties = await PropertyConfigRepo.GetAllListAsync(x => x.EntityConfig == source && x.ParentProperty == null);
+            await CopyPropertiesAsync(properties, destination);
         }
     }
 }

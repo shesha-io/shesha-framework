@@ -37,7 +37,7 @@ namespace Shesha.Metadata
         public async Task<Type?> GetModelTypeAsync(string nameOrAlias)
         {
             var models = await GetModelsAsync();
-            return models.FirstOrDefault(m => m.Alias == nameOrAlias || m.ClassName == nameOrAlias)?.Type;
+            return models.FirstOrDefault(m => m.Alias == nameOrAlias || m.FullClassName == nameOrAlias)?.Type;
         }
 
         public async Task ClearCacheAsync()

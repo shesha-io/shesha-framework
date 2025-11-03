@@ -7,6 +7,7 @@ import { useStyles } from '@/designer-components/_common/styles/listConfigurator
 import { DataTypes } from '@/index';
 import { ObjectFormats } from '@/interfaces/dataTypes';
 import PropertyWrapper from './propertyWrapper';
+import { getEntityTypeName } from '@/providers/metadataDispatcher/entities/utils';
 
 export interface IProps extends IModelItem {
   index: number[];
@@ -16,16 +17,17 @@ export interface IProps extends IModelItem {
 export const SimpleProperty: FC<IProps> = (props) => {
   const { styles } = useStyles();
 
-  const icon = getIconByDataType(props.dataType, props.dataFormat || props.entityType);
+  const entityType = getEntityTypeName(props.entityType);
+  const icon = getIconByDataType(props.dataType, props.dataFormat || entityType);
 
   const label = props.isItemsType
     ? <>Array items type</>
     : <>{props.name} {props.label && <>({props.label})</>}</>;
 
   const labelInfo = props.dataType === DataTypes.entityReference
-    ? <>: <i>{props.entityType ?? 'Generic entity reference'}</i></>
+    ? <>: <i>{entityType ?? 'Generic entity reference'}</i></>
     : props.dataType === DataTypes.object && props.dataFormat === ObjectFormats.interface
-      ? <>: <i>{props.entityType ?? 'undefined'}</i></>
+      ? <>: <i>{entityType ?? 'undefined'}</i></>
       : null;
 
 

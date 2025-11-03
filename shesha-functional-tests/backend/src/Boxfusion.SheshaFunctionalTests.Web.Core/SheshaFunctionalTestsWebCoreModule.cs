@@ -48,7 +48,7 @@ namespace Boxfusion.SheshaFunctionalTests
             FriendlyName = "Shesha Functional Tests Web",
             Publisher = "Boxfusion",
             Alias = "functionalTestsWeb",
-            Hierarchy = [typeof(SheshaFunctionalTestsModuleA), typeof(SheshaFunctionalTestsModuleB), typeof(SheshaFrameworkModule)],
+            Hierarchy = [typeof(SheshaFunctionalTestsModuleA), typeof(SheshaFunctionalTestsModuleB), typeof(SheshaFunctionalTestsCommonModule), typeof(SheshaFrameworkModule)],
         };
 
         /// <summary>

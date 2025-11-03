@@ -24,10 +24,7 @@ namespace Shesha.Swagger
 {
     public static class SwaggerHelper
     {
-        private static Lazy<IList<TypeInfo>> ServiceTypes = new Lazy<IList<TypeInfo>>(() =>
-        {
-            return ServiceTypesFunc();
-        });
+        private static Lazy<IList<TypeInfo>> ServiceTypes = new Lazy<IList<TypeInfo>>(ServiceTypesFunc);
 
         public static IList<TypeInfo> ServiceTypesFunc()
         {
@@ -41,10 +38,7 @@ namespace Shesha.Swagger
             return types;
         }
 
-        private static Lazy<IList<Type>> EntityTypes = new Lazy<IList<Type>>(() =>
-        {
-            return EntityTypesFunc();
-        });
+        private static Lazy<IList<Type>> EntityTypes = new Lazy<IList<Type>>(EntityTypesFunc);
 
         public static IList<Type> EntityTypesFunc()
         {

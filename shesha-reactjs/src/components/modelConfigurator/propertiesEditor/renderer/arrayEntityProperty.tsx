@@ -5,6 +5,7 @@ import { IModelItem } from '@/interfaces/modelConfigurator';
 import { getIconByDataType } from '@/utils/metadata';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import PropertyWrapper from './propertyWrapper';
+import { getEntityTypeName } from '@/providers/metadataDispatcher/entities/utils';
 
 export interface IProps extends IModelItem {
   index: number[];
@@ -17,7 +18,7 @@ export const ArrayEntityProperty: FC<IProps> = (props) => {
   const icon = getIconByDataType(props.dataType, props.dataFormat);
 
   const itemsType = props.properties?.find((p) => p.isItemsType);
-  const listType = itemsType?.entityType;
+  const listType = getEntityTypeName(itemsType?.entityType);
   const listIcon = itemsType ? getIconByDataType(itemsType.dataType, itemsType.dataFormat) : null;
 
   return (

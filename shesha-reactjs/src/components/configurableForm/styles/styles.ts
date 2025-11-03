@@ -31,6 +31,14 @@ export const ShaFormStyles = createGlobalStyle`
         }
     }
     .${formClassNames.shaForm} {
+        .ant-form-item-label {
+            > label {
+                display: inline-flex;
+                align-items: center;
+                height: 100%;
+            }
+        }
+
         .${formClassNames.shaComponentsContainer} {
             min-height: 32px;
             &.horizontal {
@@ -42,7 +50,7 @@ export const ShaFormStyles = createGlobalStyle`
                         margin-bottom: unset;
                     }
                 }
-            }            
+            }
             .${formClassNames.shaError} {
                 background: none;
                 border: none;
