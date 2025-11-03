@@ -56,10 +56,6 @@ END;
 $$
 LANGUAGE plpgsql;
             ");
-
-            IfDatabase("PostgreSql").Execute.Sql(@"
-DROP FUNCTION IF EXISTS frwk_get_multi_value_ref_list_item_names(varchar(255), varchar(255), bigint);
-            ");
         }
     }
 }

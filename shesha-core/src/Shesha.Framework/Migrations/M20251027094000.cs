@@ -50,11 +50,6 @@ BEGIN
     RETURN @ret_val
 END
             ");
-
-            IfDatabase("SqlServer").Execute.Sql(@"
-IF OBJECT_ID('[dbo].[frwk_get_multi_value_ref_list_item_names]', 'FN') IS NOT NULL
-    DROP FUNCTION [dbo].[frwk_get_multi_value_ref_list_item_names];
-            ");
         }
     }
 }
