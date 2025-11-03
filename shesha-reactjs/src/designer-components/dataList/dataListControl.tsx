@@ -1,11 +1,11 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
-import { Alert } from 'antd';
+import { Alert, App } from 'antd';
 import { DataList } from '@/components/dataList';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import classNames from 'classnames';
 import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
-import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
+import { useConfigurableAction, useConfigurableActionDispatcher, useDataContextManager } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 import { useStyles } from '@/components/dataList/styles/styles';
 import { useAvailableConstantsData } from '@/providers/form/utils';
@@ -13,6 +13,7 @@ import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { IFormApi } from '@/providers/form/formApi';
+import FileSaver from 'file-saver';
 
 export const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
@@ -63,6 +64,17 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const allData = useAvailableConstantsData();
   const isDesignMode = allData.form?.formMode === 'designer';
 
+  // Additional hooks for missing variables
+  let message = null;
+  try {
+    const app = App.useApp();
+    message = app.message;
+  } catch (error) {
+    console.warn('Message API not available in current context');
+  }
+
+  const dataContextManager = useDataContextManager(false);
+
   const repository = getRepository();
 
   const onSelectRow = useCallback((index: number, row: any) => {
@@ -98,14 +110,89 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   // http, moment, setFormData
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
-    if (!onListItemSave) return (data) => Promise.resolve(data);
+    if (!onListItemSave) {
+      // No custom handler - just pass through the data unchanged
+      return (data) => {
+        console.log('OnListItemSave - No handler defined, returning original data:', data);
+        return Promise.resolve(data);
+      };
+    }
 
-    const executer = new Function('data, form, contexts, globalState, http, moment', onListItemSave);
+    // TODO: Remove this legacy mode flag after testing
+    const useLegacyMode = false; // Set to true to temporarily revert to old behavior for debugging
+
+    const executer = useLegacyMode
+      ? new Function('data, form, contexts, globalState, http, moment', onListItemSave)
+      : new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onListItemSave);
+
     return (data, form, contexts, globalState) => {
-      const preparedData = executer(data, form, contexts, globalState, allData.http, allData.moment);
-      return Promise.resolve(preparedData);
+      try {
+        // Debug: Log the original data structure to help identify serialization issues
+        console.log('OnListItemSave - Original data:', data);
+
+        // Safely get contexts data - fallback to empty object if not available
+        const contextData = dataContextManager?.getDataContextsData?.() || {};
+
+        // Create fileSaver API with safe error handling
+        const fileSaver = {
+          saveAs: (data: object | string, filename?: string, options?: object) => {
+            try {
+              FileSaver.saveAs(new Blob([typeof data === 'string' ? data : JSON.stringify(data)]), filename || 'download.txt');
+            } catch (error) {
+              console.error('Error saving file:', error);
+            }
+          }
+        };
+
+        // Safely get page context - fallback to empty object if not available
+        const pageContext = dataContextManager?.getPageContext?.() || {};
+
+        const preparedData = useLegacyMode
+          ? executer(data, form, contexts, globalState, allData.http, allData.moment)
+          : executer(
+              data,
+              contextData,
+              fileSaver,
+              form,
+              globalState,
+              allData.http || null,
+              message || null,
+              allData.moment,
+              pageContext,
+              selectedRow || null,
+              allData.setGlobalState
+            );
+
+        // Debug: Log the prepared data structure
+        console.log('OnListItemSave - Prepared data:', preparedData);
+
+        // Validate and sanitize the returned data
+        if (preparedData === undefined || preparedData === null) {
+          // If handler doesn't return anything, use original data
+          return Promise.resolve(data);
+        }
+
+        // If handler returns a non-object (like a string, number, boolean), use original data
+        if (typeof preparedData !== 'object') {
+          console.warn('OnListItemSave returned non-object value, using original data. Returned value:', preparedData);
+          return Promise.resolve(data);
+        }
+
+        try {
+          // Test if the data can be serialized (important for API calls)
+          JSON.stringify(preparedData);
+          return Promise.resolve(preparedData);
+        } catch (serializationError) {
+          console.warn('OnListItemSave returned non-serializable data, falling back to original data:', serializationError);
+          return Promise.resolve(data);
+        }
+      } catch (error) {
+        console.error('Error in onListItemSave handler:', error);
+        // Fallback to returning the original data if the handler fails
+        return Promise.resolve(data);
+      }
     };
-  }, [onListItemSave]);
+  }, [onListItemSave, dataContextManager, message, selectedRow, allData.http, allData.moment, allData.setGlobalState]);
 
   const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
