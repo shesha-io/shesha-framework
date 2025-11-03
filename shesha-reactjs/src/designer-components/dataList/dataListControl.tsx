@@ -64,12 +64,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const allData = useAvailableConstantsData();
   const isDesignMode = allData.form?.formMode === 'designer';
 
-  // Additional hooks for missing variables - with safe error handling for mode switches
-  let message = null;
-  try {
-    const appContext = App.useApp();
-    message = appContext?.message ?? null;
-  } catch {
+  const appContext = App.useApp();
+  const message = appContext?.message ?? null;
+  if (!message && isDesignMode) {
     console.warn('Message API not available in current context during mode switch');
   }
 
