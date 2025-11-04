@@ -280,7 +280,7 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
                                                                 id: nanoid(),
                                                                 propertyName: 'dummyEventColor',
                                                                 label: 'Selected Date Color',
-                                                                parentId: commonTabId,
+                                                                parentId: styleRouterId,
                                                             })
                                                             .toJson(),
                                                     ],
