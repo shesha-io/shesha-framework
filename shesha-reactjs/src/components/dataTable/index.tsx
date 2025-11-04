@@ -118,8 +118,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const appContextData = useApplicationContextData();
 
   // Get message API if available - component must be wrapped in App provider
-  const app = App.useApp();
-  const message = app?.message || null;
+  const { message } = App.useApp();
 
   const dataContextManager = useDataContextManager(false);
 
@@ -409,12 +408,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       };
     }
 
-    // TODO: Remove this legacy mode flag after testing
-    const useLegacyMode = false; // Set to true to temporarily revert to old behavior for debugging
-
-    const executer = useLegacyMode
-      ? new Function('data, form, globalState, http, moment, application', onRowSave)
-      : new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onRowSave);
+    const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onRowSave);
     return (data, formApi, globalState) => {
       try {
         // Safely get contexts data - fallback to empty object if not available
@@ -434,9 +428,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         // Safely get page context - fallback to empty object if not available
         const pageContext = dataContextManager?.getPageContext?.() || {};
 
-        const preparedData = useLegacyMode
-          ? executer(data, formApi, globalState, httpClient, moment, appContextData)
-          : executer(
+        const preparedData = executer(
             data,
             contexts,
             fileSaver,
@@ -462,14 +454,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           return Promise.resolve(data);
         }
 
-        try {
-          // Test if the data can be serialized (important for API calls)
-          JSON.stringify(preparedData);
-          return Promise.resolve(preparedData);
-        } catch (serializationError) {
-          console.warn('OnRowSave returned non-serializable data, falling back to original data:', serializationError);
-          return Promise.resolve(data);
-        }
+        return Promise.resolve(preparedData);
       } catch (error) {
         console.error('Error in onRowSave handler:', error);
         // Fallback to returning the original data if the handler fails
