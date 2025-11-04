@@ -274,7 +274,7 @@ export const getSettings = (data: any) => {
                                                 id: nanoid(),
                                                 propertyName: 'dummyEventColor',
                                                 label: 'Selected Date Color',
-                                                parentId: commonTabId,
+                                                parentId: styleRouterId,
                                             })
                                             .toJson()
                                     ]
