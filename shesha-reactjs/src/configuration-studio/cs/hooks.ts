@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
-import { ConfigItemTreeNode, DocumentDefinition, IDocumentInstance, TreeNode } from "../models";
+import { CloseDocumentResponse, ConfigItemTreeNode, DocumentDefinition, IDocumentInstance, TreeNode } from "../models";
 import { CsSubscriptionType, ProcessingState } from "./configurationStudio";
 import { useConfigurationStudio, useConfigurationStudioIfAvailable } from "./contexts";
 import { TreeProps } from "antd";
@@ -82,9 +82,9 @@ export type UseCsTabsResponse = {
   readonly activeDocId: string | undefined;
   readonly activeDocument: IDocumentInstance | undefined;
   readonly navigateToDocumentAsync: (docId: string) => Promise<void>;
-  readonly closeDocumentAsync: (tabId: string) => Promise<void>;
+  readonly closeDocumentAsync: (tabId: string, confirmUnsavedChanges: boolean, activateNextTab: boolean) => Promise<CloseDocumentResponse>;
   readonly reloadDocumentAsync: (tabId: string) => Promise<void>;
-  readonly closeMultipleDocumentsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean) => Promise<void>;
+  readonly closeMultipleDocumentsAsync: (predicate: (doc: IDocumentInstance, index: number) => boolean, confirmUnsavedChanges: boolean) => Promise<void>;
   readonly reorderDocumentsAsync: (fromIndex: number, toIndex: number) => Promise<void>;
 };
 export const useCsTabs = (): UseCsTabsResponse => {

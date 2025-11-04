@@ -1,4 +1,5 @@
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import * as RestfulShesha from '@/utils/fetchers';
 
 export type RefListPermissionedAccess = 1 | 2 | 3 | 4 | 5;
@@ -100,7 +101,7 @@ export interface ModelPropertyDto {
   /**
    * Entity type. Aplicable for entity references
    */
-  entityType?: string | null;
+  entityType?: IEntityTypeIndentifier | null;
   /**
    * Reference list name
    */

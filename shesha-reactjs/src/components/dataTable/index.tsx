@@ -81,6 +81,23 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   rowSelectedBackgroundColor?: string;
   borderRadius?: string;
   border?: IBorderValue;
+  hoverHighlight?: boolean;
+  backgroundColor?: string;
+
+  // Header styling
+  headerFontSize?: string;
+  headerFontWeight?: string;
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
+
+  // Table body styling
+  rowHeight?: string;
+  rowPadding?: string;
+  rowBorder?: string;
+
+  // Overall table styling
+  boxShadow?: string;
+  sortableIndicatorColor?: string;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -89,6 +106,7 @@ export interface IExtendedModalProps extends ModalProps {
 
 export const DataTable: FC<Partial<IIndexTableProps>> = ({
   useMultiselect: useMultiSelect,
+  selectionMode,
   selectedRowIndex,
   onSelectRow,
   onDblClick,
@@ -120,11 +138,22 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
   border,
+  hoverHighlight,
   onRowClick,
   onRowDoubleClick,
   onRowHover,
   onRowSelect,
   onSelectionChange,
+  backgroundColor,
+  headerFontSize,
+  headerFontWeight,
+  headerBackgroundColor,
+  headerTextColor,
+  rowHeight,
+  rowPadding,
+  rowBorder,
+  boxShadow,
+  sortableIndicatorColor,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -385,8 +414,21 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [dblClickHandler, handleRowDoubleClick]);
 
   useEffect(() => {
-    if (handleSelectionChange && selectedIds?.length !== previousIds?.length) {
-      handleSelectionChange(selectedIds);
+    if (handleSelectionChange && previousIds !== undefined) {
+      // Check if the selection actually changed by comparing the arrays
+      const currentIds = selectedIds || [];
+      const prevIds = previousIds || [];
+
+      // Compare sorted arrays for efficient comparison
+      const currentSorted = [...currentIds].sort();
+      const prevSorted = [...prevIds].sort();
+
+      const hasChanged = currentSorted.length !== prevSorted.length ||
+        currentSorted.some((id, index) => id !== prevSorted[index]);
+
+      if (hasChanged) {
+        handleSelectionChange(currentIds);
+      }
     }
   }, [selectedIds, handleSelectionChange, previousIds]);
 
@@ -535,12 +577,12 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onRowSave) return (data) => Promise.resolve(data);
 
-    const executer = new Function('data, form, globalState, http, moment, application', onRowSave);
+    const AsyncFunction = Object.getPrototypeOf(async function () { /* noop */ }).constructor;
+    const executer = new AsyncFunction('data, form, globalState, http, moment, application', onRowSave);
     return (data, formApi, globalState) => {
-      const preparedData = executer(data, formApi, globalState, httpClient, moment, appContextData);
-      return Promise.resolve(preparedData);
+      return executer(data, formApi, globalState, httpClient, moment, appContextData);
     };
-  }, [onRowSave, httpClient]);
+  }, [onRowSave, httpClient, appContextData]);
 
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
@@ -926,12 +968,13 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     data: tableData,
     // Disable sorting if we're in create mode so that the new row is always the first
     defaultSorting: defaultSorting,
-    useMultiSelect,
+    useMultiSelect: selectionMode === 'multiple' || selectionMode === 'single' || (selectionMode === undefined && useMultiSelect),
+    selectionMode,
     freezeHeaders,
-    onSelectRow: onSelectRowLocal,
+    onSelectRow: selectionMode === 'none' ? undefined : onSelectRowLocal,
     onRowDoubleClick: combinedDblClickHandler,
-    onSelectedIdsChanged: changeSelectedIds,
-    onMultiRowSelect,
+    onSelectedIdsChanged: selectionMode === 'none' ? undefined : changeSelectedIds,
+    onMultiRowSelect: (selectionMode === 'multiple' || (selectionMode === undefined && useMultiSelect)) ? onMultiRowSelect : undefined,
     onSort, // Update it so that you can pass it as param. Quick fix for now
     columns: preparedColumns,
     selectedRowIndex,
@@ -978,9 +1021,19 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     rowBackgroundColor,
     rowAlternateBackgroundColor,
-    rowHoverBackgroundColor,
+    rowHoverBackgroundColor: hoverHighlight ? rowHoverBackgroundColor : undefined,
     rowSelectedBackgroundColor,
     border,
+    backgroundColor,
+    headerFontSize,
+    headerFontWeight,
+    headerBackgroundColor,
+    headerTextColor,
+    rowHeight,
+    rowPadding,
+    rowBorder,
+    boxShadow,
+    sortableIndicatorColor,
 
     onRowClick: handleRowClick,
     onRowHover: handleRowHover,

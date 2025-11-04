@@ -25,6 +25,8 @@ export interface IModalBaseProps {
   width?: number | string;
 
   onCancel?: () => void;
+
+  showCloseIcon?: boolean;
 }
 
 export type ModalFooterButtons = 'default' | 'custom' | 'none';

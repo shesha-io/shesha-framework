@@ -3,11 +3,14 @@ using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations.ConfigurationStudio
 {
-    [Migration(20251122200899)]
-    public class M20251122200899 : OneWayMigration
+    [Migration(20251022200899)]
+    public class M20251022200899 : OneWayMigration
     {
         public override void Up()
         {
+            if (this.Shesha().MigrationApplied(20251122200899))
+                return;
+
             // Shesha.Domain.ShaUserLoginAttempt
             Create.Table("user_login_attempts").InSchema("frwk")
                 .WithIdAsGuid("id")

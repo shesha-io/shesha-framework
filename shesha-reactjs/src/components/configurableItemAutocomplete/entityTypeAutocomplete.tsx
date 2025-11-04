@@ -6,6 +6,7 @@ import { AbpWrappedResponse } from '@/interfaces/gql';
 import { useDebouncedCallback } from 'use-debounce';
 import HelpTextPopover from '../helpTextPopover';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
+import { getEntityTypeName } from '@/providers/metadataDispatcher/entities/utils';
 
 interface IConfigurationItemProps {
   name: string;
@@ -34,7 +35,7 @@ interface IMetadataAutocompleteDto
   id: string;
   name: string;
   description?: string | null;
-  module?: string | null;
+  module: string | null;
   className: string;
   alias?: string | null;
 }
@@ -47,12 +48,13 @@ interface IOption {
   options?: IOption[];
 }
 
-type EntityIdentifier = ConfigurableItemFullName | string;
+export type EntityIdentifier = ConfigurableItemFullName | string;
 
 export type EntityTypeAutocompleteType = 'All' | 'Entity' | 'JsonEntity';
 
 interface IEntityTypeAutocompleteProps {
-  value?: string | ConfigurableItemFullName;
+  value?: EntityIdentifier;
+  baseModel?: EntityIdentifier;
   readOnly?: boolean;
   onChange?: (value: EntityIdentifier | null) => void;
   type?: EntityTypeAutocompleteType;
@@ -60,7 +62,7 @@ interface IEntityTypeAutocompleteProps {
 }
 
 interface ISelectedItem {
-  value?: string | ConfigurableItemFullName;
+  value?: EntityIdentifier;
   key?: string;
   item?: IMetadataAutocompleteDto;
 }
@@ -69,6 +71,7 @@ interface IEntityTypeAutocompletePayload {
   type?: EntityTypeAutocompleteType;
   term?: string;
   selectedValue?: string;
+  baseModel?: EntityIdentifier;
 }
 
 const isEntityByEntityId = (item: IMetadataAutocompleteDto, id: EntityIdentifier): Boolean => {
@@ -77,23 +80,15 @@ const isEntityByEntityId = (item: IMetadataAutocompleteDto, id: EntityIdentifier
     : item.module === id.module && item.name === id.name;
 };
 
-const getDisplayText = (item: IMetadataAutocompleteDto): string | null => {
-  return item
-    ? item.module
-      ? `${item.module}: ${item.name}`
-      : item.name
-    : null;
-};
+const getDisplayText = (item: IMetadataAutocompleteDto): string | null => item ? getEntityTypeName(item) : null;
+const getEntityIdentifier = (item: ConfigurableItemFullName): string | null => item ? getEntityTypeName(item) : null;
 
-const getEntityIdentifier = (item: ConfigurableItemFullName): string | null => {
-  return item
-    ? item.module
-      ? `${item.module}: ${item.name}`
-      : item.name
-    : null;
-};
-
-const getListFetcherQueryParams = (type: EntityTypeAutocompleteType, term: string | null, value: EntityIdentifier | null): IEntityTypeAutocompletePayload => {
+const getListFetcherQueryParams = (
+  type: EntityTypeAutocompleteType,
+  term: string | null,
+  value: EntityIdentifier | null,
+  baseModel?: EntityIdentifier,
+): IEntityTypeAutocompletePayload => {
   return {
     type: type ?? 'All',
     term: term ?? undefined,
@@ -101,6 +96,11 @@ const getListFetcherQueryParams = (type: EntityTypeAutocompleteType, term: strin
       ? value
       : value?.module && value?.name
         ? getEntityIdentifier(value)
+        : undefined,
+    baseModel: typeof baseModel === 'string'
+      ? baseModel
+      : baseModel?.module && baseModel?.name
+        ? getEntityIdentifier(baseModel)
         : undefined,
   };
 };
@@ -112,20 +112,21 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
     size,
     onChange,
     type = 'All',
+    baseModel,
   } = props;
 
   const [selectedItem, setSelectedItem] = useState<ISelectedItem>({});
 
   const listFetcher = useGet<AbpWrappedResponse<IMetadataAutocompleteDto[], any>, any, IEntityTypeAutocompletePayload>(
     '/api/services/app/Metadata/Autocomplete',
-    { lazy: true, queryParams: getListFetcherQueryParams(type, '', null) },
+    { lazy: true, queryParams: getListFetcherQueryParams(type, '', null, baseModel) },
   );
 
   const fetchedItems = listFetcher.data?.result;
 
   const debouncedFetchItems = useDebouncedCallback<(term?: string) => void>(
     (term?: string) => {
-      listFetcher.refetch({ queryParams: getListFetcherQueryParams(type, term, selectedItem.value ?? value) });
+      listFetcher.refetch({ queryParams: getListFetcherQueryParams(type, term, selectedItem.value ?? value, baseModel) });
     },
     // delay in ms
     100,

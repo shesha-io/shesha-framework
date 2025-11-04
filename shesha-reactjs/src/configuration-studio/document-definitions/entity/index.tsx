@@ -3,7 +3,7 @@ import { DocumentDefinition, ItemEditorProps, ProviderRendererProps, ITEM_TYPES 
 
 import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
 import { EntityToolbar } from "./toolbar";
-import { Form } from "antd";
+import { Form, Space } from "antd";
 import ModelConfiguratorRenderer from "@/components/modelConfigurator/renderer";
 import { ModelConfiguratorProvider, useModelConfigurator } from "@/providers";
 
@@ -33,7 +33,11 @@ export const EntityDocumentDefinition: DocumentDefinition = {
   },
   Toolbar: (_props: ItemEditorProps): ReactNode => {
     return (
-      <EntityToolbar />
+      <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Space direction="horizontal" size={5}>
+          <EntityToolbar />
+        </Space>
+      </div>
     );
   },
   documentInstanceFactory: (args) => {

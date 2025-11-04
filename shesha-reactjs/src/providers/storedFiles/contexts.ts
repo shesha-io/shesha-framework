@@ -1,6 +1,7 @@
 import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { createNamedContext } from '@/utils/react';
 import { UploadFile } from 'antd/lib/upload/interface';
+import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
 
 export type IFlagProgressFlags =
   'downloadFile' |
@@ -34,7 +35,7 @@ export interface IStoredFile extends UploadFile {
 export interface IRequestFilePayload {
   file: File;
   ownerId?: string;
-  ownerType?: string;
+  ownerType?: string | IEntityTypeIndentifier;
   ownerName?: string;
 }
 

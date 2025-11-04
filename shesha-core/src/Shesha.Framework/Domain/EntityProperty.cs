@@ -69,8 +69,20 @@ namespace Shesha.Domain
         /// <summary>
         /// Entity type. Applicable for entity references
         /// </summary>
+        [MaxLength(1000)]
+        public virtual string? EntityFullClassName { get; set; }
+
+        /// <summary>
+        /// Entity type. Applicable for entity references
+        /// </summary>
         [MaxLength(300)]
         public virtual string? EntityType { get; set; }
+
+        /// <summary>
+        /// Entity type. Applicable for entity references
+        /// </summary>
+        [MaxLength(300)]
+        public virtual string? EntityModule { get; set; }
 
         /// <summary>
         /// Reference list name
@@ -201,7 +213,7 @@ namespace Shesha.Domain
 
         public override string ToString()
         {
-            return $"{Name} {DataType} ({DataFormat} {EntityType})";
+            return $"{Name} {DataType} ({DataFormat} {EntityFullClassName})";
         }
     }
 }
