@@ -179,7 +179,13 @@ export const getSettings = (data: any) => {
                                     },
                                     components: [
                                         ...new DesignerToolbarSettings()
-
+                                            .addSettingsInput({
+                                                inputType: 'colorPicker',
+                                                id: nanoid(),
+                                                propertyName: 'dummyEventColor',
+                                                label: 'Selected Date Color',
+                                                parentId: styleRouterId,
+                                            })
                                             .addSettingsInputRow({
                                                 id: nanoid(),
                                                 parentId: styleRouterId,
@@ -268,13 +274,6 @@ export const getSettings = (data: any) => {
                                                             .toJson(),
                                                     ],
                                                 },
-                                            })
-                                            .addSettingsInput({
-                                                inputType: 'colorPicker',
-                                                id: nanoid(),
-                                                propertyName: 'dummyEventColor',
-                                                label: 'Selected Date Color',
-                                                parentId: styleRouterId,
                                             })
                                             .toJson()
                                     ]

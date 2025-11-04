@@ -78,7 +78,21 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       ? (() => {
         const s = new Date(startDate);
         const e = new Date(endDate || startDate);
-        return isNaN(s.getTime()) || isNaN(e.getTime()) ? null : { start: s, end: e, color: dummyEventColor || primaryColor };
+
+        if (Number.isNaN(s.getTime()) || Number.isNaN(e.getTime())) return null;
+
+        // Check if this is an all-day event (both dates are at start of day with no time component)
+        const startMoment = moment(s);
+        const endMoment = moment(e);
+        const startIsStartOfDay = startMoment.isSame(startMoment.clone().startOf('day'));
+        const endIsStartOfDay = endMoment.isSame(endMoment.clone().startOf('day'));
+
+        // react-big-calendar requires all-day events to have end date at midnight of the NEXT day
+        const adjustedEnd = (startIsStartOfDay && endIsStartOfDay)
+          ? endMoment.clone().add(1, 'day').startOf('day').toDate()
+          : e;
+
+        return { start: s, end: adjustedEnd, color: dummyEventColor || primaryColor };
       })()
       : null;
 
