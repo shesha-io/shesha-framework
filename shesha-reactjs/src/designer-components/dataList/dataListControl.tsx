@@ -116,26 +116,27 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
     const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onListItemSave);
 
-    return (data, form, contexts, globalState) => {
-      try {
-        // Safely get contexts data - fallback to empty object if not available
-        const contextData = dataContextManager?.getDataContextsData?.() || {};
+    return async (data, form, contexts, globalState) => {
+      // Safely get contexts data - fallback to empty object if not available
+      const contextData = dataContextManager?.getDataContextsData?.() || {};
 
-        // Create fileSaver API with safe error handling
-        const fileSaver = {
-          saveAs: (data: object | string, filename?: string, _?: object) => {
-            try {
-              FileSaver.saveAs(new Blob([typeof data === 'string' ? data : JSON.stringify(data)]), filename || 'download.txt');
-            } catch (error) {
-              console.error('Error saving file:', error);
-            }
+      // Create fileSaver API with safe error handling
+      const fileSaver = {
+        saveAs: (data: object | string, filename?: string, _?: object) => {
+          try {
+            FileSaver.saveAs(new Blob([typeof data === 'string' ? data : JSON.stringify(data)]), filename || 'download.txt');
+          } catch (error) {
+            console.error('Error saving file:', error);
           }
-        };
+        }
+      };
 
-        // Safely get page context - fallback to empty object if not available
-        const pageContext = dataContextManager?.getPageContext?.() || {};
+      // Safely get page context - fallback to empty object if not available
+      const pageContext = dataContextManager?.getPageContext?.() || {};
 
-        const preparedData = executer(
+      let preparedData;
+      try {
+        preparedData = await executer(
           data,
           contextData,
           fileSaver,
@@ -148,30 +149,29 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
           selectedRow || null,
           allData.setGlobalState
         );
+      } catch (executerError) {
+        console.error('Error in executer function:', executerError);
+        return Promise.resolve(data);
+      }
 
-        // Validate and sanitize the returned data
-        if (preparedData === undefined || preparedData === null) {
-          // If handler doesn't return anything, use original data
-          return Promise.resolve(data);
-        }
+      // Validate and sanitize the returned data
+      if (preparedData === undefined || preparedData === null) {
+        // If handler doesn't return anything, use original data
+        return Promise.resolve(data);
+      }
 
-        // If handler returns a non-object (like a string, number, boolean), use original data
-        if (typeof preparedData !== 'object') {
-          console.warn('OnListItemSave returned non-object value, using original data. Returned value:', preparedData);
-          return Promise.resolve(data);
-        }
+      // If handler returns a non-object (like a string, number, boolean), use original data
+      if (typeof preparedData !== 'object') {
+        console.warn('OnListItemSave returned non-object value, using original data. Returned value:', preparedData);
+        return Promise.resolve(data);
+      }
 
-        try {
-          // Test if the data can be serialized (important for API calls)
-          JSON.stringify(preparedData);
-          return Promise.resolve(preparedData);
-        } catch (serializationError) {
-          console.warn('OnListItemSave returned non-serializable data, falling back to original data:', serializationError);
-          return Promise.resolve(data);
-        }
-      } catch (error) {
-        console.error('Error in onListItemSave handler:', error);
-        // Fallback to returning the original data if the handler fails
+      try {
+        // Test if the data can be serialized (important for API calls)
+        JSON.stringify(preparedData);
+        return Promise.resolve(preparedData);
+      } catch (serializationError) {
+        console.warn('OnListItemSave returned non-serializable data, falling back to original data:', serializationError);
         return Promise.resolve(data);
       }
     };
