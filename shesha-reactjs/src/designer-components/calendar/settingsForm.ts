@@ -190,128 +190,135 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
                   components: [
                     ...new DesignerToolbarSettings()
 
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: styleRouterId,
-                        inline: true,
-                        inputs: [
-                          {
-                            type: 'textField',
-                            id: nanoid(),
-                            label: "Width",
-                            width: 85,
-                            propertyName: "dimensions.width",
-                            icon: "widthIcon",
-                            tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
-                          },
-                          {
-                            type: 'textField',
-                            id: nanoid(),
-                            label: "Min Width",
-                            width: 85,
-                            hideLabel: true,
-                            propertyName: "dimensions.minWidth",
-                            icon: "minWidthIcon",
-                          },
-                          {
-                            type: 'textField',
-                            id: nanoid(),
-                            label: "Max Width",
-                            width: 85,
-                            hideLabel: true,
-                            propertyName: "dimensions.maxWidth",
-                            icon: "maxWidthIcon",
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: styleRouterId,
-                        inline: true,
-                        inputs: [
-                          {
-                            type: 'textField',
-                            id: nanoid(),
-                            label: "Height",
-                            width: 85,
-                            propertyName: "dimensions.height",
-                            icon: "heightIcon",
-                            tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
-                          },
-                          {
-                            type: 'textField',
-                            id: nanoid(),
-                            label: "Min Height",
-                            width: 85,
-                            hideLabel: true,
-                            propertyName: "dimensions.minHeight",
-                            icon: "minHeightIcon",
-                          },
-                          {
-                            type: 'textField',
-                            id: nanoid(),
-                            label: "Max Height",
-                            width: 85,
-                            hideLabel: true,
-                            propertyName: "dimensions.maxHeight",
-                            icon: "maxHeightIcon",
-                          },
-                        ],
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'stylingBox',
-                        label: 'Margin & Padding',
-                        labelAlign: 'right',
-                        ghost: true,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [
+                                            .addSettingsInputRow({
+                                                id: nanoid(),
+                                                parentId: styleRouterId,
+                                                inline: true,
+                                                inputs: [
+                                                    {
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        label: "Width",
+                                                        width: 85,
+                                                        propertyName: "dimensions.width",
+                                                        icon: "widthIcon",
+                                                        tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                    },
+                                                    {
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        label: "Min Width",
+                                                        width: 85,
+                                                        hideLabel: true,
+                                                        propertyName: "dimensions.minWidth",
+                                                        icon: "minWidthIcon",
+                                                    },
+                                                    {
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        label: "Max Width",
+                                                        width: 85,
+                                                        hideLabel: true,
+                                                        propertyName: "dimensions.maxWidth",
+                                                        icon: "maxWidthIcon",
+                                                    }
+                                                ]
+                                            })
+                                            .addSettingsInputRow({
+                                                id: nanoid(),
+                                                parentId: styleRouterId,
+                                                inline: true,
+                                                inputs: [
+                                                    {
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        label: "Height",
+                                                        width: 85,
+                                                        propertyName: "dimensions.height",
+                                                        icon: "heightIcon",
+                                                        tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                    },
+                                                    {
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        label: "Min Height",
+                                                        width: 85,
+                                                        hideLabel: true,
+                                                        propertyName: "dimensions.minHeight",
+                                                        icon: "minHeightIcon",
+                                                    },
+                                                    {
+                                                        type: 'textField',
+                                                        id: nanoid(),
+                                                        label: "Max Height",
+                                                        width: 85,
+                                                        hideLabel: true,
+                                                        propertyName: "dimensions.maxHeight",
+                                                        icon: "maxHeightIcon",
+                                                    }
+                                                ]
+                                            })
+                                            .addCollapsiblePanel({
+                                                id: nanoid(),
+                                                propertyName: 'stylingBox',
+                                                label: 'Margin & Padding',
+                                                labelAlign: 'right',
+                                                ghost: true,
+                                                collapsible: 'header',
+                                                content: {
+                                                    id: nanoid(),
+                                                    components: [
+                                                        ...new DesignerToolbarSettings()
+                                                            .addStyleBox({
+                                                                id: nanoid(),
+                                                                label: 'Margin Padding',
+                                                                hideLabel: true,
+                                                                propertyName: 'stylingBox',
+                                                            })
+                                                            .addSettingsInput({
+                                                                inputType: 'colorPicker',
+                                                                id: nanoid(),
+                                                                propertyName: 'dummyEventColor',
+                                                                label: 'Selected Date Color',
+                                                                parentId: commonTabId,
+                                                            })
+                                                            .toJson(),
+                                                    ],
+                                                },
+                                            })
+                                            .toJson()
+                                    ]
+                                })
+                                .toJson()
+                        ]
+                    },
+                    {
+                        key: '5',
+                        title: 'Security',
+                        id: securityTabId,
+                        components: [
                             ...new DesignerToolbarSettings()
-                              .addStyleBox({
-                                id: nanoid(),
-                                label: 'Margin Padding',
-                                hideLabel: true,
-                                propertyName: 'stylingBox',
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .toJson(),
-                  ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: '5',
-            title: 'Security',
-            id: securityTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  parentId: securityTabId,
-                  jsSetting: false,
-                  tooltip: 'Enter a list of permissions that should be associated with this component',
-                })
-                .toJson(),
-            ],
-          },
-        ],
-      })
-      .toJson(),
-    formSettings: {
-      colon: false,
-      layout: 'vertical' as FormLayout,
-      labelCol: { span: 24 },
-      wrapperCol: { span: 24 },
-    },
-  };
+                                .addSettingsInput({
+                                    id: nanoid(),
+                                    inputType: 'permissions',
+                                    propertyName: 'permissions',
+                                    label: 'Permissions',
+                                    size: 'small',
+                                    parentId: securityTabId,
+                                    jsSetting: false,
+                                    tooltip: 'Enter a list of permissions that should be associated with this component',
+                                })
+                                .toJson(),
+                        ],
+                    },
+                ],
+            })
+            .toJson(),
+        formSettings: {
+            colon: false,
+            layout: 'vertical' as FormLayout,
+            labelCol: { span: 24 },
+            wrapperCol: { span: 24 },
+        },
+    };
 };
