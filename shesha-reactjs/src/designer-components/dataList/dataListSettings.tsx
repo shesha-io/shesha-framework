@@ -280,7 +280,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
 
         {model.formSelectionMode === 'name' &&
-          <SettingsFormItem name="formId" label="Form">
+          <SettingsFormItem name="formId" label="Form" jsSetting>
             <FormAutocomplete readOnly={readOnly} />
           </SettingsFormItem>
         }
