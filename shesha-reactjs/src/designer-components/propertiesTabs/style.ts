@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx , token}) => {
     const searchField = cx(css`
     width: 100%;
     background: #fff;
@@ -28,6 +28,15 @@ export const useStyles = createStyles(({ css, cx }) => {
         text-overflow: ellipsis;
         white-space: nowrap;
       }
+    }
+
+    * > .sha-required-mark {
+      margin-left: 4px;
+      color: ${token.colorErrorText};
+      font-family: ${token.fontFamily};
+      line-height: 1;
+      position: relative;
+      top: 8px;
     }
   `);
 

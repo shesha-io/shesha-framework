@@ -202,6 +202,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 align-items: center;
                 justify-content: flex-start;
                 margin-top: -10px;
+                margin-right: 32px;
             }
 
             .${shaDesignerToolbarLeft} {
