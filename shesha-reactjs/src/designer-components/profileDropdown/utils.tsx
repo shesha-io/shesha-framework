@@ -1,5 +1,4 @@
 import {
-  IButtonItem,
   IConfigurableActionConfiguration,
   IconType,
   IHeaderAction,
@@ -10,7 +9,9 @@ import {
   ButtonGroupItemProps,
   IButtonGroup,
   isGroup,
+  isButtonItem,
 } from '@/providers/buttonGroupConfigurator/models';
+import { IFullAuditedEntity } from '@/publicJsApis/entities';
 import { IAuthenticator } from '@/providers/auth';
 import { LoginOutlined } from '@ant-design/icons';
 import { MenuProps } from 'antd';
@@ -46,7 +47,7 @@ const filterVisibleItems = (
 
 export const getMenuItem = (
   items: ButtonGroupItemProps[] = [],
-  execute: (payload: IConfigurableActionConfiguration) => void,
+  execute: (payload: IConfigurableActionConfiguration, dynamicItem?: IFullAuditedEntity) => void,
   visibilityChecker?: ItemVisibilityFunc
 ): ItemType[] => {
   // Filter items based on visibility if checker is provided
@@ -55,6 +56,7 @@ export const getMenuItem = (
   return visibleItems.map((item) => {
     const { id, icon, label } = item;
     const childItems = isGroup(item) ? (item as IButtonGroup).childItems : undefined;
+    const dynamicItem = isButtonItem(item) ? item.dynamicItem : undefined;
 
     return {
       key: id,
@@ -64,7 +66,7 @@ export const getMenuItem = (
         </Fragment>
       ),
       children: childItems ? getMenuItem(childItems, execute, visibilityChecker) : undefined,
-      onClick: () => execute((item as IButtonItem)?.actionConfiguration),
+      onClick: () => isButtonItem(item) ? execute(item.actionConfiguration, dynamicItem) : undefined,
     };
   });
 };
