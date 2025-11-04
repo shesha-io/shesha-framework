@@ -72,6 +72,7 @@ export const DEFAULT_OPTIONS = {
   configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
   gutter: 4,
   designerWidth: defaultDesignerWidth,
+  zoomStep: 1,
 };
 
 const SIDEBAR_WIDTH = {
@@ -102,11 +103,8 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   // Determine the offset based on view type
   let offset: number;
   if (viewType === 'configStudio') {
-    // Use configTreePanelSize for config studio
     offset = configTreePanelSize;
-  } else if (viewType === 'page') {
-    // Use sidebar width for regular pages
-    // When collapsed: 32px, when expanded: 250px
+  } else if (viewType === 'page' || viewType === 'modal') {
     offset = isSidebarCollapsed ? SIDEBAR_WIDTH.COLLAPSED : SIDEBAR_WIDTH.EXPANDED;
   } else {
     offset = SIDEBAR_WIDTH.MINIMAL;
