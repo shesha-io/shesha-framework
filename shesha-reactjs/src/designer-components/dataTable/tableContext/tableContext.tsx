@@ -10,9 +10,9 @@ import { ITableContextComponentProps } from './models';
 import { SheshaError } from '@/utils/errors';
 import { useActualContextExecution } from '@/hooks';
 import { DatabaseOutlined } from '@ant-design/icons';
-import { useStyles } from './styles';
 import { ShaForm } from '@/providers/form';
 import { useParent } from '@/providers/parentProvider';
+import { useStyles } from './styles';
 
 type ITableContextInnerProps = ITableContextComponentProps;
 
