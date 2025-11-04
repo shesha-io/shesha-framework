@@ -55,10 +55,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     padding-bottom: ${paddingBottom ?? '2px'};
     ${restContainerStyles}
     width: var(--container-width) !important;
-    max-width: var(--container-max-width) !important;;
+    max-width: var(--container-max-width) !important;
     min-width: var(--container-min-width) !important;
     height: var(--container-height) !important;
-    max-height: var(--container-max-height) !important;
     min-height: var(--container-min-height) !important;
     overflow: auto;
     scrollbar-width: thin;
@@ -77,6 +76,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .ant-upload-list-item {
       --ant-line-width: 0px !important;
       --ant-padding-xs: 0px !important;
+      --ant-margin-xs: 0px !important;
       --font-size: ${fontSize ?? '14px'} !important;
       --ant-font-size: ${fontSize ?? '14px'} !important;
       display: flex;
@@ -183,6 +183,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       padding: 2px;
       overflow-y: auto;
       display: flex;
+      max-height: var(--container-max-height) !important;
       flex-direction: column;
       scrollbar-width: thin;
       &::-webkit-scrollbar {
@@ -336,6 +337,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         width: 100% !important;
         height: 100% !important;
         border-radius: ${borderRadius ?? '8px'} !important;
+        margin-top: 0px !important;
+        margin-bottom: 8px !important;
       }
     }
 

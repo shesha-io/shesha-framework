@@ -304,11 +304,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             </div>
           ))
         : (props.disabled && fileList.length === 0
-          ? (
-            <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
-              {renderUploadContent()}
-            </div>
-          )
+          ? null
           : props.disabled
             ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
             : isDragger
