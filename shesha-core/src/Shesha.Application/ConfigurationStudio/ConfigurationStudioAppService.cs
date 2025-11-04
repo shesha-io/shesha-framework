@@ -83,12 +83,15 @@ namespace Shesha.ConfigurationStudio
              */
             var itemsToExpose = await ItemRepo.GetListInBatchesAsync(request.ItemIds);
 
-            foreach (var item in itemsToExpose) 
+            using (CfRuntime.DisableConfigurationTracking()) 
             {
-                var manager = CiHelper.GetManager(item);
-                var newItem = await manager.ExposeAsync(item, module);
-                newItem.Folder = folder;
-                await ItemRepo.UpdateAsync(newItem);
+                foreach (var item in itemsToExpose)
+                {
+                    var manager = CiHelper.GetManager(item);
+                    var newItem = await manager.ExposeAsync(item, module);
+                    newItem.Folder = folder;
+                    await ItemRepo.UpdateAsync(newItem);
+                }
             }
         }
 
@@ -128,6 +131,8 @@ namespace Shesha.ConfigurationStudio
                 Module = module,
                 Folder = folder,
                 Name = request.Name,
+                Label = request.Label,
+                Description = request.Description,
             });
 
             var dto = await manager.MapToDtoAsync(item);

@@ -34,6 +34,11 @@ import {
 } from './contexts';
 import { notesReducer } from './reducer';
 
+const extractErrorDetails = (error: unknown): unknown => {
+  // TODO: review and remove this function. The logic seems wrong but kept as is for now
+  return typeof (error) === 'object' && 'data' in error ? error.data : undefined;
+};
+
 const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   children,
   ownerId,
@@ -91,7 +96,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   };
 
   const fetchNotesError = (): void => {
-    dispatch(fetchNotesErrorAction(fetchNotesResError?.data));
+    dispatch(fetchNotesErrorAction(extractErrorDetails(fetchNotesResError)));
   };
 
   // Refetch notes when the main parameters change
@@ -128,7 +133,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   const { mutate: saveNotesHttp, error: saveNotesResError } = useNoteCreate();
 
   const postNotesError = (): void => {
-    dispatch(postNotesErrorAction(saveNotesResError?.data));
+    dispatch(postNotesErrorAction(extractErrorDetails(saveNotesResError)));
   };
 
   const postNotesRequest = (newNotes: ICreateNotePayload): void => {
@@ -175,7 +180,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
       .then(() => {
         dispatch(deleteNotesSuccessAction(commentIdToBeDeleted));
       })
-      .catch(() => dispatch(deleteNotesErrorAction(deleteNotesResError?.data)));
+      .catch(() => dispatch(deleteNotesErrorAction(extractErrorDetails(deleteNotesResError))));
   };
   //#endregion
 
@@ -189,7 +194,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
   const { mutate: updateNotesHttp, error: updateNotesResError } = useNoteUpdate();
 
   const updateNotesError = (): void => {
-    dispatch(updateNotesErrorAction(updateNotesResError?.data));
+    dispatch(updateNotesErrorAction(extractErrorDetails(updateNotesResError)));
   };
 
   const updateNotesRequest = (newNotes: ICreateNotePayload): void => {

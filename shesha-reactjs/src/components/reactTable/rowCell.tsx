@@ -34,7 +34,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
   const cellRef = useRef(null);
   const cellParentRef = useRef(null);
 
-  let cellStyle: React.CSSProperties = useActualContextExecutionExecutor(
+  let cellStyle = useActualContextExecutionExecutor(
     (context) => {
       return isStyledColumn(cell.column)
         ? cell.column.cellStyleAccessor(context)

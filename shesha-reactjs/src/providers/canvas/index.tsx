@@ -106,29 +106,27 @@ const CanvasProvider: FC<PropsWithChildren> = ({
   );
 };
 
-function useCanvasState(require: boolean): ICanvasStateContext | undefined {
-  const context = useContext(CanvasStateContext);
-
-  if (context === undefined && require) {
+const useCanvasStateOrUndefined = (): ICanvasStateContext | undefined => useContext(CanvasStateContext);
+const useCanvasState = (): ICanvasStateContext => {
+  const context = useCanvasStateOrUndefined();
+  if (context === undefined)
     throw new Error('useCanvasState must be used within a CanvasProvider');
-  }
 
   return context;
-}
+};
 
-function useCanvasActions(require: boolean): ICanvasActionsContext | undefined {
-  const context = useContext(CanvasActionsContext);
-
-  if (context === undefined && require) {
+const useCanvasActionsOrUndefined = (): ICanvasActionsContext | undefined => useContext(CanvasActionsContext);
+const useCanvasActions = (): ICanvasActionsContext => {
+  const context = useCanvasActionsOrUndefined();
+  if (context === undefined)
     throw new Error('useCanvasActions must be used within a CanvasProvider');
-  }
 
   return context;
-}
+};
 
-function useCanvas(require: boolean = true): ICanvasStateContext & ICanvasActionsContext | undefined {
-  const actionsContext = useCanvasActions(require);
-  const stateContext = useCanvasState(require);
+const useCanvasOrUndefined = (): ICanvasStateContext & ICanvasActionsContext | undefined => {
+  const actionsContext = useCanvasActionsOrUndefined();
+  const stateContext = useCanvasStateOrUndefined();
 
   // useContext() returns initial state when provider is missing
   // initial context state is useless especially when require == true
@@ -136,7 +134,15 @@ function useCanvas(require: boolean = true): ICanvasStateContext & ICanvasAction
   return actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext }
     : undefined;
-}
+};
+
+const useCanvas = (): ICanvasStateContext & ICanvasActionsContext => {
+  const context = useCanvasOrUndefined();
+  if (context === undefined)
+    throw new Error('useCanvas must be used within a CanvasProvider');
+
+  return context;
+};
 
 
 //#endregion
@@ -144,6 +150,9 @@ function useCanvas(require: boolean = true): ICanvasStateContext & ICanvasAction
 export {
   CanvasProvider,
   useCanvas,
+  useCanvasOrUndefined,
   useCanvasActions,
+  useCanvasActionsOrUndefined,
   useCanvasState,
+  useCanvasStateOrUndefined,
 };

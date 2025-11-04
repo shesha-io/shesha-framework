@@ -43,6 +43,7 @@ namespace Shesha.ConfigurationItems
         public IModuleHierarchyProvider HierarchyProvider { get; set; }
         public IRepository<ConfigurationItemInheritance, string> InheritanceRepository { get; set; }
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
+        public IConfigurationFrameworkRuntime CfRuntime { get; set; }
 
         public ConfigurationItemManager()
         {
@@ -140,34 +141,31 @@ namespace Shesha.ConfigurationItems
         /// inheritedDoc
         public virtual async Task<TItem> ExposeAsync(TItem item, Module module)
         {
-            var srcRevision = item.LatestRevision;
+            ArgumentNullException.ThrowIfNull(item.Module);
 
-            var exposedConfig = new TItem
+            using (CfRuntime.DisableConfigurationTracking())
             {
-                Name = item.Name,
-                Module = module,
-                ExposedFrom = item,
-                ExposedFromRevision = srcRevision,
-                SurfaceStatus = Domain.Enums.RefListSurfaceStatus.Overridden,
-            };
-            await CopyItemPropertiesAsync(item, exposedConfig);
-            await Repository.InsertAsync(exposedConfig);
+                var srcRevision = item.LatestRevision;
 
-            /*
-            var exposedRevision = exposedConfig.MakeNewRevision();
+                var exposedConfig = new TItem
+                {
+                    Name = item.Name,
+                    Module = module,
+                    ExposedFrom = item,
+                    ExposedFromRevision = srcRevision,
+                    SurfaceStatus = RefListSurfaceStatus.Overridden,
+                };
+                await CopyItemPropertiesAsync(item, exposedConfig);
+                await Repository.InsertAsync(exposedConfig);
 
-            if (srcRevision != null)
-                await CopyRevisionPropertiesBaseAsync(srcRevision, exposedRevision);
-            exposedRevision.VersionNo = 1;
-            exposedRevision.VersionName = null;
+                await SaveToRevisionAsync(exposedConfig, revision => { 
+                    revision.Comments = $"Exposed from {item.Module.Name}";
+                });
 
-            await RevisionRepository.InsertAsync(exposedRevision);
-            await Repository.UpdateAsync(exposedConfig);
-            */
+                await UnitOfWorkManager.Current.SaveChangesAsync();
 
-            await UnitOfWorkManager.Current.SaveChangesAsync();
-
-            return exposedConfig;
+                return exposedConfig;
+            }            
         }
 
         public async Task<ConfigurationItem> DuplicateAsync(ConfigurationItem item)
@@ -334,7 +332,7 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Dump current state of the configuration item to a revision
         /// </summary>
-        public async Task<ConfigurationItemRevision> SaveToRevisionAsync(ConfigurationItem item)
+        public async Task<ConfigurationItemRevision> SaveToRevisionAsync(ConfigurationItem item, Action<ConfigurationItemRevision>? revisionCustomizer = null)
         {
             var exporter = IocResolver.GetItemExporter(ItemType);
             if (exporter == null)
@@ -354,6 +352,8 @@ namespace Shesha.ConfigurationItems
 
             revision.ConfigurationJson = json;
             revision.ConfigHash = configHash;
+
+            revisionCustomizer?.Invoke(revision);
 
             if (isNewRevision)
                 await RevisionRepository.InsertAsync(revision);
