@@ -173,7 +173,7 @@ export const usePinchZoom = (
     if (isAutoWidth || !e.ctrlKey) return;
 
     e.preventDefault();
-    const delta = e.deltaY > 0 ? -5 : 5;
+    const delta = e.deltaY > 0 ? -DEFAULT_OPTIONS.zoomStep : DEFAULT_OPTIONS.zoomStep;
     const newZoom = Math.max(minZoom, Math.min(maxZoom, currentZoom + delta));
     onZoomChange(newZoom);
   }, [onZoomChange, currentZoom, minZoom, maxZoom, isAutoWidth]);
