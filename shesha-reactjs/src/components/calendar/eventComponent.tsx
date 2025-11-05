@@ -34,7 +34,7 @@ export const EventComponent: FC<IEventComponentProps> = ({ event }) => {
           />
         </span>
       )}
-      <span style={{ fontSize: '14px', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <span style={{ fontSize: '14px', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {event.title}
       </span>
     </div>
