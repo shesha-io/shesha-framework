@@ -64,11 +64,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const allData = useAvailableConstantsData();
   const isDesignMode = allData.form?.formMode === 'designer';
 
-  const appContext = App.useApp();
-  const message = appContext?.message ?? null;
-  if (!message && isDesignMode) {
-    console.warn('Message API not available in current context during mode switch');
-  }
+  const { message } = App.useApp();
 
   const dataContextManager = useDataContextManager(false);
 
