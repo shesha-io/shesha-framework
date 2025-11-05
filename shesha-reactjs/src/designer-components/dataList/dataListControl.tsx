@@ -116,7 +116,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
     const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onListItemSave);
 
-    return async (data, form, contexts, globalState) => {
+    return async (data, form, _, globalState) => {
       // Safely get contexts data - fallback to empty object if not available
       const contextData = dataContextManager?.getDataContextsData?.() || {};
 
