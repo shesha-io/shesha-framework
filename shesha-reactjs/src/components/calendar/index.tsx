@@ -14,11 +14,13 @@ import {
   useActualContextExecution,
   useAvailableConstantsData,
   useConfigurableActionDispatcher,
+  useFormState,
   useTheme,
 } from '@/index';
 import { ICalendarProps } from '@/designer-components/calendar/interfaces';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { ICalendarEvent } from '@/providers/layersProvider/models';
+import { useCanvas } from '../../providers';
 
 
 export const CalendarControl: FC<ICalendarProps> = (props) => {
@@ -54,6 +56,11 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const primaryColor = theme.application.primaryColor;
   const defaultVisibleLayers = getLayerOptions(items)?.map((item) => item.value);
 
+  const canvasContext = useCanvas();
+  const canvasZoom = canvasContext?.zoom ?? 100;
+  const { formMode } = useFormState();
+  const isDesignerMode = formMode === 'designer';
+
   const startDate = useActualContextExecution(externalStartDate, {}, undefined);
   const endDate = useActualContextExecution(externalEndDate, {}, undefined);
 
@@ -78,7 +85,20 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       ? (() => {
         const s = new Date(startDate);
         const e = new Date(endDate || startDate);
-        return isNaN(s.getTime()) || isNaN(e.getTime()) ? null : { start: s, end: e, color: dummyEventColor || primaryColor };
+        if (Number.isNaN(s.getTime()) || Number.isNaN(e.getTime())) return null;
+
+        // Check if this is an all-day event (both dates are at start of day with no time component)
+        const startMoment = moment(s);
+        const endMoment = moment(e);
+        const startIsStartOfDay = startMoment.isSame(startMoment.clone().startOf('day'));
+        const endIsStartOfDay = endMoment.isSame(endMoment.clone().startOf('day'));
+
+        // react-big-calendar requires all-day events to have end date at midnight of the NEXT day
+        const adjustedEnd = (startIsStartOfDay && endIsStartOfDay)
+          ? endMoment.clone().add(1, 'day').startOf('day').toDate()
+          : e;
+
+        return { start: s, end: adjustedEnd, color: dummyEventColor || primaryColor };
       })()
       : null;
 
@@ -315,7 +335,10 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
           defaultDate={new Date()}
           view={displayPeriod?.includes(defaultView) ? defaultView : displayPeriod?.[0]}
           events={dummyEvent ? updatedEvents.concat(dummyEvent) : updatedEvents}
-          style={styles}
+          style={{
+            ...styles,
+            ...(isDesignerMode && canvasZoom ? { zoom: 100 / canvasZoom } : {}),
+          }}
           onSelectEvent={handleCustomSelect}
           onDoubleClickEvent={handleCustomDoubleClick}
           onSelectSlot={handleSlotClick}
