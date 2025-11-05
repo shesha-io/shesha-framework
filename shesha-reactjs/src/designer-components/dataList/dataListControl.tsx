@@ -150,26 +150,12 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         return Promise.resolve(data);
       }
 
-      // Validate and sanitize the returned data
+      // If handler doesn't return anything, use original data
       if (preparedData === undefined || preparedData === null) {
-        // If handler doesn't return anything, use original data
         return Promise.resolve(data);
       }
 
-      // If handler returns a non-object (like a string, number, boolean), use original data
-      if (typeof preparedData !== 'object') {
-        console.warn('OnListItemSave returned non-object value, using original data. Returned value:', preparedData);
-        return Promise.resolve(data);
-      }
-
-      try {
-        // Test if the data can be serialized (important for API calls)
-        JSON.stringify(preparedData);
-        return Promise.resolve(preparedData);
-      } catch (serializationError) {
-        console.warn('OnListItemSave returned non-serializable data, falling back to original data:', serializationError);
-        return Promise.resolve(data);
-      }
+      return Promise.resolve(preparedData);
     };
   }, [onListItemSave, dataContextManager, message, selectedRow, allData.http, allData.moment, allData.setGlobalState]);
 
