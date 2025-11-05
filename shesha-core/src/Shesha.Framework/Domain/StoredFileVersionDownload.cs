@@ -4,6 +4,7 @@ using Shesha.Domain.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,9 @@ namespace Shesha.Domain
     /// <summary>
     /// Tracks when a user downloads a specific file version
     /// </summary>
-    [Entity(TypeShortAlias = "Shesha.Framework.StoredFileVersionDownload")]
+    [SnakeCaseNaming]
+    [Table("stored_file_version_downloads", Schema = "frwk")]
+    [Entity(TypeShortAlias = "Shesha.Framework.StoredFileVersionDownload", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class StoredFileVersionDownload : FullAuditedEntity<Guid>, IMayHaveTenant
     {
         /// <summary>Tenant Id</summary>
