@@ -81,7 +81,7 @@ export const useStyles = createStyles(({ css, cx }) => {
                 min-height: 20px;
                 z-index: 1000;
             }
-            &:not(:hover) {
+            &:not(:hover):not(:focus-within):not(.selected) {
                 .${shaToolbarItemControls} {
                     display: none;
                 }

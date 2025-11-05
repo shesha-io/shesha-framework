@@ -12,7 +12,7 @@ export const EventComponent: FC<IEventComponentProps> = ({ event }) => {
 
   const icon = useMemo(() =>
     getIcon(event.icon, formData, globalState, event, 'CalendarOutlined'),
-  [event.icon, formData, globalState],
+  [event, formData, globalState],
   );
 
   return (

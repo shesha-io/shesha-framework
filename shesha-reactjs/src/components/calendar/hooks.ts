@@ -60,7 +60,7 @@ export const useCalendarLayers = (layers: ICalendarLayersProps[]): IGetData => {
 
   const fetchData = useCallback(() => {
     Promise.allSettled(
-      layerWithMetadata?.map(async (item) => {
+      (layerWithMetadata ?? []).map(async (item) => {
         try {
           const filter = await evaluateFilters(item, formData, globalState, item.metadata);
           const evalCustomUrl = evaluateString(item.customUrl, { data: formData, globalState });
