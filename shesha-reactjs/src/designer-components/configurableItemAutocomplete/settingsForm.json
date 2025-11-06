@@ -155,7 +155,7 @@
         "components": [
           {
             "id": "0d0dy-UXJOY1yLDN7fZQkD-7ori-Rx",
-            "type": "autocomplete",
+            "type": "entityTypeAutocomplete",
             "propertyName": "entityType",
             "componentName": "entityType",
             "label": "Entity Type",
@@ -163,19 +163,12 @@
             "parentId": "hUgOhbYnOoh2JJcfaU3zD1hYd7yjpi",
             "hidden": false,
             "isDynamic": false,
-            "version": 6,
-            "dataSourceType": "url",
-            "useRawValues": true,
+            "version": 1,
             "desktop": {
               "borderRadius": "8"
             },
             "tablet": {},
-            "mobile": {},
-            "mode": [
-              "single"
-            ],
-            "validate": {},
-            "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete"
+            "mobile": {}
           },
           {
             "id": "NZAhm49SHOsCTjp99cCInZ41FN4e0F",

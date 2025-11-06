@@ -3,7 +3,6 @@ import React, { FC, useState } from 'react';
 import PropertyAutocomplete from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import Show from '@/components/show';
-import { Autocomplete } from '@/components/autocomplete';
 import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 import { EndpointsAutocomplete } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { MetadataProvider, useForm } from '@/providers';
@@ -19,6 +18,7 @@ import { ContextPropertyAutocomplete } from '@/designer-components/contextProper
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { ButtonGroupConfigurator, IconPicker } from '@/components';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
+import EntityTypeAutocomplete from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 
 export const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
@@ -75,11 +75,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         </SettingsFormItem>
 
         <SettingsFormItem name="entityType" label="Entity type" style={{ width: '100%' }} jsSetting>
-          <Autocomplete.Raw
-            dataSourceType="url"
-            dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
-            readOnly={readOnly}
-          />
+          <EntityTypeAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="displayType" label="Display type" jsSetting>

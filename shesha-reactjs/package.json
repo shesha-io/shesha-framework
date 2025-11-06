@@ -149,6 +149,7 @@
   ],
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.2",
+    "@atlaskit/pragmatic-drag-and-drop": "^1.7.7",
     "@bprogress/next": "^3.2.12",
     "@monaco-editor/react": "^4.6.0",
     "@react-awesome-query-builder/antd": "^6.5.2",

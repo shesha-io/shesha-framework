@@ -2,7 +2,6 @@ import { EndpointsAutocomplete } from '@/components/endpointsAutocomplete/endpoi
 import React, { FC, useMemo } from 'react';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
-import { Autocomplete } from '@/components/autocomplete';
 import {
   Divider,
   Input,
@@ -15,6 +14,7 @@ import { MetadataProvider } from '@/providers/metadata';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
+import EntityTypeAutocomplete from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 
 const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {
   const { readOnly } = props;
@@ -35,7 +35,7 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
       </SettingsFormItem>
       {(state.sourceType === 'Entity') && (
         <SettingsFormItem key="entityType" name="entityType" label="Entity Type" jsSetting>
-          <Autocomplete.Raw dataSourceType="url" dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete" />
+          <EntityTypeAutocomplete />
         </SettingsFormItem>
       )}
       {(state.sourceType === 'Entity' || state.sourceType === 'Url') && (

@@ -21,7 +21,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder.Model
 
         public List<EntityTypeBuilderType> Types { get; set; } = new List<EntityTypeBuilderType>();
 
-        public IEntityConfigurationStore EntityConfigurationStore { get; set; }
+        public IEntityTypeConfigurationStore EntityConfigurationStore { get; set; }
 
         public Dictionary<Module, ModuleBuilder> ModuleBuilders { get; set; } = new Dictionary<Module, ModuleBuilder>();
     }

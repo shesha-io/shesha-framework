@@ -168,13 +168,15 @@ export type ItemEditorRenderer<TDoc extends IDocumentInstance> = (props: ItemEdi
 export type ProviderRendererProps<TDoc extends IDocumentInstance = IDocumentInstance> = PropsWithChildren<ItemEditorProps<TDoc>>;
 export type ProviderRenderer<TDoc extends IDocumentInstance> = (props: ProviderRendererProps<TDoc>) => ReactNode;
 
-export type DocumentDataLoader = () => Promise<void>;
+export type DocumentLoader = () => Promise<void>;
+export type DocumentSaver = () => Promise<void>;
 
 export interface IDocumentInstance extends CIDocument {
-  // state
   toolbarForceRender?: ForceRenderFunc;
+  setLoader: (loader: DocumentLoader | undefined) => void;
   reloadDocumentAsync: () => Promise<void>;
-  setLoader: (loader: DocumentDataLoader | undefined) => void;
+  setSaver: (saver: DocumentSaver | undefined) => void;
+  saveAsync: () => Promise<void>;
 };
 
 export type DocumentInstanceFactoryArgs = {
@@ -196,3 +198,6 @@ export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstanc
 };
 
 export type DocumentDefinitions = Map<string, DocumentDefinition>;
+
+export type SaveDocumentResponse = 'save' | 'dont-save' | 'cancel';
+export type CloseDocumentResponse = 'closed' | 'cancelled';

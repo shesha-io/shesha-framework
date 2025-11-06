@@ -1,4 +1,5 @@
-﻿using Shesha.Metadata.Dtos;
+﻿using Shesha.Domain;
+using Shesha.Metadata.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Shesha.Metadata
     /// </summary>
     public interface IMetadataProvider
     {
-        Task<MetadataDto> GetAsync(Type containerType);
+        Task<MetadataDto> GetAsync(Type containerType, EntityConfig? entityConfig = null);
 
         Task<MetadataDto> GetAsync(string? moduleName, string container);
 

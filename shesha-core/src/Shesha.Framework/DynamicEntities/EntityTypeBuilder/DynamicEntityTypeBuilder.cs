@@ -62,7 +62,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             _logger = logger;
         }
 
-        public List<Type> GenerateTypes(IEntityConfigurationStore entityConfigurationStore)
+        public List<Type> GenerateTypes(IEntityTypeConfigurationStore entityConfigurationStore)
         {
             List<Type> list;
             using (var unitOfWork = _unitOfWorkManager.Begin())
@@ -76,7 +76,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             return list;
         }
 
-        private List<Type> GenerateTypesInternal(IEntityConfigurationStore entityConfigurationStore)
+        private List<Type> GenerateTypesInternal(IEntityTypeConfigurationStore entityConfigurationStore)
         {
             _logger.Warn("DynamicEntityTypeBuilder: GetTypes");
 
@@ -459,7 +459,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                     }
 
                 case DataTypes.EntityReference:
-                    return property.EntityType.IsNullOrWhiteSpace()
+                    return property.EntityFullClassName.IsNullOrWhiteSpace()
                         ? typeof(GenericEntityReference)
                         : GetReferenceType(property, context);
 
@@ -467,7 +467,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                     return typeof(StoredFile);
 
                 case DataTypes.Object:
-                    return !property.EntityType.IsNullOrWhiteSpace()
+                    return !property.EntityFullClassName.IsNullOrWhiteSpace()
                         ? GetReferenceType(property, context)
                         : dataFormat == ObjectFormats.Object
                             ? typeof(JObject)
@@ -495,16 +495,16 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             if (property.DataType != DataTypes.EntityReference && property.DataType != DataTypes.Object)
                 throw new NotSupportedException($"DataType {property.DataType} is not supported. Expected {DataTypes.EntityReference} or {DataTypes.Object}");
 
-            if (string.IsNullOrWhiteSpace(property.EntityType))
+            if (string.IsNullOrWhiteSpace(property.EntityFullClassName))
                 throw new EntityTypeNotFoundException("Entity type is empty");
 
-            var refType = context.Types.FirstOrDefault(x => x.EntityConfig.FullClassName == property.EntityType);
+            var refType = context.Types.FirstOrDefault(x => x.EntityConfig.FullClassName == property.EntityFullClassName);
 
             var entityType = refType?.Type ?? refType?.TypeBuilder
-                ?? context.EntityConfigurationStore.GetOrNull(property.EntityType)?.EntityType // try to find in the EntityConfigurationStore by ClassName and TypeShortAlias
-                ?? _typeFinder.Find(x => x.FullName == property.EntityType).FirstOrDefault();
+                ?? context.EntityConfigurationStore.GetOrNull(property.EntityFullClassName)?.EntityType // try to find in the EntityConfigurationStore by ClassName and TypeShortAlias
+                ?? _typeFinder.Find(x => x.FullName == property.EntityFullClassName).FirstOrDefault();
             if (entityType == null)
-                throw new EntityTypeNotFoundException(property.EntityType.NotNull());
+                throw new EntityTypeNotFoundException(property.EntityFullClassName.NotNull());
             return entityType;
         }
     }

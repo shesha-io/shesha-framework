@@ -114,6 +114,7 @@ import PieChartComponent from '@/designer-components/charts/pie';
 import PolarAreaChartComponent from '@/designer-components/charts/polarArea';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
 import DividerComponent from '@/designer-components/_legacyComponents/divider';
+import EntityTypeAutocompleteComponent from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -266,6 +267,7 @@ export const getToolboxComponents = (
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,
         ConfigurableItemAutocompleteComponent,
+        EntityTypeAutocompleteComponent,
         PermissionTagGroup,
         QueryBuilderComponent,
         ScheduledJobExecutionLog,

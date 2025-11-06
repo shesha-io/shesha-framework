@@ -19,12 +19,17 @@ namespace Shesha.DynamicEntities
         /// <summary>
         /// Get model configuration
         /// </summary>
-        Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(string @namespace, string className, List<PropertyMetadataDto>? hardCodedProps = null);
+        Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(EntityConfig modelConfig, bool useExposed, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Get model configuration
         /// </summary>
-        Task<ModelConfigurationDto> GetCachedModelConfigurationAsync(string @namespace, string className, List<PropertyMetadataDto>? hardCodedProps = null);
+        Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(string? moduleName, string? @namespace, string className, bool useExposed, List<PropertyMetadataDto>? hardCodedProps = null);
+
+        /// <summary>
+        /// Get model configuration
+        /// </summary>
+        Task<ModelConfigurationDto> GetCachedModelConfigurationAsync(string? moduleName, string? @namespace, string className, bool useExposed, List<PropertyMetadataDto>? hardCodedProps = null);
 
         /// <summary>
         /// Create model configuration

@@ -1,15 +1,17 @@
 import { ConfigurableForm } from '@/components';
+import { IDocumentInstance } from '@/configuration-studio/models';
 import { FormFullName } from '@/interfaces';
 import { useShaFormInstance } from '@/providers';
 import React, { FC, useMemo } from 'react';
 
 export interface IConfigurableEditorProps {
-  itemId: string;
+  doc: IDocumentInstance;
   formId: FormFullName;
 }
 
 export const ConfigurableEditor: FC<IConfigurableEditorProps> = (props) => {
-  const { formId, itemId } = props;
+  const { formId, doc } = props;
+  const { itemId } = doc;
 
   const formArguments = useMemo(() => {
     return { id: itemId };
