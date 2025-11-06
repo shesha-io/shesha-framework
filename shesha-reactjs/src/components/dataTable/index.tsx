@@ -4,11 +4,13 @@ import React, { CSSProperties, FC, Fragment, MutableRefObject, useEffect, useMem
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import { ValidationErrors } from '..';
+import { App } from 'antd';
 import {
   FormMode,
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
   useConfigurableActionDispatcher,
+  useDataContextManager,
   useDataTableStore,
   useForm,
   useGlobalState,
@@ -45,6 +47,7 @@ import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { executeScriptSync, useApplicationContextData } from '@/providers/form/utils';
 import moment from 'moment';
 import { ConfigurableFormInstance, IAnyObject } from '@/interfaces';
+import FileSaver from 'file-saver';
 import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
 import { isEqual } from 'lodash';
@@ -113,6 +116,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const { globalState, setState: setGlobalState } = useGlobalState();
   const [visibleColumns, setVisibleColumns] = useState<number>(0);
   const appContextData = useApplicationContextData();
+
+  // Get message API if available - component must be wrapped in App provider
+  const { message } = App.useApp();
+
+  const dataContextManager = useDataContextManager(false);
 
   if (tableRef) tableRef.current = store;
 
@@ -393,14 +401,67 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const { executeAction } = useConfigurableActionDispatcher();
 
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
-    if (!onRowSave) return (data) => Promise.resolve(data);
+    if (!onRowSave) {
+      // No custom handler - just pass through the data unchanged
+      return (data) => {
+        return Promise.resolve(data);
+      };
+    }
 
-    const executer = new Function('data, form, globalState, http, moment, application', onRowSave);
+    const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onRowSave);
     return (data, formApi, globalState) => {
-      const preparedData = executer(data, formApi, globalState, httpClient, moment, appContextData);
-      return Promise.resolve(preparedData);
+      try {
+        // Safely get contexts data - fallback to empty object if not available
+        const contexts = dataContextManager?.getDataContextsData?.() || {};
+
+        // Create fileSaver API with safe error handling
+        const fileSaver = {
+          saveAs: (data: object | string, filename?: string, _?: object) => {
+            try {
+              FileSaver.saveAs(new Blob([typeof data === 'string' ? data : JSON.stringify(data)]), filename || 'download.txt');
+            } catch (error) {
+              console.error('Error saving file:', error);
+            }
+          }
+        };
+
+        // Safely get page context - fallback to empty object if not available
+        const pageContext = dataContextManager?.getPageContext?.() || {};
+
+        const preparedData = executer(
+            data,
+            contexts,
+            fileSaver,
+            formApi,
+            globalState,
+            httpClient || null,
+            message || null,
+            moment,
+            pageContext,
+            selectedRow || null,
+            setGlobalState
+          );
+        // Validate and sanitize the returned data
+        // The onRowSave handler should return the data object to be saved
+        if (preparedData === undefined || preparedData === null) {
+          // If handler doesn't return anything, use original data
+          return Promise.resolve(data);
+        }
+
+        // If handler returns a non-object (like a string, number, boolean), use original data
+        if (typeof preparedData !== 'object') {
+          console.warn('OnRowSave returned non-object value, using original data. Returned value:', preparedData);
+          return Promise.resolve(data);
+        }
+
+        return Promise.resolve(preparedData);
+      } catch (error) {
+        console.error('Error in onRowSave handler:', error);
+        // Fallback to returning the original data if the handler fails
+        return Promise.resolve(data);
+      }
     };
-  }, [onRowSave, httpClient]);
+  }, [onRowSave, httpClient, dataContextManager, message, selectedRow, setGlobalState, appContextData]);
 
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowDeleteSuccessAction)
