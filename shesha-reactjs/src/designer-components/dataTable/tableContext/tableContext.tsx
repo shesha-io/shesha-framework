@@ -13,6 +13,7 @@ import { DatabaseOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
 import { ShaForm } from '@/providers/form';
 import { useParent } from '@/providers/parentProvider';
+import { TableContextEmptyState } from './tableContextEmptyState';
 
 type ITableContextInnerProps = ITableContextComponentProps;
 
@@ -54,6 +55,11 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       if (!isDesignerMode && !hasChildComponents) return styles.dataContextRuntimeEmpty;
       return hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty;
     };
+
+    // Show only the empty state box when empty and in designer mode
+    if (!hasChildComponents && isDesignerMode) {
+      return <TableContextEmptyState containerId={id} componentId={id} />;
+    }
 
     return (
       <div className={cx(getStyleClass())}>
