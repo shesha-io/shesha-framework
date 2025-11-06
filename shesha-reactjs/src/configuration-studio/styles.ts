@@ -22,6 +22,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const headerHeight = 60;
 
   const configStudio = cx("sha-config-studio", css`
+        body {
+            overflow: hidden;
+        }
+
         .${csHeader} {
             height: ${headerHeight}px;
             padding: 0;
