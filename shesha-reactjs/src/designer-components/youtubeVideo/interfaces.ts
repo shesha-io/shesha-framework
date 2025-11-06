@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { FormMode, IConfigurableFormComponent } from '@/providers/form/models';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 
 export interface IYoutubeVideoComponentProps extends IConfigurableFormComponent {
@@ -55,4 +55,13 @@ export interface IYoutubeVideoComponentProps extends IConfigurableFormComponent 
   thumbnailBase64?: string;
   thumbnailStoredFileId?: string;
   privacyMode?: boolean;
+}
+
+export interface IYoutubeVideoCalculatedValues {
+  formMode: FormMode;
+}
+
+export interface IYouTubeEventData {
+  event: string;
+  info?: number;
 }

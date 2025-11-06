@@ -1,23 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Typography } from 'antd';
 import { IToolboxComponent } from '@/interfaces';
 import { YoutubeOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { FormMode, useConfigurableActionDispatcher, useForm, useGlobalState } from '@/providers';
+import { useConfigurableActionDispatcher, useForm, useGlobalState } from '@/providers';
 import { getSettings } from './settingsForm';
-import { IYoutubeVideoComponentProps } from './interfaces';
+import { IYouTubeEventData, IYoutubeVideoCalculatedValues, IYoutubeVideoComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeUndefinedProps } from '@/utils/object';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import './styles.module.scss';
+import { useStyles } from './styles';
 
 const { Title, Paragraph } = Typography;
 
-interface IYoutubeVideoCalculatedValues {
-  formMode: FormMode;
-}
+const isYouTubeEventData = (data: unknown): data is IYouTubeEventData => {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'event' in data &&
+    typeof (data as IYouTubeEventData).event === 'string'
+  );
+};
 
 const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYoutubeVideoCalculatedValues> = {
   type: 'youtubeVideo',
@@ -26,6 +31,8 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
   name: 'YouTube Video',
   icon: <YoutubeOutlined />,
   Factory: ({ model, calculatedModel }) => {
+    const { styles } = useStyles();
+
     const {
       videoId,
       title,
@@ -61,7 +68,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
     const [hasWatched, setHasWatched] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
     const playerRef = useRef<HTMLIFrameElement>(null);
-    const onChangeRef = useRef<((value: any) => void) | null>(null);
+    const onChangeRef = useRef<((value: boolean) => void) | null>(null);
 
     const { executeAction } = useConfigurableActionDispatcher();
     const { formData } = useForm();
@@ -81,7 +88,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
           return thumbnailBase64 || null;
         case 'storedFile':
           return thumbnailStoredFileId
-            ? `/api/StoredFile/Download?id=${thumbnailStoredFileId}`
+            ? `/api/StoredFile/Download?id=${encodeURIComponent(thumbnailStoredFileId)}`
             : null;
         default:
           return null;
@@ -181,6 +188,57 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
 
     const youtubeUrl = buildYoutubeUrl();
 
+    // Memoize style objects to avoid recreating on each render
+    const containerStyle: React.CSSProperties = useMemo(() => responsive
+      ? {
+        position: 'relative',
+        paddingBottom: '56.25%', // 16:9 aspect ratio
+        overflow: 'hidden',
+        width: '100%',
+        height: 0,
+      }
+      : {
+        // Non-responsive: container fills parent (dimensions are on wrapper)
+        width: '100%',
+        height: '100%',
+      }, [responsive]);
+
+    const iframeStyle: React.CSSProperties = useMemo(() => responsive
+      ? {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+      }
+      : {
+        width: '100%',
+        height: '100%',
+      }, [responsive]);
+
+    const thumbnailStyle: React.CSSProperties = useMemo(() => responsive
+      ? {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundImage: `url(${resolvedThumbnail})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        cursor: 'pointer',
+      }
+      : {
+        width: '100%',
+        height: '100%',
+        backgroundImage: `url(${resolvedThumbnail})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        cursor: 'pointer',
+      }, [responsive, resolvedThumbnail]);
+
     // Handle interaction events from YouTube Player API (at top level)
     useEffect(() => {
       const hasEventHandlers = Boolean(onPlay?.actionName || onPause?.actionName || onEnd?.actionName || onReady?.actionName);
@@ -201,18 +259,20 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
         }
 
         // Parse event data - might be string or already parsed
-        let data;
+        let parsedData: unknown;
         try {
-          data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+          parsedData = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
         } catch {
           // Ignore malformed messages
           return;
         }
 
-        // Ignore messages that aren't YouTube player events
-        if (!data || !data.event) {
+        // Validate that the data is a YouTube event using type guard
+        if (!isYouTubeEventData(parsedData)) {
           return;
         }
+
+        const data = parsedData;
         // Create evaluation context with video and form data
         const evaluationContext = {
           videoId,
@@ -309,7 +369,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
           // Render placeholder in designer mode
           if (formMode === 'designer' && !videoId) {
             return (
-              <div className="youtube-video-placeholder">
+              <div className={styles.youtubeVideoPlaceholder}>
                 <YoutubeOutlined style={{ fontSize: '48px', color: '#ff0000' }} />
                 <p>YouTube Video Component</p>
                 <p style={{ fontSize: '12px', color: '#666' }}>
@@ -319,61 +379,8 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
             );
           }
 
-          // Container styles: handles aspect ratio for responsive mode, fills parent otherwise
-          const containerStyle: React.CSSProperties = responsive
-            ? {
-              position: 'relative',
-              paddingBottom: '56.25%', // 16:9 aspect ratio
-              overflow: 'hidden',
-              width: '100%',
-              height: 0,
-            }
-            : {
-              // Non-responsive: container fills parent (dimensions are on wrapper)
-              width: '100%',
-              height: '100%',
-            };
-
-          // Iframe styles
-          const iframeStyle: React.CSSProperties = responsive
-            ? {
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-            }
-            : {
-              width: '100%',
-              height: '100%',
-            };
-
-          // Thumbnail styles
-          const thumbnailStyle: React.CSSProperties = responsive
-            ? {
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              backgroundImage: `url(${resolvedThumbnail})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              cursor: 'pointer',
-            }
-            : {
-              width: '100%',
-              height: '100%',
-              backgroundImage: `url(${resolvedThumbnail})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              cursor: 'pointer',
-            };
-
           return (
-            <div className="youtube-video-component" style={componentStyles}>
+            <div className={styles.youtubeVideoComponent} style={componentStyles}>
               {title && (
                 <Title
                   level={titleLevel}
