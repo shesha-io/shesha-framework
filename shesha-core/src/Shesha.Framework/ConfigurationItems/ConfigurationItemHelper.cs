@@ -22,9 +22,9 @@ namespace Shesha.ConfigurationItems
     {
         private readonly IIocManager _iocManager;
         private readonly ITypeFinder _typeFinder;
-        private readonly IEntityConfigurationStore _entityConfigStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigStore;
 
-        public ConfigurationItemHelper(IIocManager iocManager, ITypeFinder typeFinder, IEntityConfigurationStore entityConfigStore)
+        public ConfigurationItemHelper(IIocManager iocManager, ITypeFinder typeFinder, IEntityTypeConfigurationStore entityConfigStore)
         {
             _iocManager = iocManager;
             _typeFinder = typeFinder;

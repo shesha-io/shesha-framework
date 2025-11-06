@@ -19,7 +19,7 @@ namespace Shesha
         public async Task ProcessAsync()
         {
             _ioc.Resolve<ShaPermissionManager>().Initialize();
-            await _ioc.Resolve<IEntityConfigurationStore>().InitializeDynamicAsync();
+            await _ioc.Resolve<IEntityTypeConfigurationStore>().InitializeDynamicAsync();
 
             // ToDo: AS - refresh WebApi
         }

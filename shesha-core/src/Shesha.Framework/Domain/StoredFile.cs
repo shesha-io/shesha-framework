@@ -72,7 +72,7 @@ namespace Shesha.Domain
         /// <param name="owner"></param>
         /// <param name="entityConfigurationStore">Entity configuration store</param>
         /// <returns></returns>
-        public static StoredFile NewFor<TId>([NotNull]IEntity<TId> owner, IEntityConfigurationStore entityConfigurationStore) where TId: IConvertible
+        public static StoredFile NewFor<TId>([NotNull]IEntity<TId> owner, IEntityTypeConfigurationStore entityConfigurationStore) where TId: IConvertible
         {
             if (owner.IsTransient())
                 throw new Exception("Owner is not persisted to the DB");

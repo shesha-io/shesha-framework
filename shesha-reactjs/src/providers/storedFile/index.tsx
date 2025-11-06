@@ -49,6 +49,8 @@ import {
 } from './contexts';
 import { App } from 'antd';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
+import { getEntityTypeName } from '../metadataDispatcher/entities/utils';
 
 export interface IStoredFileProviderPropsBase {
   baseUrl?: string;
@@ -68,7 +70,7 @@ export type FileUploadMode = 'async' | 'sync';
 
 export interface IStoredFileProviderProps {
   ownerId?: string;
-  ownerType?: string;
+  ownerType?: string | IEntityTypeIndentifier;
   fileCategory?: string;
   propertyName?: string;
   fileId?: string;
@@ -129,7 +131,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
       fileFetcher.refetch({ queryParams: { id: newFileId } });
     else
       if (ownerId && ownerType && propertyName)
-        propertyFetcher.refetch({ queryParams: { ownerId, ownerType, propertyName, fileCategory } });
+        propertyFetcher.refetch({ queryParams: { ownerId, ownerType: getEntityTypeName(ownerType), propertyName, fileCategory } });
   };
 
   useEffect(() => {
@@ -316,7 +318,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     const deleteFileInput: StoredFileDeleteQueryParams = {
       fileId: fileId ?? state.fileInfo?.id,
       ownerId,
-      ownerType,
+      ownerType: getEntityTypeName(ownerType),
       fileCategory,
       propertyName,
     };

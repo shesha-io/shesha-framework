@@ -217,12 +217,12 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onListItemSave) return (data) => Promise.resolve(data);
 
-    const executer = new Function('data, form, contexts, globalState, http, moment', onListItemSave);
+    const AsyncFunction = Object.getPrototypeOf(async function () { /* noop */ }).constructor;
+    const executer = new AsyncFunction('data, form, contexts, globalState, http, moment', onListItemSave);
     return (data, form, contexts, globalState) => {
-      const preparedData = executer(data, form, contexts, globalState, allData.http, allData.moment);
-      return Promise.resolve(preparedData);
+      return executer(data, form, contexts, globalState, httpClient, moment);
     };
-  }, [onListItemSave]);
+  }, [onListItemSave, httpClient]);
 
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onListItemSaveSuccessAction)

@@ -1,4 +1,6 @@
-import { MetadataSourceType, ModelTypeIdentifier } from './metadata';
+import { MetadataSourceType } from './metadata';
+import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IReferenceListIdentifier } from './referenceList';
 
 export interface IModelItem {
   id: string;
@@ -25,11 +27,11 @@ export interface IModelItem {
   /**
    * Entity type. Aplicable for entity references
    */
-  entityType?: string | null;
+  entityType?: IEntityTypeIndentifier | null;
   /**
    * Reference list Id
    */
-  referenceListId?: ModelTypeIdentifier | null;
+  referenceListId?: IReferenceListIdentifier | null;
 
   source?: MetadataSourceType;
 

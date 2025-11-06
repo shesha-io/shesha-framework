@@ -206,7 +206,7 @@ namespace Shesha.Tests.QuickSearch
             var refListRevisionId = refListHelperRepoMock.Object.GetListId(new ReferenceListIdentifier("Shesha", "Shesha.Core.PreferredContactMethod"));
 
             var quickSearchPropertiesCacheHolder = Resolve<IQuickSearchPropertiesCacheHolder>();
-            var quickSearcher = new QuickSearcher(Resolve<IEntityConfigurationStore>(), rliRepoMock.Object, Resolve<ICacheManager>(), refListHelperRepoMock.Object, quickSearchPropertiesCacheHolder);
+            var quickSearcher = new QuickSearcher(Resolve<IEntityTypeConfigurationStore>(), rliRepoMock.Object, Resolve<ICacheManager>(), refListHelperRepoMock.Object, quickSearchPropertiesCacheHolder);
 
             var expression = quickSearcher.GetQuickSearchExpression<TestOrganisation>("Email", new List<string> {
                 nameof(TestOrganisation.ContactMethods)

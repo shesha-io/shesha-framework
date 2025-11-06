@@ -1,4 +1,4 @@
-import { IDocumentInstance, DocumentType, DocumentDefinition, LoadingStatus, ForceRenderFunc, DocumentFlags, DocumentInstanceFactoryArgs, DocumentDataLoader } from "../models";
+import { IDocumentInstance, DocumentType, DocumentDefinition, LoadingStatus, ForceRenderFunc, DocumentFlags, DocumentInstanceFactoryArgs, DocumentLoader, DocumentSaver } from "../models";
 
 export type DocumentInstanceArgs = DocumentInstanceFactoryArgs & {
   definition: DocumentDefinition;
@@ -47,9 +47,9 @@ export class DocumentInstance implements IDocumentInstance {
     this.isHistoryVisible = false;
   }
 
-  private _loader: DocumentDataLoader | undefined = undefined;
+  private _loader: DocumentLoader | undefined = undefined;
 
-  setLoader = (loader: DocumentDataLoader | undefined): void => {
+  setLoader = (loader: DocumentLoader | undefined): void => {
     this._loader = loader;
   };
 
@@ -65,6 +65,19 @@ export class DocumentInstance implements IDocumentInstance {
       this.loadingState = 'ready';
     } else
       this.loadingState = 'ready';
+  };
+
+  private _saver: DocumentSaver | undefined = undefined;
+
+  setSaver = (saver: DocumentSaver | undefined): void => {
+    this._saver = saver;
+  };
+
+  saveAsync = async (): Promise<void> => {
+    if (!this._saver)
+      throw new Error('Saver is not defined');
+
+    await this._saver();
   };
 
   toolbarForceRender?: ForceRenderFunc;
