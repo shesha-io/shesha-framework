@@ -304,24 +304,19 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       const defaultStylesCache = defaultStyles();
       const containerDefaultsCache = containerDefaultStyles();
 
-      // Prepare migration data
-      const existingContainer = result.desktop?.container || {};
-      const existingFont = result.desktop?.font || defaultStylesCache.font;
-
-      const containerUpdates = migrateContainerProperties(prev, existingContainer, containerDefaultsCache);
-      const fontUpdates = migrateFontProperties(prev, existingFont);
-
-      // Apply migrations to all device types
+      // Apply migrations to all device types without clobbering existing overrides
       DEVICE_TYPES.forEach((device: DeviceType) => {
         if (!result[device]) {
           result[device] = { ...defaultStylesCache };
         }
-        if (!result[device].container) {
-          result[device].container = { ...containerDefaultsCache };
-        }
 
-        // Apply updates efficiently
-        result[device].container = { ...result[device].container, ...containerUpdates };
+        const existingContainer = result[device].container ?? { ...containerDefaultsCache };
+        const existingFont = result[device].font ?? { ...defaultStylesCache.font };
+
+        const containerUpdates = migrateContainerProperties(prev, existingContainer, containerDefaultsCache);
+        const fontUpdates = migrateFontProperties(prev, existingFont);
+
+        result[device].container = { ...existingContainer, ...containerUpdates };
         result[device] = { ...result[device], ...fontUpdates };
       });
 
