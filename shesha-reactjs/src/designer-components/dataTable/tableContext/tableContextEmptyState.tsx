@@ -15,7 +15,7 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
   containerId,
   componentId,
   className,
-  style
+  style,
 }) => {
   const selectedComponentId = useFormDesignerStateSelector((x) => x.selectedComponentId);
   const isSelected = selectedComponentId === componentId;
@@ -36,26 +36,29 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
           gap: '12px',
           position: 'relative',
           zIndex: 1,
-          pointerEvents: 'none'
+          pointerEvents: 'none',
         }}
       >
         <DatabaseOutlined style={{
           fontSize: '48px',
           color: isSelected ? theme?.application.primaryColor : '#8c8c8c',
-          flexShrink: 0
-        }} />
+          flexShrink: 0,
+        }}
+        />
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <div style={{
             color: isSelected ? theme?.application.primaryColor : '#8c8c8c',
             fontSize: '14px',
-            fontWeight: '500'
-          }}>
+            fontWeight: '500',
+          }}
+          >
             Data Context Component
           </div>
           <div style={{
             color: '#bfbfbf',
-            fontSize: '12px'
-          }}>
+            fontSize: '12px',
+          }}
+          >
             Drag & Drop a Form Component
           </div>
         </div>
@@ -66,8 +69,9 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
         left: 0,
         right: 0,
         bottom: 0,
-        zIndex: 2
-      }}>
+        zIndex: 2,
+      }}
+      >
         <ComponentsContainer
           containerId={containerId}
           itemsLimit={-1}
