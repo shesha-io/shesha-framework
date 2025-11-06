@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Shesha.Migrations
 {
-    [Migration(20251030085500)]
-    public class M20251030085500 : OneWayMigration
+    [Migration(20251106095300)]
+    public class M20251106095300 : OneWayMigration
     {
         private void MoveFks(string oldTable, string newTable)
         {
@@ -57,9 +57,9 @@ namespace Shesha.Migrations
             }
             else
             {
-                Create.ForeignKey("fk_stored_file_versions_file_version_id")
-                    .FromTable("stored_file_versions").InSchema("frwk").ForeignColumn("file_version_id")
-                    .ToTable("stored_file_version_downloads").InSchema("frwk").PrimaryColumn("id");
+                Create.ForeignKey("fk_stored_file_version_downloads_file_version_id")
+                    .FromTable("stored_file_version_downloads").InSchema("frwk").ForeignColumn("file_version_id")
+                    .ToTable("stored_file_versions").InSchema("frwk").PrimaryColumn("id");
             }
 
         }
