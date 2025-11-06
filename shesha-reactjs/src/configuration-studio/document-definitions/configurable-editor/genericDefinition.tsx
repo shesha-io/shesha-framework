@@ -5,9 +5,10 @@ import { ShaFormProvider } from "@/providers/form/providers/shaFormProvider";
 import { useShaForm } from "@/providers/form/store/shaFormInstance";
 import ParentProvider from "@/providers/parentProvider";
 import { Form, Result } from "antd";
-import React, { FC, PropsWithChildren, ReactNode } from "react";
+import React, { FC, PropsWithChildren, ReactNode, useEffect } from "react";
 import { ConfigurableEditor } from ".";
 import { GenericToolbar } from "./toolbar";
+import { useConfigurationStudio } from "@/configuration-studio/cs/contexts";
 
 export interface DummyEditorProps {
   formId: FormFullName;
@@ -48,6 +49,7 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
 
     Provider: (props: ProviderRendererProps): ReactNode => {
       const { children, doc } = props;
+      const cs = useConfigurationStudio();
       const [form] = Form.useForm();
       const [shaForm] = useShaForm({
         form: undefined,
@@ -59,8 +61,18 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
             await instance.reloadMarkup();
             await instance.fetchData();
           });
+          doc.setSaver(async (): Promise<void> => {
+            await instance.submitData();
+          });
         },
       });
+      useEffect(() => {
+        // Subscribe to changes
+        const unsubscribe = shaForm.subscribe('data-modified', () => {
+          cs.setDocumentModified(doc.itemId, shaForm.isDataModified);
+        });
+        return unsubscribe; // Cleanup on unmount
+      }, [shaForm, doc.itemId, cs]);
 
       return (
         <ShaFormProvider shaForm={shaForm}>
@@ -82,7 +94,7 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
       return (
         <ConfigurableEditor
           formId={formId}
-          itemId={document.itemId}
+          doc={document}
         />
       );
     },

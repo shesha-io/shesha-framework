@@ -8,9 +8,10 @@ import { IShaFormInstance } from "./store/interfaces";
 import { IDelayedUpdateGroup } from "../delayedUpdateProvider/models";
 import { AxiosResponse } from "axios";
 import { FieldValueSetter } from "@/utils/dotnotation";
+import { IEntityTypeIndentifier } from "../sheshaApplication/publicApi/entities/models";
 
 export interface IFormSettings {
-  modelType?: string;
+  modelType?: string | IEntityTypeIndentifier;
 
   postUrl?: string;
   putUrl?: string;

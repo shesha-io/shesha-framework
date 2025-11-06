@@ -3,11 +3,14 @@ using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations.ConfigurationStudio
 {
-    [Migration(20251124104999)]
-    public class M20251124104999 : OneWayMigration
+    [Migration(20251024104999)]
+    public class M20251024104999 : OneWayMigration
     {
         public override void Up()
         {
+            if (this.Shesha().MigrationApplied(20251124104999))
+                return;
+
             Delete.Table("Frwk_DeviceForceUpdates");
             Delete.Table("Frwk_UserRegistration");
             Delete.Table("Frwk_OtpAuditItems");

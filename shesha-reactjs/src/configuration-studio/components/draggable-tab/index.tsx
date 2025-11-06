@@ -109,7 +109,7 @@ export const DraggableTabWithGapPlaceholder: FC<DraggableTabWithGapPlaceholderPr
   const enhancedNode = React.cloneElement(node, {
     style: {
       ...(node as ReactElementWithStyle).props.style,
-      cursor: dragState.isDragging && dragState.sourceIndex === index ? 'grabbing' : 'grab',
+      cursor: 'pointer', // dragState.isDragging && dragState.sourceIndex === index ? 'grabbing' : 'pointer',
       opacity: dragState.isDragging && dragState.sourceIndex === index ? 0.5 : 1,
       position: 'relative',
       transition: 'all 0.2s ease',

@@ -89,7 +89,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         }
       }
     }
-  }, [canZoom, autoZoom, windowSize.width, designerWidth, currentSizes, configTreePanelSize, zoom, setCanvasZoom, viewType, isSidebarCollapsed]);
+  }, [canZoom, autoZoom, windowSize.width, designerWidth, currentSizes, configTreePanelSize, setCanvasZoom, viewType, isSidebarCollapsed]);
 
   useEffect(() => {
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
@@ -157,7 +157,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
               { [styles.designerCanvas]: isDesigner && canZoom },
             )}
             style={isDesigner && canZoom ? {
-              width: designerWidth,
+              width: autoZoom ? "100%" : designerWidth,
               zoom: `${zoom}%`,
             } : {}}
           >

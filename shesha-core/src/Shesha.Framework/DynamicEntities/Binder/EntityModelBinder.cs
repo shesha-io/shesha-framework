@@ -696,7 +696,7 @@ namespace Shesha.DynamicEntities.Binder
             var typeShortAlias = entity.GetType().GetCustomAttribute<EntityAttribute>()?.TypeShortAlias;
             var entityType = entity.GetType().StripCastleProxyType();
             var entityTypeName = entityType.FullName;
-            var references = _entityPropertyRepository.GetAll().Where(x => x.EntityType == typeShortAlias || x.EntityType == entityTypeName);
+            var references = _entityPropertyRepository.GetAll().Where(x => x.EntityFullClassName == typeShortAlias || x.EntityFullClassName == entityTypeName);
             if (!await references.AnyAsync())
                 return false;
 

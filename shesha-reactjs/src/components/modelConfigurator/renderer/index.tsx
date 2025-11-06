@@ -13,7 +13,7 @@ import { useStyles } from '../styles/styles';
 const markup = modelSettingsMarkup as FormMarkup;
 
 export const ModelConfiguratorRenderer: FC = () => {
-  const { styles } = useStyles();
+  const { styles } = useStyles({ height: 180 });
   const { message } = App.useApp();
   const { modelConfiguration, form, save, id } = useModelConfigurator();
 

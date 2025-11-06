@@ -1,14 +1,16 @@
 ﻿using FluentMigrator;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Shesha.FluentMigrator;
 
 namespace Shesha.Migrations.ConfigurationStudio
 {
-    [Migration(20251123153999)]
-    public class M20251123153999 : OneWayMigration
+    [Migration(20251023153999)]
+    public class M20251023153999 : OneWayMigration
     {
         public override void Up()
         {
+            if (this.Shesha().MigrationApplied(20251123153999))
+                return;
+
             Delete.ForeignKey("FK_Frwk_StoredFiles_ParentFileId_Frwk_StoredFiles_Id").OnTable("Frwk_StoredFiles");
             Delete.ForeignKey("FK_Frwk_StoredFileVersions_FileId_Frwk_StoredFiles_Id").OnTable("Frwk_StoredFileVersions");
             Delete.ForeignKey("FK_Frwk_VersionedFieldVersions_FieldId_Frwk_VersionedFields_Id").OnTable("Frwk_VersionedFieldVersions");
