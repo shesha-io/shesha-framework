@@ -20,8 +20,10 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
   const selectedComponentId = useFormDesignerStateSelector((x) => x.selectedComponentId);
   const isSelected = selectedComponentId === componentId;
   const { theme } = useTheme();
+
   return (
-    <div style={{ position: 'relative', ...style }} className={className}>
+    <div style={{ position: 'relative', minHeight: '120px', ...style }} className={className}>
+      {/* Visual overlay showing the empty state message */}
       <div
         style={{
           display: 'flex',
@@ -34,7 +36,11 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
           backgroundColor: '#fafafa',
           minHeight: '120px',
           gap: '12px',
-          position: 'relative',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
           zIndex: 1,
           pointerEvents: 'none',
         }}
@@ -63,20 +69,13 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
           </div>
         </div>
       </div>
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 2,
-      }}
-      >
-        <ComponentsContainer
-          containerId={containerId}
-          itemsLimit={-1}
-        />
-      </div>
+
+      {/* ComponentsContainer that handles the actual dropping */}
+      <ComponentsContainer
+        containerId={containerId}
+        itemsLimit={-1}
+        style={{ minHeight: '120px', position: 'relative', zIndex: 2 }}
+      />
     </div>
   );
 };
