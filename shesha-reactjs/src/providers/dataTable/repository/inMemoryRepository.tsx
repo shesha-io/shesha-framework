@@ -97,7 +97,7 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
           dataFormat: null,
           referenceListName: null,
           referenceListModule: null,
-          entityReferenceTypeShortAlias: null,
+          entityTypeName: null,
           allowInherited: false, // TODO: add to metadata
           isFilterable: true, // TODO: add to metadata
           isSortable: true, // TODO: add to metadata

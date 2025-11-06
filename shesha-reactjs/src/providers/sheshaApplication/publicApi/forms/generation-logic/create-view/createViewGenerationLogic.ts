@@ -4,6 +4,7 @@ import { PropertyMetadataDto } from "@/apis/metadata";
 import { IEntityMetadata } from "@/interfaces";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
 import { CreateViewExtensionJson } from "../../models/CreateViewExtensionJson";
+import { IEntityTypeIndentifier } from "../../../entities/models";
 
 /**
  * Implements generation logic for create views.
@@ -11,7 +12,7 @@ import { CreateViewExtensionJson } from "../../models/CreateViewExtensionJson";
 export class CreateViewGenerationLogic extends BaseGenerationLogic {
   readonly typeName = "CreateViewGenerationLogic";
 
-  protected getModelTypeFromReplacements(replacements: object): string | null {
+  protected getModelTypeFromReplacements(replacements: object): string | IEntityTypeIndentifier | null {
     const extensionJson = castToExtensionType<CreateViewExtensionJson>(replacements);
     return extensionJson?.modelType || null;
   }

@@ -2,6 +2,8 @@ import { useGet, UseGetProps } from '@/hooks/useGet';
 import { useMutateForEndpoint } from '@/hooks/useMutate';
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { GuidEntityReferenceDto } from './common';
+import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifierQueryParams } from '@/interfaces/metadata';
 
 export interface NoteDto {
   id?: string;
@@ -45,7 +47,7 @@ export interface CreateNoteDto {
   /**
    * Type short alias of the owner entity
    */
-  ownerType: string;
+  ownerType: string | IEntityTypeIndentifier;
   /**
    * Category of the note. Is used to split notes into groups
    */
@@ -72,7 +74,7 @@ export interface NoteGetListQueryParams {
   /**
    * Type short alias of the owner entity
    */
-  ownerType: string;
+  ownerType: IEntityTypeIdentifierQueryParams;
   /**
    * Category of the note. Is used to split notes into groups
    */

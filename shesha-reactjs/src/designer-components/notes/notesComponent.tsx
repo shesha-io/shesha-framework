@@ -19,10 +19,11 @@ import { getFormApi } from '@/providers/form/formApi';
 import { App } from 'antd';
 import moment from 'moment';
 import { INote } from '@/providers/notes/contexts';
+import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
-  ownerType: string;
+  ownerType: string | IEntityTypeIndentifier;
   savePlacement?: 'left' | 'right';
   autoSize?: boolean;
   allowDelete?: boolean;
@@ -131,7 +132,12 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     return customModel;
   },
   settingsFormMarkup: (data) => getSettings(data),
-  linkToModelMetadata: (model, metadata) => ({ ...model, ownerId: '{data.id}', ownerType: metadata.containerType, category: metadata.path }),
+  linkToModelMetadata: (model, metadata) => ({
+    ...model,
+    ownerId: '{data.id}',
+    ownerType: metadata.entityType && { module: metadata.entityModule, name: metadata.entityType },
+    category: metadata.path,
+  }),
   migrator: (m) =>
     m
       .add<INotesProps>(

@@ -20,10 +20,12 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { listType } from '../attachmentsEditor/attachmentsEditor';
+import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IStyleType {
   ownerId: string;
-  ownerType: string;
+  ownerType: string | IEntityTypeIndentifier;
   allowUpload?: boolean;
   allowReplace?: boolean;
   allowDelete?: boolean;
@@ -69,9 +71,9 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
               fileId={model.value?.Id ?? model.value}
               baseUrl={backendUrl}
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
-              ownerType={Boolean(model.ownerType)
+              ownerType={!isEntityTypeIdEmpty(model.ownerType)
                 ? model.ownerType
-                : Boolean(formSettings?.modelType)
+                : !isEntityTypeIdEmpty(formSettings?.modelType)
                   ? formSettings?.modelType
                   : ''}
               propertyName={model.propertyName}

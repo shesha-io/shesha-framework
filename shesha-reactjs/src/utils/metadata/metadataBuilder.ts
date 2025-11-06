@@ -8,6 +8,8 @@ import { registerMetadataBuilderAction } from "./standardProperties";
 
 import { IMemberType, IMetadata } from '@/publicJsApis/metadata';
 import { metadataSourceCode } from '@/publicJsApis';
+import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { getEntityTypeIdentifier } from "@/providers/metadataDispatcher/entities/utils";
 
 export interface IObjectMetadataBuilder extends IPublicObjectMetadataBuilder {
   // internal methods
@@ -22,7 +24,7 @@ export interface IObjectMetadataBuilder extends IPublicObjectMetadataBuilder {
 
 export type IMetadataBuilder = IPublicMetadataBuilder<IObjectMetadataBuilder>;
 
-export type MetadataFetcher = (typeId: ModelTypeIdentifier) => Promise<IObjectMetadata>;
+export type MetadataFetcher = (typeId: ModelTypeIdentifier) => Promise<IObjectMetadata | null>;
 export type MetadataBuilderAction = (builder: IObjectMetadataBuilder, name: string) => void;
 
 export type WellKnownConstantDescriptor = {
@@ -128,17 +130,20 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
     return this;
   }
 
-  addEntityAsync(path: string, label: string, entityType: string): Promise<this> {
-    return this.#metadataBuilder.metadataFetcher({ name: entityType, module: null }).then((response) => {
+  addEntityAsync(path: string, label: string, entityType: string | IEntityTypeIndentifier): Promise<this> {
+    return this.#metadataBuilder.metadataFetcher(getEntityTypeIdentifier(entityType)).then((response) => {
       if (!isEntityMetadata(response))
         throw new Error(`Failed to resolve entity type '${entityType}'`);
 
       this._createProperty<IEntityProperty>(DataTypes.entityReference, path, label,
         (p) => ({
           ...p,
-          dataFormat: entityType,
+          fullClassName: response.fullClassName,
           entityType: response.entityType,
           entityModule: response.entityModule,
+
+          // ToDo: AS - remove after implementation of module + name
+          typeAccessor: response.typeAccessor,
           moduleAccessor: response.moduleAccessor,
         }));
 

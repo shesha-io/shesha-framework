@@ -110,7 +110,9 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {
       ...model,
-      entityType: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
+      entityType: isEntityReferencePropertyMetadata(propMetadata)
+        ? { name: propMetadata.entityType, module: propMetadata.entityModule }
+        : undefined,
     };
   },
 };

@@ -21,7 +21,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 export interface IContextPropertyAutocompleteComponentProps extends IConfigurableFormComponent {
   dropdownStyle?: string;
   mode?: 'single' | 'multiple';
-  modelType?: string;
+  modelType?: string | IEntityTypeIndentifier;
   autoFillProps?: boolean;
   styledLabel?: boolean;
 }

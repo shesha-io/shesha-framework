@@ -21,9 +21,9 @@ import { DatePicker, TimePicker, TimeRangePicker } from '@/components/antd';
 import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
 import { EntityData } from '@/interfaces/gql';
 import { humanizeString } from '@/utils/string';
-import { IDictionary } from '@/interfaces';
+import { DataTypes, IDictionary } from '@/interfaces';
 import { Moment } from 'moment';
-import { ProperyDataType } from '@/interfaces/metadata';
+import { IEntityMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { useEntityAutocomplete } from '@/utils/autocomplete';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { useStyles } from './styles/styles';
@@ -33,6 +33,8 @@ import {
   getMoment,
   ADVANCEDFILTER_TIME_FORMAT,
 } from '@/providers/dataTable/utils';
+import { useMetadataDispatcher } from '@/providers';
+import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -173,10 +175,23 @@ interface IEntityFilterProps extends IFilterBaseProps {
   value: string;
   onChange: (changeValue: string | undefined) => void;
   autocompleteUrl?: string;
-  entityType: string;
+  entityTypeName: string;
+  entityTypeModule: string | null;
 }
+
+// ToDo: AS - V1 review and replaco with new EntityTypeAutocomplete
+
 const EntityFilter: FC<IEntityFilterProps> = (props) => {
-  const { data, loading, search } = useEntityAutocomplete({ entityType: props.entityType, value: props.value });
+  const { getMetadata } = useMetadataDispatcher();
+
+  const entityType = useAsyncMemo(async () => {
+    return await getMetadata({
+      dataType: DataTypes.entityReference,
+      modelType: { name: props.entityTypeName, module: props.entityTypeModule },
+    }) as IEntityMetadata;
+  }, [props.entityTypeName, props.entityTypeModule]);
+
+  const { data, loading, search } = useEntityAutocomplete({ entityType: entityType?.fullClassName, value: props.value });
 
   const dataLoaded = data && data.length > 0;
   const selectValue = props.value && dataLoaded ? props.value : undefined;
@@ -285,7 +300,8 @@ export interface IColumnItemFilterProps {
   accessor: string;
   referenceListName: string;
   referenceListModule: string;
-  entityReferenceTypeShortAlias: string;
+  entityTypeName: string;
+  entityTypeModule: string | null;
   autocompleteUrl?: string;
   dataType: ProperyDataType;
   filter: ColumnFilter;
@@ -308,7 +324,8 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
   applyFilters,
   referenceListName,
   referenceListModule,
-  entityReferenceTypeShortAlias,
+  entityTypeName,
+  entityTypeModule,
   autocompleteUrl,
 }) => {
   const { styles } = useStyles();
@@ -442,7 +459,8 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
             onChange={handleRawFilter}
             onPressEnter={handlePressEnter}
             value={filter as string}
-            entityType={entityReferenceTypeShortAlias}
+            entityTypeName={entityTypeName}
+            entityTypeModule={entityTypeModule}
             autocompleteUrl={autocompleteUrl}
           />
         )}

@@ -33,6 +33,7 @@ import {
   NotesStateContext,
 } from './contexts';
 import { notesReducer } from './reducer';
+import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '../metadataDispatcher/entities/utils';
 
 const extractErrorDetails = (error: unknown): unknown => {
   // TODO: review and remove this function. The logic seems wrong but kept as is for now
@@ -82,7 +83,12 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     data,
     error: fetchNotesResError,
   } = useNoteGetList({
-    queryParams: { ownerId, ownerType, category, allCategories: shouldShowAllCategories },
+    queryParams: {
+      ownerId,
+      ownerType: getEntityTypeIdentifierQueryParams(ownerType),
+      category,
+      allCategories: shouldShowAllCategories,
+    },
     lazy: true,
   });
 
@@ -101,7 +107,7 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
 
   // Refetch notes when the main parameters change
   useEffect(() => {
-    if (ownerId && ownerType) {
+    if (ownerId && !isEntityTypeIdEmpty(ownerType)) {
       fetchNotesRequest();
     }
   }, [ownerId, ownerType, category, allCategories]);
@@ -140,13 +146,13 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     if (newNotes) {
       dispatch(postNotesRequestAction(newNotes));
 
-      const payload = newNotes;
+      const payload = { ...newNotes };
 
       if (!newNotes.ownerId) {
         payload.ownerId = ownerId;
       }
 
-      if (!newNotes.ownerType) {
+      if (isEntityTypeIdEmpty(newNotes.ownerType)) {
         payload.ownerType = ownerType;
       }
 
@@ -201,13 +207,13 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     if (newNotes) {
       dispatch(updateNotesRequestAction(newNotes));
 
-      const payload = newNotes;
+      const payload = { ...newNotes };
 
       if (!newNotes.ownerId) {
         payload.ownerId = ownerId;
       }
 
-      if (!newNotes.ownerType) {
+      if (isEntityTypeIdEmpty(newNotes.ownerType)) {
         payload.ownerType = ownerType;
       }
 

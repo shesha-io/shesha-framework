@@ -1,4 +1,6 @@
 ﻿using Abp.Extensions;
+using Newtonsoft.Json;
+using Shesha.Reflection;
 using System;
 
 namespace Shesha.Domain
@@ -9,16 +11,39 @@ namespace Shesha.Domain
     [Serializable]
     public class EntityTypeIdentifier : ConfigurationItemIdentifier<EntityConfig>, IIdentifierFactory<EntityTypeIdentifier>
     {
-        public EntityTypeIdentifier(string? module, string name) : base(module, name)
+        public string? FullClassName { get; set; }
+
+        public EntityTypeIdentifier() : base(null, "")
         {
+
+        }
+
+        public EntityTypeIdentifier(string? module, string name, string? fullClassName) : base(module, name)
+        {
+            FullClassName = fullClassName;
         }
 
         public static EntityTypeIdentifier New(string? module, string name)
         {
-            return new EntityTypeIdentifier(module, name);
+            return new EntityTypeIdentifier(module, name, null);
         }
 
-        public static string GetTextId(string? module, string name) => module.IsNullOrWhiteSpace() ? name : $"{module}: {name}";
+        public static EntityTypeIdentifier New(string entityType)
+        {
+            if (entityType.IsNullOrWhiteSpace())
+                throw new ArgumentException("entityType can not be empty");
+
+            if (entityType.Contains(":"))
+                return GetIdFromTextId(entityType);
+
+            if (entityType.Contains("{"))
+                return JsonConvert.DeserializeObject<EntityTypeIdentifier>(entityType)
+                    .NotNull("Parsing identifier Error. Format of data should be {module: string | null, name: string}");
+
+            return new EntityTypeIdentifier(null, "", entityType);
+        }
+
+        public static string GetTextId(string? module, string name) => module.IsNullOrWhiteSpace() ? name : $"{module}:{name}";
         public static EntityTypeIdentifier GetIdFromTextId(string identifier) 
         {
             var parts = identifier.Split(':');
@@ -28,8 +53,8 @@ namespace Shesha.Domain
             return parts.Length > 1
                 ? New(parts[0].Trim(), parts[1].Trim())
                 : New(null, parts[0].Trim());
-
-
         }
+
+        public static implicit operator EntityTypeIdentifier(string entityType) => New(entityType);
     }
 }

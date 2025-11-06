@@ -50,7 +50,7 @@ import {
 import { App } from 'antd';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
-import { getEntityTypeName } from '../metadataDispatcher/entities/utils';
+import { getEntityTypeIdentifierQueryParams, isEntityTypeIdentifier } from '../metadataDispatcher/entities/utils';
 
 export interface IStoredFileProviderPropsBase {
   baseUrl?: string;
@@ -58,7 +58,7 @@ export interface IStoredFileProviderPropsBase {
 
 export interface IEntityProperty extends IStoredFileProviderPropsBase {
   ownerId: string;
-  ownerType: string;
+  ownerType: string | IEntityTypeIndentifier;
   propertyName: string;
 }
 
@@ -131,7 +131,14 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
       fileFetcher.refetch({ queryParams: { id: newFileId } });
     else
       if (ownerId && ownerType && propertyName)
-        propertyFetcher.refetch({ queryParams: { ownerId, ownerType: getEntityTypeName(ownerType), propertyName, fileCategory } });
+        propertyFetcher.refetch({
+          queryParams: {
+            ownerId,
+            ownerType: getEntityTypeIdentifierQueryParams(ownerType),
+            propertyName,
+            fileCategory,
+          },
+        });
   };
 
   useEffect(() => {
@@ -237,7 +244,12 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     formData.append('file', file);
     appendIfDefined('id', fileId);
     appendIfDefined('ownerId', ownerId);
-    appendIfDefined('ownerType', ownerType);
+    if (isEntityTypeIdentifier(ownerType)) {
+      formData.append('ownerType.name', ownerType.name);
+      formData.append('ownerType.module', ownerType.module);
+    } else {
+      formData.append('ownerType.fullClassName', ownerType);
+    }
     if (fileCategory)
       appendIfDefined('filesCategory', fileCategory);
     appendIfDefined('propertyName', propertyName);
@@ -318,7 +330,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     const deleteFileInput: StoredFileDeleteQueryParams = {
       fileId: fileId ?? state.fileInfo?.id,
       ownerId,
-      ownerType: getEntityTypeName(ownerType),
+      ownerType: getEntityTypeIdentifierQueryParams(ownerType),
       fileCategory,
       propertyName,
     };

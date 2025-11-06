@@ -1,6 +1,7 @@
 import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
 import { IDictionary } from "@/interfaces";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse, SortMode } from "../interfaces";
+import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 
 export interface RowsReorderPayload {
   propertyName: string;
@@ -24,7 +25,7 @@ export interface IRepository<TCreateOptions = any, TUpdateOptions = any, TDelete
 };
 
 export interface IHasModelType {
-  modelType: string;
+  modelType: string | IEntityTypeIndentifier;
 }
 
 export interface IHasRepository {
@@ -36,7 +37,7 @@ export interface EntityReorderItem {
   orderIndex: number;
 }
 export interface EntityReorderPayload {
-  entityType: string;
+  entityType: string | IEntityTypeIndentifier;
   propertyName: string;
   items: EntityReorderItem[];
 }

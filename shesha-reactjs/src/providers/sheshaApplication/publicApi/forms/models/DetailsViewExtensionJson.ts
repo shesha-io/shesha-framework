@@ -1,5 +1,7 @@
+import { IEntityTypeIndentifier } from "../../entities/models";
+
 export interface DetailsViewExtensionJson {
-  modelType: string;
+  modelType: string | IEntityTypeIndentifier;
   showKeyInformationBar: boolean;
   keyInformationBarProperties: string[];
   addChildTables: boolean;

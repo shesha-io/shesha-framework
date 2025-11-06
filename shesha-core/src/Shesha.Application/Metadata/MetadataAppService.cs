@@ -210,10 +210,9 @@ namespace Shesha.Metadata
 
         /// inheritedDoc
         [HttpGet]
-        public async Task<MetadataDto> GetAsync(string container)
+        public async Task<MetadataDto> GetAsync(EntityTypeIdInput entityType)
         {
-            var (module, name) = ParseContainer(container);
-            var containerType = await _metadataProvider.GetContainerTypeAsync(module, name);
+            var containerType = await _metadataProvider.GetContainerTypeAsync(entityType.Module, entityType.Name ?? entityType.FullClassName ?? "");
             return await _metadataProvider.GetAsync(containerType);
         }
 

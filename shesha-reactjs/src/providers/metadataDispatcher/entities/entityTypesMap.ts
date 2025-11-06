@@ -19,7 +19,9 @@ export class EntityTypesMap implements IEntityTypesMap {
   };
 
   identifierExists = (model: IEntityTypeIndentifier): boolean => {
-    return this.#namesMap.values().some((m) => m.name === model.name && m.module === model.module);
+    return this.#namesMap.values().some((m) => {
+      return m.name === model.name && m.module === model.module;
+    });
   };
 
   clear = (): void => {

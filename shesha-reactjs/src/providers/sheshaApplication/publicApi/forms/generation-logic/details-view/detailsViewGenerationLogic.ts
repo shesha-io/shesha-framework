@@ -8,6 +8,7 @@ import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, 
 import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson";
 import { ROW_COUNT } from "../../constants";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
+import { IEntityTypeIndentifier } from "../../../entities/models";
 
 /**
  * Implements generation logic for detail views.
@@ -16,7 +17,7 @@ import { BaseGenerationLogic } from "../baseGenerationLogic";
 export class DetailsViewGenerationLogic extends BaseGenerationLogic {
   readonly typeName = "DetailsViewGenerationLogic";
 
-  protected getModelTypeFromReplacements(replacements: object): string | null {
+  protected getModelTypeFromReplacements(replacements: object): string | IEntityTypeIndentifier | null {
     const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
     return extensionJson?.modelType || null;
   }

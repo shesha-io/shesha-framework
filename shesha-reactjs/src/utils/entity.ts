@@ -4,15 +4,17 @@ import { EntityData, IAbpWrappedGetEntityListResponse, IGetAllPayload } from "@/
 import { camelcaseDotNotation } from "@/utils/string";
 import { GENERIC_ENTITIES_ENDPOINT } from "@/shesha-constants";
 import { getValueByPropertyName, setValueByPropertyName } from "./object";
+import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEqual } from "@/providers/metadataDispatcher/entities/utils";
+import { IEntityTypeIdentifierQueryParams } from "@/interfaces/metadata";
 
 export interface IUseEntityDisplayTextProps {
-  entityType?: string;
+  entityType?: string | IEntityTypeIndentifier;
   propertyName?: string;
   selection?: string | string[];
 }
 
-interface IGetEntityPayload extends IGetAllPayload {
-  entityType: string;
+interface IGetEntityPayload extends IGetAllPayload, IEntityTypeIdentifierQueryParams {
 }
 
 const buildFilterById = (value: string | string[]): string => {
@@ -34,7 +36,7 @@ export interface IEntitySelectionResult {
 
 interface ILoadedSelectionSummary {
   keys: string[];
-  entityType: string;
+  entityType: string | IEntityTypeIndentifier;
   propertyName: string;
 }
 
@@ -46,7 +48,7 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
     selection &&
     Array.isArray(selection) &&
     lastSelection.current &&
-    lastSelection.current.entityType === entityType &&
+    isEntityTypeIdEqual(lastSelection.current.entityType, entityType) &&
     lastSelection.current.propertyName === propertyName &&
     !Boolean(selection.find((item) => !lastSelection.current.keys.includes(item)));
 
@@ -58,7 +60,7 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
   const getValuePayload = useMemo<IGetEntityPayload>(() => ({
     skipCount: 0,
     maxResultCount: 1000,
-    entityType: entityType,
+    ...getEntityTypeIdentifierQueryParams(entityType),
     properties: `id ${gqlFields}`,
     filter: buildFilterById(selection),
   }), [entityType, displayProperty, selection]);

@@ -96,6 +96,7 @@ import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { dataTableContextCode } from '@/publicJsApis';
 import { DataTypes, IObjectMetadata } from '@/index';
 import { IModelMetadata } from '@/interfaces/metadata';
+import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -169,7 +170,7 @@ interface IUrlDataSourceConfig {
 }
 export interface IHasEntityDataSourceConfig extends IUrlDataSourceConfig {
   /** Type of entity */
-  entityType: string;
+  entityType: string | IEntityTypeIndentifier;
 }
 
 const getFilter = (state: IDataTableStateContext): string => {

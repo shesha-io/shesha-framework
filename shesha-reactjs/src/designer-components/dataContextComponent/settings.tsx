@@ -26,16 +26,19 @@ const convertPropertyMetadataToModelItem = (property: IPropertyMetadata): IModel
     properties: isPropertiesArray(properties)
       ? properties.map((item) => convertPropertyMetadataToModelItem(item))
       : undefined,
+    entityType: { module: property.entityModule, name: property.entityType },
   } satisfies IModelItem;
 };
 
 const convertModelItemToPropertyMetadata = (item: IModelItem): IPropertyMetadata => {
-  const { name, properties, itemsType, ...commonProps } = item;
+  const { name, properties, itemsType, entityType, ...commonProps } = item;
   return {
     ...commonProps,
     path: name,
     properties: properties?.map((item) => convertModelItemToPropertyMetadata(item)),
     itemsType: itemsType ? convertModelItemToPropertyMetadata(itemsType) : undefined,
+    entityType: entityType.name,
+    entityModule: entityType.module,
   };
 };
 
