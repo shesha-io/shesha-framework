@@ -123,7 +123,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       font-family: ${fontFamily ?? 'Segoe UI'};
       font-size: ${fontSize ?? '14px'};
       font-weight: ${fontWeight ?? '400'};
-      text-align: ${textAlign ?? 'center'};
       padding: 0 8px !important;
       width: ${(layout && width) ?? '54px'} !important;
       font-size: var(--font-size, 14px) !important;
@@ -197,7 +196,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .ant-upload-list-item-container {
-      display: inline-block !important;
+      display: flex !important;
+      flex-direction: row;
       &.ant-upload-animate-inline-appear,
       &.ant-upload-animate-inline-appear-active,
       &.ant-upload-animate-inline {
@@ -207,6 +207,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       }
       width: ${layout ? (width ?? '54px') + ' !important' : ''};
       height: ${layout ? (height ?? '54px') + ' !important' : ''};
+      justify-content: ${textAlign ?? 'center'};
     }
 
     .ant-upload-list-item-action {
