@@ -99,11 +99,29 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
 
     // Helper to convert any value to percentage
     const toPercentage = (value: string | number | undefined): string | undefined => {
-      if (!value) return undefined;
-      const strValue = String(value);
-      // Extract numeric part from "500px", "500", "50%", etc.
+      if (value === undefined || value === null) {
+        return undefined;
+      }
+
+      const strValue = String(value).trim();
+
+      // If already a percentage, return as-is
+      if (strValue.endsWith('%')) {
+        return strValue;
+      }
+
+      // Extract numeric part from "500px", "500", etc.
       const match = strValue.match(/^(\d+(?:\.\d+)?)/);
-      return match ? `${match[1]}%` : undefined;
+      if (!match) {
+        return undefined;
+      }
+
+      const numeric = parseFloat(match[1]);
+      if (!Number.isFinite(numeric) || numeric < 0) {
+        return undefined;
+      }
+
+      return `${numeric}%`;
     };
 
     // Intercept dimensions when responsive mode is enabled
