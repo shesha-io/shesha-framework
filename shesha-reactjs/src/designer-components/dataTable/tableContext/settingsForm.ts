@@ -49,7 +49,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       parentId: commonTabId,
                       label: 'Disable Refresh Data',
                       tooltip:
-                        "Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)",
+                        "Return 'true' if dataContext is not ready to refresh data (filter data is not ready, etc...)",
                       readOnly: {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
