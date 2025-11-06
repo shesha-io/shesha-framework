@@ -1,11 +1,11 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
-import { Alert } from 'antd';
+import { Alert, App } from 'antd';
 import { DataList } from '@/components/dataList';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import classNames from 'classnames';
 import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
-import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
+import { useConfigurableAction, useConfigurableActionDispatcher, useDataContextManager } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 import { useStyles } from '@/components/dataList/styles/styles';
 import { useAvailableConstantsData } from '@/providers/form/utils';
@@ -13,6 +13,7 @@ import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { IFormApi } from '@/providers/form/formApi';
+import FileSaver from 'file-saver';
 
 export const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
@@ -63,6 +64,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const allData = useAvailableConstantsData();
   const isDesignMode = allData.form?.formMode === 'designer';
 
+  const { message } = App.useApp();
+
+  const dataContextManager = useDataContextManager(false);
+
   const repository = getRepository();
 
   const onSelectRow = useCallback((index: number, row: any) => {
@@ -98,14 +103,61 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   // http, moment, setFormData
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
-    if (!onListItemSave) return (data) => Promise.resolve(data);
+    if (!onListItemSave) {
+      // No custom handler - just pass through the data unchanged
+      return (data) => {
+        return Promise.resolve(data);
+      };
+    }
 
-    const executer = new Function('data, form, contexts, globalState, http, moment', onListItemSave);
-    return (data, form, contexts, globalState) => {
-      const preparedData = executer(data, form, contexts, globalState, allData.http, allData.moment);
+    const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onListItemSave);
+
+    return async (data, form, _, globalState) => {
+      // Safely get contexts data - fallback to empty object if not available
+      const contextData = dataContextManager?.getDataContextsData?.() || {};
+
+      // Create fileSaver API with safe error handling
+      const fileSaver = {
+        saveAs: (data: object | string, filename?: string, _?: object) => {
+          try {
+            FileSaver.saveAs(new Blob([typeof data === 'string' ? data : JSON.stringify(data)]), filename || 'download.txt');
+          } catch (error) {
+            console.error('Error saving file:', error);
+          }
+        }
+      };
+
+      // Safely get page context - fallback to empty object if not available
+      const pageContext = dataContextManager?.getPageContext?.() || {};
+
+      let preparedData;
+      try {
+        preparedData = await executer(
+          data,
+          contextData,
+          fileSaver,
+          form,
+          globalState,
+          allData.http || null,
+          message || null,
+          allData.moment,
+          pageContext,
+          selectedRow || null,
+          allData.setGlobalState
+        );
+      } catch (executerError) {
+        console.error('Error in executer function:', executerError);
+        return Promise.resolve(data);
+      }
+
+      // If handler doesn't return anything, use original data
+      if (preparedData === undefined || preparedData === null) {
+        return Promise.resolve(data);
+      }
+
       return Promise.resolve(preparedData);
     };
-  }, [onListItemSave]);
+  }, [onListItemSave, dataContextManager, message, selectedRow, allData.http, allData.moment, allData.setGlobalState]);
 
   const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
@@ -154,7 +206,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     const repository = getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, allData.data ?? {}, allData.contexts ?? {}, allData.globalState).then((preparedData) => {
+    return performOnRowSave(rowData, allData.form, allData.contexts ?? {}, allData.globalState).then((preparedData) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customCreateUrl } as ICreateOptions)
@@ -223,13 +275,17 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  if (isDesignMode
-    && (
-      !repository
-      || !props.formId && props.formSelectionMode === "name"
-      || !props.formType && props.formSelectionMode === "view"
-      || !props.formIdExpression && props.formSelectionMode === "expression"
-    )) return <NotConfiguredWarning />;
+  // Only show configuration warning in design mode when truly misconfigured
+  if (isDesignMode && !repository) {
+    return <NotConfiguredWarning />;
+  }
+
+  // Form configuration warnings - only in design mode and when specific selection modes are used
+  if (isDesignMode) {
+    if (props.formSelectionMode === "name" && !props.formId) return <NotConfiguredWarning />;
+    if (props.formSelectionMode === "view" && !props.formType) return <NotConfiguredWarning />;
+    if (props.formSelectionMode === "expression" && !props.formIdExpression) return <NotConfiguredWarning />;
+  }
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
