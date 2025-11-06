@@ -181,10 +181,19 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
       SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
     ]
   });
-  const onRowSaveConstants = useAvailableConstantsMetadata({ 
+  const onRowSaveConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
-      SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
+      SheshaConstants.contexts,
+      SheshaConstants.fileSaver,
+      SheshaConstants.form,
+      SheshaConstants.globalState,
+      SheshaConstants.http,
+      SheshaConstants.message,
+      SheshaConstants.moment,
+      SheshaConstants.pageContext,
+      SheshaConstants.selectedRow,
+      SheshaConstants.setGlobalState
     ],
     onBuild: (builder) => {
       builder.addObject("data", "Current row data", undefined);
