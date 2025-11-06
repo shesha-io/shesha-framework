@@ -496,7 +496,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             mode="dialog"
             label="On list item save"
             description="Allows custom business logic to be executed on saving of new/updated list item (e.g. custom validation / calculations)."
-            exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
             wrapInTemplate={true}
             templateSettings={{
               functionName: 'onListItemSave',

@@ -5,7 +5,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import classNames from 'classnames';
 import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
-import { useConfigurableAction, useConfigurableActionDispatcher, useDataContextManager } from '@/providers';
+import { useConfigurableAction, useConfigurableActionDispatcher, useDataContextManager, useSheshaApplication } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 import { useStyles } from '@/components/dataList/styles/styles';
 import { useAvailableConstantsData } from '@/providers/form/utils';
@@ -67,6 +67,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const { message } = App.useApp();
 
   const dataContextManager = useDataContextManager(false);
+  const application = useSheshaApplication();
 
   const repository = getRepository();
 
@@ -110,7 +111,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       };
     }
 
-    const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onListItemSave);
+    const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState, application', onListItemSave);
 
     return async (data, form, _, globalState) => {
       // Safely get contexts data - fallback to empty object if not available
@@ -143,7 +144,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
           allData.moment,
           pageContext,
           selectedRow || null,
-          allData.setGlobalState
+          allData.setGlobalState,
+          application
         );
       } catch (executerError) {
         console.error('Error in executer function:', executerError);
@@ -157,7 +159,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
       return Promise.resolve(preparedData);
     };
-  }, [onListItemSave, dataContextManager, message, selectedRow, allData.http, allData.moment, allData.setGlobalState]);
+  }, [onListItemSave, dataContextManager, message, selectedRow, allData.http, allData.moment, allData.setGlobalState, application]);
 
   const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
@@ -175,6 +177,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         setGlobalState,
         http: allData.http,
         moment,
+        application,
       };
       // execute the action
       executeAction({
@@ -182,7 +185,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         argumentsEvaluationContext: evaluationContext,
       });
     };
-  }, [onListItemSaveSuccessAction]);
+  }, [onListItemSaveSuccessAction, application]);
 
   const updater = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = getRepository();
@@ -234,6 +237,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         setGlobalState,
         http: allData.http,
         moment,
+        application,
       };
 
       try {
@@ -245,7 +249,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         console.error('Error executing row delete success action:', error);
       }
     };
-  }, [onRowDeleteSuccessAction, allData.http]);
+  }, [onRowDeleteSuccessAction, allData.http, application]);
 
 
   const deleter = (rowIndex: number, rowData: any): Promise<any> => {
