@@ -116,6 +116,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const { globalState, setState: setGlobalState } = useGlobalState();
   const [visibleColumns, setVisibleColumns] = useState<number>(0);
   const appContextData = useApplicationContextData();
+  const application = useSheshaApplication();
 
   // Get message API if available - component must be wrapped in App provider
   const { message } = App.useApp();
@@ -239,7 +240,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       ? () => {
         // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
         //return onNewRowInitializeExecuter(formData, globalState);
-        const result = onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData);
+        const result = onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData, application);
         return Promise.resolve(result);
       }
       : () => {
@@ -408,7 +409,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       };
     }
 
-    const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onRowSave);
+    const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState, application', onRowSave);
     return (data, formApi, globalState) => {
       try {
         // Safely get contexts data - fallback to empty object if not available
@@ -439,7 +440,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             moment,
             pageContext,
             selectedRow || null,
-            setGlobalState
+            setGlobalState,
+            application
           );
         // Validate and sanitize the returned data
         // The onRowSave handler should return the data object to be saved
@@ -461,7 +463,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         return Promise.resolve(data);
       }
     };
-  }, [onRowSave, httpClient, dataContextManager, message, selectedRow, setGlobalState, appContextData]);
+  }, [onRowSave, httpClient, dataContextManager, message, selectedRow, setGlobalState, application]);
 
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowDeleteSuccessAction)
@@ -477,6 +479,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         setGlobalState,
         http: httpClient,
         moment,
+        application,
       };
 
       try {
@@ -488,7 +491,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row delete success action:', error);
       }
     };
-  }, [onRowDeleteSuccessAction, httpClient]);
+  }, [onRowDeleteSuccessAction, httpClient, application]);
 
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
@@ -504,6 +507,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         setGlobalState,
         http: httpClient,
         moment,
+        application,
       };
       // execute the action
       executeAction({
@@ -511,7 +515,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         argumentsEvaluationContext: evaluationContext,
       });
     };
-  }, [onRowSaveSuccess, backendUrl]);
+  }, [onRowSaveSuccess, backendUrl, application]);
 
   const updater = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
