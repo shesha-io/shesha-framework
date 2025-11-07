@@ -24,9 +24,11 @@ import { useStyles } from './styles/styles';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
 
 interface EntityForm {
-  entityType: string;
+  entityType: string | IEntityTypeIdentifier;
   isFetchingFormId?: boolean;
   formId: FormIdentifier;
   formType?: string;
@@ -244,11 +246,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     }
   };
 
-  const getEntityForm = (className: string, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
-    let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
+  const getEntityForm = (entityType: string | IEntityTypeIdentifier, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
+    let entityForm = entityForms.current.find((x) => x.formType === fType && isEntityTypeIdEqual(x.entityType, entityType));
     if (!entityForm) {
       entityForm = {
-        entityType: className,
+        entityType: typeof entityType === 'string' ? entityType : { ...entityType },
         formId: fId,
         formConfiguration: null,
         formType: fType,
@@ -266,8 +268,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           isReady(entityForms.current);
         });
     } else {
-      const f = loadedFormId.current[`${entityForm.entityType}_${fType}`] ??
-        getEntityFormId(entityForm.entityType, fType);
+      const entityTypeKey = getEntityTypeName(entityForm.entityType) ?? '';
+      const cacheKey = `${entityTypeKey}_${fType ?? ''}`;
+      const f = loadedFormId.current[cacheKey] ?? getEntityFormId(entityForm.entityType, fType);
 
       f.then((e) =>
         getForm({ formId: e, skipCache })
@@ -287,33 +290,33 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     let isReady = true;
 
     let fId = createFormId;
-    let className = '$createFormName$';
+    let formEntityType: string | IEntityTypeIdentifier = '$createFormName$';
     let fType = null;
     if (formSelectionMode === 'view') {
       fId = null;
-      className = entityType ?? '$createFormName$';
+      formEntityType = entityType ?? '$createFormName$';
       fType = !!createFormType ? createFormType : null;
     }
     if (!!fId || !!fType)
-      isReady = getEntityForm(className, fId, fType, createFormInfo) && isReady;
+      isReady = getEntityForm(formEntityType, fId, fType, createFormInfo) && isReady;
 
     records.forEach((item) => {
       let fId = null;
-      let className = null;
+      let formEntityType = null;
       let fType = null;
       if (formSelectionMode === 'name') {
-        className = '$formName$';
+        formEntityType = '$formName$';
         fId = formId;
       }
       if (formSelectionMode === 'view') {
         fType = !!formType ? formType : null;
-        className = entityType ?? item?._className;
+        formEntityType = entityType ?? item?._className;
       }
       if (formSelectionMode === 'expression') {
         fId = getFormIdFromExpression(item);
       }
       if (!!fId || !!fType)
-        isReady = getEntityForm(className, fId, fType, entityFormInfo) && isReady;
+        isReady = getEntityForm(formEntityType, fId, fType, entityFormInfo) && isReady;
     });
 
     // we don't need to wait form requests if all form is ready
@@ -324,17 +327,17 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, showEditIcons, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
   const renderSubForm = (item: any, index: number): JSX.Element => {
-    let className = null;
+    let formEntityType = null;
     let fType = null;
     if (formSelectionMode === 'name') {
-      className = '$formName$';
+      formEntityType = '$formName$';
     }
     if (formSelectionMode === 'view') {
-      className = entityType ?? item?._className;
+      formEntityType = entityType ?? item?._className;
       fType = formType;
     }
 
-    let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
+    let entityForm = entityForms.current.find((x) => isEntityTypeIdEqual(x.entityType, formEntityType) && x.formType === fType);
 
     if (!entityForm?.formConfiguration?.markup)
       return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;

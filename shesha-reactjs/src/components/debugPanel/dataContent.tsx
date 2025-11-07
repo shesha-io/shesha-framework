@@ -5,6 +5,7 @@ import { useGlobalState, useMetadataDispatcher } from "@/providers";
 import { useFormDesignerStateSelector } from "@/providers/formDesigner";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { getFieldNameFromExpression } from "@/providers/form/utils";
+import { DataTypes } from "@/interfaces";
 
 const DebugPanelDataContent: FC = () => {
   const globalState = useGlobalState();
@@ -19,7 +20,7 @@ const DebugPanelDataContent: FC = () => {
   useEffect(() => {
     if (metadataDispatcher && modelType && !formMetadata)
       metadataDispatcher
-        .getMetadata({ modelType: pageInstance.formSettings.modelType, dataType: 'entity' })
+        .getMetadata({ modelType: pageInstance.formSettings.modelType, dataType: DataTypes.entityReference })
         .then((r) => {
           setFormMetadata(r);
         });

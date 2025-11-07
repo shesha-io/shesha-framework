@@ -5,6 +5,7 @@ import { ISettingsInputProps } from './interfaces';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { MetadataProvider, useSettingsComponents } from '@/providers';
 import { evaluateString, IToolboxComponent, useShaFormInstance } from '@/index';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 
 export interface ISettingsComponent extends IToolboxComponent {
@@ -34,7 +35,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
     : (
       <div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
         <ConditionalWrap
-          condition={Boolean(modelType)}
+          condition={!isEntityTypeIdEmpty(evaluatedModelType)}
           wrap={(content) => <MetadataProvider modelType={evaluatedModelType}>{content}</MetadataProvider>}
         >
           <FormItem

@@ -210,10 +210,16 @@ namespace Shesha.Metadata
 
         /// inheritedDoc
         [HttpGet]
-        public async Task<MetadataDto> GetAsync(string container)
+        public async Task<MetadataDto> GetAsync(EntityTypeIdInput entityType)
         {
-            var (module, name) = ParseContainer(container);
-            var containerType = await _metadataProvider.GetContainerTypeAsync(module, name);
+            if (entityType == null)
+                throw new AbpValidationException($"'{nameof(entityType)}' is mandatory");
+
+            var containerName = entityType.Name.GetDefaultIfEmpty(entityType.FullClassName);
+            if (string.IsNullOrWhiteSpace(containerName))
+                throw new AbpValidationException($"Either '{nameof(entityType.Name)}' or '{nameof(entityType.FullClassName)}' must be provided");
+            
+            var containerType = await _metadataProvider.GetContainerTypeAsync(entityType.Module, containerName);
             return await _metadataProvider.GetAsync(containerType);
         }
 

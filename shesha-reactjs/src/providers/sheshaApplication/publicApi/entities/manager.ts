@@ -1,6 +1,6 @@
 import { IApiEndpoint, StandardEntityActions } from "@/interfaces/metadata";
 import { HttpClientApi } from "@/publicJsApis/httpClient";
-import { EntityConfigurationDto, IEntity, IEntityTypeIndentifier } from "./models";
+import { EntityConfigurationDto, IEntity, IEntityTypeIdentifier } from "./models";
 import { IAjaxResponse, IEntityMetadata } from "@/interfaces";
 import { ICacheProvider, IEntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/models";
 import qs from "qs";
@@ -20,7 +20,7 @@ export class EntitiesManager {
 
   static #configurationsPromise: Promise<EntityConfigurationDto[]> = undefined;
 
-  getApiEndpointsAsync = async (typeAccessor: IEntityTypeIndentifier): Promise<IEntityEndpoints> => {
+  getApiEndpointsAsync = async (typeAccessor: IEntityTypeIdentifier): Promise<IEntityEndpoints> => {
     const meta = await this.#resolveEntityTypeAsync(typeAccessor);
     if (!meta?.apiEndpoints)
       throw new Error("Failed to get endpoints");
@@ -28,7 +28,7 @@ export class EntitiesManager {
     return meta.apiEndpoints;
   };
 
-  createEntityAsync = async <TId, TEntity extends IEntity<TId>>(typeAccessor: IEntityTypeIndentifier, value: TEntity): Promise<TEntity> => {
+  createEntityAsync = async <TId, TEntity extends IEntity<TId>>(typeAccessor: IEntityTypeIdentifier, value: TEntity): Promise<TEntity> => {
     const meta = await this.#resolveEntityTypeAsync(typeAccessor);
     if (!meta)
       throw new Error(`Failed to create entity. '${typeAccessor.module}.${typeAccessor.name}' not found`);
@@ -41,7 +41,7 @@ export class EntitiesManager {
     return response.data.result;
   };
 
-  getEntityAsync = async <TId, TEntity extends IEntity<TId>>(typeAccessor: IEntityTypeIndentifier, id: TId): Promise<TEntity> => {
+  getEntityAsync = async <TId, TEntity extends IEntity<TId>>(typeAccessor: IEntityTypeIdentifier, id: TId): Promise<TEntity> => {
     const meta = await this.#resolveEntityTypeAsync(typeAccessor);
     if (!meta)
       throw new Error(`Failed to get entity. '${typeAccessor.module}.${typeAccessor.name}' not found`);
@@ -56,7 +56,7 @@ export class EntitiesManager {
     return response.data.result;
   };
 
-  updateEntityAsync = async <TId, TEntity extends IEntity<TId>>(typeAccessor: IEntityTypeIndentifier, value: TEntity): Promise<TEntity> => {
+  updateEntityAsync = async <TId, TEntity extends IEntity<TId>>(typeAccessor: IEntityTypeIdentifier, value: TEntity): Promise<TEntity> => {
     const meta = await this.#resolveEntityTypeAsync(typeAccessor);
     if (!meta)
       throw new Error(`Failed to update entity. '${typeAccessor.module}.${typeAccessor.name}' not found`);
@@ -71,7 +71,7 @@ export class EntitiesManager {
     return response.data.result;
   };
 
-  deleteEntityAsync = async <TId>(typeAccessor: IEntityTypeIndentifier, id: TId): Promise<void> => {
+  deleteEntityAsync = async <TId>(typeAccessor: IEntityTypeIdentifier, id: TId): Promise<void> => {
     const meta = await this.#resolveEntityTypeAsync(typeAccessor);
     if (!meta)
       throw new Error(`Failed to delete entity. '${typeAccessor.module}.${typeAccessor.name}' not found`);
@@ -88,7 +88,7 @@ export class EntitiesManager {
     return meta.apiEndpoints[action];
   };
 
-  #resolveEntityTypeAsync = (typeId: IEntityTypeIndentifier): Promise<IEntityMetadata | null> => {
+  #resolveEntityTypeAsync = (typeId: IEntityTypeIdentifier): Promise<IEntityMetadata | null> => {
     return this._metadataFetcher.getByTypeId(typeId);
   };
 

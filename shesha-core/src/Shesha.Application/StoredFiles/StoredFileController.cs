@@ -3,12 +3,13 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.ObjectMapping;
-using Abp.Reflection;
 using Abp.Runtime.Validation;
 using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.Domain;
+using Shesha.DynamicEntities;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.TypeFinder;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
@@ -38,9 +39,9 @@ namespace Shesha.StoredFiles
         private readonly IStoredFileService _fileService;
         private readonly IRepository<StoredFile, Guid> _fileRepository;
         private readonly IRepository<StoredFileVersion, Guid> _fileVersionRepository;
+        private readonly IModelConfigurationManager _modelConfigManager;
         private readonly IDynamicRepository _dynamicRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly IRepository<Person, Guid> _personRepository;
         private readonly IShaTypeFinder _typeFinder;
 
         /// <summary>
@@ -50,18 +51,18 @@ namespace Shesha.StoredFiles
 
         public StoredFileController(IRepository<StoredFile, Guid> fileRepository,
             IRepository<StoredFileVersion, Guid> fileVersionRepository, IStoredFileService fileService,
+            IModelConfigurationManager modelConfigManager,
             IDynamicRepository dynamicRepository,
             IUnitOfWorkManager unitOfWorkManager,
-            IRepository<Person, Guid> personRepository,
             IShaTypeFinder typeFinder
             )
         {
             _fileService = fileService;
             _fileRepository = fileRepository;
             _fileVersionRepository = fileVersionRepository;
+            _modelConfigManager = modelConfigManager;
             _dynamicRepository = dynamicRepository;
             _unitOfWorkManager = unitOfWorkManager;
-            _personRepository = personRepository;
             _typeFinder = typeFinder;
         }
 
@@ -127,7 +128,7 @@ namespace Shesha.StoredFiles
             if (input.File == null)
                 validationResults.Add($"{nameof(input.File)} must not be null", [nameof(input.File)]);
 
-            if (string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
+            if (input.OwnerType.IsEmpty() && !string.IsNullOrWhiteSpace(input.OwnerId))
                 validationResults.Add($"{nameof(input.OwnerType)} must not be null when {nameof(input.OwnerId)} is specified", [nameof(input.OwnerType)]);
 
             if (validationResults.Any())
@@ -139,9 +140,14 @@ namespace Shesha.StoredFiles
 
             object? owner = null;
 
-            if (!string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
+            if (!input.OwnerType.IsEmpty() && !string.IsNullOrWhiteSpace(input.OwnerId))
             {
-                owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
+                var entityConfig = await _modelConfigManager.GetByEntityTypeIdAsync(
+                    new EntityTypeIdentifier(input.OwnerType?.Module, input.OwnerType?.Name ?? "", input.OwnerType?.FullClassName)
+                );
+                if (entityConfig == null)
+                    throw new Exception($"Owner type not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
+                owner = await _dynamicRepository.GetAsync(entityConfig.FullClassName, input.OwnerId);
                 if (owner == null)
                     throw new Exception($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
             }
@@ -217,7 +223,7 @@ namespace Shesha.StoredFiles
                         }
                         else
                         {
-                            if (!string.IsNullOrWhiteSpace(input.OwnerType))
+                            if (!input.OwnerType.IsEmpty())
                             {
                                 // otherwise - mark as temporary
                                 file.Temporary = true;
@@ -431,9 +437,20 @@ namespace Shesha.StoredFiles
             return true;
         }
 
-        private async Task<object> GetOwnerAsync(string ownerType, string ownerId, string? ownerName)
+        private async Task<string> GetFullClassNameFromEntityTypeIdAsync(EntityTypeIdInput? ownerType)
         {
-            var owner = await _dynamicRepository.GetAsync(ownerType, ownerId);
+            return ((ownerType?.FullClassName).IsNullOrEmpty()
+                ? (await _modelConfigManager.GetByEntityTypeIdAsync(
+                    new EntityTypeIdentifier(ownerType?.Module, ownerType?.Name ?? "", ownerType?.FullClassName)))
+                    .NotNull($"Owner type not found '{ownerType}'")
+                    .FullClassName
+                : ownerType?.FullClassName)
+                .NotNull("FullClassName should not be empty");
+        }
+
+        private async Task<object> GetOwnerAsync(EntityTypeIdInput? ownerType, string ownerId, string? ownerName)
+        {
+            var owner = await _dynamicRepository.GetAsync(await GetFullClassNameFromEntityTypeIdAsync(ownerType), ownerId);
             if (owner == null)
                 throw new AbpValidationException($"Owner '{ownerType}:{ownerId}' not found");
             if (!string.IsNullOrWhiteSpace(ownerName))
@@ -455,7 +472,7 @@ namespace Shesha.StoredFiles
         public async Task<FileStreamResult> DownloadZipAsync([FromQuery] FilesListInput input)
         {
             IList<StoredFile> files = new List<StoredFile>();
-            if (string.IsNullOrWhiteSpace(input.OwnerId) || string.IsNullOrWhiteSpace(input.OwnerType))
+            if (string.IsNullOrWhiteSpace(input.OwnerId) || input.OwnerType.IsEmpty())
             {
                 if (input.FilesId?.Count > 0)
                 {
@@ -499,7 +516,7 @@ namespace Shesha.StoredFiles
         [HttpGet, Route("FilesList")]
         public async Task<List<StoredFileDto>> FilesListAsync([FromQuery] FilesListInput input)
         {
-            if (string.IsNullOrEmpty(input.OwnerType))
+            if (input.OwnerType.IsEmpty())
                 throw new Exception($"`{nameof(input.OwnerType)}` must not be null");
             if (string.IsNullOrEmpty(input.OwnerId))
                 throw new Exception($"`{nameof(input.OwnerId)}` must not be null");
@@ -666,7 +683,7 @@ namespace Shesha.StoredFiles
         [HttpGet, Route("EntityProperty")]
         public async Task<StoredFileDto?> GetEntityPropertyAsync([FromQuery] StoredFileAsPropertyDto input)
         {
-            var hasOwner = !string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId);
+            var hasOwner = !input.OwnerType.IsEmpty() && !string.IsNullOrWhiteSpace(input.OwnerId);
             var hasProperty = !string.IsNullOrWhiteSpace(input.PropertyName);
             var hasCategory = !string.IsNullOrWhiteSpace(input.FileCategory);
             if ((!hasOwner || !hasProperty) && !hasCategory)
@@ -674,7 +691,7 @@ namespace Shesha.StoredFiles
 
             if (hasOwner)
             {
-                var entity = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
+                var entity = await _dynamicRepository.GetAsync(await GetFullClassNameFromEntityTypeIdAsync(input.OwnerType), input.OwnerId);
                 if (entity == null)
                     return null;
 
