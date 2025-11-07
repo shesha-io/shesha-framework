@@ -41,6 +41,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = (props) => {
     type: unwrappedType,
     modelType: evaluatedModelType,
     size: size ?? 'small',
+    width: undefined, // backward compatibility
   } as BaseInputProps;
 
   return isHidden ? null
