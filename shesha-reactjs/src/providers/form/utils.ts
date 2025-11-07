@@ -74,7 +74,7 @@ import { useShaFormInstanceOrUndefined, useShaFormDataUpdate } from './providers
 import { QueryStringParams } from '@/utils/url';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
 import { jsonSafeParse } from '@/utils/object';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getActualModel, getActualPropertyValue } from './utils/js-settings';
 import {
   executeScriptSync,
@@ -85,6 +85,7 @@ import {
   IExpressionExecuterArguments,
   IExpressionExecuterFailedHandler,
 } from './utils/scripts';
+import { findToolboxComponent, getToolboxComponent } from './utils/markup';
 
 export {
   // prop settings
@@ -971,21 +972,6 @@ export const evaluateValueAsString = (value: string, dictionary: object): string
   return evaluated ? evaluated.toString() : undefined;
 };
 
-export const findToolboxComponent = (
-  availableComponents: IToolboxComponentGroup[],
-  predicate: (component: IToolboxComponent) => boolean,
-): IToolboxComponent => {
-  if (availableComponents) {
-    for (const group of availableComponents) {
-      for (const component of group.components) {
-        if (predicate(component)) return component;
-      }
-    }
-  }
-
-  return null;
-};
-
 export const getComponentsFromMarkup = (markup: FormMarkup): IConfigurableFormComponent[] => {
   if (!markup) return [];
   return Array.isArray(markup)
@@ -1071,7 +1057,9 @@ export const processRecursive = (
 ): void => {
   func(component, parentId);
 
-  const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c?.type === component?.type);
+  if (isNullOrWhiteSpace(component?.type))
+    return;
+  const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c.type === component?.type);
   if (!toolboxComponent) return;
   const containers = getContainerNames(toolboxComponent);
 
@@ -1110,7 +1098,7 @@ export const cloneComponents = (
 
     result.push(clone);
 
-    const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c.type === component.type);
+    const toolboxComponent = getToolboxComponent(componentsRegistration, (c) => c.type === component.type);
     const containers = getContainerNames(toolboxComponent);
 
     if (containers) {
@@ -1132,7 +1120,7 @@ export const createComponentModelForDataProperty = (
   propertyMetadata: IPropertyMetadata,
   migrator?: (
     componentModel: IConfigurableFormComponent,
-    toolboxComponent: IToolboxComponent<any>
+    toolboxComponent: IToolboxComponent
   ) => IConfigurableFormComponent,
 ): IConfigurableFormComponent => {
   let toolboxComponent = findToolboxComponent(components, (c) => c.type === propertyMetadata.formatting.defaultEditor);

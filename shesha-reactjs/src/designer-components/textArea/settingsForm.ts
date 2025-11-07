@@ -101,7 +101,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     propertyName: 'autoSize',
                     parentId: commonTabId,
                     label: 'Auto Size',
-                    defaultValue: false,
                     jsSetting: true,
                   },
                   {
@@ -123,7 +122,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     id: nanoid(),
                     propertyName: 'editMode',
                     label: 'Edit Mode',
-                    defaultValue: 'inherited',
                     size: 'small',
                     jsSetting: true,
                   },
@@ -627,7 +625,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   label: 'Repeat',
                                   hideLabel: true,
                                   propertyName: 'background.repeat',
-                                  inputType: 'radio',
                                   buttonGroupOptions: repeatOptions,
                                 }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,

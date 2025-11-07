@@ -9,7 +9,7 @@ import { IConfigurableFormComponent, MetadataProvider } from '@/providers';
 import { IToolboxComponent } from '@/interfaces';
 import { MetadataType } from '@/providers/metadata/contexts';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesignerSettings } from '@/providers/formDesigner';
 import SettingsControl from '../_settings/settingsControl';
 import { getValueFromPropertySettings } from '../_settings/utils';
 import { useStyles } from '../_settings/styles/styles';
@@ -204,7 +204,8 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
     };
   },
   Factory: ({ model, calculatedModel }) => {
-    const designerModelType = useFormDesignerStateSelector((x) => x.formSettings?.modelType);
+    const formSettings = useFormDesignerSettings();
+    const designerModelType = formSettings?.modelType;
     const validate = useMemo(() => ({ ...model.validate, required: false }), [model.validate]);
     const onValuesChange = useCallback((values) => calculatedModel.setFieldsValue(values), [calculatedModel.setFieldsValue]);
 

@@ -71,7 +71,6 @@ export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       size: 'small',
-                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
@@ -156,7 +155,6 @@ export const getSettings = (data: ISwitchComponentProps): FormMarkupWithSettings
                                   id: nanoid(),
                                   label: "Size",
                                   propertyName: "size",
-                                  defaultValue: 'default',
                                   dropdownOptions: [
                                     { value: 'small', label: 'Small' },
                                     { value: 'default', label: 'Default' },

@@ -19,12 +19,8 @@ const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
   const toolbarRef = useRef<HTMLDivElement>(null!);
   if (!csRef.current) {
     // Create a new FormStore if not provided
-    const forceReRender = (): void => {
-      forceUpdate({});
-    };
-
     const instance = new ConfigurationStudio({
-      forceRootUpdate: forceReRender,
+      forceRootUpdate: () => forceUpdate({}),
       httpClient,
       storage: asyncStorage,
       modalApi: modalApi,

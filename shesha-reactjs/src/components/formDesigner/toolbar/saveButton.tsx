@@ -9,7 +9,7 @@ import {
   ButtonProps,
 } from 'antd';
 import { FormMarkupWithSettings } from '@/providers/form/models';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesigner } from '@/providers/formDesigner';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 
@@ -19,13 +19,13 @@ export interface ISaveButtonProps extends Pick<ButtonProps, 'size' | 'type'> {
 
 export const SaveButton: FC<ISaveButtonProps> = (props) => {
   const { saveForm } = useFormPersister();
-  const formFlatMarkup = useFormDesignerStateSelector((x) => x.formFlatMarkup);
-  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
+  const formDesigner = useFormDesigner();
   const toolboxComponents = useFormDesignerComponents();
   const { message } = App.useApp();
   const isModified = true;
 
   const saveFormInternal = (): Promise<void> => {
+    const { formFlatMarkup, formSettings } = formDesigner.state;
     const payload: FormMarkupWithSettings = {
       components: componentsFlatStructureToTree(toolboxComponents, formFlatMarkup),
       formSettings: formSettings,

@@ -1,12 +1,12 @@
 import React, { FC, useMemo } from 'react';
-import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
+import { IConfigurableFormComponent } from '@/interfaces';
 import { useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ComponentError from '../componentErrors';
 import AttributeDecorator from '../attributeDecorator';
-import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
+import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 export interface IFormComponentProps {
@@ -21,7 +21,7 @@ export const standartActualModelPropertyFilter = (name: string): boolean => {
   return propertiesToSkip.indexOf(name) === -1;
 };
 
-export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: unknown): boolean => {
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponentBase, name: string, value: unknown): boolean => {
   return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true) &&
     propertiesToSkip.indexOf(name) === -1;
 };
