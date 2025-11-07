@@ -60,18 +60,33 @@ namespace Shesha.Metadata
         }
 
         [HttpGet]
-        public async Task<List<MetadataAutocompleteDto>> AutocompleteAsync(string? type, string? term, string? selectedValue)
+        public async Task<List<MetadataAutocompleteDto>> AutocompleteAsync(string? type, string? term, string? selectedValue, string? baseModel)
         {
-            var models = (await _entityModelProvider.GetModelsAsync())
-                .Where(m => !m.IsExposed)
-                .WhereIf(type == "Entity", x => x.Metadata.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
-                .WhereIf(type == "JsonEntity", x => x.Metadata.EntityConfigType == Domain.Enums.EntityConfigTypes.Interface)
-                .ToList();
-
+            var allModels = await _entityModelProvider.GetModelsAsync();
             var isPreselection = selectedValue.IsNullOrWhiteSpace();
 
             var (selectedFullClassName, selectedModule, selectedClass) = ParseInputData(selectedValue);
             var (searchFullClassName, searchModule, searchClass) = ParseInputData(term);
+
+            EntityModelDto? baseEntity = null;
+            if (!baseModel.IsNullOrWhiteSpace())
+            {
+                var (baseFullClassName, baseModule, baseClass) = ParseInputData(term);
+
+                baseEntity = allModels.FirstOrDefault(e => (
+                    !string.IsNullOrWhiteSpace(e.Alias) && e.Alias == baseFullClassName
+                    || (baseFullClassName != null && e.FullClassName == baseFullClassName)
+                    || (baseModule != null && e.Name == baseClass && e.Module == baseModule)
+                ));
+            }
+
+            var models = allModels
+                .Where(m => !m.IsExposed)
+                .WhereIf(type == "Entity", x => x.Metadata.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
+                .WhereIf(type == "JsonEntity", x => x.Metadata.EntityConfigType == Domain.Enums.EntityConfigTypes.Interface)
+                .WhereIf(baseEntity != null, x => x.Type.IsAssignableTo(baseEntity?.Type))
+                .ToList();
+
 
             var entities = models
                 .Where(e => (
@@ -159,14 +174,25 @@ namespace Shesha.Metadata
             return result;
         }
 
+        private (string? module, string name) ParseContainer(string container)
+        {
+            if (string.IsNullOrWhiteSpace(container))
+                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
+
+            var parts = container.Split(':');
+
+            if (parts.Length > 2)
+                throw new AbpValidationException($"Incorrect container format '{nameof(container)}'. Should be 'module:name' or 'className'");
+
+            return (parts.Length > 1 ? parts[0] : null, parts.Last());
+        }
+
         /// inheritedDoc
         [HttpGet]
         public async Task<List<PropertyMetadataDto>> GetPropertiesAsync(string container)
         {
-            if (string.IsNullOrWhiteSpace(container))
-                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
-            
-            var containerType = await _metadataProvider.GetContainerTypeAsync(null, container);
+            var (module, name) = ParseContainer(container);
+            var containerType = await _metadataProvider.GetContainerTypeAsync(module, name);
             var properties = await _metadataProvider.GetPropertiesAsync(containerType);
             return properties;
         }
@@ -175,10 +201,8 @@ namespace Shesha.Metadata
         [HttpGet]
         public async Task<List<AutocompleteItemDto>> GetNonFrameworkRelatedPropertiesAsync(string container, string? term, string? selectedValue)
         {
-            if (string.IsNullOrWhiteSpace(container))
-                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
-
-            var containerType = await _metadataProvider.GetContainerTypeAsync(null, container);
+            var (module, name) = ParseContainer(container);
+            var containerType = await _metadataProvider.GetContainerTypeAsync(module, name);
             var properties = await _metadataProvider.GetPropertiesAsync(containerType);
             var nonFrameworkRelatedProperties = properties.Where(x => x.IsFrameworkRelated == false).ToList();
             return FilterProperties(nonFrameworkRelatedProperties, term, selectedValue);
@@ -186,13 +210,16 @@ namespace Shesha.Metadata
 
         /// inheritedDoc
         [HttpGet]
-        public async Task<MetadataDto> GetAsync(string container)
+        public async Task<MetadataDto> GetAsync(EntityTypeIdInput entityType)
         {
-            if (string.IsNullOrWhiteSpace(container))
-                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
+            if (entityType == null)
+                throw new AbpValidationException($"'{nameof(entityType)}' is mandatory");
 
-            var containerType = await _metadataProvider.GetContainerTypeAsync(null, container);
-
+            var containerName = entityType.Name.GetDefaultIfEmpty(entityType.FullClassName);
+            if (string.IsNullOrWhiteSpace(containerName))
+                throw new AbpValidationException($"Either '{nameof(entityType.Name)}' or '{nameof(entityType.FullClassName)}' must be provided");
+            
+            var containerType = await _metadataProvider.GetContainerTypeAsync(entityType.Module, containerName);
             return await _metadataProvider.GetAsync(containerType);
         }
 

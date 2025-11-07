@@ -14,6 +14,7 @@ import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensio
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { ColorValueType } from 'antd/es/color-picker/interface';
 import { isDefined } from '@/utils/nullables';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
@@ -308,7 +309,7 @@ export interface IFlatComponentsStructure {
 }
 
 export interface IFormSettingsCommon {
-  modelType?: string;
+  modelType?: IEntityTypeIdentifier | string;
   layout: FormLayout;
   colon: boolean;
   labelCol: ColProps;

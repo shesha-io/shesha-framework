@@ -4,6 +4,7 @@ import { IFlatComponentsStructure } from '@/providers/form/models';
 import React, { ReactNode, CSSProperties } from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { TableSelectionMode } from '../dataTable/interfaces';
 
 export interface IColumnWidth {
   id: React.Key;
@@ -81,6 +82,11 @@ export interface IReactTableProps extends ITableRowDragProps {
    * Whether the table should allow multi-select
    */
   useMultiSelect?: boolean;
+
+  /**
+   * Selection mode for the table
+   */
+  selectionMode?: TableSelectionMode;
 
   /**
    * Whether the table's headers should be frozen and you scroll under them
@@ -223,12 +229,27 @@ export interface IReactTableProps extends ITableRowDragProps {
   noDataIcon?: string;
   showExpandedView?: boolean;
 
+  // Header styling
+  headerFontSize?: string;
+  headerFontWeight?: string;
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
+
+  // Table body styling
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
+  rowHeight?: string;
+  rowPadding?: string;
+  rowBorder?: string;
+
+  // Overall table styling
   borderRadius?: string;
   border?: IBorderValue;
+  backgroundColor?: string;
+  boxShadow?: string;
+  sortableIndicatorColor?: string;
 
   canDeleteInline?: boolean;
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;

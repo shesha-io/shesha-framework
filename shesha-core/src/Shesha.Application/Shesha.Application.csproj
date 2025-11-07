@@ -149,7 +149,6 @@
         <EmbeddedResource Include="ConfigMigrations\package20250801_0955.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20250805_0851.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20251027_1622.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20251028_1950.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20251030_1025.shaconfig" />
         <EmbeddedResource Include="Excel\template.xlsx" />
         <EmbeddedResource Include="ConfigMigrations\package20230324_1835.shaconfig" />

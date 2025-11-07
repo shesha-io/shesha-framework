@@ -1,6 +1,6 @@
 import React from 'react';
 import { ConfigurableFormItem } from "@/components";
-import EntityTypeAutocomplete, { EntityTypeAutocompleteType } from "@/components/configurableItemAutocomplete/entityTypeAutocomplete";
+import EntityTypeAutocomplete, { EntityIdentifier, EntityTypeAutocompleteType } from "@/components/configurableItemAutocomplete/entityTypeAutocomplete";
 import { FormMarkup, IConfigurableFormComponent, IToolboxComponent } from "@/interfaces";
 import { FileSearchOutlined } from "@ant-design/icons";
 import settingsFormJson from './settingsForm.json';
@@ -10,9 +10,10 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 export interface IEntityTypeAutocompleteComponentProps extends IConfigurableFormComponent {
   entityTypeAutocompleteType?: EntityTypeAutocompleteType;
+  baseModel?: EntityIdentifier;
 }
 
-const EntityTypeAutocompleteComponent: IToolboxComponent<any, any> = {
+const EntityTypeAutocompleteComponent: IToolboxComponent<IEntityTypeAutocompleteComponentProps, IEntityTypeAutocompleteComponentProps> = {
   type: 'entityTypeAutocomplete',
   isInput: true,
   isOutput: true,
@@ -28,6 +29,9 @@ const EntityTypeAutocompleteComponent: IToolboxComponent<any, any> = {
               type={model.entityTypeAutocompleteType}
               value={value}
               onChange={onChange}
+              baseModel={model.baseModel}
+              readOnly={model.readOnly}
+              size={model.size}
             />
           );
         }}

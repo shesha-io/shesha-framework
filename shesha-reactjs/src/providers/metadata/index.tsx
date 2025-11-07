@@ -12,10 +12,11 @@ import {
 } from './contexts';
 import metadataReducer from './reducer';
 import camelcase from 'camelcase';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
 export interface IMetadataProviderProps {
   id?: string;
-  modelType: string;
+  modelType: string | IEntityTypeIdentifier;
   dataType?: MetadataType;
 }
 

@@ -151,24 +151,29 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     sb.append(`export type ${typeAccessor}<Env extends ${CODE.ENVIRONMENT_TYPE} = ${CODE.ENVIRONMENT_TYPE}.None> = {`);
     sb.incIndent();
     await this.#iterateProperties(metadata.properties, async (prop) => {
-      const propertyName = verifiedCamelCase(prop.path);
-      const dataType = await this.#getTypescriptType(prop, {
-        onUseComplexType: (typeInfo) => {
-          typesImporter.import({ typeName: typeInfo.typeName, filePath: typeInfo.filePath });
-        },
-      });
+      try {
+        const propertyName = verifiedCamelCase(prop.path);
+        const dataType = await this.#getTypescriptType(prop, {
+          onUseComplexType: (typeInfo) => {
+            typesImporter.import({ typeName: typeInfo.typeName, filePath: typeInfo.filePath });
+          },
+        });
 
-      if (dataType) {
-        if (dataType.filePath !== fileName)
-          typesImporter.import(dataType);
+        if (dataType) {
+          if (dataType.filePath !== fileName)
+            typesImporter.import(dataType);
 
-        const isEntity = dataType.metadata && isEntityMetadata(dataType.metadata);
-        const typeName = isEntity
-          ? `${dataType.typeName}<Env>`
-          : dataType.typeName;
+          const isEntity = dataType.metadata && isEntityMetadata(dataType.metadata);
+          const typeName = isEntity
+            ? `${dataType.typeName}<Env>`
+            : dataType.typeName;
 
-        this.#appendCommentBlock(sb, [prop.label, prop.description]);
-        sb.append(`${propertyName}${prop.isNullable ? '?' : ''}: ${typeName};`);
+          this.#appendCommentBlock(sb, [prop.label, prop.description]);
+          sb.append(`${propertyName}${prop.isNullable ? '?' : ''}: ${typeName};`);
+        }
+      } catch (e) {
+        // skip errors with logging to not break the build
+        console.warn(e.message);
       }
     });
     sb.decIndent();
@@ -251,7 +256,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
 
     const entityMetadata = await this.metadataFetcher(typeId);
     if (!isEntityMetadata(entityMetadata))
-      throw new Error(`Specified type is not an entity: ${typeId}`);
+      throw new Error(`Specified type is not an entity: '${typeId.module}:${typeId.name}'`);
 
     const { typeAccessor, moduleAccessor } = entityMetadata;
     if (!moduleAccessor)
@@ -331,7 +336,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             dataType: DataTypes.entityReference,
             // dataFormat: property.entityType,
             entityType: property.entityType,
-            moduleAccessor: property.moduleAccessor,
+            entityModule: property.entityModule,
           };
           const itemType = await this.#getTypescriptType(itemTypeFixed);
 
@@ -340,7 +345,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
               context.onUseComplexType({ typeName: itemType.typeName, filePath: itemType.filePath });
             return { typeName: `${itemType.typeName}[]` };
           } else {
-            console.warn(`Failed to build type ${property.entityType}`, property);
+            console.warn(`Failed to build type ${property.entityModule}${property.entityType}`, property);
           }
         }
         break;

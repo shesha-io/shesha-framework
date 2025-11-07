@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
@@ -20,6 +21,14 @@ namespace Shesha.Configuration.Runtime
         public EntityConfigManager(IRepository<EntityProperty, Guid> propertyConfigRepo) : base()
         {
             PropertyConfigRepo = propertyConfigRepo;
+        }
+
+        public async Task<EntityConfig?> GetByEntityTypeIdAsync(EntityTypeIdentifier entityId)
+        {
+            return entityId.FullClassName.IsNullOrEmpty()
+                ? await Repository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Module != null && entityId.Module != null && x.Module.Name == entityId.Module && x.Name == entityId.Name)
+                : await Repository.GetAll().FirstOrDefaultAsync(x => x.FullClassName == entityId.FullClassName || x.TypeShortAlias == entityId.FullClassName);
         }
 
         public async Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig>? query = null, bool? implemented = null)
@@ -73,7 +82,9 @@ namespace Shesha.Configuration.Runtime
                     Label = src.Label,
                     Description = src.Description,
                     DataFormat = src.DataFormat,
+                    EntityFullClassName = src.EntityFullClassName,
                     EntityType = src.EntityType,
+                    EntityModule = src.EntityModule,
                     ReferenceListName = src.ReferenceListName,
                     ReferenceListModule = src.ReferenceListModule,
                     IsFrameworkRelated = src.IsFrameworkRelated,

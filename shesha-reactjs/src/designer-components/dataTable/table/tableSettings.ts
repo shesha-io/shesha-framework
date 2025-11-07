@@ -1007,6 +1007,131 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                     })
                     .addCollapsiblePanel({
                       id: nanoid(),
+                      propertyName: 'headerStyling',
+                      label: 'Header Styling',
+                      labelAlign: 'right',
+                      ghost: true,
+                      parentId: styleRouterId,
+                      collapsible: 'header',
+                      content: {
+                        id: nanoid(),
+                        components: [...new DesignerToolbarSettings()
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            inputs: [
+                              {
+                                id: nanoid(),
+                                propertyName: 'headerFontSize',
+                                label: 'Font Size',
+                                type: 'textField',
+                                tooltip: 'Font size for table headers (e.g., 14px, 1.2em)',
+                                jsSetting: true,
+                              },
+                              {
+                                id: nanoid(),
+                                propertyName: 'headerFontWeight',
+                                label: 'Font Weight',
+                                type: 'dropdown',
+                                tooltip: 'Font weight for table headers',
+                                jsSetting: true,
+                                dropdownOptions: fontWeightsOptions,
+                              },
+                            ],
+                          })
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            inputs: [
+                              {
+                                id: nanoid(),
+                                propertyName: 'headerBackgroundColor',
+                                label: 'Background Color',
+                                type: 'colorPicker',
+                                tooltip: 'Background color for table headers',
+                                jsSetting: true,
+                              },
+                              {
+                                id: nanoid(),
+                                propertyName: 'headerTextColor',
+                                label: 'Text Color',
+                                type: 'colorPicker',
+                                tooltip: 'Text color for table headers',
+                                jsSetting: true,
+                              },
+                            ],
+                          })
+                          .toJson(),
+                        ],
+                      },
+                    })
+                    .addCollapsiblePanel({
+                      id: nanoid(),
+                      propertyName: 'tableBodyStyling',
+                      label: 'Table Body Styling',
+                      labelAlign: 'right',
+                      ghost: true,
+                      parentId: styleRouterId,
+                      collapsible: 'header',
+                      content: {
+                        id: nanoid(),
+                        components: [...new DesignerToolbarSettings()
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            inputs: [
+                              {
+                                id: nanoid(),
+                                propertyName: 'rowHeight',
+                                label: 'Row Height',
+                                type: 'textField',
+                                tooltip: 'Height for table rows (e.g., 40px, 3rem)',
+                                jsSetting: true,
+                              },
+                              {
+                                id: nanoid(),
+                                propertyName: 'rowPadding',
+                                label: 'Cell Padding',
+                                type: 'textField',
+                                tooltip: 'Padding for table cells (e.g., 8px, 0.5rem 1rem)',
+                                jsSetting: true,
+                              },
+                            ],
+                          })
+                          .addSettingsInput({
+                            id: nanoid(),
+                            propertyName: 'rowBorder',
+                            label: 'Row Border',
+                            inputType: 'textField',
+                            tooltip: 'Border style for table rows (e.g., 1px solid #ccc)',
+                            jsSetting: true,
+                          })
+                          .toJson(),
+                        ],
+                      },
+                    })
+                    .addCollapsiblePanel({
+                      id: nanoid(),
+                      propertyName: 'overallTableStyling',
+                      label: 'Overall Table Styling',
+                      labelAlign: 'right',
+                      ghost: true,
+                      parentId: styleRouterId,
+                      collapsible: 'header',
+                      content: {
+                        id: nanoid(),
+                        components: [...new DesignerToolbarSettings()
+                          .addSettingsInput({
+                            id: nanoid(),
+                            propertyName: 'sortableIndicatorColor',
+                            label: 'Sort Indicator Color',
+                            inputType: 'colorPicker',
+                            tooltip: 'Color for sortable column indicators',
+                            jsSetting: true,
+                          })
+                          .toJson(),
+                        ],
+                      },
+                    })
+                    .addCollapsiblePanel({
+                      id: nanoid(),
                       propertyName: 'customStyle',
                       label: 'Custom Styles',
                       labelAlign: 'right',

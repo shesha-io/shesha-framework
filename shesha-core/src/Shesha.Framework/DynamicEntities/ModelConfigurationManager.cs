@@ -3,10 +3,10 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Abp.Runtime.Caching;
 using AutoMapper;
-using NUglify.JavaScript.Syntax;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
@@ -149,15 +149,11 @@ namespace Shesha.DynamicEntities
                     CascadeDeleteUnreferenced = x.CascadeDeleteUnreferenced,
                     DataFormat = x.DataFormat,
                     DataType = x.DataType,
-                    EntityModule = x.EntityModule,
                     EntityType = x.EntityType,
                     Max = x.Max,
                     MaxLength = x.MaxLength,
                     Min = x.Min,
                     MinLength = x.MinLength,
-
-                    // ToDo: AS - review
-                    ModuleAccessor = x.ModuleAccessor,
 
                     Properties = x.Properties != null ? OverrideProperties(x.Properties) : new List<ModelPropertyDto>(),
 
@@ -167,7 +163,8 @@ namespace Shesha.DynamicEntities
                     Required = x.Required,
                     SortOrder = x.SortOrder,
                     Suppress = x.Suppress,
-                    TypeAccessor = x.TypeAccessor,
+                    Accessor = x.Accessor,
+                    BaseEntityType = x.BaseEntityType,
                     ValidationMessage = x.ValidationMessage,
                     IsFrameworkRelated = x.IsFrameworkRelated,
 
@@ -202,6 +199,17 @@ namespace Shesha.DynamicEntities
                     var inheritedProps = OverrideProperties(inheritedFromModel.Properties);
                     input.Properties.AddRange(inheritedProps);
                 }
+            }
+
+            if (input.Properties.All(x => x.Name.ToLower() != "id"))
+            {
+                input.Properties.Add(new ModelPropertyDto()
+                {
+                    Name = "Id",
+                    ColumnName = "id",
+                    DataType = DataTypes.Guid,
+                    IsFrameworkRelated = true,
+                });
             }
 
             var modelConfig = new EntityConfig()
@@ -307,12 +315,7 @@ namespace Shesha.DynamicEntities
 
             var properties = await PropertyConfigRepo.GetAll().Where(p => p.EntityConfig == entityConfig).OrderBy(p => p.SortOrder).ToListAsync();
 
-            var mappers = new Dictionary<ModelUpdateType, IMapper> {
-                { ModelUpdateType.DecorProperties, GetPropertyMapper(ModelUpdateType.DecorProperties) },
-                { ModelUpdateType.AllProperties, GetPropertyMapper(ModelUpdateType.AllProperties) }
-            };
-
-            await BindPropertiesAndReturnItemsTypeAsync(mappers, properties, input.Properties, entityConfig, null, false, new List<EntityProperty>());
+            await BindPropertiesAndReturnItemsTypeAsync(properties, input.Properties, entityConfig, null, false, new List<EntityProperty>());
 
             // delete missing properties
             var allPropertiesId = new List<Guid>();
@@ -404,7 +407,6 @@ namespace Shesha.DynamicEntities
         }
 
         private async Task<EntityProperty?> BindPropertiesAndReturnItemsTypeAsync(
-            Dictionary<ModelUpdateType, IMapper> mappers,
             List<EntityProperty> allProperties,
             List<ModelPropertyDto> inputProperties,
             EntityConfig entityConfig,
@@ -435,18 +437,16 @@ namespace Shesha.DynamicEntities
 
                 dbProp = dbProp ?? new EntityProperty { EntityConfig = entityConfig, Name = inputName };
 
-                var propertyMapper = mappers[
-                    dbProp.InheritedFrom != null
+                var updateType = dbProp.InheritedFrom != null
+                    ? ModelUpdateType.DecorProperties
+                    : dbProp.Source == MetadataSourceType.ApplicationCode
                         ? ModelUpdateType.DecorProperties
-                        : dbProp.Source == MetadataSourceType.ApplicationCode
-                            ? ModelUpdateType.DecorProperties
-                            : ModelUpdateType.AllProperties
-                    ];
+                        : ModelUpdateType.AllProperties;
 
                 // clear itemsType because will get relevant property from the properties list
                 inputProp.ItemsType = null;
 
-                propertyMapper.Map(inputProp, dbProp);
+                await MapPropertyToDbAsync(inputProp, dbProp, updateType);
 
                 if (dbProp.DataType == DataTypes.Array)
                 {
@@ -494,7 +494,6 @@ namespace Shesha.DynamicEntities
                 if (inputProp.Properties != null && inputProp.Properties.Any())
                 {
                     dbProp.ItemsType = await BindPropertiesAndReturnItemsTypeAsync(
-                        mappers,
                         dbProp.Properties.ToList(),
                         inputProp.Properties,
                         dbProp.EntityConfig,
@@ -520,7 +519,6 @@ namespace Shesha.DynamicEntities
                         foreach (var inheritedEntity in inheritedEntities)
                         {
                             await BindPropertiesAndReturnItemsTypeAsync(
-                                mappers,
                                 new List<EntityProperty>(),
                                 new List<ModelPropertyDto> { inputProp },
                                 inheritedEntity,
@@ -542,7 +540,6 @@ namespace Shesha.DynamicEntities
                             inhProp.Id = inheritedProperty.Id.ToString();
                             //inhProp.Properties = new List<ModelPropertyDto>();
                             await BindPropertiesAndReturnItemsTypeAsync(
-                                mappers,
                                 new List<EntityProperty>() { inheritedProperty },
                                 new List<ModelPropertyDto> { inhProp },
                                 inheritedProperty.EntityConfig,
@@ -567,35 +564,55 @@ namespace Shesha.DynamicEntities
             return itemsType;
         }
 
-        private IMapper GetPropertyMapper(ModelUpdateType updateType)
+        private async Task MapPropertyToDbAsync(ModelPropertyDto dto, EntityProperty dbProp, ModelUpdateType updateType)
         {
-            var propertyMapperConfig = new MapperConfiguration(cfg =>
+            // Critical properties should not be changed
+            /*
+            dbProp.ColumnName = dto.ColumnName;
+            dbProp.CreatedInDb = dto.CreatedInDb;
+            dbProp.ListConfiguration = dto.ListConfiguration;
+
+            dbProp.SortOrder = dto.SortOrder;
+            dbProp.Source = dto.Source;
+            dbProp.IsFrameworkRelated = dto.IsFrameworkRelated ?? false;
+            */
+
+            if (updateType != ModelUpdateType.DecorProperties)
             {
-                // Fix bug of Automapper < 11.0.0 under .net 7 https://stackoverflow.com/questions/74730425/system-datetime-on-t-maxintegertsystem-collections-generic-ienumerable1t
-                cfg.ShouldMapMethod = (m) => { return false; };
+                //dbProp.Name = dbProp.CreatedInDb ? dbProp.Name : dto.Name; // update only if the property is not created in DB yet
+                dbProp.EntityModule = dto.EntityType?.Module;
+                dbProp.EntityType = dto.EntityType?.Name;
+                dbProp.EntityFullClassName = (await Repository.FirstOrDefaultAsync(x => 
+                    x.Name == dbProp.EntityType 
+                    && (x.Module  != null && x.Module.Name == dbProp.EntityModule
+                        || x.Module != null && dbProp.EntityModule == null
+                    )))?.FullClassName;
+                dbProp.DataFormat = dto.DataFormat;
+                dbProp.DataType = dto.DataType;
+            }
 
-                var mapExpression = cfg.CreateMap<ModelPropertyDto, EntityProperty>()
-                    .ForMember(d => d.Id, o => o.Ignore())
-                    .ForMember(d => d.InheritedFrom, o => o.Ignore())
-                    .ForMember(d => d.EntityConfig, o => o.Ignore())
-                    .ForMember(d => d.SortOrder, o => o.Ignore())
-                    .ForMember(d => d.Properties, o => o.Ignore())
-                    .ForMember(d => d.Source, o => o.Ignore())
-                    .ForMember(d => d.Name, o => o.MapFrom((dto, m) => m.CreatedInDb ? m.Name : dto.Name)) // update only if the property is not created in DB yet
-                ;
+            dbProp.Suppress = dto.Suppress ?? false;
 
-                if (updateType == ModelUpdateType.DecorProperties)
-                {
-                    mapExpression.ForMember(d => d.DataType, o => o.Ignore());
-                    mapExpression.ForMember(d => d.DataFormat, o => o.Ignore());
-                    mapExpression.ForMember(d => d.ItemsType, o => o.Ignore());
-                }
-            });
-
-            return propertyMapperConfig.CreateMapper();
+            dbProp.Audited = dto.Audited ?? false;
+            dbProp.CascadeCreate = dto.CascadeCreate ?? false;
+            dbProp.CascadeDeleteUnreferenced = dto.CascadeDeleteUnreferenced ?? false;
+            dbProp.CascadeUpdate = dto.CascadeUpdate ?? false;
+            dbProp.Description = dto.Description;
+            dbProp.Formatting = dto.Formatting;
+            dbProp.Label = dto.Label;
+            dbProp.Min = dto.Min;
+            dbProp.Max = dto.Max;
+            dbProp.MaxLength = dto.MaxLength;
+            dbProp.MinLength = dto.MinLength;
+            dbProp.ReadOnly = dto.ReadOnly ?? false;
+            dbProp.ReferenceListModule = dto.ReferenceListId?.Module;
+            dbProp.ReferenceListName = dto.ReferenceListId?.Name;
+            dbProp.RegExp = dto.RegExp;
+            dbProp.Required = dto.Required ?? false;
+            dbProp.ValidationMessage = dto.ValidationMessage;
         }
 
-        public ModelPropertyDto MapProperty(EntityProperty dbProp, PropertyMetadataDto? hardCodedProp)
+        public ModelPropertyDto MapPropertyToDto(EntityProperty dbProp, PropertyMetadataDto? hardCodedProp)
         {
             var prop = new ModelPropertyDto()
             {
@@ -607,7 +624,6 @@ namespace Shesha.DynamicEntities
                 DataFormat = dbProp.DataFormat,
                 DataType = dbProp.DataType,
                 Description = dbProp.Description,
-                EntityType = dbProp.EntityType,
                 Formatting = dbProp.Formatting,
                 Id = dbProp.Id.ToString(),
                 InheritedFromId = dbProp.InheritedFrom?.Id,
@@ -617,8 +633,8 @@ namespace Shesha.DynamicEntities
                 Label = dbProp.Label,
                 ListConfiguration = dbProp.ListConfiguration,
                 Name = dbProp.Name,
-                ReferenceListId = dbProp.ReferenceListName.IsNullOrEmpty() 
-                    ? null 
+                ReferenceListId = dbProp.ReferenceListName.IsNullOrEmpty()
+                    ? null
                     : new ReferenceListIdentifier(dbProp.ReferenceListModule, dbProp.ReferenceListName.NotNull()),
                 SortOrder = dbProp.SortOrder,
                 Source = dbProp.Source,
@@ -628,11 +644,20 @@ namespace Shesha.DynamicEntities
                 ? null
                 : new ReferenceListIdentifier(dbProp.ReferenceListModule, dbProp.ReferenceListName.NotNull());
 
-            var baseProp = dbProp;
-            while (baseProp.InheritedFrom != null)
-                baseProp = baseProp.InheritedFrom;
+            if (dbProp.DataType == DataTypes.EntityReference || (new []{ObjectFormats.Interface, ArrayFormats.EntityReference}).Contains(dbProp.DataFormat))
+            {
+                var baseProp = dbProp;
+                while (baseProp == dbProp && baseProp?.InheritedFrom != null)
+                    baseProp = baseProp.InheritedFrom;
 
-            prop.BaseEntityType = baseProp != dbProp ? baseProp.EntityType : null;
+                prop.BaseEntityType = baseProp != null && baseProp != dbProp && !baseProp.EntityType.IsNullOrEmpty()
+                    ? EntityTypeIdentifier.New(
+                        baseProp.EntityModule,
+                        baseProp.EntityType.NotNull(
+                            $"Base entity type for `{dbProp.Id}` {dbProp.EntityConfig.FullName}.{dbProp.Name} not found in `{baseProp.Id}` {baseProp.EntityConfig.FullName}.{baseProp.Name}"
+                        ))
+                    : null;
+            }
 
             prop.Suppress = !hardCodedProp?.IsVisible ?? dbProp.Suppress;
             prop.Required = hardCodedProp?.Required ?? dbProp.Required;
@@ -661,15 +686,29 @@ namespace Shesha.DynamicEntities
             prop.CascadeUpdateHardcoded = hardCodedProp?.CascadeUpdate != null;
             prop.CascadeDeleteUnreferencedHardcoded = hardCodedProp?.CascadeDeleteUnreferenced != null;
 
-            prop.EntityModule = dbProp.EntityConfig.Module?.Name ?? hardCodedProp?.EntityModule;
-            prop.ModuleAccessor = dbProp.EntityConfig.Module?.Accessor ?? hardCodedProp?.ModuleAccessor;
-            prop.TypeAccessor = dbProp.EntityConfig.Accessor ?? hardCodedProp?.TypeAccessor;
+            prop.EntityType = !dbProp.EntityType.IsNullOrWhiteSpace() || !(hardCodedProp?.EntityType).IsNullOrWhiteSpace()
+                ? EntityTypeIdentifier.New(
+                    dbProp.EntityModule ?? hardCodedProp?.EntityModule,
+                    (dbProp.EntityType ?? hardCodedProp?.EntityType).NotNull()
+                )
+                : null;
+
+            prop.BaseEntityType = dbProp.InheritedFrom != null && !dbProp.InheritedFrom.EntityFullClassName.IsNullOrWhiteSpace()
+                ? EntityTypeIdentifier.New(dbProp.InheritedFrom.EntityModule, dbProp.InheritedFrom.EntityFullClassName.NotNull())
+                : null;
+
+            // ToDo: AS - review if this should be here (may be need to be removed as unused)
+            prop.Accessor = !(hardCodedProp?.TypeAccessor).IsNullOrWhiteSpace()
+                ? EntityTypeIdentifier.New(hardCodedProp?.ModuleAccessor, (hardCodedProp?.TypeAccessor).NotNull())
+                : null;
+
 
             if (dbProp.Properties != null)
             {
                 prop.Properties = dbProp.Properties
-                    .Select(x => {
-                        var p = MapProperty(x, hardCodedProp?.Properties.FirstOrDefault(p => p.Path == x.Name));
+                    .Select(x =>
+                    {
+                        var p = MapPropertyToDto(x, hardCodedProp?.Properties.FirstOrDefault(p => p.Path == x.Name));
                         if (x == dbProp.ItemsType)
                             prop.ItemsType = p;
                         return p;
@@ -741,7 +780,7 @@ namespace Shesha.DynamicEntities
                     .ToList();
             }
 
-            dto.Properties = properties.Select(x => MapProperty(x, hardCodedProps?.FirstOrDefault(pp => pp.Path == x.Name))).ToList();
+            dto.Properties = properties.Select(x => MapPropertyToDto(x, hardCodedProps?.FirstOrDefault(pp => pp.Path == x.Name))).ToList();
 
             dto.HardcodedPropertiesMD5 = entityConfig.HardcodedPropertiesMD5;
 
@@ -797,7 +836,7 @@ namespace Shesha.DynamicEntities
         public async Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(
             string? moduleName,
             string? @namespace,
-            string className,
+            string entityTypeName,
             bool useExposed,
             List<PropertyMetadataDto>? hardCodedProps = null
         )
@@ -805,9 +844,9 @@ namespace Shesha.DynamicEntities
             using var uow = UnitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew);
 
             // There can be three options here:
-            // 1. namespace and className (old format)
-            // 2. moduleName, namespace, and className(combined)
-            // 3. moduleName and className(new format)
+            // 1. namespace and entityTypeName (old format)
+            // 2. moduleName, namespace, and entityTypeName(combined)
+            // 3. moduleName and entityTypeName(new format)
 
             var entityModuleName = moduleName;
             ModelConfigurationDto? rootEntity = null;
@@ -819,11 +858,11 @@ namespace Shesha.DynamicEntities
                     throw new ArgumentNullException("moduleName or namespace is required");
 
                 // We don't know a module, so get Entity by FullClassName and not exposed and store as a Root Entity
-                var cacheRootKey = GetCacheKey(ROOT_ENTITY, @namespace, className);
+                var cacheRootKey = GetCacheKey(ROOT_ENTITY, @namespace, entityTypeName);
                 rootEntity = await _modelConfigsCache.GetAsync(cacheRootKey, async () =>
                 {
                     var modelConfig = await Repository.GetAll()
-                        .Where(m => m.ClassName == className && m.Namespace == @namespace && !m.IsDeleted && !m.IsExposed)
+                        .Where(m => m.ClassName == entityTypeName && m.Namespace == @namespace && !m.IsDeleted && !m.IsExposed)
                         .FirstOrDefaultAsync();
                     if (modelConfig == null)
                         return null;
@@ -838,7 +877,7 @@ namespace Shesha.DynamicEntities
 
                 // Get the module of the Entity
                 entityModuleName = rootEntity.Module;
-                cacheRootKey = GetCacheKey(entityModuleName, @namespace, className);
+                cacheRootKey = GetCacheKey(entityModuleName, @namespace, entityTypeName);
                 // Store cache of Root Entity with Module key (for the next use)
                 await _modelConfigsCache.SetAsync(cacheRootKey, rootEntity);
             }
@@ -847,7 +886,7 @@ namespace Shesha.DynamicEntities
             if (useExposed && !entityModuleName.IsNullOrEmpty())
             {
                 // Find Module of exposed Entity if needed
-                var inheritance = await GetActualInheritanceOrNullAsync(entityModuleName.NotNull(), $"{className}");
+                var inheritance = await GetActualInheritanceOrNullAsync(entityModuleName.NotNull(), $"{entityTypeName}");
                 entityModuleName = inheritance?.ExposedInModuleName ?? entityModuleName;
             }
 
@@ -857,15 +896,15 @@ namespace Shesha.DynamicEntities
 
             // Get the module of the Entity (exposed or requested if ModuleName is provided in parameters and Expose is not require)
             var module = entityModuleName.IsNullOrEmpty() ? null : await _moduleManager.GetModuleAsync(entityModuleName.NotNull());
-            var cacheKey = GetCacheKey(entityModuleName, @namespace, className);
+            var cacheKey = GetCacheKey(entityModuleName, @namespace, entityTypeName);
 
             // Get Entity for second option if the namespace parameter is not emty
             // or get Entity for third option if the namespace paremeter is empty
             var result = await _modelConfigsCache.GetAsync(cacheKey, async () =>
             {
                 var modelConfig = await Repository.GetAll()
-                    .WhereIf(@namespace.IsNullOrEmpty(), m => m.Module == module && m.ClassName == className && !m.IsDeleted)
-                    .WhereIf(!@namespace.IsNullOrEmpty(), m => m.Module == module && m.Namespace == @namespace && m.ClassName == className && !m.IsDeleted)
+                    .WhereIf(@namespace.IsNullOrEmpty(), m => m.Module == module && m.ClassName == entityTypeName && !m.IsDeleted)
+                    .WhereIf(!@namespace.IsNullOrEmpty(), m => m.Module == module && m.Namespace == @namespace && m.ClassName == entityTypeName && !m.IsDeleted)
                     .FirstOrDefaultAsync();
                 if (modelConfig == null)
                     return null;
@@ -896,13 +935,13 @@ namespace Shesha.DynamicEntities
         public async Task<ModelConfigurationDto> GetCachedModelConfigurationAsync(
             string? moduleName,
             string? @namespace,
-            string className,
+            string entityTypeName,
             bool useExposed,
             List<PropertyMetadataDto>? hardCodedProps = null
         )
         {
-            var result = await GetCachedModelConfigurationOrNullAsync(moduleName, @namespace, className, useExposed, hardCodedProps);
-            return result ?? throw new ModelConfigurationNotFoundException(@namespace, className);
+            var result = await GetCachedModelConfigurationOrNullAsync(moduleName, @namespace, entityTypeName, useExposed, hardCodedProps);
+            return result ?? throw new ModelConfigurationNotFoundException(@namespace, entityTypeName);
         }
     }
 }

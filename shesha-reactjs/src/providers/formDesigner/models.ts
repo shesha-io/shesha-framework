@@ -12,6 +12,7 @@ import { DEFAULT_FORM_SETTINGS, FormMode, IConfigurableFormComponent, IFlatCompo
 export interface IDataSource {
   id: string;
   name: string;
+  module: string | null;
   containerType: string;
   items: IPropertyMetadata[];
 }

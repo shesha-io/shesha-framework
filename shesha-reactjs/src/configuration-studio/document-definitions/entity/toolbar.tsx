@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
-import ModelConfiguratorToolbar from '@/components/modelConfigurator/toolbar';
+import { Space } from 'antd';
+import { SaveButton } from '@/components/modelConfigurator/toolbar/saveButton';
 
 export interface IEntityToolbarProps {
   readOnly?: boolean;
@@ -7,8 +8,8 @@ export interface IEntityToolbarProps {
 
 export const EntityToolbar: FC<IEntityToolbarProps> = () => {
   return (
-    <div>
-      <ModelConfiguratorToolbar />
-    </div>
+    <Space direction="horizontal" size={5}>
+      <SaveButton size="small" type="primary" />
+    </Space>
   );
 };

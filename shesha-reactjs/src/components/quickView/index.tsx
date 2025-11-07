@@ -13,6 +13,8 @@ import { ShaIconTypes } from '../iconPicker';
 import { formItemLayout, getQuickViewInitialValues, loadingBox } from './utils';
 import { useStyles } from './styles/styles';
 import { IPropertyMetadata } from '@/interfaces/metadata';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -28,7 +30,7 @@ export interface IQuickViewProps extends PropsWithChildren {
   /** The width of the quickview */
   width?: number | string;
 
-  className?: string;
+  entityType?: string | IEntityTypeIdentifier;
 
   formType?: string;
 
@@ -52,7 +54,7 @@ export interface IQuickViewProps extends PropsWithChildren {
 const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   children,
   entityId,
-  className,
+  entityType,
   formIdentifier,
   getEntityUrl,
   displayProperty,
@@ -94,6 +96,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
         .catch(() => {
           setLoadingState('error');
         });
+      setLoadingState('loading');
     }
   }, [formIdentifier, formArguments, fetchForm]);
 
@@ -112,7 +115,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       const getUrl = getEntityUrl ?? formMarkup?.formSettings?.getUrl;
       const fetcher = getUrl
         ? get(getUrl, { id: entityId }, { base: backendUrl, headers: httpHeaders })
-        : entitiesGet({ id: entityId, entityType: className }, { base: backendUrl, headers: httpHeaders });
+        : entitiesGet({ id: entityId, ...getEntityTypeIdentifierQueryParams(entityType) }, { base: backendUrl, headers: httpHeaders });
       fetcher
         .then((resp) => {
           setFormData(resp.result);
@@ -123,8 +126,9 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
           setLoadingState('error');
           notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> });
         });
+      setLoadingState('loading');
     }
-  }, [entityId, getEntityUrl, formMarkup, formArguments, formData, backendUrl, httpHeaders, className, displayProperty, notification, formIdentifier]);
+  }, [entityId, getEntityUrl, formMarkup, formArguments, formData, backendUrl, httpHeaders, entityType, displayProperty, notification, formIdentifier]);
 
   const formContent = useMemo(() => {
     // When using formArguments, require formIdentifier (data will be loaded by form's data loader)
@@ -133,7 +137,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
     return canRenderForm ? (
       <FormItemProvider namePrefix={undefined}>
-        <MetadataProvider id="dynamic" modelType={formArguments ? className : formMarkup?.formSettings.modelType}>
+        <MetadataProvider id="dynamic" modelType={formArguments ? entityType : formMarkup?.formSettings.modelType}>
           <ParentProvider
             formMode="readonly"
             model={{ editMode: 'readOnly', readOnly: true } /* force readonly to show popup dialog always read only */}
@@ -156,7 +160,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     ) : (
       <></>
     );
-  }, [formMarkup, formData, dataProperties, formArguments, formIdentifier, className]);
+  }, [formMarkup, formData, dataProperties, formArguments, formIdentifier, entityType]);
 
   const render = (): ReactNode => {
     if (children) {
@@ -248,9 +252,9 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
     // If formIdentifier is provided directly, use it
     if (props.formIdentifier) {
       setFormConfig(props.formIdentifier);
-    } else if (props.className && props.formType && formConfig === undefined) {
+    } else if (!isEntityTypeIdEmpty(props.entityType) && props.formType && formConfig === undefined) {
       // Otherwise, fetch form ID dynamically using className and formType
-      getEntityFormId(props.className, props.formType)
+      getEntityFormId(props.entityType, props.formType)
         .then((f) => {
           setFormConfig(f);
         })
@@ -258,7 +262,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
           setFormConfig(null);
         });
     }
-  }, [props.formIdentifier, props.className, props.formType, formConfig, getEntityFormId]);
+  }, [props.formIdentifier, props.entityType, props.formType, formConfig, getEntityFormId]);
 
   const buttonOrPopover = formConfig === undefined ? (
     <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>

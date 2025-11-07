@@ -61,6 +61,11 @@ namespace Shesha.Metadata.Dtos
         public string? DataFormat { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public string? EntityFullClassName { get; set; }
+
+        /// <summary>
         /// Type of the entity. Applicable when DataType = <seealso cref="DataTypes.EntityReference"/>
         /// </summary>
         [JsonProperty("entityType")]
@@ -154,7 +159,7 @@ namespace Shesha.Metadata.Dtos
 
         public override string ToString()
         {
-            return $"{Path} {DataType} ({DataFormat} {EntityType})";
+            return $"{Path} {DataType} ({DataFormat} {EntityFullClassName})";
         }
     }
 }

@@ -36,10 +36,10 @@ namespace Shesha.Swagger
 
                 foreach (var service in types)
                 {
-                    if (service.ImplementsGenericInterface(typeof(IEntityAppService<,>)))
+                    if (service.ImplementsGenericInterface(typeof(IDynamicCrudAppService<,,>)))
                     {
                         // entity service
-                        var genericInterface = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).First();
+                        var genericInterface = service.GetGenericInterfaces(typeof(IDynamicCrudAppService<,,>)).First();
                         var entityType = genericInterface.GenericTypeArguments.First();
                         var fullName = GetFullName(entityType.Namespace, entityType.Name);
 

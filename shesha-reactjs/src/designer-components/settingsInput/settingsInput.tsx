@@ -5,7 +5,7 @@ import ConditionalWrap from '@/components/conditionalWrapper';
 import { MetadataProvider, useSettingsComponents } from '@/providers';
 import { evaluateString, IToolboxComponentBase, useShaFormInstance } from '@/index';
 import { InputComponent } from '../inputComponent';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 export type ISettingsComponent = IToolboxComponentBase & {
   settingsComponent?: React.FC<any>;
@@ -26,7 +26,11 @@ export const SettingInput: React.FC<ISettingsInputProps> = (props) => {
   const customComponent = settingsComponents.find((c) => c.type === type);
   const CustomComponent = customComponent?.component;
 
-  const evaluatedModelType = hasModelType(props) && !isNullOrWhiteSpace(props.modelType) ? evaluateString(props.modelType, { data: formData }) : undefined;
+  const evaluatedModelType = hasModelType(props) && props.modelType
+    ? typeof props.modelType === 'string'
+      ? evaluateString(props.modelType, { data: formData })
+      : props.modelType
+    : undefined;
 
   const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
 
@@ -43,7 +47,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = (props) => {
     : (
       <div key={label} style={unwrappedType === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
         <ConditionalWrap
-          condition={Boolean(evaluatedModelType)}
+          condition={!isEntityTypeIdEmpty(evaluatedModelType)}
           wrap={(content) => <MetadataProvider modelType={evaluatedModelType}>{content}</MetadataProvider>}
         >
           <FormItem

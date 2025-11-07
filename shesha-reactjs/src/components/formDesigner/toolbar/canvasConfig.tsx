@@ -27,8 +27,8 @@ export const CanvasConfig: FC = () => {
               }}
             />
           </Tooltip>
-          <Tooltip title={`${zoom}%`}><Button size="small" disabled={autoZoom} type="default" icon={<MinusOutlined />} title="Zoom out" onClick={() => setCanvasZoom(zoom - (zoom > DEFAULT_OPTIONS.minZoom ? 2 : 0))} /></Tooltip>
-          <Tooltip title={`${zoom}%`}><Button size="small" disabled={autoZoom} type="default" icon={<PlusOutlined />} title="Zoom in" onClick={() => setCanvasZoom(zoom + (zoom < DEFAULT_OPTIONS.maxZoom ? 2 : 0))} /></Tooltip>
+          <Tooltip title={`${zoom}%`}><Button size="small" disabled={autoZoom} type="default" icon={<MinusOutlined />} title="Zoom out" onClick={() => setCanvasZoom(zoom - (zoom > DEFAULT_OPTIONS.minZoom ? DEFAULT_OPTIONS.zoomStep : 0))} /></Tooltip>
+          <Tooltip title={`${zoom}%`}><Button size="small" disabled={autoZoom} type="default" icon={<PlusOutlined />} title="Zoom in" onClick={() => setCanvasZoom(zoom + (zoom < DEFAULT_OPTIONS.maxZoom ? DEFAULT_OPTIONS.zoomStep : 0))} /></Tooltip>
         </Space>
       </Space>
     </div>

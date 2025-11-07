@@ -19,7 +19,8 @@ const Toolbox: FC = () => {
       dataSources.push({
         id: currentMeta.id,
         name: currentMeta.metadata.name,
-        containerType: currentMeta.metadata.entityType,
+        module: currentMeta.metadata.module,
+        containerType: currentMeta.metadata.fullClassName,
         items: isPropertiesArray(currentMeta.metadata.properties) ? currentMeta.metadata.properties : [],
       });
     if (dataSources.length > 0) {

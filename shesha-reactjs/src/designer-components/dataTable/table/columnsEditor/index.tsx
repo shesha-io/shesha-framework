@@ -23,7 +23,7 @@ export const ColumnsEditorComponent: IToolboxComponent<IColumnsEditorComponentPr
   Factory: ({ model }) => {
     const { formData } = useForm();
     const { modelType: modelTypeExpression } = model;
-    const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : undefined;
+    const modelType = typeof modelTypeExpression === 'string' ? evaluateString(modelTypeExpression, { data: formData }) : modelTypeExpression;
 
     return (
       <ConditionalWrap

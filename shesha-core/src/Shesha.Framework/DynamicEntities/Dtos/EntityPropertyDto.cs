@@ -4,6 +4,7 @@ using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.DynamicEntities.Dtos
 {
@@ -52,7 +53,18 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Entity type. Aplicable for entity references
         /// </summary>
+        public string EntityFullClassName { get; set; }
+
+        /// <summary>
+        /// Entity type. Aplicable for entity references
+        /// </summary>
         public string EntityType { get; set; }
+
+        /// <summary>
+        /// Entity type. Applicable for entity references
+        /// </summary>
+        [MaxLength(300)]
+        public virtual string? EntityModule { get; set; }
 
         /// <summary>
         /// Reference list name
@@ -62,7 +74,7 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Reference list namespace
         /// </summary>
-        public string ReferenceListNamespace { get; set; }
+        public string ReferenceListModule { get; set; }
 
         /// <summary>
         /// Source type (ApplicationCode = 1, UserDefined = 2)

@@ -46,6 +46,16 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
       ...model.allStyles.dimensionsStyles,
     } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
+    const regExpObj = useMemo(() => {
+      if (!model.regExp) return null;
+      try {
+        return new RegExp(model.regExp, 'g');
+      } catch (error) {
+        console.warn('Invalid regExp pattern:', model.regExp, error);
+        return null;
+      }
+    }, [model.regExp]);
+
     if (model.hidden) return null;
 
     const inputProps: InputProps = {
@@ -69,8 +79,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextField
         {(value, onChange) => {
           const customEvents = calculatedModel.eventHandlers;
           const onChangeInternal = (...args: any[]): void => {
-            customEvents.onChange({ value: args[0].currentTarget.value }, args[0]);
-            if (typeof onChange === 'function') onChange(...args);
+            const inputValue: string | undefined = args[0]?.currentTarget?.value?.toString();
+            const newValue = regExpObj ? inputValue?.replace(regExpObj, '') : inputValue;
+            const changedValue = customEvents.onChange({ value: newValue }, args[0]);
+            if (typeof onChange === 'function') onChange(changedValue !== undefined ? changedValue : newValue);
           };
 
           return inputProps.readOnly

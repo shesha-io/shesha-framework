@@ -187,7 +187,7 @@ namespace Shesha.DynamicEntities
             {
                 case DataTypes.EntityReference:
                     {
-                        var entityConfig = _entityConfigurationStore.Get(dynamicProperty.EntityType);
+                        var entityConfig = _entityConfigurationStore.Get(dynamicProperty.EntityFullClassName);
                         var id = SerializationManager.DeserializeProperty(entityConfig.IdType.NotNull(), serializedValue);
                         var stringId = id?.ToString();
                         if (string.IsNullOrWhiteSpace(stringId))

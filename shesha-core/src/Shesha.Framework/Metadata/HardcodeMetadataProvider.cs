@@ -160,9 +160,11 @@ namespace Shesha.Metadata
                     result.ItemsType.ReferenceListName = epc?.ReferenceListName;
                 }
 
-                var entityType = result.DataFormat == DataTypes.EntityReference
+                var entityType = result.ItemsType?.DataType == DataTypes.EntityReference 
+                    || result.ItemsType?.DataType == DataTypes.Object && result.ItemsType?.DataFormat == ObjectFormats.Interface
                     ? result.ItemsType
                     : null;
+                result.EntityFullClassName = entityType?.EntityFullClassName;
                 result.EntityType = entityType?.EntityType;
                 result.EntityModule = entityType?.EntityModule;
             }
@@ -180,18 +182,12 @@ namespace Shesha.Metadata
         private void FillEntityRelatedProperties(PropertyMetadataDto propertyDto, Type propertyType, DataTypeInfo dataType)
         {
             var propType = propertyType.StripCastleProxyType();
-            var isEntity = propType.IsEntityType();
-            var isJsonEntity = propType.IsJsonEntityType();
-
-            // todo: review and move handling of other types to separate methods
-            propertyDto.EntityType = isEntity
-                    ? _entityConfigurationStore.Get(propType)?.SafeTypeShortAlias ?? propType.FullName
-                    : isJsonEntity
-                        ? propType.FullName
-                        : dataType.ObjectType;
-
-            if (isEntity || isJsonEntity)
+            if (propType.IsGenericType || propType.IsSystemType())
+                return;
+            if (propType.IsEntityType() || propType.IsJsonEntityType())
             {
+                propertyDto.EntityFullClassName = propType.FullName;
+                propertyDto.EntityType = propType.Name;
                 var moduleInfo = propType.GetConfigurableModuleInfo();
                 if (moduleInfo != null)
                 {
@@ -199,6 +195,11 @@ namespace Shesha.Metadata
                     propertyDto.ModuleAccessor = moduleInfo.GetModuleAccessor();
                 }
                 propertyDto.TypeAccessor = propType.GetTypeAccessor();
+            }
+            else
+            {
+                propertyDto.EntityFullClassName = dataType.ObjectType;
+                propertyDto.EntityType = dataType.ObjectType;
             }
         }
 
@@ -237,7 +238,8 @@ namespace Shesha.Metadata
                     }
                     return prop;
                 }
-                else if (dataType.DataType == DataTypes.EntityReference)
+                else if (dataType.DataType == DataTypes.EntityReference
+                    || dataType.DataType == DataTypes.Object && dataType.DataFormat == ObjectFormats.Interface)
                 {
                     var prop = new PropertyMetadataDto
                     {
@@ -328,8 +330,6 @@ namespace Shesha.Metadata
         public DataTypeInfo GetDataType(PropertyInfo propInfo)
         {
             var propType = ReflectionHelper.GetUnderlyingTypeIfNullable(propInfo.PropertyType);
-
-            var s = propType.FullName;
 
             return GetDataTypeByPropertyType(propType, propInfo) ?? throw new NotSupportedException($"Data type not supported: {propType.FullName}");
         }

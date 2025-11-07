@@ -11,6 +11,7 @@ import { GetResultTypeFunc } from '../codeEditor/interfaces';
 import { EndpointSelectionMode, IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { EntityTypeAutocompleteType } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface IRadioOption {
   value: string | number;
@@ -27,7 +28,7 @@ export interface IDropdownOption {
 }
 
 export interface IHasModelType {
-  modelType?: string;
+  modelType?: string | IEntityTypeIdentifier;
 }
 
 // Base interface without type-specific properties
@@ -188,7 +189,7 @@ export interface IAutocompleteSettingsInputProps extends ISettingsInputBase, IHa
   type: 'autocomplete';
   dataSourceType?: AutocompleteDataSourceType;
   dataSourceUrl?: string;
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   entityAutocompleteType?: EntityTypeAutocompleteType;
   referenceList?: any;
   filter?: any;
@@ -219,7 +220,7 @@ export interface IReferenceListAutocompleteSettingsInputProps extends ISettingsI
   type: 'referenceListAutocomplete';
   dataSourceType?: AutocompleteDataSourceType;
   dataSourceUrl?: string;
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   entityAutocompleteType?: EntityTypeAutocompleteType;
   referenceList?: any;
   filter?: any;
@@ -250,7 +251,7 @@ export interface IContextPropertyAutocompleteSettingsInputProps extends ISetting
   type: 'contextPropertyAutocomplete';
   dataSourceType?: AutocompleteDataSourceType;
   dataSourceUrl?: string;
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   entityAutocompleteType?: EntityTypeAutocompleteType;
   referenceList?: any;
   filter?: any;
@@ -392,7 +393,7 @@ export interface IQueryBuilderSettingsInputProps extends ISettingsInputBase, IHa
   type: 'queryBuilder';
   fields?: string[];
   fieldsUnavailableHint?: string;
-  modelType?: string;
+  modelType?: string | IEntityTypeIdentifier;
 }
 export const isQueryBuilderProps = (value: ISettingsInputBase): value is IQueryBuilderSettingsInputProps => value.type === 'queryBuilder';
 
@@ -507,7 +508,7 @@ export type ISettingsInputSettingsInputProps = {
   [K in InputTypes]: {
     type?: 'settingsInput';
     inputType: K;
-    modelType?: string;
+    modelType?: string | IEntityTypeIdentifier;
   } & Omit<Extract<BaseInputProps, { type: K }>, 'type'>;
 }[InputTypes];
 
@@ -515,4 +516,4 @@ export type ISettingsInputProps = BaseInputProps | ISettingsInputSettingsInputPr
 
 export const isSettingsInputProps = (value: unknown): value is ISettingsInputSettingsInputProps => typeof (value) === 'object' && 'type' in value && value.type === 'settingsInput';
 
-export const hasModelType = (value: unknown): value is IHasModelType => typeof (value) === 'object' && 'modelType' in value && typeof (value.modelType) === 'string';
+export const hasModelType = (value: unknown): value is IHasModelType => typeof (value) === 'object' && 'modelType' in value && (typeof (value.modelType) === 'string' || typeof (value.modelType) === 'object');
