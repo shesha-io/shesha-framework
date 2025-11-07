@@ -215,7 +215,7 @@ namespace Shesha.Metadata
             if (entityType == null)
                 throw new AbpValidationException($"'{nameof(entityType)}' is mandatory");
 
-            var containerName = entityType.Name ?? entityType.FullClassName;
+            var containerName = entityType.Name.GetDefaultIfEmpty(entityType.FullClassName);
             if (string.IsNullOrWhiteSpace(containerName))
                 throw new AbpValidationException($"Either '{nameof(entityType.Name)}' or '{nameof(entityType.FullClassName)}' must be provided");
             
