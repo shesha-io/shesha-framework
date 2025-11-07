@@ -7,6 +7,8 @@ import { ValidationErrors } from '..';
 import { App } from 'antd';
 import {
   FormMode,
+  IApplicationApi,
+  IDataContextsData,
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
   useConfigurableActionDispatcher,
@@ -116,7 +118,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const { globalState, setState: setGlobalState } = useGlobalState();
   const [visibleColumns, setVisibleColumns] = useState<number>(0);
   const appContextData = useApplicationContextData();
-  const application = useSheshaApplication();
 
   // Get message API if available - component must be wrapped in App provider
   const { message } = App.useApp();
@@ -240,7 +241,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       ? () => {
         // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
         //return onNewRowInitializeExecuter(formData, globalState);
-        const result = onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData, application);
+        const result = onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData, (appContextData as unknown as { application: IApplicationApi }).application);
         return Promise.resolve(result);
       }
       : () => {
@@ -413,7 +414,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return (data, formApi, globalState) => {
       try {
         // Safely get contexts data - fallback to empty object if not available
-        const contexts = dataContextManager?.getDataContextsData?.() || {};
+        const contexts = dataContextManager?.getDataContextsData?.() || {} as IDataContextsData;
 
         // Create fileSaver API with safe error handling
         const fileSaver = {
@@ -441,7 +442,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             pageContext,
             selectedRow || null,
             setGlobalState,
-            application
+            contexts?.application || null
           );
         // Validate and sanitize the returned data
         // The onRowSave handler should return the data object to be saved
@@ -463,7 +464,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         return Promise.resolve(data);
       }
     };
-  }, [onRowSave, httpClient, dataContextManager, message, selectedRow, setGlobalState, application]);
+  }, [onRowSave, httpClient, dataContextManager, message, selectedRow, setGlobalState]);
 
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowDeleteSuccessAction)
@@ -479,7 +480,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         setGlobalState,
         http: httpClient,
         moment,
-        application,
       };
 
       try {
@@ -491,7 +491,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row delete success action:', error);
       }
     };
-  }, [onRowDeleteSuccessAction, httpClient, application]);
+  }, [onRowDeleteSuccessAction, httpClient]);
 
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
@@ -507,7 +507,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         setGlobalState,
         http: httpClient,
         moment,
-        application,
       };
       // execute the action
       executeAction({
@@ -515,7 +514,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         argumentsEvaluationContext: evaluationContext,
       });
     };
-  }, [onRowSaveSuccess, backendUrl, application]);
+  }, [onRowSaveSuccess, backendUrl]);
 
   const updater = (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
