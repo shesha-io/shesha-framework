@@ -27,6 +27,17 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   ].join(' ');
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
+  const storedFilesRendererWrapper = cx("stored-files-renderer-wrapper", css`
+    margin-top: ${marginTop};
+    margin-left: ${marginLeft};
+    margin-right: ${marginRight};
+    margin-bottom: ${marginBottom};
+    padding-top: ${paddingTop ?? '2px'};
+    padding-left: ${paddingLeft ?? '2px'};
+    padding-right: ${paddingRight ?? '2px'};
+    padding-bottom: ${paddingBottom ?? '2px'};
+  `);
+
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
     --thumbnail-width: ${layout ? (width ?? '54px') : '100%'};
     --thumbnail-height: ${layout ? (height ?? '54px') : '100%'};
@@ -45,27 +56,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     --ant-button-font-weight: ${fontWeight ?? '400'} !important;
     --ant-font-family: ${fontFamily ?? 'Segoe UI'} !important;
     --ant-button-font-weight: ${fontWeight ?? '400'} !important;
-    margin-top: ${marginTop};
-    margin-left: ${marginLeft};
-    margin-right: ${marginRight};
-    margin-bottom: ${marginBottom};
-    padding-top: ${paddingTop ?? '2px'};
-    padding-left: ${paddingLeft ?? '2px'};
-    padding-right: ${paddingRight ?? '2px'};
-    padding-bottom: ${paddingBottom ?? '2px'};
     ${restContainerStyles}
     width: var(--container-width) !important;
     max-width: var(--container-max-width) !important;
     min-width: var(--container-min-width) !important;
     height: var(--container-height) !important;
     min-height: var(--container-min-height) !important;
-    overflow: auto;
-    scrollbar-width: thin;
-      &::-webkit-scrollbar {
-        width: 8px;
-        background-color: transparent;
-      }
-
     
     .ant-upload:not(.ant-upload-disabled) {
       .icon {
@@ -93,6 +89,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .ant-upload-list-item-thumbnail {
+      ${rest}
       background: ${background ?? backgroundImage ?? (backgroundColor ?? 'transparent')} !important;
       border: ${borderWidth} ${borderStyle} ${borderColor};
       border-top: ${borderTopWidth ?? borderWidth} ${borderTopStyle ?? borderStyle} ${borderTopColor ?? borderColor};
@@ -101,7 +98,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       border-bottom: ${borderBottomWidth ?? borderWidth} ${borderBottomStyle ?? borderStyle} ${borderBottomColor ?? borderColor};
       box-shadow: ${boxShadow};
       border-radius: ${borderRadius ?? '8px'} !important;
-      ${rest}
+      background-position: ${backgroundPosition} !important;
+      background-repeat: ${backgroundRepeat} !important;
+      background-size: ${backgroundSize} !important;
 
       img {
         width: var(--thumbnail-width, 54px) !important;
@@ -141,6 +140,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       border-color: ${token.colorPrimary} !important;
     }
 
+    .ant-upload-drag {
+      height: max-content !important;
+    }
+
     .${prefixCls}-upload {
       ${(layout && !isDragger) && 'width: var(--thumbnail-width) !important;'};
       ${(layout && !isDragger) && 'height: var(--thumbnail-height) !important'};
@@ -148,6 +151,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       align-items: center;
 
       &.${prefixCls}-upload-btn {
+        padding: 8px 0px;
         .${prefixCls}-upload-drag-icon {
           margin: unset;
         }
@@ -228,7 +232,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-name-stub { 
       position: absolute;
-      bottom: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -290,7 +293,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     min-height: var(--container-min-height) !important;
     .${prefixCls}-upload-list {
       display: flex !important;
-      flex-direction: column-reverse !important;
+      flex-direction: column !important;
       flex-wrap: nowrap !important;
       padding: 2px ${borderWidth ?? '2px'} !important;
       height: var(--container-height) !important;
@@ -377,5 +380,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     antUploadDragIcon,
     antPreviewDownloadIcon,
     thumbnailReadOnly,
+    storedFilesRendererWrapper,
   };
 });

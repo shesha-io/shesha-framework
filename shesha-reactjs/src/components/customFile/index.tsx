@@ -45,7 +45,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
 
   return (
-    <div className="stored-files-renderer-wrapper">
       <StoredFilesRendererBase
         {...props}
         isStub={props.isStub}
@@ -66,7 +65,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         layout={props?.filesLayout}
         listType={props?.listType}
       />
-    </div>
   );
 };
 
