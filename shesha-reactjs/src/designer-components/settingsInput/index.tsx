@@ -27,7 +27,6 @@ const SettingsInput: IToolboxComponent<ISettingsInputProps & IConfigurableFormCo
             jsSetting={model.jsSetting}
             layout={model.layout}
             {...model}
-            // type={model.inputType}
           />
         )
 
