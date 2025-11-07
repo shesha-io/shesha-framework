@@ -2,7 +2,7 @@ import React, { FC, useEffect, useMemo, useState } from "react";
 import { DebugDataTree } from "./dataTree";
 import { useDataContextManager } from "@/providers/dataContextManager";
 import { useGlobalState, useMetadataDispatcher } from "@/providers";
-import { useFormDesignerStateSelector } from "@/providers/formDesigner";
+import { useFormDesignerSettings } from "@/providers/formDesigner";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { getFieldNameFromExpression } from "@/providers/form/utils";
 
@@ -11,7 +11,7 @@ const DebugPanelDataContent: FC = () => {
 
   const contextManager = useDataContextManager();
   const pageInstance = contextManager.getPageFormInstance();
-  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
+  const formSettings = useFormDesignerSettings();
 
   const modelType = pageInstance?.formSettings?.modelType ?? formSettings?.modelType;
   const [formMetadata, setFormMetadata] = useState<IModelMetadata>(null);

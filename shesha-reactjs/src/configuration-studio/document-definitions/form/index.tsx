@@ -21,6 +21,13 @@ export const FormDocumentDefinition: DocumentDefinition = {
       });
     }, [doc, loadForm]);
 
+    /*
+    doc.setSaver(async (): Promise<void> => {
+      await instance.submitData();
+    });
+    cs.setDocumentModified(doc.itemId, shaForm.isDataModified);
+    */
+
     return (
       <div className={styles.formDesigner}>
         <DesignerMainArea viewType="configStudio" />

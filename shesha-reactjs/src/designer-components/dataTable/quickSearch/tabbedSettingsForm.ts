@@ -35,7 +35,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     type: 'switch',
                     propertyName: 'hidden',
                     label: 'Hide',
-                    defaultValue: false,
                     parentId: 'root',
                     jsSetting: true,
                   },
@@ -45,7 +44,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     propertyName: 'block',
                     parentId: 'root',
                     label: 'Block',
-                    defaultValue: false,
                     jsSetting: true,
                   },
                 ],
@@ -97,7 +95,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
                                   tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
-                                  defaultValue: '360px',
                                 },
                                 {
                                   type: 'textField',
@@ -107,7 +104,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   hideLabel: true,
                                   propertyName: "dimensions.minWidth",
                                   icon: "minWidthIcon",
-                                  defaultValue: '0px',
                                 },
                                 {
                                   type: 'textField',
@@ -117,7 +113,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
-                                  defaultValue: '100%',
                                 },
                               ],
                             })

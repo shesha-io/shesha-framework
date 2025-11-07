@@ -3,6 +3,7 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 export const filtersSettingsForm = new DesignerToolbarSettings()
   .addSettingsInput({
     id: 's4gmBg31azZC0UjZjpfTm',
+    inputType: 'textField',
     propertyName: 'name',
     label: 'Title',
     layout: 'horizontal',

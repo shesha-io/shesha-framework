@@ -108,7 +108,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     } : model.allStyles.fullStyle;
 
     return (
-      <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
+      <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           const customEvent = customOnChangeValueEventHandler(model, allData);
           const onChangeInternal = (...args: any[]): void => {

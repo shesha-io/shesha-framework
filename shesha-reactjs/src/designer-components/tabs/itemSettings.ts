@@ -144,7 +144,6 @@ export const getItemSettings = (): FormRawMarkup => {
                     label: "Select Mode",
                     allowClear: false,
                     jsSetting: true,
-                    defaultValue: "editable",
                     dropdownOptions: [
                       {
                         label: "Selectable",

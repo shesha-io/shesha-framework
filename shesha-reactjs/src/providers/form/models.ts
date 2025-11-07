@@ -25,7 +25,7 @@ export interface ISubmitActionArguments {
 }
 
 export const SubmitActionArgumentsMarkup = new DesignerToolbarSettings()
-  .addCheckbox({ id: nanoid(), propertyName: 'validateFields', parentId: 'root', label: 'Validate fields', defaultValue: false })
+  .addCheckbox({ id: nanoid(), propertyName: 'validateFields', parentId: 'root', label: 'Validate fields' })
   .toJson();
 
 export type FormMode = 'designer' | 'edit' | 'readonly';
@@ -39,7 +39,7 @@ export enum PropertySettingMode {
   Code = 'code'
 }
 */
-export interface IPropertySetting<Value = any> {
+export interface IPropertySetting<Value = unknown> {
   _mode?: PropertySettingMode;
   _value?: Value;
   _code?: string;
@@ -52,7 +52,7 @@ export interface IFormComponentContainer {
   /** Unique Id of the component */
   id: string;
   /** Id of the parent component */
-  parentId?: string;
+  parentId?: string | undefined;
 }
 
 export interface IComponentValidationRules {
@@ -144,7 +144,7 @@ export interface IComponentLabelProps {
 
 export interface IComponentRuntimeProps {
   /**/
-  settingsValidationErrors?: IAsyncValidationError[];
+  settingsValidationErrors?: IAsyncValidationError[] | undefined;
 
   /** Custom onBlur handler */
   onBlurCustom?: string;
@@ -175,7 +175,7 @@ export interface IComponentBindingProps {
 
 export interface IComponentVisibilityProps {
   /** Hidden field is still a part of the form but not visible on it */
-  hidden?: boolean;
+  hidden?: boolean | undefined;
 
   /** Custom visibility code */
   /** @deprecated Use hidden in js mode instead */
@@ -236,9 +236,6 @@ export interface IConfigurableFormComponent
   /** Custom visibility code */
   /** @deprecated Use disabled in js mode instead */
   customEnabled?: string;
-
-  /** Default value of the field */
-  defaultValue?: any;
 
   /** Control size */
   size?: SizeType;
@@ -302,7 +299,7 @@ export interface IComponentsDictionary {
 }
 
 export interface IComponentRelations {
-  [index: string]: string[];
+  [index: string]: string[] | undefined;
 }
 
 export interface IFlatComponentsStructure {

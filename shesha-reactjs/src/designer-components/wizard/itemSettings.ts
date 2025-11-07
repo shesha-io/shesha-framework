@@ -136,7 +136,6 @@ export const getItemSettings = (): FormRawMarkup => {
                   label: 'Allow Cancel',
                   labelAlign: 'right',
                   hidden: false,
-                  defaultValue: false,
                   validate: {},
                   jsSetting: true,
                 }],
@@ -149,7 +148,6 @@ export const getItemSettings = (): FormRawMarkup => {
               labelAlign: 'right',
               parentId: commonTabId,
               hidden: false,
-              defaultValue: false,
               validate: {},
               jsSetting: true,
             })
@@ -236,7 +234,6 @@ export const getItemSettings = (): FormRawMarkup => {
                     labelAlign: 'right',
                     parentId: backButtonContentId,
                     jsSetting: true,
-                    defaultValue: true,
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
@@ -306,7 +303,6 @@ export const getItemSettings = (): FormRawMarkup => {
                     labelAlign: 'right',
                     parentId: doneButtonContentId,
                     jsSetting: true,
-                    defaultValue: true,
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
@@ -600,7 +596,6 @@ export const getItemSettings = (): FormRawMarkup => {
                         jsSetting: false,
                         propertyName: "background.type",
                         inputType: "radio",
-                        defaultValue: "color",
                         tooltip: "Select a type of background",
                         buttonGroupOptions: backgroundTypeOptions,
                       })
@@ -706,7 +701,6 @@ export const getItemSettings = (): FormRawMarkup => {
                           label: 'Repeat',
                           hideLabel: true,
                           propertyName: 'background.repeat',
-                          inputType: 'radio',
                           buttonGroupOptions: repeatOptions,
                         }],
                         hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
@@ -739,7 +733,6 @@ export const getItemSettings = (): FormRawMarkup => {
                           hideLabel: true,
                           width: 80,
                           placeholder: '0',
-                          inputType: 'numberField',
                           icon: "offsetHorizontalIcon",
                           propertyName: 'shadow.offsetX',
                         },
@@ -750,7 +743,6 @@ export const getItemSettings = (): FormRawMarkup => {
                           hideLabel: true,
                           width: 80,
                           placeholder: '0',
-                          inputType: 'numberField',
                           icon: 'offsetVerticalIcon',
                           propertyName: 'shadow.offsetY',
                         },
@@ -761,7 +753,6 @@ export const getItemSettings = (): FormRawMarkup => {
                           hideLabel: true,
                           width: 80,
                           placeholder: '0',
-                          inputType: 'numberField',
                           icon: 'blurIcon',
                           propertyName: 'shadow.blurRadius',
                         },
@@ -772,7 +763,6 @@ export const getItemSettings = (): FormRawMarkup => {
                           hideLabel: true,
                           width: 80,
                           placeholder: '0',
-                          inputType: 'numberField',
                           icon: 'spreadIcon',
                           propertyName: 'shadow.spreadRadius',
                         },

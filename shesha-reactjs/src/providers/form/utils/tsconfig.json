@@ -1,6 +1,5 @@
 {
-  //"extends": "../../../../tsconfig.strictNulls.json",
-  "extends": "../../../../tsconfig.base.json",
+  "extends": "../../../../tsconfig.strictNulls.json",
   "compilerOptions": {
     "composite": true,
   },

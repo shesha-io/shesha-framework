@@ -120,8 +120,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     parentId: dataTabId,
                     type: 'formTypeAutocomplete',
                     jsSetting: true,
-                    width: '100%',
-                    allowClear: true,
                   },
                 ],
               })
@@ -244,8 +242,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     label: 'Form Type',
                     type: 'formTypeAutocomplete',
                     jsSetting: true,
-                    width: '100%',
-                    allowClear: true,
                   },
                 ],
               })
@@ -290,7 +286,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     allowClear: true,
                     jsSetting: true,
                     customDropdownMode: 'single',
-                    defaultValue: 'Medium',
                     dropdownOptions: [
                       {
                         label: 'Small',
@@ -305,7 +300,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         value: '80%',
                       },
                     ],
-                    width: '60%',
                   },
                 ],
                 hideLabel: true,
@@ -760,7 +754,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
@@ -899,7 +892,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             parentId: containerStylePnlId,
                             label: "Orientation",
                             jsSetting: true,
-                            defaultValue: 'vertical',
                             dropdownOptions: [
                               { label: 'Vertical', value: 'vertical' },
                               { label: 'Horizontal', value: 'horizontal' },
@@ -945,7 +937,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       propertyName: "container.dimensions.width",
                                       icon: "widthIcon",
                                       tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
-                                      defaultValue: 'auto',
                                     },
                                     {
                                       type: 'textField',
@@ -955,7 +946,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       hideLabel: true,
                                       propertyName: "container.dimensions.minWidth",
                                       icon: "minWidthIcon",
-                                      defaultValue: 'auto',
                                     },
                                     {
                                       type: 'textField',
@@ -965,7 +955,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       hideLabel: true,
                                       propertyName: "container.dimensions.maxWidth",
                                       icon: "maxWidthIcon",
-                                      defaultValue: 'auto',
                                     },
                                   ],
                                 })
@@ -983,7 +972,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       propertyName: "container.dimensions.height",
                                       icon: "heightIcon",
                                       tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
-                                      defaultValue: 'auto',
                                     },
                                     {
                                       type: 'textField',
@@ -993,7 +981,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       hideLabel: true,
                                       propertyName: "container.dimensions.minHeight",
                                       icon: "minHeightIcon",
-                                      defaultValue: 'auto',
                                     },
                                     {
                                       type: 'textField',
@@ -1003,7 +990,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       hideLabel: true,
                                       propertyName: "container.dimensions.maxHeight",
                                       icon: "maxHeightIcon",
-                                      defaultValue: 'auto',
                                     },
                                   ],
                                 })

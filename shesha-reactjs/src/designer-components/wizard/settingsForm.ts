@@ -70,7 +70,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                     propertyName: 'wizardType',
                     label: 'Wizard Type',
                     parentId: 'root',
-                    inputType: 'dropdown',
                     jsSetting: true,
                     dropdownOptions: [
                       { value: 'default', label: 'Default' },
@@ -83,7 +82,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                     propertyName: 'direction',
                     label: 'Direction',
                     parentId: 'root',
-                    inputType: 'dropdown',
                     tooltip: 'To specify the direction of the step bar',
                     jsSetting: true,
                     dropdownOptions: [
@@ -102,7 +100,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                     propertyName: 'labelPlacement',
                     label: 'Label Placement',
                     parentId: 'root',
-                    inputType: 'dropdown',
                     tooltip: 'To specify the label placement',
                     jsSetting: true,
                     dropdownOptions: [
@@ -466,7 +463,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
@@ -607,7 +603,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 id: nanoid(),
                                 label: "Step Width",
                                 width: 85,
-                                defaultValue: '200px',
                                 propertyName: "stepWidth",
                                 icon: "widthIcon",
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
@@ -646,7 +641,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 type: 'colorPicker',
                                 propertyName: 'primaryTextColor',
                                 hideLabel: false,
-                                defaultValue: '#fff',
                                 label: 'Primary Text Color',
                               },
                             ],

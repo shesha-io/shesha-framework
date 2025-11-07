@@ -66,8 +66,10 @@ export const migrateDefaults = (settings: IFormSettings, context: IFormMigration
   for (const id in flatStructure.allComponents) {
     if (!flatStructure.allComponents.hasOwnProperty(id)) continue;
     const component = flatStructure.allComponents[id];
-    if (component.defaultValue !== undefined)
+
+    if ('defaultValue' in component && typeof (component.defaultValue) === 'string')
       initialData.push({ key: component.propertyName, value: component.defaultValue });
+
     if (component['initialValue'] !== undefined)
       initialData.push({ key: component.propertyName, value: component['initialValue'] });
   }

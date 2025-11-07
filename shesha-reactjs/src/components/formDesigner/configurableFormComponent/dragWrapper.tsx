@@ -1,7 +1,7 @@
 import React, { FC, PropsWithChildren, useMemo, useState } from 'react';
 import { ShaForm } from '@/providers/form';
 import { Button, Tooltip } from 'antd';
-import { useFormDesignerState, useFormDesignerActions } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerSelectedComponentId, useFormDesignerIsDebug } from '@/providers/formDesigner';
 import { DeleteFilled, FunctionOutlined } from '@ant-design/icons';
 import { useStyles } from '../styles/styles';
 
@@ -13,8 +13,9 @@ interface IDragWrapperProps {
 export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
   const { styles } = useStyles();
 
-  const { selectedComponentId, isDebug } = useFormDesignerState();
-  const { setSelectedComponent, deleteComponent } = useFormDesignerActions();
+  const selectedComponentId = useFormDesignerSelectedComponentId();
+  const isDebug = useFormDesignerIsDebug();
+  const { setSelectedComponent, deleteComponent } = useFormDesigner();
   const [isOpen, setIsOpen] = useState(false);
 
   const componentModel = ShaForm.useComponentModel(props.componentId);

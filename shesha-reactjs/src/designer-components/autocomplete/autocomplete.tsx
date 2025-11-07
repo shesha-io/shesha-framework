@@ -128,7 +128,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     .add<IAutocompleteComponentProps>(4, (prev) => migrateReadOnly(prev))
     .add<IAutocompleteComponentProps>(5, (prev) => ({
       ...migrateFormApi.eventsAndProperties(prev),
-      defaultValue: migrateFormApi.withoutFormData(prev?.defaultValue),
     }))
     .add<IAutocompleteComponentProps>(6, (prev) => {
       const styles: IInputStyles = {

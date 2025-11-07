@@ -12,7 +12,6 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IAutocompleteTagsOutlinedComponentProps extends IConfigurableFormComponent {
   value?: string[];
-  defaultValue?: string;
   autocompleteUrl: string;
   onChange?: (values?: string[]) => void;
 }
@@ -47,7 +46,6 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
     .add<IAutocompleteTagsOutlinedComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IAutocompleteTagsOutlinedComponentProps>(2, (prev) => ({
       ...migrateFormApi.eventsAndProperties(prev),
-      defaultValue: migrateFormApi.withoutFormData(prev?.defaultValue),
     })),
 };
 

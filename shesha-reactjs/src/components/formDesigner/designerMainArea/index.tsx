@@ -1,7 +1,7 @@
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { DataContextProvider, MetadataProvider, useDataContextManager, useShaFormInstance } from '@/providers';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesignerFormMode, useFormDesignerIsDebug, useFormDesignerReadOnly, useFormDesignerSettings } from '@/providers/formDesigner';
 import ParentProvider from '@/providers/parentProvider';
 import React, { FC, useMemo, useEffect } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
@@ -19,10 +19,11 @@ const rightSidebarProps = {
 };
 
 export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'configStudio' }) => {
-  const isDebug = useFormDesignerStateSelector((state) => state.isDebug);
-  const readOnly = useFormDesignerStateSelector((state) => state.readOnly);
-  const formSettings = useFormDesignerStateSelector((state) => state.formSettings);
-  const formMode = useFormDesignerStateSelector((state) => state.formMode);
+  const isDebug = useFormDesignerIsDebug();
+  const readOnly = useFormDesignerReadOnly();
+  const formSettings = useFormDesignerSettings();
+  const formMode = useFormDesignerFormMode();
+
   const shaForm = useShaFormInstance();
   const { antdForm: form } = shaForm;
   const { styles } = useStyles();
