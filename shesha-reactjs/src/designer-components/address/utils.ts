@@ -88,7 +88,7 @@ export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['sear
   const countries = (Array.isArray(countryRestriction)
     ? countryRestriction
     : [countryRestriction]
-  ).filter(c => c != null && c !== '');
+  ).filter((c) => c != null && c !== '');
 
   if (countries.length) {
     const countryCodes = countries.map((countryLabel) => {
