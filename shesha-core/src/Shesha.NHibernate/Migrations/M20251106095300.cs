@@ -54,14 +54,11 @@ namespace Shesha.Migrations
                 MoveFks("Frwk_StoredFileVersionDownloads", "stored_file_version_downloads");
 
                 Delete.Table("Frwk_StoredFileVersionDownloads");
-            }
-            else
-            {
+
                 Create.ForeignKey("fk_stored_file_version_downloads_file_version_id")
                     .FromTable("stored_file_version_downloads").InSchema("frwk").ForeignColumn("file_version_id")
                     .ToTable("stored_file_versions").InSchema("frwk").PrimaryColumn("id");
             }
-
         }
     }
 }
