@@ -166,7 +166,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
         .${canvasWrapper} {
           height: calc(100vh - 120px);
-          overflow: scroll;
         }
         
         [data-sha-c-type="datatable"] {
