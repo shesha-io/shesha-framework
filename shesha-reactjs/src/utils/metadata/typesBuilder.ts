@@ -336,7 +336,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             dataType: DataTypes.entityReference,
             // dataFormat: property.entityType,
             entityType: property.entityType,
-            moduleAccessor: property.moduleAccessor,
+            entityModule: property.entityModule,
           };
           const itemType = await this.#getTypescriptType(itemTypeFixed);
 
@@ -345,7 +345,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
               context.onUseComplexType({ typeName: itemType.typeName, filePath: itemType.filePath });
             return { typeName: `${itemType.typeName}[]` };
           } else {
-            console.warn(`Failed to build type ${property.entityType}`, property);
+            console.warn(`Failed to build type ${property.entityModule}${property.entityType}`, property);
           }
         }
         break;

@@ -4,7 +4,7 @@ import { EntityPicker, ValidationErrors } from '@/components';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { ButtonGroupItemProps, IStyleType } from '@/providers';
+import { ButtonGroupItemProps, IStyleType, useMetadataDispatcher } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
 import { executeExpression, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -12,7 +12,7 @@ import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { IEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
@@ -21,6 +21,8 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getValueByPropertyName } from '@/utils/object';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent, IStyleType {
   placeholder?: string;
@@ -30,7 +32,7 @@ export interface IEntityPickerComponentProps extends IConfigurableFormComponent,
   incomeCustomJs?: string;
   outcomeCustomJs?: string;
   mode?: 'single' | 'multiple' | 'tags';
-  entityType: string;
+  entityType: string | IEntityTypeIdentifier;
   filters?: object;
   title?: string;
   displayEntityKey?: string;
@@ -57,6 +59,12 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
+    const { getMetadata } = useMetadataDispatcher();
+
+    const metadata = useAsyncMemo(async () => {
+      return await getMetadata({ dataType: DataTypes.entityReference, modelType: model.entityType }) as IEntityMetadata;
+    }, [model.entityType]);
+
     const { filters, modalWidth, customWidth, widthUnits } = model;
 
     const displayEntityKey = model.displayEntityKey || '_displayName';
@@ -87,14 +95,14 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     const outcomeValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
       if (model.valueFormat === 'entityReference') {
         return !!value
-          ? { id: value.id, _displayName: getValueByPropertyName(value, displayEntityKey) ?? value._displayName, _className: model.entityType }
+          ? { id: value.id, _displayName: getValueByPropertyName(value, displayEntityKey) ?? value._displayName, _className: value._className ?? metadata?.fullClassName }
           : null;
       }
       if (model.valueFormat === 'custom') {
         return executeExpression(model.outcomeCustomJs, { ...args, value }, null, null);
       }
       return !!value ? value.id : null;
-    }, [model.valueFormat, model.outcomeCustomJs, displayEntityKey, model.entityType]);
+    }, [model.valueFormat, model.outcomeCustomJs, displayEntityKey, metadata]);
 
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
@@ -211,9 +219,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       ...model,
       editMode: 'inherited',
       entityType: isEntityReferencePropertyMetadata(propMetadata)
-        ? propMetadata.entityType
+        ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
         : isEntityReferenceArrayPropertyMetadata(propMetadata)
-          ? propMetadata.entityType
+          ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
           : undefined,
       mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
       valueFormat: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'entityReference' : 'simple',

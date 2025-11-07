@@ -6,6 +6,7 @@ import { ISettingsFormFactory } from "@/interfaces";
 export interface IDataSource {
   id: string;
   name: string;
+  module: string | null;
   containerType: string;
   items: IPropertyMetadata[];
 }

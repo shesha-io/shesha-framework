@@ -15,6 +15,7 @@ import {
 import { useDataSource } from '@/providers/dataSourcesProvider';
 import { useDeepCompareEffect } from 'react-use';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
+import { getEntityTypeName, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 const getPageSize = (value?: number): number => {
   return Boolean(value) ? value : 1147489646;
@@ -106,7 +107,7 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = (props) => {
       : provider;
   }, [sourceType]);
 
-  if (isDesignMode && ((sourceType === 'Entity' && !entityType) || (sourceType === 'Url' && !endpoint)))
+  if (isDesignMode && ((sourceType === 'Entity' && isEntityTypeIdEmpty(entityType)) || (sourceType === 'Url' && !endpoint)))
     return (
       <Alert
         className="sha-designer-warning"
@@ -121,10 +122,10 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = (props) => {
 };
 
 export const DataSource: FC<IDataSourceComponentProps> = (props) => {
-  const uniqueKey = `${props.sourceType}_${props.propertyName}_${props.entityType ?? props.endpoint}`; // is used just for re-rendering
+  const uniqueKey = `${props.sourceType}_${props.propertyName}_${getEntityTypeName(props.entityType) ?? props.endpoint}`; // is used just for re-rendering
   const provider = <DataSourceInner key={uniqueKey} {...props} />;
 
-  return props.entityType ? (
+  return !isEntityTypeIdEmpty(props.entityType) ? (
     <MetadataProvider id={props.id} modelType={props.entityType}>
       {provider}
     </MetadataProvider>

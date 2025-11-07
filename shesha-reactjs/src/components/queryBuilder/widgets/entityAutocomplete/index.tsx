@@ -16,6 +16,8 @@ const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
       setValue(v);
     };
 
+    // ToDo: AS - V1 review and replace with EntityTypeAutocomplete
+
     return (
       <Autocomplete
         dataSourceType="entitiesList"

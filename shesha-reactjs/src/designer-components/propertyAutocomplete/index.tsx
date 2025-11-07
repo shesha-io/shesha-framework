@@ -21,7 +21,7 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
   isInput: true,
   isOutput: true,
   calculateModel: (model, allData) => ({
-    modelType: model.modelType ? evaluateString(model.modelType, { data: allData.data }) : null,
+    modelType: typeof model.modelType === 'string' ? evaluateString(model.modelType, { data: allData.data }) : model.modelType,
     dropdownStyle: getStyle(model.dropdownStyle, allData.data),
   }),
   Factory: ({ model, calculatedModel }) => {

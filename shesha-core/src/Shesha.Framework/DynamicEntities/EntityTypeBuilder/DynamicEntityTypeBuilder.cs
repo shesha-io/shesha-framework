@@ -479,7 +479,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                     if (property.ItemsType != null)
                     {
                         var nestedType = GetPropertyType(property.ItemsType, context);
-                        var arrayType = typeof(IList<>).MakeGenericType(nestedType.NotNull());
+                        var arrayType = typeof(IList<>).MakeGenericType(nestedType.NotNull($"ItemsType not fount for array {property.EntityConfig.Name}.{property.Name} ({property.ItemsType})"));
                         return arrayType;
                     }
                     return null;

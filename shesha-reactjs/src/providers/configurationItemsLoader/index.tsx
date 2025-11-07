@@ -20,6 +20,8 @@ import { IComponentSettings } from '../appConfigurator/models';
 import { ConfigurationLoader, GetConfigurationArgs, IConfigurationLoader } from './configurationLoader';
 import { useCacheProvider } from '@/hooks/useCache';
 import { useRefInitialized } from '@/hooks';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { getEntityTypeIdentifierQueryParams } from '../metadataDispatcher/entities/utils';
 
 export const URLS = {
   GET_CURRENT_CONFIG: '/api/services/app/ConfigurationItem/GetCurrent',
@@ -86,8 +88,8 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren> = ({
     throw new Error('Not implemented');
   };
 
-  const getEntityFormId = async (className: string, formType: string): Promise<FormFullName> => {
-    const url = buildUrl(URLS.GET_ENTITY_CONFIG_FORM, { entityConfigName: className, typeName: formType });
+  const getEntityFormId = async (entityType: string | IEntityTypeIdentifier, formType: string): Promise<FormFullName> => {
+    const url = buildUrl(URLS.GET_ENTITY_CONFIG_FORM, { ...getEntityTypeIdentifierQueryParams(entityType), typeName: formType });
 
     const response = await httpClient.get<FormIdFullNameDtoAjaxResponse>(url);
     const dto = extractAjaxResponse(response.data);

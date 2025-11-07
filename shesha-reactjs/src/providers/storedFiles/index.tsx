@@ -47,13 +47,13 @@ import { addFile, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } 
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
-import { getEntityTypeName } from '../metadataDispatcher/entities/utils';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty, isEntityTypeIdentifier } from '../metadataDispatcher/entities/utils';
 
 export interface IStoredFilesProviderProps {
   name?: string;
   ownerId: string;
-  ownerType: string | IEntityTypeIndentifier;
+  ownerType: string | IEntityTypeIdentifier;
   ownerName?: string;
   filesCategory?: string;
   propertyName?: string;
@@ -113,7 +113,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     path: filesListEndpoint.url,
     queryParams: {
       ownerId,
-      ownerType,
+      ownerType: getEntityTypeIdentifierQueryParams(ownerType),
       ownerName,
       filesCategory,
       propertyName,
@@ -131,7 +131,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   }, [value]);
 
   useEffect(() => {
-    if ((ownerId || '') !== '' && (ownerType || '') !== '') {
+    if ((ownerId || '') !== '' && !isEntityTypeIdEmpty(ownerType)) {
       fetchFileListHttp()
         .then((resp) => {
           if (isAjaxSuccessResponse(resp)) {
@@ -190,7 +190,13 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     const { file } = payload;
 
     formData.append('ownerId', payload.ownerId || ownerId);
-    formData.append('ownerType', getEntityTypeName(payload.ownerType || ownerType));
+    const entityType = payload.ownerType || ownerType;
+    if (isEntityTypeIdentifier(entityType)) {
+      formData.append('ownerType.name', entityType.name);
+      formData.append('ownerType.module', entityType.module);
+    } else {
+      formData.append('ownerType.fullClassName', entityType);
+    }
     formData.append('ownerName', payload.ownerName || ownerName);
     formData.append('file', file);
     if (filesCategory)
@@ -282,7 +288,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       : !!ownerId
         ? {
           ownerId: ownerId,
-          ownerType: ownerType,
+          ownerType: getEntityTypeIdentifierQueryParams(ownerType),
           filesCategory: filesCategory,
           ownerName: ownerName,
         }

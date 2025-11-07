@@ -836,7 +836,7 @@ namespace Shesha.DynamicEntities
         public async Task<ModelConfigurationDto?> GetCachedModelConfigurationOrNullAsync(
             string? moduleName,
             string? @namespace,
-            string className,
+            string entityTypeName,
             bool useExposed,
             List<PropertyMetadataDto>? hardCodedProps = null
         )
@@ -844,9 +844,9 @@ namespace Shesha.DynamicEntities
             using var uow = UnitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew);
 
             // There can be three options here:
-            // 1. namespace and className (old format)
-            // 2. moduleName, namespace, and className(combined)
-            // 3. moduleName and className(new format)
+            // 1. namespace and entityTypeName (old format)
+            // 2. moduleName, namespace, and entityTypeName(combined)
+            // 3. moduleName and entityTypeName(new format)
 
             var entityModuleName = moduleName;
             ModelConfigurationDto? rootEntity = null;
@@ -858,11 +858,11 @@ namespace Shesha.DynamicEntities
                     throw new ArgumentNullException("moduleName or namespace is required");
 
                 // We don't know a module, so get Entity by FullClassName and not exposed and store as a Root Entity
-                var cacheRootKey = GetCacheKey(ROOT_ENTITY, @namespace, className);
+                var cacheRootKey = GetCacheKey(ROOT_ENTITY, @namespace, entityTypeName);
                 rootEntity = await _modelConfigsCache.GetAsync(cacheRootKey, async () =>
                 {
                     var modelConfig = await Repository.GetAll()
-                        .Where(m => m.ClassName == className && m.Namespace == @namespace && !m.IsDeleted && !m.IsExposed)
+                        .Where(m => m.ClassName == entityTypeName && m.Namespace == @namespace && !m.IsDeleted && !m.IsExposed)
                         .FirstOrDefaultAsync();
                     if (modelConfig == null)
                         return null;
@@ -877,7 +877,7 @@ namespace Shesha.DynamicEntities
 
                 // Get the module of the Entity
                 entityModuleName = rootEntity.Module;
-                cacheRootKey = GetCacheKey(entityModuleName, @namespace, className);
+                cacheRootKey = GetCacheKey(entityModuleName, @namespace, entityTypeName);
                 // Store cache of Root Entity with Module key (for the next use)
                 await _modelConfigsCache.SetAsync(cacheRootKey, rootEntity);
             }
@@ -886,7 +886,7 @@ namespace Shesha.DynamicEntities
             if (useExposed && !entityModuleName.IsNullOrEmpty())
             {
                 // Find Module of exposed Entity if needed
-                var inheritance = await GetActualInheritanceOrNullAsync(entityModuleName.NotNull(), $"{className}");
+                var inheritance = await GetActualInheritanceOrNullAsync(entityModuleName.NotNull(), $"{entityTypeName}");
                 entityModuleName = inheritance?.ExposedInModuleName ?? entityModuleName;
             }
 
@@ -896,15 +896,15 @@ namespace Shesha.DynamicEntities
 
             // Get the module of the Entity (exposed or requested if ModuleName is provided in parameters and Expose is not require)
             var module = entityModuleName.IsNullOrEmpty() ? null : await _moduleManager.GetModuleAsync(entityModuleName.NotNull());
-            var cacheKey = GetCacheKey(entityModuleName, @namespace, className);
+            var cacheKey = GetCacheKey(entityModuleName, @namespace, entityTypeName);
 
             // Get Entity for second option if the namespace parameter is not emty
             // or get Entity for third option if the namespace paremeter is empty
             var result = await _modelConfigsCache.GetAsync(cacheKey, async () =>
             {
                 var modelConfig = await Repository.GetAll()
-                    .WhereIf(@namespace.IsNullOrEmpty(), m => m.Module == module && m.ClassName == className && !m.IsDeleted)
-                    .WhereIf(!@namespace.IsNullOrEmpty(), m => m.Module == module && m.Namespace == @namespace && m.ClassName == className && !m.IsDeleted)
+                    .WhereIf(@namespace.IsNullOrEmpty(), m => m.Module == module && m.ClassName == entityTypeName && !m.IsDeleted)
+                    .WhereIf(!@namespace.IsNullOrEmpty(), m => m.Module == module && m.Namespace == @namespace && m.ClassName == entityTypeName && !m.IsDeleted)
                     .FirstOrDefaultAsync();
                 if (modelConfig == null)
                     return null;
@@ -935,13 +935,13 @@ namespace Shesha.DynamicEntities
         public async Task<ModelConfigurationDto> GetCachedModelConfigurationAsync(
             string? moduleName,
             string? @namespace,
-            string className,
+            string entityTypeName,
             bool useExposed,
             List<PropertyMetadataDto>? hardCodedProps = null
         )
         {
-            var result = await GetCachedModelConfigurationOrNullAsync(moduleName, @namespace, className, useExposed, hardCodedProps);
-            return result ?? throw new ModelConfigurationNotFoundException(@namespace, className);
+            var result = await GetCachedModelConfigurationOrNullAsync(moduleName, @namespace, entityTypeName, useExposed, hardCodedProps);
+            return result ?? throw new ModelConfigurationNotFoundException(@namespace, entityTypeName);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Collections.Extensions;
 using Abp.Domain.Entities;
 using Abp.ObjectMapping;
 using Abp.UI;
@@ -55,17 +56,23 @@ namespace Shesha.DynamicEntities
             await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.GetRequiredFullName(), crudMethod.NotNull(), ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
         }
 
+        private EntityTypeConfiguration GetConfig(EntityTypeIdInput entityType)
+        {
+            var entityConfig = entityType.FullClassName.IsNullOrEmpty()
+                ? _entityConfigStore.Get(entityType.Module, entityType.Name.NotNull())
+                : _entityConfigStore.Get(entityType.FullClassName.NotNull());
+            if (entityConfig == null)
+                throw new EntityTypeNotFoundException(entityType.ToString());
+            return entityConfig;
+        }
+
         [HttpGet]
-        public virtual async Task<IDynamicDataResult> GetAsync(string entityType, GetDynamicEntityInput<string> input)
+        public virtual async Task<IDynamicDataResult> GetAsync(EntityTypeIdInput entityType, GetDynamicEntityInput<string> input)
         {
             try
             {
-                var entityConfig = _entityConfigStore.Get(entityType);
-                if (entityConfig == null)
-                    throw new EntityTypeNotFoundException(entityType);
-
+                var entityConfig = GetConfig(entityType);
                 var typeName = entityConfig.EntityType.FullName;
-
                 var appServiceType = entityConfig.ApplicationServiceType;
 
                 if (entityConfig.ApplicationServiceType == null)
@@ -111,14 +118,11 @@ namespace Shesha.DynamicEntities
         }
 
         [HttpGet]
-        public virtual async Task<IDynamicDataResult> GetAllAsync(string entityType, PropsFilteredPagedAndSortedResultRequestDto input)
+        public virtual async Task<IDynamicDataResult> GetAllAsync(EntityTypeIdInput entityType, PropsFilteredPagedAndSortedResultRequestDto input)
         {
             try
             {
-                var entityConfig = _entityConfigStore.Get(entityType);
-                if (entityConfig == null)
-                    throw new EntityTypeNotFoundException(entityType);
-
+                var entityConfig = GetConfig(entityType);
                 var appServiceType = entityConfig.ApplicationServiceType;
 
                 if (entityConfig.ApplicationServiceType == null)
@@ -143,12 +147,8 @@ namespace Shesha.DynamicEntities
         {
             try
             {
-                var entityConfig = _entityConfigStore.Get(input.EntityType);
-                if (entityConfig == null)
-                    throw new EntityTypeNotFoundException(input.EntityType);
-
+                var entityConfig = GetConfig(input.EntityType);
                 var typeName = entityConfig.EntityType.FullName;
-
                 var appServiceType = entityConfig.ApplicationServiceType;
 
                 if (entityConfig.ApplicationServiceType == null)
@@ -209,11 +209,9 @@ namespace Shesha.DynamicEntities
         /// Get specifications available for the specified entityType
         /// </summary>
         /// <returns></returns>
-        public Task<List<SpecificationDto>> SpecificationsAsync(string entityType) 
+        public Task<List<SpecificationDto>> SpecificationsAsync(EntityTypeIdInput entityType) 
         {
-            var entityConfig = _entityConfigStore.Get(entityType);
-            if (entityConfig == null)
-                throw new EntityTypeNotFoundException(entityType);
+            var entityConfig = GetConfig(entityType);
 
             var specifications = _specificationsFinder.AllSpecifications.Where(s => entityConfig.EntityType.IsAssignableFrom(s.EntityType) /* include base classes */ && !s.IsGlobal).ToList();
 

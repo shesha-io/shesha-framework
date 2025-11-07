@@ -4,6 +4,8 @@ import { toCamelCase } from "@/utils/string";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
+import { IEntityTypeIdentifier } from "../../entities/models";
+import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
 
 /**
  * Helper class for fetching entity metadata and generating form fields based on that metadata.
@@ -12,7 +14,7 @@ import { isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 export class FormMetadataHelper {
   private _metadataDispatcher: IMetadataDispatcher;
 
-  private _modelType: string | null = null;
+  private _modelType: string | IEntityTypeIdentifier | null = null;
 
   /**
    * Creates an instance of FormMetadataHelper.
@@ -28,8 +30,8 @@ export class FormMetadataHelper {
    * @returns A promise that resolves to the entity metadata object.
    * @throws Error if the model type is empty or if the request fails.
    */
-  public async fetchEntityMetadataAsync(modelType: string): Promise<IEntityMetadata> {
-    if (!modelType?.trim()) {
+  public async fetchEntityMetadataAsync(modelType: string | IEntityTypeIdentifier): Promise<IEntityMetadata> {
+    if (isEntityTypeIdEmpty(modelType)) {
       throw new Error('Model type is required and cannot be empty');
     }
 
@@ -58,7 +60,7 @@ export class FormMetadataHelper {
    * @returns A promise that resolves to an object containing entity metadata and non-framework properties.
    * @throws Error if the model type is empty or if the request fails.
    */
-  public async fetchEntityMetadataWithPropertiesAsync(modelType: string): Promise<{ entity: IEntityMetadata; nonFrameworkProperties: PropertyMetadataDto[] }> {
+  public async fetchEntityMetadataWithPropertiesAsync(modelType: string | IEntityTypeIdentifier): Promise<{ entity: IEntityMetadata; nonFrameworkProperties: PropertyMetadataDto[] }> {
     const entity = await this.fetchEntityMetadataAsync(modelType);
     const nonFrameworkProperties = await this.extractNonFrameworkProperties(entity);
 

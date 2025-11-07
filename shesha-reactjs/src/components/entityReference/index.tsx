@@ -26,6 +26,8 @@ import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles/styles';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -35,7 +37,7 @@ export interface IEntityReferenceProps {
   value?: any;
   disabled?: boolean;
   placeholder?: string;
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   formSelectionMode: 'name' | 'dynamic';
 
   /** The Url that details of the entity are retreived */
@@ -100,7 +102,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const [displayText, setDisplayText] = useState((!props.value ? props.placeholder : props.value._displayName) ?? '');
 
   const entityId = props.value?.id ?? props.value;
-  const entityType = props.entityType ?? props.value?._className;
+  const entityType = props.entityType ?? (props.value?._className as string | undefined);
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
 
   const { styles, cx } = useStyles();
@@ -109,7 +111,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     const fetchFormId = async (): Promise<void> => {
       if (
         props.formSelectionMode === 'dynamic' &&
-        Boolean(entityType) &&
+        !isEntityTypeIdEmpty(entityType) &&
         Boolean(formType)
       ) {
         try {
@@ -126,7 +128,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   useEffect(() => {
     const fetchMetadata = async (): Promise<void> => {
-      if (entityType) {
+      if (!isEntityTypeIdEmpty(entityType)) {
         try {
           const res = await getMetadata({ modelType: entityType, dataType: null });
           setProperties(isPropertiesArray(res?.properties) ? res.properties : []);
@@ -149,7 +151,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       };
       const fetcher = props.getEntityUrl
         ? get(props.getEntityUrl, queryParams, { base: backendUrl, headers: httpHeaders })
-        : entitiesGet({ ...queryParams, entityType: entityType }, { base: backendUrl, headers: httpHeaders });
+        : entitiesGet({ ...queryParams, ...getEntityTypeIdentifierQueryParams(entityType) }, { base: backendUrl, headers: httpHeaders });
 
       fetcher
         .then((resp) => {
@@ -275,7 +277,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           displayName={displayText}
           dataProperties={properties}
           entityId={props.value?.id ?? props.value}
-          className={entityType}
+          entityType={entityType}
           getEntityUrl={props.getEntityUrl}
           width={addPx(props.quickviewWidth)}
           formIdentifier={formIdentifier}
