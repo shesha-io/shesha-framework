@@ -47,13 +47,13 @@ import { addFile, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } 
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty, isEntityTypeIdentifier } from '../metadataDispatcher/entities/utils';
 
 export interface IStoredFilesProviderProps {
   name?: string;
   ownerId: string;
-  ownerType: string | IEntityTypeIndentifier;
+  ownerType: string | IEntityTypeIdentifier;
   ownerName?: string;
   filesCategory?: string;
   propertyName?: string;

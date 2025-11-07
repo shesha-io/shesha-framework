@@ -21,7 +21,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getValueByPropertyName } from '@/utils/object';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent, IStyleType {
@@ -32,7 +32,7 @@ export interface IEntityPickerComponentProps extends IConfigurableFormComponent,
   incomeCustomJs?: string;
   outcomeCustomJs?: string;
   mode?: 'single' | 'multiple' | 'tags';
-  entityType: string | IEntityTypeIndentifier;
+  entityType: string | IEntityTypeIdentifier;
   filters?: object;
   title?: string;
   displayEntityKey?: string;
@@ -219,9 +219,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       ...model,
       editMode: 'inherited',
       entityType: isEntityReferencePropertyMetadata(propMetadata)
-        ? { name: propMetadata.entityType, module: propMetadata.entityModule }
+        ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
         : isEntityReferenceArrayPropertyMetadata(propMetadata)
-          ? { name: propMetadata.entityType, module: propMetadata.entityModule }
+          ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
           : undefined,
       mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
       valueFormat: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'entityReference' : 'simple',

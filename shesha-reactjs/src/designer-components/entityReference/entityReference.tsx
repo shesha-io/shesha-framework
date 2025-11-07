@@ -111,7 +111,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
     return {
       ...model,
       entityType: isEntityReferencePropertyMetadata(propMetadata)
-        ? { name: propMetadata.entityType, module: propMetadata.entityModule }
+        ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
         : undefined,
     };
   },

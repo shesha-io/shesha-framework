@@ -179,23 +179,34 @@ interface IEntityFilterProps extends IFilterBaseProps {
   entityTypeModule: string | null;
 }
 
-// ToDo: AS - V1 review and replaco with new EntityTypeAutocomplete
+// ToDo: AS - V1 review and replace with new EntityTypeAutocomplete
 
 const EntityFilter: FC<IEntityFilterProps> = (props) => {
   const { getMetadata } = useMetadataDispatcher();
 
   const entityType = useAsyncMemo(async () => {
-    return await getMetadata({
-      dataType: DataTypes.entityReference,
-      modelType: { name: props.entityTypeName, module: props.entityTypeModule },
-    }) as IEntityMetadata;
+    try {
+      return await getMetadata({
+        dataType: DataTypes.entityReference,
+        modelType: { name: props.entityTypeName, module: props.entityTypeModule },
+      }) as IEntityMetadata;
+    } catch (e) {
+      console.error('Failed to fetch entity metadata:', e);
+      return undefined;
+    }
   }, [props.entityTypeName, props.entityTypeModule]);
 
-  const { data, loading, search } = useEntityAutocomplete({ entityType: entityType?.fullClassName, value: props.value });
-
+  const { data, loading, search } = useEntityAutocomplete({
+    entityType: entityType?.fullClassName,
+    value: props.value,
+  });
+  const isLoadingMetadata = !entityType;
+  const isLoading = loading || isLoadingMetadata;
   const dataLoaded = data && data.length > 0;
   const selectValue = props.value && dataLoaded ? props.value : undefined;
-  const selectPlaceholder = props.value && !dataLoaded ? 'Loading...' : 'Type to search';
+  const selectPlaceholder = isLoadingMetadata
+    ? 'Loading metadata...'
+    : (props.value && !dataLoaded ? 'Loading...' : 'Type to search');
 
   return (
     <Select
@@ -209,9 +220,10 @@ const EntityFilter: FC<IEntityFilterProps> = (props) => {
       onSelect={() => search('')}
       allowClear={true}
       placeholder={selectPlaceholder}
-      loading={loading}
+      loading={isLoading}
+      disabled={isLoadingMetadata}
       value={selectValue}
-      notFoundContent={loading ? <Spin size="small" /> : null}
+      notFoundContent={isLoading ? <Spin size="small" /> : null}
     >
       {dataLoaded &&
         data.map((d: EntityData) => (

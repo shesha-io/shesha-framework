@@ -1,5 +1,5 @@
-import { IEntityTypeIndentifier } from "../../entities/models";
+import { IEntityTypeIdentifier } from "../../entities/models";
 
 export interface CreateViewExtensionJson {
-  modelType?: string | IEntityTypeIndentifier;
+  modelType?: string | IEntityTypeIdentifier;
 }

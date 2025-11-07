@@ -1,5 +1,5 @@
 import { useGet } from '@/hooks';
-import { useMetadataDispatcher } from '@/index';
+import { DataTypes, useMetadataDispatcher } from '@/index';
 import { IPropertyMetadata, IRefListPropertyMetadata } from '@/interfaces/metadata';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
@@ -142,7 +142,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
       }
 
       // Get metadata first to identify reference list properties
-      const metaData = await getMetadata({ modelType: entityType, dataType: 'entity' });
+      const metaData = await getMetadata({ modelType: entityType, dataType: DataTypes.entityReference });
 
       const faultyPropertiesInner = validateEntityProperties((metaData?.properties ?? []) as IPropertyMetadata[], axisProperty, valueProperty, groupingProperty);
 
@@ -317,7 +317,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
       return;
     }
 
-    getMetadata({ modelType: entityType, dataType: 'entity' }).then((metaData) => {
+    getMetadata({ modelType: entityType, dataType: DataTypes.entityReference }).then((metaData) => {
       if (metaData) {
         if (!axisPropertyLabel || axisPropertyLabel?.trim().length === 0) {
           setAxisPropertyLabel((metaData?.properties as IPropertyMetadata[])?.find((property: IPropertyMetadata) => property.path?.toLowerCase() === axisProperty?.toLowerCase())?.label ?? axisProperty);

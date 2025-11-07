@@ -17,7 +17,7 @@ import {
   GroupingItem,
   FilterExpression,
 } from './interfaces';
-import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
 export enum DataTableActionEnums {
   FetchColumnsSuccess = 'FETCH_COLUMNS_SUCCESS',
@@ -87,7 +87,7 @@ export const setMultiSelectedRowAction = createAction<Array<Row> | Row, Array<Ro
   (p) => p,
 );
 
-export const setModelTypeAction = createAction<string | IEntityTypeIndentifier, string | IEntityTypeIndentifier>(
+export const setModelTypeAction = createAction<string | IEntityTypeIdentifier, string | IEntityTypeIdentifier>(
   DataTableActionEnums.SetModelType,
   (p) => p,
 );

@@ -10,7 +10,7 @@ import qs from "qs";
 import { isAjaxErrorResponse } from "@/interfaces/ajaxResponse";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdentifier } from "./entities/utils";
-import { IEntityTypeIndentifier } from "../sheshaApplication/publicApi/entities/models";
+import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 
 interface IPropertyPathWithMetadata {
   path: string;
@@ -36,7 +36,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
     return properties.find((p) => camelcase(p.path) === name);
   };
 
-  #getEntityTypeId = (property: IHasEntityType): IEntityTypeIndentifier =>
+  #getEntityTypeId = (property: IHasEntityType): IEntityTypeIdentifier =>
     ({ name: property.entityType, module: property.entityModule ?? null });
 
 
@@ -214,7 +214,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
     });
   };
 
-  isEntityType = (modelType: string | IEntityTypeIndentifier): Promise<boolean> => {
+  isEntityType = (modelType: string | IEntityTypeIdentifier): Promise<boolean> => {
     if (!modelType) return Promise.resolve(false);
 
     return this.getMetadata({ dataType: null, modelType: modelType }).then((m) => {

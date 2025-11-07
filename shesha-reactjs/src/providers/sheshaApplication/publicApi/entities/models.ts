@@ -15,7 +15,7 @@ export interface EntityConfigurationDto extends EntityApiItem {
   fullClassName: string;
 }
 
-export interface IEntityTypeIndentifier {
+export interface IEntityTypeIdentifier {
   module: string | null;
   name: string;
 }

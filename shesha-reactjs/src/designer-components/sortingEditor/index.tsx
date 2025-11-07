@@ -10,10 +10,10 @@ import { SortingEditor } from '@/components/dataTable/sortingConfigurator/index'
 import { MetadataProvider } from '@/providers/index';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface ISortingEditorComponentProps extends IConfigurableFormComponent {
-  modelType: string | IEntityTypeIndentifier;
+  modelType: string | IEntityTypeIdentifier;
   maxItemsCount?: number;
 }
 

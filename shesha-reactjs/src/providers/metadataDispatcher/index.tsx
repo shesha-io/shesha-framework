@@ -10,10 +10,10 @@ import { MetadataFetcher } from '@/utils/metadata/metadataBuilder';
 import { useEntityMetadataFetcher } from './entities/provider';
 import { IEntityMetadataFetcher } from './entities/models';
 import { MetadataDispatcherProvider, useMetadataDispatcher } from './provider';
-import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
 
-const useNestedPropertyMetadatAccessor = (modelType: string | IEntityTypeIndentifier): NestedPropertyMetadatAccessor => {
+const useNestedPropertyMetadatAccessor = (modelType: string | IEntityTypeIdentifier): NestedPropertyMetadatAccessor => {
   const dispatcher = useMetadataDispatcher();
 
   const accessor: NestedPropertyMetadatAccessor = (propertyPath: string) => modelType

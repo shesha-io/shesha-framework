@@ -41,12 +41,12 @@ namespace Shesha.DynamicEntities.Dtos
             if (entityType.IsNullOrWhiteSpace())
                 throw new ArgumentException("entityType can not be empty");
 
-            if (entityType.Contains(":"))
-                return GetIdFromTextId(entityType);
-
             if (entityType.Contains("{"))
                 return JsonConvert.DeserializeObject<EntityTypeIdInput>(entityType)
                     .NotNull("Parsing identifier Error. Format of data should be {module: string | null, name: string}");
+
+            if (entityType.Contains(":"))
+                return GetIdFromTextId(entityType);
 
             return new EntityTypeIdInput(null, null, entityType);
         }

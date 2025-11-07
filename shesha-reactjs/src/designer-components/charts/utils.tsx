@@ -7,7 +7,7 @@ import PolarAreaChart from "./components/polarArea";
 import { Result } from "antd";
 import { IPropertyMetadata, IStyleType } from "@/interfaces";
 import { FetcherOptions } from "@/utils/fetchers";
-import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
 
 export const MAX_TITLE_LINE_LENGTH = 12;
@@ -351,7 +351,7 @@ function convertNestedPropertiesToObjectFormat(array?: string[]): string {
  * @param axisProperty axis property to use for the chart
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string | IEntityTypeIndentifier, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string, orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number): FetcherOptions => {
+export const getChartDataRefetchParams = (entityType: string | IEntityTypeIdentifier, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string, orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number): FetcherOptions => {
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {

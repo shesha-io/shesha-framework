@@ -24,11 +24,11 @@ import { useStyles } from './styles/styles';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
-import { isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
 
 interface EntityForm {
-  entityType: string | IEntityTypeIndentifier;
+  entityType: string | IEntityTypeIdentifier;
   isFetchingFormId?: boolean;
   formId: FormIdentifier;
   formType?: string;
@@ -246,7 +246,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     }
   };
 
-  const getEntityForm = (entityType: string | IEntityTypeIndentifier, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
+  const getEntityForm = (entityType: string | IEntityTypeIdentifier, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
     let entityForm = entityForms.current.find((x) => x.formType === fType && isEntityTypeIdEqual(x.entityType, entityType));
     if (!entityForm) {
       entityForm = {
@@ -268,8 +268,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           isReady(entityForms.current);
         });
     } else {
-      const f = loadedFormId.current[`${entityForm.entityType}_${fType}`] ??
-        getEntityFormId(entityForm.entityType, fType);
+      const entityTypeKey = getEntityTypeName(entityForm.entityType) ?? '';
+      const cacheKey = `${entityTypeKey}_${fType ?? ''}`;
+      const f = loadedFormId.current[cacheKey] ?? getEntityFormId(entityForm.entityType, fType);
 
       f.then((e) =>
         getForm({ formId: e, skipCache })
@@ -289,7 +290,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     let isReady = true;
 
     let fId = createFormId;
-    let formEntityType: string | IEntityTypeIndentifier = '$createFormName$';
+    let formEntityType: string | IEntityTypeIdentifier = '$createFormName$';
     let fType = null;
     if (formSelectionMode === 'view') {
       fId = null;

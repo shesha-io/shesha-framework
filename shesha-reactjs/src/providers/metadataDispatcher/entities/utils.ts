@@ -1,9 +1,9 @@
 import { IAjaxResponse, IEntityMetadata } from "@/interfaces";
-import { IEntityTypeIndentifier } from "../../sheshaApplication/publicApi/entities/models";
+import { IEntityTypeIdentifier } from "../../sheshaApplication/publicApi/entities/models";
 import { ICacheProvider, ISyncEntitiesContext, ModuleSyncRequest, SyncAllRequest, SyncAllResponse, isEntityOutOfDateResponse } from "./models";
 import { isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
 import { IConfigurationItemDto } from "@/providers/configurationItemsLoader/models";
-import { IEntityTypeIdentifierQueryParams } from "@/interfaces/metadata";
+import { IEntityTypeIdentifierQueryParams, IPropertyMetadata } from "@/interfaces/metadata";
 
 export const ENTITY_CACHE = {
   ENTITIES: 'entity',
@@ -22,7 +22,7 @@ const URLS = {
   SYNC_ENTITIES: '/api/services/app/EntityConfig/SyncClientApi',
 };
 
-export const getEntityMetadataCacheKey = (id: IEntityTypeIndentifier): string => {
+export const getEntityMetadataCacheKey = (id: IEntityTypeIdentifier): string => {
   const moduleAccessor = wrapModuleName(id.module);
   return `${moduleAccessor}:${id.name}`;
 };
@@ -107,6 +107,7 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
                   ...e.metadata,
                   entityType: e.metadata.name,
                   entityModule: e.metadata.module,
+                  properties: e.metadata.properties.map((p) => ({ ...p, entityType: p.entityType ?? undefined } as IPropertyMetadata)),
                 },
               };
 
@@ -173,14 +174,14 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
 const getEntityCacheItem = (key: string, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> =>
   context.cacheProvider.getCache(ENTITY_CACHE.ENTITIES).getItem<IConfigurationItemDto<IEntityMetadata>>(key).then((item) => item?.configuration);
 
-export const getEntityMetadata = async (accessor: IEntityTypeIndentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
+export const getEntityMetadata = async (accessor: IEntityTypeIdentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
   await syncEntities(context);
 
   const key = getEntityMetadataCacheKey(accessor);
   return getEntityCacheItem(key, context);
 };
 
-export const getCachedMetadataByTypeId = (typeId: IEntityTypeIndentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
+export const getCachedMetadataByTypeId = (typeId: IEntityTypeIdentifier, context: ISyncEntitiesContext): Promise<IEntityMetadata | undefined> => {
   const key = getEntityMetadataCacheKey(typeId);
   return getEntityCacheItem(key, context);
 };
@@ -194,27 +195,27 @@ export const getCachedMetadataByClassName = (className: string, context: ISyncEn
   return getEntityCacheItem(key, context);
 };
 
-export const isEntityTypeIdentifier = (modelType: string | IEntityTypeIndentifier | null | undefined): modelType is IEntityTypeIndentifier =>
+export const isEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifier | null | undefined): modelType is IEntityTypeIdentifier =>
   modelType !== null && modelType !== undefined && typeof modelType === 'object' && 'name' in modelType && 'module' in modelType;
 
-export const getEntityTypeIdentifier = (modelType: string | IEntityTypeIndentifier): IEntityTypeIndentifier =>
+export const getEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifier): IEntityTypeIdentifier =>
   (isEntityTypeIdentifier(modelType) ? modelType : { name: modelType, module: null });
 
-export const getEntityTypeIdentifierQueryParams = (modelType: string | IEntityTypeIndentifier): IEntityTypeIdentifierQueryParams =>
+export const getEntityTypeIdentifierQueryParams = (modelType: string | IEntityTypeIdentifier): IEntityTypeIdentifierQueryParams =>
   (isEntityTypeIdentifier(modelType)
     ? { name: modelType.name, module: modelType.module ?? undefined }
     : { fullClassName: modelType }
   );
-export const isEntityTypeIdEqual = (a: string | IEntityTypeIndentifier, b: string | IEntityTypeIndentifier): boolean =>
+export const isEntityTypeIdEqual = (a: string | IEntityTypeIdentifier, b: string | IEntityTypeIdentifier): boolean =>
   (typeof a === 'string' && typeof b === 'string' && a === b) ||
   (isEntityTypeIdentifier(a) && isEntityTypeIdentifier(b) && a.name === b.name && a.module === b.module);
 
-export const isEntityTypeIdEmpty = (a: string | IEntityTypeIndentifier | null | undefined): boolean =>
+export const isEntityTypeIdEmpty = (a: string | IEntityTypeIdentifier | null | undefined): boolean =>
   a === null || a === undefined ||
   (typeof a === 'string' && a.trim().length === 0) ||
   (isEntityTypeIdentifier(a) && (a.name.trim().length === 0));
 
-export const getEntityTypeName = (modelType: string | IEntityTypeIndentifier | null | undefined): string | null | undefined =>
+export const getEntityTypeName = (modelType: string | IEntityTypeIdentifier | null | undefined): string | null | undefined =>
   isEntityTypeIdentifier(modelType)
     ? Boolean(modelType.module)
       ? `${modelType.module}:${modelType.name}`

@@ -33,7 +33,7 @@ import {
 import { getTableDataColumn, prepareColumn } from './utils';
 import { Row } from 'react-table';
 import { ProperyDataType } from '@/interfaces/metadata';
-import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
 /** get dirty filter if exists and fallback to current filter state */
 const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
@@ -112,7 +112,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     /** Table Context */
 
-    [DataTableActionEnums.SetModelType]: (state: IDataTableStateContext, action: ReduxActions.Action<string | IEntityTypeIndentifier>) => {
+    [DataTableActionEnums.SetModelType]: (state: IDataTableStateContext, action: ReduxActions.Action<string | IEntityTypeIdentifier>) => {
       const { payload } = action;
 
       return {

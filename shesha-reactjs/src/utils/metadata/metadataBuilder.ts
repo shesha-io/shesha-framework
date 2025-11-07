@@ -8,7 +8,7 @@ import { registerMetadataBuilderAction } from "./standardProperties";
 
 import { IMemberType, IMetadata } from '@/publicJsApis/metadata';
 import { metadataSourceCode } from '@/publicJsApis';
-import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { getEntityTypeIdentifier } from "@/providers/metadataDispatcher/entities/utils";
 
 export interface IObjectMetadataBuilder extends IPublicObjectMetadataBuilder {
@@ -130,7 +130,7 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
     return this;
   }
 
-  addEntityAsync(path: string, label: string, entityType: string | IEntityTypeIndentifier): Promise<this> {
+  addEntityAsync(path: string, label: string, entityType: string | IEntityTypeIdentifier): Promise<this> {
     return this.#metadataBuilder.metadataFetcher(getEntityTypeIdentifier(entityType)).then((response) => {
       if (!isEntityMetadata(response))
         throw new Error(`Failed to resolve entity type '${entityType}'`);

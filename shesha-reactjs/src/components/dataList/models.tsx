@@ -4,7 +4,7 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { ISortingItem } from '@/providers/dataTable/interfaces';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export type DataListSelectionMode = 'none' | 'single' | 'multiple';
 export type FormSelectionMode = 'name' | 'view' | 'expression';
@@ -57,7 +57,7 @@ export interface IDataListBaseProps extends IStyleType {
 
   grouping?: ISortingItem[];
 
-  entityType?: string | IEntityTypeIndentifier;
+  entityType?: string | IEntityTypeIdentifier;
 
   orientation?: Orientation;
   listItemWidth?: ListItemWidth;

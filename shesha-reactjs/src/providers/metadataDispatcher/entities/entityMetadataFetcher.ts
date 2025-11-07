@@ -3,12 +3,12 @@ import { IEntityTypesMap, IEntityMetadataFetcher, ISyncEntitiesContext, ICachePr
 import { DataTypes, IPropertyMetadata } from "@/interfaces";
 import { IEntityMetadata, NestedProperties, isIHasEntityType, isPropertiesArray } from "@/interfaces/metadata";
 import { ENTITY_CACHE, getEntityMetadataCacheKey, syncEntities } from "./utils";
-import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { EntityTypesMap } from "./entityTypesMap";
 import { IConfigurationItemsLoaderActionsContext } from "@/providers/configurationItemsLoader/contexts";
 
 type EntityMetadataByClassNameFetcher = (className: string) => Promise<IEntityMetadata | null>;
-type EntityMetadataByIdFetcher = (etityIdentifier: IEntityTypeIndentifier) => Promise<IEntityMetadata | null>;
+type EntityMetadataByIdFetcher = (etityIdentifier: IEntityTypeIdentifier) => Promise<IEntityMetadata | null>;
 
 export class EntityMetadataFetcher implements IEntityMetadataFetcher {
   #syncPromise: Promise<void> | undefined;
@@ -38,7 +38,7 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
   #mapProperty = (property: IPropertyMetadata, metadataGetter: EntityMetadataByIdFetcher, prefix: string = ''): IPropertyMetadata => {
     const nestedProperties: NestedProperties = isPropertiesArray(property.properties)
       ? property.dataType === DataTypes.entityReference && isIHasEntityType(property)
-        ? () => metadataGetter({ name: property.entityType, module: property.entityModule ?? null })
+        ? () => metadataGetter({ name: property.entityType ?? '', module: property.entityModule ?? null })
           .then((m) => (m?.properties ?? []) as IPropertyMetadata[])
         : property.properties.map((child) => this.#mapProperty(child, metadataGetter, property.path))
       : (property.properties ?? null);
@@ -76,7 +76,7 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
     return this.#syncPromise;
   };
 
-  getByTypeId: EntityMetadataByIdFetcher = async (typeId: IEntityTypeIndentifier): Promise<IEntityMetadata | null> => {
+  getByTypeId: EntityMetadataByIdFetcher = async (typeId: IEntityTypeIdentifier): Promise<IEntityMetadata | null> => {
     await this.#ensureSynchronized();
     const metadata = await this.#configurationItemsLoader.getCachedConfig<IEntityMetadata>({ type: 'entity', id: typeId, skipCache: false });
     return metadata
@@ -92,20 +92,20 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
       : null;
   };
 
-  isEntity = (modelType: string | IEntityTypeIndentifier): Promise<boolean> => {
+  isEntity = (modelType: string | IEntityTypeIdentifier): Promise<boolean> => {
     return this.#ensureSynchronized().then(async () => {
       // Check if modelType is a string and alias exists
       if (typeof modelType === 'string' && this.#typesMap.resolve(modelType))
         return true;
 
       // check if entity is cached
-      const key = getEntityMetadataCacheKey(modelType as IEntityTypeIndentifier);
+      const key = getEntityMetadataCacheKey(modelType as IEntityTypeIdentifier);
       const entity = await this.#cacheProvider.getCache(ENTITY_CACHE.ENTITIES).getItem<IEntityMetadata>(key);
       if (Boolean(entity))
         return true;
 
       // Check if entitty type exists in the types map
-      return Boolean(this.#typesMap.identifierExists(modelType as IEntityTypeIndentifier));
+      return Boolean(this.#typesMap.identifierExists(modelType as IEntityTypeIdentifier));
     });
   };
 };

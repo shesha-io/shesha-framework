@@ -13,7 +13,7 @@ import { ShaIconTypes } from '../iconPicker';
 import { formItemLayout, getQuickViewInitialValues, loadingBox } from './utils';
 import { useStyles } from './styles/styles';
 import { IPropertyMetadata } from '@/interfaces/metadata';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 export interface IQuickViewProps extends PropsWithChildren {
@@ -30,7 +30,7 @@ export interface IQuickViewProps extends PropsWithChildren {
   /** The width of the quickview */
   width?: number | string;
 
-  entityType?: string | IEntityTypeIndentifier;
+  entityType?: string | IEntityTypeIdentifier;
 
   formType?: string;
 
@@ -71,7 +71,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   textTitle,
   emptyText = 'No Display Name',
 }) => {
-  const [loadingState, setLoadingState] = useState<'loading' | 'error' | 'success'>();
+  const [loadingState, setLoadingState] = useState<'loading' | 'error' | 'success'>('loading');
   const [formData, setFormData] = useState(initialFormData);
   const [formTitle, setFormTitle] = useState(displayName);
   const [formMarkup, setFormMarkup] = useState<FormMarkupWithSettings>(null);

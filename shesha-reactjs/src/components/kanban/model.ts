@@ -1,7 +1,7 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IButtonGroupItem, IButtonItem, IStyleType } from '@/providers';
 import { CSSProperties } from 'styled-components';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
@@ -26,7 +26,7 @@ export interface IKanbanProps extends IConfigurableFormComponent, IStyleType {
   fontColor?: string;
   showIcons?: boolean;
   fontSize?: number;
-  entityType?: string | IEntityTypeIndentifier;
+  entityType?: string | IEntityTypeIdentifier;
   allowNewRecord?: boolean;
   readonly?: boolean;
   collapsible?: boolean;

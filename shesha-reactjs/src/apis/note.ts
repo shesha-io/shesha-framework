@@ -2,7 +2,7 @@ import { useGet, UseGetProps } from '@/hooks/useGet';
 import { useMutateForEndpoint } from '@/hooks/useMutate';
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { GuidEntityReferenceDto } from './common';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { IEntityTypeIdentifierQueryParams } from '@/interfaces/metadata';
 
 export interface NoteDto {
@@ -47,7 +47,7 @@ export interface CreateNoteDto {
   /**
    * Type short alias of the owner entity
    */
-  ownerType: string | IEntityTypeIndentifier;
+  ownerType: string | IEntityTypeIdentifier;
   /**
    * Category of the note. Is used to split notes into groups
    */

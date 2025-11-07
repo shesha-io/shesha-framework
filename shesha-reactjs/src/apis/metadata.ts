@@ -55,7 +55,7 @@ export interface PropertyMetadataDto {
   /**
    * Child properties (applicable for complex objects)
    */
-  properties?: PropertyMetadataDto[] | null;
+  properties?: PropertyMetadataDto[];
   itemsType?: PropertyMetadataDto;
   source?: MetadataSourceType;
 }

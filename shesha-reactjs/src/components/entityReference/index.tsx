@@ -26,7 +26,7 @@ import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles/styles';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
@@ -37,7 +37,7 @@ export interface IEntityReferenceProps {
   value?: any;
   disabled?: boolean;
   placeholder?: string;
-  entityType?: string | IEntityTypeIndentifier;
+  entityType?: string | IEntityTypeIdentifier;
   formSelectionMode: 'name' | 'dynamic';
 
   /** The Url that details of the entity are retreived */

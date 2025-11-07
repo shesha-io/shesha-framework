@@ -3,7 +3,7 @@ import { FilterExpression } from "@/providers/dataTable/interfaces";
 import { IBackgroundValue } from "../_settings/utils/background/interfaces";
 import { IShadowValue } from "../_settings/utils/shadow/interfaces";
 import { IBorderValue } from "../_settings/utils/border/interfaces";
-import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 
 /**
  * Chart data that will go into the actual chart component from ChartJS
@@ -31,7 +31,7 @@ export interface IChartsProps {
   description?: string;
   showLegend?: boolean;
   legendPosition?: TLegendPosition;
-  entityType?: string | IEntityTypeIndentifier;
+  entityType?: string | IEntityTypeIdentifier;
   valueProperty?: string;
   axisProperty?: string;
   isAxisTimeSeries?: boolean;

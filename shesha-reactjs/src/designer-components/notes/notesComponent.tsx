@@ -19,11 +19,11 @@ import { getFormApi } from '@/providers/form/formApi';
 import { App } from 'antd';
 import moment from 'moment';
 import { INote } from '@/providers/notes/contexts';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
-  ownerType: string | IEntityTypeIndentifier;
+  ownerType: string | IEntityTypeIdentifier;
   savePlacement?: 'left' | 'right';
   autoSize?: boolean;
   allowDelete?: boolean;

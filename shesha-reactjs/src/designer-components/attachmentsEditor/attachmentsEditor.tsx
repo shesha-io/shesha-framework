@@ -20,14 +20,14 @@ import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { containerDefaultStyles, defaultStyles } from './utils';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
   ownerId: string;
-  ownerType: string | IEntityTypeIndentifier;
+  ownerType: string | IEntityTypeIdentifier;
   filesCategory?: string;
   allowedFileTypes?: string[];
   ownerName?: string;

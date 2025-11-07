@@ -4,12 +4,12 @@ import { EntityData, IAbpWrappedGetEntityListResponse, IGetAllPayload } from "@/
 import { camelcaseDotNotation } from "@/utils/string";
 import { GENERIC_ENTITIES_ENDPOINT } from "@/shesha-constants";
 import { getValueByPropertyName, setValueByPropertyName } from "./object";
-import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEqual } from "@/providers/metadataDispatcher/entities/utils";
 import { IEntityTypeIdentifierQueryParams } from "@/interfaces/metadata";
 
 export interface IUseEntityDisplayTextProps {
-  entityType?: string | IEntityTypeIndentifier;
+  entityType?: string | IEntityTypeIdentifier;
   propertyName?: string;
   selection?: string | string[];
 }
@@ -36,7 +36,7 @@ export interface IEntitySelectionResult {
 
 interface ILoadedSelectionSummary {
   keys: string[];
-  entityType: string | IEntityTypeIndentifier;
+  entityType: string | IEntityTypeIdentifier;
   propertyName: string;
 }
 

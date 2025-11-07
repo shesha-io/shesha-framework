@@ -20,12 +20,12 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { listType } from '../attachmentsEditor/attachmentsEditor';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IStyleType {
   ownerId: string;
-  ownerType: string | IEntityTypeIndentifier;
+  ownerType: string | IEntityTypeIdentifier;
   allowUpload?: boolean;
   allowReplace?: boolean;
   allowDelete?: boolean;

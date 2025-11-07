@@ -49,7 +49,7 @@ import { ConfigurableItemIdentifierToString } from '@/interfaces/configurableIte
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { extractAjaxResponse, IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { getEntityTypeIdentifierQueryParams, getEntityTypeName } from '../metadataDispatcher/entities/utils';
-import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { IGenericGetPayload } from '@/interfaces/gql';
 
 interface IFormLoadingState {
@@ -122,7 +122,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   };
 
   const internalEntityType = (props.apiMode === 'entityName' ? entityType : value?.['_className'] as string) || value?.['_className'] as string;
-  const prevRenderedEntityTypeForm = useRef<string | IEntityTypeIndentifier>(null);
+  const prevRenderedEntityTypeForm = useRef<string | IEntityTypeIdentifier>(null);
 
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {

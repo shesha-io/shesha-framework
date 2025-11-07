@@ -3,7 +3,7 @@ import { IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/mode
 import { Key, ReactNode } from "react";
 import { GroupingItem, ISortingItem } from "@/providers/dataTable/interfaces";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
-import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 
 /**
  * Converts array of strings into IDataColumnsProps array
@@ -57,7 +57,7 @@ export interface IAutocompleteBaseProps {
   value?: any;
 
   /** Type of entity */
-  entityType?: string | IEntityTypeIndentifier;
+  entityType?: string | IEntityTypeIdentifier;
   /** Data source type */
   dataSourceType: AutocompleteDataSourceType;
   /** Data source URL (required for dataSourceType === 'url', alternative for dataSourceType === 'entitiesList') */

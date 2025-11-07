@@ -18,12 +18,12 @@ import FileSaver from "file-saver";
 import { DataTypes } from "@/interfaces/dataTypes";
 import { GENERIC_ENTITIES_ENDPOINT } from "@/shesha-constants";
 import { wrapDisplayName } from "@/utils/react";
-import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
 import { IGenericGetAllPayload } from "@/interfaces/gql";
 
 export interface IWithBackendRepositoryArgs {
-  entityType: string | IEntityTypeIndentifier;
+  entityType: string | IEntityTypeIdentifier;
   getListUrl: string;
   customCreateUrl?: string;
   customUpdateUrl?: string;
@@ -43,7 +43,7 @@ export interface IDeleteOptions {
 }
 
 export interface IBackendRepository extends IRepository<ICreateOptions, IUpdateOptions, IDeleteOptions> {
-  entityType: string | IEntityTypeIndentifier;
+  entityType: string | IEntityTypeIdentifier;
 }
 
 interface ICreateBackendRepositoryArgs extends IWithBackendRepositoryArgs {

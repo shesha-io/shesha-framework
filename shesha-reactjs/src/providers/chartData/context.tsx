@@ -1,7 +1,7 @@
 import { IChartsProps, TAggregationMethod, TChartType, TDataMode, TLegendPosition, TTimeSeriesFormat } from "@/designer-components/charts/model";
 import { FilterExpression } from "@/publicJsApis/dataTableContextApi";
 import { createContext } from "react";
-import { IEntityTypeIndentifier } from "../sheshaApplication/publicApi/entities/models";
+import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 
 export interface IChartDataContext extends IChartsProps {
   height?: number;
@@ -16,7 +16,7 @@ export interface IChartDataContext extends IChartsProps {
   title?: string;
   showLegend?: boolean;
   legendPosition?: TLegendPosition;
-  entityType?: string | IEntityTypeIndentifier;
+  entityType?: string | IEntityTypeIdentifier;
   valueProperty?: string;
   axisProperty?: string;
   isAxisTimeSeries?: boolean;

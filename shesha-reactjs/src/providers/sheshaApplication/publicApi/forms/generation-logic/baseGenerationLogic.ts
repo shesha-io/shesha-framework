@@ -5,7 +5,7 @@ import { GenerationLogic } from "./interface";
 import { processBaseMarkup } from "./viewGenerationUtils";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { IEntityMetadata } from "@/interfaces";
-import { IEntityTypeIndentifier } from "../../entities/models";
+import { IEntityTypeIdentifier } from "../../entities/models";
 import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
 
 /**
@@ -63,7 +63,7 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
   /**
    * Get the model type from the replacements object
    */
-  protected abstract getModelTypeFromReplacements(replacements: object): string | IEntityTypeIndentifier | null;
+  protected abstract getModelTypeFromReplacements(replacements: object): string | IEntityTypeIdentifier | null;
 
   /**
    * Fetch entity metadata and extract non-framework properties

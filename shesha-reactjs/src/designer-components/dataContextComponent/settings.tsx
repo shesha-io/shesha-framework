@@ -26,7 +26,7 @@ const convertPropertyMetadataToModelItem = (property: IPropertyMetadata): IModel
     properties: isPropertiesArray(properties)
       ? properties.map((item) => convertPropertyMetadataToModelItem(item))
       : undefined,
-    entityType: { module: property.entityModule, name: property.entityType },
+    entityType: !property.entityType ? undefined : { module: property.entityModule, name: property.entityType },
   } satisfies IModelItem;
 };
 
@@ -37,8 +37,8 @@ const convertModelItemToPropertyMetadata = (item: IModelItem): IPropertyMetadata
     path: name,
     properties: properties?.map((item) => convertModelItemToPropertyMetadata(item)),
     itemsType: itemsType ? convertModelItemToPropertyMetadata(itemsType) : undefined,
-    entityType: entityType.name,
-    entityModule: entityType.module,
+    entityType: entityType?.name,
+    entityModule: entityType?.module,
   };
 };
 

@@ -12,7 +12,7 @@ import { IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocompl
 import { ILabelValueEditorProps } from '@/components/labelValueEditor/labelValueEditor';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { EntityTypeAutocompleteType } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface IRadioOption {
   value: string | number;
@@ -102,9 +102,9 @@ export interface ISettingsInputProps extends IComponentLabelProps,
   fields?: string[];
   dataSourceType?: AutocompleteDataSourceType;
   dataSourceUrl?: string;
-  entityType?: string | IEntityTypeIndentifier;
+  entityType?: string | IEntityTypeIdentifier;
   useRawValues?: boolean;
-  modelType?: string | IEntityTypeIndentifier;
+  modelType?: string | IEntityTypeIdentifier;
   maxItemsCount?: number;
   httpVerb?: string;
   min?: number;

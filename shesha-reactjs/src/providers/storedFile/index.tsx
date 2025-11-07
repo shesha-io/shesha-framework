@@ -49,7 +49,7 @@ import {
 } from './contexts';
 import { App } from 'antd';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
-import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdentifier } from '../metadataDispatcher/entities/utils';
 
 export interface IStoredFileProviderPropsBase {
@@ -58,7 +58,7 @@ export interface IStoredFileProviderPropsBase {
 
 export interface IEntityProperty extends IStoredFileProviderPropsBase {
   ownerId: string;
-  ownerType: string | IEntityTypeIndentifier;
+  ownerType: string | IEntityTypeIdentifier;
   propertyName: string;
 }
 
@@ -70,7 +70,7 @@ export type FileUploadMode = 'async' | 'sync';
 
 export interface IStoredFileProviderProps {
   ownerId?: string;
-  ownerType?: string | IEntityTypeIndentifier;
+  ownerType?: string | IEntityTypeIdentifier;
   fileCategory?: string;
   propertyName?: string;
   fileId?: string;

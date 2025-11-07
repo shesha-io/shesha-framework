@@ -38,7 +38,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const { getMetadata } = useMetadataDispatcher();
 
     const entityMetadata = useAsyncMemo(async () => {
-      const meta = await getMetadata({ modelType: model.entityType, dataType: 'entity' });
+      const meta = await getMetadata({ modelType: model.entityType, dataType: DataTypes.entityReference });
       return isEntityMetadata(meta) ? meta : null;
     }, [model.entityType]);
 
@@ -65,7 +65,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       if (model.valueFormat === 'custom' && model.outcomeValueFunc)
         return executeExpression(model.outcomeValueFunc, { ...args, item: item }, null, null);
       return typeof (item) === 'object' ? getValueByPropertyName(item, keyPropName) : item;
-    }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, model.entityType]);
+    }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, entityMetadata]);
 
     const displayValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
       if (model.displayValueFunc)
@@ -181,9 +181,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       dataSourceType: 'entitiesList',
       mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
       entityType: isEntityReferencePropertyMetadata(propMetadata)
-        ? { name: propMetadata.entityType, module: propMetadata.entityModule }
+        ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
         : isEntityReferenceArrayPropertyMetadata(propMetadata)
-          ? { name: propMetadata.entityType, module: propMetadata.entityModule }
+          ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
           : undefined,
       valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
         ? 'entityReference'
