@@ -1,4 +1,5 @@
 import {
+  FormMarkupWithSettings,
   FormMode,
   IComponentRelations,
   IComponentsDictionary,
@@ -18,7 +19,7 @@ import { camelcaseDotNotation } from '@/utils/string';
 import { nanoid } from "@/utils/uuid";
 import { MutableRefObject } from "react";
 import { toolbarGroupsToComponents } from "../form/hooks";
-import { createComponentModelForDataProperty, processRecursive, upgradeComponent } from "../form/utils";
+import { componentsFlatStructureToTree, createComponentModelForDataProperty, processRecursive, upgradeComponent } from "../form/utils";
 import {
   FormDesignerFormState,
   IAddDataPropertyPayload,
@@ -32,6 +33,7 @@ import {
 } from "./contexts";
 import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType, IComponentSettingsEditorsCache } from "./models";
 import { IUndoRedoManager, UndoRedoManager } from "./undoRedoManager";
+import { IFormPersisterContext } from "../formPersisterProvider/contexts";
 
 export type FormDesignerArgs = {
   readOnly: boolean;
@@ -40,6 +42,7 @@ export type FormDesignerArgs = {
   formSettings: IFormSettings;
   settingsPanelRef: MutableRefObject<HTMLDivElement | undefined>;
   logEnabled?: boolean;
+  formPersister: IFormPersisterContext;
 };
 
 const isComponentsArray = (value: unknown): value is IConfigurableFormComponent[] => {
@@ -66,6 +69,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   toolboxComponents: IToolboxComponents;
 
+  formPersister: IFormPersisterContext;
+
   isDragging: boolean;
 
   hasDragged: boolean;
@@ -83,12 +88,14 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   constructor(args: FormDesignerArgs) {
     this.toolboxComponentGroups = args.toolboxComponentGroups;
     this.toolboxComponents = toolbarGroupsToComponents(args.toolboxComponentGroups);
+    this.formPersister = args.formPersister;
     this.settingsPanelRef = args.settingsPanelRef;
     this.readOnly = args.readOnly;
     this.isDebug = false;
     this.formMode = 'designer';
     this.isDragging = false;
     this.hasDragged = false;
+    this.isDataModified = false;
     this.subscriptions = new Map<FormDesignerSubscriptionType, Set<FormDesignerSubscription>>();
 
     // eslint-disable-next-line no-console
@@ -100,6 +107,25 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     };
     this.undoableState = new UndoRedoManager<FormDesignerFormState>(initialState);
   }
+
+  isDataModified: boolean;
+
+  loadAsync = async (): Promise<void> => {
+    await this.formPersister.loadForm({ skipCache: true });
+    this.isDataModified = false;
+    this.notifySubscribers(['data-modified']);
+  };
+
+  saveAsync = async (): Promise<void> => {
+    const { formFlatMarkup, formSettings } = this.state;
+    const payload: FormMarkupWithSettings = {
+      components: componentsFlatStructureToTree(this.toolboxComponents, formFlatMarkup),
+      formSettings: formSettings,
+    };
+    await this.formPersister.saveForm(payload);
+    this.isDataModified = false;
+    this.notifySubscribers(['data-modified']);
+  };
 
   log = (..._args: unknown[]): void => {
     // noop
@@ -113,7 +139,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       formSettings: settings,
     });
     this.selectedComponentId = undefined;
-    this.notifySubscribers(['markup', 'selection', 'history']);
+    this.isDataModified = false;
+    this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
   };
 
   validationErrors?: IFormValidationErrors | undefined;
@@ -665,19 +692,22 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   private updateState = (updater: (state: FormDesignerFormState) => FormDesignerFormState, description: string): void => {
     this.undoableState.executeChange(updater, description);
-    this.notifySubscribers(['markup', 'selection', 'history']);
+    this.isDataModified = true;
+    this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
   };
 
   undo = (): void => {
     this.log('FD: ◀ undo');
     this.undoableState.undo();
-    this.notifySubscribers(['markup', 'selection', 'history']);
+    this.isDataModified = this.undoableState.index > 0;
+    this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
   };
 
   redo = (): void => {
     this.log('FD: ▶ redo');
     this.undoableState.redo();
-    this.notifySubscribers(['markup', 'selection', 'history']);
+    this.isDataModified = true;
+    this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
   };
 
   get canUndo(): boolean {

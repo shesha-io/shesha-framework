@@ -8,6 +8,7 @@ import {
 } from './contexts';
 import { FormDesignerInstance } from './instance';
 import { FormDesignerSubscriptionType } from './models';
+import { useFormPersister } from '../formPersisterProvider';
 
 export interface IFormDesignerProviderProps {
   flatMarkup: IFlatComponentsStructure;
@@ -22,12 +23,14 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     readOnly,
   } = props;
   const toolboxComponentGroups = useFormDesignerComponentGroups();
+  const formPersister = useFormPersister();
   const settingsPanelRef = useRef<HTMLDivElement>();
 
   const [formDesigner] = useState<IFormDesignerInstance>(() => {
     return new FormDesignerInstance({
       readOnly,
       toolboxComponentGroups,
+      formPersister,
       formFlatMarkup: flatMarkup,
       formSettings,
       settingsPanelRef,
@@ -97,6 +100,10 @@ const useFormDesignerFormMode = (): FormMode => {
   useFormDesignerSubscription('mode');
   return useFormDesigner().formMode;
 };
+const useFormDesignerIsModified = (): boolean => {
+  useFormDesignerSubscription('data-modified');
+  return useFormDesigner().isDataModified;
+};
 
 const useFormDesignerUndoRedo = (): IUndoable => {
   useFormDesignerSubscription('history');
@@ -124,4 +131,5 @@ export {
   useFormDesignerIsDebug,
   useFormDesignerFormMode,
   useFormDesignerUndoRedo,
+  useFormDesignerIsModified,
 };

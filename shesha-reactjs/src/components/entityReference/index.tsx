@@ -87,7 +87,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const formData = localForm?.formData;
   const formMode = localForm?.formMode;
 
-  const { getEntityFormId } = useConfigurationItemsLoader();
+  const { getEntityFormIdAsync } = useConfigurationItemsLoader();
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const httpClient = useHttpClient();
   const { getMetadata } = useMetadataDispatcher();
@@ -115,7 +115,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         Boolean(formType)
       ) {
         try {
-          const formid = await getEntityFormId(entityType, formType);
+          const formid = await getEntityFormIdAsync(entityType, formType);
           setFormIdentifier({ name: formid.name, module: formid.module });
         } catch (error) {
           console.error('Error fetching form ID:', error);

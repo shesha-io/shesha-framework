@@ -5,7 +5,7 @@ import { getFormCacheKey } from '@/utils/form';
 import { useFormDesignerComponents } from '../form/hooks';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
 import { convertFormMarkupToFlatStructure } from '../form/utils';
-import { DEFAULT_FORM_SETTINGS, IFormSettings } from '../form/models';
+import { DEFAULT_FORM_SETTINGS, FormIdentifier, IFormSettings } from '../form/models';
 import { useFormById, useFormByMarkup } from './hooks';
 import { migrateFormSettings } from '../form/migration/formSettingsMigrations';
 
@@ -17,7 +17,7 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
   const cacheById = useRef<FormsCache>({});
   const cacheByMarkup = useRef<FormsCache>({});
   const designerComponents = useFormDesignerComponents();
-  const { getForm } = useConfigurationItemsLoader();
+  const { getFormAsync: getForm } = useConfigurationItemsLoader();
 
   const getFormByIdAsync = async ({ formId, skipCache }: GetFormByIdPayload): Promise<UpToDateForm> => {
     const formDto = await getForm({ formId, skipCache });
@@ -66,6 +66,11 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
     cacheById.current[cacheKey] = item;
 
     return item;
+  };
+
+  const clearCache = (formId: FormIdentifier): void => {
+    const cacheKey = getFormCacheKey(formId);
+    delete cacheById.current[cacheKey];
   };
 
   const getFormById = (payload: GetFormByIdPayload): Promise<UpToDateForm> => {
@@ -129,6 +134,7 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
   const actions: IFormManagerActionsContext = {
     getFormById,
     getFormByIdLoader,
+    clearCache,
     getFormByMarkup,
     getFormByMarkupLoader,
   };

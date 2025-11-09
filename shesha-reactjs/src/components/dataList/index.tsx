@@ -221,7 +221,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     if (!isFetchingTableData && records?.length && props.onFetchDataSuccess) props.onFetchDataSuccess();
   }, [isFetchingTableData]);
 
-  const { getEntityFormId, getForm } = useConfigurationItemsLoader();
+  const { getEntityFormIdAsync, getFormAsync } = useConfigurationItemsLoader();
 
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
@@ -262,7 +262,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       return !!entityForm.formConfiguration;
 
     if (!!entityForm.formId) {
-      getForm({ formId: entityForm.formId, skipCache })
+      getFormAsync({ formId: entityForm.formId, skipCache })
         .then((response) => {
           entityForm.formConfiguration = response;
           isReady(entityForms.current);
@@ -270,10 +270,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     } else {
       const entityTypeKey = getEntityTypeName(entityForm.entityType) ?? '';
       const cacheKey = `${entityTypeKey}_${fType ?? ''}`;
-      const f = loadedFormId.current[cacheKey] ?? getEntityFormId(entityForm.entityType, fType);
+      const f = loadedFormId.current[cacheKey] ?? getEntityFormIdAsync(entityForm.entityType, fType);
 
       f.then((e) =>
-        getForm({ formId: e, skipCache })
+        getFormAsync({ formId: e, skipCache })
           .then((response) => {
             entityForm.formId = e;
             entityForm.formConfiguration = response;
