@@ -139,9 +139,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const [formLoadingState, setFormLoadingState] = useState<IFormLoadingState>({ isLoading: false, error: null });
 
-  const { getForm } = useConfigurationItemsLoader();
+  const { getFormAsync: getForm } = useConfigurationItemsLoader();
 
-  const { getEntityFormId } = useConfigurationItemsLoader();
+  const { getEntityFormIdAsync } = useConfigurationItemsLoader();
 
   const entityTypeFormCache = useRef<{ [key: string]: IFormDto }>({});
 
@@ -181,7 +181,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             });
             prevRenderedEntityTypeForm.current = internalEntityType;
           } else {
-            getEntityFormId(internalEntityType, formType).then((formid) => {
+            getEntityFormIdAsync(internalEntityType, formType).then((formid) => {
               setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
               prevRenderedEntityTypeForm.current = internalEntityType;
             });

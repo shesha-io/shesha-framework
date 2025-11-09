@@ -5,6 +5,7 @@ import { UpToDateForm } from "../formManager/interfaces";
 import { FormIdentifier, FormMarkupWithSettings, IFormSettings, toErrorInfo } from "@/interfaces";
 import { HttpClientApi } from "../sheshaApplication/publicApi";
 import { FormUpdateMarkupInput } from "@/apis/formConfiguration";
+import { IConfigurationLoader } from "../configurationItemsLoader/configurationLoader";
 
 type ForceUpdateTrigger = () => void;
 
@@ -13,6 +14,7 @@ type FormPersisterArguments = {
   formId: FormIdentifier;
   forceRootUpdate: ForceUpdateTrigger;
   httpClient: HttpClientApi;
+  configurationItemsLoader: IConfigurationLoader;
 };
 
 const URLS = {
@@ -28,9 +30,12 @@ export class FormPersister implements IFormPersisterActionsContext {
 
   private forceRootUpdate: ForceUpdateTrigger;
 
+  private configurationItemsLoader: IConfigurationLoader;
+
   constructor(args: FormPersisterArguments) {
     this.formManager = args.formManager;
     this.httpClient = args.httpClient;
+    this.configurationItemsLoader = args.configurationItemsLoader;
     this.forceRootUpdate = args.forceRootUpdate;
     this.state = {
       formId: args.formId,
@@ -84,6 +89,9 @@ export class FormPersister implements IFormPersisterActionsContext {
         permissions: payload.formSettings.permissions,
       };
       await this.httpClient.put(URLS.SAVE_FORM, dto);
+      // TODO: review FormManager and implement single cleanup
+      this.formManager.clearCache(formId);
+      this.configurationItemsLoader.clearFormCache({ formId });
 
       this.setState((s) => ({
         ...s,

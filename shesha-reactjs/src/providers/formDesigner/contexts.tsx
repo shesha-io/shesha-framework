@@ -85,6 +85,8 @@ export type FormDesignerState = {
   isDragging: boolean;
   hasDragged: boolean;
 
+  isDataModified: boolean;
+
   isDebug: boolean;
   readOnly: boolean;
   formMode: FormMode;
@@ -121,6 +123,8 @@ export type FormDesignerActions = {
   getCachedComponentEditor: (type: string, evaluator: () => ISettingsFormFactory) => ISettingsFormFactory;
 
   subscribe: (type: FormDesignerSubscriptionType, callback: FormDesignerSubscription) => void;
+  loadAsync: () => Promise<void>;
+  saveAsync: () => Promise<void>;
 };
 
 

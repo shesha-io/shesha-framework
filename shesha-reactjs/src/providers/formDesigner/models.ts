@@ -28,7 +28,7 @@ export type IComponentSettingsEditorsCache = Record<string, ISettingsFormFactory
 export type RerenderTrigger = () => void;
 
 export type FormDesignerSubscription = (designer: IFormDesignerInstance) => void;
-export type FormDesignerSubscriptionType = 'markup' | 'selection' | 'readonly' | 'mode' | 'debug' | 'history';
+export type FormDesignerSubscriptionType = 'markup' | 'selection' | 'readonly' | 'mode' | 'debug' | 'history' | 'data-modified';
 
 export interface AddComponentPayloadBase {
   index: number;

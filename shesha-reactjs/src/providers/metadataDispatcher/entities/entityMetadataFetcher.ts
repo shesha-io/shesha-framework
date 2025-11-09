@@ -5,7 +5,7 @@ import { IEntityMetadata, NestedProperties, isIHasEntityType, isPropertiesArray 
 import { ENTITY_CACHE, getEntityMetadataCacheKey, syncEntities } from "./utils";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { EntityTypesMap } from "./entityTypesMap";
-import { IConfigurationItemsLoaderActionsContext } from "@/providers/configurationItemsLoader/contexts";
+import { IConfigurationLoader } from "@/providers/configurationItemsLoader/configurationLoader";
 
 type EntityMetadataByClassNameFetcher = (className: string) => Promise<IEntityMetadata | null>;
 type EntityMetadataByIdFetcher = (etityIdentifier: IEntityTypeIdentifier) => Promise<IEntityMetadata | null>;
@@ -19,9 +19,9 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
 
   #cacheProvider: ICacheProvider;
 
-  #configurationItemsLoader: IConfigurationItemsLoaderActionsContext;
+  #configurationItemsLoader: IConfigurationLoader;
 
-  constructor(configurationItemsLoader: IConfigurationItemsLoaderActionsContext, httpClient: HttpClientApi, cacheProvider: ICacheProvider) {
+  constructor(configurationItemsLoader: IConfigurationLoader, httpClient: HttpClientApi, cacheProvider: ICacheProvider) {
     this.#httpClient = httpClient;
     this.#typesMap = new EntityTypesMap();
     this.#cacheProvider = cacheProvider;
@@ -78,7 +78,7 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
 
   getByTypeId: EntityMetadataByIdFetcher = async (typeId: IEntityTypeIdentifier): Promise<IEntityMetadata | null> => {
     await this.#ensureSynchronized();
-    const metadata = await this.#configurationItemsLoader.getCachedConfig<IEntityMetadata>({ type: 'entity', id: typeId, skipCache: false });
+    const metadata = await this.#configurationItemsLoader.getCachedConfigAsync<IEntityMetadata>({ type: 'entity', id: typeId, skipCache: false });
     return metadata
       ? this.#convertMetadata(metadata.configuration, this.getByTypeId)
       : null;
@@ -86,7 +86,7 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
 
   getByClassName: EntityMetadataByClassNameFetcher = async (className: string): Promise<IEntityMetadata | null> => {
     await this.#ensureSynchronized();
-    const metadata = await this.#configurationItemsLoader.getCachedConfig<IEntityMetadata>({ type: 'entity', id: className, skipCache: false });
+    const metadata = await this.#configurationItemsLoader.getCachedConfigAsync<IEntityMetadata>({ type: 'entity', id: className, skipCache: false });
     return metadata
       ? this.#convertMetadata(metadata.configuration, this.getByTypeId)
       : null;
