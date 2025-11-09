@@ -353,8 +353,8 @@ namespace Shesha.Web.FormsDesigner.Services
             entity.Label = input.Label;
             entity.Description = input.Description;
             entity.Markup = input.Markup;
-            entity.ModelType = input.ModelType;
             entity.ConfigurationForm =  new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!);
+            entity.ModelType = input.ModelType;
             entity.GenerationLogicTypeName = input.GenerationLogicTypeName;
             entity.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
             entity.PlaceholderIcon = input.PlaceholderIcon;

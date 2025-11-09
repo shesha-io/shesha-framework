@@ -48,7 +48,7 @@ export class EntitiesManager {
     const endpoint = this.#getApiEndpoint(meta, StandardEntityActions.read);
 
     const requestParams = { id: id };
-    const url = `${endpoint.url}?${qs.stringify(requestParams)}`;
+    const url = `${endpoint.url}?${qs.stringify(requestParams, { allowDots: true })}`;
     const response = await this._httpClient.get<IAjaxResponse<TEntity>>(url);
     if (response.status !== 200 || !response.data.success)
       throw new Error(`Failed to get entity '${typeAccessor.module}.${typeAccessor.name}' by id ${id}`);
@@ -63,7 +63,7 @@ export class EntitiesManager {
     const endpoint = this.#getApiEndpoint(meta, StandardEntityActions.update);
 
     const requestParams = { id: value.id };
-    const url = `${endpoint.url}?${qs.stringify(requestParams)}`;
+    const url = `${endpoint.url}?${qs.stringify(requestParams, { allowDots: true })}`;
     const response = await this._httpClient.put<IAjaxResponse<TEntity>>(url, value);
     if (response.status !== 200 || !response.data.success)
       throw new Error(`Failed to update entity '${typeAccessor.module}.${typeAccessor.name}' by id ${value.id}`);
@@ -78,7 +78,7 @@ export class EntitiesManager {
     const endpoint = this.#getApiEndpoint(meta, StandardEntityActions.delete);
 
     const requestParams = { id: id };
-    const url = `${endpoint.url}?${qs.stringify(requestParams)}`;
+    const url = `${endpoint.url}?${qs.stringify(requestParams, { allowDots: true })}`;
     const response = await this._httpClient.delete<IAjaxResponse<void>>(url);
     if (response.status !== 200 || !response.data.success)
       throw new Error(`Failed to delete entity '${typeAccessor.module}.${typeAccessor.name}' by id ${id}`);

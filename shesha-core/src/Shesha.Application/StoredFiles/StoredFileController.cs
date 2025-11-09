@@ -448,9 +448,13 @@ namespace Shesha.StoredFiles
                 .NotNull("FullClassName should not be empty");
         }
 
-        private async Task<object> GetOwnerAsync(EntityTypeIdInput? ownerType, string ownerId, string? ownerName)
+
+        private async Task<object> GetOwnerAsync(string? className, EntityTypeIdInput? ownerType, string ownerId, string? ownerName)
         {
-            var owner = await _dynamicRepository.GetAsync(await GetFullClassNameFromEntityTypeIdAsync(ownerType), ownerId);
+            var ownerClassName = string.IsNullOrEmpty(className)
+                ? await GetFullClassNameFromEntityTypeIdAsync(ownerType)
+                : className;
+            var owner = await _dynamicRepository.GetAsync(ownerClassName, ownerId);
             if (owner == null)
                 throw new AbpValidationException($"Owner '{ownerType}:{ownerId}' not found");
             if (!string.IsNullOrWhiteSpace(ownerName))
@@ -486,7 +490,7 @@ namespace Shesha.StoredFiles
             }
             else
             {
-                var owner = await GetOwnerAsync(input.OwnerType, input.OwnerId, input.OwnerName);
+                var owner = await GetOwnerAsync(null, input.OwnerType, input.OwnerId, input.OwnerName);
                 var ownerId = owner.NotNull().GetId()?.ToString();
                 var ownerType = owner.GetType().StripCastleProxyType().GetRequiredFullName();
 
@@ -521,7 +525,7 @@ namespace Shesha.StoredFiles
             if (string.IsNullOrEmpty(input.OwnerId))
                 throw new Exception($"`{nameof(input.OwnerId)}` must not be null");
 
-            var owner = await GetOwnerAsync(input.OwnerType, input.OwnerId, input.OwnerName);
+            var owner = await GetOwnerAsync(null, input.OwnerType, input.OwnerId, input.OwnerName);
             var id = owner.GetId();
             var type = owner.GetType().StripCastleProxyType().GetRequiredFullName();
             var fileVersions = string.IsNullOrWhiteSpace(input.FilesCategory)
@@ -549,24 +553,27 @@ namespace Shesha.StoredFiles
             if (input.File == null)
                 validations.Add($"{nameof(input.File)} must not be null", [nameof(input.File)]);
 
-            var ownerSpecified = !string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId);
+            var ownerSpecified = !input.OwnerType.IsEmpty() && !string.IsNullOrWhiteSpace(input.OwnerId);
             var hasProperty = !string.IsNullOrWhiteSpace(input.PropertyName);
 
-            if (string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
+            if (input.OwnerType.IsEmpty() && !string.IsNullOrWhiteSpace(input.OwnerId))
                 validations.Add($"{nameof(input.OwnerType)} must not be null when {nameof(input.OwnerId)} is specified", [nameof(input.OwnerType)]);
 
             if (input.Id == null && string.IsNullOrWhiteSpace(input.PropertyName) && !ownerSpecified && string.IsNullOrWhiteSpace(input.FilesCategory))
                 validations.Add($"Id must not be null", [nameof(input.Id)]);
 
-            var ownerType = _typeFinder.FindAll().FirstOrDefault(x => x.IsEntityType() && (x.FullName == input.OwnerType || x.GetTypeShortAliasOrNull() == input.OwnerType));
-            if (ownerSpecified && ownerType == null)
-                validations.Add($"Owner type not found (type = '{input.OwnerType}')", [nameof(input.OwnerId)]);
-
-            var owner = ownerType != null && !string.IsNullOrWhiteSpace(input.OwnerId)
-                ? await _dynamicRepository.GetAsync(ownerType.GetRequiredFullName(), input.OwnerId)
+            var ownerClassName = !input.OwnerType.IsEmpty()
+                ? await GetFullClassNameFromEntityTypeIdAsync(input.OwnerType)
                 : null;
-            if (ownerSpecified && owner == null)
-                validations.Add($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')", [nameof(input.OwnerId)]);
+
+            object? owner = null;
+
+            if (ownerSpecified)
+            {
+                owner = await GetOwnerAsync(ownerClassName, input.OwnerType, input.OwnerId.NotNull("OwnerId can not be null here"), null);
+                if (owner == null)
+                    validations.Add($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')", [nameof(input.OwnerId)]);
+            }
 
             PropertyInfo? property = null;
             if (owner != null && !string.IsNullOrWhiteSpace(input.PropertyName))
@@ -626,9 +633,9 @@ namespace Shesha.StoredFiles
                         storedFile.Temporary = true;
                     }
 
-                    if (!string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
+                    if (!string.IsNullOrEmpty(ownerClassName) && !string.IsNullOrWhiteSpace(input.OwnerId))
                     {
-                        storedFile.SetOwner(input.OwnerType, input.OwnerId);
+                        storedFile.SetOwner(ownerClassName, input.OwnerId);
                     }
 
                     storedFile.Category = input.FilesCategory;

@@ -82,6 +82,7 @@ export class FormMetadataHelper {
       dataType: prop.dataType || "",
       dataFormat: prop.dataFormat || "",
       entityType: prop.entityType || "",
+      entityModule: prop.entityModule || "",
       required: !!prop.required,
       readonly: !!prop.readonly,
       minLength: prop.minLength || null,
@@ -188,7 +189,9 @@ export class FormMetadataHelper {
         }
         builder.addAutocomplete({
           ...commonProps,
-          entityType: property.entityType,
+          entityType: property.entityType
+            ? { name: property.entityType, module: property.entityModule } as IEntityTypeIdentifier
+            : null,
           dataSourceType: 'entitiesList',
         });
         break;

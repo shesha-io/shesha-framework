@@ -127,6 +127,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
 
     const getDataUrl = `${getListUrl || `${GENERIC_ENTITIES_ENDPOINT}/GetAll`}?${qs.stringify(
       getDataPayload,
+      { allowDots: true },
     )}`;
 
     const response = await httpClient.get<IAjaxResponse<ITableDataResponse>>(getDataUrl);

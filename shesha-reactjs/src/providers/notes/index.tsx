@@ -37,7 +37,7 @@ import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '../meta
 
 const extractErrorDetails = (error: unknown): unknown => {
   // TODO: review and remove this function. The logic seems wrong but kept as is for now
-  return typeof (error) === 'object' && 'data' in error ? error.data : undefined;
+  return error && typeof (error) === 'object' && 'data' in error ? error.data : undefined;
 };
 
 const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
