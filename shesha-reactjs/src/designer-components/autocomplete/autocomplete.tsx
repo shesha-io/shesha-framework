@@ -24,6 +24,7 @@ import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { useMetadataDispatcher } from '@/providers';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   type: 'autocomplete',
@@ -38,6 +39,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const { getMetadata } = useMetadataDispatcher();
 
     const entityMetadata = useAsyncMemo(async () => {
+      if (isEntityTypeIdEmpty(model.entityType))
+        return null;
       const meta = await getMetadata({ modelType: model.entityType, dataType: DataTypes.entityReference });
       return isEntityMetadata(meta) ? meta : null;
     }, [model.entityType]);

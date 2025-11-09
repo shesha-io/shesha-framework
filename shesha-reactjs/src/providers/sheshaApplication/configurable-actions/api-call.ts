@@ -128,7 +128,7 @@ export const useApiCallAction = (): void => {
       const encodeAsQueryString = ['get', 'delete'].includes(verb?.toLowerCase());
       if (encodeAsQueryString) {
         const queryStringData = { ...getQueryParams(preparedUrl), ...preparedData };
-        preparedUrl = `${preparedUrl}?${qs.stringify(queryStringData)}`;
+        preparedUrl = `${preparedUrl}?${qs.stringify(queryStringData, { allowDots: true })}`;
         preparedData = undefined;
       }
 

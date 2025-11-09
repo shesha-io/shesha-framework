@@ -38,6 +38,7 @@ export interface PropertyMetadataDto {
   description?: string | null;
   dataType: string;
   dataFormat?: string | null;
+  containerType?: string | null;
   entityType?: string | null;
   entityModule?: string | null;
   referenceListName?: string | null;

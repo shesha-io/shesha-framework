@@ -18,6 +18,7 @@ namespace Shesha.Domain
 
         }
 
+        [JsonConstructor]
         public EntityTypeIdentifier(string? module, string name, string? fullClassName) : base(module, name)
         {
             FullClassName = fullClassName;
