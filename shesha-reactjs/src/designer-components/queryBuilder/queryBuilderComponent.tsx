@@ -20,7 +20,8 @@ const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
   canBeJsSetting: true,
   //dataTypes: [DataTypes.string],
   Factory: ({ model }) => {
-    return <QueryBuilder {...model} readOnly={model.readOnly}></QueryBuilder>;
+    return model.hidden ? null :
+    <QueryBuilder {...model} readOnly={model.readOnly}></QueryBuilder>;
   },
   settingsFormMarkup: settingsForm,
   migrator: (m) => m
