@@ -67,7 +67,7 @@ export const getLayerEventItems = (
   return { ...item, events };
 };
 
-export const getLayerEventsData = (layers: ICalendarLayersProps[], layerData: { [x: string]: any }[]): ICalendarLayersProps[] =>
+export const getLayerEventsData = (layers: ICalendarLayersProps[], layerData: Array<{ [x: string]: any } | null>): ICalendarLayersProps[] =>
   (layers || []).map((item, index): ICalendarLayersProps => {
     const layerDataItem = (layerData[index] as any[]) || [];
 
@@ -141,8 +141,8 @@ export const getLayerEvents = (
     .reduce((prev, curr) => [...(prev || []), ...(curr || [])], []);
 };
 
-export const getResponseListToState = (res: { [key in string]: any }[]): any[] =>
-  res.map((res) => (res?.result?.items ? res.result.items : res?.result));
+export const getResponseListToState = (res: Array<{ [key in string]: any } | null>): any[] =>
+  res.map((res) => res === null ? null : (res?.result?.items ? res.result.items : res?.result));
 
 export const addPx = (value: string): string => {
   value = value ?? "100%";

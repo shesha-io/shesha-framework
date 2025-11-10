@@ -79,14 +79,12 @@ export const useCalendarLayers = (layers: ICalendarLayersProps[]): IGetData => {
       }),
     )
       .then((results) => {
-        // Filter out rejected promises and null results from failed layers
-        const successfulData = results
-          .filter((result): result is PromiseFulfilledResult<any> =>
-            result.status === 'fulfilled' && result.value != null,
-          )
-          .map((result) => result.value);
+        // Normalize results to maintain alignment with layers - preserve indices even for failed fetches
+        const normalizedData = results.map((result) =>
+          result.status === 'fulfilled' && result.value != null ? result.value : null,
+        );
 
-        setState((s) => ({ ...s, layerData: getResponseListToState(successfulData) }));
+        setState((s) => ({ ...s, layerData: getResponseListToState(normalizedData) }));
       })
       .catch((error) => {
         // This should rarely happen with allSettled, but handle it just in case

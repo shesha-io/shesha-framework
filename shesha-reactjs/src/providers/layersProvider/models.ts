@@ -45,21 +45,13 @@ export interface ILayerGroupItemBase {
 }
 
 export interface ILayerFormModel extends ILayerGroupItemBase {
-  label?: string;
   orderIndex?: number;
   description?: string;
-  visible?: boolean;
-  allowChangeVisibility?: boolean;
   useExpression?: boolean;
-  entityType?: string | IEntityTypeIdentifier;
-  permissions?: any;
   properties?: string[];
   queryParamsExpression?: string;
   readOnly?: boolean;
-  icon?: string;
-  iconColor?: {
-    hex: string;
-  };
+  iconColor?: string;
   customUrl?: string;
 }
 
