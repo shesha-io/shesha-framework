@@ -1,6 +1,5 @@
 import { IEntityReferenceDto, IErrorInfo, ILoginForm } from '@/interfaces';
 import { GetCurrentLoginInfoOutput, UserLoginInfoDto } from '@/apis/session';
-import { IRouter } from '../shaRouting';
 
 export type AuthenticationStatus = 'waiting' | 'inprogress' | 'ready' | 'failed';
 export interface AuthenticationState {
@@ -41,5 +40,4 @@ export interface IAuthenticator {
   anyOfPermissionsGranted: (permissions: string[], permissionedEntities?: IEntityReferenceDto[]) => boolean;
 
   state: AuthenticationState;
-  applyRouter: (router: IRouter) => void;
 }

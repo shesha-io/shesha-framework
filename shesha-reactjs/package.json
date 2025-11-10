@@ -178,6 +178,7 @@
     "monaco-editor": "^0.50.0",
     "mustache": "^4.2.0",
     "next": "^14.2.4",
+    "next-navigation-guard": "^0.2.0",
     "number-to-words": "^1.2.4",
     "object-hash": "^3.0.0",
     "pluralize": "^8.0.0",
