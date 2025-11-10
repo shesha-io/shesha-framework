@@ -9,7 +9,6 @@ import { isDefined } from "../../utils/nullables";
 import { useSearchParams } from "next/navigation";
 
 const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
-  const csRef = React.useRef<IConfigurationStudio>();
   const [, forceUpdate] = React.useState({});
   const httpClient = useHttpClient();
   const modalApi = useModalApi();
@@ -17,7 +16,8 @@ const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
   const shaRouter = useShaRouting();
 
   const toolbarRef = useRef<HTMLDivElement>(null!);
-  if (!csRef.current) {
+
+  const [configurationStudio] = React.useState<IConfigurationStudio>(() => {
     // Create a new FormStore if not provided
     const instance = new ConfigurationStudio({
       forceRootUpdate: () => forceUpdate({}),
@@ -29,19 +29,31 @@ const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
       shaRouter: shaRouter,
       logEnabled: false,
     });
-    csRef.current = instance;
 
     instance.init();
-  }
+    return instance;
+  });
 
   const query = useSearchParams();
   const docId = query.get('docId');
   useEffect(() => {
-    if (csRef.current && docId)
-      csRef.current.openDocumentByIdAsync(docId);
-  }, [docId]);
+    if (docId)
+      configurationStudio.openDocumentByIdAsync(docId);
+  }, [configurationStudio, docId]);
 
-  return [csRef.current];
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent): void => {
+      if (configurationStudio.hasUnsavedChanges) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [configurationStudio]);
+
+
+  return [configurationStudio];
 };
 
 export const ConfigurationStudioContext = createNamedContext<IConfigurationStudio | undefined>(undefined, "ConfigurationStudioContext");
