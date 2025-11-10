@@ -291,7 +291,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       >
         {isStub
           ? (isDragger
-            ? <Dragger disabled ><DraggerStub styles={styles} /></Dragger>
+            ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
             : (
               <div
                 className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}

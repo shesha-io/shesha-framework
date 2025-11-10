@@ -45,26 +45,26 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
 
   return (
-      <StoredFilesRendererBase
-        {...props}
-        isStub={props.isStub}
-        disabled={props.disabled || !props.allowAdd}
-        isDragger={props?.isDragger}
-        fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
-        allowUpload={false}
-        allowDelete={props.allowDelete}
-        deleteFile={deleteFile}
-        uploadFile={props.uploadFile ?? uploadFile}
-        downloadZipFile={downloadZipFile}
-        downloadZip={props.downloadZip}
-        downloadFile={downloadFile}
-        isDownloadingFileListZip={downloadZip}
-        isDownloadZipSucceeded={downloadZipSuccess}
-        allowedFileTypes={props?.allowedFileTypes}
-        maxHeight={props?.maxHeight}
-        layout={props?.filesLayout}
-        listType={props?.listType}
-      />
+    <StoredFilesRendererBase
+      {...props}
+      isStub={props.isStub}
+      disabled={props.disabled || !props.allowAdd}
+      isDragger={props?.isDragger}
+      fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
+      allowUpload={false}
+      allowDelete={props.allowDelete}
+      deleteFile={deleteFile}
+      uploadFile={props.uploadFile ?? uploadFile}
+      downloadZipFile={downloadZipFile}
+      downloadZip={props.downloadZip}
+      downloadFile={downloadFile}
+      isDownloadingFileListZip={downloadZip}
+      isDownloadZipSucceeded={downloadZipSuccess}
+      allowedFileTypes={props?.allowedFileTypes}
+      maxHeight={props?.maxHeight}
+      layout={props?.filesLayout}
+      listType={props?.listType}
+    />
   );
 };
 
