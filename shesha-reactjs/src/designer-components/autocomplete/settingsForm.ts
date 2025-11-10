@@ -88,7 +88,6 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                     label: 'Edit Mode',
                     size: 'small',
                     jsSetting: true,
-                    defaultValue: 'inherited',
                   },
                   {
                     id: nanoid(),
@@ -234,8 +233,8 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                     id: nanoid(),
                     parentId: dataTabId,
                     hidden: {
-                      _code: `return  getSettingValue(data.entityType) == undefined || getSettingValue(data.dataSourceType) !== 'entitiesList';`,
                       _mode: 'code',
+                      _code: `return  getSettingValue(data.entityType) == undefined || getSettingValue(data.dataSourceType) !== 'entitiesList';`,
                       _value: false,
                     },
                     inputs: [
@@ -510,7 +509,6 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                       _mode: 'code',
                       _value: false,
                     } as any,
-                    fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
                   },
                 ],
               })
@@ -1058,7 +1056,6 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,

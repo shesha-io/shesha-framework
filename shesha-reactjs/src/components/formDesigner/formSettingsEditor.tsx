@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Modal } from 'antd';
 import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
-import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerSettings } from '@/providers/formDesigner';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
@@ -17,8 +17,8 @@ export interface IFormSettingsEditorProps {
 }
 
 export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, close, readOnly }) => {
-  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
-  const { updateFormSettings } = useFormDesignerActions();
+  const formSettings = useFormDesignerSettings();
+  const { updateFormSettings } = useFormDesigner();
   const { formProps } = useFormPersister();
   const formRef = useShaFormRef();
 

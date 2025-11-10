@@ -1,6 +1,7 @@
 import { NoteDto } from '@/apis/note';
 import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { createNamedContext } from '@/utils/react';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
 export type IFlagProgressFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes';
 export type IFlagSucceededFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes';
@@ -9,7 +10,7 @@ export type IFlagActionedFlags = '__DEFAULT__';
 
 export interface INoteSettings {
   ownerId: string;
-  ownerType: string;
+  ownerType: string | IEntityTypeIdentifier;
   category?: string;
   allCategories?: boolean;
 }
@@ -18,7 +19,7 @@ export type INote = NoteDto;
 
 export interface ICreateNotePayload {
   ownerId?: string;
-  ownerType?: string;
+  ownerType?: string | IEntityTypeIdentifier;
   category?: string;
   priority?: number;
   parentId?: string;

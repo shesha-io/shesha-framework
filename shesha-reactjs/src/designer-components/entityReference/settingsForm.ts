@@ -99,7 +99,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'entityTypeAutocomplete',
-                  allowClear: true,
                   propertyName: 'entityType',
                   label: 'Entity Type',
                   tooltip: 'The entity type you want to reference.',
@@ -108,7 +107,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                   hidden: false,
                   validate: { required: true },
                   settingsValidationErrors: [],
-                  width: '100%',
                   jsSetting: true,
                 })
                 .addSettingsInput({
@@ -131,7 +129,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                   dataSourceUrl: '/api/services/app/Api/Endpoints',
                   settingsValidationErrors: [],
                   useRawValues: true,
-                  width: '100%',
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -170,7 +167,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                       parentId: dataTabId,
                       type: 'iconPicker',
                       jsSetting: true,
-                      allowClear: true,
                       readOnly: {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
@@ -220,7 +216,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                       type: 'propertyAutocomplete',
                       allowClear: true,
                       jsSetting: true,
-                      width: '100%',
                       modelType: {
                         _code: 'return getSettingValue(data?.entityType);',
                         _mode: 'code',
@@ -243,7 +238,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                     { value: 'NavigateLink', label: 'Navigate link' },
                     { value: 'Dialog', label: 'Dialog' },
                   ],
-                  defaultValue: 'Quickview',
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -261,7 +255,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                         { value: 'name', label: 'Name' },
                         { value: 'dynamic', label: 'Dynamic' },
                       ],
-                      defaultValue: 'name',
                     },
                     {
                       id: nanoid(),
@@ -270,8 +263,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                       parentId: dataTabId,
                       type: 'formTypeAutocomplete',
                       jsSetting: true,
-                      width: '100%',
-                      allowClear: true,
                       readOnly: {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
@@ -344,7 +335,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                               type: 'dropdown',
                               allowClear: true,
                               jsSetting: true,
-                              defaultValue: 'default',
                               dropdownOptions: [
                                 { value: 'default', label: 'Default' },
                                 { value: 'custom', label: 'Custom' },
@@ -381,7 +371,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                                 { value: 'POST', label: 'POST' },
                                 { value: 'PUT', label: 'PUT' },
                               ],
-                              defaultValue: 'POST',
                               hidden: {
                                 _code: 'return getSettingValue(data?.footerButtons) === "default";',
                                 _mode: 'code',
@@ -420,24 +409,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                                 'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                                 'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
                                 'Id initial value is already initialised with {{entityReference.id}} but you can override it',
-                              exposedVariables: [
-                                { name: 'data', description: 'This form data', type: 'object' },
-                                { name: 'form', description: 'Form instance', type: 'object' },
-                                {
-                                  name: 'formMode',
-                                  description: 'Current form mode',
-                                  type: "'designer' | 'edit' | 'readonly'",
-                                },
-                                { name: 'globalState', description: 'Global state', type: 'object' },
-                                {
-                                  name: 'entityReference.id',
-                                  description: 'Id of entity reference entity',
-                                  type: 'object',
-                                },
-                                { name: 'entityReference.entity', description: 'Entity', type: 'object' },
-                                { name: 'moment', description: 'moment', type: '' },
-                                { name: 'http', description: 'axiosHttp', type: '' },
-                              ].map((item) => JSON.stringify(item)),
                             },
                             {
                               id: nanoid(),
@@ -454,7 +425,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                                 { value: '60%', label: 'Medium' },
                                 { value: '80%', label: 'Large' },
                               ],
-                              width: '100%',
                             },
                           ],
                         })
@@ -468,9 +438,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                               label: 'Handle Success',
                               parentId: dataTabId,
                               type: 'switch',
-                              defaultValue: true,
                               jsSetting: true,
-                              width: '100%',
                             },
                           ],
                         })
@@ -512,7 +480,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                               label: 'Handle Fail',
                               parentId: dataTabId,
                               type: 'switch',
-                              defaultValue: false,
                               jsSetting: false,
                             },
                           ],
@@ -949,7 +916,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    inputType: 'radio',
                                     buttonGroupOptions: repeatOptions,
                                   },
                                 ],
@@ -1081,7 +1047,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                                     jsSetting: true,
                                     min: 0,
                                     max: 24,
-                                    defaultValue: 8,
                                   },
                                   {
                                     type: 'numberField',
@@ -1092,7 +1057,6 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                                     jsSetting: true,
                                     min: 0,
                                     max: 24,
-                                    defaultValue: 16,
                                   },
                                 ],
                               })

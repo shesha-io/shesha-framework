@@ -46,7 +46,6 @@ export class FormsApi implements IFormsApi {
     this._entityMetadataHelper = new FormMetadataHelper(metadataDispatcher);
   }
 
-
   prepareTemplateAsync = (templateId: string, replacements: object): Promise<string> => {
     if (!templateId)
       return Promise.resolve('');

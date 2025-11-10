@@ -19,7 +19,6 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;
-  defaultValue?: number;
   allowClear?: boolean;
   allowHalf?: boolean;
   icon?: string;

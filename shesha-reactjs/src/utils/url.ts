@@ -48,7 +48,7 @@ export const getQueryParams = (url?: string): QueryStringParams => {
   const queryString = getQueryString(effectiveUrl);
 
   return queryString
-    ? qs.parse(queryString, { ignoreQueryPrefix: true })
+    ? qs.parse(queryString, { allowDots: true, ignoreQueryPrefix: true })
     : {};
 };
 
@@ -65,7 +65,7 @@ export const setQueryParam = (url: string, key: string, value: string): string =
   const params = Object.fromEntries(urlSearchParams.entries());
   params[key] = encodeURIComponent(value);
 
-  return `${urlObj.host}${urlObj.pathname}?${qs.stringify(params)}`;
+  return `${urlObj.host}${urlObj.pathname}?${qs.stringify(params, { allowDots: true })}`;
 };
 
 export const isValidSubmitVerb = (submitVerb: string): boolean => {
@@ -85,11 +85,11 @@ export function removeURLParameter(url: string, parameter: string): string {
   const [baseUrl, queryString = ''] = url.split('?');
   if (queryString === '') return url;
 
-  const parsed = qs.parse(queryString);
+  const parsed = qs.parse(queryString, { allowDots: true });
   if (!(parameter in parsed))
     return url;
   delete parsed[parameter];
-  const newQueryString = qs.stringify(parsed);
+  const newQueryString = qs.stringify(parsed, { allowDots: true });
   return isNullOrWhiteSpace(newQueryString)
     ? baseUrl
     : baseUrl + '?' + newQueryString;
@@ -102,7 +102,7 @@ export const buildUrl = (url: string, queryParams?: object): string => {
 
   const queryStringData = { ...urlQueryPatams, ...queryParams };
 
-  const queryString = qs.stringify(queryStringData);
+  const queryString = qs.stringify(queryStringData, { allowDots: true });
   const preparedUrl = queryString
     ? `${urlWithoutQuery}?${queryString}`
     : urlWithoutQuery;

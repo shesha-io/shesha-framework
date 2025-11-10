@@ -77,7 +77,7 @@ export const getAddressValue = (value: string | IEntityReferenceDto): string => 
 
 export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['searchOptions'] => {
   const {
-    countryRestriction: country,
+    countryRestriction,
     latPriority: lat,
     lngPriority: lng,
     radiusPriority: radius,
@@ -85,8 +85,13 @@ export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['sear
   } = model;
   let result = {} as PropTypes['searchOptions'];
 
-  if (country?.length) {
-    const countryCodes = country.map((countryLabel) => {
+  const countries = (Array.isArray(countryRestriction)
+    ? countryRestriction
+    : [countryRestriction]
+  ).filter((c) => c != null && c !== '');
+
+  if (countries.length) {
+    const countryCodes = countries.map((countryLabel) => {
       const foundCountry = COUNTRY_CODES.find((item) => item.value === countryLabel);
       return foundCountry ? foundCountry.code : countryLabel;
     });

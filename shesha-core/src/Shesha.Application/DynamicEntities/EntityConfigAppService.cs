@@ -1,7 +1,12 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
+using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Shesha.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
@@ -22,7 +27,7 @@ namespace Shesha.DynamicEntities;
 public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, EntityConfigDto, Guid>, IEntityConfigAppService
 {
     private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
-    private readonly IEntityConfigManager _entityConfigManager;
+    private readonly IModelConfigurationManager _modelConfigManager;
     private readonly IRepository<ConfigurationItem, Guid> _configItemRepository;
     private readonly IRepository<ConfigurationItemInheritance, string> _configItemInheritanceRepository;
     private readonly IRepository<EntityProperty, Guid> _propertyRepository;
@@ -31,7 +36,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     public EntityConfigAppService(
         IRepository<EntityConfig, Guid> repository,
         IEntityTypeConfigurationStore entityConfigurationStore,
-        IEntityConfigManager entityConfigManager,
+        IModelConfigurationManager modelConfigManager,
         IRepository<ConfigurationItem, Guid> configItemRepository,
         IRepository<ConfigurationItemInheritance, string> configItemInheritanceRepository,
         IRepository<EntityProperty, Guid> propertyRepository,
@@ -39,24 +44,29 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         ) : base(repository)
     {
         _entityConfigurationStore = entityConfigurationStore;
-        _entityConfigManager = entityConfigManager;
+        _modelConfigManager = modelConfigManager;
         _configItemRepository = configItemRepository;
         _configItemInheritanceRepository = configItemInheritanceRepository;
         _propertyRepository = propertyRepository;
         _moduleManager = moduleManager;
     }
 
-    public async Task<FormIdentifier?> GetEntityConfigFormAsync(string entityConfigName, string typeName)
+    [AllowAnonymous]
+    public async Task<FormIdentifier?> GetEntityConfigFormAsync(EntityTypeIdInput entityType, string typeName)
     {
-        var entityConfig = await Repository.GetAll().Where(x => x.Name == entityConfigName || x.TypeShortAlias == entityConfigName).FirstOrDefaultAsync();
+        // ToDo: AS - merge EntityTypeIdInput with EntityTypeIdentifier
+        var entityConfig = await _modelConfigManager.GetByEntityTypeIdAsync(new EntityTypeIdentifier(entityType.Module, entityType.Name ?? "", entityType.FullClassName));
+
         if (entityConfig == null)
             return null;
 
+        var model = (await _modelConfigManager.GetCachedModelConfigurationOrNullAsync(entityConfig, true)).NotNull();
+
         typeName = typeName.Replace(" ", "").ToLower();
 
-        var configFormId = entityConfig.ViewConfigurations.FirstOrDefault(x => x.Type == typeName || x.Type.Replace(" ", "").ToLower() == typeName)?.FormId;
+        var configFormId = model.ViewConfigurations.FirstOrDefault(x => x.Type == typeName || x.Type.Replace(" ", "").ToLower() == typeName)?.FormId;
 
-        return configFormId ?? new FormIdentifier(entityConfig.Module?.Name, $"{entityConfigName}-{typeName}");
+        return configFormId ?? new FormIdentifier(entityConfig.Module?.Name, $"{entityType.Name}-{typeName}");
     }
 
     // Used to avoid performance issues
@@ -72,7 +82,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         query = ApplySorting(query, input);
         query = ApplyPaging(query, input);
 
-        var entities = await _entityConfigManager.GetMainDataListAsync(query);
+        var entities = await _modelConfigManager.GetMainDataListAsync(query);
 
         return new PagedResultDto<EntityConfigDto>(totalCount, entities);
     }
@@ -81,7 +91,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     public async Task<List<AutocompleteItemDto>> EntityConfigAutocompleteAsync(bool? implemented, string? term, string? selectedValue)
     {
         var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
-        var models = await _entityConfigManager.GetMainDataListAsync(implemented: implemented);
+        var models = await _modelConfigManager.GetMainDataListAsync(implemented: implemented);
 
         var entities = isPreselection
             ? models.Where(e => e.Id == selectedValue.NotNull().ToGuid()).ToList()
@@ -121,32 +131,35 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     [HttpGet]
     public async Task<List<EntityConfigurationDto>> GetClientApiConfigurationsAsync()
     {
-        var entities = await _entityConfigManager.GetMainDataListAsync();
+        var entities = await _modelConfigManager.GetMainDataListAsync();
         var result = new List<EntityConfigurationDto>();
 
         foreach (var entity in entities)
         {
+            // Check if the entity is definitely exists as class
             var entityConfig = _entityConfigurationStore.GetOrNull(entity.FullClassName);
             if (entityConfig == null)
                 continue;
 
+            // Skip JsonEntities because the can't use api
             if (entityConfig.EntityType.IsJsonEntityType())
                 continue;
 
-            var moduleInfo = entityConfig.EntityType.GetConfigurableModuleInfo();
-            if (moduleInfo == null)
+            var module = entity.Module.IsNullOrEmpty() ? null : await _moduleManager.GetModuleOrNullAsync(entity.Module.NotNull());
+            if (module == null)
                 continue;
 
             var dto = new EntityConfigurationDto
             {
-                Name = entity.FullClassName,
+                FullClassName = entity.FullClassName,
+                Name = entity.Name,
                 Description = entity.Description,
                 Accessor = entityConfig.EntityType.GetTypeAccessor(),
                 Module = new EntityApiItemBase
                 {
-                    Name = moduleInfo.Name,
-                    Description = moduleInfo.Description,
-                    Accessor = moduleInfo.GetModuleAccessor(),
+                    Name = module.Name,
+                    Description = module.Description,
+                    Accessor = module.Accessor ?? module.Name,
                 }
             };
             result.Add(dto);

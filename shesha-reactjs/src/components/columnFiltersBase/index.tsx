@@ -40,7 +40,8 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
           isFilterable,
           referenceListName,
           referenceListModule,
-          entityReferenceTypeShortAlias,
+          entityTypeName,
+          entityTypeModule,
         }) => {
           if (isFilterable) {
             const onRemoveFilter = (idOfFilter: string): void => {
@@ -77,7 +78,8 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
                 applyFilters={applyFilters}
                 referenceListName={referenceListName}
                 referenceListModule={referenceListModule}
-                entityReferenceTypeShortAlias={entityReferenceTypeShortAlias}
+                entityTypeName={entityTypeName}
+                entityTypeModule={entityTypeModule}
                 key={id}
               />
             );

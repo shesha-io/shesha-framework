@@ -8,9 +8,10 @@ import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { ButtonGroupItemProps } from '@/index';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 interface IWrappedEntityPickerProps {
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   filters?: ITableViewProps[];
   allowNewRecord?: boolean;
   onDblClick?: (data: any) => void;

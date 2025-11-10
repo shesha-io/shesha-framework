@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { SaveMenu } from './saveMenu';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesignerReadOnly, useFormDesignerSettings } from '@/providers/formDesigner';
 import { useSheshaApplication } from '@/providers';
 import { DebugButton } from './debugButton';
 import { UndoRedoButtons } from './undoRedoButtons';
@@ -11,8 +11,8 @@ import { CanvasConfig } from './canvasConfig';
 import { CustomActions } from './customActions';
 
 export const FormDesignerToolbar: FC = () => {
-  const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
-  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
+  const readOnly = useFormDesignerReadOnly();
+  const formSettings = useFormDesignerSettings();
   const { styles } = useStyles();
 
   const { anyOfPermissionsGranted } = useSheshaApplication();
