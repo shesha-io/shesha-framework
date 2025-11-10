@@ -283,7 +283,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                       id: nanoid(),
                       propertyName: 'color',
                       label: 'Event Color',
-                      allowClear: true,
                       jsSetting: true,
                     },
                     {
@@ -341,7 +340,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                       id: nanoid(),
                       propertyName: 'iconColor',
                       label: 'Icon Color',
-                      allowClear: true,
                       jsSetting: true,
                       hidden: {
                         _code: "return getSettingValue(data?.showIcon) !== true",
