@@ -50,7 +50,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           &.open {
             width: ${leftSidebarWidth};
             display: block;
-            overflow: scroll;
+            overflow: auto;
             height: calc(100vh - 120px);
 
             .${sidebarHeader} {
