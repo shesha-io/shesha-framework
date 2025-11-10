@@ -106,7 +106,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     id: nanoid(),
                     type: 'editModeSelector',
                     propertyName: 'editMode',
-                    defaultValue: 'inherited',
                     label: 'Edit Mode',
                     size: 'small',
                     jsSetting: true,
@@ -186,7 +185,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     propertyName: 'defaultToMidnight',
                     label: 'Default time to midnight',
                     size: 'small',
-                    defaultValue: true,
                     jsSetting: true,
                     hidden: { _code: 'return !getSettingValue(data?.showTime);', _mode: 'code', _value: false } as any,
                   },
@@ -222,7 +220,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     propertyName: 'disabledDateMode',
                     label: 'Disabled Date Mode',
                     parentId: dataTabId,
-                    defaultValue: 'none',
                     dropdownOptions: [
                       { value: 'none', label: 'None' },
                       { value: 'functionTemplate', label: 'Function template' },
@@ -260,7 +257,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     type: 'dropdown',
                     propertyName: 'disabledTimeMode',
                     label: 'Disabled Time Mode',
-                    defaultValue: 'none',
                     dropdownOptions: [
                       { value: 'none', label: 'None' },
                       { value: 'timeFunctionTemplate', label: 'Function template' },
@@ -310,7 +306,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     size: 'small',
                     jsSetting: true,
                     type: "textField",
-                    defaultValue: "DD/MM/YYYY",
                     parentId: dataTabId,
                   },
                 ],
@@ -327,7 +322,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     size: 'small',
                     jsSetting: true,
                     type: "textField",
-                    defaultValue: "HH:mm:ss",
                     parentId: dataTabId,
                     hidden: {
                       _code: 'return  !getSettingValue(data?.showTime);',
@@ -350,7 +344,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     size: 'small',
                     jsSetting: true,
                     type: "textField",
-                    defaultValue: "YYYY",
                     parentId: dataTabId,
                     hidden: { _code: 'return getSettingValue(data?.picker) !== "year"', _mode: 'code', _value: false } as any,
 
@@ -362,7 +355,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     size: 'small',
                     jsSetting: true,
                     type: "textField",
-                    defaultValue: "YYYY-\\QQ",
                     parentId: dataTabId,
                     hidden: { _code: 'return getSettingValue(data?.picker) !== "quarter"', _mode: 'code', _value: false } as any,
 
@@ -375,7 +367,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     size: 'small',
                     jsSetting: true,
                     type: "textField",
-                    defaultValue: "YYYY-MM",
                     parentId: dataTabId,
                     hidden: { _code: 'return getSettingValue(data?.picker) !== "month"', _mode: 'code', _value: false } as any,
 
@@ -387,7 +378,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     size: 'small',
                     jsSetting: true,
                     type: "textField",
-                    defaultValue: "YYYY-wo",
                     parentId: dataTabId,
                     hidden: { _code: 'return getSettingValue(data?.picker) !== "week"', _mode: 'code', _value: false } as any,
 
@@ -778,7 +768,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,

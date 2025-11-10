@@ -59,7 +59,6 @@ export const getSettings = (): FormRawMarkup =>
               { id: 'edeb7d32-f942-41cc-a941-07b8882d8faa', label: 'Manual', value: 'manual' },
             ],
             validate: { required: true },
-            defaultValue: 'manual',
           })
           .addTextField({
             id: '33b16438-9563-438b-a375-8c5f4ccdd727',

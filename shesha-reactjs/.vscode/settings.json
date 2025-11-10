@@ -34,5 +34,9 @@
     "eslint.format.enable": true,
     "eslint.codeAction.showDocumentation": {
         "enable": true
-    }
+    },
+    // "eslint.workingDirectories": [
+    //     "."
+    // ],
+    // "eslint.useESLintClass": true,
 }

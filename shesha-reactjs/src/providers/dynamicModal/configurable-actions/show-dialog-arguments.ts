@@ -134,7 +134,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                   id: nanoid(),
                   propertyName: 'footerButtons',
                   label: 'Action Buttons',
-                  defaultValue: 'default',
                   dropdownOptions: [
                     {
                       label: "Default",
@@ -156,7 +155,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                   id: nanoid(),
                   propertyName: 'showCloseIcon',
                   label: 'Show Close Icon',
-                  defaultValue: true,
                   jsSetting: true,
                 },
                 {

@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { evaluateDynamicFiltersSync } from '@/utils/datatable';
-import { useAvailableConstantsData, useDataContextManager, useMetadataDispatcher, IModelMetadata } from '@/index';
+import { useAvailableConstantsData, useDataContextManager, useMetadataDispatcher, IModelMetadata, DataTypes } from '@/index';
 import { IChartProps } from '../model';
 import { FilterExpression, IStoredFilter } from '@/providers/dataTable/interfaces';
 
@@ -24,7 +24,7 @@ export const useChartFilters = (model: IChartProps): UseChartFiltersResult => {
   const filtersReadyRef = useRef<boolean>(false);
 
   useEffect(() => {
-    getMetadata({ modelType: model.entityType, dataType: 'entity' })
+    getMetadata({ modelType: model.entityType, dataType: DataTypes.entityReference })
       .then(setMetaData)
       .catch((error) => {
         console.error('Error getting entity metadata:', error);

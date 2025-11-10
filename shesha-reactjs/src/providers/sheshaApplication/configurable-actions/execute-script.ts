@@ -94,7 +94,6 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
       propertyName: 'expression',
       label: 'Expression',
       mode: 'dialog',
-      fileName: 'expression',
       wrapInTemplate: true,
       templateSettings: {
         functionName: "executeScriptAsync",

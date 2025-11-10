@@ -1,6 +1,6 @@
 
-import React, { FC, PropsWithChildren, useContext } from 'react';
-import { useHttpClient } from '@/providers';
+import React, { FC, PropsWithChildren, useContext, useState } from 'react';
+import { useConfigurationItemsLoader, useHttpClient } from '@/providers';
 import {
   FormIdentifier,
 } from '../form/models';
@@ -13,7 +13,6 @@ import {
   IFormPersisterStateContext,
 } from './contexts';
 import { useFormManager } from '../formManager';
-import { useRefInitialized } from '@/hooks';
 import { FormPersister } from './formPersister';
 
 export interface IFormProviderProps {
@@ -24,8 +23,9 @@ export interface IFormProviderProps {
 const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ children, ...props }) => {
   const formManager = useFormManager();
   const httpClient = useHttpClient();
+  const configurationItemsLoader = useConfigurationItemsLoader();
   const [, forceUpdate] = React.useState({});
-  const persisterRef = useRefInitialized(() => {
+  const [persister] = useState(() => {
     const forceReRender = (): void => {
       forceUpdate({});
     };
@@ -35,9 +35,9 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ chil
       formId: props.formId,
       formManager: formManager,
       httpClient: httpClient,
+      configurationItemsLoader: configurationItemsLoader,
     });
   });
-  const persister = persisterRef.current;
 
   return (
     <FormPersisterStateContext.Provider value={persister.state}>

@@ -1,9 +1,11 @@
 import React, { FC } from 'react';
 import { Empty } from 'antd';
-import { useFormDesignerState } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
 
 const ComponentPropertiesPanelInner: FC = () => {
-  const { selectedComponentId, readOnly, settingsPanelRef } = useFormDesignerState();
+  const { settingsPanelRef } = useFormDesigner();
+  const readOnly = useFormDesignerReadOnly();
+  const selectedComponentId = useFormDesignerSelectedComponentId();
 
   return (
     <>

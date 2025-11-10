@@ -81,6 +81,7 @@ export const getSettings = (data: IPasswordComponentProps): FormMarkupWithSettin
               })
               .addSettingsInput({
                 id: nanoid(),
+                inputType: 'textArea',
                 propertyName: 'placeholder',
                 label: 'Placeholder',
                 size: 'small',
@@ -90,6 +91,7 @@ export const getSettings = (data: IPasswordComponentProps): FormMarkupWithSettin
               .addSettingsInput({
                 parentId: commonTabId,
                 id: nanoid(),
+                inputType: 'textArea',
                 propertyName: 'confirmPlaceholder',
                 label: 'Placeholder: Confirmation',
                 size: 'small',
@@ -506,7 +508,6 @@ export const getSettings = (data: IPasswordComponentProps): FormMarkupWithSettin
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,

@@ -1,15 +1,15 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { CopyOutlined, DeleteFilled } from '@ant-design/icons';
-import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerMarkup, useFormDesignerReadOnly, useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
 import { isDefined } from '@/utils/nullables';
 
 export const ComponentPropertiesTitle: FC = ({}) => {
-  const selectedComponentId = useFormDesignerStateSelector((x) => x.selectedComponentId);
-  const formFlatMarkup = useFormDesignerStateSelector((x) => x.formFlatMarkup);
-  const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
-  const { deleteComponent, duplicateComponent } = useFormDesignerActions();
+  const formFlatMarkup = useFormDesignerMarkup();
+  const selectedComponentId = useFormDesignerSelectedComponentId();
+  const readOnly = useFormDesignerReadOnly();
+  const { deleteComponent, duplicateComponent } = useFormDesigner();
   const { styles } = useStyles();
 
   const component = formFlatMarkup?.allComponents?.[selectedComponentId];

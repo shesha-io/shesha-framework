@@ -21,8 +21,6 @@ export const MetadataEditorComponent: IToolboxComponent<IMetadataEditorComponent
   name: 'Metadata editor',
   icon: <ApartmentOutlined />,
   Factory: ({ model }) => {
-    const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
-
     const { data: formData } = useFormData();
     const metadataBuilderFactory = useMetadataBuilderFactory();
 
@@ -36,7 +34,7 @@ export const MetadataEditorComponent: IToolboxComponent<IMetadataEditorComponent
     }, [model.baseProperties, formData]);
 
     return (
-      <ConfigurableFormItem model={model} {...initialValue}>
+      <ConfigurableFormItem model={model}>
         {(value, onChange) => {
           return (
             <MetadataEditor

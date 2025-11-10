@@ -1,12 +1,12 @@
 import { Space } from 'antd';
 import React from 'react';
-import { AppEditModeToggler, IToolboxComponent, PERM_APP_CONFIGURATOR, ProtectedContent } from '@/index';
+import { AppEditModeToggler, IToolboxComponentBase, PERM_APP_CONFIGURATOR, ProtectedContent } from '@/index';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider';
 import { SwapOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 
-const HeaderAppControl: IToolboxComponent = {
+const HeaderAppControl: IToolboxComponentBase = {
   type: 'headerAppControl',
   name: 'Header App Control',
   isInput: false,

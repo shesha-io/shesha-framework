@@ -21,7 +21,6 @@ interface IProgressProps
   strokeColor?: string;
   lineStrokeColor?: string;
   circleStrokeColor?: string;
-  defaultValue?: number;
   stylingBox?: string;
   allStyles?: IFormComponentStyles;
 }
@@ -55,7 +54,6 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       gapPosition,
       strokeWidth,
       width,
-      defaultValue,
       hidden,
       gapDegree,
       style,
@@ -118,7 +116,6 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               showInfo={showInfo}
               strokeLinecap={strokeLinecap}
               success={getEvaluatedSuccessColor()}
-              defaultValue={defaultValue}
               gapDegree={gapDegree}
               style={finalStyle}
             />

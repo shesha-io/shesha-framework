@@ -54,7 +54,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     id: nanoid(),
                     propertyName: 'editMode',
                     label: 'Edit Mode',
-                    defaultValue: 'inherited',
                     jsSetting: true,
                   },
                   {

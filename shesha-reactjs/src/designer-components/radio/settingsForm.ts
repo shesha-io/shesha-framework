@@ -74,7 +74,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       size: 'small',
-                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
@@ -283,7 +282,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         size: 'small',
                         jsSetting: true,
                         parentId: styleRouterId,
-                        defaultValue: 'horizontal',
                         dropdownOptions: [
                           {
                             label: 'Horizontal',

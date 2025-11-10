@@ -43,7 +43,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
 }: PropsWithChildren<IGenericConfigurableComponentProviderProps<TSettings>>): ReactElement => {
   const reducer = useMemo(() => reducerFactory(initialState), []);
 
-  const { getComponent, updateComponent } = useConfigurationItemsLoader();
+  const { getComponentAsync, updateComponentAsync } = useConfigurationItemsLoader();
 
   const upgradeSettings = (value: TSettings): TSettings => {
     if (!isObject(value))
@@ -61,7 +61,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
   };
 
   const initialSettingsMemo = useMemo<TSettings>(() => {
-    const promised = getComponent({ name, isApplicationSpecific, skipCache: false });
+    const promised = getComponentAsync({ name, isApplicationSpecific, skipCache: false });
     const loadedSettings = promised.value?.settings as TSettings;
     if (!loadedSettings)
       return undefined;
@@ -96,13 +96,13 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
   useEffect(() => {
     if (!Boolean(name) || Boolean(state.settings)) return;
 
-    fetchInternal(getComponent({ name, isApplicationSpecific, skipCache: false }));
+    fetchInternal(getComponentAsync({ name, isApplicationSpecific, skipCache: false }));
   }, []);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   const loadComponent = (): void => {
-    var loader = getComponent({ name, isApplicationSpecific, skipCache: true });
+    var loader = getComponentAsync({ name, isApplicationSpecific, skipCache: true });
     fetchInternal(loader);
   };
 
@@ -126,7 +126,7 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
       isApplicationSpecific: isApplicationSpecific,
       settings: settingsToSave as object,
     };
-    return updateComponent(payload)
+    return updateComponentAsync(payload)
       .then((_response) => {
         dispatch(saveSuccessAction({ settings: payload.settings }));
       })

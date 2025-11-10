@@ -15,6 +15,7 @@ import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCo
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
 import EntityTypeAutocomplete from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {
   const { readOnly } = props;
@@ -71,7 +72,7 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
     return <MetadataProvider id={state.id} modelType={state.entityType}>{settings}</MetadataProvider>;
   }, [state.entityType, state.sourceType]);
 
-  return state.sourceType === 'Entity' && state.entityType ? meta : settings;
+  return state.sourceType === 'Entity' && !isEntityTypeIdEmpty(state.entityType) ? meta : settings;
 };
 
 export const DataSourceSettingsForm: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {

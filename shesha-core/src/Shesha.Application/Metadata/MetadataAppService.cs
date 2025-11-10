@@ -210,10 +210,16 @@ namespace Shesha.Metadata
 
         /// inheritedDoc
         [HttpGet]
-        public async Task<MetadataDto> GetAsync(string container)
+        public async Task<MetadataDto> GetAsync(EntityTypeIdInput entityType)
         {
-            var (module, name) = ParseContainer(container);
-            var containerType = await _metadataProvider.GetContainerTypeAsync(module, name);
+            if (entityType == null)
+                throw new AbpValidationException($"'{nameof(entityType)}' is mandatory");
+
+            var containerName = entityType.Name.GetDefaultIfEmpty(entityType.FullClassName);
+            if (string.IsNullOrWhiteSpace(containerName))
+                throw new AbpValidationException($"Either '{nameof(entityType.Name)}' or '{nameof(entityType.FullClassName)}' must be provided");
+            
+            var containerType = await _metadataProvider.GetContainerTypeAsync(entityType.Module, containerName);
             return await _metadataProvider.GetAsync(containerType);
         }
 
@@ -229,5 +235,71 @@ namespace Shesha.Metadata
 
             return await _metadataProvider.GetSpecificationsAsync(entityConfig.EntityType);
         }
+
+        #region for backward compatibility
+
+        private List<AutocompleteItemDto> FilterModels(List<ModelDto> models, string? term, string? selectedValue)
+        {
+            var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
+            var entities = isPreselection
+                ? models.Where(e => e.FullClassName == selectedValue || e.Alias == selectedValue).ToList()
+                : models
+                .Where(e => (
+                    string.IsNullOrWhiteSpace(term) ||
+                    !string.IsNullOrWhiteSpace(e.Alias) && e.Alias.Contains(term, StringComparison.InvariantCultureIgnoreCase) ||
+                    e.FullClassName.Contains(term, StringComparison.InvariantCultureIgnoreCase)) && !e.FullClassName.Contains("AspNetCore")
+                )
+                .OrderBy(e => e.FullClassName)
+                .Take(10)
+                .ToList();
+
+            var result = entities
+                .DistinctBy(e => e.FullClassName)
+                .Select(e => new AutocompleteItemDto
+                {
+                    DisplayText = $"{e.Name} ({e.FullClassName})",
+                    Value = !string.IsNullOrWhiteSpace(e.Alias)
+                        ? e.Alias
+                        : e.FullClassName
+                })
+                .ToList();
+
+            return result;
+        }
+
+        [HttpGet]
+        public async Task<List<AutocompleteItemDto>> TypeAutocompleteAsync(string? term, string? selectedValue)
+        {
+            var models = await _metadataProvider.GetAllModelsAsync();
+            return FilterModels(models, term, selectedValue);
+        }
+
+        /// inheritedDoc
+        [HttpGet]
+        public async Task<List<AutocompleteItemDto>> EntityTypeAutocompleteAsync(string? term, string? selectedValue, string? baseClass)
+        {
+            var models = await _entityModelProvider.GetModelsAsync();
+            var baseEntity = baseClass.IsNullOrEmpty() ? null : models.FirstOrDefault(x => x.Type?.FullName == baseClass || x.Alias == baseClass || x.Accessor == baseClass);
+            var list = models
+                .Where(x => x.Type.IsEntityType())
+                .WhereIf(baseEntity != null, x => x.Type != null && x.Type.IsAssignableTo(baseEntity?.Type))
+                .ToList<ModelDto>();
+            return FilterModels(list, term, selectedValue);
+        }
+
+        /// inheritedDoc
+        [HttpGet]
+        public async Task<List<AutocompleteItemDto>> JsonEntityTypeAutocompleteAsync(string? term, string? selectedValue, string? baseClass)
+        {
+            var models = await _entityModelProvider.GetModelsAsync();
+            var baseEntity = baseClass.IsNullOrEmpty() ? null : models.FirstOrDefault(x => x.Type?.FullName == baseClass || x.Alias == baseClass || x.Accessor == baseClass);
+            var list = models
+                .Where(x => x.Type.IsJsonEntityType())
+                .WhereIf(baseEntity != null, x => x.Type != null && x.Type.IsAssignableTo(baseEntity?.Type))
+                .ToList<ModelDto>();
+            return FilterModels(list, term, selectedValue);
+        }
+
+        #endregion
     }
 }

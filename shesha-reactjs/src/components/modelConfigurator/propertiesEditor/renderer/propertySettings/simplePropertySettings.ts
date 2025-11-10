@@ -37,7 +37,7 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
   return new DesignerToolbarSettings()
     .addSettingsInput({ parentId: dataTabId, inputType: 'dropdown', propertyName: `${propName}dataType`, label: 'Data Type', validate: { required: true },
       editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
-      mode: 'single', dropdownOptions: type === 'full' ? typesFullList : typesArrayList,
+      dropdownOptions: type === 'full' ? typesFullList : typesArrayList,
       allowClear: true, tooltip: 'Select the data type for this property.',
       onChangeSetting: (_value, _data, setFormData) => {
         const newData = { formatting: { defaultEditor: null } };
@@ -63,7 +63,7 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
 
     .addContainer({ id: stringFormatId, parentId: dataTabId, hidden: { _code: `return data?.${codePropName}dataType !== \'string\';`, _mode: 'code', _value: false },
       components: [...new DesignerToolbarSettings()
-        .addSettingsInput({ parentId: stringFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'String Format', mode: 'single',
+        .addSettingsInput({ parentId: stringFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'String Format',
           dropdownOptions: [
             { label: 'Single line', value: 'singleline' },
             { label: 'Multiline', value: 'multiline' },
@@ -89,7 +89,7 @@ export const SimplePropertySettings = (dataTabId: string, type: 'full' | 'array'
 
     .addContainer({ id: numberFormatId, parentId: dataTabId, hidden: { _code: `return data?.${codePropName}dataType !== \'number\';`, _mode: 'code', _value: false },
       components: [...new DesignerToolbarSettings()
-        .addSettingsInput({ parentId: numberFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'Number format', mode: 'single',
+        .addSettingsInput({ parentId: numberFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'Number format',
           editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
           dropdownOptions: [
             { label: 'Integer', value: 'int64' },

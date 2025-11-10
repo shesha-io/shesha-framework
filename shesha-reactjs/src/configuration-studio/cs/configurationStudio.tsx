@@ -145,6 +145,7 @@ export interface IConfigurationStudio {
   readonly treeSelectedItemNode: ConfigItemTreeNode | undefined;
   readonly isTreeDragging: boolean;
   readonly renderedDocs: Map<string, ReactNode>;
+  readonly hasUnsavedChanges: boolean;
 
   setIsTreeDragging: (isDragging: boolean) => void;
 
@@ -314,6 +315,10 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.shaRouter = args.shaRouter;
     this.rootPath = this.shaRouter.router.path;
   }
+
+  get hasUnsavedChanges(): boolean {
+    return this.docs.some((doc) => doc.isDataModified);
+  };
 
   reorderDocumentsAsync = async (fromIndex: number, toIndex: number): Promise<void> => {
     const doc = this.docs[fromIndex];

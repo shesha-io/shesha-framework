@@ -1,12 +1,12 @@
 import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';
 import { createNamedContext } from '@/utils/react';
-import { IEntityTypeIndentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
 export type MetadataType = 'entity' | 'context';
 
 export interface IMetadataStateContext {
   id: string | null;
-  modelType: IEntityTypeIndentifier | string | null;
+  modelType: IEntityTypeIdentifier | string | null;
   dataType?: MetadataType;
   metadata: IModelMetadata | null;
 }
@@ -19,7 +19,7 @@ export interface IMetadataContext extends IMetadataStateContext, IMetadataAction
 
 export interface ISetMetadataPayload {
   metadata: IModelMetadata | null;
-  modelType: string | IEntityTypeIndentifier;
+  modelType: string | IEntityTypeIdentifier;
   dataType?: MetadataType;
 }
 

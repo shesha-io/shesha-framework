@@ -5,7 +5,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useMetadata } from '@/providers';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { INumberFieldComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from '@/utils/string';
@@ -38,9 +38,6 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
   calculateModel: (model, allData) => {
     return {
-      defaultValue: model?.defaultValue
-        ? evaluateString(model?.defaultValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState })
-        : undefined,
       eventHandlers: { ...getEventHandlers(model, allData), ...customOnChangeValueEventHandler(model, allData) },
     };
   },
@@ -101,7 +98,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps, INumbe
             : (
               <InputNumber
                 type="number"
-                value={value ?? model?.defaultValue}
+                value={value}
                 {...inputProps}
                 style={{ ...model.allStyles.fullStyle }}
                 className={styles.numberField}

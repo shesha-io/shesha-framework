@@ -1,6 +1,6 @@
 import { Button, Space, Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
-import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IEditorAdapter, IToolboxComponent, IToolboxComponents } from '@/interfaces';
+import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IEditorAdapter, IToolboxComponentBase, IToolboxComponents } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { nanoid } from '@/utils/uuid';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
@@ -27,7 +27,7 @@ export interface IFormComponentSelectorProps {
   propertyMeta?: IPropertyMetadata;
 }
 
-export const getEditorAdapter = (component: IToolboxComponent): IEditorAdapter | undefined => {
+export const getEditorAdapter = (component: IToolboxComponentBase): IEditorAdapter | undefined => {
   return component.editorAdapter ?? editorAdapters[component.type];
 };
 
@@ -36,7 +36,7 @@ const getEditorAdapterByType = (components: IToolboxComponents, type: string): I
   return component ? getEditorAdapter(component) : undefined;
 };
 
-const canBeUsedAsEditor = (component: IToolboxComponent): boolean => {
+const canBeUsedAsEditor = (component: IToolboxComponentBase): boolean => {
   const adapter = getEditorAdapter(component);
   return Boolean(adapter);
 };
@@ -47,7 +47,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   const [isSettingsVisible, setIsSettingsVisible] = useState<boolean>(false);
   const allComponents = useFormDesignerComponents();
   const editors = useMemo(() => {
-    const result: IToolboxComponent[] = [];
+    const result: IToolboxComponentBase[] = [];
     for (const key in allComponents) {
       if (allComponents.hasOwnProperty(key)) {
         const component = allComponents[key];
@@ -75,7 +75,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
     return result;
   }, [editors]);
 
-  const formComponent = useMemo<IToolboxComponent>(() => {
+  const formComponent = useMemo<IToolboxComponentBase>(() => {
     if (!Boolean(value?.type)) return null;
 
     return allComponents[value?.type];
@@ -84,7 +84,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   const canConfigure = Boolean(formComponent);
   const selectStyle = { width: canConfigure ? 'calc(100% - 100px)' : '100%' };
 
-  const getComponentModel = (toolboxComponent: IToolboxComponent): IConfigurableFormComponent | null => {
+  const getComponentModel = (toolboxComponent: IToolboxComponentBase): IConfigurableFormComponent | null => {
     if (!toolboxComponent) return null;
 
     let componentModel: IConfigurableFormComponent = {

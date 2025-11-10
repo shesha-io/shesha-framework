@@ -34,11 +34,6 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
   editorsCode += 'const editors = allowedComponents(data.dataType, data.dataFormat);\n';
   editorsCode += 'return editors.map((e) => ({ value: e, label: components[e] }));\n';
 
-  let defaultEditorCode = DataTypes.allowedCompoenentsCode;
-  defaultEditorCode += '\n';
-  defaultEditorCode += 'const editors = allowedComponents(data.dataType, data.dataFormat);\n';
-  defaultEditorCode += 'return editors?.[0];\n';
-
   return {
     components: new DesignerToolbarSettings<ModelPropertyDto>(data)
       .addSearchableTabs({
@@ -94,7 +89,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
 
                 .addContainer({ id: objectRefFormatId, parentId: dataTabId, hidden: { _code: 'return data?.dataType !== \'object\';', _mode: 'code', _value: false },
                   components: [...new DesignerToolbarSettings()
-                    .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'Object Format', mode: 'single',
+                    .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'Object Format',
                       editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
                       dropdownOptions: [
                         { label: 'Nested object', value: 'object' },
@@ -115,7 +110,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
 
                 .addContainer({ id: advancedFormatId, parentId: dataTabId, hidden: { _code: 'return data?.dataType !== \'advanced\';', _mode: 'code', _value: false },
                   components: [...new DesignerToolbarSettings()
-                    .addSettingsInput({ parentId: advancedFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'Advanced format', mode: 'single',
+                    .addSettingsInput({ parentId: advancedFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'Advanced format',
                       dropdownOptions: [
                         { label: 'List of files', value: 'attachmentsEditor' },
                         { label: 'Notes', value: 'notes' },
@@ -133,7 +128,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
 
                 .addContainer({ id: listFormatId, parentId: dataTabId, hidden: { _code: 'return data?.dataType !== \'array\';', _mode: 'code', _value: false },
                   components: [...new DesignerToolbarSettings()
-                    .addSettingsInput({ parentId: advancedFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'List Format', mode: 'single',
+                    .addSettingsInput({ parentId: advancedFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'List Format',
                       editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
                       dropdownOptions: [
                         { label: 'Simple Values', value: 'simple' },
@@ -163,7 +158,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
                   // Child objects
 
                     .addSettingsInputRow({ parentId: listFormatId, inputs: [
-                      { type: 'dropdown', propertyName: 'itemsType.dataFormat', label: 'Object Format', mode: 'single',
+                      { type: 'dropdown', propertyName: 'itemsType.dataFormat', label: 'Object Format',
                         editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
                         dropdownOptions: [
                           { label: 'Nested object', value: 'object' },
@@ -199,8 +194,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
 
               // Default editor
 
-                .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'formatting.defaultEditor', label: 'Default Editor', mode: 'single',
-                  defaultValue: { _value: '', _mode: 'code', _code: defaultEditorCode } as any,
+                .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'formatting.defaultEditor', label: 'Default Editor',
                   dropdownOptions: { _value: '', _mode: 'code', _code: editorsCode } as any,
                 })
 
@@ -247,7 +241,7 @@ export const getSettings = (data: ModelPropertyDto, components: IToolboxComponen
                 components: [...new DesignerToolbarSettings()
                   .addContainer({ id: listRelFormatId, parentId: dataTabId, hidden: { _code: 'return !data?.listConfiguration;', _mode: 'code', _value: false },
                     components: [...new DesignerToolbarSettings()
-                      .addSettingsInput({ parentId: listRelFormatId, inputType: 'dropdown', propertyName: 'listConfiguration.mappingType', label: 'Mapping type', mode: 'single',
+                      .addSettingsInput({ parentId: listRelFormatId, inputType: 'dropdown', propertyName: 'listConfiguration.mappingType', label: 'Mapping type',
                         dropdownOptions: [
                           { label: 'Many to many', value: 'many-to-many' },
                           { label: 'Many to one', value: 'many-to-one' },

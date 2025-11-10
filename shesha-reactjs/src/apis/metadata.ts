@@ -3,7 +3,7 @@ import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import * as RestfulShesha from '@/utils/fetchers';
 import { IDictionary } from '..';
 import { ConfigurationDto } from '@/providers/configurationItemsLoader/models';
-import { IApiEndpoint, ISpecification } from '@/interfaces/metadata';
+import { IApiEndpoint, IEntityTypeIdentifierQueryParams, ISpecification } from '@/interfaces/metadata';
 
 /**
  * Indicate the source of the entity/property metadata
@@ -38,6 +38,7 @@ export interface PropertyMetadataDto {
   description?: string | null;
   dataType: string;
   dataFormat?: string | null;
+  containerType?: string | null;
   entityType?: string | null;
   entityModule?: string | null;
   referenceListName?: string | null;
@@ -55,7 +56,7 @@ export interface PropertyMetadataDto {
   /**
    * Child properties (applicable for complex objects)
    */
-  properties?: PropertyMetadataDto[] | null;
+  properties?: PropertyMetadataDto[];
   itemsType?: PropertyMetadataDto;
   source?: MetadataSourceType;
 }
@@ -93,8 +94,6 @@ export interface MetadataDto extends ConfigurationDto {
 
   fullClassName: string;
 
-  entityType: string;
-  
   aliases?: string[];
 
   md5?: string;
@@ -102,8 +101,7 @@ export interface MetadataDto extends ConfigurationDto {
 
 export type MetadataDtoAjaxResponse = IAjaxResponse<MetadataDto>;
 
-export interface MetadataGetQueryParams {
-  container?: string;
+export interface MetadataGetQueryParams extends IEntityTypeIdentifierQueryParams {
   /**
    * The requested API version
    */
