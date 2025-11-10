@@ -7,6 +7,8 @@ export const getSettings = (): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
+  const appearanceTabId = nanoid();
+  const eventsTabId = nanoid();
 
   return {
     components: new DesignerToolbarSettings()
@@ -235,8 +237,41 @@ export const getSettings = (): FormMarkupWithSettings => {
           },
           {
             key: '3',
+            title: 'Events',
+            id: eventsTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: nanoid(),
+                  inputs: [
+                    {
+                      type: 'configurableActionConfigurator',
+                      id: nanoid(),
+                      propertyName: 'onSelect',
+                      label: 'On Select',
+                      description: 'Action to be executed when the event is selected',
+                      jsSetting: false,
+                      hideLabel: true,
+                    },
+                    {
+                      type: 'configurableActionConfigurator',
+                      id: nanoid(),
+                      propertyName: 'onDblClick',
+                      label: 'On Double Click',
+                      description: 'Action to be executed when the event is double clicked',
+                      jsSetting: false,
+                      hideLabel: true,
+                    },
+                  ],
+                })
+                .toJson(),
+            ],
+          },
+          {
+            key: '4',
             title: 'Appearance',
-            id: nanoid(),
+            id: appearanceTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInputRow({
@@ -313,30 +348,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                         _mode: "code",
                         _value: false,
                       } as any,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: nanoid(),
-                  inputs: [
-                    {
-                      type: 'configurableActionConfigurator',
-                      id: nanoid(),
-                      propertyName: 'onSelect',
-                      label: 'On Select',
-                      description: 'Action to be executed when the event is selected',
-                      jsSetting: false,
-                      hideLabel: true,
-                    },
-                    {
-                      type: 'configurableActionConfigurator',
-                      id: nanoid(),
-                      propertyName: 'onDblClick',
-                      label: 'On Double Click',
-                      description: 'Action to be executed when the event is double clicked',
-                      jsSetting: false,
-                      hideLabel: true,
                     },
                   ],
                 })
