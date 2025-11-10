@@ -42,7 +42,10 @@ export const useCalendarLayers = (layers: ICalendarLayersProps[]): IGetData => {
 
   const { refetch } = useGet({ path: '', lazy: true });
 
-  const layerEvents = getLayerEventsData(layers, layerData) || [];
+  const layerEvents = useMemo(() =>
+    getLayerEventsData(layers, layerData) || [],
+  [layers, layerData],
+  );
 
   const dispatcher = useMetadataDispatcher();
 
