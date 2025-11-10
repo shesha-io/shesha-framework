@@ -52,7 +52,7 @@ const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
     },
   });
   useEffect(() => {
-    shaRouter.registerNavigationValidator((url) => {
+    return shaRouter.registerNavigationValidator((url) => {
       return Promise.resolve(configurationStudio.confirmNavigation(url));
     });
   }, [configurationStudio, shaRouter]);

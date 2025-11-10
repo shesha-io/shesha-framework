@@ -24,7 +24,7 @@ export interface IShaRoutingActionsContext {
   getUrlFromNavigationRequest: (request: INavigateActoinArguments) => string;
 
   /**
-   * Check is navigation to url is allowed according to the current application state.
+   * Check if navigation to the url is allowed according to the current application state.
    * Can be used to prevent navigation when user has unsaved changes.
    * @param url url to navigate
    */

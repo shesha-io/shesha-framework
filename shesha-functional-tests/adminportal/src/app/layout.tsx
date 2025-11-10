@@ -18,7 +18,7 @@ export default function RootLayout({
             <body>
                 <AntdRegistry>
                     <NavigationGuardProvider>
-                        <Suspense>
+                        <Suspense fallback={null}>
                             <AppProvider backendUrl={backendUrl}>
                                 {children}
                             </AppProvider>
