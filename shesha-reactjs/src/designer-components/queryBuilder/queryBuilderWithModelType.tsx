@@ -13,6 +13,11 @@ export const QueryBuilderWithModelType: FC<PropsWithChildren<IQueryBuilderWithMo
   const { modelType: modelTypeExpression } = props;
   const modelType = evaluateString(modelTypeExpression, { data: formData });
 
+  //only show if modelType is provided
+  if (!modelType) {
+    return null;
+  }
+
   return (
     <ConditionalWrap
       condition={Boolean(modelType)}
