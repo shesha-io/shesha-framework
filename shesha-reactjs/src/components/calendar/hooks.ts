@@ -1,5 +1,5 @@
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-big-calendar';
 import { evaluateFilters, getCalendarRefetchParams, getLayerEventsData, getResponseListToState } from './utils';
 import { useGet, useMutate } from '@/hooks';
@@ -91,7 +91,7 @@ export const useCalendarLayers = (layers: ICalendarLayersProps[]): IGetData => {
         console.error('Unexpected error in fetchData:', error);
         setState((s) => ({ ...s, layerData: [] }));
       });
-  }, [layerWithMetadata, formData, globalState, refetch, refreshTrigger]);
+  }, [layerWithMetadata, formData, globalState, refetch]);
 
 
   const updateDefaultCalendarView = useCallback(async (value: string): Promise<ISettingResponse | null> => {
@@ -144,6 +144,11 @@ export const useCalendarLayers = (layers: ICalendarLayersProps[]): IGetData => {
       return null; // Return null in case of error
     }
   }, [mutate]);
+
+  // Refetch data when refreshTrigger changes
+  useEffect(() => {
+    fetchData();
+  }, [refreshTrigger, fetchData]);
 
   return {
     fetchData,
