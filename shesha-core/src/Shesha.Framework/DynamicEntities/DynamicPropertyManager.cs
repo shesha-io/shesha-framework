@@ -23,7 +23,7 @@ namespace Shesha.DynamicEntities
     {
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IRepository<EntityPropertyValue, Guid> _entityPropertyValueRepository;
-        private readonly IEntityConfigurationStore _entityConfigurationStore;
+        private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly IDynamicRepository _dynamicRepository;
 
         public IDynamicDtoTypeBuilder DtoTypeBuilder { get; set; }
@@ -32,7 +32,7 @@ namespace Shesha.DynamicEntities
         public DynamicPropertyManager(
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IRepository<EntityPropertyValue, Guid> entityPropertyValueRepository,
-            IEntityConfigurationStore entityConfigurationStore,
+            IEntityTypeConfigurationStore entityConfigurationStore,
             IDynamicRepository dynamicRepository
             )
         {
@@ -187,7 +187,7 @@ namespace Shesha.DynamicEntities
             {
                 case DataTypes.EntityReference:
                     {
-                        var entityConfig = _entityConfigurationStore.Get(dynamicProperty.EntityType);
+                        var entityConfig = _entityConfigurationStore.Get(dynamicProperty.EntityFullClassName);
                         var id = SerializationManager.DeserializeProperty(entityConfig.IdType.NotNull(), serializedValue);
                         var stringId = id?.ToString();
                         if (string.IsNullOrWhiteSpace(stringId))

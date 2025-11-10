@@ -81,7 +81,7 @@ namespace Shesha.EntityHistory
         private async Task<Type?> GetContainerTypeAsync(string container)
         {
             var allModels = await GetAllModelsAsync();
-            var models = allModels.Where(m => m.Alias == container || m.ClassName == container).ToList();
+            var models = allModels.Where(m => m.Alias == container || m.FullClassName == container).ToList();
 
             if (models.Count() > 1)
                 throw new DuplicateModelsException(models);

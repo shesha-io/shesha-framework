@@ -10,6 +10,7 @@ import { MetadataProvider } from '@/providers';
 import { IKanbanProps } from '@/components/kanban/model';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
+import EntityTypeAutocomplete from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 
 const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
   const { values } = useSettingsForm<IKanbanProps>();
@@ -24,7 +25,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
     <>
       <SettingsCollapsiblePanel header="Display">
         <SettingsFormItem key="entityType" name="entityType" label="Entity Type" jsSetting>
-          <Autocomplete dataSourceType="url" dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete" />
+          <EntityTypeAutocomplete />
         </SettingsFormItem>
         <SettingsFormItem name="componentName" label="Component Name" required>
           <Input readOnly={readOnly} />

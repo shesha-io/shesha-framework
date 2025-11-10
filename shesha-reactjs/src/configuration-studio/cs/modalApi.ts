@@ -34,8 +34,8 @@ interface ConfirmArgs {
 
 export interface IModalApi {
   showModalFormAsync: <TResponse = void>(args: ShowModalFormArgs) => Promise<TResponse | undefined>;
-  showModalContentAsync: <TResponse = void>(executor: ShowModalContentExecutor<TResponse>) => Promise<TResponse | undefined>;
-  confirmYesNo: (args: ConfirmArgs) => Promise<boolean>;
+  showModalContentAsync: <TResponse = void>(executor: ShowModalContentExecutor<TResponse>, modalSettings?: ModalSettings) => Promise<TResponse | undefined>;
+  confirmYesNoAsync: (args: ConfirmArgs) => Promise<boolean>;
 };
 
 type CreateModalType = ReturnType<typeof useDynamicModals>['createModal'];
@@ -45,6 +45,8 @@ type ModalApiArguments = {
   removeModal: RemoveModalType;
   antdApi: ModalHookAPI;
 };
+
+export type ModalSettings = Partial<Pick<IModalWithContentProps, 'width' | 'showCloseIcon'>>;
 
 export class ModalApi implements IModalApi {
   private _createModal: CreateModalType;
@@ -59,7 +61,7 @@ export class ModalApi implements IModalApi {
     this._antdApi = args.antdApi;
   }
 
-  confirmYesNo = (args: ConfirmArgs): Promise<boolean> => {
+  confirmYesNoAsync = (args: ConfirmArgs): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       this._antdApi.confirm({
         title: args.title,
@@ -111,7 +113,7 @@ export class ModalApi implements IModalApi {
     });
   };
 
-  showModalContentAsync = <TResponse = void>(executor: ShowModalContentExecutor<TResponse>): Promise<TResponse | undefined> => {
+  showModalContentAsync = <TResponse = void>(executor: ShowModalContentExecutor<TResponse>, modalSettings?: ModalSettings): Promise<TResponse | undefined> => {
     const modalId = nanoid();
 
     return new Promise((resolve, reject) => {
@@ -120,6 +122,7 @@ export class ModalApi implements IModalApi {
       };
       const modalArgs = executor({ resolve, reject, removeModal });
       const modalProps: IModalWithContentProps<TResponse> = {
+        ...modalSettings,
         id: modalId,
         title: modalArgs.title,
         content: modalArgs.content,

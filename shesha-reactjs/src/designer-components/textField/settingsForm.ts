@@ -212,6 +212,20 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                   {
                     type: 'textField',
                     id: nanoid(),
+                    propertyName: 'regExp',
+                    label: 'Regular expression',
+                    size: 'small',
+                    jsSetting: true,
+                  },
+                ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: validationTabId,
+                inputs: [
+                  {
+                    type: 'textField',
+                    id: nanoid(),
                     propertyName: 'validate.message',
                     label: 'Message',
                     size: 'small',
@@ -243,6 +257,7 @@ export const getSettings = (data: ITextFieldComponentProps): FormMarkupWithSetti
                 labelAlign: 'right',
                 tooltip: 'Enter custom eventhandler on changing of event.',
                 parentId: eventsTabId,
+                availableConstantsExpression: "return metadataBuilder.object(\"constants\").addAllStandard().addString(\"value\", \"Component current value\", undefined).build();",
               })
               .addSettingsInput({
                 id: nanoid(),

@@ -219,17 +219,13 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                     inputs: [
                       {
                         id: nanoid(),
-                        type: 'autocomplete',
+                        type: 'entityTypeAutocomplete',
                         propertyName: 'entityType',
                         label: 'Entity Type',
                         labelAlign: 'right',
                         parentId: dataTabId,
                         hidden: false,
-                        dataSourceType: 'url',
-                        validate: {},
                         jsSetting: true,
-                        dataSourceUrl: '/api/services/app/Metadata/TypeAutocomplete',
-                        useRawValues: true,
                       },
                     ],
                   })

@@ -1,4 +1,4 @@
-import { IShaDataTableInlineEditableProps } from '@/components/dataTable/interfaces';
+import { IShaDataTableInlineEditableProps, TableSelectionMode } from '@/components/dataTable/interfaces';
 import { IConfigurableActionConfiguration } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IConfigurableFormComponent } from '@/providers/form/models';
@@ -10,6 +10,7 @@ export type RowDroppedMode = 'executeScript' | 'showDialog';
 export interface ITableComponentBaseProps extends IShaDataTableInlineEditableProps, Omit<ICommonContainerProps, 'style'> {
   items: IConfigurableColumnsProps[];
   useMultiselect?: boolean;
+  selectionMode?: TableSelectionMode;
   freezeHeaders?: boolean;
   showExpandedView?: boolean;
   containerStyle?: string;
@@ -31,13 +32,27 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   hoverHighlight?: boolean;
   stickyHeader?: boolean;
 
+  // Header styling
+  headerFontSize?: string;
+  headerFontWeight?: string;
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
+
+  // Table body styling
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
+  rowHeight?: string;
+  rowPadding?: string;
+  rowBorder?: string;
+
+  // Overall table styling
   borderRadius?: string;
   border?: IBorderValue;
-
+  backgroundColor?: string;
+  boxShadow?: string;
+  sortableIndicatorColor?: string;
   enableStyleOnReadonly?: boolean;
 }
 

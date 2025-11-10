@@ -44,7 +44,7 @@ namespace Shesha.ConfigurationItems.Distribution.Models
             _iocManager = iocManager;
 
             var typeFinder = iocManager.Resolve<ITypeFinder>();
-            var entityConfigStore = iocManager.Resolve<IEntityConfigurationStore>();
+            var entityConfigStore = iocManager.Resolve<IEntityTypeConfigurationStore>();
 
             var types = typeFinder.Find(t => t.IsAssignableTo(typeof(ConfigurationItem)) && !t.IsAbstract && !t.IsGenericType).ToList();
             _itemTypes = types.Select(t => 

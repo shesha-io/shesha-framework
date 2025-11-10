@@ -3,7 +3,8 @@ import { IComponentSettings } from '../appConfigurator/models';
 import { FormFullName, FormIdentifier, IFormDto } from '../form/models';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { createNamedContext } from '@/utils/react';
-import { ReferenceListDto } from './models';
+import { ConfigurationDto, IConfigurationItemDto, ReferenceListDto } from './models';
+import { GetConfigurationArgs } from './configurationLoader';
 
 export interface IConfigurationItemsLoaderStateContext {
   activeProvider?: string;
@@ -43,6 +44,8 @@ export interface IConfigurationItemsLoaderActionsContext {
   getComponent: (payload: IGetComponentPayload) => PromisedValue<IComponentSettings>;
   updateComponent: (payload: IUpdateComponentPayload) => Promise<void>;
   getEntityFormId: (className: string, formType: string) => Promise<FormFullName>;
+
+  getCachedConfig: <TConfigDto extends ConfigurationDto = ConfigurationDto>(payload: GetConfigurationArgs) => Promise<IConfigurationItemDto<TConfigDto> | undefined>;
 }
 
 export const ConfigurationItemsLoaderActionsContext = createNamedContext<IConfigurationItemsLoaderActionsContext | undefined>(undefined, "ConfigurationItemsLoaderActionsContext");

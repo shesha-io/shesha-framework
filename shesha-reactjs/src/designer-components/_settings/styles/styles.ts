@@ -36,7 +36,12 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
             +.ant-form-item-tooltip {
             align-self: end !important;
             position: relative;
-            bottom: -2px;
+            top: 4px;
+            }
+
+            
+            +.sha-required-mark {
+            margin-bottom: -16px !important;
             }
     `);
 

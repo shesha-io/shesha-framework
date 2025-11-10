@@ -11,6 +11,7 @@ import { GetResultTypeFunc } from '../codeEditor/interfaces';
 import { IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { ILabelValueEditorProps } from '@/components/labelValueEditor/labelValueEditor';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
+import { EntityTypeAutocompleteType } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 
 export interface IRadioOption {
   value: string | number;
@@ -31,7 +32,7 @@ export interface InputType {
     'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'textField' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' | 'filtersList' |
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList' |
     'sizableColumnsConfig' | 'labelValueEditor' | 'componentSelector' | 'itemListConfiguratorModal' | 'dataSortingEditor' | 'tooltip' | 'customLabelValueEditor' |
-    'typeAutoComplete' | 'fullIdFormAutocomplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator' | 'RefListItemSelectorSettingsModal' |
+    'entityTypeAutocomplete' | 'fullIdFormAutocomplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator' | 'RefListItemSelectorSettingsModal' |
     'keyInformationBarColumnsList' | 'Password' | 'settingsInput' | 'date';
 }
 
@@ -134,4 +135,6 @@ export interface ISettingsInputProps extends IComponentLabelProps,
   showSearch?: boolean;
   defaultChecked?: boolean;
   hidden?: boolean | IPropertySetting;
+  entityAutocompleteType?: EntityTypeAutocompleteType;
+  regExp?: string;
 };
