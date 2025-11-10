@@ -1,19 +1,15 @@
 
-import React, { FC, useMemo } from 'react';
-import { useFormState, useGlobalState } from '@/providers';
+import React, { FC } from 'react';
+import { useActualContextExecutionExecutor } from '@/hooks';
 import ShaIcon from '../shaIcon';
 import { getIcon } from './utils';
 import { IEventComponentProps } from './interfaces';
 
 // Custom Event Component with Icon
 export const EventComponent: FC<IEventComponentProps> = ({ event }) => {
-  const { formData } = useFormState();
-  const { globalState } = useGlobalState();
-
-  const icon = useMemo(() =>
-    getIcon(event.icon, formData, globalState, event, 'CalendarOutlined'),
-  [event, formData, globalState],
-  );
+  const icon = useActualContextExecutionExecutor((context) =>
+    getIcon(event.icon, context.data, context.globalState, event, 'CalendarOutlined'),
+  { item: event });
 
   return (
     <div
