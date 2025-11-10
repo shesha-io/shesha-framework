@@ -68,7 +68,7 @@ export default {
       logLevel: 'warnings-only',
       timestampFormat: 'locale',
       maxFileSize: 5 * 1024 * 1024, // 5MB
-      backupOldLogs: true
+      backupOldLogs: false
     }),
     memoryTrace(false),
     codeAsText(),
