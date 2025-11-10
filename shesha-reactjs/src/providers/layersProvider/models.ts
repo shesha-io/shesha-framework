@@ -1,4 +1,5 @@
 import { FormIdentifier, IConfigurableActionConfiguration } from '@/providers';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface ICalendarEvent {
@@ -40,7 +41,7 @@ export interface ILayerGroupItemBase {
   useQuickView?: boolean;
   quickViewForm?: FormIdentifier;
   dataSource?: 'entity' | 'custom';
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
 }
 
 export interface ILayerFormModel extends ILayerGroupItemBase {
@@ -50,7 +51,7 @@ export interface ILayerFormModel extends ILayerGroupItemBase {
   visible?: boolean;
   allowChangeVisibility?: boolean;
   useExpression?: boolean;
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   permissions?: any;
   properties?: string[];
   queryParamsExpression?: string;
@@ -76,7 +77,7 @@ export interface ICalendarLayersProps {
   visible?: boolean;
   allowChangeVisibility?: boolean;
   dataSource: 'entity' | 'custom';
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   startTime?: string;
   endTime?: string;
   title?: string;

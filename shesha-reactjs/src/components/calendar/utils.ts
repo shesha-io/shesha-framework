@@ -7,6 +7,7 @@ import { IStoredFilter } from "@/providers/dataTable/interfaces";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
 import { executeScriptSync } from "@/providers/form/utils";
 import { ILayerWithMetadata } from "./interfaces";
+import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
 
 export const getLayerEventItems = (
   item: ICalendarLayersProps,
@@ -100,7 +101,7 @@ export const getQueryProperties = ({ startTime, endTime, propertyList }: ICalend
   return Array.from(properties).join(' ');
 };
 
-export const getCalendarRefetchParams = (param: ICalendarLayersProps, filter: string): { path: string; queryParams?: { entityType: string; properties: string | null; maxResultCount: number; filter: string } } => {
+export const getCalendarRefetchParams = (param: ICalendarLayersProps, filter: string): { path: string; queryParams?: Record<string, any> } => {
   const { customUrl, dataSource, entityType, overfetch } = param;
 
   if (dataSource === 'custom') {
@@ -112,7 +113,7 @@ export const getCalendarRefetchParams = (param: ICalendarLayersProps, filter: st
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
-      entityType,
+      ...getEntityTypeIdentifierQueryParams(entityType ?? ''),
       properties: overfetch ? getQueryProperties(param) : null,
       maxResultCount: 100,
       filter,

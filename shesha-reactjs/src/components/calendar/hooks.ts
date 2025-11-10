@@ -8,6 +8,7 @@ import { DataTypes } from '@/interfaces';
 import { useLayerGroupConfigurator } from '@/providers/layersProvider';
 import { evaluateString, useFormData, useGlobalState, useMetadataDispatcher, useNestedPropertyMetadatAccessor } from '@/index';
 import { ICalendarLayersProps } from '@/providers/layersProvider/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 interface IGetData {
   fetchData: () => void;
@@ -45,17 +46,17 @@ export const useCalendarLayers = (layers: ICalendarLayersProps[]): IGetData => {
 
   const dispatcher = useMetadataDispatcher();
 
-  const getMetadataAccessor = (modelType: string): NestedPropertyMetadatAccessor => {
+  const getMetadataAccessor = useCallback((modelType: string | IEntityTypeIdentifier): NestedPropertyMetadatAccessor => {
     return (propertyPath: string) => modelType
       ? dispatcher.getPropertyMetadata({ dataType: DataTypes.entityReference, modelType, propertyPath })
       : Promise.resolve(null);
-  };
+  }, [dispatcher]);
 
   const layerWithMetadata = useMemo(() =>
     layers?.map((obj) => ({
       ...obj,
       metadata: getMetadataAccessor(obj.entityType),
-    })), [layers, dispatcher],
+    })), [layers, getMetadataAccessor],
   );
 
   const fetchData = useCallback(() => {
