@@ -50,6 +50,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           &.open {
             width: ${leftSidebarWidth};
             display: block;
+            overflow: scroll;
+            height: calc(100vh - 120px);
 
             .${sidebarHeader} {
               .sidebar-header-title {
@@ -124,7 +126,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
         .${sidebarContainerLeft} {
           border-right: 1px solid lightgrey;
-          min-height: calc(100vh - 102px);
+          min-height: calc(100vh - 150px);
     
           &.open {
             .toggle-open-btn {
@@ -135,7 +137,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
         .${sidebarContainerRight} {
           border-left: 1px solid lightgrey;
-          min-height: calc(100vh - 102px);
+          min-height: calc(100vh - 150px);
     
           &.open {
             .toggle-open-btn {
@@ -166,6 +168,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
         .${canvasWrapper} {
           height: calc(100vh - 120px);
+          overflow: auto;
         }
         
         [data-sha-c-type="datatable"] {

@@ -18,6 +18,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const csQuickInfoIcons = 'sha-cs-quick-info-icons';
   const csDocTabs = 'sha-cs-doc-tabs';
   const csDocEditor = 'sha-cs-doc-editor';
+  const csMainArea = "sha-cs-main-area";
 
   const headerHeight = 60;
 
@@ -87,7 +88,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             height: calc(100vh - ${headerHeight}px);
             overflow: 'auto';
             .${csDocTabs}{
-                height: 100%;
+            height: 100%;
                 >.ant-tabs-content-holder{
                     height: 100%;
                     >.ant-tabs-content{
@@ -98,6 +99,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             }
             .${csDocEditor}{
                 padding: 0;
+                .${csMainArea}{
+                    height: 100%;
+                }
             }
         }
   `);
