@@ -40,6 +40,7 @@ namespace Shesha.Authorization
         private readonly UserRegistrationManager _userRegistrationManager;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<MobileDevice, Guid> _mobileDeviceRepository;
+        private readonly ITokenBlacklistService _tokenBlacklistService;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -51,7 +52,8 @@ namespace Shesha.Authorization
             UserRegistrationManager userRegistrationManager,
             IRepository<Person, Guid> personRepository,
             IRepository<ShaUserRegistration, Guid> userRegistration,
-            IRepository<MobileDevice, Guid> mobileDeviceRepository)
+            IRepository<MobileDevice, Guid> mobileDeviceRepository,
+            ITokenBlacklistService tokenBlacklistService)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -63,6 +65,7 @@ namespace Shesha.Authorization
             _personRepository = personRepository;
             _mobileDeviceRepository = mobileDeviceRepository;
             _userRegistration = userRegistration;
+            _tokenBlacklistService = tokenBlacklistService;
         }
 
         [HttpPost]
@@ -130,8 +133,12 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        public bool SignOff()
+        public async Task<bool> SignOffAsync()
         {
+            var jti = User.GetTokenId();
+            if (jti != null)
+                await _tokenBlacklistService.BlacklistTokenAsync(jti, User.GetTokenExpirationDate());
+
             return true;
         }
 
