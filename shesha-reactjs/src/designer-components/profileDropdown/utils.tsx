@@ -48,7 +48,7 @@ const filterVisibleItems = (
 export const getMenuItem = (
   items: ButtonGroupItemProps[] = [],
   execute: (payload: IConfigurableActionConfiguration, dynamicItem?: IFullAuditedEntity) => void,
-  visibilityChecker?: ItemVisibilityFunc
+  visibilityChecker?: ItemVisibilityFunc,
 ): ItemType[] => {
   // Filter items based on visibility if checker is provided
   const visibleItems = visibilityChecker ? filterVisibleItems(items, visibilityChecker) : items;

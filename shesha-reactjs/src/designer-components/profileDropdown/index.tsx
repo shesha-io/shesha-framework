@@ -147,7 +147,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       if (actionConfiguration) {
         executeAction({
           actionConfiguration,
-          argumentsEvaluationContext: { ...allData, dynamicItem }
+          argumentsEvaluationContext: { ...allData, dynamicItem },
         });
       }
     };
