@@ -90,7 +90,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     formName,
     formTitle,
     formNameParent,
-    // mainArea,
+    mainArea,
   } = useStyles().styles;
 
   const quickEditModal = cx("sha-designer-modal", css`
@@ -145,6 +145,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
    `);
     */
   const formDesigner = cx(formDesignerClassName, css`
+    height: 100%;
+    .${mainArea} {
+      height: 100%;
+
+      .sidebar-container {
+        height: 100%;
+      }
+    };
         .${shaHelpIcon} {
             cursor: help;
             font-size: 14px;
