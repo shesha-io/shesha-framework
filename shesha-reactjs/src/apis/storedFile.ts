@@ -1,6 +1,7 @@
 import { useMutateForEndpoint } from '@/hooks';
 import { useGet, UseGetProps } from '@/hooks/useGet';
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { IEntityTypeIdentifierQueryParams } from '@/interfaces/metadata';
 
 export interface StoredFileDeleteQueryParams {
   /**
@@ -14,7 +15,7 @@ export interface StoredFileDeleteQueryParams {
   /**
    * Type short alias of the owner entity
    */
-  ownerType?: string;
+  ownerType?: IEntityTypeIdentifierQueryParams;
   /**
    * File category
    */
@@ -98,7 +99,7 @@ export interface StoredFileGetEntityPropertyQueryParams {
   /**
    * Type short alias of the owner entity
    */
-  ownerType: string;
+  ownerType: IEntityTypeIdentifierQueryParams;
   /**
    * File category 
    */

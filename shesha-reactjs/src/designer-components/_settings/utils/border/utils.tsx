@@ -156,7 +156,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
           hideLabel: true,
           propertyName: '',
           icon: 'BorderOutlined',
-          width: 20,
           tooltip: `Styles will apply to all border`,
         },
         {
@@ -203,7 +202,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                 label: 'Icon',
                 hideLabel: true,
                 readOnly: true,
-                width: 20,
                 value: sideValue.icon,
                 propertyName: 'bordericon',
                 icon: sideValue.icon,
@@ -255,7 +253,7 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
       inputType: 'radio',
       label: 'Radius Type',
       propertyName: `${path ? path + '.' : ''}border.radiusType`,
-      defaultValue: 'all',
+      // defaultValue: 'all',
       buttonGroupOptions: radiusConfigType,
     })
     .addSettingsInputRow({
@@ -268,7 +266,7 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
           label: "Corner Radius",
           hideLabel: true,
           width: 80,
-          defaultValue: 0,
+          // defaultValue: 0,
           type: 'numberField',
           icon: 'ExpandOutlined',
           tooltip: 'Styles will apply to all corners',
@@ -289,7 +287,7 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
           label: "Corner Radius",
           hideLabel: true,
           width: 80,
-          defaultValue: 0,
+          // defaultValue: 0,
           type: 'numberField',
           icon: cornerValue.icon,
           placeholder: '0',

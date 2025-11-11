@@ -17,7 +17,8 @@ export const propertyMetadata2QbProperty = (property: IPropertyMetadata): IPrope
     visible: property.isVisible,
     dataType: property.dataType,
     fieldSettings: {
-      typeShortAlias: isEntityReferencePropertyMetadata(property) ? property.entityType : undefined,
+      entityTypeName: isEntityReferencePropertyMetadata(property) ? property.entityType : undefined,
+      entityTypeModule: isEntityReferencePropertyMetadata(property) ? property.entityModule : undefined,
       referenceListName: property.referenceListName,
       referenceListModule: property.referenceListModule,
       allowInherited: true,

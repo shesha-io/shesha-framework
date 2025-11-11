@@ -162,7 +162,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     id: nanoid(),
                                     label: 'Size',
                                     propertyName: 'font.size',
-                                    defaultValue: 14,
                                     hideLabel: true,
                                     width: 50,
                                   },
@@ -223,7 +222,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     propertyName: 'width',
                                     icon: 'widthIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                                    defaultValue: '150px',
                                   },
                                   {
                                     type: 'textField',
@@ -233,7 +231,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     propertyName: 'height',
                                     icon: 'heightIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                                    defaultValue: '35px',
                                   },
                                 ],
                               })
@@ -285,7 +282,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           jsSetting: true,
                           tooltip: 'Hex and RGB colors are supported',
                           parentId: styleRouterId,
-                          defaultValue: 'primary',
                           dropdownOptions: [
                             { value: 'primary', label: 'Primary color' },
                             { value: 'custom', label: 'Custom color' },

@@ -1,5 +1,7 @@
-interface IHasEntityType {
-  entityType: string;
+export interface IHasEntityTypeIdPayload {
+  fullClassName?: string;
+  module?: string;
+  name?: string;
 }
 
 /**
@@ -16,7 +18,7 @@ export interface IGetAllPayload {
 /**
  * Generic get all payload, is used for the generic entpoint like `/api/services/app/Entities/GetAll`
  */
-export interface IGenericGetAllPayload extends IGetAllPayload, IHasEntityType {}
+export interface IGenericGetAllPayload extends IGetAllPayload, IHasEntityTypeIdPayload {}
 
 /**
  * Get entity payload
@@ -28,7 +30,7 @@ export interface IGetPayload {
 /**
  * Generic get entity payload, is used for the generic entpoint like `/api/services/app/Entities/Get`
  */
-export interface IGenericGetPayload extends IGetPayload, IHasEntityType {}
+export interface IGenericGetPayload extends IGetPayload, IHasEntityTypeIdPayload {}
 
 export interface ValidationErrorInfo {
   message?: string | null;

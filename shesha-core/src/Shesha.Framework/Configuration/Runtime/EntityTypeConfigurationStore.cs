@@ -1,7 +1,10 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.Reflection;
 using Shesha.Configuration.MappingMetadata;
 using Shesha.Configuration.Runtime.Exceptions;
+using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.EntityTypeBuilder;
 using Shesha.Extensions;
@@ -23,29 +26,34 @@ namespace Shesha.Configuration.Runtime
     {
         private readonly Hashtable _entityByTypeShortAlias = new Hashtable();
         private readonly Hashtable _entityByClassName = new Hashtable();
+        private readonly Hashtable _entityByEntityTypeId = new Hashtable();
 
         private readonly IDictionary<Type, EntityTypeConfiguration> _entityConfigurations = new Dictionary<Type, EntityTypeConfiguration>();
         private readonly ITypeFinder _typeFinder;
         private readonly IDynamicEntityTypeBuilder _dynamicEntityTypeBuilder;
         private readonly IMappingMetadataProvider _mappingMetadataProvider;
         private readonly IDynamicEntityUpdateHandler _dynamicEntityUpdateHandler;
+        private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
 
         public EntityTypeConfigurationStore(
             ITypeFinder typeFinder,
             IDynamicEntityTypeBuilder dynamicEntityTypeBuilder,
             IMappingMetadataProvider mappingMetadataProvider,
-            IDynamicEntityUpdateHandler dynamicEntityUpdateHandler
+            IDynamicEntityUpdateHandler dynamicEntityUpdateHandler,
+            IRepository<EntityConfig, Guid> entityConfigRepository
         )
         {
             _typeFinder = typeFinder;
             _dynamicEntityTypeBuilder = dynamicEntityTypeBuilder;
             _mappingMetadataProvider = mappingMetadataProvider;
             _dynamicEntityUpdateHandler = dynamicEntityUpdateHandler;
-
-            InitializeHardcoded();
+            _entityConfigRepository = entityConfigRepository;
         }
 
-        public void InitializeHardcoded(bool resetMapping = true)
+        private string GetEntityTypeIdKey(string? module, string name) => $"{module}:{name}";
+
+        [UnitOfWork]
+        public async Task InitializeHardcodedAsync(bool resetMapping = true, List<EntityConfig>? entityConfigs = null)
         {
             var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType() || t.IsJsonEntityType()) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
                 .Select(t => new { Type = t, TypeShortAlias = t.GetAttributeOrNull<EntityAttribute>()?.TypeShortAlias ?? "" })
@@ -59,9 +67,15 @@ namespace Shesha.Configuration.Runtime
             if (duplicates.Any())
                 throw new DuplicatedTypeShortAliasesException(duplicates.ToDictionary(i => i.TypeShortAlias ?? "empty", i => i.Types));
 
+            entityConfigs = entityConfigs ?? await _entityConfigRepository.GetAllListAsync();
+
             foreach (var entityType in entityTypes)
             {
-                _entityByClassName.Add(entityType.Type.GetRequiredFullName(), entityType.Type);
+                var className = entityType.Type.GetRequiredFullName();
+                _entityByClassName.Add(className, entityType.Type);
+                var configs = entityConfigs.Where(x => x.FullClassName == className);
+                foreach (var config in configs)
+                    _entityByEntityTypeId.Add(GetEntityTypeIdKey(config.Module?.Name, config.Name), entityType.Type);
                 if (!string.IsNullOrWhiteSpace(entityType.TypeShortAlias))
                     _entityByTypeShortAlias.Add(entityType.TypeShortAlias, entityType.Type);
             }
@@ -70,12 +84,20 @@ namespace Shesha.Configuration.Runtime
                 _mappingMetadataProvider.ResetMapping();
         }
 
-        public async Task InitializeDynamicAsync()
+        [UnitOfWork]
+        public async Task InitializeDynamicAsync(List<EntityConfig>? entityConfigs = null)
         {
             var userEntityTypes = _dynamicEntityTypeBuilder.GenerateTypes(this);
+            entityConfigs = entityConfigs ?? await _entityConfigRepository.GetAllListAsync(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined);
             foreach (var entityType in userEntityTypes)
-                _entityByClassName.Add(entityType.GetRequiredFullName(), entityType);
-            
+            {
+                var className = entityType.GetRequiredFullName();
+                _entityByClassName.Add(className, entityType);
+                var configs = entityConfigs.Where(x => x.FullClassName == className);
+                foreach (var config in configs)
+                    _entityByEntityTypeId.Add(GetEntityTypeIdKey(config.Module?.Name, config.Name), entityType);
+            }
+
             _mappingMetadataProvider.ResetMapping();
             await _dynamicEntityUpdateHandler.ProcessAsync();
         }
@@ -92,15 +114,35 @@ namespace Shesha.Configuration.Runtime
                 ? _entityByTypeShortAlias[nameOrAlias] as Type
                 : _entityByClassName.ContainsKey(nameOrAlias)
                     ? _entityByClassName[nameOrAlias] as Type
-                    : null;
+                    : _entityByEntityTypeId.ContainsKey(nameOrAlias)
+                        ? _entityByEntityTypeId[nameOrAlias] as Type
+                        : null;
         }
 
         /// inheritedDoc
         public EntityTypeConfiguration? GetOrNull(string nameOrAlias)
         {
             var type = GetTypeOrNull(nameOrAlias);
-
             return type == null ? null : Get(type);
+        }
+
+        /// inheritedDoc
+        public EntityTypeConfiguration? GetOrNull(string? module, string name)
+        {
+            var type = GetTypeOrNull(GetEntityTypeIdKey(module, name));
+            return type == null ? null : Get(type);
+        }
+
+        /// inheritedDoc
+        public EntityTypeConfiguration Get(string? module, string name)
+        {
+            var key = GetEntityTypeIdKey(module, name);
+            var type = GetTypeOrNull(key);
+
+            if (type == null)
+                throw new EntityTypeNotFoundException(key);
+
+            return Get(type);
         }
 
         /// inheritedDoc
@@ -139,13 +181,17 @@ namespace Shesha.Configuration.Runtime
             config.ApplicationServiceType = applicationServiceType;
         }
 
+        [UnitOfWork]
         public async Task ReInitializeAsync()
         {
             _entityByTypeShortAlias.Clear();
             _entityByClassName.Clear();
+            _entityByEntityTypeId.Clear();
             _entityConfigurations.Clear();
-            InitializeHardcoded(false);
-            await InitializeDynamicAsync();
+            var configs = await _entityConfigRepository.GetAllListAsync();
+            await InitializeHardcodedAsync(false, configs);
+            configs = configs.Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined).ToList();
+            await InitializeDynamicAsync(configs);
         }
 
 

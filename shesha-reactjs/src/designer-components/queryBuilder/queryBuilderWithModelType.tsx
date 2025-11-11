@@ -2,9 +2,10 @@ import React, { FC, PropsWithChildren } from 'react';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { MetadataProvider } from '@/providers';
 import { QueryBuilderWrapper } from './queryBuilderWrapper';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface IQueryBuilderWithModelType {
-  modelType?: string;
+  modelType?: string | IEntityTypeIdentifier;
 }
 
 export const QueryBuilderWithModelType: FC<PropsWithChildren<IQueryBuilderWithModelType>> = (props) => {

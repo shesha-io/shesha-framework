@@ -43,7 +43,6 @@ export const getSettings = (data: IRateProps): FormMarkupWithSettings => {
                   label: 'Label',
                   parentId: commonTabId,
                   hideLabel: true,
-                  defaultValue: true,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -89,7 +88,6 @@ export const getSettings = (data: IRateProps): FormMarkupWithSettings => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       size: 'small',
-                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
@@ -98,7 +96,6 @@ export const getSettings = (data: IRateProps): FormMarkupWithSettings => {
                       propertyName: 'hidden',
                       label: 'Hide',
                       size: 'small',
-                      defaultValue: 'inherit',
                       jsSetting: true,
                     },
                   ],

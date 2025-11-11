@@ -1,4 +1,4 @@
-import { IHasEntityType, IPropertyMetadata, ITypeDefinitionLoadingContext, SourceFile, TypeDefinition, isEntityReferencePropertyMetadata, isPropertiesArray } from "@/interfaces/metadata";
+import { IHasFullEntityType, IPropertyMetadata, ITypeDefinitionLoadingContext, SourceFile, TypeDefinition, isEntityReferencePropertyMetadata, isPropertiesArray } from "@/interfaces/metadata";
 import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
 import { EntitiesManager } from "./manager";
 import { HttpClientApi } from "@/publicJsApis/httpClient";
@@ -39,7 +39,7 @@ const entitiesConfigurationToProperties = (entityConfigs: EntityConfigurationDto
     if (!isPropertiesArray(moduleProp.properties))
       throw new Error("Something went wrong. Expected array of properties");
 
-    const propertyMetadata: IEntityPropertyMetadata & IHasEntityType = {
+    const propertyMetadata: IEntityPropertyMetadata & IHasFullEntityType = {
       path: entityConfig.accessor,
       label: entityConfig.name,
       description: entityConfig.description,
@@ -48,7 +48,9 @@ const entitiesConfigurationToProperties = (entityConfigs: EntityConfigurationDto
       entityModule: entityConfig.module.name,
       properties: [],
       entityItemType: 'entityType',
+      typeAccessor: entityConfig.accessor,
       moduleAccessor: entityConfig.module.accessor,
+      fullClassName: entityConfig.fullClassName,
     };
     if (!isPropertiesArray(moduleProp.properties))
       throw new Error("Something went wrong. Expected array of properties");
@@ -190,13 +192,13 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
 
           const idType = getEntityIdJsType(typeDef.metadata);
           if (!idType)
-            throw new Error(`Failed to find identifier type for entity '${prop.entityType}'`);
+            throw new Error(`Failed to find identifier type for entity '${prop.entityModule}:${prop.entityType}'`);
 
           if (prop.description)
             sb.append(`/** ${prop.description} */`);
           sb.append(`${prop.path}: EntityAccessor<${idType}, ${typeDef.typeName}>;`);
         } else {
-          console.error(`Failed to find entity type '${prop.entityModule}/${prop.entityType}' for (property '${prop.path}')`);
+          console.error(`Failed to find entity type '${prop.entityModule}:${prop.entityType}' for (property '${prop.path}')`);
           sb.append(`${prop.path}: any;`);
         }
       }

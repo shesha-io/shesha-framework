@@ -14,6 +14,7 @@ import { useStyles } from './styles';
 import { ShaForm } from '@/providers/form';
 import { useParent } from '@/providers/parentProvider';
 import TableContextEmptyState from './tableContextEmptyState';
+import { getEntityTypeName, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 type ITableContextInnerProps = ITableContextComponentProps;
 
@@ -35,14 +36,14 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     : (components && components.length > 0) || childComponentIds.length > 0;
   const disableRefresh: boolean = useActualContextExecution(props.disableRefresh, null, false);
 
-  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
   const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
 
   const getDataPath = evaluateString(endpoint, { data });
 
   if (!sourceType)
     throw SheshaError.throwPropertyError('sourceType');
-  if (sourceType === 'Entity' && !entityType)
+  if (sourceType === 'Entity' && isEntityTypeIdEmpty(entityType))
     throw SheshaError.throwPropertyError('entityType');
   if (sourceType === 'Url' && !endpoint)
     throw SheshaError.throwPropertyError('endpoint');
@@ -132,7 +133,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
 export const TableContext: FC<ITableContextComponentProps> = (props) => {
   const uniqueKey = useMemo(() => {
-    return `${props.sourceType}_${props.propertyName}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
+    return `${props.sourceType}_${props.propertyName}_${getEntityTypeName(props.entityType) ?? 'empty'}`; // is used just for re-rendering
   }, [props.sourceType, props.propertyName, props.entityType]);
 
   return <TableContextInner key={uniqueKey} {...props} />;

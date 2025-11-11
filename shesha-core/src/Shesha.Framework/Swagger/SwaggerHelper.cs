@@ -100,7 +100,7 @@ namespace Shesha.Swagger
             // 3. Add Entities (need to add all entities because services may have been disabled but will be enabled in the future)
             foreach (var entity in entityTypes)
             {
-                var serviceName = entity.Name;
+                var serviceName = entity.Name + "Crud";
                 if (!docs.ContainsKey(GetDocumentNameForService(serviceName)))
                     docs.Add(GetDocumentNameForService(serviceName), new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
             }

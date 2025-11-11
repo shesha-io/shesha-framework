@@ -103,7 +103,7 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
       permissionedEntityClass: permissionedEntity ? permissionedEntity?._className : undefined,
     };
     const response = await this.#httpClient
-      .get<IAjaxResponse<boolean>>(`${URLS.IS_PERMISSION_GRANTED}?${qs.stringify(requestParams)}`);
+      .get<IAjaxResponse<boolean>>(`${URLS.IS_PERMISSION_GRANTED}?${qs.stringify(requestParams, { allowDots: true })}`);
 
     return response.data?.success ? response.data.result : false;
   }
@@ -115,7 +115,7 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
       roleName: roleName,
     };
     return this.#httpClient
-      .get<IAjaxResponse<boolean>>(`${URLS.IS_ROLE_GRANTED}?${qs.stringify(requestParams)}`)
+      .get<IAjaxResponse<boolean>>(`${URLS.IS_ROLE_GRANTED}?${qs.stringify(requestParams, { allowDots: true })}`)
       .then((response) => (response.data?.success ? response.data.result : false));
   }
 

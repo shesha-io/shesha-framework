@@ -74,23 +74,19 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           inputs: [
                             {
                               id: '12d700d6-ed4d-49d5-9cfd-fe8f00w0f3b6',
-                              inputType: 'switch',
                               type: 'switch',
                               propertyName: 'showHeader',
                               label: 'Show Header',
                               size: 'small',
                               jsSetting: true,
-                              defaultValue: false,
                             },
                             {
                               id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                              inputType: 'switch',
                               type: 'switch',
                               propertyName: 'showFooter',
                               label: 'Show Action Buttons',
                               size: 'small',
                               jsSetting: true,
-                              defaultValue: false,
                             },
                           ],
                         })
@@ -121,6 +117,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   })
                                   .addSettingsInput({
                                     id: nanoid(),
+                                    inputType: 'textField',
                                     propertyName: 'okText',
                                     parentId: nanoid(),
                                     label: 'Ok Text',
@@ -153,6 +150,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   })
                                   .addSettingsInput({
                                     id: nanoid(),
+                                    inputType: 'textField',
                                     propertyName: 'cancelText',
                                     label: 'Cancel Text',
                                     description: 'The text that will be displayed on the Cancel button',
@@ -205,7 +203,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         label: 'Slide Direction',
                         inputType: 'dropdown',
                         hidden: false,
-                        defaultValue: 'right',
                         dropdownOptions: [
                           { label: 'Top', value: 'top' },
                           { label: 'Right', value: 'right' },
@@ -466,7 +463,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    inputType: 'radio',
                                     buttonGroupOptions: repeatOptions,
                                   },
                                 ],
@@ -853,7 +849,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                             label: 'Repeat',
                                             hideLabel: true,
                                             propertyName: 'headerStyles.background.repeat',
-                                            inputType: 'radio',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],
@@ -1160,7 +1155,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                             label: 'Repeat',
                                             hideLabel: true,
                                             propertyName: 'footerStyles.background.repeat',
-                                            inputType: 'radio',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],

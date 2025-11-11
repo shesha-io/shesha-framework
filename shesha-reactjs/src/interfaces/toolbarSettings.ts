@@ -33,7 +33,7 @@ import { ILabelComponentProps } from '@/designer-components/styleLabel/interface
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
 import { ISettingsInputRowProps } from '@/designer-components/settingsInputRow';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
-import { IRadioOption, ISettingsInputProps } from '@/designer-components/settingsInput/interfaces';
+import { IRadioOption, ISettingsInputSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { IImageFieldProps } from '@/designer-components/image/image';
 import { IKeyInformationBarProps } from '@/designer-components/keyInformationBar/interfaces';
 import { ITextTypographyProps } from '@/designer-components/text/models';
@@ -50,7 +50,7 @@ import { IFileUploadProps } from '@/designer-components/fileUpload';
 import { IEntityTypeAutocompleteComponentProps } from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'id' | 'hidden' | 'type'> {
-  id?: string;
+  id?: string | undefined;
   hidden?: boolean | IPropertySetting;
   jsSetting?: boolean;
   labelAlignOptions?: IRadioOption[];
@@ -149,7 +149,7 @@ type LabelStyleType = ToolbarSettingsProp & Omit<ILabelComponentProps, 'hidden' 
 
 type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
 
-type SettingInputType = ToolbarSettingsProp & Omit<ISettingsInputProps, 'hidden' | 'type'>;
+type SettingInputType = ToolbarSettingsProp & ISettingsInputSettingsInputProps;
 
 type SettingInputRowType = ToolbarSettingsProp & Omit<ISettingsInputRowProps, 'hidden' | 'type'>;
 

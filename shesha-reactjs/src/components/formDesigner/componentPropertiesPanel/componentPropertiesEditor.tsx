@@ -1,14 +1,14 @@
 import React, { FC, MutableRefObject } from 'react';
-import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
+import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponentBase } from '@/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
 import { FormMarkup } from '@/providers/form/models';
 import GenericSettingsForm from '../genericSettingsForm';
 import { IConfigurableFormComponent } from '@/providers';
-import { useFormDesignerActions } from '@/providers/formDesigner';
+import { useFormDesigner } from '@/providers/formDesigner';
 import { wrapDisplayName } from '@/utils/react';
 
 export interface IComponentPropertiesEditorProps {
-  toolboxComponent: IToolboxComponent;
+  toolboxComponent: IToolboxComponentBase;
   componentModel: IConfigurableFormComponent;
   onSave: (settings: IConfigurableFormComponent) => void;
   readOnly: boolean;
@@ -45,12 +45,12 @@ const getDefaultFactory = (markup: FormMarkup, isInModal?: boolean): ISettingsFo
 export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (props) => {
   const { componentModel, readOnly, toolboxComponent, isInModal } = props;
 
-  const { getCachedComponentEditor } = useFormDesignerActions();
+  const { getCachedComponentEditor } = useFormDesigner();
 
   const SettingsForm = getCachedComponentEditor(componentModel.type, () => {
-    return toolboxComponent?.settingsFormFactory
+    return toolboxComponent.settingsFormFactory
       ? toolboxComponent.settingsFormFactory
-      : toolboxComponent?.settingsFormMarkup
+      : toolboxComponent.settingsFormMarkup
         ? getDefaultFactory(toolboxComponent.settingsFormMarkup, isInModal)
         : null;
   });

@@ -12,10 +12,10 @@ export interface DataTypeInfo {
 
 export interface EntityConfigurationDto extends EntityApiItem {
   module: EntityApiItem;
-  entityType: EntityApiItem;
+  fullClassName: string;
 }
 
-export interface IEntityTypeIndentifier {
+export interface IEntityTypeIdentifier {
   module: string | null;
   name: string;
 }

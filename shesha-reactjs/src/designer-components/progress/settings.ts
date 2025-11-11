@@ -45,7 +45,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   label: 'Label',
                   parentId: commonTabId,
                   hideLabel: true,
-                  defaultValue: false,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -80,7 +79,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'progressType',
                       label: 'Type',
                       tooltip: 'To specify the type of progress bar',
-                      defaultValue: 'line',
                       dropdownOptions: [
                         { label: 'Line', value: 'line' },
                         { label: 'Circle', value: 'circle' },
@@ -114,7 +112,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'showInfo',
                       label: 'Show Info',
                       tooltip: 'Whether to display the progress info',
-                      defaultValue: true,
                       jsSetting: true,
                     },
                     {
@@ -199,7 +196,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       { label: 'Butt', value: 'butt' },
                                       { label: 'Square', value: 'square' },
                                     ],
-                                    defaultValue: 'round',
                                     jsSetting: true,
                                   },
                                   {
@@ -208,7 +204,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     propertyName: 'strokeWidth',
                                     label: 'Stroke Width',
                                     tooltip: 'The width of the progress bar, unit: percentage of the canvas width',
-                                    defaultValue: 6,
                                     jsSetting: true,
                                   },
                                 ],

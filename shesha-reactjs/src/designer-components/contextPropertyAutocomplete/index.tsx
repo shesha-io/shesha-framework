@@ -9,19 +9,19 @@ import { IConfigurableFormComponent, MetadataProvider } from '@/providers';
 import { IToolboxComponent } from '@/interfaces';
 import { MetadataType } from '@/providers/metadata/contexts';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesignerSettings } from '@/providers/formDesigner';
 import SettingsControl from '../_settings/settingsControl';
 import { getValueFromPropertySettings } from '../_settings/utils';
 import { useStyles } from '../_settings/styles/styles';
 import { ConfigurableFormItem } from '@/components';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
 export interface IContextPropertyAutocompleteComponentProps extends IConfigurableFormComponent {
   dropdownStyle?: string;
   mode?: 'single' | 'multiple';
-  modelType?: string;
+  modelType?: string | IEntityTypeIdentifier;
   autoFillProps?: boolean;
   styledLabel?: boolean;
 }
@@ -33,7 +33,7 @@ export interface IContextPropertyAutocompleteProps extends Omit<IContextProperty
   contextName: string;
   style?: CSSProperties;
   dropdownStyle?: CSSProperties;
-  defaultModelType: string | IEntityTypeIndentifier;
+  defaultModelType: string | IEntityTypeIdentifier;
   onValuesChange?: (changedValues: any) => void;
 }
 
@@ -179,7 +179,7 @@ interface IContextPropertyAutocompleteCalculatedModel {
   contextName: string;
   style: CSSProperties;
   dropdownStyle: CSSProperties;
-  modelType: string | IEntityTypeIndentifier;
+  modelType: string | IEntityTypeIdentifier;
   setFieldsValue: (values: any) => void;
 }
 
@@ -204,7 +204,8 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
     };
   },
   Factory: ({ model, calculatedModel }) => {
-    const designerModelType = useFormDesignerStateSelector((x) => x.formSettings?.modelType);
+    const formSettings = useFormDesignerSettings();
+    const designerModelType = formSettings?.modelType;
     const validate = useMemo(() => ({ ...model.validate, required: false }), [model.validate]);
     const onValuesChange = useCallback((values) => calculatedModel.setFieldsValue(values), [calculatedModel.setFieldsValue]);
 

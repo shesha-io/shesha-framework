@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Shesha.DynamicEntities.Dtos;
 
 namespace Shesha.StoredFiles.Dto
 {
@@ -14,7 +15,7 @@ namespace Shesha.StoredFiles.Dto
         /// Type short alias of the owner entity
         /// </summary>
         [BindProperty(Name = "ownerType")]
-        public string? OwnerType { get; set; }
+        public EntityTypeIdInput? OwnerType { get; set; }
 
         /// <summary>
         /// Category of the file. Is used to split attachments into groups

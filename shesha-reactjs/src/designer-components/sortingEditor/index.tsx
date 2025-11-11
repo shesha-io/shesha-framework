@@ -10,9 +10,10 @@ import { SortingEditor } from '@/components/dataTable/sortingConfigurator/index'
 import { MetadataProvider } from '@/providers/index';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface ISortingEditorComponentProps extends IConfigurableFormComponent {
-  modelType: string;
+  modelType: string | IEntityTypeIdentifier;
   maxItemsCount?: number;
 }
 
@@ -25,7 +26,7 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
   isOutput: true,
   canBeJsSetting: true,
   icon: <GroupOutlined />,
-  calculateModel: (model, allData) => ({ modelType: model.modelType ? evaluateString(model.modelType, { data: allData.data }) : null }),
+  calculateModel: (model, allData) => ({ modelType: typeof model.modelType === 'string' ? evaluateString(model.modelType, { data: allData.data }) : model.modelType }),
   Factory: ({ model, calculatedModel }) => {
     return (
       <ConditionalWrap

@@ -16,7 +16,7 @@ import {
   SubmitHandler,
 } from "./interfaces";
 import { IFormDataLoader } from "../loaders/interfaces";
-import { FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
+import { DataTypes, FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
 import { ExpressionCaller, ExpressionExecuter, IDataArguments, IFormDataSubmitter } from "../submitters/interfaces";
 import { IFormManagerActionsContext } from "@/providers/formManager/contexts";
 import { useFormManager } from "@/providers/formManager";
@@ -416,12 +416,12 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   setLogEnabled = (enabled: boolean): void => {
     this.logEnabled = enabled;
+    // eslint-disable-next-line no-console
+    this.log = this.logEnabled ? console.log : this.log;
   };
 
-  log = (...args: unknown[]): void => {
-    if (this.logEnabled)
-    // eslint-disable-next-line no-console
-      console.log(...args);
+  log = (..._args: unknown[]): void => {
+    // noop
   };
 
   setInitialValues = (values: Values): void => {
@@ -473,7 +473,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.events.onValuesUpdate = makeCaller<IDataArguments<Values>, void>(settings.onValuesUpdate);
 
     this.modelMetadata = settings.modelType
-      ? await this.metadataDispatcher.getMetadata({ modelType: settings.modelType, dataType: 'entity' })
+      ? await this.metadataDispatcher.getMetadata({ modelType: settings.modelType, dataType: DataTypes.entityReference })
       : undefined;
   };
 

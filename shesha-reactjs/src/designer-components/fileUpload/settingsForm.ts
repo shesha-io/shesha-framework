@@ -64,7 +64,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                       propertyName: 'listType',
                       label: 'List Type',
                       type: 'dropdown',
-                      defaultValue: 'text',
                       dropdownOptions: [
                         { label: 'File name', value: 'text' },
                         { label: 'Thumbnail', value: 'thumbnail' },
@@ -100,7 +99,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       type: 'editModeSelector',
-                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
@@ -133,7 +131,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                       propertyName: 'allowUpload',
                       label: 'Allow Upload',
                       type: 'switch',
-                      defaultValue: true,
                       jsSetting: true,
                     },
                   ],
@@ -663,7 +660,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    inputType: 'radio',
                                     buttonGroupOptions: repeatOptions,
                                   },
                                 ],
