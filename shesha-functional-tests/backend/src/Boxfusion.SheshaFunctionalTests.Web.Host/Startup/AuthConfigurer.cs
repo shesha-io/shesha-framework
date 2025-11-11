@@ -50,7 +50,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
                     options.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = QueryStringTokenResolver,
-                        OnTokenValidated = context => context.EnsureTokenIsNotkBlacklistedAsync(),
+                        OnTokenValidated = context => context.EnsureTokenIsNotBlacklistedAsync(),
                     };
                 });
             }
