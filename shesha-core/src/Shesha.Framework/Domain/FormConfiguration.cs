@@ -55,12 +55,12 @@ namespace Shesha.Domain
         public virtual string? GenerationLogicTypeName { get; set; }
 
         /// <summary>
-        /// 
+        /// JSON configuration for extending the generation logic behavior
         /// </summary>
         public virtual string? GenerationLogicExtensionJson { get; set; }
 
         /// <summary>
-        /// 
+        /// Icon to display as a placeholder for the template in the designer
         /// </summary>
         public virtual string? PlaceholderIcon { get; set; }
     }

@@ -35,26 +35,26 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Form module for getting additional configuration options for template
         /// </summary>
-        public virtual string? ConfigurationFormModule { get; set; }
+        public string? ConfigurationFormModule { get; set; }
 
         /// <summary>
-        /// Form module for getting additional configuration options for template
+        /// Form name for getting additional configuration options for template
         /// </summary>
-        public virtual string? ConfigurationFormName { get; set; }
+        public string? ConfigurationFormName { get; set; }
 
         /// <summary>
         /// The fully qualified name of the class implementing the generation behavior for this template through ITemplateGenerator
         /// </summary>
-        public virtual string? GenerationLogicTypeName { get; set; }
+        public string? GenerationLogicTypeName { get; set; }
 
         /// <summary>
-        /// 
+        /// JSON configuration for extending the generation logic behavior
         /// </summary>
-        public virtual string? GenerationLogicExtensionJson { get; set; }
+        public string? GenerationLogicExtensionJson { get; set; }
 
         /// <summary>
-        /// 
+        /// Icon to display as a placeholder for the template in the designer
         /// </summary>
-        public virtual string? PlaceholderIcon { get; set; }
+        public string? PlaceholderIcon { get; set; }
     }
 }

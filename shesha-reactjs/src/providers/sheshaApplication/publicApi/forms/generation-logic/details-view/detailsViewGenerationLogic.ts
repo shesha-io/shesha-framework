@@ -55,19 +55,6 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
   }
 
   /**
-   * Adds components to the markup based on the extension configuration.
-   * This method adds header, details panel, and child tables to the markup object
-   * according to the provided extension configuration and entity metadata.
-   *
-   * @param markup The JSON markup object to modify.
-   * @param extensionJson The extension configuration for the details view.
-   * @param entity The entity metadata for the main entity.
-   * @param nonFrameworkProperties The filtered list of non-framework properties for the entity.
-   * @param metadataHelper The form builder or metadata helper instance.
-   * @returns The updated markup object with added components.
-   */
-
-  /**
    * Adds header components to the markup.
    * Sets the title and optionally adds a key information bar if configured.
    *
