@@ -166,7 +166,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                 )).NotNull();
                 var primarySchema = entityProperty.DataType == DataTypes.File
                     ? MappingHelper.GetSchemaName(typeof(StoredFile))
-                    : referenceConfig?.SchemaName.NotNull();
+                    : referenceConfig?.SchemaName;
                 var primaryTable = entityProperty.DataType == DataTypes.File
                     ? MappingHelper.GetTableName(typeof(StoredFile))
                     : referenceConfig?.TableName.NotNull();
