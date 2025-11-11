@@ -263,7 +263,6 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
                           icon: "RightOutlined",
                         },
                       ],
-                      allowClear: true,
                     },
                     {
                       id: "allowSorting1",
@@ -400,7 +399,6 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
                           inputType: "colorPicker",
                           propertyName: "backgroundColor",
                           label: "Background Color",
-                          allowClear: true,
                           showText: true,
                           jsSetting: true,
                         })

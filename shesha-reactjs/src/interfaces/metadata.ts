@@ -5,6 +5,12 @@ import { DataTypeInfo } from "@/providers/sheshaApplication/publicApi/entities/m
 import { isDefined } from "@/utils/nullables";
 import { ConfigurationDto } from "@/providers/configurationItemsLoader/models";
 
+export interface IEntityTypeIdentifierQueryParams {
+  name?: string | undefined;
+  module?: string | undefined;
+  fullClassName?: string | undefined;
+}
+
 export interface IMemberType {
   dataType: string;
   dataFormat?: string | null;
@@ -97,7 +103,14 @@ export interface ModelTypeIdentifier {
 }
 
 export interface IHasEntityType {
-  entityType: string; // TODO: split this property into two different (for objects and for entities) or rename existing
+  entityType?: string;
+  entityModule?: string | null;
+}
+
+export interface IHasFullEntityType {
+  fullClassName: string;
+
+  entityType: string;
   entityModule?: string | null;
 
   typeAccessor?: string;
@@ -152,7 +165,7 @@ export type PropertiesLoader = () => PropertiesPromise;
 
 export type NestedProperties = IPropertyMetadata[] | PropertiesLoader | null;
 
-export interface IPropertyMetadata extends IMemberMetadata {
+export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
   containerType?: string;
   required?: boolean;
   readonly?: boolean;
@@ -267,7 +280,7 @@ export interface IObjectMetadata extends IMetadata, IContainerWithNestedProperti
 
 }
 
-export interface IEntityMetadata extends ConfigurationDto, Omit<IObjectMetadata, 'name' | 'description'>, IHasEntityType {
+export interface IEntityMetadata extends ConfigurationDto, Omit<IObjectMetadata, 'name' | 'description'>, IHasFullEntityType {
   md5?: string;
   changeTime?: Date;
   aliases?: string[];

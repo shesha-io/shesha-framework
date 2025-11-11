@@ -2,35 +2,24 @@ import React, { FC } from 'react';
 import {
   SaveOutlined,
 } from '@ant-design/icons';
-import { componentsFlatStructureToTree } from '@/providers/form/utils';
 import {
   App,
   Button,
   ButtonProps,
 } from 'antd';
-import { FormMarkupWithSettings } from '@/providers/form/models';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
-import { useFormDesignerComponents } from '@/providers/form/hooks';
-import { useFormPersister } from '@/providers/formPersisterProvider';
+import { useFormDesigner, useFormDesignerIsModified } from '@/providers/formDesigner';
 
 export interface ISaveButtonProps extends Pick<ButtonProps, 'size' | 'type'> {
   onSaved?: () => void;
 }
 
 export const SaveButton: FC<ISaveButtonProps> = (props) => {
-  const { saveForm } = useFormPersister();
-  const formFlatMarkup = useFormDesignerStateSelector((x) => x.formFlatMarkup);
-  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
-  const toolboxComponents = useFormDesignerComponents();
+  const formDesigner = useFormDesigner();
+  const isModified = useFormDesignerIsModified();
   const { message } = App.useApp();
-  const isModified = true;
 
   const saveFormInternal = (): Promise<void> => {
-    const payload: FormMarkupWithSettings = {
-      components: componentsFlatStructureToTree(toolboxComponents, formFlatMarkup),
-      formSettings: formSettings,
-    };
-    return saveForm(payload);
+    return formDesigner.saveAsync();
   };
 
   const onSaveClick = (): void => {

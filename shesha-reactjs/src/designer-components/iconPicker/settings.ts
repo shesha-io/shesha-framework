@@ -55,7 +55,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
             parentId: 'root',
             label: 'Icon Align',
             allowClear: false,
-            defaultValue: 'start',
             values: [
               {
                 label: 'Left',
@@ -161,7 +160,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           id: nanoid(),
           propertyName: 'fontSize',
           label: 'Size',
-          defaultValue: 24,
         })
         .addColorPicker({
           id: nanoid(),

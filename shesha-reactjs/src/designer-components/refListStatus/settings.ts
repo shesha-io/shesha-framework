@@ -106,7 +106,6 @@ export const getSettings = (data: IRefListStatusProps): FormMarkupWithSettings =
                     label: ' Show Reference List Item Name',
                     tooltip: 'When checked the DisplayName/RefList Name will be shown.',
                     size: 'small',
-                    defaultValue: true,
                     parentId: dataTabId,
                   },
 
@@ -336,7 +335,6 @@ export const getSettings = (data: IRefListStatusProps): FormMarkupWithSettings =
                               propertyName: 'solidBackground',
                               label: 'Show Solid Background',
                               size: 'small',
-                              defaultValue: true,
                               tooltip: 'When checked the component will show a coloured badge and display within it in white font the icon and/or the selected reference list item label.',
                               parentId: backgroundStylePnlId,
                             })
@@ -450,7 +448,6 @@ export const getSettings = (data: IRefListStatusProps): FormMarkupWithSettings =
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,

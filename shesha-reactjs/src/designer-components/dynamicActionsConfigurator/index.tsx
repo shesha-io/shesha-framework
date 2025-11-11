@@ -19,7 +19,7 @@ export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActi
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => (
-          <DynamicActionsConfigurator editorConfig={model} readOnly={model.readOnly} value={value} onChange={onChange} />
+          <DynamicActionsConfigurator readOnly={model.readOnly} value={value} onChange={onChange} />
         )}
       </ConfigurableFormItem>
     );

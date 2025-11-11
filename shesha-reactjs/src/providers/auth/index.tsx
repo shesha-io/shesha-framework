@@ -43,14 +43,14 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   authRef,
 }) => {
   const httpClient = useHttpClient();
-  const { router } = useShaRouting();
+  const shaRouter = useShaRouting();
   const app = useSheshaApplication();
   const settings = useSettings();
 
   const [authenticator] = useAuthenticatorInstance({
     httpClient,
     settings,
-    router,
+    shaRouter: shaRouter,
     tokenName,
     homePageUrl,
     unauthorizedRedirectUrl,

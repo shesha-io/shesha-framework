@@ -21,7 +21,7 @@ export const useFormDataRegistration = (): MetadataBuilderAction => {
       // add form model definition
       metaBuilder.addCustom(name, "Form values", ({ typeDefinitionBuilder }) => {
         const baseTypeGetter = formMetadata && isEntityMetadata(formMetadata)
-          ? getMetadata({ dataType: DataTypes.entityReference, modelType: formMetadata.entityType })
+          ? getMetadata({ dataType: DataTypes.entityReference, modelType: { name: formMetadata.entityType, module: formMetadata.entityModule } })
             .then((meta) => {
               return isEntityMetadata(meta)
                 ? typeDefinitionBuilder.getEntityType({ name: meta.entityType, module: meta.entityModule })

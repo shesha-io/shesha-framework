@@ -20,12 +20,14 @@ import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { containerDefaultStyles, defaultStyles } from './utils';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
   ownerId: string;
-  ownerType: string;
+  ownerType: string | IEntityTypeIdentifier;
   filesCategory?: string;
   allowedFileTypes?: string[];
   ownerName?: string;
@@ -96,7 +98,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
             <StoredFilesProvider
               name={model.componentName}
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
-              ownerType={Boolean(model.ownerType) ? model.ownerType : Boolean(form?.formSettings?.modelType) ? form?.formSettings?.modelType : ''}
+              ownerType={!isEntityTypeIdEmpty(model.ownerType) ? model.ownerType : !isEntityTypeIdEmpty(form?.formSettings?.modelType) ? form?.formSettings?.modelType : ''}
               ownerName={model.ownerName}
               filesCategory={model.filesCategory}
               baseUrl={backendUrl}
@@ -130,7 +132,12 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   },
   settingsFormMarkup: () => getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
-  linkToModelMetadata: (model, metadata) => ({ ...model, ownerId: '{data.id}', ownerType: metadata.containerType, filesCategory: metadata.path }),
+  linkToModelMetadata: (model, metadata) => ({
+    ...model,
+    ownerId: '{data.id}',
+    ownerType: metadata.entityType && { module: metadata.entityModule, name: metadata.entityType ?? '' },
+    filesCategory: metadata.path,
+  }),
   migrator: (m) => m
     .add<IAttachmentsEditorProps>(0, (prev) => {
       return {

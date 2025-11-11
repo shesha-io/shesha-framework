@@ -16,7 +16,6 @@ import {
   useApplicationContextData,
 } from '@/providers/form/utils';
 import { DEFAULT_FORM_SETTINGS, IFormDto } from '../form/models';
-import { EntitiesGetQueryParams } from '@/apis/entities';
 import { EntityAjaxResponse } from '@/generic-pages/dynamic/interfaces';
 import { GetDataError, useActualContextExecution, useDeepCompareMemo, useMutate } from '@/hooks';
 import { ISubFormProviderProps } from './interfaces';
@@ -49,6 +48,9 @@ import { AxiosResponse } from 'axios';
 import { ConfigurableItemIdentifierToString } from '@/interfaces/configurableItems';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { extractAjaxResponse, IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { getEntityTypeIdentifierQueryParams, getEntityTypeName } from '../metadataDispatcher/entities/utils';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IGenericGetPayload } from '@/interfaces/gql';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -97,7 +99,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const designerComponents = useFormDesignerComponents();
 
-  const actualQueryParams = useActualContextExecution(props.queryParams, undefined, EMPTY_OBJECT);
+  const actualQueryParams = useActualContextExecution(queryParams, undefined, EMPTY_OBJECT);
   const actualGetUrl = useActualContextExecution(props.getUrl, undefined, "");
   const actualPostUrl = useActualContextExecution(props.postUrl, undefined, "");
   const actualPutUrl = useActualContextExecution<string>(props.putUrl, undefined, "");
@@ -119,8 +121,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       parentFormApi.clearFieldsValue();
   };
 
-  const internalEntityType = (props.apiMode === 'entityName' ? entityType : value?.['_className']) || value?.['_className'];
-  const prevRenderedEntityTypeForm = useRef<string>(null);
+  const internalEntityType = (props.apiMode === 'entityName' ? entityType : value?.['_className'] as string) || value?.['_className'] as string;
+  const prevRenderedEntityTypeForm = useRef<string | IEntityTypeIdentifier>(null);
 
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {
@@ -137,9 +139,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const [formLoadingState, setFormLoadingState] = useState<IFormLoadingState>({ isLoading: false, error: null });
 
-  const { getForm } = useConfigurationItemsLoader();
+  const { getFormAsync: getForm } = useConfigurationItemsLoader();
 
-  const { getEntityFormId } = useConfigurationItemsLoader();
+  const { getEntityFormIdAsync } = useConfigurationItemsLoader();
 
   const entityTypeFormCache = useRef<{ [key: string]: IFormDto }>({});
 
@@ -166,7 +168,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     if (formSelectionMode === 'dynamic') {
       if (internalEntityType) {
         if (internalEntityType !== prevRenderedEntityTypeForm.current) {
-          const cachedFormDto = entityTypeFormCache.current[internalEntityType];
+          const cachedFormDto = entityTypeFormCache.current[getEntityTypeName(internalEntityType)];
           if (cachedFormDto) {
             setMarkup({
               hasFetchedConfig: true,
@@ -179,7 +181,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             });
             prevRenderedEntityTypeForm.current = internalEntityType;
           } else {
-            getEntityFormId(internalEntityType, formType).then((formid) => {
+            getEntityFormIdAsync(internalEntityType, formType).then((formid) => {
               setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
               prevRenderedEntityTypeForm.current = internalEntityType;
             });
@@ -215,22 +217,23 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   /**
    * Get final query params taking into account all settings
    */
-  const getFinalQueryParams = (): EntitiesGetQueryParams => {
-    if (form.formMode === 'designer' || dataSource !== 'api') return {};
+  const getFinalQueryParams = (): IGenericGetPayload => {
+    if (form.formMode === 'designer' || dataSource !== 'api') return { properties: undefined, id: undefined };
 
-    let params: EntitiesGetQueryParams = { entityType: internalEntityType };
+    const localQueryParams: { id?: string } = typeof actualQueryParams === 'object' ? actualQueryParams : {};
 
-    if (properties) {
-      // Always include the `id` property/. Useful for deleting
-      params.properties = ['id', ...Array.from(new Set(Array.isArray(properties) ? properties : [properties]))].join(' ');
-    }
-
-    if (queryParams) {
-      params = { ...params, ...(typeof actualQueryParams === 'object' ? actualQueryParams : {}) };
-    }
-
-    if (!params.id && Boolean(value) && value['id'] != null && value['id'] !== undefined)
-      params.id = value['id'];
+    const params: IGenericGetPayload = {
+      ...getEntityTypeIdentifierQueryParams(internalEntityType),
+      properties: Boolean(properties)
+        ? ['id', ...Array.from(new Set(Array.isArray(properties) ? properties : [properties]))].join(' ')
+        : undefined,
+      id: Boolean(localQueryParams.id)
+        ? localQueryParams.id
+        : Boolean(value) && value['id'] !== null && value['id'] !== undefined
+          ? value['id']
+          : undefined,
+      ...localQueryParams,
+    };
 
     return params;
   };
@@ -383,8 +386,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         .then((response) => {
           setFormLoadingState({ isLoading: false, error: null });
 
-          if (internalEntityType && formSelectionMode === 'dynamic' && !entityTypeFormCache.current[internalEntityType])
-            entityTypeFormCache.current[internalEntityType] = response;
+          if (internalEntityType && formSelectionMode === 'dynamic' && !entityTypeFormCache.current[getEntityTypeName(internalEntityType)])
+            entityTypeFormCache.current[getEntityTypeName(internalEntityType)] = response;
 
           setMarkup({
             hasFetchedConfig: true,

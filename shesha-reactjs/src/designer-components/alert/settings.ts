@@ -37,7 +37,6 @@ export const getSettings = (data: object): FormRawMarkup =>
               { id: '21fc57e5-5e5d-4ae8-83c4-080a15b55176', label: 'Error', value: 'error' },
             ],
             validate: { required: true },
-            defaultValue: 'info',
           })
           .addTextArea({
             id: '277b7ffe-d023-4543-a4b4-ff7f76052867',

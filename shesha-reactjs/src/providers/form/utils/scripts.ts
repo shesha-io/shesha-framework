@@ -1,8 +1,10 @@
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export interface IExpressionExecuterArguments {
   [key: string]: unknown;
 }
+
+type FunctionWithArgs<TArgs, TResult> = (args: TArgs) => TResult;
 
 export function executeScriptSync<TResult, TArgs = unknown>(expression: string, context: TArgs): TResult | undefined {
   if (!expression) throw new Error('Expression must be defined');
@@ -13,10 +15,9 @@ export function executeScriptSync<TResult, TArgs = unknown>(expression: string, 
       ${expression}
     }
   `;
-    const dynamicFunction = new Function('context', functionBody);
+    const dynamicFunction = new Function('context', functionBody) as FunctionWithArgs<TArgs, TResult>;
 
-
-    return dynamicFunction(context) as TResult | undefined;
+    return dynamicFunction(context);
   } catch (error) {
     console.error(`executeScriptSync error`, error);
     return undefined;
@@ -70,36 +71,32 @@ export const getFunctionExecutor = <TResult = unknown>(
 };
 
 
-const AsyncFunction = Object.getPrototypeOf(async function () {
+type AsyncFunctionWithArgs<TArgs, TResult> = (args: TArgs) => Promise<TResult>;
+
+const AsyncFunction = (async () => {
   // noop
+}).constructor as FunctionConstructor;
 
-}).constructor;
-
-export function executeScript<TResult, TArgs = unknown>(
+export const executeScript = async <TResult, TArgs extends object = object>(
   expression: string,
   expressionArgs: TArgs,
-): Promise<TResult> {
-  return new Promise<TResult>((resolve, reject) => {
-    if (!expression) reject('Expression must be defined');
-
-    try {
-      let argsDefinition = '';
-      const argList: unknown[] = [];
-      for (const argumentName in expressionArgs) {
-        if (expressionArgs.hasOwnProperty(argumentName)) {
-          argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-          argList.push(expressionArgs[argumentName]);
-        }
-      }
+): Promise<TResult> => {
+  if (isNullOrWhiteSpace(expression))
+    throw new Error('Expression must be defined');
 
 
-      const asyncFn = new AsyncFunction(argsDefinition, expression);
-
-
-      const result = asyncFn.apply(null, argList) as TResult;
-      resolve(result);
-    } catch (e) {
-      reject(e);
+  let argsDefinition = '';
+  const argList: unknown[] = [];
+  for (const argumentName in expressionArgs) {
+    if (expressionArgs.hasOwnProperty(argumentName)) {
+      argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+      argList.push(expressionArgs[argumentName]);
     }
-  });
-}
+  }
+
+  const asyncFn = new AsyncFunction(argsDefinition, expression) as AsyncFunctionWithArgs<TArgs, TResult>;
+
+  const awaiter = asyncFn.apply(null, argList) as Promise<TResult>;
+
+  return await awaiter;
+};

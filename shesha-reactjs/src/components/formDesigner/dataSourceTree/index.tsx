@@ -4,7 +4,7 @@ import React, { FC, useMemo, useState, useEffect, ReactNode } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
-import { useFormDesignerActions } from '@/providers/formDesigner';
+import { useFormDesigner } from '@/providers/formDesigner';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
 import { useStyles } from '../styles/styles';
 
@@ -41,7 +41,7 @@ interface NodesWithExpanded {
 const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => {
   const { styles } = useStyles();
   const [manuallyExpanded, setManuallyExpanded] = useState<string[]>(null);
-  const { startDraggingNewItem, endDraggingNewItem } = useFormDesignerActions();
+  const { startDraggingNewItem, endDraggingNewItem } = useFormDesigner();
   const treeData = useMemo<NodesWithExpanded>(() => {
     const expanded: string[] = [];
     const nodes = items.map((item) =>

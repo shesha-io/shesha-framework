@@ -116,7 +116,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     const getDataPayload = convertPayload(payload);
     const key = getUrlKeyParam(getListUrl);
 
-    const getDataUrl = `${backendUrl}${getListUrl}${key}${qs.stringify(getDataPayload)}`;
+    const getDataUrl = `${backendUrl}${getListUrl}${key}${qs.stringify(getDataPayload, { allowDots: true })}`;
 
     return axios({
       url: getDataUrl,

@@ -19,6 +19,8 @@ import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { useTheme } from 'antd-style';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 export interface IImageStyleProps {
   height?: number | string;
@@ -40,7 +42,7 @@ export interface IImageProps extends IConfigurableFormComponent, IFormItem, IIma
   storedFileId?: string;
   base64?: string;
   dataSource?: ImageSourceType;
-  ownerType?: string;
+  ownerType?: string | IEntityTypeIdentifier;
   ownerId?: string;
   fileCategory?: string;
   allowPreview?: boolean;
@@ -109,7 +111,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
                 onChange={onChange}
                 fileId={val}
                 ownerId={Boolean(calculatedModel.ownerId) ? calculatedModel.ownerId : Boolean(calculatedModel.dataId) ? calculatedModel.dataId : ''}
-                ownerType={Boolean(model.ownerType) ? model.ownerType : Boolean(calculatedModel.formModelType) ? calculatedModel.formModelType : ''}
+                ownerType={!isEntityTypeIdEmpty(model.ownerType) ? model.ownerType : !isEntityTypeIdEmpty(calculatedModel.formModelType) ? calculatedModel.formModelType : ''}
                 fileCategory={model.fileCategory}
                 propertyName={!model.context ? model.propertyName : null}
                 // uploadMode={model.useSync ? 'sync' : 'async'}

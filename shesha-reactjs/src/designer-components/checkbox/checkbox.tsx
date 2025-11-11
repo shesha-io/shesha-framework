@@ -49,7 +49,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
     const { styles } = useStyles({ style: finalStyle });
 
     return (
-      <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
+      <ConfigurableFormItem model={model} valuePropName="checked">
         {(value, onChange) => {
           const events: ExtendedCheckboxProps = {
             onBlur: calculatedModel.eventHandlers.onBlur,

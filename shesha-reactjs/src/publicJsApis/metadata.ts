@@ -1,3 +1,8 @@
+export interface IHasEntityType {
+  entityType?: string;
+  entityModule?: string | null;
+}
+
 export interface IMetadata {
   dataType: string;
   name?: string;
@@ -17,7 +22,7 @@ export interface IMemberMetadata extends IMemberType {
   description?: string | null;
 }
 
-export interface IPropertyMetadata extends IMemberMetadata {
+export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
   required?: boolean;
   readonly?: boolean;
   minLength?: number | null;

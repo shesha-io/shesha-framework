@@ -14,7 +14,7 @@ import {
 import { FormMode, IFormActions, IFormSections, IFormSettings } from './models';
 import { isComponentFiltered } from '@/index';
 import { FormFlatMarkupProvider, useChildComponentIds, useChildComponents, useComponentModel, useFormMarkup } from './providers/formMarkupProvider';
-import { useFormDesignerActions } from '../formDesigner';
+import { useFormDesignerOrUndefined } from '../formDesigner';
 import { IShaFormInstance } from './store/interfaces';
 import { useShaFormActions } from './configurableActions';
 import { ConfigurableFormActionsProvider } from './actions';
@@ -148,7 +148,7 @@ const useForm = (require: boolean = true): ConfigurableFormInstance => {
 
 const useIsDrawingForm = (): boolean => {
   const { formMode } = useForm();
-  const designer = useFormDesignerActions(false);
+  const designer = useFormDesignerOrUndefined();
 
   const isDrawing = useMemo(() => {
     return formMode === 'designer' && Boolean(designer);

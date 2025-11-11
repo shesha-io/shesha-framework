@@ -11,7 +11,6 @@ import { Button, Form, Result } from 'antd';
 import { ValidateErrorEntity } from '@/interfaces';
 import { IConfigurableFormRendererProps } from './models';
 import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { useSheshaApplication } from '@/providers';
 import { useStyles } from './styles/styles';
 import Link from 'next/link';
@@ -39,7 +38,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const { styles } = useStyles();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const isDragging = useFormDesignerStateSelector((x) => x.isDragging) ?? false;
 
   const onValuesChangeInternal = (_changedValues: any, values: any): void => {
     shaForm.setFormData({ values: values, mergeValues: true });
@@ -105,7 +103,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
           onFinishFailed={onFinishFailedInternal}
           onValuesChange={onValuesChangeInternal}
           initialValues={initialValues}
-          className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
+          className={classNames(styles.shaForm, props.className)}
           {...mergedProps}
           data-sha-form-id={shaForm.form.id}
           data-sha-form-name={`${shaForm.form.module}/${shaForm.form.name}`}

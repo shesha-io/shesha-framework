@@ -1,6 +1,6 @@
 import { IApiEndpoint, IEntityMetadata } from "@/interfaces";
 import { EntitiesManager } from "./manager";
-import { IEntity, IEntityTypeIndentifier } from "./models";
+import { IEntity, IEntityTypeIdentifier } from "./models";
 
 export interface IEntityEndpoints extends Record<string, IApiEndpoint> {
   create?: IApiEndpoint;
@@ -23,7 +23,7 @@ export interface IEntityTypeAccessor<TId, TEntity extends IEntity<TId>> {
  * Entities accessor. It allows to manipulate entities.
  */
 export class EntityTypeAccessor<TId = string, TEntity extends IEntity<TId> = IEntity<TId>> implements IEntityTypeAccessor<TId, TEntity> {
-  readonly _entityTypeId: IEntityTypeIndentifier;
+  readonly _entityTypeId: IEntityTypeIdentifier;
 
   readonly _manager: EntitiesManager;
 

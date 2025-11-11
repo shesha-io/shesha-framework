@@ -1,15 +1,20 @@
+import { FormIdFullNameDtoAjaxResponse } from "@/apis/entityConfig";
+import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid, FormFullName, IFormDto, isConfigurableItemFullName, isConfigurableItemRawId, IToolboxComponents } from "@/interfaces";
+import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
 import { HttpClientApi, HttpResponse } from "@/publicJsApis/httpClient";
-import { ConfigurationDto, IConfigurationItemDto } from "./models";
-import { URLS } from ".";
-import { buildUrl } from "@/utils/url";
-import { ICacheProvider } from "../metadataDispatcher/entities/models";
-import { IAjaxResponse, isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
-import axios from "axios";
-import { getConfigurationNotFoundMessage } from "./utils";
-import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid, isConfigurableItemFullName, isConfigurableItemRawId } from "@/interfaces";
-import { ConfigurationLoadingError } from "./errors";
 import { PromisedValue, StatefulPromise } from "@/utils/promises";
+import { buildUrl } from "@/utils/url";
+import axios from "axios";
+import { URLS } from ".";
+import { IComponentSettings } from "../appConfigurator/models";
+import { migrateFormSettings } from "../form/migration/formSettingsMigrations";
+import { ConfigurationType, ICacheProvider, IGetFormPayload, IGetRefListPayload } from "../metadataDispatcher/entities/models";
+import { getEntityTypeIdentifierQueryParams } from "../metadataDispatcher/entities/utils";
+import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
+import { ConfigurationLoadingError } from "./errors";
+import { ConfigurationDto, FormConfigurationDto, IClearFormCachePayload, IConfigurationItemDto, IGetComponentPayload, IUpdateComponentPayload, ReferenceListDto } from "./models";
+import { convertFormConfigurationDto2FormDto, getConfigurationNotFoundMessage } from "./utils";
 
 export interface GetConfigurationArgs {
   type: string;
@@ -33,11 +38,19 @@ export interface IConfigurationLoader {
   getCachedConfigAsync<TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined>;
   getCurrentConfigAsync<TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): PromisedValue<TConfigDto>;
   clearCacheAsync: (type: string, id: ConfigurableItemIdentifier) => Promise<void>;
+
+  getFormAsync: (payload: IGetFormPayload) => Promise<IFormDto>;
+  getRefListAsync: (payload: IGetRefListPayload) => PromisedValue<ReferenceListDto>;
+  getEntityFormIdAsync: (entityType: string | IEntityTypeIdentifier, formType: string) => Promise<FormFullName>;
+  clearFormCache: (payload: IClearFormCachePayload) => void;
+  getComponentAsync: (payload: IGetComponentPayload) => PromisedValue<IComponentSettings>;
+  updateComponentAsync: (payload: IUpdateComponentPayload) => Promise<void>;
 };
 
 export interface ConfigurationLoaderConstructorArgs {
   httpClient: HttpClientApi;
   cacheProvider: ICacheProvider;
+  designerComponents: IToolboxComponents;
 };
 
 export interface IConfigurationRequests {
@@ -74,6 +87,8 @@ const LOOKUP_SUFFIX = '_lookup';
 export class ConfigurationLoader implements IConfigurationLoader {
   #httpClient: HttpClientApi;
 
+  #designerComponents: IToolboxComponents;
+
   #cacheProvider: ICacheProvider;
 
   #requests: Map<string, IConfigurationRequests> = new Map<string, IConfigurationRequests>();
@@ -81,7 +96,39 @@ export class ConfigurationLoader implements IConfigurationLoader {
   constructor(args: ConfigurationLoaderConstructorArgs) {
     this.#httpClient = args.httpClient;
     this.#cacheProvider = args.cacheProvider;
+    this.#designerComponents = args.designerComponents;
   }
+
+  getComponentAsync = (_payload: IGetComponentPayload): PromisedValue<IComponentSettings> => {
+    throw new Error('Not implemented');
+  };
+
+  updateComponentAsync = (_payload: IUpdateComponentPayload): Promise<void> => {
+    throw new Error('Not implemented');
+  };
+
+  clearFormCache = (payload: IClearFormCachePayload): void => {
+    this.clearCacheAsync(ConfigurationType.Form, payload.formId);
+  };
+
+  getEntityFormIdAsync = async (entityType: string | IEntityTypeIdentifier, formType: string): Promise<FormFullName> => {
+    const url = buildUrl(URLS.GET_ENTITY_CONFIG_FORM, { ...getEntityTypeIdentifierQueryParams(entityType), typeName: formType });
+
+    const response = await this.#httpClient.get<FormIdFullNameDtoAjaxResponse>(url);
+    const dto = extractAjaxResponse(response.data);
+    return { name: dto.name, module: dto.module };
+  };
+
+  getFormAsync = async (payload: IGetFormPayload): Promise<IFormDto> => {
+    const form = await this.getCurrentConfigAsync({ type: ConfigurationType.Form, id: payload.formId, skipCache: payload.skipCache });
+    const formDto = form as FormConfigurationDto;
+    const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(formDto), this.#designerComponents);
+    return dto;
+  };
+
+  getRefListAsync = (payload: IGetRefListPayload): PromisedValue<ReferenceListDto> => {
+    return this.getCurrentConfigAsync<ReferenceListDto>({ type: ConfigurationType.ReferenceList, id: payload.refListId, skipCache: payload.skipCache });
+  };
 
   clearCacheAsync = (type: string, id: ConfigurableItemIdentifier): Promise<void> => {
     const requests = this.getExistingRequests(type);

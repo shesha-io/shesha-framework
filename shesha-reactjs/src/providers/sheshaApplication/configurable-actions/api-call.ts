@@ -40,7 +40,6 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
         propertyName: 'verb',
         label: 'HTTP Verb',
         dropdownOptions: HttpVerbs.map((v) => ({ id: v, label: v.toUpperCase(), value: v })),
-        defaultValue: 'get',
       },
       {
         id: nanoid(),
@@ -72,7 +71,6 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
         propertyName: 'sendStandardHeaders',
         label: 'Send Standard Headers',
         description: 'Allow to send standard application headers including authentication. Note: it may be unsafe to send these headers to external applications.',
-        defaultValue: true,
       },
     ],
   })
@@ -130,7 +128,7 @@ export const useApiCallAction = (): void => {
       const encodeAsQueryString = ['get', 'delete'].includes(verb?.toLowerCase());
       if (encodeAsQueryString) {
         const queryStringData = { ...getQueryParams(preparedUrl), ...preparedData };
-        preparedUrl = `${preparedUrl}?${qs.stringify(queryStringData)}`;
+        preparedUrl = `${preparedUrl}?${qs.stringify(queryStringData, { allowDots: true })}`;
         preparedData = undefined;
       }
 

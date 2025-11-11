@@ -16,6 +16,7 @@ import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
 import { ValueRenderer } from '../valueRenderer';
 import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAutocompleteBaseProps, IAutocompleteProps, ISelectOption, KayValueFunc, OutcomeValueFunc, getColumns } from './models';
 import { useStyles } from './style';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
   const { allowClear = true, style = {} } = props;
@@ -76,7 +77,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   // update local store of values details
   useEffect(() => {
-    if ((props.dataSourceType === 'entitiesList' && props.entityType) ||
+    if ((props.dataSourceType === 'entitiesList' && !isEntityTypeIdEmpty(props.entityType)) ||
       (props.dataSourceType === 'url' && props.dataSourceUrl)
     ) {
       if (keys.length) {
