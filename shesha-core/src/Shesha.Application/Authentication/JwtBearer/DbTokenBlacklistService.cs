@@ -57,11 +57,17 @@ namespace Shesha.Authentication.JwtBearer
         {
             using (var session = _sessionFactory.OpenSession()) 
             {
-                var query = session.CreateSQLQuery("insert into frwk.blacklist_tokens (token, blacklisted_on, expires_on) values (:token, :blacklisted_on, :expires_on)");
+                var query = session.CreateSQLQuery(@"INSERT INTO frwk.blacklist_tokens (token, blacklisted_on, expires_on)
+SELECT :token, :blacklisted_on, :expires_on
+WHERE NOT EXISTS (
+    SELECT 1 FROM frwk.blacklist_tokens WHERE token = :token
+)");
                 query.SetString("token", tokenId);
                 query.SetDateTime("blacklisted_on", DateTime.UtcNow);
                 if (expirationDate.HasValue)
                     query.SetDateTime("expires_on", expirationDate.Value);
+                else
+                    query.SetParameter("expires_on", null);
                 await query.ExecuteUpdateAsync();
             }
         }

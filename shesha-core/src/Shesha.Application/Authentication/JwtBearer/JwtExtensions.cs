@@ -14,7 +14,7 @@ namespace Shesha.Authentication.JwtBearer
     /// </summary>
     public static class JwtExtensions
     {
-        public static async Task EnsureTokenIsNotkBlacklistedAsync(this TokenValidatedContext context) 
+        public static async Task EnsureTokenIsNotBlacklistedAsync(this TokenValidatedContext context) 
         {
             var tokenBlacklistService = context.HttpContext.RequestServices.GetRequiredService<ITokenBlacklistService>();
 
@@ -44,8 +44,15 @@ namespace Shesha.Authentication.JwtBearer
             if (string.IsNullOrWhiteSpace(jwtToken))
                 return null;
 
-            var handler = new JwtSecurityTokenHandler();
-            return handler.ReadToken(jwtToken) as JwtSecurityToken;
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                return handler.ReadToken(jwtToken) as JwtSecurityToken;
+            }
+            catch
+            {
+                return null;
+            }            
         }
 
         public static string GetUsernameFromJwtToken(this HttpContext httpContext)
