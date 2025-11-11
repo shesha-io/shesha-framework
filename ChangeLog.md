@@ -1,14 +1,7 @@
 # Release Notes
 
 💪 Enhancements
-- Wizard: allow the done and back to be optional at the step level
-- New Phone number component
-
+- Exposed dynamicItem variable on Profile Dropdown
 
 🐞 Bug Fixes
-- FileList fix
-- File upload through the wizard
-- File with uppercase extension not downloadable
-- Notification with attachments
-- Version of Monaco editor libraries to prevent unexpected update
-- DataTable Auto Save Mode delays update API call
+- Fixed Profile dropdown component ignores Hide When Empty and Hide properties
