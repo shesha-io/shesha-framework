@@ -168,7 +168,9 @@ export const evaluateFilterAsync = async (args: UseEvaluatedFilterArgs): Promise
   );
 
   // Return the evaluated filter expression or an empty string if it's not found
-  return JSON.stringify(response[0]?.expression) || '';
+  const evaluated = response[0]?.expression;
+  if (!evaluated) return '';
+  return typeof evaluated === 'string' ? evaluated : JSON.stringify(evaluated);
 };
 
 // Using any types for item and formData parameters because these are dynamic objects
