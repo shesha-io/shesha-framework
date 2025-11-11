@@ -152,5 +152,15 @@ namespace Shesha.Sessions
         {
             await _permissionChecker.ClearPermissionsCacheAsync();
         }
+
+        [AbpAuthorize]
+        [HttpPost]
+        public async Task<string> TestAuthAsync() 
+        {
+            var currentUser = AbpSession.UserId.HasValue
+                ? await GetCurrentPersonAsync()
+                : null;
+            return currentUser?.User?.UserName;
+        }
     }
 }
