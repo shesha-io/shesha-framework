@@ -1,13 +1,14 @@
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Abp.Runtime.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Abp.Runtime.Security;
 using Shesha;
+using Shesha.Authentication.JwtBearer;
+using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
@@ -47,7 +48,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
                     options.Events = new JwtBearerEvents
                     {
-                        OnMessageReceived = QueryStringTokenResolver
+                        OnMessageReceived = QueryStringTokenResolver,
+                        OnTokenValidated = context => context.EnsureTokenIsNotBlacklistedAsync(),
                     };
                 });
             }

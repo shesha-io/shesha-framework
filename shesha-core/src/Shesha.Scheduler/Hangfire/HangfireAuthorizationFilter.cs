@@ -2,6 +2,7 @@
 using Abp.Dependency;
 using Abp.Runtime.Session;
 using Hangfire.Dashboard;
+using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.Authorization.Users;
 
@@ -11,8 +12,7 @@ namespace Shesha.Scheduler.Hangfire
     {
         public bool Authorize(DashboardContext context)
         {
-            var username = context.GetHttpContext()
-                                .GetUsernameFromJwtToken();
+            var username = context.GetHttpContext().GetUsernameFromJwtToken();
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrWhiteSpace(username))
                 return false;
