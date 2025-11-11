@@ -64,7 +64,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         id: payload.id,
         // Do not update modelConfiguration to avoid update interface
         // ToDo: AS - think if we still need update intreface and restore selected property and settings tabs
-        // modelConfiguration: { ...payload }, 
+        // modelConfiguration: { ...payload },
       };
     },
 

@@ -181,14 +181,14 @@ export interface INumberFormatting {
   showThousandsSeparator?: boolean;
   customFormat?: string | null;
 }
-export const isHNumberFormatting = (value: object | null | undefined): value is IHasFilter =>
+export const isHNumberFormatting = (value: object | null | undefined): value is INumberFormatting =>
   value && ("showThousandsSeparator" in value || "customFormat" in value);
 
 export interface IDecimalFormatting extends INumberFormatting {
   numDecimalPlaces?: number | null;
   showAsPercentage?: boolean;
 }
-export const isDecimalFormatting = (value: object | null | undefined): value is IHasFilter =>
+export const isDecimalFormatting = (value: object | null | undefined): value is IDecimalFormatting =>
   value && ("numDecimalPlaces" in value || "showAsPercentage" in value);
 
 // -------

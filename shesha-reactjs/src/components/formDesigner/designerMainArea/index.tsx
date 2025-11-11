@@ -76,7 +76,7 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
             <ConditionalWrap
               condition={noPageContext}
               wrap={(children) => (
-                <DataContextProvider 
+                <DataContextProvider
                   id="designerPageContext"
                   description="Designer Page context"
                   name={SheshaCommonContexts.PageContext}
