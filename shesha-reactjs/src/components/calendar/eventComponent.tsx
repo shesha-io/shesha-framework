@@ -1,15 +1,12 @@
 
 import React, { FC } from 'react';
-import { useActualContextExecutionExecutor } from '@/hooks';
+import { useActualContextExecution } from '@/hooks';
 import ShaIcon from '../shaIcon';
-import { getIcon } from './utils';
 import { IEventComponentProps } from './interfaces';
 
 // Custom Event Component with Icon
 export const EventComponent: FC<IEventComponentProps> = ({ event }) => {
-  const icon = useActualContextExecutionExecutor((context) =>
-    getIcon(event.icon, context.data, context.globalState, event, 'CalendarOutlined'),
-  { item: event });
+  const icon = useActualContextExecution(event.icon, { item: event }, 'CalendarOutlined');
 
   return (
     <div

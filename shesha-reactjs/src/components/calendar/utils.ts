@@ -5,7 +5,6 @@ import { ICalendarLayersProps } from "@/providers/layersProvider/models";
 import { UseEvaluatedFilterArgs } from "@/providers/dataTable/filters/evaluateFilter";
 import { IStoredFilter } from "@/providers/dataTable/interfaces";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
-import { executeScriptSync } from "@/providers/form/utils";
 import { ILayerWithMetadata } from "./interfaces";
 import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
 
@@ -198,29 +197,6 @@ export const evaluateFilters = async (
   });
 
   return evaluatedFilters;
-};
-
-// Using any types for formData, globalState, and item parameters because these are dynamic objects
-// with unknown structure that depend on the form/application context
-export const getIcon = (
-  icon: string,
-  formData: object = {},
-  globalState: IAnyObject = {},
-  item: any = {},
-  defaultIcon: string = 'UserOutlined',
-): any => {
-  if (!icon) return defaultIcon;
-
-  try {
-    // Use executeScriptSync for safer script evaluation with scoped context
-    // The icon string is expected to be JavaScript code that returns an icon name
-    const context = { data: formData, globalState, item };
-    const result = executeScriptSync<string>(icon, context);
-    return result || defaultIcon;
-  } catch (error) {
-    console.error('Error evaluating icon expression:', error);
-    return defaultIcon;
-  }
 };
 
 export const isDateDisabled = (date: Date, minDate?: string, maxDate?: string): boolean => {
