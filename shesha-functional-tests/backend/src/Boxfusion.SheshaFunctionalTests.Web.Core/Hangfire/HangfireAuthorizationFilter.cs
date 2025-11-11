@@ -1,5 +1,5 @@
 using Hangfire.Dashboard;
-using Shesha.Authorization;
+using Shesha.Authentication.JwtBearer;
 
 namespace Boxfusion.SheshaFunctionalTests.Hangfire
 {
