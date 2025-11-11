@@ -127,7 +127,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
 
   const selectMultipleVlaue = (data: string): void => {
     var list = props.value
-      ? Array.isArray(props.value) ? props.value : []
+      ? Array.isArray(props.value) ? [...props.value] : []
       : [];
 
     list.push(data);
