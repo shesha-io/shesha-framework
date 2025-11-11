@@ -84,7 +84,7 @@ export class FormsApi implements IFormsApi {
           // Process the template using the appropriate generation logic
           const preparedMarkup = await generationLogic.processTemplate(
             markup,
-            replacements,
+            enhancedReplacements,
             this._entityMetadataHelper,
           );
           return preparedMarkup;
