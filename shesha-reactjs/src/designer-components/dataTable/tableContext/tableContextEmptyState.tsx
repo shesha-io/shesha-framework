@@ -1,7 +1,7 @@
 import React from 'react';
 import { DatabaseOutlined } from '@ant-design/icons';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
 import { useTheme } from '@/providers/theme';
 
 export interface ITableContextEmptyStateProps {
@@ -17,7 +17,7 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
   className,
   style,
 }) => {
-  const selectedComponentId = useFormDesignerStateSelector((x) => x.selectedComponentId);
+  const selectedComponentId = useFormDesignerSelectedComponentId();
   const isSelected = selectedComponentId === componentId;
   const { theme } = useTheme();
 
