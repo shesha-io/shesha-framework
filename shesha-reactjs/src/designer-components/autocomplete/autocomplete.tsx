@@ -11,7 +11,7 @@ import {
 } from '@/providers/form/utils';
 import { IAutocompleteComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { isEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { isEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata, isHasFilter } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ConfigurableFormItem } from '@/components';
@@ -190,7 +190,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
         ? 'entityReference'
         : 'simple',
-      filter: typeof propMetadata.formatting?.filter === 'object' && propMetadata.formatting?.filter
+      filter: isHasFilter(propMetadata.formatting)
         ? { ...propMetadata.formatting?.filter }
         : null,
     };

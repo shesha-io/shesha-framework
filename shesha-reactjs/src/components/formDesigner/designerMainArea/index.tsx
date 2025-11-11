@@ -71,30 +71,27 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
           condition={Boolean(formSettings?.modelType)}
           wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
         >
-          <ParentProvider model={null} formMode="designer">
+          <ParentProvider model={null} formMode="designer" name="designer" isScope>
             {/* pageContext has added only to customize the designed form. It is not used as a data context.*/}
             <ConditionalWrap
               condition={noPageContext}
               wrap={(children) => (
-                <DataContextProvider id="pageContext" name="pageContext" type="page" webStorageType="sessionStorage">
+                <DataContextProvider
+                  id="designerPageContext"
+                  description="Designer Page context"
+                  name={SheshaCommonContexts.PageContext}
+                  type="page"
+                  webStorageType="sessionStorage"
+                >
                   {children}
                 </DataContextProvider>
               )}
             >
-              <DataContextProvider
-                id="designerFormContext"
-                name={SheshaCommonContexts.FormContext}
-                type="form"
-                webStorageType="sessionStorage"
-                description="Form designer"
-              >
-                <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
-                  {isDebug && (
-                    <DebugPanel />
-                  )}
-                </ConfigurableFormRenderer>
-
-              </DataContextProvider>
+              <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
+                {isDebug && (
+                  <DebugPanel />
+                )}
+              </ConfigurableFormRenderer>
             </ConditionalWrap>
           </ParentProvider>
         </ConditionalWrap>

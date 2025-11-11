@@ -219,8 +219,10 @@ namespace Shesha.DynamicEntities
 
             var module = input.ModuleId != null ? await _moduleManager.GetModuleAsync(input.ModuleId.Value) : null;
 
+            var entityName = input.Name.ToSnakeCase().Replace("-", "_").Trim();
+
             var dynamicNamespace = (module?.Accessor).IsNullOrEmpty() ? DynamicEntityTypeBuilder.SheshaDynamicNamespace : $"{module?.Accessor}.{DynamicEntityTypeBuilder.SheshaDynamicNamespace}";
-            var discriminatorValue = (module?.Accessor).IsNullOrEmpty() ? input.Name : $"{dynamicNamespace}.{input.Name}";
+            var discriminatorValue = (module?.Accessor).IsNullOrEmpty() ? entityName : $"{dynamicNamespace}.{entityName}";
 
             // ToDo: AS V1 - get correct prefix from name conventions
             var schemaName = module != null
@@ -243,10 +245,10 @@ namespace Shesha.DynamicEntities
 
                 // ToDo: AS - use name conventions
                 SchemaName = inheritedFrom != null ? inheritedFrom.SchemaName : schemaName.ToSnakeCase(),
-                TableName = inheritedFrom != null ? inheritedFrom.TableName : input.Name.ToSnakeCase(),
+                TableName = inheritedFrom != null ? inheritedFrom.TableName : entityName,
                 DiscriminatorValue = discriminatorValue,
 
-                ClassName = input.Name,
+                ClassName = entityName,
                 Namespace = dynamicNamespace,
                 GenerateAppService = true,
                 AllowConfigureAppService = true,
@@ -305,7 +307,7 @@ namespace Shesha.DynamicEntities
             entityConfig.Label = input.Label;
             entityConfig.Description = input.Description;
             entityConfig.GenerateAppService = input.GenerateAppService;
-            entityConfig.Accessor = input.ClassName;
+            entityConfig.Accessor = input.Name.Trim();
             entityConfig.ViewConfigurations = input.ViewConfigurations;
 
             await Repository.UpdateAsync(entityConfig);
@@ -610,6 +612,7 @@ namespace Shesha.DynamicEntities
             dbProp.RegExp = dto.RegExp;
             dbProp.Required = dto.Required ?? false;
             dbProp.ValidationMessage = dto.ValidationMessage;
+            dbProp.IsFrameworkRelated = dto.IsFrameworkRelated ?? false;
         }
 
         public ModelPropertyDto MapPropertyToDto(EntityProperty dbProp, PropertyMetadataDto? hardCodedProp)
