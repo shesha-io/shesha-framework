@@ -7,7 +7,6 @@ import { useModalApi } from "./modalApi";
 import { useNotificationApi } from "./notificationApi";
 import { isDefined } from "../../utils/nullables";
 import { useSearchParams } from "next/navigation";
-import { useNavigationGuard } from "next-navigation-guard";
 
 export const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -45,12 +44,6 @@ const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
       configurationStudio.openDocumentByIdAsync(docId);
   }, [configurationStudio, docId]);
 
-  useNavigationGuard({
-    enabled: true,
-    confirm: (params) => {
-      return configurationStudio.confirmNavigation(params.to);
-    },
-  });
   useEffect(() => {
     return shaRouter.registerNavigationValidator((url) => {
       return Promise.resolve(configurationStudio.confirmNavigation(url));
