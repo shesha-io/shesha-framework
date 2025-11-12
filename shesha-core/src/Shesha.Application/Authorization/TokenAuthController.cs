@@ -101,9 +101,11 @@ namespace Shesha.Authorization
 
         private async Task<AuthenticateResultModel> GetAuthenticateResultAsync(ShaLoginResult<User> loginResult, string imei) 
         {
-            var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
-
+            var validFrom = DateTime.UtcNow;
+            var expiresOn = validFrom.Add(_configuration.Expiration);
             var expireInSeconds = (int)_configuration.Expiration.TotalSeconds;
+
+            var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity), validFrom, expiresOn);
 
             var personId = loginResult?.User != null
                 ? await _personRepository.GetAll()
@@ -121,7 +123,7 @@ namespace Shesha.Authorization
                 AccessToken = accessToken,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 ExpireInSeconds = expireInSeconds,
-                ExpireOn = DateTime.Now.AddSeconds(expireInSeconds),
+                ExpireOn = expiresOn,
                 UserId = loginResult.User.Id,
                 PersonId = personId,
                 DeviceName = device?.Name,
@@ -309,16 +311,21 @@ namespace Shesha.Authorization
             }
         }
 
-        private string CreateAccessToken(IEnumerable<Claim> claims, TimeSpan? expiration = null)
+        private string CreateAccessToken(IEnumerable<Claim> claims) 
         {
-            var now = DateTime.UtcNow;
+            var validFrom = DateTime.UtcNow;
+            var expiresOn = validFrom.Add(_configuration.Expiration);
+            return CreateAccessToken(claims, validFrom, expiresOn);
+        }
 
+        private string CreateAccessToken(IEnumerable<Claim> claims, DateTime validFrom, DateTime? expiresOn = null)
+        {
             var jwtSecurityToken = new JwtSecurityToken(
                 issuer: _configuration.Issuer,
                 audience: _configuration.Audience,
                 claims: claims,
-                notBefore: now,
-                expires: now.Add(expiration ?? _configuration.Expiration),
+                notBefore: validFrom,
+                expires: expiresOn,
                 signingCredentials: _configuration.SigningCredentials
             );
 

@@ -68,7 +68,10 @@ namespace Boxfusion.SheshaFunctionalTests
             tokenAuthConfig.Issuer = _appConfiguration["Authentication:JwtBearer:Issuer"];
             tokenAuthConfig.Audience = _appConfiguration["Authentication:JwtBearer:Audience"];
             tokenAuthConfig.SigningCredentials = new SigningCredentials(tokenAuthConfig.SecurityKey, SecurityAlgorithms.HmacSha256);
-            tokenAuthConfig.Expiration = TimeSpan.FromDays(5);
+            // Min expiration is 60 seconds, max is 30 days
+            tokenAuthConfig.Expiration = int.TryParse(_appConfiguration["Authentication:JwtBearer:ExpirationSeconds"], out var expiration) && expiration >= 60 && expiration <= 86400 * 30
+                ? TimeSpan.FromSeconds(expiration)
+                : TimeSpan.FromDays(1);
         }
 
         /// <summary>
