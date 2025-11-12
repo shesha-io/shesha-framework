@@ -75,7 +75,9 @@ namespace Shesha
             tokenAuthConfig.Issuer = _appConfiguration.GetRequired("Authentication:JwtBearer:Issuer");
             tokenAuthConfig.Audience = _appConfiguration.GetRequired("Authentication:JwtBearer:Audience");
             tokenAuthConfig.SigningCredentials = new SigningCredentials(tokenAuthConfig.SecurityKey, SecurityAlgorithms.HmacSha256);
-            tokenAuthConfig.Expiration = TimeSpan.FromDays(1);
+            tokenAuthConfig.Expiration = int.TryParse(_appConfiguration["Authentication:JwtBearer:ExpirationSeconds"], out var expiration)
+                ? TimeSpan.FromSeconds(expiration)
+                : TimeSpan.FromDays(1);
         }
 
         public override void Initialize()
