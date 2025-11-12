@@ -58,11 +58,12 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
 
   const savedVersion = await getEntitiesSyncVersion(context.cacheProvider);
   if (savedVersion === CURRENT_SYNC_VERSION) {
-    await metadataCache.iterate<IEntityMetadata, void>((metadata) => {
-      const { typeAccessor } = metadata;
-      if (!typeAccessor)
+    await metadataCache.iterate<IConfigurationItemDto<IEntityMetadata>, void>((item) => {
+      const metadata = item.configuration;
+      const { name } = metadata;
+      if (!name)
         return;
-      const moduleSync = getModuleSyncRequest(metadata.moduleAccessor);
+      const moduleSync = getModuleSyncRequest(metadata.module);
 
       const aliases = [...(metadata.aliases ?? []), metadata.fullClassName];
       aliases.forEach((alias) => {
@@ -70,7 +71,7 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
       });
 
       moduleSync.entities.push({
-        accessor: typeAccessor,
+        accessor: name,
         md5: metadata.md5 ?? "",
         modificationTime: metadata.changeTime ?? new Date(),
       });
