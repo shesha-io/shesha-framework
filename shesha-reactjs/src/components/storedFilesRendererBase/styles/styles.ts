@@ -124,7 +124,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-text {
       height: calc(var(--sha-container-height) - 32px) !important;
-      max-height: calc(var(--sha-container-max-height) - calc(${isDragger ? '0px' : fontSize} * 4)) !important;
+      max-height: calc(var(--sha-container-max-height) - calc(${isDragger ? '0px' : fontSize ?? '14px'} * 4)) !important;
       min-height: calc(var(--sha-container-min-height) - 32px) !important;
       width: calc(var(--sha-container-width) - 32px) !important;
       max-width: calc(var(--sha-container-max-width) - 32px) !important;
