@@ -315,7 +315,7 @@ namespace Shesha.Authorization
         {
             var validFrom = DateTime.UtcNow;
             var expiresOn = validFrom.Add(_configuration.Expiration);
-            return CreateAccessToken(claims);
+            return CreateAccessToken(claims, validFrom, expiresOn);
         }
 
         private string CreateAccessToken(IEnumerable<Claim> claims, DateTime validFrom, DateTime? expiresOn = null)
