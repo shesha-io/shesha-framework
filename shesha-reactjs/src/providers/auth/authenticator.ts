@@ -257,6 +257,7 @@ export class Authenticator implements IAuthenticator {
     #clearTokenExpirationTimer = () => {
         if (this.#timer) {
             clearTimeout(this.#timer);
+            this.#timer = undefined;
         }
     };
 
