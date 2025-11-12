@@ -4,14 +4,14 @@ import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder
 import { ApplicationApi, IApplicationApi } from '../publicApi/applicationApi';
 import { useApplicationContextMetadata } from '../publicApi/metadata';
 import { useHttpClient } from '../publicApi/http/hooks';
-import { useAuth, useShaRouting } from '@/providers';
+import { useAuth, useMetadataDispatcher, useShaRouting } from '@/providers';
 import { IUserProfileInfo } from '../publicApi/currentUser/api';
 import { useCacheProvider } from '@/hooks/useCache';
 import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/provider';
 import { IMetadataBuilder, IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { createNamedContext } from '@/utils/react';
 
-export interface IApplicationDataProviderProps {}
+export interface IApplicationDataProviderProps { }
 
 export interface ApplicationPluginRegistration {
   name: string;
@@ -39,22 +39,23 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
   const cacheProvider = useCacheProvider();
   const metadataFetcher = useEntityMetadataFetcher();
   const shaRouter = useShaRouting();
+  const metadataDispatcher = useMetadataDispatcher();
 
   // inject fields from plugins
   const [contextData] = useState<IApplicationApi>(
-    () => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter)
+    () => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter, metadataDispatcher)
   );
 
   const { loginInfo } = useAuth(false) ?? {};
   useEffect(() => {
     const profile: IUserProfileInfo = loginInfo
       ? {
-          id: loginInfo.id?.toString(),
-          userName: loginInfo.userName,
-          firstName: loginInfo.firstName,
-          lastName: loginInfo.lastName,
-          personId: loginInfo.personId,
-        }
+        id: loginInfo.id?.toString(),
+        userName: loginInfo.userName,
+        firstName: loginInfo.firstName,
+        lastName: loginInfo.lastName,
+        personId: loginInfo.personId,
+      }
       : undefined;
 
     contextData.user.setProfileInfo(profile);

@@ -179,6 +179,7 @@
     "next": "^14.2.5",
     "number-to-words": "^1.2.4",
     "object-hash": "^3.0.0",
+    "pluralize": "^8.0.0",
     "point-in-polygon": "^1.1.0",
     "rc-picker": "4.5.0",
     "react-ace": "^10.1.0",

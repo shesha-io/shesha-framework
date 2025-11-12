@@ -70,6 +70,10 @@ export interface FormConfigurationDto {
    * Cache MD5, is used for client-side caching
    */
   cacheMd5?: string | null;
+  /**
+   * Generation logic type name
+   */
+  generationLogicTypeName?: string | null;
 }
 
 export interface IFormFetcherProps {
@@ -258,11 +262,11 @@ export const filterDataByOutputComponents = (
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       var component = components[key];
-      if (component.propertyName 
-          && component.type
-          && data.hasOwnProperty(component.propertyName) 
-          && !toolboxComponents[component.type]?.isOutput) {
-         delete data[component.propertyName];
+      if (component.propertyName
+        && component.type
+        && data.hasOwnProperty(component.propertyName)
+        && !toolboxComponents[component.type]?.isOutput) {
+        delete data[component.propertyName];
       }
     }
   }
@@ -275,9 +279,9 @@ export const gqlFieldsToString = (fields: IFieldData[]): string => {
     let s = '';
     items.forEach((item) => {
       if (!(item.property
-          || item.name === 'id'
-          || item.name === '_className'
-          || item.name === '_displayName'
+        || item.name === 'id'
+        || item.name === '_className'
+        || item.name === '_displayName'
       )) return;
       s += s ? ',' + item.name : item.name;
       if (item.child.length > 0) {

@@ -61,7 +61,34 @@ namespace Shesha.Metadata
         {
             return await GetContainerTypeOrNullAsync(container) ?? throw new MetadataOfTypeNotFoundException(container);
         }
-        
+
+        private List<AutocompleteItemDto> FilterProperties(List<PropertyMetadataDto> properties, string? term, string? selectedValue)
+        {
+            var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
+            var entities = isPreselection
+                ? properties.Where(e => e.Label == selectedValue || e.Path == selectedValue).ToList()
+                : properties
+                .Where(e =>
+                    string.IsNullOrWhiteSpace(term) ||
+                    (!string.IsNullOrWhiteSpace(e.Path) &&
+                     e.Path.Contains(term, StringComparison.InvariantCultureIgnoreCase)) ||
+                    (!string.IsNullOrWhiteSpace(e.Label) &&
+                     e.Label.Contains(term, StringComparison.InvariantCultureIgnoreCase))
+                )
+                .OrderBy(e => e.Label)
+                .Take(10)
+                .ToList();
+
+            var result = entities
+                .Select(e => new AutocompleteItemDto
+                {
+                    DisplayText = !string.IsNullOrWhiteSpace(e.Label) ? e.Label : e.Path,
+                    Value = e.Path
+                })
+                .ToList();
+
+            return result;
+        }
 
         [HttpGet]
         public Task<List<AutocompleteItemDto>> TypeAutocompleteAsync(string? term, string? selectedValue)
@@ -136,6 +163,19 @@ namespace Shesha.Metadata
             var containerType = await GetContainerTypeAsync(container);
             var properties = await _metadataProvider.GetPropertiesAsync(containerType, container);
             return properties;
+        }
+
+        /// inheritedDoc
+        [HttpGet]
+        public async Task<List<AutocompleteItemDto>> GetNonFrameworkRelatedPropertiesAsync(string container, string? term, string? selectedValue)
+        {
+            if (string.IsNullOrWhiteSpace(container))
+                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
+
+            var containerType = await GetContainerTypeAsync(container);
+            var properties = await _metadataProvider.GetPropertiesAsync(containerType, container);
+            var nonFrameworkRelatedProperties = properties.Where(x => x.IsFrameworkRelated == false).ToList();
+            return FilterProperties(nonFrameworkRelatedProperties, term, selectedValue);
         }
 
         /// inheritedDoc

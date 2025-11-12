@@ -69,7 +69,11 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 form.Description == item.Description &&
                 form.ModelType == item.ModelType &&
                 form.Suppress == item.Suppress &&
-                form.IsTemplate == item.IsTemplate;
+                form.IsTemplate == item.IsTemplate &&
+                form.ConfigurationForm == item.ConfigurationForm &&
+                form.GenerationLogicTypeName == item.GenerationLogicTypeName &&
+                form.GenerationLogicExtensionJson == item.GenerationLogicExtensionJson &&
+                form.PlaceholderIcon == item.PlaceholderIcon;
         }
 
         /// inheritedDoc
@@ -179,6 +183,10 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             form.Markup = item.Markup;
             form.ModelType = item.ModelType;
             form.IsTemplate = item.IsTemplate;
+            form.ConfigurationForm = item.ConfigurationForm;
+            form.GenerationLogicTypeName = item.GenerationLogicTypeName;
+            form.GenerationLogicExtensionJson = item.GenerationLogicExtensionJson;
+            form.PlaceholderIcon = item.PlaceholderIcon;
         }
     }
 }
