@@ -41,6 +41,7 @@ import { FormAutocompleteWrapper } from "./formAutocomplete";
 import { CustomLabelValueEditorWrapper } from "./customLabelValueEditor";
 import { KeyInformationBarColumnsWrapper } from "./keyInformationBarColumns";
 import { SizableColumnsConfigWrapper } from "./sizableColumnsConfig";
+import { LayerSelectorSettingsModalWrapper } from "./layerSelectorSettingsModal";
 
 
 type InputType = ISettingsInputProps['type'];
@@ -87,6 +88,7 @@ export const editorRegistry: EditorDictionary = {
   RefListItemSelectorSettingsModal: RefListItemSelectorSettingsModalWrapper,
   Password: PasswordWrapper,
   date: DateWrapper,
+  layerSelectorSettingsModal: LayerSelectorSettingsModalWrapper,
   // TODO: check usages and remove or implement wrapper
   settingsInput: undefined,
   endpointsAutocomplete: EndpointsAutocompleteWrapper,

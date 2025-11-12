@@ -186,6 +186,7 @@
     "rc-picker": "^4.11.3",
     "react-ace": "^10.1.0",
     "react-beautiful-dnd": "^13.1.0",
+    "react-big-calendar": "^1.15.0",
     "react-chartjs-2": "^5.3.0",
     "react-error-boundary": "^3.1.4",
     "react-fast-marquee": "^1.6.5",
