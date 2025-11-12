@@ -327,9 +327,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       align-items: center;
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      flex-direction: row;
+      align-content: flex-start;
+      flex-direction: row !important;
       padding: 2px;
       height: calc(var(--sha-container-height) - ${model.downloadZip ? "32px" : "0px"}) !important;
       width: var(--sha-container-width) !important;
