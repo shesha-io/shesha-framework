@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using NHibernate;
 using System;
-using System.Linq.Dynamic.Core.Tokenizer;
 using System.Threading.Tasks;
 
 namespace Shesha.Authentication.JwtBearer
