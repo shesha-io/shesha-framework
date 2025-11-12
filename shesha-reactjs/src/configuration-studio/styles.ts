@@ -52,7 +52,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         }
         .${csContent}{
             background-color: ${token.colorBgContainer};
-            height: calc(100vh - 55px);
         }
         .${csTreeArea}{
             height: calc(100vh - ${headerHeight}px);
