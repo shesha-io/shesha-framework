@@ -29,7 +29,7 @@
 		<PackageReference Include="Abp.TestBase" Version="9.0.0" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\src\Module\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj" />
+	  <ProjectReference Include="..\..\src\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj" />
 	</ItemGroup>
 
   <ItemGroup>

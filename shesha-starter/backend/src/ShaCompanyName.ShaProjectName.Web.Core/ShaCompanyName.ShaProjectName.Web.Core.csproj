@@ -45,8 +45,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Module\ShaCompanyName.ShaProjectName.Application\ShaCompanyName.ShaProjectName.Application.csproj" />
-    <ProjectReference Include="..\Module\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj" />
+    <ProjectReference Include="..\ShaCompanyName.ShaProjectName.Application\ShaCompanyName.ShaProjectName.Application.csproj" />
+    <ProjectReference Include="..\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Authorization\" />
   </ItemGroup>
 
 </Project>
