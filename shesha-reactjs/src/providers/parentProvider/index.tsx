@@ -1,5 +1,5 @@
 import React, { useContext, FC, PropsWithChildren, useMemo, useId, useRef, useEffect } from "react";
-import { ConfigurableActionDispatcherProvider, DataContextManager, DataContextProvider, FormMode, IConfigurableFormComponent, IFlatComponentsStructure, useShaFormInstanceOrUndefined } from "../index";
+import { ConfigurableActionDispatcherProvider, DataContextManager, DataContextProvider, FormMode, IConfigurableFormComponent, IDataContextProviderProps, IFlatComponentsStructure, useShaFormInstanceOrUndefined } from "../index";
 import { createNamedContext } from "@/utils/react";
 import ConditionalWrap from "@/components/conditionalWrapper";
 import ValidateProvider from "../validateProvider";
@@ -27,6 +27,8 @@ export interface IParentProviderProps {
   formFlatMarkup?: IFlatComponentsStructure | undefined;
   formApi?: IFormApi<any>;
   isScope?: boolean;
+  addContext?: boolean;
+  contextProps?: IDataContextProviderProps<object>;
 }
 
 export const ParentProviderStateContext = createNamedContext<IParentProviderStateContext>(
@@ -57,6 +59,7 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
     formFlatMarkup,
     formApi,
     isScope = false,
+    addContext = true,
   } = props;
 
   const form = useShaFormInstanceOrUndefined();
@@ -124,23 +127,30 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
     };
   }, [value]);
 
+  const contextProps: IDataContextProviderProps<object> = addContext && !props.contextProps
+    ? { id, name: SheshaCommonContexts.FormContext, type: "form", webStorageType: "sessionStorage", description: `${props.name || id}` }
+    : props.contextProps;
+
   return (
     <ConditionalWrap
       condition={isScope}
       wrap={(children: React.ReactNode) => {
         return (
           <ValidateProvider>
-            <DataContextManager id={id}>
+            <DataContextManager id={id} name={props.name}>
               <ConfigurableActionDispatcherProvider>
-                <DataContextProvider
-                  id={id}
-                  name={SheshaCommonContexts.FormContext}
-                  type="form"
-                  webStorageType="sessionStorage"
-                  description={`${props.name || id}`}
+                <ConditionalWrap
+                  condition={addContext}
+                  wrap={(children: React.ReactNode) => {
+                    return (
+                      <DataContextProvider {...contextProps}>
+                        {children}
+                      </DataContextProvider>
+                    );
+                  }}
                 >
                   {children}
-                </DataContextProvider>
+                </ConditionalWrap>
               </ConfigurableActionDispatcherProvider>
             </DataContextManager>
           </ValidateProvider>
