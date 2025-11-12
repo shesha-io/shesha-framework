@@ -229,11 +229,21 @@ export type WrapConstantsDataArgs<TValues extends object = object> = GetAvailabl
 
 const EMPTY_DATA = {};
 
-const getArguments = (args: Array<object> | object): object[] => {
+const getArguments = (args: object[] | object): object[] => {
   const fArgs = Array.isArray(args) && args.length === 1 ? args[0] : args;
-  return fArgs._propAccessors !== undefined
-    ? Array.from(fArgs._propAccessors, ([n, v]: [string, any]) => ({ n, v: v() && v()['getData'] ? v().getData() : v() }))
-    : Array.from(fArgs, (v: any) => (v && v['getData'] ? v.getData() : v));
+
+  if (fArgs && '_propAccessors' in fArgs && fArgs._propAccessors !== undefined) {
+    return Array.from(fArgs._propAccessors, ([name, accessor]: [string, () => object]) => {
+      const resolved = accessor();
+      const value = resolved && 'getData' in resolved && typeof resolved.getData === 'function'
+        ? resolved.getData()
+        : resolved;
+      return { [name]: value };
+    });
+  }
+
+  const values = Array.isArray(fArgs) ? fArgs : Object.values(fArgs ?? {});
+  return values.map((value: any) => (value && typeof value.getData === 'function' ? value.getData() : value));
 };
 
 export const wrapConstantsData = <TValues extends object = object>(args: WrapConstantsDataArgs<TValues>): ProxyPropertiesAccessors<IApplicationContext<TValues>> => {
