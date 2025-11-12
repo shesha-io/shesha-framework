@@ -76,6 +76,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       --font-size: ${fontSize ?? '14px'} !important;
       --ant-font-size: ${fontSize ?? '14px'} !important;
       display: flex;
+      flex: 1;
       width: ${layout ? (width ?? '54px') + ' !important' : ''};
       height: ${layout ? (height ?? '54px') + ' !important' : ''};
 
@@ -122,6 +123,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       font-family: ${fontFamily ?? 'Segoe UI'};
       font-size: ${fontSize ?? '14px'};
       font-weight: ${fontWeight ?? '400'};
+      text-align: ${textAlign ?? 'center'} !important;
       padding: 0 8px !important;
       width: ${(layout && width) ?? '54px'} !important;
       font-size: var(--font-size, 14px) !important;
@@ -186,7 +188,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       padding: 2px;
       overflow-y: auto;
       display: flex;
-      max-height: var(--container-max-height) !important;
       flex-direction: column;
       scrollbar-width: thin;
       &::-webkit-scrollbar {
@@ -202,6 +203,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .ant-upload-list-item-container {
       display: flex !important;
       flex-direction: row;
+      width: 100%;
       &.ant-upload-animate-inline-appear,
       &.ant-upload-animate-inline-appear-active,
       &.ant-upload-animate-inline {
@@ -211,7 +213,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       }
       width: ${layout ? (width ?? '54px') + ' !important' : ''};
       height: ${layout ? (height ?? '54px') + ' !important' : ''};
-      justify-content: ${textAlign ?? 'center'};
+      justify-content: ${textAlign === 'left' ? 'flex-start' : textAlign === 'right' ? 'flex-end' : (textAlign ?? 'center')};
     }
 
     .ant-upload-list-item-action {
@@ -298,7 +300,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       padding: 2px ${borderWidth ?? '2px'} !important;
       height: var(--container-height) !important;
       width: 100% !important;
-      max-height: calc(var(--container-max-height) - 32px) !important;
+      max-height: calc(var(--container-max-height) - ${model.downloadZip ? "32px" : "0px"}) !important;
       min-height: calc(var(--container-min-height) - 32px) !important;
     }
 
