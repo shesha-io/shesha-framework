@@ -49,8 +49,4 @@
     <ProjectReference Include="..\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Authorization\" />
-  </ItemGroup>
-
 </Project>
