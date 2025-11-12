@@ -8,6 +8,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         max-width: 100%;
         overflow: hidden;
         box-sizing: border-box;
+        display: flex;
 
         &.${prefixCls}-form-item {
             margin-bottom: unset;
