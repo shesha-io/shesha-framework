@@ -8,12 +8,35 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-            Alter.Table("Frwk_FormConfigurations")
-                .AddColumn("ConfigurationFormModule").AsString().Nullable()
-                .AddColumn("ConfigurationFormName").AsString().Nullable()
-                .AddColumn("GenerationLogicTypeName").AsString().Nullable()
-                .AddColumn("PlaceholderIcon").AsString().Nullable()
-                .AddColumn("GenerationLogicExtensionJson").AsStringMax().Nullable();
+            if (!Schema.Table("Frwk_FormConfigurations").Column("ConfigurationFormModule").Exists())
+            {
+                Alter.Table("Frwk_FormConfigurations")
+                    .AddColumn("ConfigurationFormModule").AsString().Nullable();
+            }
+
+            if (!Schema.Table("Frwk_FormConfigurations").Column("ConfigurationFormName").Exists())
+            {
+                Alter.Table("Frwk_FormConfigurations")
+                    .AddColumn("ConfigurationFormName").AsString().Nullable();
+            }
+
+            if (!Schema.Table("Frwk_FormConfigurations").Column("GenerationLogicTypeName").Exists())
+            {
+                Alter.Table("Frwk_FormConfigurations")
+                    .AddColumn("GenerationLogicTypeName").AsString().Nullable();
+            }
+
+            if (!Schema.Table("Frwk_FormConfigurations").Column("PlaceholderIcon").Exists())
+            {
+                Alter.Table("Frwk_FormConfigurations")
+                    .AddColumn("PlaceholderIcon").AsString().Nullable();
+            }
+
+            if (!Schema.Table("Frwk_FormConfigurations").Column("GenerationLogicExtensionJson").Exists())
+            {
+                Alter.Table("Frwk_FormConfigurations")
+                    .AddColumn("GenerationLogicExtensionJson").AsStringMax().Nullable();
+            }
         }
     }
 }
