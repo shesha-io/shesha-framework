@@ -278,22 +278,26 @@ export class Authenticator implements IAuthenticator {
   #startTokenExpirationTimer = (expireOn: string | undefined): void => {
     this.#clearTokenExpirationTimer();
 
-    const expirationDate = expireOn && new Date(expireOn);
-    const timeUntilExpiration = expirationDate.getTime() - Date.now();
-    if (timeUntilExpiration > 0) {
-      this.#timer = setTimeout(() => {
-        this.#clearAccessToken();
-        this.#updateState('waiting', null, null);
-        this.#redirect(this.#unauthorizedRedirectUrl);
-        this.#onTokenExpired?.();
-        this.#timer = undefined;
-      }, timeUntilExpiration);
+    if (expireOn) {
+      const expirationDate = expireOn && new Date(expireOn);
+      const timeUntilExpiration = expirationDate.getTime() - Date.now();
+      if (timeUntilExpiration > 0) {
+        this.#timer = setTimeout(() => {
+          this.#clearAccessToken();
+          this.#loginInfo = null;
+          this.#updateState('waiting', null, null);
+          this.#redirect(this.#unauthorizedRedirectUrl);
+          this.#onTokenExpired?.();
+          this.#timer = undefined;
+        }, timeUntilExpiration);
+      }
     }
   };
 
   #clearTokenExpirationTimer = (): void => {
     if (this.#timer) {
-      clearInterval(this.#timer);
+      clearTimeout(this.#timer);
+      this.#timer = undefined;
     }
   };
 
