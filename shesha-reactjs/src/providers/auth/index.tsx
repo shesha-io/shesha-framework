@@ -4,6 +4,7 @@ import { useShaRouting } from '@/providers/shaRouting';
 import { useHttpClient, useSettings, useSheshaApplication } from '..';
 import { useAuthenticatorInstance } from './authenticator';
 import { IAuthenticator } from './models';
+import { App } from 'antd';
 
 export interface IAuthProviderRefProps {
   anyOfPermissionsGranted?: (permissions: string[]) => boolean;
@@ -44,6 +45,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   const { router } = useShaRouting();
   const app = useSheshaApplication();
   const settings = useSettings();
+  const { notification } = App.useApp();
   
   const [authenticator] = useAuthenticatorInstance({
     httpClient,
@@ -55,6 +57,9 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     onSetRequestHeaders: (headers) => {
       // set application headers
       app.setRequestHeaders(headers);
+    },
+    onTokenExpired: () => {
+      notification.info({ message: 'Your session has expired. Please log in again.' });
     }
   });
 
