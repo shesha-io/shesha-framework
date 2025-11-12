@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShaCompanyName.ShaProjectNa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShaCompanyName.ShaProjectName.Common.Domain.Tests", "test\ShaCompanyName.ShaProjectName.Common.Domain.Tests\ShaCompanyName.ShaProjectName.Common.Domain.Tests.csproj", "{1E3B0FB7-94E8-48AD-83AC-17EABA2EA5D1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShaCompanyName.ShaProjectName.Domain", "src\Module\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj", "{18F3CFCE-4532-457A-B4E2-B1FFE601C7A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShaCompanyName.ShaProjectName.Domain", "src\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj", "{18F3CFCE-4532-457A-B4E2-B1FFE601C7A4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShaCompanyName.ShaProjectName.Application", "src\Module\ShaCompanyName.ShaProjectName.Application\ShaCompanyName.ShaProjectName.Application.csproj", "{CDBB7196-2532-4E94-9EAF-7DA7BC32C0D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShaCompanyName.ShaProjectName.Application", "src\ShaCompanyName.ShaProjectName.Application\ShaCompanyName.ShaProjectName.Application.csproj", "{CDBB7196-2532-4E94-9EAF-7DA7BC32C0D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
