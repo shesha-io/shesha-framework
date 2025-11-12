@@ -55,6 +55,29 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
   }
 
   /**
+   * Attempts to find a suitable display name property from the entity metadata.
+   * Checks for common property names like 'fullName' and 'name'.
+   *
+   * @param metadata The properties metadata.
+   * @returns The path to a display name property, or null if not found.
+   */
+  private findDisplayNameProperty(metadata: PropertyMetadataDto[]): string | null {
+    // Common property names that typically serve as display names, in order of preference
+    const commonDisplayNames = ['fullName', 'name'];
+
+    for (const displayName of commonDisplayNames) {
+      const property = metadata.find((prop) =>
+        prop.path?.toLowerCase() === displayName.toLowerCase()
+      );
+      if (property) {
+        return property.path;
+      }
+    }
+
+    return null;
+  }
+
+  /**
    * Adds header components to the markup.
    * Sets the title and optionally adds a key information bar if configured.
    *
@@ -66,7 +89,11 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
    * @returns Array of property paths used in key information bar, empty array if none used
    */
   private addHeader(entity: IEntityMetadata, metadata: PropertyMetadataDto[], markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): string[] {
-    const title = `${entity.typeAccessor} Details`;
+    // Try to find a display name property, falling back to static entity type name
+    const displayNameProperty = this.findDisplayNameProperty(metadata);
+    const title = displayNameProperty
+      ? `{{${toCamelCase(displayNameProperty)}}}`
+      : `${entity.typeAccessor} Details`;
 
     const titleContainer = findContainersWithPlaceholder(markup, "//*TITLE*//");
 
