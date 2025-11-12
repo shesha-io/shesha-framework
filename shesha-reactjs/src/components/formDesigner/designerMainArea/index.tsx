@@ -71,8 +71,10 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
           condition={Boolean(formSettings?.modelType)}
           wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
         >
-          <ParentProvider model={null} formMode="designer" name="designer" isScope>
+          {/* Use special format of parent properties to avoid adding form context */}
+          <ParentProvider model={null} formMode="designer" name="designer" isScope addContext={false}>
             {/* pageContext has added only to customize the designed form. It is not used as a data context.*/}
+            {/* formContext has added only to customize the designed form. It is not used as a data context.*/}
             <ConditionalWrap
               condition={noPageContext}
               wrap={(children) => (
@@ -83,7 +85,15 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
                   type="page"
                   webStorageType="sessionStorage"
                 >
-                  {children}
+                  <DataContextProvider
+                    id="designerFormContext"
+                    description="Designer Form context"
+                    name={SheshaCommonContexts.FormContext}
+                    type="form"
+                    webStorageType="sessionStorage"
+                  >
+                    {children}
+                  </DataContextProvider>
                 </DataContextProvider>
               )}
             >

@@ -145,7 +145,7 @@ export interface IApplicationContext<Value extends object = object> {
   /**
    * Function for testing
    */
-  test?: any;
+  test?: { getArguments: (args: Array<object> | object) => object[] };
 }
 
 export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
@@ -229,6 +229,13 @@ export type WrapConstantsDataArgs<TValues extends object = object> = GetAvailabl
 
 const EMPTY_DATA = {};
 
+const getArguments = (args: Array<object> | object): object[] => {
+  const fArgs = Array.isArray(args) && args.length === 1 ? args[0] : args;
+  return fArgs._propAccessors !== undefined
+    ? Array.from(fArgs._propAccessors, ([n, v]: [string, any]) => ({ n, v: v() && v()['getData'] ? v().getData() : v() }))
+    : Array.from(fArgs, (v: any) => (v && v['getData'] ? v.getData() : v));
+};
+
 export const wrapConstantsData = <TValues extends object = object>(args: WrapConstantsDataArgs<TValues>): ProxyPropertiesAccessors<IApplicationContext<TValues>> => {
   const { topContextId, shaForm, fullContext, queryStringGetter } = args;
   const { closestShaFormApi: closestShaForm,
@@ -274,6 +281,8 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     query: () => queryStringGetter?.() ?? {},
     initialValues: () => shaFormInstance?.initialValues,
     parentFormValues: () => shaFormInstance?.parentFormValues,
+    // don't delete this as is used for debug the proxied data from the form scripts
+    test: () => ({ getArguments }),
   };
   return accessors;
 };
