@@ -86,7 +86,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     propertyName: 'editMode',
                     label: 'Edit Mode',
                     size: 'small',
-                    defaultValue: 'inherited',
                     jsSetting: true,
                   },
                   {
@@ -210,7 +209,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         value: 'custom',
                       },
                     ],
-                    defaultValue: ['simple'],
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
@@ -245,7 +243,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     propertyName: 'items',
                     parentId: dataPanelContainerId,
                     label: 'Columns',
-                    items: [],
                     modelType: {
                       _code: 'return getSettingValue(data?.entityType);',
                       _mode: 'code',
@@ -321,7 +318,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           { label: 'Custom', value: 'custom' },
                           { label: 'None', value: 'none' },
                         ],
-                        defaultValue: 'default',
                       },
                       {
                         type: 'dropdown',
@@ -334,7 +330,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           { label: 'POST', value: 'POST' },
                           { label: 'PUT', value: 'PUT' },
                         ],
-                        defaultValue: 'POST',
                       },
                       {
                         id: nanoid(),
@@ -740,7 +735,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,

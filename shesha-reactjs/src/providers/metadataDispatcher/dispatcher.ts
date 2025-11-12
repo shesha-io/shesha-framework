@@ -36,17 +36,22 @@ export class MetadataDispatcher implements IMetadataDispatcher {
     return properties.find((p) => camelcase(p.path) === name);
   };
 
-  #getEntityTypeId = (property: IHasEntityType): IEntityTypeIdentifier =>
-    ({ name: property.entityType, module: property.entityModule ?? null });
+  #getEntityTypeId = (property: IHasEntityType): IEntityTypeIdentifier | undefined =>
+    property.entityType
+      ? ({ name: property.entityType, module: property.entityModule ?? null })
+      : undefined;
 
 
   #extractNestedProperty = (mainProperty: IPropertyMetadata, name: string): Promise<IPropertyMetadata | undefined> => {
+    const id = this.#getEntityTypeId(mainProperty);
     return isEntityReferencePropertyMetadata(mainProperty)
-      ? this.getMetadata({ dataType: mainProperty.dataType, modelType: this.#getEntityTypeId(mainProperty) }).then((entityMeta) => {
-        return entityMeta && isPropertiesArray(entityMeta.properties)
-          ? this.#getPropertyByName(entityMeta.properties, name)
-          : undefined;
-      })
+      ? id
+        ? this.getMetadata({ dataType: mainProperty.dataType, modelType: id }).then((entityMeta) => {
+          return entityMeta && isPropertiesArray(entityMeta.properties)
+            ? this.#getPropertyByName(entityMeta.properties, name)
+            : undefined;
+        })
+        : Promise.resolve(undefined)
       : Promise.resolve(isDataPropertyMetadata(mainProperty) && isPropertiesArray(mainProperty.properties)
         ? this.#getPropertyByName(mainProperty.properties, name)
         : undefined,
@@ -58,14 +63,16 @@ export class MetadataDispatcher implements IMetadataDispatcher {
 
     if (!propMeta) return Promise.reject(`property '${propName}' not found`);
 
-    if (isEntityReferencePropertyMetadata(propMeta))
-      return this.getMetadata({ dataType: DataTypes.entityReference, modelType: this.#getEntityTypeId(propMeta) });
+    const id = this.#getEntityTypeId(propMeta);
 
-    if (isEntityReferenceArrayPropertyMetadata(propMeta))
-      return this.getMetadata({ dataType: DataTypes.entityReference, modelType: this.#getEntityTypeId(propMeta) });
+    if (id && isEntityReferencePropertyMetadata(propMeta))
+      return this.getMetadata({ dataType: DataTypes.entityReference, modelType: id });
 
-    if (isObjectReferencePropertyMetadata(propMeta)) {
-      return this.getMetadata({ dataType: DataTypes.object, modelType: this.#getEntityTypeId(propMeta) });
+    if (id && isEntityReferenceArrayPropertyMetadata(propMeta))
+      return this.getMetadata({ dataType: DataTypes.entityReference, modelType: id });
+
+    if (id && isObjectReferencePropertyMetadata(propMeta)) {
+      return this.getMetadata({ dataType: DataTypes.object, modelType: id });
     }
 
     if (isDataPropertyMetadata(propMeta) && propMeta.dataType === DataTypes.object) {
@@ -103,13 +110,17 @@ export class MetadataDispatcher implements IMetadataDispatcher {
             path: property.path,
             prefix,
             itemsType: itemsType ? mapProperty(itemsType) : undefined,
+            entityType: property.entityType ?? '',
             properties: properties
               ? properties.map((child) => mapProperty(child, property.path))
               : undefined,
           };
         };
 
-        const url = `/api/services/app/Metadata/Get?${qs.stringify(getEntityTypeIdentifierQueryParams(modelType) as MetadataGetQueryParams)}`;
+        const url = `/api/services/app/Metadata/Get?${qs.stringify(
+          getEntityTypeIdentifierQueryParams(modelType) as MetadataGetQueryParams,
+          { allowDots: true },
+        )}`;
         return this.#httpClient.get<MetadataDtoAjaxResponse>(url).then((rawResponse) => {
           const response = rawResponse.data;
           if (isAjaxErrorResponse(response))

@@ -196,7 +196,15 @@ namespace Shesha.DynamicEntities
                 var inheritedFrom = _dbAllConfigs.FirstOrDefault(x => x.FullClassName == config.code.Config.EntityType.BaseType?.FullName && !x.IsExposed);
                 config.db.InheritedFrom = inheritedFrom;
 
-                config.db.TableName = config.code.Config.TableName;
+                var parts = config.code.Config.TableName?.Split(".");
+
+                config.db.SchemaName = parts?.Length == 2 ? parts[0] : null;
+                config.db.TableName = parts?.Length == 1 
+                    ? config.code.Config.TableName
+                    : parts?.Length == 2
+                        ? parts[1]
+                        // use full table name for unknown format
+                        : config.code.Config.TableName;
                 config.db.DiscriminatorValue = config.code.Config.DiscriminatorValue;
                 config.db.IsCodeBased = true;
                 config.db.SurfaceStatus = RefListSurfaceStatus.Visible;

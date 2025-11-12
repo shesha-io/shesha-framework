@@ -296,7 +296,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           filesId: fileListRef.current?.map((x) => x.id).filter((x) => !!x),
         };
     axios({
-      url: `${baseUrl ?? backendUrl}/api/StoredFile/DownloadZip?${qs.stringify(query)}`,
+      url: `${baseUrl ?? backendUrl}/api/StoredFile/DownloadZip?${qs.stringify(query, { allowDots: true })}`,
       method: 'GET',
       responseType: 'blob',
       headers,

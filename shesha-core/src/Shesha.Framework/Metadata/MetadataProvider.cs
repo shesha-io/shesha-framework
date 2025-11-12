@@ -89,7 +89,7 @@ namespace Shesha.Metadata
                 Module = entityConfig?.Module?.Name ?? null,
                 ModuleAccessor = entityConfig?.Module?.Accessor ?? null,
 
-                Name = containerType.Name,
+                Name = entityConfig?.Name ?? containerType.Name,
                 Label = entityConfig?.Label,
                 Description = entityConfig?.Description,
             };

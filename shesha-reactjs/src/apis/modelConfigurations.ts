@@ -34,20 +34,22 @@ export interface PermissionedObjectDto {
   } | null;
 }
 
+export interface IHasDefaultEditor {
+  defaultEditor?: string | null;
+}
+
+export interface IHasFilter {
+  filter: object;
+}
+
 export interface INumberFormatting {
   showThousandsSeparator?: boolean;
   customFormat?: string | null;
 }
 
-export interface IIntegerFormatting extends INumberFormatting {
-}
-
 export interface IDecimalFormatting extends INumberFormatting {
   numDecimalPlaces?: number | null;
   showAsPercentage?: boolean;
-}
-
-export interface IFloatFormatting extends INumberFormatting {
 }
 
 export interface IEntityPropertyListDbMapping
@@ -197,7 +199,7 @@ export interface ModelPropertyDto {
    */
   cascadeDeleteUnreferencedHardcoded?: boolean;
 
-  formatting?: INumberFormatting | IIntegerFormatting | IDecimalFormatting | IFloatFormatting;
+  formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting);
 }
 
 /**

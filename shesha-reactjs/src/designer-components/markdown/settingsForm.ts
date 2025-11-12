@@ -489,7 +489,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    inputType: 'radio',
                                     buttonGroupOptions: repeatOptions,
                                   },
                                 ],

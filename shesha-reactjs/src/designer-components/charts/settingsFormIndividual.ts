@@ -59,7 +59,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       label: 'Hide',
                       type: 'switch',
                       jsSetting: true,
-                      width: '50%',
                     },
                     {
                       id: nanoid(),
@@ -69,7 +68,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       description: 'If the pie chart is a doughnut chart, switch to true.',
                       tooltip: 'If the pie chart is a doughnut chart, switch to true.',
                       parentId: commonTabId,
-                      defaultValue: false,
                       hidden: {
                         _code: 'return getSettingValue(data?.chartType) !== `pie`',
                         _mode: 'code',
@@ -85,7 +83,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       description: 'If the bar chart is a stacked chart, switch to true.',
                       tooltip: 'If the bar chart is a stacked chart, switch to true.',
                       parentId: commonTabId,
-                      defaultValue: false,
                       hidden: {
                         _code:
                           'return getSettingValue(data?.chartType) !== `bar` || getSettingValue(data?.simpleOrPivot) !== `pivot` || getSettingValue(data?.dataMode) === `url`',
@@ -128,7 +125,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 { label: 'Entity type', value: 'entityType' },
                               ],
                               validate: { required: true },
-                              defaultValue: 'entityType',
                               jsSetting: true,
                             },
                             {
@@ -143,7 +139,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 { label: 'Pivot', value: 'pivot' },
                               ],
                               validate: { required: true },
-                              defaultValue: 'simple',
                               hidden: {
                                 _code: 'return getSettingValue(data?.dataMode) === `url`',
                                 _mode: 'code',
@@ -182,12 +177,8 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     _value: false,
                                   } as any,
                                 },
-                                dataSourceType: 'url',
-                                dataSourceUrl: '/api/services/app/Api/Endpoints',
                                 settingsValidationErrors: [],
-                                useRawValues: true,
                                 jsSetting: true,
-                                width: '100%',
                                 placeholder: '',
                                 allowClear: true,
                               })
@@ -206,24 +197,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                                   'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
                                   'Id initial value is already initialised with {{entityReference.id}} but you can override it',
-                                exposedVariables: [
-                                  { name: 'data', description: 'This form data', type: 'object' },
-                                  { name: 'form', description: 'Form instance', type: 'object' },
-                                  {
-                                    name: 'formMode',
-                                    description: 'Current form mode',
-                                    type: "'designer' | 'edit' | 'readonly'",
-                                  },
-                                  { name: 'globalState', description: 'Global state', type: 'object' },
-                                  {
-                                    name: 'entityReference.id',
-                                    description: 'Id of entity reference entity',
-                                    type: 'object',
-                                  },
-                                  { name: 'entityReference.entity', description: 'Entity', type: 'object' },
-                                  { name: 'moment', description: 'moment', type: '' },
-                                  { name: 'http', description: 'axiosHttp', type: '' },
-                                ].map((item) => JSON.stringify(item)),
                               },
                               )
                               .toJson(),
@@ -256,7 +229,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     parentId: dataSettingsId,
                                     hidden: false,
                                     jsSetting: true,
-                                    width: '50%',
                                   },
                                   {
                                     id: nanoid(),
@@ -301,7 +273,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     } as any,
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
-                                    width: '100%',
                                     jsSetting: true,
                                   },
                                 ],
@@ -324,10 +295,8 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     description: 'If the x-axis is a time series, switch to true.',
                                     tooltip: 'If the x-axis is a time series i.e. the Axis Property is a DateTime / ISO string data property, switch to true.',
                                     parentId: dataSettingsId,
-                                    defaultValue: false,
                                     validate: { required: true },
                                     jsSetting: true,
-                                    width: '50%',
                                   },
                                   {
                                     id: nanoid(),
@@ -344,7 +313,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       { label: 'Day-Month-Year', value: 'day-month-year' },
                                       { label: 'Month-Year', value: 'month-year' },
                                     ],
-                                    defaultValue: 'month-year',
                                     jsSetting: true,
                                     hidden: {
                                       _code: 'return !!!getSettingValue(data?.isAxisTimeSeries)',
@@ -382,7 +350,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     } as any,
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
-                                    width: '100%',
                                     jsSetting: true,
                                   },
                                 ],
@@ -415,7 +382,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     } as any,
                                     autoFillProps: false,
                                     settingsValidationErrors: [],
-                                    width: '100%',
                                     jsSetting: true,
                                   },
                                 ],
@@ -438,8 +404,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     description: 'If the grouping property is a time series, switch to true.',
                                     tooltip: 'If the grouping property is a time series i.e. the Grouping Property is a DateTime / ISO string data property, switch to true.',
                                     parentId: dataSettingsId,
-                                    defaultValue: false,
-                                    width: '50%',
                                     jsSetting: true,
                                   },
                                   {
@@ -458,14 +422,12 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       { label: 'Month-Year', value: 'month-year' },
                                     ],
                                     validate: { required: true },
-                                    defaultValue: 'month-year',
                                     jsSetting: true,
                                     hidden: {
                                       _code: 'return !!!getSettingValue(data?.isGroupingTimeSeries)',
                                       _mode: 'code',
                                       _value: true,
                                     } as any,
-                                    width: '50%',
                                   },
                                 ],
                               })
@@ -485,7 +447,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   { label: 'Max', value: 'max' },
                                 ],
                                 validate: { required: true },
-                                defaultValue: 'count',
                                 jsSetting: true,
                               })
                               .toJson(),
@@ -519,9 +480,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               label: 'Show Title',
                               description: 'Show the title of the chart',
                               parentId: commonTabId,
-                              defaultValue: true,
                               jsSetting: true,
-                              width: '50%',
                             },
                             {
                               id: nanoid(),
@@ -558,9 +517,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               description:
                                 'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
                               parentId: commonTabId,
-                              defaultValue: false,
                               jsSetting: true,
-                              width: '50%',
                             },
                             {
                               id: nanoid(),
@@ -581,7 +538,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 { label: 'Right', value: 'right' },
                               ],
                               validate: { required: true },
-                              defaultValue: 'top',
                               jsSetting: true,
                             },
                           ],
@@ -601,7 +557,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               propertyName: 'showXAxisScale',
                               label: 'Show X Axis',
                               parentId: commonTabId,
-                              defaultValue: true,
                               jsSetting: true,
                             },
                             {
@@ -610,7 +565,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               propertyName: 'showXAxisTitle',
                               label: 'Show X Axis Title',
                               parentId: commonTabId,
-                              defaultValue: true,
                               hidden: {
                                 _code: 'return getSettingValue(data?.showXAxisScale) !== true',
                                 _mode: 'code',
@@ -656,7 +610,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               propertyName: 'showYAxisScale',
                               label: 'Show Y Axis',
                               parentId: commonTabId,
-                              defaultValue: true,
                               jsSetting: true,
                             },
                             {
@@ -665,7 +618,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               propertyName: 'showYAxisTitle',
                               label: 'Show Y Axis Title',
                               parentId: commonTabId,
-                              defaultValue: true,
                               hidden: {
                                 _code: 'return getSettingValue(data?.showYAxisScale) !== true',
                                 _mode: 'code',
@@ -727,7 +679,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         { label: 'Entity type', value: 'entityType' },
                       ],
                       validate: { required: true },
-                      defaultValue: 'entityType',
                       hidden: false,
                       jsSetting: true,
                       width: '50%',
@@ -741,7 +692,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       description: 'The timeout for the request (in milliseconds) to the data source. 10000 is the default timeout.',
                       tooltip: 'The timeout for the request (in milliseconds) to the data source. 10000 is the default timeout.',
                       validate: { required: false },
-                      defaultValue: 10000,
                       min: 0,
                       jsSetting: true,
                     },
@@ -775,12 +725,8 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             _value: false,
                           } as any,
                         },
-                        dataSourceType: 'url',
-                        dataSourceUrl: '/api/services/app/Api/Endpoints',
                         settingsValidationErrors: [],
-                        useRawValues: true,
                         jsSetting: true,
-                        width: '100%',
                         placeholder: '',
                         allowClear: true,
                       })
@@ -798,24 +744,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                           'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
                           'Id initial value is already initialised with {{entityReference.id}} but you can override it',
-                        exposedVariables: [
-                          { name: 'data', description: 'This form data', type: 'object' },
-                          { name: 'form', description: 'Form instance', type: 'object' },
-                          {
-                            name: 'formMode',
-                            description: 'Current form mode',
-                            type: "'designer' | 'edit' | 'readonly'",
-                          },
-                          { name: 'globalState', description: 'Global state', type: 'object' },
-                          {
-                            name: 'entityReference.id',
-                            description: 'Id of entity reference entity',
-                            type: 'object',
-                          },
-                          { name: 'entityReference.entity', description: 'Entity', type: 'object' },
-                          { name: 'moment', description: 'moment', type: '' },
-                          { name: 'http', description: 'axiosHttp', type: '' },
-                        ].map((item) => JSON.stringify(item)),
                         jsSetting: true,
                       },
                       )
@@ -849,7 +777,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             parentId: dataTabId,
                             hidden: false,
                             jsSetting: true,
-                            width: '50%',
                           },
                           {
                             id: nanoid(),
@@ -894,7 +821,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
-                            width: '100%',
                             jsSetting: true,
                           },
                         ],
@@ -916,9 +842,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             description: 'If the x-axis is a time series, switch to true.',
                             tooltip: 'If the x-axis is a time series i.e. the Axis Property is a DateTime / ISO string data property, switch to true.',
                             parentId: dataTabId,
-                            defaultValue: false,
                             validate: { required: false },
-                            width: '50%',
                             jsSetting: true,
                           },
                           {
@@ -937,7 +861,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               { label: 'Month-Year', value: 'month-year' },
                             ],
                             validate: { required: true },
-                            defaultValue: 'month-year',
                             jsSetting: true,
                             hidden: {
                               _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
@@ -974,7 +897,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
-                            width: '100%',
                             jsSetting: true,
                           },
                         ],
@@ -1007,7 +929,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
-                            width: '100%',
                             jsSetting: true,
                           },
                         ],
@@ -1030,8 +951,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             description: 'If the grouping property is a time series, switch to true.',
                             tooltip: 'If the grouping property is a time series i.e. the Grouping Property is a DateTime / ISO string data property, switch to true.',
                             parentId: dataTabId,
-                            defaultValue: false,
-                            width: '50%',
                             jsSetting: true,
                           },
                           {
@@ -1050,7 +969,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               { label: 'Month-Year', value: 'month-year' },
                             ],
                             validate: { required: true },
-                            defaultValue: 'month-year',
                             width: '50%',
                             jsSetting: true,
                             hidden: {
@@ -1089,7 +1007,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             } as any,
                             autoFillProps: false,
                             settingsValidationErrors: [],
-                            width: '100%',
                             jsSetting: true,
                           },
                         ],
@@ -1136,7 +1053,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           { label: 'Max', value: 'max' },
                         ],
                         validate: { required: true },
-                        defaultValue: 'count',
                         jsSetting: true,
                       })
                       .addSettingsInputRow({
@@ -1166,7 +1082,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               _value: false,
                             } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                            width: '100%',
                             jsSetting: true,
                           },
                         ],
@@ -1207,7 +1122,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'titleFont.family',
                             hideLabel: true,
                             dropdownOptions: fontTypes,
-                            defaultValue: 'Segoe UI',
                           },
                           {
                             type: 'numberField',
@@ -1216,7 +1130,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'titleFont.size',
                             hideLabel: true,
                             width: 50,
-                            defaultValue: 16,
                             min: 8,
                             max: 32,
                           },
@@ -1229,7 +1142,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
                             dropdownOptions: fontWeightsOptions,
                             width: 100,
-                            defaultValue: '400',
                           },
                           {
                             type: 'colorPicker',
@@ -1237,7 +1149,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             label: 'Color',
                             hideLabel: true,
                             propertyName: 'titleFont.color',
-                            defaultValue: '#000000',
                           },
                         ],
                       })
@@ -1269,7 +1180,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'axisLabelFont.family',
                             hideLabel: true,
                             dropdownOptions: fontTypes,
-                            defaultValue: 'Segoe UI',
                           },
                           {
                             type: 'numberField',
@@ -1278,7 +1188,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'axisLabelFont.size',
                             hideLabel: true,
                             width: 50,
-                            defaultValue: 12,
                             min: 8,
                             max: 24,
                           },
@@ -1291,7 +1200,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
                             dropdownOptions: fontWeightsOptions,
                             width: 100,
-                            defaultValue: '400',
                           },
                           {
                             type: 'colorPicker',
@@ -1299,7 +1207,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             label: 'Color',
                             hideLabel: true,
                             propertyName: 'axisLabelFont.color',
-                            defaultValue: '#000000',
                           },
                         ],
                       })
@@ -1341,7 +1248,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'legendFont.family',
                             hideLabel: true,
                             dropdownOptions: fontTypes,
-                            defaultValue: 'Segoe UI',
                           },
                           {
                             type: 'numberField',
@@ -1350,7 +1256,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'legendFont.size',
                             hideLabel: true,
                             width: 50,
-                            defaultValue: 12,
                             min: 8,
                             max: 24,
                           },
@@ -1363,7 +1268,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
                             dropdownOptions: fontWeightsOptions,
                             width: 100,
-                            defaultValue: '400',
                           },
                           {
                             type: 'colorPicker',
@@ -1371,7 +1275,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             label: 'Color',
                             hideLabel: true,
                             propertyName: 'legendFont.color',
-                            defaultValue: '#000000',
                           },
                         ],
                       })
@@ -1403,7 +1306,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'tickFont.family',
                             hideLabel: true,
                             dropdownOptions: fontTypes,
-                            defaultValue: 'Segoe UI',
                           },
                           {
                             type: 'numberField',
@@ -1412,7 +1314,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             propertyName: 'tickFont.size',
                             hideLabel: true,
                             width: 50,
-                            defaultValue: 12,
                             min: 8,
                             max: 24,
                           },
@@ -1425,7 +1326,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
                             dropdownOptions: fontWeightsOptions,
                             width: 100,
-                            defaultValue: '400',
                           },
                           {
                             type: 'colorPicker',
@@ -1433,7 +1333,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             label: 'Color',
                             hideLabel: true,
                             propertyName: 'tickFont.color',
-                            defaultValue: '#000000',
                           },
                         ],
                       })
@@ -1694,7 +1593,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   label: 'Repeat',
                                   hideLabel: true,
                                   propertyName: 'background.repeat',
-                                  inputType: 'radio',
                                   buttonGroupOptions: repeatOptions,
                                 }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
@@ -1726,7 +1624,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   label: 'Offset X',
                                   hideLabel: true,
                                   width: 80,
-                                  inputType: 'numberField',
                                   icon: "offsetHorizontalIcon",
                                   propertyName: 'shadow.offsetX',
                                 },
@@ -1736,7 +1633,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   label: 'Offset Y',
                                   hideLabel: true,
                                   width: 80,
-                                  inputType: 'numberField',
                                   icon: 'offsetVerticalIcon',
                                   propertyName: 'shadow.offsetY',
                                 },
@@ -1746,7 +1642,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   label: 'Blur',
                                   hideLabel: true,
                                   width: 80,
-                                  inputType: 'numberField',
                                   icon: 'blurIcon',
                                   propertyName: 'shadow.blurRadius',
                                 },
@@ -1756,7 +1651,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   label: 'Spread',
                                   hideLabel: true,
                                   width: 80,
-                                  inputType: 'numberField',
                                   icon: 'spreadIcon',
                                   propertyName: 'shadow.spreadRadius',
                                 },
@@ -1834,7 +1728,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       parentId: appearanceTabId,
                       type: 'numberField',
                       label: 'Stroke Thickness',
-                      defaultValue: 0.0,
                       description:
                         'The thickness of the stroke for the elements (bars, lines, etc.) in the chart. Default is 0.0',
                       step: 0.1,
@@ -1845,7 +1738,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'strokeColor',
                       parentId: appearanceTabId,
                       label: 'Stroke Color',
-                      allowClear: true,
                       type: 'colorPicker',
                       jsSetting: true,
                       tooltip: 'The color of the stroke / border for the elements (bars, lines, etc.) in the chart. Default is #000000',
@@ -1862,7 +1754,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'tension',
                       parentId: appearanceTabId,
                       label: 'Tension',
-                      defaultValue: 0,
                       min: 0,
                       hidden: {
                         _code: 'return getSettingValue(data?.chartType) !== `line`',

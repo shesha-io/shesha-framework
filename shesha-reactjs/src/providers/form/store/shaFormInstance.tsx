@@ -416,12 +416,12 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   setLogEnabled = (enabled: boolean): void => {
     this.logEnabled = enabled;
+    // eslint-disable-next-line no-console
+    this.log = this.logEnabled ? console.log : this.log;
   };
 
-  log = (...args: unknown[]): void => {
-    if (this.logEnabled)
-    // eslint-disable-next-line no-console
-      console.log(...args);
+  log = (..._args: unknown[]): void => {
+    // noop
   };
 
   setInitialValues = (values: Values): void => {

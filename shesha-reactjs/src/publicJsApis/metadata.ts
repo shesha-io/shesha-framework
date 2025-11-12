@@ -22,6 +22,24 @@ export interface IMemberMetadata extends IMemberType {
   description?: string | null;
 }
 
+export interface IHasDefaultEditor {
+  defaultEditor?: string | null;
+}
+
+export interface IHasFilter {
+  filter: object;
+}
+
+export interface INumberFormatting {
+  showThousandsSeparator?: boolean;
+  customFormat?: string | null;
+}
+
+export interface IDecimalFormatting extends INumberFormatting {
+  numDecimalPlaces?: number | null;
+  showAsPercentage?: boolean;
+}
+
 export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
   required?: boolean;
   readonly?: boolean;
@@ -51,7 +69,7 @@ export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
   columnName?: string | null;
   createdInDb?: boolean;
   inheritedFromId?: string | null;
-  formatting?: any;
+  formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting);
 }
 
 export type PropertiesPromise = Promise<IPropertyMetadata[]>;

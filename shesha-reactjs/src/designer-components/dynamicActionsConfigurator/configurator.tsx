@@ -1,5 +1,4 @@
 import React, { FC, useMemo } from 'react';
-import { IDynamicActionsConfiguratorComponentProps } from './interfaces';
 import { IDynamicActionsConfiguration } from './models';
 import { ProviderSelector } from './providerSelector';
 import { Form } from 'antd';
@@ -10,7 +9,6 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 export interface IDynamicActionsConfiguratorProps {
   value?: IDynamicActionsConfiguration;
   onChange?: (newValue: IDynamicActionsConfiguration) => void;
-  editorConfig?: IDynamicActionsConfiguratorComponentProps;
   readOnly?: boolean;
   size?: SizeType;
 }

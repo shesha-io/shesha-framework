@@ -156,7 +156,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       label: 'Direction',
                       jsSetting: true,
                       layout: 'horizontal',
-                      defaultValue: 'vertical',
                       dropdownOptions: [
                         {
                           label: 'Horizontal',

@@ -11,7 +11,7 @@ import {
 } from '@/providers/form/utils';
 import { IAutocompleteComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { isEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { isEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata, isHasFilter } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ConfigurableFormItem } from '@/components';
@@ -24,6 +24,7 @@ import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { useMetadataDispatcher } from '@/providers';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   type: 'autocomplete',
@@ -38,6 +39,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const { getMetadata } = useMetadataDispatcher();
 
     const entityMetadata = useAsyncMemo(async () => {
+      if (isEntityTypeIdEmpty(model.entityType))
+        return null;
       const meta = await getMetadata({ modelType: model.entityType, dataType: DataTypes.entityReference });
       return isEntityMetadata(meta) ? meta : null;
     }, [model.entityType]);
@@ -140,7 +143,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     .add<IAutocompleteComponentProps>(4, (prev) => migrateReadOnly(prev))
     .add<IAutocompleteComponentProps>(5, (prev) => ({
       ...migrateFormApi.eventsAndProperties(prev),
-      defaultValue: migrateFormApi.withoutFormData(prev?.defaultValue),
     }))
     .add<IAutocompleteComponentProps>(6, (prev) => {
       const styles: IInputStyles = {
@@ -188,7 +190,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
         ? 'entityReference'
         : 'simple',
-      filter: typeof propMetadata.formatting?.filter === 'object' && propMetadata.formatting?.filter
+      filter: isHasFilter(propMetadata.formatting)
         ? { ...propMetadata.formatting?.filter }
         : null,
     };

@@ -27,7 +27,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
       return {
         ...model,
         sourceType: 'Entity',
-        entityType: 'Shesha.Domain.FormConfiguration',
+        entityType: 'Shesha.Core.DummyTable',
         dataFetchingMode: 'paging',
         defaultPageSize: 10,
       };

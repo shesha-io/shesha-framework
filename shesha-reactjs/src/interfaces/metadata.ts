@@ -165,6 +165,34 @@ export type PropertiesLoader = () => PropertiesPromise;
 
 export type NestedProperties = IPropertyMetadata[] | PropertiesLoader | null;
 
+// Formatting interfaces
+
+export interface IHasDefaultEditor {
+  defaultEditor?: string | null;
+}
+
+export interface IHasFilter {
+  filter: object;
+}
+export const isHasFilter = (value: object | null | undefined): value is IHasFilter =>
+  value && "filter" in value && typeof (value.filter) === 'object' && !Array.isArray(value.filter) && value.filter !== null;
+
+export interface INumberFormatting {
+  showThousandsSeparator?: boolean;
+  customFormat?: string | null;
+}
+export const isHNumberFormatting = (value: object | null | undefined): value is INumberFormatting =>
+  value && ("showThousandsSeparator" in value || "customFormat" in value);
+
+export interface IDecimalFormatting extends INumberFormatting {
+  numDecimalPlaces?: number | null;
+  showAsPercentage?: boolean;
+}
+export const isDecimalFormatting = (value: object | null | undefined): value is IDecimalFormatting =>
+  value && ("numDecimalPlaces" in value || "showAsPercentage" in value);
+
+// -------
+
 export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
   containerType?: string;
   required?: boolean;
@@ -197,7 +225,7 @@ export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
   columnName?: string | null;
   createdInDb?: boolean;
   inheritedFromId?: string | null;
-  formatting?: any;
+  formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting);
 }
 
 export interface IArrayMetadata extends IMetadata {

@@ -1,6 +1,5 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { DEFAULT_CONTENT_TYPE } from './utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
@@ -76,7 +75,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'contentDisplay',
                       label: 'Content Display',
                       size: 'small',
-                      defaultValue: 'content',
                       jsSetting: true,
                       allowClear: false,
                       dropdownOptions: [
@@ -102,7 +100,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'dataType',
                       label: 'Data Type',
                       size: 'small',
-                      defaultValue: 'string',
                       jsSetting: true,
                       allowClear: false,
                       dropdownOptions: [
@@ -152,7 +149,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       size: 'small',
                       jsSetting: true,
                       placeholder: 'Date Format',
-                      allowClear: false,
                     },
                   ],
                 })
@@ -373,7 +369,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     label: 'Size unit',
                                     propertyName: 'level',
                                     hideLabel: true,
-                                    defaultValue: '1',
                                     dropdownOptions: [
                                       {
                                         label: 'H1',
@@ -433,7 +428,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     propertyName: 'contentType',
                                     label: 'Type',
                                     hideLabel: false,
-                                    defaultValue: DEFAULT_CONTENT_TYPE,
                                     dropdownOptions: [
                                       {
                                         label: 'Default',
@@ -813,7 +807,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    inputType: 'radio',
                                     buttonGroupOptions: repeatOptions,
                                   },
                                 ],

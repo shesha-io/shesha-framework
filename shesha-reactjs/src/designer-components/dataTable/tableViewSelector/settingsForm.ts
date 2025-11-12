@@ -58,7 +58,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   propertyName: 'showIcon',
                   label: 'Show Icon',
                   description: 'Display the layout icon next to the View label',
-                  defaultValue: true,
                   layout: 'horizontal',
                 })
                 .toJson(),

@@ -25,6 +25,7 @@ import {
 import { ISettingsActionsContext } from '../settings/contexts';
 import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { IShaRouter } from '../shaRouting/contexts';
 
 type RerenderTrigger = () => void;
 
@@ -38,7 +39,7 @@ const enum AuthenticateResultType {
 
 export interface AuthenticatorArgs {
   httpClient: HttpClientApi;
-  router: IRouter;
+  shaRouter: IShaRouter;
   settings: ISettingsActionsContext;
   tokenName?: string;
   unauthorizedRedirectUrl?: string;
@@ -54,7 +55,11 @@ export class Authenticator implements IAuthenticator {
 
   #settings: ISettingsActionsContext;
 
-  #router: IRouter;
+  #shaRouter: IShaRouter;
+
+  get #router(): IRouter {
+    return this.#shaRouter.router;
+  };
 
   #rerender: RerenderTrigger;
 
@@ -81,7 +86,7 @@ export class Authenticator implements IAuthenticator {
   constructor(args: AuthenticatorArgs, forceRootUpdate: RerenderTrigger) {
     this.#httpClient = args.httpClient;
     this.#settings = args.settings;
-    this.#router = args.router;
+    this.#shaRouter = args.shaRouter;
     this.#rerender = forceRootUpdate;
     this.state = { status: 'waiting' };
 
@@ -90,10 +95,6 @@ export class Authenticator implements IAuthenticator {
     this.#homePageUrl = args.homePageUrl || URL_HOME_PAGE;
     this.#onSetRequestHeaders = args.onSetRequestHeaders;
   }
-
-  applyRouter = (router: IRouter): void => {
-    this.#router = router;
-  };
 
   #redirect = (url: string): void => {
     this.#router.push(url);
@@ -252,6 +253,9 @@ export class Authenticator implements IAuthenticator {
   };
 
   logoutUser = async (): Promise<void> => {
+    if (!await this.#shaRouter.validateNavigation(this.#unauthorizedRedirectUrl))
+      return;
+
     await this.#logoutUserHttp();
     this.#clearAccessToken();
 
@@ -338,8 +342,6 @@ export const useAuthenticatorInstance = (args: AuthenticatorArgs): [IAuthenticat
     const instance = new Authenticator(args, forceReRender);
 
     authenticatorRef.current = instance as IAuthenticator;
-  } else {
-    authenticatorRef.current.applyRouter(args.router);
   }
 
   const authenticator = authenticatorRef.current;

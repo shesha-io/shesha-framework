@@ -1,7 +1,7 @@
 import React, { MutableRefObject } from 'react';
 import { Form } from 'antd';
 import { IConfigurableFormComponent, FormMarkup } from '@/providers/form/models';
-import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
+import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IToolboxComponentBase } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableForm } from '../configurableForm';
@@ -14,7 +14,7 @@ export interface IProps<TModel extends IConfigurableFormComponent> {
   onSave: (model: TModel) => void;
   onCancel: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
-  toolboxComponent: IToolboxComponent;
+  toolboxComponent: IToolboxComponentBase;
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
   propertyFilter?: (name: string) => boolean;
   layoutSettings?: IFormLayoutSettings;

@@ -97,7 +97,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                           propertyName: 'orientation',
                           label: 'Orientation',
                           jsSetting: true,
-                          defaultValue: 'horizontal',
                           dropdownOptions: [
                             { value: 'horizontal', label: 'Horizontal' },
                             { value: 'vertical', label: 'Vertical' },
@@ -109,7 +108,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                           label: 'Align Items',
                           parentId: commonTabId,
                           type: 'dropdown',
-                          defaultValue: 'flex-start',
                           hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any,
                           dropdownOptions: [
                             { value: 'flex-start', label: 'Flex Start' },
@@ -360,7 +358,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
@@ -547,7 +544,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 parentId: dividerTabId,
                                 type: 'colorPicker',
                                 jsSetting: true,
-                                allowClear: true,
                               }],
                           })
                           .toJson(),

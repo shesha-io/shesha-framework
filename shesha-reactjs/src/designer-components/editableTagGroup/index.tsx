@@ -24,7 +24,7 @@ const EditableTagGroupComponent: IToolboxComponent<IEditableTagGroupComponentPro
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => (<EditableTagGroup value={value} defaultValue={model?.defaultValue} onChange={onChange} readOnly={model.readOnly} />)}
+        {(value, onChange) => (<EditableTagGroup value={value} onChange={onChange} readOnly={model.readOnly} />)}
       </ConfigurableFormItem>
     );
   },

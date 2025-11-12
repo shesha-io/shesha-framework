@@ -1,15 +1,17 @@
 
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dropdown, Empty, Tabs, TabsProps } from 'antd';
-import { useCsTabs } from '../../cs/hooks';
-import { DocumentEditor } from '../documentEditor';
-import { useStyles } from '../../styles';
-import { TabLabel } from '../tab-label';
-import { IDocumentInstance } from '../../models';
 import { isDefined } from '@/utils/nullables';
-import { DraggableTabWithGapPlaceholder, TabsDragState, TabPosition } from '../draggable-tab';
+import { Dropdown, Empty, Tabs, TabsProps } from 'antd';
+import { useNavigationGuard } from "next-navigation-guard";
+import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCsTabs } from '../../cs/hooks';
+import { IDocumentInstance } from '../../models';
+import { useStyles } from '../../styles';
+import { DocumentEditor } from '../documentEditor';
+import { DraggableTabWithGapPlaceholder, TabPosition, TabsDragState } from '../draggable-tab';
+import { TabLabel } from '../tab-label';
 import { CloseIcon } from './closeIcon';
 import { getContextMenuItems } from './utils';
+import { useConfigurationStudio } from '@/configuration-studio/cs/contexts';
 
 type Tab = Required<TabsProps>['items'][number];
 type OnEdit = TabsProps['onEdit'];
@@ -34,6 +36,7 @@ export const WorkArea: FC = () => {
   } = tabsApi;
   const { styles } = useStyles();
   const [contextMenuState, setContextMenuState] = useState<TabContextMenuState>();
+  const configurationStudio = useConfigurationStudio();
 
   const [dragState, setDragState] = useState<TabsDragState>({
     isDragging: false,
@@ -49,6 +52,13 @@ export const WorkArea: FC = () => {
     e.stopPropagation();
     setContextMenuState({ doc, x: e.clientX, y: e.clientY, isVisible: true });
   };
+
+  useNavigationGuard({
+    enabled: configurationStudio.hasUnsavedChanges,
+    confirm: (params) => {
+      return configurationStudio.confirmNavigation(params.to);
+    },
+  });
 
   const treeTabs = useMemo<Tab[]>(() => {
     const result: Tab[] = [];

@@ -1,4 +1,4 @@
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesignerReadOnly } from '@/providers/formDesigner';
 import { App, Space } from 'antd';
 import React, { FC } from 'react';
 import { DebugButton } from '../toolbar/debugButton';
@@ -15,7 +15,7 @@ export interface IQuickEditToolbarProps {
 }
 
 export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, renderSource }) => {
-  const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
+  const readOnly = useFormDesignerReadOnly();
   const { message } = App.useApp();
 
   const onSaved = (): void => {

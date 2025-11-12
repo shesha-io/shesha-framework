@@ -88,7 +88,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       parentId: commonTabId,
-                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
@@ -248,7 +247,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'savePlacement',
                       label: 'Buttons Layout',
                       tooltip: 'This is used to place the save button (Left, Right).',
-                      defaultValue: 'left',
                       jsSetting: true,
                       dropdownOptions: [
                         { value: 'left', label: 'Left' },

@@ -70,7 +70,7 @@ namespace Shesha.DynamicEntities.Dtos
             return FullClassName.IsNullOrEmpty()
                 ? Module.IsNullOrEmpty()
                     ? Name ?? "empty"
-                    : $"{Module}.{Name}"
+                    : $"{Module}:{Name}"
                 : FullClassName ?? "empty";
         }
     }

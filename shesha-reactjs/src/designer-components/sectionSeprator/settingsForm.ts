@@ -32,6 +32,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   id: nanoid(),
+                  inputType: 'textField',
                   parentId: commonTabId,
                   propertyName: 'componentName',
                   label: 'Component Name',
@@ -182,7 +183,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     label: 'Type',
                                     propertyName: 'lineType',
                                     hideLabel: false,
-                                    defaultValue: 'solid',
                                     dropdownOptions: [
                                       {
                                         label: 'Solid',

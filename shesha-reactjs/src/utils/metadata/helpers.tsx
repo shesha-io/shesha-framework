@@ -69,7 +69,7 @@ export const getFullPath = (property: IPropertyMetadata): string => {
 };
 
 export const getDataProperty = <TProp extends keyof IPropertyMetadata = keyof IPropertyMetadata, TValue = IPropertyMetadata[TProp]>(properties: IPropertyMetadata[], name: string, propertyName: TProp): TValue | undefined =>
-  properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
+  properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName] as TValue | undefined;
 
 export const getFormatContent = (content: string, metadata: Pick<IContent, 'dataFormat' | 'dataType'>): string => {
   const { dataType, dataFormat } = metadata || {};

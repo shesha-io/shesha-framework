@@ -244,7 +244,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 };
 
 export const GenericQuickView: FC<IQuickViewProps> = (props) => {
-  const { getEntityFormId } = useConfigurationItemsLoader();
+  const { getEntityFormIdAsync } = useConfigurationItemsLoader();
   const [formConfig, setFormConfig] = useState<FormIdentifier>(undefined);
   const { styles, cx } = useStyles();
 
@@ -254,7 +254,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
       setFormConfig(props.formIdentifier);
     } else if (!isEntityTypeIdEmpty(props.entityType) && props.formType && formConfig === undefined) {
       // Otherwise, fetch form ID dynamically using className and formType
-      getEntityFormId(props.entityType, props.formType)
+      getEntityFormIdAsync(props.entityType, props.formType)
         .then((f) => {
           setFormConfig(f);
         })
@@ -262,7 +262,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
           setFormConfig(null);
         });
     }
-  }, [props.formIdentifier, props.entityType, props.formType, formConfig, getEntityFormId]);
+  }, [props.formIdentifier, props.entityType, props.formType, formConfig, getEntityFormIdAsync]);
 
   const buttonOrPopover = formConfig === undefined ? (
     <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>

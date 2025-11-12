@@ -123,7 +123,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
           owner: prev['owner'],
         } as IFileUploadProps;
       })
-      .add<IFileUploadProps>(1, (prev, context) => ({ ...prev, useSync: !Boolean(context.formSettings?.modelType) }))
+      .add<IFileUploadProps>(1, (prev, context) => ({ ...prev, useSync: isEntityTypeIdEmpty(context.formSettings?.modelType) }))
       .add<IFileUploadProps>(2, (prev) => {
         const pn = prev['name'] ?? prev.propertyName;
         const model = migratePropertyName(migrateCustomFunctions(prev));
