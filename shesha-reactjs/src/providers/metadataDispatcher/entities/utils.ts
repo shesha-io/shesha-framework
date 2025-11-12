@@ -60,8 +60,8 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
   if (savedVersion === CURRENT_SYNC_VERSION) {
     await metadataCache.iterate<IConfigurationItemDto<IEntityMetadata>, void>((item) => {
       const metadata = item.configuration;
-      const { typeAccessor } = metadata;
-      if (!typeAccessor)
+      const { name } = metadata;
+      if (!name)
         return;
       const moduleSync = getModuleSyncRequest(metadata.module);
 
@@ -71,7 +71,7 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
       });
 
       moduleSync.entities.push({
-        accessor: typeAccessor,
+        accessor: name,
         md5: metadata.md5 ?? "",
         modificationTime: metadata.changeTime ?? new Date(),
       });

@@ -251,12 +251,12 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
             if (backendModule != null)
             {
-                foreach (var entity in module.Entities)
+                foreach (var requestEntity in module.Entities)
                 {
-                    var backendEntity = backendModule.Entities.FirstOrDefault(e => e.Accessor == entity.Accessor && e.Module == module.Accessor);
+                    var backendEntity = backendModule.Entities.FirstOrDefault(e => e.Name == requestEntity.Accessor && e.Module == module.Accessor);
                     if (backendEntity != null)
                     {
-                        if (backendEntity.Md5 == entity.Md5 && backendEntity.ModificationTime == entity.ModificationTime)
+                        if (backendEntity.Md5 == requestEntity.Md5 && backendEntity.ModificationTime == requestEntity.ModificationTime)
                         {
                             //responseModule.Entities.Add(new BaseEntitySyncResponse
                             //{
@@ -268,7 +268,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
                         {
                             responseModule.Entities.Add(new OutOfDateEntitySyncResponse
                             {
-                                Accessor = entity.Accessor,
+                                Accessor = requestEntity.Accessor,
                                 Status = SyncStatus.OutOfDate,
                                 Metadata = backendEntity.Metadata,
                             });
@@ -278,17 +278,17 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
                     {
                         responseModule.Entities.Add(new BaseEntitySyncResponse
                         {
-                            Accessor = entity.Accessor,
+                            Accessor = requestEntity.Accessor,
                             Status = SyncStatus.Unknown,
                         });
                     }
                 }
-                var missingEntities = backendModule.Entities.Where(be => be.ModuleAccessor == module.Accessor && !module.Entities.Any(ce => ce.Accessor == be.Accessor)).ToList();
+                var missingEntities = backendModule.Entities.Where(be => be.Module == module.Accessor && !module.Entities.Any(ce => ce.Accessor == be.Name)).ToList();
                 foreach (var entity in missingEntities)
                 {
                     responseModule.Entities.Add(new OutOfDateEntitySyncResponse
                     {
-                        Accessor = entity.Accessor,
+                        Accessor = entity.Name,
                         Status = SyncStatus.OutOfDate,
                         Metadata = entity.Metadata,
                     });
@@ -321,7 +321,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
                     {
                         responseModule.Entities.Add(new OutOfDateEntitySyncResponse
                         {
-                            Accessor = entity.Accessor,
+                            Accessor = entity.Name,
                             Status = SyncStatus.OutOfDate,
                             Metadata = entity.Metadata
                         });
