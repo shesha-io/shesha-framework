@@ -59,15 +59,6 @@ namespace Shesha
 
             ConfigureTokenAuth();
 
-            /*
-            Configuration.Modules.AbpAutoMapper().Configurators.Add(config =>
-            {
-                config.CreateMap<DataTableColumn, DataTableColumnDto>()
-                    .ForMember(u => u.Password, options => options.Ignore())
-                    .ForMember(u => u.Email, options => options.MapFrom(input => input.EmailAddress));
-            });
-            */
-
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
                 this.GetType().Assembly,
                 moduleName: "Shesha",
