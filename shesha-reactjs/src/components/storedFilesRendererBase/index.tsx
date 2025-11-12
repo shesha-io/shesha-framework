@@ -122,7 +122,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       hideFileName: rest.hideFileName && listType === 'thumbnail',
       isDragger,
       isStub,
-      downloadZip
+      downloadZip,
     },
   });
 
