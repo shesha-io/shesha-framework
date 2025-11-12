@@ -193,7 +193,8 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
       SheshaConstants.moment,
       SheshaConstants.pageContext,
       SheshaConstants.selectedRow,
-      SheshaConstants.setGlobalState
+      SheshaConstants.setGlobalState,
+      SheshaConstants.application
     ],
     onBuild: (builder) => {
       builder.addObject("data", "Current row data", undefined);
