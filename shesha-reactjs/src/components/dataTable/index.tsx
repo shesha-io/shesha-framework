@@ -7,6 +7,8 @@ import { ValidationErrors } from '..';
 import { App } from 'antd';
 import {
   FormMode,
+  IApplicationApi,
+  IDataContextsData,
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
   useConfigurableActionDispatcher,
@@ -239,7 +241,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       ? () => {
         // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
         //return onNewRowInitializeExecuter(formData, globalState);
-        const result = onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData);
+        const result = onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData, (appContextData as unknown as { application: IApplicationApi }).application);
         return Promise.resolve(result);
       }
       : () => {
@@ -408,11 +410,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       };
     }
 
-    const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onRowSave);
+    const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState, application', onRowSave);
     return (data, formApi, globalState) => {
       try {
         // Safely get contexts data - fallback to empty object if not available
-        const contexts = dataContextManager?.getDataContextsData?.() || {};
+        const contexts = dataContextManager?.getDataContextsData?.() || {} as IDataContextsData;
 
         // Create fileSaver API with safe error handling
         const fileSaver = {
@@ -439,7 +441,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             moment,
             pageContext,
             selectedRow || null,
-            setGlobalState
+            setGlobalState,
+            contexts?.application || null
           );
         // Validate and sanitize the returned data
         // The onRowSave handler should return the data object to be saved
@@ -461,7 +464,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         return Promise.resolve(data);
       }
     };
-  }, [onRowSave, httpClient, dataContextManager, message, selectedRow, setGlobalState, appContextData]);
+  }, [onRowSave, httpClient, dataContextManager, message, selectedRow, setGlobalState]);
 
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowDeleteSuccessAction)

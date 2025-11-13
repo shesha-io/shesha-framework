@@ -222,9 +222,14 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       SheshaConstants.http,
       SheshaConstants.message,
       SheshaConstants.moment,
+      SheshaConstants.contexts,
+      SheshaConstants.message,
+      SheshaConstants.application,
+      SheshaConstants.setGlobalState,
+      SheshaConstants.data,
       SheshaConstants.pageContext,
       SheshaConstants.selectedRow,
-      SheshaConstants.setGlobalState
+      SheshaConstants.fileSaver
     ],
     onBuild: (builder) => {
       builder.addObject("data", "Current list item data", undefined);
