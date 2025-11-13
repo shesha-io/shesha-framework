@@ -140,6 +140,14 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           columns: keyInfoProperties.map((prop, index) => {
             const keyInfoBuilder = this.getFormBuilder({});
             const count = index + 1;
+            const customDefaults = {
+              font: {
+                weight: '700',
+                size: 14,
+                color: '#000',
+                type: 'Segoe UI',
+              },
+            };
 
             keyInfoBuilder.addText({
               id: nanoid(),
@@ -153,10 +161,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               contentDisplay: 'content',
               textType: "span",
               color: 'default',
-              desktop: {
-                weight: 500,
-              },
-              strong: true,
+              desktop: { ...customDefaults },
+              tablet: { ...customDefaults },
+              mobile: { ...customDefaults },
             });
 
             metadataHelper.getConfigFields(prop, keyInfoBuilder, true);
@@ -280,10 +287,13 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               createComponent: { type: standardCellComponentTypes.notEditable },
             };
           });
+          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
+          const dataTableName = `childTable${index + 1}`;
 
           childTableBuilder.addDatatable({
             id: nanoid(),
-            propertyName: "childTable",
+            propertyName: dataTableName,
+            componentName: dataTableName,
             canAddInline: 'yes',
             canEditInline: 'yes',
             canDeleteInline: 'yes',
@@ -299,8 +309,6 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               ...columns,
             ],
           });
-
-          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
 
           const childTableContextBuilder = this.getFormBuilder({});
           childTableContextBuilder.addDatatableContext({

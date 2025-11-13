@@ -108,7 +108,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     // Implementation for adding columns to the markup
     const builder = this.getFormBuilder({});
 
-    const dataTableName = `datatable ${nanoid()}`;
+    const dataTableName = `datatable1`;
     builder.addDatatable({
       id: nanoid(),
       propertyName: dataTableName,
