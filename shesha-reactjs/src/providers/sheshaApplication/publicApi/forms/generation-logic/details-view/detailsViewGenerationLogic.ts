@@ -3,7 +3,7 @@ import { EditMode, IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { FormMetadataHelper } from "../formMetadataHelper";
-import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
+import { IConfigurableColumnsProps, standardCellComponentTypes } from "@/providers/datatableColumnsConfigurator/models";
 import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, addDetailsPanel, getDataTypePriority, getColumnWidthByDataType } from "../viewGenerationUtils";
 import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson";
 import { ROW_COUNT } from "../../constants";
@@ -259,7 +259,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             return priorityA - priorityB;
           });
 
-          const columns: IConfigurableColumnsProps[] = sortedProperties.map((prop, idx) => {
+          const columns = sortedProperties.map<IConfigurableColumnsProps>((prop, idx) => {
             // Get column width based on data type
             const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
 
@@ -275,6 +275,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               minWidth: width.min,
               maxWidth: width.max,
               allowSorting: true,
+              displayComponent: { type: standardCellComponentTypes.defaultDisplay },
+              editComponent: { type: standardCellComponentTypes.notEditable },
+              createComponent: { type: standardCellComponentTypes.notEditable },
             };
           });
 

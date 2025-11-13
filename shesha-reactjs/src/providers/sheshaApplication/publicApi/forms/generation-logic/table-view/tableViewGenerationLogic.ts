@@ -6,6 +6,7 @@ import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { TableViewExtensionJson } from "../../models/TableViewExtensionJson";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
+import { IConfigurableColumnsProps, standardCellComponentTypes } from "@/providers/datatableColumnsConfigurator/models";
 
 /**
  * Implements generation logic for table views.
@@ -112,7 +113,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
       id: nanoid(),
       propertyName: dataTableName,
       componentName: dataTableName,
-      items: sortedProperties.map((prop, idx) => {
+      items: sortedProperties.map<IConfigurableColumnsProps>((prop, idx) => {
         // Get column width based on data type
         const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
 
@@ -128,6 +129,9 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
           minWidth: width.min,
           maxWidth: width.max,
           allowSorting: true,
+          displayComponent: { type: standardCellComponentTypes.defaultDisplay },
+          editComponent: { type: standardCellComponentTypes.notEditable },
+          createComponent: { type: standardCellComponentTypes.notEditable },
         };
       }),
     });
