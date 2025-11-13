@@ -57,7 +57,16 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
         })}
       </Row>
 
-      <InputRow inline={true} readOnly={readOnly} inputs={[{ id: nanoid(), propertyName: propertyName.replace('gradient.colors', 'gradient.direction'), label: 'Direction', hideLabel: true, width: '120px', type: 'dropdown', dropdownOptions: gradientDirectionOptions }]}>
+      <InputRow inline={true} readOnly={readOnly}>
+        <SettingInput
+          id={nanoid()}
+          propertyName={propertyName.replace('gradient.colors', 'gradient.direction')}
+          label="Direction"
+          hideLabel={true}
+          width="120px"
+          type="dropdown"
+          dropdownOptions={gradientDirectionOptions}
+        />
         <FormItem>
           <Button
             type="primary"
