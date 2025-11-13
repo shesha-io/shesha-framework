@@ -3,7 +3,7 @@ import { EditMode, IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { FormMetadataHelper } from "../formMetadataHelper";
-import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
+import { IConfigurableColumnsProps, standardCellComponentTypes } from "@/providers/datatableColumnsConfigurator/models";
 import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, addDetailsPanel, getDataTypePriority, getColumnWidthByDataType } from "../viewGenerationUtils";
 import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson";
 import { ROW_COUNT } from "../../constants";
@@ -140,6 +140,14 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           columns: keyInfoProperties.map((prop, index) => {
             const keyInfoBuilder = this.getFormBuilder({});
             const count = index + 1;
+            const customDefaults = {
+              font: {
+                weight: '700',
+                size: 14,
+                color: '#000',
+                type: 'Segoe UI',
+              },
+            };
 
             keyInfoBuilder.addText({
               id: nanoid(),
@@ -153,10 +161,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               contentDisplay: 'content',
               textType: "span",
               color: 'default',
-              desktop: {
-                weight: 500,
-              },
-              strong: true,
+              desktop: { ...customDefaults },
+              tablet: { ...customDefaults },
+              mobile: { ...customDefaults },
             });
 
             metadataHelper.getConfigFields(prop, keyInfoBuilder, true);
@@ -275,12 +282,24 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               minWidth: width.min,
               maxWidth: width.max,
               allowSorting: true,
+              displayComponent: {
+                type: standardCellComponentTypes.defaultDisplay,
+              },
+              editComponent: {
+                type: standardCellComponentTypes.notEditable
+              },
+              createComponent: {
+                type: standardCellComponentTypes.notEditable
+              }
             };
           });
+          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
+          const dataTableName = `childTable${index + 1}`;
 
           childTableBuilder.addDatatable({
             id: nanoid(),
-            propertyName: "childTable",
+            propertyName: dataTableName,
+            componentName: dataTableName,
             canAddInline: 'yes',
             canEditInline: 'yes',
             canDeleteInline: 'yes',
@@ -296,8 +315,6 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               ...columns,
             ],
           });
-
-          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
 
           const childTableContextBuilder = this.getFormBuilder({});
           childTableContextBuilder.addDatatableContext({
