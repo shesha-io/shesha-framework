@@ -1,7 +1,9 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
+using GraphQL;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Exceptions;
@@ -103,9 +105,15 @@ namespace Shesha.ConfigurationStudio
 
             var item = await manager.ResolveItemAsync(request.Module, request.Name);
 
-            var dto = await manager.MapToDtoAsync(item);
-
-            return dto;
+            if (item == null)
+                throw new EntityNotFoundException($"Requested configuration not found ({request.ItemType} - {request.Module}: {request.Name})");
+            if (await manager.CurrentUserHasAccessToAsync(item.Module?.Name ?? string.Empty, item.Name))
+            {
+                var dto = await manager.MapToDtoAsync(item);
+                return dto;
+            } 
+            else
+                throw new AbpAuthorizationException($"You are not authorized for this {request.ItemType} {request.Module}: {request.Name}");
         }
 
         public Task<List<IConfigurationItemTypeDto>> GetAvailableItemTypesAsync() 

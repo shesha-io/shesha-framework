@@ -5,13 +5,10 @@ import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import { ValidationErrors } from '..';
 import {
-  FormMode,
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
   useConfigurableActionDispatcher,
   useDataTableStore,
-  useForm,
-  useGlobalState,
   useHttpClient,
   useMetadata,
   useShaFormInstanceOrUndefined,
@@ -43,10 +40,9 @@ import {
   standardCellComponentTypes,
 } from '@/providers/datatableColumnsConfigurator/models';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
-import { executeScriptSync, useApplicationContextData } from '@/providers/form/utils';
+import { executeScript, executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import moment from 'moment';
-import { ConfigurableFormInstance, IAnyObject } from '@/interfaces';
-import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
+import { DataTableColumn, IShaDataTableProps, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { isEqual } from 'lodash';
@@ -56,7 +52,6 @@ import { useStyles } from './styles/styles';
 import { adjustWidth } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
-import { getFormApi } from '@/providers/form/formApi';
 import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
 
 export interface IIndexTableOptions {
@@ -157,11 +152,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   ...props
 }) => {
   const store = useDataTableStore();
-  const form = useForm(false);
-  const formApi = getFormApi(form ?? { formMode: 'readonly', formData: {} } as ConfigurableFormInstance);
-  const { formMode, data: formData } = formApi;
-  const { globalState, setState: setGlobalState } = useGlobalState();
-  const appContextData = useApplicationContextData();
+  const appContext = useAvailableConstantsData();
 
   if (tableRef) tableRef.current = store;
 
@@ -204,15 +195,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!onRowSelect?.actionName) return undefined;
 
     return (row: any, rowIndex: number) => {
-      const evaluationContext = {
-        data: row,
-        rowIndex,
-        formData,
-        globalState,
-        setGlobalState,
-        http: httpClient,
-        moment,
-      };
+      const evaluationContext = { ...appContext, data: row, rowIndex };
 
       try {
         executeAction({
@@ -223,7 +206,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row select action:', error);
       }
     };
-  }, [onRowSelect, formData, globalState, setGlobalState, moment, executeAction, httpClient]);
+  }, [onRowSelect, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
 
   const onSelectRowLocal = (index: number, row: any): void => {
     if (onSelectRow) {
@@ -304,15 +287,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!onRowClick?.actionName) return undefined;
 
     return (rowIndex: number, row: any) => {
-      const evaluationContext = {
-        data: row,
-        rowIndex,
-        formData,
-        globalState,
-        setGlobalState,
-        http: httpClient,
-        moment,
-      };
+      const evaluationContext = { ...appContext, data: row, rowIndex };
 
       try {
         executeAction({
@@ -323,21 +298,13 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row click action:', error);
       }
     };
-  }, [onRowClick, formData, globalState, httpClient]);
+  }, [onRowClick, appContext.contexts.lastUpdate, httpClient]);
 
   const handleRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick?.actionName) return undefined;
 
     return (row: any, rowIndex: number) => {
-      const evaluationContext = {
-        data: row,
-        rowIndex,
-        formData,
-        globalState,
-        setGlobalState,
-        http: httpClient,
-        moment,
-      };
+      const evaluationContext = { ...appContext, data: row, rowIndex };
 
       try {
         executeAction({
@@ -348,21 +315,13 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row double-click action:', error);
       }
     };
-  }, [onRowDoubleClick, formData, globalState, setGlobalState, moment, executeAction, httpClient]);
+  }, [onRowDoubleClick, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
 
   const handleRowHover = useMemo(() => {
     if (!onRowHover?.actionName) return undefined;
 
     return (rowIndex: number, row: any) => {
-      const evaluationContext = {
-        data: row,
-        rowIndex,
-        formData,
-        globalState,
-        setGlobalState,
-        http: httpClient,
-        moment,
-      };
+      const evaluationContext = { ...appContext, data: row, rowIndex };
 
       try {
         executeAction({
@@ -373,21 +332,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row hover action:', error);
       }
     };
-  }, [onRowHover, formData, globalState, httpClient]);
+  }, [onRowHover, appContext.contexts.lastUpdate, httpClient]);
 
 
   const handleSelectionChange = useMemo(() => {
     if (!onSelectionChange?.actionName) return undefined;
 
     return (selectedIds: string[]) => {
-      const evaluationContext = {
-        selectedIds,
-        formData,
-        globalState,
-        setGlobalState,
-        http: httpClient,
-        moment,
-      };
+      const evaluationContext = { ...appContext, selectedIds };
 
       try {
         executeAction({
@@ -398,7 +350,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing selection change action:', error);
       }
     };
-  }, [onSelectionChange, formData, globalState, httpClient]);
+  }, [onSelectionChange, appContext.contexts.lastUpdate, httpClient]);
 
   const combinedDblClickHandler = useMemo(() => {
     return (rowData: any, rowIndex: number) => {
@@ -445,8 +397,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const result: RowDataInitializer = props.onNewRowInitialize
       ? () => {
         // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
-        // return onNewRowInitializeExecuter(formData, globalState);
-        const result = onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData);
+        // return onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData);
+        const result = executeScriptSync(props.onNewRowInitialize, appContext) as object;
         return Promise.resolve(result);
       }
       : () => {
@@ -454,14 +406,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       };
 
     return result;
-  }, [onNewRowInitializeExecuter, formData, globalState]);
+  }, [onNewRowInitializeExecuter, appContext.contexts.lastUpdate]);
 
   const evaluateYesNoInheritJs = (
     value: YesNoInheritJs,
     jsExpression: string,
-    formMode: FormMode,
-    formData: any,
-    globalState: IAnyObject,
   ): boolean => {
     switch (value) {
       case 'yes':
@@ -469,16 +418,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       case 'no':
         return false;
       case 'inherit':
-        return formMode === 'edit';
+        return appContext.form.formMode === 'edit';
       case 'js': {
         return (
           jsExpression &&
-          executeScriptSync<boolean>(jsExpression, {
-            formData: formData,
-            globalState: globalState,
-            moment: moment,
-            application: appContextData,
-          })
+          executeScriptSync<boolean>(jsExpression, { ...appContext, formData: appContext.data })
         );
       }
     }
@@ -490,27 +434,21 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       canDelete: evaluateYesNoInheritJs(
         props.canDeleteInline,
         props.canDeleteInlineExpression,
-        formMode,
-        formData,
-        globalState,
       ),
       canEdit: evaluateYesNoInheritJs(
         props.canEditInline,
         props.canEditInlineExpression,
-        formMode,
-        formData,
-        globalState,
       ),
       inlineEditMode,
-      formMode,
-      canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
+      formMode: appContext.form.formMode,
+      canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression),
       onNewRowInitialize,
     };
     return {
       ...result,
       enabled: result.canAdd || result.canDelete || result.canEdit,
     };
-  }, [props.canDeleteInline, inlineEditMode, props.canEditInline, props.canAddInline, formMode, formData, globalState]);
+  }, [props.canDeleteInline, inlineEditMode, props.canEditInline, props.canAddInline, appContext.contexts.lastUpdate]);
 
   const preparedColumns = useMemo<Column<any>[]>(() => {
     const localPreparedColumns = columns
@@ -573,32 +511,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const defaultSorting =
     sortMode === 'standard' ? userSorting?.map<SortingRule<string>>((c) => ({ id: c.id, desc: c.desc })) : undefined;
 
-  // http, moment
-  const performOnRowSave = useMemo<OnSaveHandler>(() => {
-    if (!onRowSave) return (data) => Promise.resolve(data);
-
-    const AsyncFunction = Object.getPrototypeOf(async function () { /* noop */ }).constructor;
-    const executer = new AsyncFunction('data, form, globalState, http, moment, application', onRowSave);
-    return (data, formApi, globalState) => {
-      return executer(data, formApi, globalState, httpClient, moment, appContextData);
-    };
-  }, [onRowSave, httpClient, appContextData]);
-
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowSaveSuccess)
       return () => {
         /* nop*/
       };
 
-    return (data, formApi, globalState, setGlobalState) => {
-      const evaluationContext = {
-        data,
-        formApi,
-        globalState,
-        setGlobalState,
-        http: httpClient,
-        moment,
-      };
+    return (data) => {
+      const evaluationContext = { ...appContext, data };
       // execute the action
       executeAction({
         actionConfiguration: onRowSaveSuccess,
@@ -611,7 +531,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, formApi, globalState).then((preparedData) => {
+    return executeScript(onRowSave, { ...appContext, data: rowData }).then((preparedData: object) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
@@ -619,7 +539,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
         setRowData(rowIndex, preparedData /* , response*/);
-        performOnRowSaveSuccess(preparedData, formApi, globalState, setGlobalState);
+        performOnRowSaveSuccess(preparedData);
         return response;
       });
     });
@@ -629,7 +549,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, formApi, globalState).then((preparedData) => {
+    return executeScript(onRowSave, { ...appContext, data: rowData }).then((preparedData: object) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customCreateUrl } as ICreateOptions)
@@ -637,7 +557,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
       return repository.performCreate(0, preparedData, options).then(() => {
         store.refreshTable();
-        performOnRowSaveSuccess(preparedData, formApi, globalState, setGlobalState);
+        performOnRowSaveSuccess(preparedData);
       });
     });
   };
@@ -647,15 +567,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       return () => {
         /* nop*/
       };
-    return (data, formApi, globalState, setGlobalState) => {
-      const evaluationContext = {
-        data,
-        formApi,
-        globalState,
-        setGlobalState,
-        http: httpClient,
-        moment,
-      };
+    return (data) => {
+      const evaluationContext = { ...appContext, data };
       try {
         executeAction({
           actionConfiguration: onRowDeleteSuccessAction,
@@ -678,7 +591,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         : undefined;
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
-      performOnRowDeleteSuccessAction(rowData, formApi, globalState, setGlobalState);
+      performOnRowDeleteSuccessAction(rowData);
       store.refreshTable();
     });
   };
@@ -882,14 +795,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           allData: oldData,
         };
 
-        const evaluationContext = {
-          data: beforeArgs,
-          formData,
-          globalState,
-          setGlobalState,
-          http: httpClient,
-          moment,
-        };
+        const evaluationContext = { ...appContext, data: beforeArgs };
 
         executeAction({
           actionConfiguration: {
@@ -931,14 +837,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             response: apiResponse,
           };
 
-          const evaluationContext = {
-            data: afterArgs,
-            formData,
-            globalState,
-            setGlobalState,
-            http: httpClient,
-            moment,
-          };
+          const evaluationContext = { ...appContext, data: afterArgs };
 
           // Execute the after event action
           await executeAction({

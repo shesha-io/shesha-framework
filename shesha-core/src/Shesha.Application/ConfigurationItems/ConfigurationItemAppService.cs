@@ -1,5 +1,7 @@
 ﻿using Abp.Authorization;
+using Abp.Domain.Entities;
 using Abp.Events.Bus;
+using Azure.Core;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Dtos;
 using Shesha.ConfigurationItems.Events;
@@ -39,10 +41,13 @@ namespace Shesha.ConfigurationItems
 
             var resolvedItem = await manager.ResolveItemAsync(input.Module, input.Name);
 
-            var hasAccess = await manager.CurrentUserHasAccessToAsync(input.Module, input.Name);
-            if (!hasAccess)
-                throw new AbpAuthorizationException("You are not authorized to access the requested configuration.");
+            if (resolvedItem == null)
+                throw new EntityNotFoundException($"Requested configuration not found ({input.ItemType} - {input.Module}: {input.Name})");
 
+            var hasAccess = await manager.CurrentUserHasAccessToAsync(resolvedItem.Module?.Name ?? string.Empty, resolvedItem.Name);
+            if (!hasAccess)
+                throw new AbpAuthorizationException($"You are not authorized to access the requested configuration ({resolvedItem.ItemType} - {resolvedItem.Module?.Name}: {resolvedItem.Name}).");
+            
             var dto = await manager.MapToDtoAsync(resolvedItem);
 
             var cacheMd5 = await manager.GetCacheMD5Async(dto);
@@ -70,9 +75,12 @@ namespace Shesha.ConfigurationItems
 
             var item = await manager.GetAsync(input.Id);
 
+            if (item == null)
+                throw new EntityNotFoundException($"Requested configuration not found ({input.ItemType} - {input.Id})");
+
             var hasAccess = await manager.CurrentUserHasAccessToAsync(item.Module?.Name ?? string.Empty, item.Name);
             if (!hasAccess)
-                throw new AbpAuthorizationException("You are not authorized to access the requested configuration.");
+                throw new AbpAuthorizationException($"You are not authorized to access the requested configuration ({item.ItemType} - {item.Module?.Name}: {item.Name}).");
 
             var dto = await manager.MapToDtoAsync(item);
 

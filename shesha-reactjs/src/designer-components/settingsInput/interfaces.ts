@@ -376,6 +376,7 @@ export interface IItemListConfiguratorModalSettingsInputProps extends ISettingsI
   buttonTextReadOnly?: string;
   modalSettings?: IItemListConfiguratorModalProps<any>['modalSettings'];
   modalReadonlySettings?: IItemListConfiguratorModalProps<any>['modalSettings'];
+  settings?: FormMarkup;
   settingsMarkupFactory?: FormMarkup;
 }
 export const isItemListConfiguratorModalProps = (value: ISettingsInputBase): value is IItemListConfiguratorModalSettingsInputProps => value.type === 'itemListConfiguratorModal';
@@ -450,6 +451,12 @@ export interface ITooltipSettingsInputProps extends ISettingsInputBase {
 }
 export const isTooltipProps = (value: ISettingsInputBase): value is ITooltipSettingsInputProps => value.type === 'tooltip';
 
+// Layer Selector Settings Modal
+export interface ILayerSelectorSettingsInputProps extends ISettingsInputBase {
+  type: 'layerSelectorSettingsModal';
+  settings?: FormMarkup;
+}
+
 // Common styling props that can be applied to multiple components
 export interface ICommonStylingProps {
   variant?: 'borderless' | 'filled' | 'outlined';
@@ -500,7 +507,8 @@ export type BaseInputProps =
   IFormAutocompleteSettingsInputProps |
   ICustomLabelValueEditorSettingsInputProps |
   IKeyInformationBarColumnsInputProps |
-  ISizableColumnsConfigSettingsInputProps;
+  ISizableColumnsConfigSettingsInputProps |
+  ILayerSelectorSettingsInputProps;
 
 export type InputTypes = BaseInputProps['type'];
 
