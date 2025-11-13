@@ -19,13 +19,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
 
-  // Computed values for direct use (no CSS variables)
   const thumbnailWidth = layout ? (width ?? '54px') : '100%';
   const thumbnailHeight = layout ? (height ?? '54px') : '100%';
   const gapValue = gap ?? '8px';
   const fontSizeValue = fontSize ?? '14px';
   const fontWeightValue = fontWeight ?? '400';
   const fontFamilyValue = fontFamily ?? 'Segoe UI';
+  const downloadZipBtnHeight = model.downloadZip ? '32px' : '0px';
 
   const borderRadius = [
     borderTopRightRadius ?? allRadius ?? '8px',
@@ -285,10 +285,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       flex-direction: column !important;
       flex-wrap: nowrap !important;
       padding: 2px ${borderWidth ?? '2px'} !important;
-      ${containerHeight ? `height: calc(${containerHeight} - ${model.downloadZip ? "32px" : "0px"}) !important;` : ''}
+      ${containerHeight ? `height: calc(${containerHeight} - ${downloadZipBtnHeight}) !important;` : ''}
       width: 100% !important;
-      ${containerMaxHeight ? `max-height: calc(${containerMaxHeight} - ${model.downloadZip ? "32px" : "0px"}) !important;` : ''}
-      ${containerMinHeight ? `min-height: calc(${containerMinHeight} - 32px) !important;` : ''}
+      ${containerMaxHeight ? `max-height: calc(${containerMaxHeight} - ${downloadZipBtnHeight}) !important;` : ''}
+      ${containerMinHeight ? `min-height: calc(${containerMinHeight} - ${downloadZipBtnHeight}) !important;` : ''}
     }
 
     .stored-files-renderer-btn-container {
@@ -324,9 +324,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       align-content: flex-start;
       flex-direction: row !important;
       padding: 2px;
-      ${containerHeight ? `height: calc(${containerHeight} - ${model.downloadZip ? "32px" : "0px"}) !important;` : ''}
+      ${containerHeight ? `height: calc(${containerHeight} - ${downloadZipBtnHeight}) !important;` : ''}
       ${containerWidth ? `width: ${containerWidth} !important;` : ''}
-      ${containerMaxHeight ? `max-height: calc(${containerMaxHeight} - ${model.downloadZip ? "32px" : "0px"}) !important;` : ''}
+      ${containerMaxHeight ? `max-height: calc(${containerMaxHeight} - ${downloadZipBtnHeight}) !important;` : ''}
       ${containerMaxWidth ? `max-width: ${containerMaxWidth} !important;` : ''}
       ${containerMinHeight ? `min-height: ${containerMinHeight} !important;` : ''}
       ${containerMinWidth ? `min-width: ${containerMinWidth} !important;` : ''}
