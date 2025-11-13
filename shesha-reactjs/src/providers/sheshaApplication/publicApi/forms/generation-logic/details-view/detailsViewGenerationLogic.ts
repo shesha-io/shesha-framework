@@ -213,7 +213,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
     if (entities.length > 0) {
       builder.addTabs({
         id: nanoid(),
-        tabType: "line",
+        tabType: "card",
         propertyName: "childTables",
         label: "Child Tables",
         editMode: 'inherited' as EditMode,
@@ -239,9 +239,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             version: 1,
           });
 
-          const childTableBuilder = this.getFormBuilder({});
+          const childTableContainerBuilder = this.getFormBuilder({});
 
-          childTableBuilder.addContainer({
+          childTableContainerBuilder.addContainer({
             id: nanoid(),
             propertyName: "childTableContainer",
             editMode: 'editable' as EditMode,
@@ -249,6 +249,10 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'right',
+            isDynamic: false,
+            desktop: {
+              stylingBox: '{"marginBottom":"14","marginRight":"14"}',
+            },
             components: childTableAccessoriesBuilder.toJson(),
           });
 
@@ -290,7 +294,8 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
           const dataTableName = `childTable${index + 1}`;
 
-          childTableBuilder.addDatatable({
+          const datatableBuilder = this.getFormBuilder({});
+          datatableBuilder.addDatatable({
             id: nanoid(),
             propertyName: dataTableName,
             componentName: dataTableName,
@@ -309,6 +314,11 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               ...columns,
             ],
           });
+
+          const contextComponents = [
+            ...childTableContainerBuilder.toJson(),
+            ...datatableBuilder.toJson(),
+          ];
 
           const childTableContextBuilder = this.getFormBuilder({});
           childTableContextBuilder.addDatatableContext({
@@ -344,7 +354,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               ],
             },
             entityType: extensionJson.childTablesList[index] || '',
-            components: childTableBuilder.toJson(),
+            components: contextComponents,
           });
 
           return {
