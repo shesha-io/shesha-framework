@@ -4,6 +4,7 @@ import { evaluateString } from "@/providers/form/utils";
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { DataTypes } from "@/interfaces/dataTypes";
 import { nanoid } from "@/utils/uuid";
+import { IFieldComponentProps, standardCellComponentTypes } from "@/providers/datatableColumnsConfigurator/models";
 import {
   COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y,
   COLUMN_WIDTH_BOOLEAN, COLUMN_WIDTH_DATE, COLUMN_WIDTH_DEFAULT,
@@ -90,6 +91,49 @@ export function processBaseMarkup(markup: string, replacements: Record<string, a
   return evaluateString(markup, replacements, true);
 }
 
+/**
+ * Gets the appropriate edit/create component type for a datatable column based on property data type
+ * @param dataType The data type of the property
+ * @param dataFormat Optional data format (e.g., 'multiline' for strings)
+ * @param entityType Optional entity type for entity references
+ * @param referenceListName Optional reference list name for reference list items
+ * @param referenceListModule Optional reference list module for reference list items
+ * @returns The field component configuration for edit/create modes
+ */
+export function getEditComponentByDataType(
+  dataType: string | null | undefined,
+  dataFormat?: string | null,
+): IFieldComponentProps {
+  switch (dataType) {
+    case DataTypes.string:
+      return dataFormat === 'multiline'
+        ? { type: 'textArea' }
+        : { type: 'textField' };
+
+    case DataTypes.number:
+      return { type: 'numberField' };
+
+    case DataTypes.boolean:
+      return { type: 'checkbox' };
+
+    case DataTypes.date:
+    case DataTypes.dateTime:
+      return { type: 'dateField' };
+
+    case DataTypes.time:
+      return { type: 'timePicker' };
+
+    case DataTypes.entityReference:
+      return { type: 'autocomplete' };
+
+    case DataTypes.referenceListItem: ;
+      return { type: 'dropdown' };
+
+    default:
+      return { type: standardCellComponentTypes.notEditable };
+  }
+}
+
 export function getDataTypePriority(dataType: string | null | undefined, dataFormat?: string | null): number {
   if (!dataType) return 99;
 
@@ -167,11 +211,11 @@ export function addDetailsPanel(
   metadata: PropertyMetadataDto[],
   markup: unknown,
   metadataHelper: FormMetadataHelper,
+  formBuilderFactory: () => DesignerToolbarSettings<any>,
 ): void {
   const placeholderName = "//*DETAILSPANEL*//";
 
-  const builder = new DesignerToolbarSettings({});
-
+  const builder = formBuilderFactory();
   const detailsPanelContainer = findContainersWithPlaceholder(markup, placeholderName);
 
   if (detailsPanelContainer.length === 0) {
@@ -196,7 +240,7 @@ export function addDetailsPanel(
   const column2: IConfigurableFormComponent[] = [];
   if (sortedMetadata.length > ROW_COUNT) {
     sortedMetadata.forEach((prop, index) => {
-      const columnBuilder = new DesignerToolbarSettings({});
+      const columnBuilder = formBuilderFactory();
       metadataHelper.getConfigFields(prop, columnBuilder);
 
       if (index % 2 === 0) {

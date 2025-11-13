@@ -1,0 +1,358 @@
+{
+    "components": [
+        {
+            "id": "XmSrjtCYoqqvNDPkj8L1g0UOdRNPlo",
+            "type": "datatableContext",
+            "propertyName": "dataTableContext2",
+            "componentName": "dataTableContext2",
+            "label": "DataTable Context2",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 7,
+            "sourceType": "Entity",
+            "defaultPageSize": 10,
+            "dataFetchingMode": "paging",
+            "sortMode": "standard",
+            "strictSortOrder": "asc",
+            "allowReordering": "no",
+            "entityType": "Shesha.Core.OrganisationPerson",
+            "components": [
+                {
+                    "id": "7iZTk1lRg9a7Uo4rpcS14o__mkymIn",
+                    "type": "datatable",
+                    "propertyName": "dataTable4",
+                    "componentName": "dataTable4",
+                    "label": "Data Table4",
+                    "labelAlign": "right",
+                    "parentId": "XmSrjtCYoqqvNDPkj8L1g0UOdRNPlo",
+                    "hidden": false,
+                    "isDynamic": false,
+                    "items": [
+                        {
+                            "id": "_MBwOL7Oe0SBGDkb3mW_xJQ6PhdxBH",
+                            "itemType": "item",
+                            "sortOrder": 0,
+                            "caption": "Column 1",
+                            "minWidth": 100,
+                            "columnType": "crud-operations",
+                            "isVisible": true,
+                            "propertyName": "",
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "[not-editable]"
+                            },
+                            "createComponent": {
+                                "type": "[not-editable]"
+                            },
+                            "allowSorting": true
+                        },
+                        {
+                            "id": "y40_4x4_upHdudQyYehKZzzW_QIlRG",
+                            "itemType": "item",
+                            "sortOrder": 1,
+                            "caption": "Organisation",
+                            "minWidth": 100,
+                            "columnType": "data",
+                            "isVisible": true,
+                            "propertyName": "organisation",
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "autocomplete",
+                                "settings": {
+                                    "id": "NiNd3BNV3F9_76yMFSh-6Rx8CgF5lU",
+                                    "type": "autocomplete",
+                                    "propertyName": "editor",
+                                    "hidden": false,
+                                    "isDynamic": false,
+                                    "version": 8,
+                                    "dataSourceType": "entitiesList",
+                                    "useRawValues": false,
+                                    "mode": "single",
+                                    "entityType": "Shesha.Core.Organisation",
+                                    "valueFormat": "entityReference",
+                                    "enableStyleOnReadonly": false
+                                }
+                            },
+                            "createComponent": {
+                                "type": "autocomplete",
+                                "settings": {
+                                    "id": "bbRT0y21nGqAB6vSVrz2Adf4I5sO82",
+                                    "type": "autocomplete",
+                                    "propertyName": "editor",
+                                    "hidden": false,
+                                    "isDynamic": false,
+                                    "version": 8,
+                                    "dataSourceType": "entitiesList",
+                                    "useRawValues": false,
+                                    "mode": "single",
+                                    "entityType": "Shesha.Core.Organisation",
+                                    "valueFormat": "entityReference",
+                                    "enableStyleOnReadonly": false
+                                }
+                            },
+                            "allowSorting": true,
+                            "description": null
+                        }
+                    ],
+                    "version": 11,
+                    "useMultiselect": false,
+                    "crud": false,
+                    "flexibleHeight": false,
+                    "canEditInline": "yes",
+                    "inlineEditMode": "one-by-one",
+                    "inlineSaveMode": "manual",
+                    "canAddInline": "yes",
+                    "newRowCapturePosition": "top",
+                    "newRowInsertPosition": "top",
+                    "canDeleteInline": "yes",
+                    "onRowSaveSuccessAction": null,
+                    "noDataText": "No Data",
+                    "noDataSecondaryText": "No data is available for this table"
+                }
+            ],
+            "permanentFilter": {
+                "and": [
+                    {
+                        "==": [
+                            {
+                                "var": "person"
+                            },
+                            {
+                                "evaluate": [
+                                    {
+                                        "expression": "{{data.id}}",
+                                        "required": true,
+                                        "type": "mustache"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "GiLKogfqYUvxisgtBvZyhSLdaiH5ae",
+            "propertyName": "childTableContext",
+            "editMode": "inherited",
+            "hideLabel": true,
+            "hidden": false,
+            "componentName": "childTableContext",
+            "sourceType": "Entity",
+            "dataFetchingMode": "paging",
+            "defaultPageSize": 5,
+            "sortMode": "standard",
+            "permanentFilter": {
+                "and": [
+                    {
+                        "==": [
+                            {
+                                "var": "person"
+                            },
+                            {
+                                "evaluate": [
+                                    {
+                                        "expression": "{{data.id}}",
+                                        "required": true,
+                                        "type": "mustache"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "entityType": "Shesha.Core.OrganisationPerson",
+            "components": [
+                {
+                    "id": "7UKVP-4DLAMnVd_RbAtr3R70336ebQ",
+                    "propertyName": "childTableContainer",
+                    "editMode": "editable",
+                    "componentName": "childTableContainer",
+                    "display": "flex",
+                    "alignItems": "flex-end",
+                    "justifyContent": "right",
+                    "components": [
+                        {
+                            "id": "duTl6F8dFQwg3jJbjnebW6AAdQXyOt",
+                            "componentName": "childTableQuickSearch",
+                            "propertyName": "childTableQuickSearch",
+                            "version": 3,
+                            "type": "datatable.quickSearch",
+                            "parentId": "7UKVP-4DLAMnVd_RbAtr3R70336ebQ",
+                            "enableStyleOnReadonly": false
+                        },
+                        {
+                            "id": "V0hgqFWiWvfE2v9p0AvaIvCxaZVJc3",
+                            "propertyName": "childTablePager",
+                            "componentName": "childTablePager",
+                            "label": "Child Table Pager",
+                            "version": 4,
+                            "type": "datatable.pager",
+                            "parentId": "7UKVP-4DLAMnVd_RbAtr3R70336ebQ",
+                            "enableStyleOnReadonly": false
+                        }
+                    ],
+                    "isDynamic": true,
+                    "type": "container",
+                    "version": "latest",
+                    "parentId": "GiLKogfqYUvxisgtBvZyhSLdaiH5ae"
+                },
+                {
+                    "id": "cC3yfrRRtMhluaqeVVZJ6Igca0hvnr",
+                    "type": "datatable",
+                    "propertyName": "dataTable3",
+                    "componentName": "dataTable3",
+                    "label": "Data Table3",
+                    "labelAlign": "right",
+                    "parentId": "GiLKogfqYUvxisgtBvZyhSLdaiH5ae",
+                    "hidden": false,
+                    "isDynamic": false,
+                    "items": [
+                        {
+                            "id": "J0guzZs5J579rMsFPkYp4Astr4PpaQ",
+                            "itemType": "item",
+                            "sortOrder": 0,
+                            "caption": "Column 1",
+                            "minWidth": 100,
+                            "columnType": "crud-operations",
+                            "isVisible": true,
+                            "propertyName": "",
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "[not-editable]"
+                            },
+                            "createComponent": {
+                                "type": "[not-editable]"
+                            },
+                            "allowSorting": true
+                        },
+                        {
+                            "id": "YrQvY1BH2rV3KgAUHuLwHKToSwaHW7",
+                            "itemType": "item",
+                            "sortOrder": 1,
+                            "caption": "Organisation",
+                            "minWidth": 100,
+                            "columnType": "data",
+                            "isVisible": true,
+                            "propertyName": "organisation",
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "autocomplete",
+                                "settings": {
+                                    "id": "OOumO5Ig-U2kpME8UT87iPRS0npBrl",
+                                    "type": "autocomplete",
+                                    "propertyName": "editor",
+                                    "hidden": false,
+                                    "isDynamic": false,
+                                    "version": 8,
+                                    "dataSourceType": "entitiesList",
+                                    "useRawValues": false,
+                                    "mode": "single",
+                                    "entityType": "Shesha.Core.Organisation",
+                                    "valueFormat": "entityReference",
+                                    "enableStyleOnReadonly": false
+                                }
+                            },
+                            "createComponent": {
+                                "type": "autocomplete",
+                                "settings": {
+                                    "id": "iJ0t5vs6fodw-HLsrhmAWSVGnqIDl7",
+                                    "type": "autocomplete",
+                                    "propertyName": "editor",
+                                    "hidden": false,
+                                    "isDynamic": false,
+                                    "version": 8,
+                                    "dataSourceType": "entitiesList",
+                                    "useRawValues": false,
+                                    "mode": "single",
+                                    "entityType": "Shesha.Core.Organisation",
+                                    "valueFormat": "entityReference",
+                                    "enableStyleOnReadonly": false
+                                }
+                            },
+                            "allowSorting": true,
+                            "description": null
+                        }
+                    ],
+                    "version": 11,
+                    "useMultiselect": false,
+                    "crud": false,
+                    "flexibleHeight": false,
+                    "canEditInline": "yes",
+                    "inlineEditMode": "one-by-one",
+                    "inlineSaveMode": "manual",
+                    "canAddInline": "yes",
+                    "newRowCapturePosition": "top",
+                    "newRowInsertPosition": "top",
+                    "canDeleteInline": "yes",
+                    "onRowSaveSuccessAction": null,
+                    "noDataText": "No Data",
+                    "noDataSecondaryText": "No data is available for this table"
+                }
+            ],
+            "type": "datatableContext",
+            "version": "latest",
+            "parentId": "root"
+        }
+    ],
+    "formSettings": {
+        "_formFields": [
+            "modelType",
+            "postUrl",
+            "putUrl",
+            "deleteUrl",
+            "getUrl",
+            "layout",
+            "colon",
+            "labelCol.span",
+            "wrapperCol.span",
+            "showModeToggler"
+        ],
+        "layout": "horizontal",
+        "colon": true,
+        "labelCol": {
+            "span": 6
+        },
+        "wrapperCol": {
+            "span": 18
+        },
+        "modelType": "Shesha.Core.Person",
+        "showModeToggler": true,
+        "uniqueFormId": "",
+        "access": 3,
+        "permissions": [],
+        "version": 7,
+        "dataLoaderType": "gql",
+        "dataSubmitterType": "gql",
+        "onBeforeDataLoad": "    form.setFieldsValue({ ...form.formArguments });",
+        "onAfterDataLoad": null,
+        "onPrepareSubmitData": null,
+        "onBeforeSubmit": null,
+        "onSubmitSuccess": null,
+        "onSubmitFailed": null,
+        "dataSubmittersSettings": {
+            "gql": {
+                "endpointType": "default",
+                "dynamicEndpoint": "    return data?.id ? form.defaultApiEndpoints.update : form.defaultApiEndpoints.create",
+                "excludeFormFields": true
+            }
+        },
+        "dataLoadersSettings": {
+            "gql": {
+                "endpointType": "default"
+            },
+            "custom": {}
+        }
+    }
+}

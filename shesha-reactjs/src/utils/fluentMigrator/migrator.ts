@@ -11,9 +11,9 @@ export interface MigrationRegistration<TPrev = IHasVersion, TNext = IHasVersion>
   up: Migration<TPrev, TNext>;
 }
 
-export const isHasVersion = (value: any): value is IHasVersion  => {
+export const isHasVersion = (value: any): value is IHasVersion => {
   const version = (value as IHasVersion)?.version;
-  return version && (typeof(version) === 'number' || version === 'latest');
+  return version && (typeof (version) === 'number' || version === 'latest');
 };
 
 export interface IAddMigrationPayload<TModel = IHasVersion, TNext = IHasVersion> {
@@ -40,6 +40,11 @@ export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext =
     const fluent = new MigratorFluent<TNext, TDst, TContext>(this.migrator);
     return fluent;
   };
+
+  get lastVersion(): number | undefined {
+    const maxVersion = Math.max(...this.migrator.migrations.map((item) => item.version), -1);
+    return maxVersion === -1 ? undefined : maxVersion;
+  }
 }
 
 export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = any>

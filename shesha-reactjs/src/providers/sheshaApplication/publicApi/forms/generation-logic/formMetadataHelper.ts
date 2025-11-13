@@ -201,15 +201,6 @@ export class FormMetadataHelper {
         builder.addDropdown({
           ...commonProps,
           dataSourceType: 'referenceList',
-          border: {
-            hideBorder: false,
-            radiusType: 'all',
-            borderType: 'all',
-            border: {
-              all: { width: 1, style: 'solid', color: '#d9d9d9' },
-            },
-            radius: { all: 8 },
-          },
           referenceListName: property.referenceListName,
           referenceListId: {
             module: property.referenceListModule,

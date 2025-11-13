@@ -1,0 +1,706 @@
+{
+    "components": [
+        {
+            "id": "Ha6vJVIU5FJMy3a7ZPITvV69csKzoc",
+            "type": "datatableContext",
+            "propertyName": "dataTableContext3",
+            "componentName": "dataTableContext3",
+            "label": "DataTable Context3",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 7,
+            "sourceType": "Entity",
+            "defaultPageSize": 10,
+            "dataFetchingMode": "paging",
+            "sortMode": "standard",
+            "strictSortOrder": "asc",
+            "allowReordering": "no",
+            "entityType": "Shesha.Core.OrganisationPerson",
+            "components": [
+                {
+                    "id": "Xf0ke8Z5KkHhR5_PQf0F9L8wZOSprK",
+                    "type": "datatable",
+                    "propertyName": "dataTable3",
+                    "componentName": "dataTable3",
+                    "label": "Data Table3",
+                    "labelAlign": "right",
+                    "parentId": "Ha6vJVIU5FJMy3a7ZPITvV69csKzoc",
+                    "hidden": false,
+                    "isDynamic": false,
+                    "items": [
+                        {
+                            "id": "fJJ8XKZI2J4Pcd3KDLCychP9z8wSwo",
+                            "itemType": "item",
+                            "sortOrder": 0,
+                            "caption": "Column 1",
+                            "minWidth": 100,
+                            "columnType": "crud-operations",
+                            "isVisible": true,
+                            "propertyName": "",
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "[not-editable]"
+                            },
+                            "createComponent": {
+                                "type": "[not-editable]"
+                            },
+                            "allowSorting": true
+                        },
+                        {
+                            "id": "gWjytf8B5mWlNgPonW8zhWPKcp40FF",
+                            "itemType": "item",
+                            "sortOrder": 1,
+                            "caption": "Organisation",
+                            "minWidth": 100,
+                            "columnType": "data",
+                            "isVisible": true,
+                            "propertyName": "organisation",
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "autocomplete",
+                                "settings": {
+                                    "id": "ZgEDNbfS02c1S_b6RDCGS88bfyVu_W",
+                                    "type": "autocomplete",
+                                    "propertyName": "editor",
+                                    "hidden": false,
+                                    "isDynamic": false,
+                                    "version": 8,
+                                    "dataSourceType": "entitiesList",
+                                    "useRawValues": false,
+                                    "mode": "single",
+                                    "entityType": "Shesha.Core.Organisation",
+                                    "valueFormat": "entityReference",
+                                    "enableStyleOnReadonly": false
+                                }
+                            },
+                            "createComponent": {
+                                "type": "autocomplete",
+                                "settings": {
+                                    "id": "hfJanI0zYSZOioL6k7tfVqXpmTU4Jt",
+                                    "type": "autocomplete",
+                                    "propertyName": "editor",
+                                    "hidden": false,
+                                    "isDynamic": false,
+                                    "version": 8,
+                                    "dataSourceType": "entitiesList",
+                                    "useRawValues": false,
+                                    "mode": "single",
+                                    "entityType": "Shesha.Core.Organisation",
+                                    "valueFormat": "entityReference",
+                                    "enableStyleOnReadonly": false
+                                }
+                            },
+                            "allowSorting": true,
+                            "description": null
+                        }
+                    ],
+                    "version": 11,
+                    "useMultiselect": false,
+                    "crud": false,
+                    "flexibleHeight": false,
+                    "canEditInline": "yes",
+                    "inlineEditMode": "one-by-one",
+                    "inlineSaveMode": "manual",
+                    "canAddInline": "yes",
+                    "newRowCapturePosition": "top",
+                    "newRowInsertPosition": "top",
+                    "canDeleteInline": "yes",
+                    "onRowSaveSuccessAction": null,
+                    "noDataText": "No Data",
+                    "noDataSecondaryText": "No data is available for this table"
+                }
+            ]
+        },
+        {
+            "id": "Z5CWHQQqTlEzDLmASq0tuZhfzdXL6N",
+            "type": "datatableContext",
+            "propertyName": "dataTableContext2",
+            "componentName": "dataTableContext2",
+            "label": "DataTable Context2",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 7,
+            "sourceType": "Entity",
+            "defaultPageSize": 10,
+            "dataFetchingMode": "paging",
+            "sortMode": "standard",
+            "strictSortOrder": "asc",
+            "allowReordering": "no",
+            "entityType": "Shesha.Core.OrganisationPerson",
+            "components": [
+                {
+                    "id": "K5u4kdGIpv-R0K9NEOA2jdOb44jlzS",
+                    "propertyName": "childTable1",
+                    "componentName": "childTable1",
+                    "hidden": false,
+                    "isDynamic": false,
+                    "version": 11,
+                    "useMultiselect": false,
+                    "canAddInline": "yes",
+                    "canEditInline": "yes",
+                    "canDeleteInline": "yes",
+                    "inlineSaveMode": "manual",
+                    "inlineEditMode": "one-by-one",
+                    "newRowCapturePosition": "top",
+                    "newRowInsertPosition": "top",
+                    "onNewRowInitialize": "    return {\r\n        person: form.data?.id,\r\n    };",
+                    "items": [
+                        {
+                            "id": "uUHN5uhvT4BoMRSWLWlmhBtQ8cMjrL",
+                            "itemType": "item",
+                            "sortOrder": 8,
+                            "caption": "Column 9",
+                            "minWidth": 100,
+                            "columnType": "crud-operations",
+                            "isVisible": true,
+                            "propertyName": "",
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "[not-editable]"
+                            },
+                            "createComponent": {
+                                "type": "[not-editable]"
+                            },
+                            "allowSorting": true
+                        },
+                        {
+                            "id": "SWMLRh9EKY3S6W-fEFaIqyzoPhQQI8",
+                            "columnType": "data",
+                            "propertyName": "organisation",
+                            "caption": "Organisation",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 0,
+                            "itemType": "item",
+                            "minWidth": 180,
+                            "maxWidth": 250,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "autocomplete"
+                            },
+                            "createComponent": {
+                                "type": "autocomplete"
+                            }
+                        },
+                        {
+                            "id": "ANGUP47wix9bjEW5hgdzxW8ib4H-Lk",
+                            "columnType": "data",
+                            "propertyName": "person",
+                            "caption": "Person",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 1,
+                            "itemType": "item",
+                            "minWidth": 180,
+                            "maxWidth": 250,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "autocomplete"
+                            },
+                            "createComponent": {
+                                "type": "autocomplete"
+                            }
+                        },
+                        {
+                            "id": "uaC9KP4oqudY-M9ATPOrb3LowkMZqv",
+                            "columnType": "data",
+                            "propertyName": "description",
+                            "caption": "Description",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 2,
+                            "itemType": "item",
+                            "minWidth": 150,
+                            "maxWidth": 250,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "textField"
+                            },
+                            "createComponent": {
+                                "type": "textField"
+                            }
+                        },
+                        {
+                            "id": "M5OUvqumtbn4dwU1WUNeYX9lQ2Ea-L",
+                            "columnType": "data",
+                            "propertyName": "role",
+                            "caption": "Role",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 3,
+                            "itemType": "item",
+                            "minWidth": 150,
+                            "maxWidth": 200,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "dropdown"
+                            },
+                            "createComponent": {
+                                "type": "dropdown"
+                            }
+                        },
+                        {
+                            "id": "xhphNhUo-iBawF7_-hFimZu4bsCTzi",
+                            "columnType": "data",
+                            "propertyName": "inactive",
+                            "caption": "Inactive",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 4,
+                            "itemType": "item",
+                            "minWidth": 80,
+                            "maxWidth": 100,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "checkbox"
+                            },
+                            "createComponent": {
+                                "type": "checkbox"
+                            }
+                        },
+                        {
+                            "id": "pE9Z5AMPpLbXiH0QR4no86hQrYJTYT",
+                            "columnType": "data",
+                            "propertyName": "isPrimary",
+                            "caption": "Is Primary",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 5,
+                            "itemType": "item",
+                            "minWidth": 80,
+                            "maxWidth": 100,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "checkbox"
+                            },
+                            "createComponent": {
+                                "type": "checkbox"
+                            }
+                        },
+                        {
+                            "id": "bdFMCSLHmfgfyVO6YsDZdZ7pBBjWDS",
+                            "columnType": "data",
+                            "propertyName": "validFromDate",
+                            "caption": "Valid From Date",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 6,
+                            "itemType": "item",
+                            "minWidth": 120,
+                            "maxWidth": 180,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "dateField"
+                            },
+                            "createComponent": {
+                                "type": "dateField"
+                            }
+                        },
+                        {
+                            "id": "03m8tzb3Aoy9E_u1uF920IKGlEZUfN",
+                            "columnType": "data",
+                            "propertyName": "validToDate",
+                            "caption": "Valid To Date",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 7,
+                            "itemType": "item",
+                            "minWidth": 120,
+                            "maxWidth": 180,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "dateField"
+                            },
+                            "createComponent": {
+                                "type": "dateField"
+                            }
+                        }
+                    ],
+                    "type": "datatable",
+                    "parentId": "Z5CWHQQqTlEzDLmASq0tuZhfzdXL6N",
+                    "onRowSaveSuccessAction": null,
+                    "noDataText": "No Data",
+                    "noDataSecondaryText": "No data is available for this table"
+                }
+            ]
+        },
+        {
+            "id": "thwL3bz4UtoGeHeSd9Tpqnmyx2GyWI",
+            "propertyName": "childTableContext",
+            "componentName": "childTableContext",
+            "label": "Child Table Context",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 7,
+            "sourceType": "Entity",
+            "dataFetchingMode": "paging",
+            "defaultPageSize": 10,
+            "sortMode": "standard",
+            "strictSortOrder": "asc",
+            "allowReordering": "no",
+            "permanentFilter": {
+                "and": [
+                    {
+                        "==": [
+                            {
+                                "var": "person"
+                            },
+                            {
+                                "evaluate": [
+                                    {
+                                        "expression": "{{data.id}}",
+                                        "required": true,
+                                        "type": "mustache"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "entityType": "Shesha.Core.OrganisationPerson",
+            "components": [
+                {
+                    "id": "tFJ-fq8bd3fpyLMFo02S4U8ljPk5eU",
+                    "propertyName": "childTableContainer",
+                    "editMode": "editable",
+                    "componentName": "childTableContainer",
+                    "display": "flex",
+                    "alignItems": "flex-end",
+                    "justifyContent": "right",
+                    "components": [
+                        {
+                            "id": "8pXif62KCb4C9cEBbyP6wiwERJT-Au",
+                            "componentName": "childTableQuickSearch",
+                            "propertyName": "childTableQuickSearch",
+                            "version": 3,
+                            "type": "datatable.quickSearch",
+                            "parentId": "tFJ-fq8bd3fpyLMFo02S4U8ljPk5eU",
+                            "enableStyleOnReadonly": false
+                        },
+                        {
+                            "id": "RYFDKk1tMBQrNYAAI94GoBBC9HL7bm",
+                            "propertyName": "childTablePager",
+                            "componentName": "childTablePager",
+                            "label": "Child Table Pager",
+                            "version": 4,
+                            "type": "datatable.pager",
+                            "parentId": "tFJ-fq8bd3fpyLMFo02S4U8ljPk5eU",
+                            "enableStyleOnReadonly": false
+                        }
+                    ],
+                    "isDynamic": true,
+                    "type": "container",
+                    "version": "latest",
+                    "parentId": "thwL3bz4UtoGeHeSd9Tpqnmyx2GyWI"
+                },
+                {
+                    "id": "Ul_lqe1HMIBRJjVqexC7yiZARcSGaM",
+                    "propertyName": "childTable1",
+                    "componentName": "childTable1",
+                    "hidden": false,
+                    "isDynamic": false,
+                    "version": 11,
+                    "useMultiselect": false,
+                    "canAddInline": "yes",
+                    "canEditInline": "yes",
+                    "canDeleteInline": "yes",
+                    "inlineSaveMode": "manual",
+                    "inlineEditMode": "one-by-one",
+                    "newRowCapturePosition": "top",
+                    "newRowInsertPosition": "top",
+                    "onNewRowInitialize": "    return {\r\n        person: form.data?.id,\r\n    };",
+                    "items": [
+                        {
+                            "id": "uUHN5uhvT4BoMRSWLWlmhBtQ8cMjrL",
+                            "itemType": "item",
+                            "sortOrder": 8,
+                            "caption": "Column 9",
+                            "minWidth": 100,
+                            "columnType": "crud-operations",
+                            "isVisible": true,
+                            "propertyName": "",
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "[not-editable]"
+                            },
+                            "createComponent": {
+                                "type": "[not-editable]"
+                            },
+                            "allowSorting": true
+                        },
+                        {
+                            "id": "SWMLRh9EKY3S6W-fEFaIqyzoPhQQI8",
+                            "columnType": "data",
+                            "propertyName": "organisation",
+                            "caption": "Organisation",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 0,
+                            "itemType": "item",
+                            "minWidth": 180,
+                            "maxWidth": 250,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "autocomplete"
+                            },
+                            "createComponent": {
+                                "type": "autocomplete"
+                            }
+                        },
+                        {
+                            "id": "ANGUP47wix9bjEW5hgdzxW8ib4H-Lk",
+                            "columnType": "data",
+                            "propertyName": "person",
+                            "caption": "Person",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 1,
+                            "itemType": "item",
+                            "minWidth": 180,
+                            "maxWidth": 250,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "autocomplete"
+                            },
+                            "createComponent": {
+                                "type": "autocomplete"
+                            }
+                        },
+                        {
+                            "id": "uaC9KP4oqudY-M9ATPOrb3LowkMZqv",
+                            "columnType": "data",
+                            "propertyName": "description",
+                            "caption": "Description",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 2,
+                            "itemType": "item",
+                            "minWidth": 150,
+                            "maxWidth": 250,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "textField"
+                            },
+                            "createComponent": {
+                                "type": "textField"
+                            }
+                        },
+                        {
+                            "id": "M5OUvqumtbn4dwU1WUNeYX9lQ2Ea-L",
+                            "columnType": "data",
+                            "propertyName": "role",
+                            "caption": "Role",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 3,
+                            "itemType": "item",
+                            "minWidth": 150,
+                            "maxWidth": 200,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "dropdown"
+                            },
+                            "createComponent": {
+                                "type": "dropdown"
+                            }
+                        },
+                        {
+                            "id": "xhphNhUo-iBawF7_-hFimZu4bsCTzi",
+                            "columnType": "data",
+                            "propertyName": "inactive",
+                            "caption": "Inactive",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 4,
+                            "itemType": "item",
+                            "minWidth": 80,
+                            "maxWidth": 100,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "checkbox"
+                            },
+                            "createComponent": {
+                                "type": "checkbox"
+                            }
+                        },
+                        {
+                            "id": "pE9Z5AMPpLbXiH0QR4no86hQrYJTYT",
+                            "columnType": "data",
+                            "propertyName": "isPrimary",
+                            "caption": "Is Primary",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 5,
+                            "itemType": "item",
+                            "minWidth": 80,
+                            "maxWidth": 100,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "checkbox"
+                            },
+                            "createComponent": {
+                                "type": "checkbox"
+                            }
+                        },
+                        {
+                            "id": "bdFMCSLHmfgfyVO6YsDZdZ7pBBjWDS",
+                            "columnType": "data",
+                            "propertyName": "validFromDate",
+                            "caption": "Valid From Date",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 6,
+                            "itemType": "item",
+                            "minWidth": 120,
+                            "maxWidth": 180,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "dateField"
+                            },
+                            "createComponent": {
+                                "type": "dateField"
+                            }
+                        },
+                        {
+                            "id": "03m8tzb3Aoy9E_u1uF920IKGlEZUfN",
+                            "columnType": "data",
+                            "propertyName": "validToDate",
+                            "caption": "Valid To Date",
+                            "isVisible": true,
+                            "description": "",
+                            "sortOrder": 7,
+                            "itemType": "item",
+                            "minWidth": 120,
+                            "maxWidth": 180,
+                            "allowSorting": true,
+                            "displayComponent": {
+                                "type": "[default]"
+                            },
+                            "editComponent": {
+                                "type": "dateField"
+                            },
+                            "createComponent": {
+                                "type": "dateField"
+                            }
+                        }
+                    ],
+                    "type": "datatable",
+                    "parentId": "thwL3bz4UtoGeHeSd9Tpqnmyx2GyWI",
+                    "onRowSaveSuccessAction": null,
+                    "noDataText": "No Data",
+                    "noDataSecondaryText": "No data is available for this table"
+                }
+            ],
+            "type": "datatableContext"
+        }
+    ],
+    "formSettings": {
+        "_formFields": [
+            "modelType",
+            "postUrl",
+            "putUrl",
+            "deleteUrl",
+            "getUrl",
+            "layout",
+            "colon",
+            "labelCol.span",
+            "wrapperCol.span",
+            "showModeToggler"
+        ],
+        "layout": "horizontal",
+        "colon": true,
+        "labelCol": {
+            "span": 6
+        },
+        "wrapperCol": {
+            "span": 18
+        },
+        "modelType": "Shesha.Core.Person",
+        "showModeToggler": true,
+        "uniqueFormId": "",
+        "access": 3,
+        "permissions": [],
+        "version": 7,
+        "dataLoaderType": "gql",
+        "dataSubmitterType": "gql",
+        "onBeforeDataLoad": "    form.setFieldsValue({ ...form.formArguments });",
+        "onAfterDataLoad": null,
+        "onPrepareSubmitData": null,
+        "onBeforeSubmit": null,
+        "onSubmitSuccess": null,
+        "onSubmitFailed": null,
+        "dataSubmittersSettings": {
+            "gql": {
+                "endpointType": "default",
+                "dynamicEndpoint": "    return data?.id ? form.defaultApiEndpoints.update : form.defaultApiEndpoints.create",
+                "excludeFormFields": true
+            }
+        },
+        "dataLoadersSettings": {
+            "gql": {
+                "endpointType": "default"
+            },
+            "custom": {}
+        }
+    }
+}

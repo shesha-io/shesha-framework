@@ -1,11 +1,12 @@
 import { castToExtensionType, findContainersWithPlaceholder, getDataTypePriority, getColumnWidthByDataType, humanizeModelType } from "../viewGenerationUtils";
 import { FormMetadataHelper } from "../formMetadataHelper";
 import { PropertyMetadataDto } from "@/apis/metadata";
-import { DesignerToolbarSettings, IEntityMetadata } from "@/interfaces";
+import { IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { TableViewExtensionJson } from "../../models/TableViewExtensionJson";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
+import { IDataColumnsProps, standardCellComponentTypes } from "@/providers/datatableColumnsConfigurator/models";
 
 /**
  * Implements generation logic for table views.
@@ -58,7 +59,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
       throw new Error("No table filter container found in the markup.");
     }
 
-    const builder = new DesignerToolbarSettings({});
+    const builder = this.getFormBuilder({});
 
     builder.addTableViewSelector({
       id: nanoid(),
@@ -105,9 +106,9 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     });
 
     // Implementation for adding columns to the markup
-    const builder = new DesignerToolbarSettings({});
+    const builder = this.getFormBuilder({});
 
-    const dataTableName = `datatable ${nanoid()}`;
+    const dataTableName = `datatable1`;
     builder.addDatatable({
       id: nanoid(),
       propertyName: dataTableName,
@@ -128,7 +129,16 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
           minWidth: width.min,
           maxWidth: width.max,
           allowSorting: true,
-        };
+          displayComponent: {
+            type: standardCellComponentTypes.defaultDisplay
+          },
+          createComponent: {
+            type: standardCellComponentTypes.notEditable
+          },
+          editComponent: {
+            type: standardCellComponentTypes.notEditable
+          }
+        } as IDataColumnsProps;
       }),
     });
 
