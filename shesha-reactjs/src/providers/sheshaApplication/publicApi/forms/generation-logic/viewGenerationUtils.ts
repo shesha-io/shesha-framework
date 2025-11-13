@@ -167,10 +167,11 @@ export function addDetailsPanel(
   metadata: PropertyMetadataDto[],
   markup: unknown,
   metadataHelper: FormMetadataHelper,
+  formBuilderFactory: () => DesignerToolbarSettings,
 ): void {
   const placeholderName = "//*DETAILSPANEL*//";
 
-  const builder = new DesignerToolbarSettings({});
+  const builder = formBuilderFactory();
 
   const detailsPanelContainer = findContainersWithPlaceholder(markup, placeholderName);
 
@@ -196,7 +197,7 @@ export function addDetailsPanel(
   const column2: IConfigurableFormComponent[] = [];
   if (sortedMetadata.length > ROW_COUNT) {
     sortedMetadata.forEach((prop, index) => {
-      const columnBuilder = new DesignerToolbarSettings({});
+      const columnBuilder = formBuilderFactory();
       metadataHelper.getConfigFields(prop, columnBuilder);
 
       if (index % 2 === 0) {

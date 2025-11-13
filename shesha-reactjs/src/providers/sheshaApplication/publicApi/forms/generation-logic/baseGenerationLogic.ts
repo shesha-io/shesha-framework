@@ -4,9 +4,10 @@ import { FormMetadataHelper } from "./formMetadataHelper";
 import { GenerationLogic } from "./interface";
 import { processBaseMarkup } from "./viewGenerationUtils";
 import { PropertyMetadataDto } from "@/apis/metadata";
-import { IEntityMetadata } from "@/interfaces";
+import { DesignerToolbarSettings, IEntityMetadata } from "@/interfaces";
 import { IEntityTypeIndentifier } from "../../entities/models";
 import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
+import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
 
 /**
  * Abstract base class for generation logic implementations
@@ -87,4 +88,8 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
     metadataHelper: FormMetadataHelper,
     replacements?: object
   ): Promise<void>;
+
+  protected getFormBuilder<T extends object = object>(model?: T): DesignerToolbarSettings<T> {
+    return new DesignerToolbarSettings<T>(model, getComponentDefinitions());
+  }
 }

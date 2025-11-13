@@ -40,6 +40,11 @@ export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext =
     const fluent = new MigratorFluent<TNext, TDst, TContext>(this.migrator);
     return fluent;
   };
+
+  get lastVersion(): number | undefined {
+    const maxVersion = Math.max(...this.migrator.migrations.map((item) => item.version), -1);
+    return maxVersion === -1 ? undefined : maxVersion;
+  }
 }
 
 export class Migrator<TSrc = IHasVersion, TDst = IHasVersion, TContext = any>

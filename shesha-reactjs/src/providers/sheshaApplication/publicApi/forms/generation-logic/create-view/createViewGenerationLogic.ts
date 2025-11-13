@@ -26,7 +26,7 @@ export class CreateViewGenerationLogic extends BaseGenerationLogic {
     try {
       // Add details panel - using shared function
       // Using await with a Promise-wrapped function to satisfy the require-await rule
-      await Promise.resolve(addDetailsPanel(nonFrameworkProperties, markup, metadataHelper));
+      await Promise.resolve(addDetailsPanel(nonFrameworkProperties, markup, metadataHelper, () => this.getFormBuilder({})));
     } catch (error) {
       console.error("Error adding components to create view markup:", error);
       throw error;
