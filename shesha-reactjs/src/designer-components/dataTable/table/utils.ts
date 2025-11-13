@@ -85,17 +85,13 @@ export const SUPPORTED_COLUMN_DATA_TYPES = [
  * @param properties - Array of property metadata
  * @returns Filtered array of properties suitable for table columns
  */
-export const filterPropertiesForTable = (properties: IPropertyMetadata[], maxNumber: number = 0): IPropertyMetadata[] => {
-  let result = properties.filter((prop: IPropertyMetadata) => {
+export const filterPropertiesForTable = (properties: IPropertyMetadata[]): IPropertyMetadata[] => {
+  return properties.filter((prop: IPropertyMetadata) => {
     const columnName = prop.path || prop.columnName || '';
     const isAuditing = AUDITING_COLUMNS.includes(columnName.toLowerCase());
     const isFramework = prop.isFrameworkRelated === true;
     return !isAuditing && !isFramework;
   });
-  if (result.length > maxNumber && maxNumber > 0) {
-    result = result.slice(0, maxNumber);
-  }
-  return result;
 };
 
 /**
@@ -136,8 +132,14 @@ export const propertyToDataColumn = (property: IPropertyMetadata, index: number)
 
 /**
  * Calculates default columns for a DataTable
+ *
+ * Processing order:
+ * 1. Filter out auditing and framework-related properties
+ * 2. Filter by supported data types
+ * 3. Apply maxNumber limit (8) to the resulting valid columns
+ *
  * @param metadata - Model metadata containing properties
- * @returns Promise resolving to array of DataTable column configurations
+ * @returns Promise resolving to array of DataTable column configurations (max 8 valid columns)
  */
 export const calculateDefaultColumns = async (metadata: IModelMetadata): Promise<IDataColumnsProps[]> => {
   if (!metadata || !metadata.properties) {
@@ -166,10 +168,16 @@ export const calculateDefaultColumns = async (metadata: IModelMetadata): Promise
   }
 
   // Filter out auditing columns and framework-related properties
-  const filteredProperties = filterPropertiesForTable(properties, 8);
+  const filteredProperties = filterPropertiesForTable(properties);
 
-  // Get properties suitable for table columns
-  const tableColumns = filterPropertiesBySupportedTypes(filteredProperties);
+  // Get properties suitable for table columns (filter by supported types)
+  const supportedProperties = filterPropertiesBySupportedTypes(filteredProperties);
+
+  // Apply maxNumber limit to the list of supported properties
+  const maxNumber = 8;
+  const tableColumns = maxNumber > 0 && supportedProperties.length > maxNumber
+    ? supportedProperties.slice(0, maxNumber)
+    : supportedProperties;
 
   // Create IDataColumnsProps from filtered properties
   const columnItems: IDataColumnsProps[] = tableColumns.map(propertyToDataColumn);
