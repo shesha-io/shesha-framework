@@ -20,6 +20,7 @@ type MultiColorInputProps = {
 export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }: MultiColorInputProps): ReactElement => {
   const { theme } = useTheme();
   const [colors, setColors] = useState(value);
+  const directionInputId = React.useMemo(() => nanoid(), []);
 
   useEffect(() => {
     if (!value || Object.entries(value).length === 0) {
@@ -59,7 +60,7 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
 
       <InputRow inline={true} readOnly={readOnly}>
         <SettingInput
-          id={nanoid()}
+          id={directionInputId}
           propertyName={propertyName.replace('gradient.colors', 'gradient.direction')}
           label="Direction"
           hideLabel={true}
