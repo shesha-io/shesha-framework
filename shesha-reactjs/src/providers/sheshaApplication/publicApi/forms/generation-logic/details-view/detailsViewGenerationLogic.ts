@@ -266,7 +266,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             return priorityA - priorityB;
           });
 
-          const columns: IConfigurableColumnsProps[] = sortedProperties.map((prop, idx) => {
+          const columns = sortedProperties.map<IConfigurableColumnsProps>((prop, idx) => {
             // Get column width based on data type
             const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
 
@@ -282,15 +282,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               minWidth: width.min,
               maxWidth: width.max,
               allowSorting: true,
-              displayComponent: {
-                type: standardCellComponentTypes.defaultDisplay,
-              },
-              editComponent: {
-                type: standardCellComponentTypes.notEditable
-              },
-              createComponent: {
-                type: standardCellComponentTypes.notEditable
-              }
+              displayComponent: { type: standardCellComponentTypes.defaultDisplay },
+              editComponent: { type: standardCellComponentTypes.notEditable },
+              createComponent: { type: standardCellComponentTypes.notEditable },
             };
           });
           const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
