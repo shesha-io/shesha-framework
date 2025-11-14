@@ -1,11 +1,10 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
-import { Alert } from 'antd';
 import { DataList } from '@/components/dataList';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import classNames from 'classnames';
 import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
-import { useConfigurableAction, useConfigurableActionDispatcher, useHttpClient } from '@/providers';
+import { useConfigurableAction, useConfigurableActionDispatcher, useForm, useHttpClient } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 import { useStyles } from '@/components/dataList/styles/styles';
 import { useAvailableConstantsData } from '@/providers/form/utils';
@@ -14,8 +13,106 @@ import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { IFormApi } from '@/providers/form/formApi';
 
-export const NotConfiguredWarning: FC = () => {
-  return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
+export const NotConfiguredWarning: FC<{ message?: string }> = ({ message }) => {
+  const { theme } = useStyles();
+
+  // Show preview items that look like actual list items
+  const previewItems = [
+    { heading: 'List Item 1', subtext: 'Configure datasource to display items' },
+    { heading: 'List Item 2', subtext: 'Configure datasource to display items' },
+    { heading: 'List Item 3', subtext: 'Configure datasource to display items' },
+  ];
+
+  return (
+    <div
+      style={{
+        border: `2px dashed ${theme.colorWarning}`,
+        borderRadius: '8px',
+        padding: '16px',
+        backgroundColor: theme.colorWarningBg,
+      }}
+    >
+      {/* Warning header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          marginBottom: '16px',
+          paddingBottom: '12px',
+          borderBottom: `1px solid ${theme.colorWarningBorder}`,
+        }}
+      >
+        <div style={{ fontSize: '20px', color: theme.colorWarning }}>⚠️</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 600, fontSize: '14px', color: theme.colorText, marginBottom: '2px' }}>
+            Data Source Not Configured
+          </div>
+          <div style={{ fontSize: '12px', color: theme.colorText }}>
+            {message || "Please configure a data source for this DataList component"}
+          </div>
+        </div>
+      </div>
+
+      {/* Preview list items */}
+      <div style={{ opacity: 0.6 }}>
+        {previewItems.map((item, index) => (
+          <div
+            key={index}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '12px',
+              marginBottom: index < previewItems.length - 1 ? '8px' : '0',
+              backgroundColor: theme.colorBgContainer,
+              borderRadius: '6px',
+              border: `1px solid ${theme.colorWarningBorder}`,
+            }}
+          >
+            {/* Icon placeholder */}
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                backgroundColor: theme.colorFillTertiary,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                fontSize: '18px',
+                color: theme.colorTextQuaternary,
+              }}
+            >
+              👤
+            </div>
+            {/* Text content */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  color: theme.colorTextSecondary,
+                  marginBottom: '2px',
+                }}
+              >
+                {item.heading}
+              </div>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: theme.colorTextTertiary,
+                }}
+              >
+                {item.subtext}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export type OnSaveHandler = (data: object, formData: object, contexts: object, globalState: object) => Promise<object>;
@@ -66,7 +163,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
   const httpClient = useHttpClient();
   const allData = useAvailableConstantsData();
-  const isDesignMode = allData.form?.formMode === 'designer';
+  const { formMode } = useForm();
+  const isDesignMode = formMode === 'designer';
   const { executeAction } = useConfigurableActionDispatcher();
 
   const repository = getRepository();
@@ -180,12 +278,22 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   );
 
   const data = useDeepCompareMemo(() => {
-    return isDesignMode
-      ? orientation === 'vertical'
-        ? [{}]
-        : [{}, {}, {}, {}]
-      : tableData;
-  }, [isDesignMode, tableData, orientation]);
+    if (isDesignMode) {
+      // Provide sample data for design mode to show a realistic preview
+      const sampleData = {
+        id: '1',
+        name: 'Sample Item',
+        description: 'This is a sample description to demonstrate how your list items will look.',
+        status: 'Active',
+        creationTime: new Date().toISOString(),
+        lastModificationTime: new Date().toISOString(),
+      };
+      return props.orientation === 'vertical'
+        ? [sampleData]
+        : [sampleData, { ...sampleData, id: '2', name: 'Sample Item 2' }, { ...sampleData, id: '3', name: 'Sample Item 3' }, { ...sampleData, id: '4', name: 'Sample Item 4' }];
+    }
+    return tableData;
+  }, [isDesignMode, tableData, props.orientation]);
 
   // http, moment, setFormData
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
@@ -312,13 +420,32 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  if (isDesignMode &&
-    (
-      !repository ||
-      (!props.formId && props.formSelectionMode === "name") ||
-      (!props.formType && props.formSelectionMode === "view") ||
-      (!props.formIdExpression && props.formSelectionMode === "expression")
-    )) return <NotConfiguredWarning />;
+  // When there's no repository configured, don't render anything in runtime mode
+  if (!repository) {
+    // In runtime mode, don't render anything if datasource is not configured
+    if (!isDesignMode) {
+      return null;
+    }
+    // In design mode, show configuration warning
+    return <NotConfiguredWarning message="Please configure a data source for this data list" />;
+  }
+
+  // Form configuration validation - check for invalid configurations
+  const hasInvalidFormConfig =
+    (props.formSelectionMode === "name" && !props.formId) ||
+    (props.formSelectionMode === "view" && !props.formType) ||
+    (props.formSelectionMode === "expression" && !props.formIdExpression);
+
+  if (hasInvalidFormConfig) {
+    // In runtime mode, don't render anything if form configuration is invalid
+    if (!isDesignMode) {
+      return null;
+    }
+    // In design mode, show specific configuration warnings
+    if (props.formSelectionMode === "name" && !props.formId) return <NotConfiguredWarning message="Please select a form to display list items" />;
+    if (props.formSelectionMode === "view" && !props.formType) return <NotConfiguredWarning message="Please specify a form type" />;
+    if (props.formSelectionMode === "expression" && !props.formIdExpression) return <NotConfiguredWarning message="Please configure the form identifier expression" />;
+  }
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 

@@ -121,6 +121,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             parentId: dataTabId,
                             hidden: false,
                             jsSetting: true,
+                            width: '100%',
                           },
                         ],
                       })
@@ -153,6 +154,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             settingsValidationErrors: [],
                             jsSetting: true,
                             placeholder: '',
+                            width: '100%',
                           },
                         ],
                       })
@@ -268,6 +270,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                             jsSetting: false,
+                            width: '100%',
                           },
                         ],
                       })
