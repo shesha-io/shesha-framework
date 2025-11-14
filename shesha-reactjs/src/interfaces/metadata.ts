@@ -5,6 +5,12 @@ import { DataTypeInfo } from "@/providers/sheshaApplication/publicApi/entities/m
 import { isDefined } from "@/utils/nullables";
 import { ConfigurationDto } from "@/providers/configurationItemsLoader/models";
 
+export interface IEntityTypeIdentifierQueryParams {
+  name?: string | undefined;
+  module?: string | undefined;
+  fullClassName?: string | undefined;
+}
+
 export interface IMemberType {
   dataType: string;
   dataFormat?: string | null;
@@ -97,7 +103,14 @@ export interface ModelTypeIdentifier {
 }
 
 export interface IHasEntityType {
-  entityType: string; // TODO: split this property into two different (for objects and for entities) or rename existing
+  entityType?: string;
+  entityModule?: string | null;
+}
+
+export interface IHasFullEntityType {
+  fullClassName: string;
+
+  entityType: string;
   entityModule?: string | null;
 
   typeAccessor?: string;
@@ -152,7 +165,35 @@ export type PropertiesLoader = () => PropertiesPromise;
 
 export type NestedProperties = IPropertyMetadata[] | PropertiesLoader | null;
 
-export interface IPropertyMetadata extends IMemberMetadata {
+// Formatting interfaces
+
+export interface IHasDefaultEditor {
+  defaultEditor?: string | null;
+}
+
+export interface IHasFilter {
+  filter: object;
+}
+export const isHasFilter = (value: object | null | undefined): value is IHasFilter =>
+  value && "filter" in value && typeof (value.filter) === 'object' && !Array.isArray(value.filter) && value.filter !== null;
+
+export interface INumberFormatting {
+  showThousandsSeparator?: boolean;
+  customFormat?: string | null;
+}
+export const isHNumberFormatting = (value: object | null | undefined): value is INumberFormatting =>
+  value && ("showThousandsSeparator" in value || "customFormat" in value);
+
+export interface IDecimalFormatting extends INumberFormatting {
+  numDecimalPlaces?: number | null;
+  showAsPercentage?: boolean;
+}
+export const isDecimalFormatting = (value: object | null | undefined): value is IDecimalFormatting =>
+  value && ("numDecimalPlaces" in value || "showAsPercentage" in value);
+
+// -------
+
+export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
   containerType?: string;
   required?: boolean;
   readonly?: boolean;
@@ -184,7 +225,7 @@ export interface IPropertyMetadata extends IMemberMetadata {
   columnName?: string | null;
   createdInDb?: boolean;
   inheritedFromId?: string | null;
-  formatting?: any;
+  formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting);
 }
 
 export interface IArrayMetadata extends IMetadata {
@@ -267,7 +308,7 @@ export interface IObjectMetadata extends IMetadata, IContainerWithNestedProperti
 
 }
 
-export interface IEntityMetadata extends ConfigurationDto, Omit<IObjectMetadata, 'name' | 'description'>, IHasEntityType {
+export interface IEntityMetadata extends ConfigurationDto, Omit<IObjectMetadata, 'name' | 'description'>, IHasFullEntityType {
   md5?: string;
   changeTime?: Date;
   aliases?: string[];

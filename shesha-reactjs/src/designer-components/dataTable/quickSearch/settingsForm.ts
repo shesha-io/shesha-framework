@@ -25,7 +25,6 @@ export const getSettings = (data: object): FormRawMarkup =>
             propertyName: 'block',
             parentId: 'root',
             label: 'Block',
-            defaultValue: false,
           })
           .toJson(),
       },

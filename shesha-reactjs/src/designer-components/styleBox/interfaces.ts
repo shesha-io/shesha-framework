@@ -1,3 +1,4 @@
+import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IStyleBoxComponentProps extends IConfigurableFormComponent {
@@ -15,3 +16,5 @@ export interface IValue {
   padding?: IInputDirection;
   margin?: IInputDirection;
 }
+
+export type StyleBoxDefinition = IToolboxComponent<IStyleBoxComponentProps>;

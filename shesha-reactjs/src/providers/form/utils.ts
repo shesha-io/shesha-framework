@@ -74,7 +74,7 @@ import { useShaFormInstanceOrUndefined, useShaFormDataUpdate } from './providers
 import { QueryStringParams } from '@/utils/url';
 import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
 import { jsonSafeParse } from '@/utils/object';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getActualModel, getActualPropertyValue } from './utils/js-settings';
 import {
   executeScriptSync,
@@ -85,6 +85,7 @@ import {
   IExpressionExecuterArguments,
   IExpressionExecuterFailedHandler,
 } from './utils/scripts';
+import { findToolboxComponent, getToolboxComponent } from './utils/markup';
 
 export {
   // prop settings
@@ -144,7 +145,7 @@ export interface IApplicationContext<Value extends object = object> {
   /**
    * Function for testing
    */
-  test?: any;
+  test?: { getArguments: (args: Array<object> | object) => object[] };
 }
 
 export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
@@ -228,6 +229,23 @@ export type WrapConstantsDataArgs<TValues extends object = object> = GetAvailabl
 
 const EMPTY_DATA = {};
 
+const getArguments = (args: object[] | object): object[] => {
+  const fArgs = Array.isArray(args) && args.length === 1 ? args[0] : args;
+
+  if (fArgs && '_propAccessors' in fArgs && fArgs._propAccessors !== undefined) {
+    return Array.from(fArgs._propAccessors, ([name, accessor]: [string, () => object]) => {
+      const resolved = accessor();
+      const value = resolved && 'getData' in resolved && typeof resolved.getData === 'function'
+        ? resolved.getData()
+        : resolved;
+      return { [name]: value };
+    });
+  }
+
+  const values = Array.isArray(fArgs) ? fArgs : Object.values(fArgs ?? {});
+  return values.map((value: any) => (value && typeof value.getData === 'function' ? value.getData() : value));
+};
+
 export const wrapConstantsData = <TValues extends object = object>(args: WrapConstantsDataArgs<TValues>): ProxyPropertiesAccessors<IApplicationContext<TValues>> => {
   const { topContextId, shaForm, fullContext, queryStringGetter } = args;
   const { closestShaFormApi: closestShaForm,
@@ -273,6 +291,8 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     query: () => queryStringGetter?.() ?? {},
     initialValues: () => shaFormInstance?.initialValues,
     parentFormValues: () => shaFormInstance?.parentFormValues,
+    // don't delete this as is used for debug the proxied data from the form scripts
+    test: () => ({ getArguments }),
   };
   return accessors;
 };
@@ -971,21 +991,6 @@ export const evaluateValueAsString = (value: string, dictionary: object): string
   return evaluated ? evaluated.toString() : undefined;
 };
 
-export const findToolboxComponent = (
-  availableComponents: IToolboxComponentGroup[],
-  predicate: (component: IToolboxComponent) => boolean,
-): IToolboxComponent => {
-  if (availableComponents) {
-    for (const group of availableComponents) {
-      for (const component of group.components) {
-        if (predicate(component)) return component;
-      }
-    }
-  }
-
-  return null;
-};
-
 export const getComponentsFromMarkup = (markup: FormMarkup): IConfigurableFormComponent[] => {
   if (!markup) return [];
   return Array.isArray(markup)
@@ -1071,7 +1076,9 @@ export const processRecursive = (
 ): void => {
   func(component, parentId);
 
-  const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c?.type === component?.type);
+  if (isNullOrWhiteSpace(component?.type))
+    return;
+  const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c.type === component?.type);
   if (!toolboxComponent) return;
   const containers = getContainerNames(toolboxComponent);
 
@@ -1110,7 +1117,7 @@ export const cloneComponents = (
 
     result.push(clone);
 
-    const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c.type === component.type);
+    const toolboxComponent = getToolboxComponent(componentsRegistration, (c) => c.type === component.type);
     const containers = getContainerNames(toolboxComponent);
 
     if (containers) {
@@ -1132,7 +1139,7 @@ export const createComponentModelForDataProperty = (
   propertyMetadata: IPropertyMetadata,
   migrator?: (
     componentModel: IConfigurableFormComponent,
-    toolboxComponent: IToolboxComponent<any>
+    toolboxComponent: IToolboxComponent
   ) => IConfigurableFormComponent,
 ): IConfigurableFormComponent => {
   let toolboxComponent = findToolboxComponent(components, (c) => c.type === propertyMetadata.formatting.defaultEditor);

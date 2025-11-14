@@ -40,23 +40,19 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   inputs: [
                     {
                       id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                      inputType: 'switch',
                       type: 'switch',
                       propertyName: 'showSizeChanger',
                       label: 'Show Size Changer',
                       size: 'small',
                       jsSetting: true,
-                      defaultValue: true,
                     },
                     {
                       id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                       type: 'switch',
-                      inputType: 'switch',
                       propertyName: 'showTotalItems',
                       label: 'Show Total Items',
                       size: 'small',
                       jsSetting: true,
-                      defaultValue: true,
                     },
                   ],
                 })

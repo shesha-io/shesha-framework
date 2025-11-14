@@ -75,7 +75,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       jsSetting: true,
-                      defaultValue: 'inherited',
                     },
                     {
                       type: 'switch',

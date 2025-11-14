@@ -11,14 +11,14 @@ export const Icon = ({
   size,
   hint,
   style,
-  styles,
+  className,
   propertyName,
 }: {
   icon: string | React.ReactNode;
   size?: any;
   hint?: string;
   style?: React.CSSProperties;
-  styles?: any;
+  className?: string;
   propertyName?: string;
 }): ReactNode => {
   const icons = antdIcons;
@@ -55,7 +55,7 @@ export const Icon = ({
       >
         <Space>
           {size}
-          <Tooltip className={styles.icon} title={hint}>
+          <Tooltip className={className} title={hint}>
             <SectionSeparator
               containerStyle={{ margin: 0 }}
               lineThickness={Number(size[0]) / 2}

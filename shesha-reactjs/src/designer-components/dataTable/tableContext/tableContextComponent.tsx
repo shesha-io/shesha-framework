@@ -1,15 +1,15 @@
 import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { TableContext } from './tableContext';
-import { ITableContextComponentProps } from './models';
+import { ITableContextComponentProps, TableContextComponentDefinition } from './models';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
-const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
+const TableContextComponent: TableContextComponentDefinition = {
   type: 'datatableContext',
   isInput: true,
   isOutput: true,
@@ -20,13 +20,13 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   },
   initModel: (model) => {
     // Only set defaults for completely new components (when dragging from toolbox)
-    const isNewComponent = !model.sourceType && !model.entityType;
+    const isNewComponent = !model.sourceType && isEntityTypeIdEmpty(model.entityType);
 
     if (isNewComponent) {
       return {
         ...model,
         sourceType: 'Entity',
-        entityType: 'Shesha.Domain.FormConfiguration',
+        entityType: 'Shesha.Core.DummyTable',
         dataFetchingMode: 'paging',
         defaultPageSize: 10,
       };
@@ -51,7 +51,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   },
   validateModel: (model, addModelError) => {
     if (!model.sourceType) addModelError('sourceType', 'Select `Source type` on the settings panel');
-    if (model.sourceType === 'Entity' && !model.entityType) addModelError('entityType', 'Select `Entity Type` on the settings panel');
+    if (model.sourceType === 'Entity' && isEntityTypeIdEmpty(model.entityType)) addModelError('entityType', 'Select `Entity Type` on the settings panel');
     if (model.sourceType === 'Url' && !model.endpoint) addModelError('endpoint', 'Select `Custom Endpoint` on the settings panel');
     if (model.sourceType === 'Form' && !model.propertyName) addModelError('propertyName', 'Select `propertyName` on the settings panel');
   },

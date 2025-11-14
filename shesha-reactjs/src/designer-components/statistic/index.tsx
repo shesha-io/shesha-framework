@@ -67,7 +67,6 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
         <ConfigurableFormItem
           model={{ ...model, hideLabel: true }}
           valuePropName="checked"
-          initialValue={model?.defaultValue}
         >
           {(value, _) => {
             const customEvent = customOnClickEventHandler(model, allData);
@@ -112,7 +111,6 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
       <ConfigurableFormItem
         model={{ ...model, hideLabel: true }}
         valuePropName="checked"
-        initialValue={model?.defaultValue}
       >
         {(value) => {
           const customEvent = customOnClickEventHandler(model, allData);

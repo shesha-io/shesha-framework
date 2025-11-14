@@ -1,13 +1,14 @@
 import { PropertyMetadataDto } from "@/apis/metadata";
-import { DesignerToolbarSettings, EditMode, IEntityMetadata } from "@/interfaces";
+import { EditMode, IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { FormMetadataHelper } from "../formMetadataHelper";
-import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
+import { IConfigurableColumnsProps, standardCellComponentTypes } from "@/providers/datatableColumnsConfigurator/models";
 import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, addDetailsPanel, getDataTypePriority, getColumnWidthByDataType } from "../viewGenerationUtils";
 import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson";
 import { ROW_COUNT } from "../../constants";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
+import { IEntityTypeIdentifier } from "../../../entities/models";
 
 /**
  * Implements generation logic for detail views.
@@ -16,7 +17,7 @@ import { BaseGenerationLogic } from "../baseGenerationLogic";
 export class DetailsViewGenerationLogic extends BaseGenerationLogic {
   readonly typeName = "DetailsViewGenerationLogic";
 
-  protected getModelTypeFromReplacements(replacements: object): string | null {
+  protected getModelTypeFromReplacements(replacements: object): string | IEntityTypeIdentifier | null {
     const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
     return extensionJson?.modelType || null;
   }
@@ -41,7 +42,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
       });
 
       // Add details panel - using shared function with filtered properties
-      addDetailsPanel(propertiesForDetailsPanel, markup, metadataHelper);
+      addDetailsPanel(propertiesForDetailsPanel, markup, metadataHelper, () => this.getFormBuilder({}));
 
       // Add child tables if configured
       if (extensionJson.addChildTables) {
@@ -112,7 +113,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
         console.warn(`No key information properties found for the key information bar. Requested properties: ${extensionJson.keyInformationBarProperties?.join(', ')}`);
         return usedKeyInfoPropertyPaths;
       } else {
-        const keyInfoBarBuilder = new DesignerToolbarSettings({});
+        const keyInfoBarBuilder = this.getFormBuilder({});
 
         keyInfoBarBuilder.addKeyInformationBar({
           id: nanoid(),
@@ -123,7 +124,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           hidden: false,
           componentName: "keyInformationBar",
           columns: keyInfoProperties.map((prop, index) => {
-            const keyInfoBuilder = new DesignerToolbarSettings({});
+            const keyInfoBuilder = this.getFormBuilder({});
             const count = index + 1;
 
             keyInfoBuilder.addText({
@@ -174,7 +175,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
    * @param metadataHelper The metadata helper instance.
    */
   private async addChildTablesAsync(markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): Promise<void> {
-    const builder = new DesignerToolbarSettings({});
+    const builder = this.getFormBuilder({});
 
     const childTableContainer = findContainersWithPlaceholder(markup, "//*CHILDTABLES*//");
 
@@ -201,7 +202,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
         tabs: await Promise.all(entities.map(async (childTable, index) => {
           const nonFrameworkProperties = await metadataHelper.extractNonFrameworkProperties(childTable);
 
-          const childTableAccessoriesBuilder = new DesignerToolbarSettings({});
+          const childTableAccessoriesBuilder = this.getFormBuilder({});
           childTableAccessoriesBuilder.addQuickSearch({
             id: nanoid(),
             componentName: 'childTableQuickSearch',
@@ -217,7 +218,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             version: 1,
           });
 
-          const childTableBuilder = new DesignerToolbarSettings({});
+          const childTableBuilder = this.getFormBuilder({});
 
           childTableBuilder.addContainer({
             id: nanoid(),
@@ -244,7 +245,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             return priorityA - priorityB;
           });
 
-          const columns: IConfigurableColumnsProps[] = sortedProperties.map((prop, idx) => {
+          const columns = sortedProperties.map<IConfigurableColumnsProps>((prop, idx) => {
             // Get column width based on data type
             const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
 
@@ -260,6 +261,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               minWidth: width.min,
               maxWidth: width.max,
               allowSorting: true,
+              displayComponent: { type: standardCellComponentTypes.defaultDisplay },
+              editComponent: { type: standardCellComponentTypes.notEditable },
+              createComponent: { type: standardCellComponentTypes.notEditable },
             };
           });
 
@@ -284,7 +288,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
 
           const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
 
-          const childTableContextBuilder = new DesignerToolbarSettings({});
+          const childTableContextBuilder = this.getFormBuilder({});
           childTableContextBuilder.addDatatableContext({
             id: nanoid(),
             propertyName: "childTableContext",

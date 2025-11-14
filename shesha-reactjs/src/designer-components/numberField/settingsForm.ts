@@ -89,7 +89,6 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                       label: 'Edit Mode',
                       size: 'small',
                       jsSetting: true,
-                      defaultValue: 'inherited',
                     },
                     {
                       type: 'switch',
@@ -148,7 +147,6 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                   label: 'High Precision',
                   tooltip: 'To support high precision decimals support',
                   version: 2,
-                  defaultValue: false,
                 })
 
                 .addSettingsInputRow({
@@ -166,7 +164,6 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                       propertyName: 'stepNumeric',
                       parentId: nanoid(),
                       label: 'Step',
-                      defaultValue: 1,
                       validate: {},
                       settingsValidationErrors: [],
                     },
@@ -188,7 +185,6 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                       propertyName: 'stepString',
                       parentId: nanoid(),
                       label: 'Step',
-                      defaultValue: 0.1,
                       validate: {},
                       settingsValidationErrors: [],
                     },
@@ -643,7 +639,6 @@ export const getSettings = (data: INumberFieldComponentProps): FormMarkupWithSet
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    inputType: 'radio',
                                     buttonGroupOptions: repeatOptions,
                                   },
                                 ],

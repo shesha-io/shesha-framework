@@ -2,11 +2,10 @@ import { CalendarOutlined } from '@ant-design/icons';
 import React, { Fragment, useMemo } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customDateEventHandler } from '@/components/formDesigner/components/utils';
-import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IDateFieldProps } from './interfaces';
+import { DateFieldDefinition, IDateFieldProps } from './interfaces';
 import {
   DATE_TIME_FORMATS,
   defaultStyles,
@@ -19,7 +18,7 @@ import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 
-const DateField: IToolboxComponent<IDateFieldProps> = {
+const DateField: DateFieldDefinition = {
   type: 'dateField',
   name: 'Date field',
   isInput: true,

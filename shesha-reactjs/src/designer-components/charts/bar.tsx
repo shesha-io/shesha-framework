@@ -145,6 +145,21 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
       maxResultCount: 250,
       requestTimeout: 15000,
       orderDirection: 'asc',
+    }))
+    .add<IChartProps>(9, (prev) => ({
+      ...prev,
+      titleFont: prev.titleFont ?? {
+        family: 'Segoe UI',
+        size: 16,
+        weight: '400',
+        color: '#000000',
+      },
+      legendFont: prev.legendFont ?? {
+        family: 'Segoe UI',
+        size: 12,
+        weight: '400',
+        color: '#000000',
+      },
     })),
 };
 

@@ -37,6 +37,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   id: nanoid(),
+                  inputType: 'textField',
                   propertyName: 'componentName',
                   label: 'Component name',
                   labelAlign: 'right',
@@ -48,6 +49,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                 })
                 .addSettingsInput({
                   id: nanoid(),
+                  inputType: 'textField',
                   propertyName: 'label',
                   label: 'Label',
                   labelAlign: 'right',
@@ -69,7 +71,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   propertyName: 'icon',
                   label: 'Icon',
                   labelAlign: 'right',
-                  defaultValue: 'FilterOutlined',
                   parentId: commonTabId,
                   jsSetting: true,
                 })
@@ -125,7 +126,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         id: nanoid(),
                         propertyName: 'buttonType',
                         label: 'Type',
-                        defaultValue: 'link',
                         validate: {
                           required: true,
                         },
@@ -486,7 +486,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    inputType: 'radio',
                                     buttonGroupOptions: repeatOptions,
                                   },
                                 ],

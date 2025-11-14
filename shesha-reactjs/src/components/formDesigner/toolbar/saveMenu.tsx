@@ -9,7 +9,7 @@ import {
   Button,
 } from 'antd';
 import { FormMarkupWithSettings } from '@/providers/form/models';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesigner } from '@/providers/formDesigner';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { getFormFullName } from '@/utils/form';
@@ -22,8 +22,7 @@ export interface ISaveMenuProps {
 
 export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   const { saveForm, formProps } = useFormPersister();
-  const formFlatMarkup = useFormDesignerStateSelector((x) => x.formFlatMarkup);
-  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
+  const formDesigner = useFormDesigner();
   const toolboxComponents = useFormDesignerComponents();
   const { message } = App.useApp();
 
@@ -32,6 +31,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
 
   const saveFormInternal = (): Promise<void> => {
+    const { formFlatMarkup, formSettings } = formDesigner.state;
     const payload: FormMarkupWithSettings = {
       components: componentsFlatStructureToTree(toolboxComponents, formFlatMarkup),
       formSettings: formSettings,
@@ -70,9 +70,8 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
         icon={<SaveOutlined />}
         onClick={onSaveClick}
         type="primary"
-      >
-        Save
-      </Button>
+        size="small"
+      />
       <p
         className={styles.formName}
         title={fullName}

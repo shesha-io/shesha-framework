@@ -1,7 +1,6 @@
 import { FileSearchOutlined } from '@ant-design/icons';
 import React, { useCallback } from 'react';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
-import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import {
@@ -9,9 +8,9 @@ import {
   useAvailableConstantsData,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
-import { IAutocompleteComponentProps } from './interfaces';
+import { AutocompleteComponentDefinition, IAutocompleteComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { isEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata, isHasFilter } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ConfigurableFormItem } from '@/components';
@@ -22,8 +21,11 @@ import { Autocomplete } from '@/components/autocomplete';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { useMetadataDispatcher } from '@/providers';
+import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
-const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
+const AutocompleteComponent: AutocompleteComponentDefinition = {
   type: 'autocomplete',
   isInput: true,
   isOutput: true,
@@ -33,6 +35,14 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
+    const { getMetadata } = useMetadataDispatcher();
+
+    const entityMetadata = useAsyncMemo(async () => {
+      if (isEntityTypeIdEmpty(model.entityType))
+        return null;
+      const meta = await getMetadata({ modelType: model.entityType, dataType: DataTypes.entityReference });
+      return isEntityMetadata(meta) ? meta : null;
+    }, [model.entityType]);
 
     const keyPropName = model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
     const displayPropName = model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
@@ -48,12 +58,16 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const outcomeValueFunc: OutcomeValueFunc = useCallback((item: any, args: any) => {
       if (model.valueFormat === 'entityReference')
         return Boolean(item)
-          ? { id: item.id, _displayName: item._displayName || getValueByPropertyName(item, displayPropName), _className: model.entityType }
+          ? {
+            id: item.id,
+            _displayName: item._displayName || getValueByPropertyName(item, displayPropName),
+            _className: (item._className || entityMetadata?.fullClassName) ?? undefined,
+          }
           : null;
       if (model.valueFormat === 'custom' && model.outcomeValueFunc)
         return executeExpression(model.outcomeValueFunc, { ...args, item: item }, null, null);
       return typeof (item) === 'object' ? getValueByPropertyName(item, keyPropName) : item;
-    }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, model.entityType]);
+    }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, entityMetadata]);
 
     const displayValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
       if (model.displayValueFunc)
@@ -128,7 +142,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     .add<IAutocompleteComponentProps>(4, (prev) => migrateReadOnly(prev))
     .add<IAutocompleteComponentProps>(5, (prev) => ({
       ...migrateFormApi.eventsAndProperties(prev),
-      defaultValue: migrateFormApi.withoutFormData(prev?.defaultValue),
     }))
     .add<IAutocompleteComponentProps>(6, (prev) => {
       const styles: IInputStyles = {
@@ -169,14 +182,14 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       dataSourceType: 'entitiesList',
       mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
       entityType: isEntityReferencePropertyMetadata(propMetadata)
-        ? propMetadata.entityType
+        ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
         : isEntityReferenceArrayPropertyMetadata(propMetadata)
-          ? propMetadata.entityType
+          ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
           : undefined,
       valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
         ? 'entityReference'
         : 'simple',
-      filter: typeof propMetadata.formatting?.filter === 'object' && propMetadata.formatting?.filter
+      filter: isHasFilter(propMetadata.formatting)
         ? { ...propMetadata.formatting?.filter }
         : null,
     };

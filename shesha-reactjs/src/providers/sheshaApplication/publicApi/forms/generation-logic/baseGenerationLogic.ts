@@ -4,7 +4,10 @@ import { FormMetadataHelper } from "./formMetadataHelper";
 import { GenerationLogic } from "./interface";
 import { processBaseMarkup } from "./viewGenerationUtils";
 import { PropertyMetadataDto } from "@/apis/metadata";
-import { IEntityMetadata } from "@/interfaces";
+import { DesignerToolbarSettings, IEntityMetadata } from "@/interfaces";
+import { IEntityTypeIdentifier } from "../../entities/models";
+import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
+import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
 
 /**
  * Abstract base class for generation logic implementations
@@ -61,14 +64,14 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
   /**
    * Get the model type from the replacements object
    */
-  protected abstract getModelTypeFromReplacements(replacements: object): string | null;
+  protected abstract getModelTypeFromReplacements(replacements: object): string | IEntityTypeIdentifier | null;
 
   /**
    * Fetch entity metadata and extract non-framework properties
    */
   protected async fetchEntityMetadata(replacements: object, metadataHelper: FormMetadataHelper): Promise<{ entity: IEntityMetadata; nonFrameworkProperties: PropertyMetadataDto[] }> {
     const modelType = this.getModelTypeFromReplacements(replacements);
-    if (!modelType) {
+    if (isEntityTypeIdEmpty(modelType)) {
       throw new Error('Model type is required for fetching metadata');
     }
 
@@ -85,4 +88,8 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
     metadataHelper: FormMetadataHelper,
     replacements?: object
   ): Promise<void>;
+
+  protected getFormBuilder<T extends object = object>(model?: T): DesignerToolbarSettings<T> {
+    return new DesignerToolbarSettings<T>(model, getComponentDefinitions());
+  }
 }

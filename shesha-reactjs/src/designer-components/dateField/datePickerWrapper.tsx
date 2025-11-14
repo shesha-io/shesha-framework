@@ -29,7 +29,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     showNow,
     onChange,
     picker = 'date',
-    defaultValue,
     readOnly,
     additionalStyles,
     defaultToMidnight,
@@ -118,8 +117,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const momentValue = useMemo(() => getMoment(value, pickerFormat), [value, pickerFormat]);
   const rangeMomentValue = useMemo(() => getRangeMoment(value, pickerFormat), [value, pickerFormat]);
-  const defaultMomentValue = useMemo(() => getRangeMoment(defaultValue, pickerFormat), [defaultValue, pickerFormat]);
-
 
   const prevStartDatePartRef = useRef(null);
   const prevEndDatePartRef = useRef(null);
@@ -190,7 +187,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
           onChange={handleRangePicker}
           format={pickerFormat}
           value={rangeMomentValue}
-          defaultValue={defaultMomentValue}
           picker={picker}
           showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
           disabled={readOnly}

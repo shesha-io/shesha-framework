@@ -4,7 +4,7 @@ import React, { FC, useMemo } from 'react';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY } from '@/providers/form/models';
 import { ShaForm } from '@/providers/form';
-import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerReadOnly } from '@/providers/formDesigner';
 import { useStyles } from '../../../components/formDesigner/styles/styles';
 import { useParent } from '@/providers/parentProvider';
 import _ from 'lodash';
@@ -26,13 +26,14 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
   const { styles } = useStyles();
   const parent = useParent();
 
-  const { readOnly, hasDragged } = useFormDesignerState();
-  const { addComponent, startDragging, endDragging } = useFormDesignerActions();
+  const readOnly = useFormDesignerReadOnly();
+  const formDesigner = useFormDesigner();
+  const { addComponent, startDragging, endDragging } = formDesigner;
 
   const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
   const onSetList = (newState: ItemInterface[], _sortable, _store): void => {
-    if (!hasDragged) return;
+    if (!formDesigner.hasDragged) return;
 
     if (newState?.length === 2) {
       return;

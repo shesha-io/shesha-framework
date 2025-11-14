@@ -6,28 +6,18 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { evaluateValue, executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IRadioProps } from './utils';
-import { IToolboxComponent } from '@/interfaces';
 import {
   migrateCustomFunctions,
   migratePropertyName,
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IConfigurableFormComponent } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { IEnhancedRadioProps, RadioComponentDefinition } from './interfaces';
 
-interface IEnhancedRadioProps extends Omit<IRadioProps, 'style'>, IConfigurableFormComponent { }
-
-interface IRadioComopnentCalulatedValues {
-  eventHandlers: IEventHandlers;
-  dataSourceUrl?: string;
-  defaultValue?: any;
-}
-
-const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValues> = {
+const RadioComponent: RadioComponentDefinition = {
   type: 'radio',
   name: 'Radio',
   icon: <CheckCircleOutlined />,
@@ -109,4 +99,4 @@ const Radio: IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValu
   },
 };
 
-export default Radio;
+export default RadioComponent;

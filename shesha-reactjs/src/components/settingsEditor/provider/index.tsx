@@ -38,7 +38,7 @@ const getListFetcherQueryParams = (maxResultCount): IGenericGetAllPayload => {
   return {
     skipCount: 0,
     maxResultCount: maxResultCount ?? -1,
-    entityType: 'Shesha.Domain.SettingConfiguration',
+    fullClassName: 'Shesha.Domain.SettingConfiguration',
     properties:
       'id category dataType editorFormModule editorFormName isClientSpecific name, module { id name }, label, description',
     quickSearch: null,
@@ -111,7 +111,7 @@ const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
       {
         skipCount: 0,
         maxResultCount: -1,
-        entityType: 'Shesha.Domain.FrontEndApp',
+        fullClassName: 'Shesha.Domain.FrontEndApp',
         properties: 'id name appKey description',
         quickSearch: null,
         sorting: '',

@@ -7,6 +7,8 @@ import PolarAreaChart from "./components/polarArea";
 import { Result } from "antd";
 import { IPropertyMetadata, IStyleType } from "@/interfaces";
 import { FetcherOptions } from "@/utils/fetchers";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
 
 export const MAX_TITLE_LINE_LENGTH = 12;
 
@@ -252,7 +254,7 @@ export const defaultConfigFiller: {
   simpleOrPivot: 'simple',
   dataMode: 'entityType',
   entityType: 'Shesha.Domain.FormConfiguration',
-  axisProperty: 'versionStatus',
+  axisProperty: 'creationTime',
   valueProperty: 'id',
   aggregationMethod: 'count',
 };
@@ -349,11 +351,11 @@ function convertNestedPropertiesToObjectFormat(array?: string[]): string {
  * @param axisProperty axis property to use for the chart
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string, orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number): FetcherOptions => {
+export const getChartDataRefetchParams = (entityType: string | IEntityTypeIdentifier, dataProperty: string, filters: string, groupingProperty?: string, axisProperty?: string, orderBy?: string, orderDirection?: TOrderDirection, skipCount?: number, maxResultCount?: number): FetcherOptions => {
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
-      entityType: entityType,
+      ...getEntityTypeIdentifierQueryParams(entityType),
       properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, groupingProperty, axisProperty])).replace(/\s/g, '')),
       filter: filters,
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',

@@ -7,12 +7,13 @@ import {
   SortMode,
 } from '@/providers/dataTable/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { YesNoInherit } from '@/interfaces';
+import { IToolboxComponent, YesNoInherit } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface ITableContextComponentProps extends Omit<IConfigurableFormComponent, 'description'> {
   sourceType?: 'Form' | 'Entity' | 'Url';
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   endpoint?: string;
   customReorderEndpoint?: string;
   components?: IConfigurableFormComponent[]; // If isDynamic we wanna
@@ -44,3 +45,5 @@ export interface IAfterRowReorderArguments {
   allData: any[];
   response?: any;
 }
+
+export type TableContextComponentDefinition = IToolboxComponent<ITableContextComponentProps>;

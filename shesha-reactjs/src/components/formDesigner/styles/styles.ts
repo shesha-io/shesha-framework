@@ -103,6 +103,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             overflow-y: hidden;
             height: calc(100vh - 40px);
             scrollbar-width: none;
+            
+            .${prefixCls}-modal-close {
+                margin-top: 4px;
+            }
+
             .${prefixCls}-modal-header {
                 padding: 8px 12px;
                 margin: 0;
@@ -203,7 +208,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
-                margin-top: -10px;
+                margin-right: 32px;
             }
 
             .${shaDesignerToolbarLeft} {

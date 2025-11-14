@@ -24,6 +24,8 @@ export class ShaRouter implements IShaRouter {
 
   private _getIsLoggedIn: () => boolean;
 
+  private _navigationValidators: Array<(url: string) => Promise<boolean>> = [];
+
   get router(): IRouter {
     return this._router;
   }
@@ -32,6 +34,20 @@ export class ShaRouter implements IShaRouter {
     this._router = args.router;
     this._getFormUrlFunc = args.getFormUrlFunc;
     this._getIsLoggedIn = args.getIsLoggedIn;
+  }
+
+  validateNavigation = async (url: string): Promise<boolean> => {
+    for (const validator of this._navigationValidators) {
+      const allowed = await validator(url);
+      if (!allowed)
+        return false;
+    }
+    return true;
+  };
+
+  registerNavigationValidator(validator: (url: string) => Promise<boolean>): () => void {
+    this._navigationValidators.push(validator);
+    return () => this._navigationValidators = this._navigationValidators.filter((v) => v !== validator);
   }
 
   updateRouter(args: ShaRouterArgs): void {

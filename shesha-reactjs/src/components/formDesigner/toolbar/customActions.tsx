@@ -1,5 +1,5 @@
 import { useDynamicModals, useHttpClient } from "@/providers";
-import { useFormDesignerStateSelector } from "@/providers/formDesigner";
+import { useFormDesignerReadOnly } from "@/providers/formDesigner";
 import { useFormPersister } from "@/providers/formPersisterProvider";
 import { downloadAsJson } from "@/utils/configurationFramework/actions";
 import { MenuOutlined } from "@ant-design/icons";
@@ -14,7 +14,7 @@ export const CustomActions: FC = () => {
   const { formProps, loadForm } = useFormPersister();
   const { open: openModal } = useDynamicModals();
   const { message } = App.useApp();
-  const readOnly = useFormDesignerStateSelector((x) => x.readOnly);
+  const readOnly = useFormDesignerReadOnly();
 
   const items: MenuItem[] = [
     {

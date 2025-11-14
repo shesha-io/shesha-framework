@@ -1,5 +1,5 @@
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import { IEntityTypeIndentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import * as RestfulShesha from '@/utils/fetchers';
 
 export type RefListPermissionedAccess = 1 | 2 | 3 | 4 | 5;
@@ -34,20 +34,22 @@ export interface PermissionedObjectDto {
   } | null;
 }
 
+export interface IHasDefaultEditor {
+  defaultEditor?: string | null;
+}
+
+export interface IHasFilter {
+  filter: object;
+}
+
 export interface INumberFormatting {
   showThousandsSeparator?: boolean;
   customFormat?: string | null;
 }
 
-export interface IIntegerFormatting extends INumberFormatting {
-}
-
 export interface IDecimalFormatting extends INumberFormatting {
   numDecimalPlaces?: number | null;
   showAsPercentage?: boolean;
-}
-
-export interface IFloatFormatting extends INumberFormatting {
 }
 
 export interface IEntityPropertyListDbMapping
@@ -101,7 +103,7 @@ export interface ModelPropertyDto {
   /**
    * Entity type. Aplicable for entity references
    */
-  entityType?: IEntityTypeIndentifier | null;
+  entityType?: IEntityTypeIdentifier | null;
   /**
    * Reference list name
    */
@@ -197,7 +199,7 @@ export interface ModelPropertyDto {
    */
   cascadeDeleteUnreferencedHardcoded?: boolean;
 
-  formatting?: INumberFormatting | IIntegerFormatting | IDecimalFormatting | IFloatFormatting;
+  formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting);
 }
 
 /**

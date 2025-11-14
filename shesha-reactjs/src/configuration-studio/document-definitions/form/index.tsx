@@ -7,19 +7,31 @@ import { CanvasConfig } from "@/components/formDesigner/toolbar/canvasConfig";
 import { Space } from "antd";
 import React, { ReactNode, useEffect } from "react";
 import { FormToolbar } from "./toolbar";
-import { useFormPersister } from "@/providers/formPersisterProvider";
+import { useFormDesigner } from "@/providers/formDesigner";
+import { useConfigurationStudio } from "@/configuration-studio/cs/contexts";
 
 export const FormDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.FORM,
   Editor: (props: ItemEditorProps): ReactNode => {
     const { styles } = useMainStyles();
-    const { loadForm } = useFormPersister();
+    const cs = useConfigurationStudio();
+    const formDesigner = useFormDesigner();
     const { doc } = props;
     useEffect(() => {
       doc.setLoader(async () => {
-        await loadForm({ skipCache: true });
+        await formDesigner.loadAsync();
       });
-    }, [doc, loadForm]);
+      doc.setSaver(async (): Promise<void> => {
+        await formDesigner.saveAsync();
+      });
+    }, [doc, formDesigner]);
+    useEffect(() => {
+      // Subscribe to changes
+      const unsubscribe = formDesigner.subscribe('data-modified', () => {
+        cs.setDocumentModified(doc.itemId, formDesigner.isDataModified);
+      });
+      return unsubscribe; // Cleanup on unmount
+    }, [formDesigner, doc.itemId, cs]);
 
     return (
       <div className={styles.formDesigner}>

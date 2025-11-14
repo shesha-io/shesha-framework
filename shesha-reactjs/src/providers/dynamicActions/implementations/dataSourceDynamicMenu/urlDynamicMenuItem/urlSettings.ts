@@ -26,7 +26,6 @@ export const getSettings = (): FormMarkupWithSettings => {
             labelName: 'param',
             valueTitle: 'Value',
             valueName: 'value',
-            ignorePrefixesOnNewItems: true,
             validate: {},
             description: '',
             settingsValidationErrors: [],

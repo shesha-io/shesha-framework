@@ -6,22 +6,21 @@ import { evaluateString, getStyle, validateConfigurableComponentSettings } from 
 import { FileSearchOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
 
-import { IPropertyAutocompleteComponentProps } from './interfaces';
-import { IToolboxComponent } from '@/interfaces';
+import { IPropertyAutocompleteComponentProps, PropertyAutocompleteComponentDefinition } from './interfaces';
 import { MetadataProvider } from '@/providers';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompleteComponentProps> = {
+export const PropertyAutocompleteComponent: PropertyAutocompleteComponentDefinition = {
   type: 'propertyAutocomplete',
   name: 'Property Autocomplete',
   icon: <FileSearchOutlined />,
   isInput: true,
   isOutput: true,
   calculateModel: (model, allData) => ({
-    modelType: model.modelType ? evaluateString(model.modelType, { data: allData.data }) : null,
+    modelType: typeof model.modelType === 'string' ? evaluateString(model.modelType, { data: allData.data }) : model.modelType,
     dropdownStyle: getStyle(model.dropdownStyle, allData.data),
   }),
   Factory: ({ model, calculatedModel }) => {

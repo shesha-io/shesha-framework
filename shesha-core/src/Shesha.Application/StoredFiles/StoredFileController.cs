@@ -1,14 +1,16 @@
-﻿using Abp.Dependency;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.ObjectMapping;
-using Abp.Reflection;
+using Abp.Runtime.Session;
 using Abp.Runtime.Validation;
 using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.Domain;
+using Shesha.DynamicEntities;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.TypeFinder;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
@@ -38,10 +40,12 @@ namespace Shesha.StoredFiles
         private readonly IStoredFileService _fileService;
         private readonly IRepository<StoredFile, Guid> _fileRepository;
         private readonly IRepository<StoredFileVersion, Guid> _fileVersionRepository;
+        private readonly IModelConfigurationManager _modelConfigManager;
+        private readonly IRepository<StoredFileVersionDownload, Guid> _fileVersionDownloadRepository;
         private readonly IDynamicRepository _dynamicRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly IRepository<Person, Guid> _personRepository;
         private readonly IShaTypeFinder _typeFinder;
+        private readonly IAbpSession _abpSession;
 
         /// <summary>
         /// Reference to the object to object mapper.
@@ -50,38 +54,61 @@ namespace Shesha.StoredFiles
 
         public StoredFileController(IRepository<StoredFile, Guid> fileRepository,
             IRepository<StoredFileVersion, Guid> fileVersionRepository, IStoredFileService fileService,
+            IModelConfigurationManager modelConfigManager,
             IDynamicRepository dynamicRepository,
             IUnitOfWorkManager unitOfWorkManager,
-            IRepository<Person, Guid> personRepository,
             IShaTypeFinder typeFinder
-            )
+, IAbpSession abpSession, IRepository<StoredFileVersionDownload, Guid> fileVersionDownloadRepository)
         {
             _fileService = fileService;
             _fileRepository = fileRepository;
             _fileVersionRepository = fileVersionRepository;
+            _modelConfigManager = modelConfigManager;
             _dynamicRepository = dynamicRepository;
             _unitOfWorkManager = unitOfWorkManager;
-            _personRepository = personRepository;
             _typeFinder = typeFinder;
+            _abpSession = abpSession;
+            _fileVersionDownloadRepository = fileVersionDownloadRepository;
         }
 
         [HttpGet, Route("Download")]
-        public async Task<ActionResult> DownloadAsync(Guid id, int? versionNo)
+        public async Task<ActionResult> DownloadAsync(Guid id, int? versionNo, Boolean skipMarkDownload = false)
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
 
             if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
+            {
                 return StatusCode(304);
+            }
 
 #pragma warning disable IDISP001 // Dispose created. Note: this stream will be disposed by FileStreamResult
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
 #pragma warning restore IDISP001 // Dispose created
-            await _fileService.MarkDownloadedAsync(fileVersion);
+
+            if (skipMarkDownload == false)
+            {
+                await _fileService.MarkDownloadedAsync(fileVersion);
+            }
 
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
             HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
 
             return File(fileContents, fileVersion.FileType.GetContentType(), fileVersion.FileName);
+        }
+
+        [HttpGet, Route("HasDownloaded")]
+        public async Task<ActionResult> HasDownloadedAsync(Guid storedFileId)
+        {
+            var file = await _fileRepository.GetAll().FirstOrDefaultAsync(f => f.Id == storedFileId);
+            if (file == null)
+                throw new UserFriendlyException("File not found");
+
+            var currentLoggedInUserId = _abpSession.UserId;
+            var hasDownloaded = await _fileVersionDownloadRepository.GetAll()
+                .Where((x => x.FileVersion.File.Id == storedFileId && x.CreatorUserId == currentLoggedInUserId))
+               .AnyAsync();
+            return Ok(new { hasDownloaded });
+
         }
 
         [HttpGet, Route("Base64String")]
@@ -127,21 +154,26 @@ namespace Shesha.StoredFiles
             if (input.File == null)
                 validationResults.Add($"{nameof(input.File)} must not be null", [nameof(input.File)]);
 
-            if (string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
+            if (input.OwnerType.IsEmpty() && !string.IsNullOrWhiteSpace(input.OwnerId))
                 validationResults.Add($"{nameof(input.OwnerType)} must not be null when {nameof(input.OwnerId)} is specified", [nameof(input.OwnerType)]);
 
             if (validationResults.Any())
                 throw new AbpValidationException("An error occured", validationResults);
-        
+
             #endregion
 
             input.EnsureFile();
 
             object? owner = null;
 
-            if (!string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
+            if (!input.OwnerType.IsEmpty() && !string.IsNullOrWhiteSpace(input.OwnerId))
             {
-                owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
+                var entityConfig = await _modelConfigManager.GetByEntityTypeIdAsync(
+                    new EntityTypeIdentifier(input.OwnerType?.Module, input.OwnerType?.Name ?? "", input.OwnerType?.FullClassName)
+                );
+                if (entityConfig == null)
+                    throw new Exception($"Owner type not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
+                owner = await _dynamicRepository.GetAsync(entityConfig.FullClassName, input.OwnerId);
                 if (owner == null)
                     throw new Exception($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
             }
@@ -217,7 +249,7 @@ namespace Shesha.StoredFiles
                         }
                         else
                         {
-                            if (!string.IsNullOrWhiteSpace(input.OwnerType))
+                            if (!input.OwnerType.IsEmpty())
                             {
                                 // otherwise - mark as temporary
                                 file.Temporary = true;
@@ -392,7 +424,7 @@ namespace Shesha.StoredFiles
                 validationResults.Add($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')", [nameof(input.OwnerId)]);
 
             PropertyInfo? property = null;
-            if (owner != null && !string.IsNullOrWhiteSpace(input.PropertyName)) 
+            if (owner != null && !string.IsNullOrWhiteSpace(input.PropertyName))
             {
                 var accessor = ReflectionHelper.GetPropertyValueAccessor(owner, input.PropertyName);
                 if (accessor.PropInfo == null)
@@ -400,7 +432,7 @@ namespace Shesha.StoredFiles
 
                 if (property != null && !typeof(StoredFile).IsAssignableFrom(property.PropertyType))
                     validationResults.Add($"Wrong type of '{owner.GetType().Name}.{input.PropertyName}' property (actual: '{property.PropertyType.FullName}', expected: '{nameof(StoredFile)}')", [nameof(input.PropertyName)]);
-                
+
                 owner = accessor.Parent;
                 property = accessor.PropInfo;
             }
@@ -431,9 +463,24 @@ namespace Shesha.StoredFiles
             return true;
         }
 
-        private async Task<object> GetOwnerAsync(string ownerType, string ownerId, string? ownerName)
+        private async Task<string> GetFullClassNameFromEntityTypeIdAsync(EntityTypeIdInput? ownerType)
         {
-            var owner = await _dynamicRepository.GetAsync(ownerType, ownerId);
+            return ((ownerType?.FullClassName).IsNullOrEmpty()
+                ? (await _modelConfigManager.GetByEntityTypeIdAsync(
+                    new EntityTypeIdentifier(ownerType?.Module, ownerType?.Name ?? "", ownerType?.FullClassName)))
+                    .NotNull($"Owner type not found '{ownerType}'")
+                    .FullClassName
+                : ownerType?.FullClassName)
+                .NotNull("FullClassName should not be empty");
+        }
+
+
+        private async Task<object> GetOwnerAsync(string? className, EntityTypeIdInput? ownerType, string ownerId, string? ownerName)
+        {
+            var ownerClassName = string.IsNullOrEmpty(className)
+                ? await GetFullClassNameFromEntityTypeIdAsync(ownerType)
+                : className;
+            var owner = await _dynamicRepository.GetAsync(ownerClassName, ownerId);
             if (owner == null)
                 throw new AbpValidationException($"Owner '{ownerType}:{ownerId}' not found");
             if (!string.IsNullOrWhiteSpace(ownerName))
@@ -455,7 +502,7 @@ namespace Shesha.StoredFiles
         public async Task<FileStreamResult> DownloadZipAsync([FromQuery] FilesListInput input)
         {
             IList<StoredFile> files = new List<StoredFile>();
-            if (string.IsNullOrWhiteSpace(input.OwnerId) || string.IsNullOrWhiteSpace(input.OwnerType))
+            if (string.IsNullOrWhiteSpace(input.OwnerId) || input.OwnerType.IsEmpty())
             {
                 if (input.FilesId?.Count > 0)
                 {
@@ -469,7 +516,7 @@ namespace Shesha.StoredFiles
             }
             else
             {
-                var owner = await GetOwnerAsync(input.OwnerType, input.OwnerId, input.OwnerName);
+                var owner = await GetOwnerAsync(null, input.OwnerType, input.OwnerId, input.OwnerName);
                 var ownerId = owner.NotNull().GetId()?.ToString();
                 var ownerType = owner.GetType().StripCastleProxyType().GetRequiredFullName();
 
@@ -487,6 +534,12 @@ namespace Shesha.StoredFiles
                 var compressedStream = await CompressionService.CompressFilesAsync(list);
 #pragma warning restore IDISP001 // Dispose created
 
+                foreach (var file in files)
+                {
+                    var lastVersion = file.LastVersion();
+                    if (lastVersion != null)
+                        await _fileService.MarkDownloadedAsync(lastVersion);
+                }
                 return File(compressedStream, "multipart/x-zip", "files.zip");
             }
 
@@ -499,20 +552,35 @@ namespace Shesha.StoredFiles
         [HttpGet, Route("FilesList")]
         public async Task<List<StoredFileDto>> FilesListAsync([FromQuery] FilesListInput input)
         {
-            if (string.IsNullOrEmpty(input.OwnerType))
+            if (input.OwnerType.IsEmpty())
                 throw new Exception($"`{nameof(input.OwnerType)}` must not be null");
             if (string.IsNullOrEmpty(input.OwnerId))
                 throw new Exception($"`{nameof(input.OwnerId)}` must not be null");
 
-            var owner = await GetOwnerAsync(input.OwnerType, input.OwnerId, input.OwnerName);
+            var owner = await GetOwnerAsync(null, input.OwnerType, input.OwnerId, input.OwnerName);
             var id = owner.GetId();
             var type = owner.GetType().StripCastleProxyType().GetRequiredFullName();
             var fileVersions = string.IsNullOrWhiteSpace(input.FilesCategory)
                 ? await _fileService.GetLastVersionsOfAttachmentsAsync(id, type)
                 : await _fileService.GetLastVersionsOfAttachmentsAsync(id, type, input.FilesCategory.ToCamelCase());
 
-            var list = fileVersions.Select(v => GetFileDto(v)).WhereNotNull().ToList();
-            return list;
+            var currentUserId = _abpSession.UserId;
+
+            if (currentUserId == null)
+                return fileVersions.Select(GetFileDto).WhereNotNull().ToList();
+
+            var fileIds = fileVersions.Select(v => v.File.Id).ToList();
+            var downloadedFileIds = await _fileVersionDownloadRepository.GetAll()
+                .Where(x => x.CreatorUserId == currentUserId && fileIds.Contains(x.FileVersion.File.Id))
+                .Select(x => x.FileVersion.File.Id)
+                .ToListAsync();
+
+            return fileVersions.Select(v =>
+            {
+                var dto = GetFileDto(v);
+                dto!.UserHasDownloaded = downloadedFileIds.Contains(v.File.Id);
+                return dto;
+            }).ToList();
         }
 
         #region REST
@@ -532,24 +600,27 @@ namespace Shesha.StoredFiles
             if (input.File == null)
                 validations.Add($"{nameof(input.File)} must not be null", [nameof(input.File)]);
 
-            var ownerSpecified = !string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId);
+            var ownerSpecified = !input.OwnerType.IsEmpty() && !string.IsNullOrWhiteSpace(input.OwnerId);
             var hasProperty = !string.IsNullOrWhiteSpace(input.PropertyName);
 
-            if (string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
+            if (input.OwnerType.IsEmpty() && !string.IsNullOrWhiteSpace(input.OwnerId))
                 validations.Add($"{nameof(input.OwnerType)} must not be null when {nameof(input.OwnerId)} is specified", [nameof(input.OwnerType)]);
 
             if (input.Id == null && string.IsNullOrWhiteSpace(input.PropertyName) && !ownerSpecified && string.IsNullOrWhiteSpace(input.FilesCategory))
                 validations.Add($"Id must not be null", [nameof(input.Id)]);
 
-            var ownerType = _typeFinder.FindAll().FirstOrDefault(x => x.IsEntityType() && (x.FullName == input.OwnerType || x.GetTypeShortAliasOrNull() == input.OwnerType));
-            if (ownerSpecified && ownerType == null)
-                validations.Add($"Owner type not found (type = '{input.OwnerType}')", [nameof(input.OwnerId)]);
-
-            var owner = ownerType != null && !string.IsNullOrWhiteSpace(input.OwnerId)
-                ? await _dynamicRepository.GetAsync(ownerType.GetRequiredFullName(), input.OwnerId)
+            var ownerClassName = !input.OwnerType.IsEmpty()
+                ? await GetFullClassNameFromEntityTypeIdAsync(input.OwnerType)
                 : null;
-            if (ownerSpecified && owner == null)
-                validations.Add($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')", [nameof(input.OwnerId)]);
+
+            object? owner = null;
+
+            if (ownerSpecified)
+            {
+                owner = await GetOwnerAsync(ownerClassName, input.OwnerType, input.OwnerId.NotNull("OwnerId can not be null here"), null);
+                if (owner == null)
+                    validations.Add($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')", [nameof(input.OwnerId)]);
+            }
 
             PropertyInfo? property = null;
             if (owner != null && !string.IsNullOrWhiteSpace(input.PropertyName))
@@ -609,9 +680,9 @@ namespace Shesha.StoredFiles
                         storedFile.Temporary = true;
                     }
 
-                    if (!string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
+                    if (!string.IsNullOrEmpty(ownerClassName) && !string.IsNullOrWhiteSpace(input.OwnerId))
                     {
-                        storedFile.SetOwner(input.OwnerType, input.OwnerId);
+                        storedFile.SetOwner(ownerClassName, input.OwnerId);
                     }
 
                     storedFile.Category = input.FilesCategory;
@@ -654,10 +725,23 @@ namespace Shesha.StoredFiles
         {
             var storedFile = await _fileRepository.GetAsync(id);
 
-            return storedFile != null && !storedFile.IsDeleted
-                ? GetFileDto(storedFile.LastVersion())
-                : null;
+            if (storedFile == null || storedFile.IsDeleted)
+                return null;
+
+            var fileVersion = storedFile.LastVersion();
+            var dto = GetFileDto(fileVersion);
+
+            var currentUserId = _abpSession.UserId;
+            if (currentUserId.HasValue)
+            {
+                dto!.UserHasDownloaded = await _fileVersionDownloadRepository.GetAll()
+                    .AnyAsync(x => x.CreatorUserId == currentUserId.Value &&
+                                   x.FileVersion.File.Id == storedFile.Id);
+            }
+
+            return dto;
         }
+
 
         /// <summary>
         /// Get file as property of the entity
@@ -666,7 +750,7 @@ namespace Shesha.StoredFiles
         [HttpGet, Route("EntityProperty")]
         public async Task<StoredFileDto?> GetEntityPropertyAsync([FromQuery] StoredFileAsPropertyDto input)
         {
-            var hasOwner = !string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId);
+            var hasOwner = !input.OwnerType.IsEmpty() && !string.IsNullOrWhiteSpace(input.OwnerId);
             var hasProperty = !string.IsNullOrWhiteSpace(input.PropertyName);
             var hasCategory = !string.IsNullOrWhiteSpace(input.FileCategory);
             if ((!hasOwner || !hasProperty) && !hasCategory)
@@ -674,7 +758,7 @@ namespace Shesha.StoredFiles
 
             if (hasOwner)
             {
-                var entity = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
+                var entity = await _dynamicRepository.GetAsync(await GetFullClassNameFromEntityTypeIdAsync(input.OwnerType), input.OwnerId);
                 if (entity == null)
                     return null;
 
@@ -746,15 +830,12 @@ namespace Shesha.StoredFiles
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
 
-            if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
+            var etagValue = $"{fileVersion.Id:N}:{width}:{height}:{(int)fitOption}".ToLowerInvariant();
+            var ifNoneMatch = HttpContext.Request.Headers.IfNoneMatch.ToString().Trim('\"');
+            if (string.Equals(etagValue, ifNoneMatch, StringComparison.Ordinal))
                 return StatusCode(304);
 
             using var fileContents = await _fileService.GetStreamAsync(fileVersion);
-
-            // Get the file name
-            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileVersion.FileName);
-            string fileExtension = Path.GetExtension(fileVersion.FileName);
-            string fileName = $"{fileNameWithoutExtension}_w{width}h{height}{fileExtension}";
 
             // Read stream and reset position
             using var stream = new MemoryStream();
@@ -763,11 +844,13 @@ namespace Shesha.StoredFiles
 
             // Decode the image
             using var originalImage = SKBitmap.Decode(stream);
+            if (originalImage == null)
+                throw new UserFriendlyException("File is not a valid image.");
 
             // Generate the thumbnail
             using var resizedImage = GenerateThumbnail(originalImage, width, height, fitOption);
 
-            // Convert the resized image to a byte array
+            // Convert the resized image to a byte array (PNG)
             using var skImage = SKImage.FromBitmap(resizedImage);
             using var data = skImage.Encode(SKEncodedImageFormat.Png, 100);
 
@@ -780,9 +863,12 @@ namespace Shesha.StoredFiles
 
             // Set response headers
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; // Ten minutes cache
-            HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
+            HttpContext.Response.Headers.ETag = $"\"{etagValue}\"";
 
-            return File(resultStream, fileVersion.FileType.GetContentType(), fileName);
+            // Always PNG
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileVersion.FileName);
+            string fileName = $"{fileNameWithoutExtension}_w{width}h{height}.png";
+            return File(resultStream, "image/png", fileName);
         }
 
         private static SKBitmap GenerateThumbnail(SKBitmap originalImage, int width, int height, FitOptions fitOption)

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.DynamicEntities.Dtos;
 
 namespace Shesha.StoredFiles.Dto
 {
@@ -20,6 +21,6 @@ namespace Shesha.StoredFiles.Dto
         /// </summary>
         [Required]
         [BindProperty(Name = "ownerType")]
-        public string OwnerType { get; set; }
+        public EntityTypeIdInput OwnerType { get; set; }
     }
 }

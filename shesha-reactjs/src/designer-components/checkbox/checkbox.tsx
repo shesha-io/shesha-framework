@@ -1,12 +1,11 @@
 import React, { useMemo } from 'react';
-import { IToolboxComponent } from '@/interfaces';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox, CheckboxProps } from 'antd';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
-import { ICheckboxComponentProps } from './interfaces';
+import { CheckboxComponentDefinition, ICheckboxComponentProps } from './interfaces';
 import {
   migratePropertyName,
   migrateCustomFunctions,
@@ -15,15 +14,11 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations';
 import { defaultStyles } from './utils';
-
-interface ICheckboxComponentCalulatedValues {
-  eventHandlers?: IEventHandlers<any>;
-}
 
 interface ExtendedCheckboxProps extends CheckboxProps {
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
@@ -31,7 +26,7 @@ interface ExtendedCheckboxProps extends CheckboxProps {
   onChange?: (e: CheckboxChangeEvent) => void;
 }
 
-const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxComponentCalulatedValues> = {
+const CheckboxComponent: CheckboxComponentDefinition = {
   type: 'checkbox',
   isInput: true,
   isOutput: true,
@@ -49,7 +44,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps, ICheckboxCom
     const { styles } = useStyles({ style: finalStyle });
 
     return (
-      <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
+      <ConfigurableFormItem model={model} valuePropName="checked">
         {(value, onChange) => {
           const events: ExtendedCheckboxProps = {
             onBlur: calculatedModel.eventHandlers.onBlur,

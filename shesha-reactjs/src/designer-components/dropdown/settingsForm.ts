@@ -132,7 +132,6 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                     label: 'Show Icon',
                     size: 'small',
                     jsSetting: true,
-                    defaultValue: true,
                     tooltip: 'When checked the icon will display on the left side of the DisplayName',
                   },
 
@@ -148,7 +147,6 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                     propertyName: "mode",
                     type: "dropdown",
                     size: "small",
-                    defaultValue: "single",
                     jsSetting: true,
                     dropdownOptions: [
                       {
@@ -224,7 +222,6 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                     inputType: "dropdown",
                     size: "small",
                     jsSetting: true,
-                    defaultValue: 'simple',
                     dropdownOptions: [
                       {
                         value: "simple",
@@ -776,7 +773,6 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
                               hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
@@ -1214,7 +1210,6 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                         label: 'Repeat',
                                         hideLabel: true,
                                         propertyName: 'tag.background.repeat',
-                                        inputType: 'radio',
                                         buttonGroupOptions: repeatOptions,
                                       }],
                                       hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) === "color";', _mode: 'code', _value: false } as any,

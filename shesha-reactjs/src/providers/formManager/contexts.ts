@@ -17,6 +17,7 @@ export type GetFormByIdPayload = {
 export interface IFormManagerActionsContext {
   getFormById: (payload: GetFormByIdPayload) => Promise<UpToDateForm>;
   getFormByIdLoader: (payload: GetFormByIdPayload) => FormLoadingItem;
+  clearCache: (formId: FormIdentifier) => void;
 
   getFormByMarkup: (payload: GetFormByMarkupPayload) => Promise<UpToDateForm>;
   getFormByMarkupLoader: (payload: GetFormByMarkupPayload) => FormLoadingItem;

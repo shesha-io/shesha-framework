@@ -51,7 +51,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                       propertyName: 'dataLoaderType',
                       label: 'Loader Type',
                       parentId: 'root',
-                      defaultValue: 'gql',
                       buttonGroupOptions: {
                         _mode: 'value',
                         _code: `    const result = [];

@@ -89,7 +89,7 @@ export class GqlSubmitter implements IFormDataSubmitter {
           const urlWithoutQuery = getUrlWithoutQueryParams(endpoint.url);
           const queryParams = getQueryParams(endpoint.url);
           const queryStringData = { ...queryParams, ...data };
-          const finalUrl = `${urlWithoutQuery}?${qs.stringify(queryStringData)}`;
+          const finalUrl = `${urlWithoutQuery}?${qs.stringify(queryStringData, { allowDots: true })}`;
 
           return unwrapHttpCall(this.#httpClient.delete(finalUrl));
         };

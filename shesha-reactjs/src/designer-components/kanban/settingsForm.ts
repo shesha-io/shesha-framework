@@ -86,6 +86,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   id: nanoid(),
+                  inputType: 'textField',
                   propertyName: 'componentName',
                   label: 'Component Name',
                   parentId: commonTabId,
@@ -515,7 +516,6 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                           label: 'Repeat',
                                           hideLabel: true,
                                           propertyName: 'background.repeat',
-                                          inputType: 'radio',
                                           buttonGroupOptions: repeatOptions,
                                         }],
                                         hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
@@ -915,7 +915,6 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             label: 'Repeat',
                                             hideLabel: true,
                                             propertyName: 'columnStyles.background.repeat',
-                                            inputType: 'radio',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],

@@ -4,6 +4,7 @@ import { PropertyMetadataDto } from "@/apis/metadata";
 import { IEntityMetadata } from "@/interfaces";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
 import { CreateViewExtensionJson } from "../../models/CreateViewExtensionJson";
+import { IEntityTypeIdentifier } from "../../../entities/models";
 
 /**
  * Implements generation logic for create views.
@@ -11,7 +12,7 @@ import { CreateViewExtensionJson } from "../../models/CreateViewExtensionJson";
 export class CreateViewGenerationLogic extends BaseGenerationLogic {
   readonly typeName = "CreateViewGenerationLogic";
 
-  protected getModelTypeFromReplacements(replacements: object): string | null {
+  protected getModelTypeFromReplacements(replacements: object): string | IEntityTypeIdentifier | null {
     const extensionJson = castToExtensionType<CreateViewExtensionJson>(replacements);
     return extensionJson?.modelType || null;
   }
@@ -25,7 +26,7 @@ export class CreateViewGenerationLogic extends BaseGenerationLogic {
     try {
       // Add details panel - using shared function
       // Using await with a Promise-wrapped function to satisfy the require-await rule
-      await Promise.resolve(addDetailsPanel(nonFrameworkProperties, markup, metadataHelper));
+      await Promise.resolve(addDetailsPanel(nonFrameworkProperties, markup, metadataHelper, () => this.getFormBuilder({})));
     } catch (error) {
       console.error("Error adding components to create view markup:", error);
       throw error;

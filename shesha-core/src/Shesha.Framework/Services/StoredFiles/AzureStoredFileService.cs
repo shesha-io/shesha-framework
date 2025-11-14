@@ -22,8 +22,8 @@ namespace Shesha.Services.StoredFiles
         private readonly IConfigurationRoot _configuration;
         private BlobContainerClient? _blobContainerClient;
 
-        public AzureStoredFileService(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IocManager iocManager)
-            : base(fileService, versionService)
+        public AzureStoredFileService(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IRepository<StoredFileVersionDownload, Guid> storedFileVersionDownloadService, IocManager iocManager)
+            : base(fileService, versionService, storedFileVersionDownloadService)
         {
             _iocManager = iocManager;
             _configuration = GetConfiguration();

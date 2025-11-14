@@ -3,6 +3,8 @@ import { AutocompleteDataSourceType } from '@/components/autocomplete';
 import { FormIdentifier } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { GroupingItem, ISortingItem } from '@/providers/dataTable/interfaces';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { IToolboxComponent } from '@/interfaces';
 
 interface IQueryParamProp {
   id: string;
@@ -11,7 +13,7 @@ interface IQueryParamProp {
 }
 
 export interface IAutocompleteComponentProps extends IConfigurableFormComponent {
-  entityType?: string;
+  entityType?: string | IEntityTypeIdentifier;
   hideBorder?: boolean;
   dataSourceUrl?: string;
   dataSourceType: AutocompleteDataSourceType;
@@ -51,3 +53,5 @@ export interface IAutocompleteComponentProps extends IConfigurableFormComponent 
   font?: any;
   dimensions?: any;
 }
+
+export type AutocompleteComponentDefinition = IToolboxComponent<IAutocompleteComponentProps>;
