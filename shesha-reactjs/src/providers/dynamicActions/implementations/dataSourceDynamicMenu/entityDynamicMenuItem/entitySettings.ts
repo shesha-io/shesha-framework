@@ -11,12 +11,15 @@ export const getSettings = (): FormMarkupWithSettings => {
         inputs: [
           {
             id: nanoid(),
-            type: 'entityTypeAutocomplete',
+            type: 'autocomplete',
             propertyName: 'entityTypeShortAlias',
             label: 'Entity Type',
             labelAlign: 'right',
             hidden: false,
+            dataSourceType: 'url',
             validate: {},
+            dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+            useRawValues: true,
           },
           {
             id: nanoid(),
@@ -79,23 +82,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                   _value: false,
                 } as any,
                 autoFillProps: false,
-              },
-              {
-                id: nanoid(),
-                type: 'propertyAutocomplete',
-                propertyName: 'tooltipProperty',
-                label: 'Tooltip Property',
-                labelAlign: 'right',
-                isDynamic: false,
-                placeholder: '',
-                description: 'Name of the property that should be used for the tooltip of the button.',
-                validate: {},
-                modelType: {
-                  _code: 'return getSettingValue(data?.entityTypeShortAlias);',
-                  _mode: 'code',
-                  _value: false,
-                } as any,
-                autoFillProps: false,
               }],
           })
           .toJson(),
@@ -106,16 +92,27 @@ export const getSettings = (): FormMarkupWithSettings => {
         inputs: [
           {
             id: nanoid(),
-            type: 'configurableActionConfigurator',
-            propertyName: 'actionConfiguration',
-            label: 'Action Configuration',
-            hidden: false,
-            hideLabel: true,
+            type: 'propertyAutocomplete',
+            propertyName: 'tooltipProperty',
+            label: 'Tooltip Property',
+            labelAlign: 'right',
+            isDynamic: false,
+            placeholder: '',
+            description: 'Name of the property that should be used for the tooltip of the button.',
             validate: {},
-            jsSetting: false,
-            settingsValidationErrors: [],
+            modelType: {
+              _code: 'return getSettingValue(data?.entityTypeShortAlias);',
+              _mode: 'code',
+              _value: false,
+            } as any,
+            autoFillProps: false,
           },
         ],
+      })
+      .addConfigurableActionConfigurator({
+        id: nanoid(),
+        propertyName: 'actionConfiguration',
+        label: 'Action Configuration',
       })
       .toJson(),
     formSettings: {

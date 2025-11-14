@@ -10,9 +10,12 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     .ant-tabs-tab, .ant-tabs-nav-operations {
       height: 30px;
     }
-    
     .ant-tabs-tab {
       --ant-tabs-card-padding-sm: 0 8px;
+    }
+
+    .ant-form-item-vertical .ant-form-item-row {
+      flex-direction: row !important;
     }
 
     .sha-toolbar-btn-configurable, .ant-btn {
