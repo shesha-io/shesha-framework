@@ -39,7 +39,7 @@ const ACTION_FULL_NAME_FIELD = 'actionFullName';
 export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = (props) => {
   const [form] = Form.useForm();
   const { formSettings } = useForm();
-  const { value, onChange, readOnly = false, label = 'Action Name', description, hideLabel = false } = props;
+  const { value, onChange, readOnly = false, label = 'Action Name', description } = props;
 
   const { getActions, getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const actions = getActions();
@@ -111,14 +111,13 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
       <Form
         component={false}
         form={form}
-        layout={formSettings.layout}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
         colon={formSettings.colon}
         onValuesChange={onValuesChange}
         initialValues={formValues}
       >
-        <FormItem name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description} hideLabel={!hideLabel}>
+        <FormItem name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description} hideLabel={props.hideLabel}>
           <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
         </FormItem>
         {selectedAction && selectedAction.hasArguments && (

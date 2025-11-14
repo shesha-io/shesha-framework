@@ -109,21 +109,10 @@ export const getSettings = (): FormMarkupWithSettings => {
           },
         ],
       })
-      .addSettingsInputRow({
+      .addConfigurableActionConfigurator({
         id: nanoid(),
-        inputs: [
-          {
-            id: nanoid(),
-            type: 'configurableActionConfigurator',
-            propertyName: 'actionConfiguration',
-            label: 'Action Configuration',
-            hidden: false,
-            hideLabel: false,
-            validate: {},
-            jsSetting: false,
-            settingsValidationErrors: [],
-          },
-        ],
+        propertyName: 'actionConfiguration',
+        label: 'Action Configuration',
       })
       .toJson(),
     formSettings: {
