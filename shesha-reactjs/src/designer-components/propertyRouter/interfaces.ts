@@ -1,3 +1,4 @@
+import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 interface IPropertyRouterContent {
@@ -12,3 +13,10 @@ export interface IPropertyRouterProps extends IConfigurableFormComponent {
   components?: IConfigurableFormComponent[];
   propertyRouteName?: any;
 }
+
+export interface IPropertyRouterComponent extends IConfigurableFormComponent {
+  propertyRouteName?: string;
+  components?: IConfigurableFormComponent[];
+}
+
+export type PropertyRouterComponentDefinition = IToolboxComponent<IPropertyRouterComponent>;

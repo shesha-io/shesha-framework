@@ -33,7 +33,7 @@ import PermissionedObjectsTree from '@/designer-components/permissions/permissio
 import PermissionsTree from '@/designer-components/permissions/permissionsTree/permissionsTree';
 import Progress from '@/designer-components/progress';
 import { PropertyAutocompleteComponent } from '@/designer-components/propertyAutocomplete';
-import Radio from '@/designer-components/radio/radio';
+import RadioComponent from '@/designer-components/radio/radio';
 import Rate from '@/designer-components/rate';
 import ReferenceListAutocompleteComponent from '@/designer-components/referenceListAutocomplete';
 import RichTextEditor from '@/designer-components/richTextEditor';
@@ -134,7 +134,7 @@ export const getToolboxComponents = (
         TextAreaComponent,
         Checkbox,
         CheckboxGroup,
-        Radio,
+        RadioComponent,
         Slider,
         Switch,
         DateField,

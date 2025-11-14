@@ -1,4 +1,6 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IEventHandlers } from '@/components/formDesigner/components/utils';
+import { IToolboxComponent } from '@/interfaces';
 
 export interface IColorPickerComponentProps extends IConfigurableFormComponent {
   title?: string;
@@ -8,3 +10,9 @@ export interface IColorPickerComponentProps extends IConfigurableFormComponent {
   tooltip?: string;
   stylingBox?: string;
 }
+
+interface IColorPickerComopnentCalulatedValues {
+  eventHandlers: IEventHandlers;
+}
+
+export type ColorPickerComponentDefinition = IToolboxComponent<IColorPickerComponentProps, IColorPickerComopnentCalulatedValues>;

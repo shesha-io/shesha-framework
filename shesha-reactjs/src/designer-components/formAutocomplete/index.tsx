@@ -1,14 +1,13 @@
-import { IToolboxComponent } from '@/interfaces';
 import { FileSearchOutlined } from '@ant-design/icons';
 import React from 'react';
-import { IFormAutocompleteComponentProps } from './interfaces';
+import { FormAutocompleteComponentDefinition, IFormAutocompleteComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { IConfigurableItemAutocompleteComponentProps } from '../configurableItemAutocomplete/interfaces';
 
 /**
  * @deprecated. Use ConfigurableItemAutocompleteComponent instead
  */
-const FormAutocompleteComponent: IToolboxComponent<IFormAutocompleteComponentProps> = {
+const FormAutocompleteComponent: FormAutocompleteComponentDefinition = {
   type: 'formAutocomplete',
   name: 'Form Autocomplete',
   icon: <FileSearchOutlined />,

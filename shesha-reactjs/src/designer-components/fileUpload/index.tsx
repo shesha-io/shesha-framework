@@ -2,10 +2,9 @@ import { FileAddOutlined } from '@ant-design/icons';
 import React from 'react';
 import { FileUpload } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { DataTypes, IFormItem, IToolboxComponent } from '@/interfaces';
-import { IStyleType, StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { DataTypes } from '@/interfaces';
+import { StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { useForm } from '@/providers/form';
-import { IConfigurableFormComponent } from '@/providers/form/models';
 import {
   evaluateValueAsString,
   validateConfigurableComponentSettings,
@@ -19,27 +18,10 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { listType } from '../attachmentsEditor/attachmentsEditor';
-import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
 
-export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IStyleType {
-  ownerId: string;
-  ownerType: string | IEntityTypeIdentifier;
-  allowUpload?: boolean;
-  allowReplace?: boolean;
-  allowDelete?: boolean;
-  useSync?: boolean;
-  allowedFileTypes?: string[];
-  isDragger?: boolean;
-  listType?: listType;
-  thumbnailWidth?: string;
-  thumbnailHeight?: string;
-  borderRadius?: number;
-  hideFileName?: boolean;
-}
-
-const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
+const FileUploadComponent: FileUploadComponentDefinition = {
   type: 'fileUpload',
   name: 'File',
   icon: <FileAddOutlined />,

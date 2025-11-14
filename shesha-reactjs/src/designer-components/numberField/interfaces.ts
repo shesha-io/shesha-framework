@@ -1,4 +1,5 @@
 import { IconType } from '@/components';
+import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles, IStyleType } from '@/providers/form/models'; ;
 
 export interface INumberFieldComponentProps extends IConfigurableFormComponent, IInputStyles, IStyleType {
@@ -14,3 +15,10 @@ export interface INumberFieldComponentProps extends IConfigurableFormComponent, 
   suffixIcon?: IconType;
   prefixIcon?: IconType;
 }
+interface INumberFieldComponentCalulatedValues {
+  defaultValue?: string;
+  eventHandlers?: any;
+}
+
+export type NumberFieldComponentDefinition = IToolboxComponent<INumberFieldComponentProps, INumberFieldComponentCalulatedValues>;
+
