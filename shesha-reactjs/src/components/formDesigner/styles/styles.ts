@@ -423,20 +423,22 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
             > div {
              height: 100%;
-             .sha-drop-hint {
-                display: none;
-             }
                 > div:not(.sha-drop-hint) {
                     min-height: 100vh;
                     height: 100%;
                 }
-                    
+
                 > .sha-components-container-inner:not(:has(.sha-component)) {
                     background: url("${getFormDesignerBackgroundSvg()}");
                     background-size: 25vw;
                     background-repeat: no-repeat;
                     background-position: 50% 50%;
                 }
+            }
+
+            /* Hide drop hint in main canvas when background SVG is showing */
+            > div > .${shaDropHint} {
+                display: none;
             }
         }
 
