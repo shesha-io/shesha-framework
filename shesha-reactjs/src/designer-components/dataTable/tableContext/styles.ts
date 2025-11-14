@@ -101,6 +101,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         border-radius: 4px;
         min-height: 100px !important;
         padding: 8px;
+        box-sizing: border-box; /* Include padding and border in width calculation */
         transition: all 0.2s ease;
         width: 100%;
 
@@ -123,6 +124,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             display: flex;
             align-items: center;
             justify-content: center;
+            height: 100px;
         }
 
         .sha-drop-hint {

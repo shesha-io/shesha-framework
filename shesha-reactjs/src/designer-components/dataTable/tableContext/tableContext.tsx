@@ -60,7 +60,11 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
     // Show only the empty state box when empty and in designer mode
     if (!hasChildComponents && isDesignerMode) {
-      return <TableContextEmptyState containerId={id} componentId={id} />;
+      return (
+        <div className={cx(styles.dataContextDesignerEmpty)}>
+          <TableContextEmptyState containerId={id} componentId={id} />
+        </div>
+      );
     }
 
     // Show alert when using DummyTable entity
