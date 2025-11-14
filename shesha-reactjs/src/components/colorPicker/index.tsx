@@ -114,8 +114,8 @@ export const ColorPicker: FC<IColorPickerProps> = ({
   const wrapperStyle: CSSProperties = {
     padding: 0,
     margin: 0,
-    width: '100%',
-    height: '100%',
+    width: 'auto',
+    height: 'auto',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
