@@ -426,7 +426,8 @@ export class DesignerToolbarSettings<T extends object = object> {
           componentRelations: {},
         }, true);
       }
-    }
+    } else
+      formComponent.version = "latest";
 
     formComponent = { ...formComponent, ...restProps };
 
