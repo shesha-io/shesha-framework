@@ -1,8 +1,5 @@
-import _ from 'lodash';
 import React from 'react';
-
-import { ITableViewSelectorComponentProps } from './models';
-import { IToolboxComponent } from '@/interfaces';
+import { ITableViewSelectorComponentProps, TableViewSelectorComponentDefinition } from './models';
 import { migrateFilterMustacheExpressions } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { SelectOutlined, InfoCircleOutlined } from '@ant-design/icons';
@@ -13,7 +10,7 @@ import { useTheme } from '@/providers/theme';
 import { getSettings } from './settingsForm';
 import { useStyles } from '../tableContext/styles';
 
-const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentProps> = {
+const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   type: 'tableViewSelector',
   isInput: false,
   name: 'Table view selector',

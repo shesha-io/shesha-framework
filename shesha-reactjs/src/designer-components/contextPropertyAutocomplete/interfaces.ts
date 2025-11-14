@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 import { IConfigurableFormComponent } from '@/providers';
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface IContextPropertyAutocompleteComponentProps extends IConfigurableFormComponent {
@@ -21,4 +21,4 @@ interface IContextPropertyAutocompleteCalculatedModel {
   setFieldsValue: (values: any) => void;
 }
 
-export type ContextPropertyAutocompleteComponentDefinition = IToolboxComponent<IContextPropertyAutocompleteComponentProps, IContextPropertyAutocompleteCalculatedModel>;
+export type ContextPropertyAutocompleteComponentDefinition = ComponentDefinition<"contextPropertyAutocomplete", IContextPropertyAutocompleteComponentProps, IContextPropertyAutocompleteCalculatedModel>;

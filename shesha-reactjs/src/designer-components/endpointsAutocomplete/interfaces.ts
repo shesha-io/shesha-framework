@@ -1,5 +1,5 @@
 import { EndpointSelectionMode, IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IEndpointsAutocompleteComponentProps extends IConfigurableFormComponent {
@@ -8,4 +8,4 @@ export interface IEndpointsAutocompleteComponentProps extends IConfigurableFormC
   mode?: EndpointSelectionMode;
 }
 
-export type EndpointsAutocompleteComponentDefinition = IToolboxComponent<IEndpointsAutocompleteComponentProps>;
+export type EndpointsAutocompleteComponentDefinition = ComponentDefinition<"endpointsAutocomplete", IEndpointsAutocompleteComponentProps>;

@@ -183,10 +183,12 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   editorAdapter?: IEditorAdapter;
 } & ToolboxComponentAsTemplate;
 
-export type IToolboxComponentBase = IToolboxComponent;
-// export type IToolboxComponentBase = IToolboxComponentGeneric<IConfigurableFormComponent>;
-// export type IToolboxComponent<TModel extends IConfigurableFormComponent, TCalculatedModel = any> = IToolboxComponentBase & IToolboxComponentGeneric<TModel, TCalculatedModel>;
+export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> =
+  Omit<IToolboxComponent<TModel, TCalculatedModel>, 'type'> & {
+    type: TType;
+  } & ToolboxComponentAsTemplate;
 
+export type IToolboxComponentBase = IToolboxComponent;
 
 export interface SettingsMigrationContext {
   formSettings?: IFormSettings;
