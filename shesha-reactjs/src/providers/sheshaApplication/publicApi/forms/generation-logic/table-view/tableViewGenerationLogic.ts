@@ -137,7 +137,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     });
 
     if (tableContainer[0].components && Array.isArray(tableContainer[0].components)) {
-      tableContainer[0].components.push(...builder.toJson());
+      tableContainer[0].components = builder.toJson();
     }
   }
 }
