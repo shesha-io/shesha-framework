@@ -1,8 +1,9 @@
 import { IComponentsContainer, IConfigurableFormComponent, IStyleType } from "@/providers";
 import { ICollapsiblePanelComponentProps, isCollapsiblePanel } from "../collapsiblePanel/interfaces";
-import { ISettingsInputRowProps, isSettingsInputRow } from "../settingsInputRow";
+import { isSettingsInputRow } from "../settingsInputRow";
 import { isPropertyRouterComponent } from "../propertyRouter";
 import { isDefined } from "@/utils/nullables";
+import { ISettingsInputRowProps } from "../settingsInputRow/interfaces";
 
 export const getHeaderStyles = (): IStyleType => (
   {

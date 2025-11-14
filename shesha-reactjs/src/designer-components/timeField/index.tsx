@@ -1,34 +1,23 @@
 import React from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
-import { IToolboxComponent } from '@/interfaces';
+import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IConfigurableFormComponent, IInputStyles } from '@/providers';
+import { IInputStyles } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { ITimePickerProps } from './models';
 import { TimePickerWrapper } from './timePickerWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settings';
 import { IDateFieldProps } from '../dateField/interfaces';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
+import { ITimePickerComponentProps, TimeFieldComponentDefinition } from './models';
 
 const DATE_TIME_FORMAT = 'HH:mm';
 
-
-interface ITimePickerComponentProps extends Omit<ITimePickerProps, 'defaultValue' | 'style'>, IConfigurableFormComponent {
-
-}
-
-interface ITimePickerComponentCalulatedValues {
-  defaultValue?: string;
-  eventHandlers?: IEventHandlers;
-}
-
-export const TimeFieldComponent: IToolboxComponent<ITimePickerComponentProps, ITimePickerComponentCalulatedValues> = {
+export const TimeFieldComponent: TimeFieldComponentDefinition = {
   type: 'timePicker',
   name: 'Time Picker',
   isInput: true,

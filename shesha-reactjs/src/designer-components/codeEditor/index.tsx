@@ -1,5 +1,4 @@
 import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { CodeSandboxOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
@@ -7,7 +6,7 @@ import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { CodeEditor } from './codeEditor';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
+import { CodeEditorComponentDefinition, ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { CodeEditorWithStandardConstants } from './codeEditorWithConstants';
@@ -17,7 +16,7 @@ import { Environment } from '@/publicJsApis/metadataBuilder';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
+const CodeEditorComponent: CodeEditorComponentDefinition = {
   type: 'codeEditor',
   name: 'Code Editor',
   icon: <CodeSandboxOutlined />,

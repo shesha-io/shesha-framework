@@ -1,9 +1,8 @@
-import { IToolboxComponent } from '@/interfaces/index';
 import { FormMarkup } from '@/providers/form/models';
 import { OneToOneOutlined } from '@ant-design/icons';
 import { LabelValueEditor } from '@/components/labelValueEditor/labelValueEditor';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { ILabelValueEditorComponentProps } from './interfaces';
+import { ILabelValueEditorComponentProps, LabelValueEditorComponentDefinition } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -12,7 +11,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentProps> = {
+const LabelValueEditorComponent: LabelValueEditorComponentDefinition = {
   type: 'labelValueEditor',
   name: 'Label Value editor',
   icon: <OneToOneOutlined />,
