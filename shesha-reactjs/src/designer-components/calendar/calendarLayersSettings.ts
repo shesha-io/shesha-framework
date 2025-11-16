@@ -236,29 +236,19 @@ export const getSettings = (): FormMarkupWithSettings => {
             id: eventsTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInputRow({
+                .addConfigurableActionConfigurator({
                   id: nanoid(),
-                  parentId: nanoid(),
-                  inputs: [
-                    {
-                      type: 'configurableActionConfigurator',
-                      id: nanoid(),
-                      propertyName: 'onSelect',
-                      label: 'On Select',
-                      description: 'Action to be executed when the event is selected',
-                      jsSetting: false,
-                      hideLabel: true,
-                    },
-                    {
-                      type: 'configurableActionConfigurator',
-                      id: nanoid(),
-                      propertyName: 'onDblClick',
-                      label: 'On Double Click',
-                      description: 'Action to be executed when the event is double clicked',
-                      jsSetting: false,
-                      hideLabel: true,
-                    },
-                  ],
+                  propertyName: 'onSelect',
+                  label: 'On Select',
+                  description: 'Action to be executed when the event is selected',
+                  jsSetting: false,
+                })
+                .addConfigurableActionConfigurator({
+                  id: nanoid(),
+                  propertyName: 'onDblClick',
+                  label: 'On Double Click',
+                  description: 'Action to be executed when the event is double clicked',
+                  jsSetting: false,
                 })
                 .toJson(),
             ],
