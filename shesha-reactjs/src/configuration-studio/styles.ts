@@ -55,8 +55,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         }
         .${csTreeArea}{
             height: calc(100vh - ${headerHeight}px);
-            overflow: 'auto';
-            scrollbar-width: thin;
+            overflow: auto;
             .${csNavPanelSpinner}{
                 height: 100%;
                 >.${prefixCls}-spin-container {
@@ -95,9 +94,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                     >.ant-tabs-content{
                         height: 100%;
                         overflow: hidden;
-                        >.ant-tabs-tabpane {
-                            height: 100%;
-                        }
                     }
                 }
             }
