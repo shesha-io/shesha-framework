@@ -41,7 +41,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
     `);
 
   const bindingOptionsBtn = cx(css`
-        top: -4px;
+        top: -8px;
         `);
   const jsSwitch = cx(css`
             position: absolute;
