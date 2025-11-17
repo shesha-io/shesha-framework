@@ -38,15 +38,10 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
             position: relative;
             top: 4px;
             }
-
-            
-            +.sha-required-mark {
-            margin-bottom: -16px !important;
-            }
     `);
 
   const bindingOptionsBtn = cx(css`
-        top: -8px;
+        top: -4px;
         `);
   const jsSwitch = cx(css`
             position: absolute;
