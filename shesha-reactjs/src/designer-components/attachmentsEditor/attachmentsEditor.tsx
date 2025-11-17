@@ -70,7 +70,7 @@ const migrateContainerProperties = (
   props: LegacyStyleProps,
   existingContainer: Partial<IStyleType>,
   defaultContainer: IStyleType,
-) => {
+): Partial<IStyleType> => {
   return {
     stylingBox: props.stylingBox || existingContainer.stylingBox || defaultContainer.stylingBox,
     style: props.style || props.containerStyle || existingContainer.style || defaultContainer.style,
@@ -90,16 +90,25 @@ const migrateContainerProperties = (
 const migrateFontProperties = (
   props: LegacyStyleProps,
   existingFont: IStyleType['font'],
-) => {
+): IStyleType['font'] => {
+  // Define valid text alignment values based on what AlignSetting accepts
+  const validAlignValues = ['left', 'center', 'right'] as const;
+  type ValidAlign = typeof validAlignValues[number];
+
+  const normalizeAlign = (align: string | undefined): ValidAlign => {
+    if (align && validAlignValues.includes(align as ValidAlign)) {
+      return align as ValidAlign;
+    }
+    return 'left'; // Default fallback
+  };
+
   return {
-    font: {
-      ...existingFont,
-      size: props.fontSize || existingFont.size,
-      color: props.fontColor || existingFont.color,
-      weight: props.fontWeight || existingFont.weight,
-      type: props.fontFamily || existingFont.type,
-      align: props.fontAlign || existingFont.align,
-    },
+    ...existingFont,
+    size: props.fontSize || existingFont?.size,
+    color: props.fontColor || existingFont?.color,
+    weight: props.fontWeight || existingFont?.weight,
+    type: props.fontFamily || existingFont?.type,
+    align: normalizeAlign(props.fontAlign || existingFont?.align),
   };
 };
 
