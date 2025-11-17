@@ -172,9 +172,23 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${shaToolboxComponents}{
             height: 100%;
-            overflow-y: auto; 
-            overflow-x: hidden; 
+            overflow-y: auto;
+            overflow-x: hidden;
             margin-bottom: 1rem;
+            scrollbar-width: thin;
+            &::-webkit-scrollbar {
+                width: 6px;
+            }
+            &::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: #d3d3d3;
+                border-radius: 3px;
+            }
+            &::-webkit-scrollbar-thumb:hover {
+                background: #a0a0a0;
+            }
         }
         .${shaDesignerToolbar} {
             background: white;
@@ -253,7 +267,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         .${shaDesignerToolbox} {
-            height: 85vh;
             margin-bottom: 3rem;
             .${shaDatasourceTree} {
                 .${prefixCls}-tree-switcher-noop {
@@ -374,6 +387,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         
+        .${designerClassNames.mainArea}{
+            height: calc(100vh - 60px - 56px);
+        }
+
         .${designerWorkArea}{
             background-color: white;
             height: 100%;

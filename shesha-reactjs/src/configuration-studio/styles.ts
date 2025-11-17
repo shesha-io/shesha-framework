@@ -57,6 +57,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         .${csTreeArea}{
             height: calc(100vh - ${headerHeight}px);
             overflow: 'auto';
+            scrollbar-width: thin;
             .${csNavPanelSpinner}{
                 height: 100%;
                 >.${prefixCls}-spin-container {
@@ -86,18 +87,30 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         }
         .${csWorkArea}{
             height: calc(100vh - ${headerHeight}px);
-            overflow: auto;
+            overflow: hidden;
 
             .${csDocTabs}{
-            height: 100%;
+            height: calc(100vh - ${headerHeight}px);
                 >.ant-tabs-content-holder{
-                    height: 100%;
+                    height: calc(100vh - ${headerHeight}px - 56px);
+                    scrollbar-width: thin;
+                    &::-webkit-scrollbar {
+                        width: 6px;
+                    }
+                    &::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+                    &::-webkit-scrollbar-thumb {
+                        background: #d3d3d3;
+                        border-radius: 3px;
+                    }
+                    &::-webkit-scrollbar-thumb:hover {
+                        background: #a0a0a0;
+                    }
                     >.ant-tabs-content{
                         height: 100%;
-                        overflow: hidden;
                         >.ant-tabs-tabpane {
                             height: 100%;
-                            overflow: auto;
                         }
                     }
                 }

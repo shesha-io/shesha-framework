@@ -26,7 +26,20 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       .${sidebarContainerMainAreaBody}{
         overflow: auto;
         height: 100%;
-
+        scrollbar-width: thin;
+        &::-webkit-scrollbar {
+          width: 6px;
+        }
+        &::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+          background: #d3d3d3;
+          border-radius: 3px;
+        }
+        &::-webkit-scrollbar-thumb:hover {
+          background: #a0a0a0;
+        }
       }
     
       .${sidebarContainerHeader} {
@@ -51,14 +64,27 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             width: ${leftSidebarWidth};
             display: block;
             overflow: auto;
-            height: calc(100vh - 120px);
+            scrollbar-width: thin;
+            &::-webkit-scrollbar {
+              width: 6px;
+            }
+            &::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            &::-webkit-scrollbar-thumb {
+              background: #d3d3d3;
+              border-radius: 3px;
+            }
+            &::-webkit-scrollbar-thumb:hover {
+              background: #a0a0a0;
+            }
 
             .${sidebarHeader} {
               .sidebar-header-title {
                 display: flex;
                 width:100%;
               }
-            
+
             }
           }
     
@@ -101,8 +127,23 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             overflow-x: hidden;
             overflow-y: auto;
             display: flex;
+            height: calc(100vh - 60px - 56px - ${sidebarBtnHeight});
             padding: ${sheshaStyles.paddingLG}px;
             flex: 1;
+            scrollbar-width: thin;
+            &::-webkit-scrollbar {
+              width: 6px;
+            }
+            &::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            &::-webkit-scrollbar-thumb {
+              background: #d3d3d3;
+              border-radius: 3px;
+            }
+            &::-webkit-scrollbar-thumb:hover {
+              background: #a0a0a0;
+            }
     
             .sidebar-body-content {
               width: 100%;
@@ -110,7 +151,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
               &.open {
                 display: block;
-                height: 85vh;
               }
             }
     
@@ -126,7 +166,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
         .${sidebarContainerLeft} {
           border-right: 1px solid lightgrey;
-          min-height: calc(100vh - 150px);
     
           &.open {
             .toggle-open-btn {
@@ -137,7 +176,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
         .${sidebarContainerRight} {
           border-left: 1px solid lightgrey;
-          min-height: calc(100vh - 150px);
     
           &.open {
             .toggle-open-btn {
@@ -169,6 +207,20 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         .${canvasWrapper} {
           height: calc(100vh - 120px);
           overflow: auto;
+          scrollbar-width: thin;
+          &::-webkit-scrollbar {
+            width: 6px;
+          }
+          &::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          &::-webkit-scrollbar-thumb {
+            background: #d3d3d3;
+            border-radius: 3px;
+          }
+          &::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+          }
         }
         
         [data-sha-c-type="datatable"] {
@@ -177,6 +229,20 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           display: flex;
           flex-direction: column;
           overflow: auto;
+          scrollbar-width: thin;
+          &::-webkit-scrollbar {
+            width: 6px;
+          }
+          &::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          &::-webkit-scrollbar-thumb {
+            background: #d3d3d3;
+            border-radius: 3px;
+          }
+          &::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+          }
         }
         }
 
