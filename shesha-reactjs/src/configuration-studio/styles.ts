@@ -102,9 +102,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                 }
             }
         }
-        .${csDocEditor}{
-            padding: 0;
-        }
+            .${csDocEditor}{
+                padding: 0;
+            }
   `);
 
   return {
