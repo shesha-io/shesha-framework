@@ -300,7 +300,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       mobile: { ...prev.mobile, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
       tablet: { ...prev.tablet, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
     }))
-    .add<IAttachmentsEditorProps>(11, (prev: IAttachmentsEditorProps & LegacyStyleProps) => {
+    .add<IAttachmentsEditorProps>(13, (prev: IAttachmentsEditorProps & LegacyStyleProps) => {
       // Handle components with root-level styling properties from legacy imports
       // This covers v0.43 imports that have styling properties at root level instead of device-specific structure
       if (!hasLegacyStyleProperties(prev)) return prev;
