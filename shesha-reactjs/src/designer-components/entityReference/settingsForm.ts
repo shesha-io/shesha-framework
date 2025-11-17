@@ -382,7 +382,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                         })
                         .addSettingsInputRow({
                           id: nanoid(),
-                          parentId: appearanceTabId,
+                          parentId: dataTabId,
                           readOnly: {
                             _code: 'return getSettingValue(data?.readOnly);',
                             _mode: 'code',
@@ -480,7 +480,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                               label: 'Handle Fail',
                               parentId: dataTabId,
                               type: 'switch',
-                              jsSetting: false,
+                              jsSetting: true,
                             },
                           ],
                         })
