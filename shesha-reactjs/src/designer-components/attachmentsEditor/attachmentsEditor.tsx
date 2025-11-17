@@ -19,7 +19,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
-import { containerDefaultStyles, defaultStyles } from './utils';
+import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles } from './utils';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
