@@ -179,7 +179,11 @@ export const getSettings = (): FormMarkupWithSettings => {
                       mode: 'single',
                       description: 'Property that will be used to show when the event starts',
                       validate: { required: true },
-                      modelType: '{{data.entityType}}',
+                      modelType: {
+                        _code: 'return data?.entityType;',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                       autoFillProps: false,
                       jsSetting: false,
                     },
@@ -191,7 +195,11 @@ export const getSettings = (): FormMarkupWithSettings => {
                       mode: 'single',
                       description: 'Property that will be used to show when the event ends',
                       validate: { required: true },
-                      modelType: '{{data.entityType}}',
+                      modelType: {
+                        _code: 'return data?.entityType;',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                       autoFillProps: false,
                       jsSetting: false,
                     },
@@ -217,7 +225,11 @@ export const getSettings = (): FormMarkupWithSettings => {
                       mode: 'multiple',
                       description: 'List of all the properties you want to fetch',
                       validate: { required: true },
-                      modelType: '{{data.entityType}}',
+                      modelType: {
+                        _code: 'return data?.entityType;',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                       autoFillProps: false,
                       hidden: {
                         _code: 'return getSettingValue(data?.overfetch) !== true',
