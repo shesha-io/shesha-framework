@@ -374,10 +374,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
             }
         }
-        
-        .${designerClassNames.mainArea}{
-            height: calc(100vh - 60px - 56px);
-        }
 
         .${designerWorkArea}{
             background-color: white;

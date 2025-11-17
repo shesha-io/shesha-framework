@@ -51,10 +51,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             width: ${leftSidebarWidth};
             display: block;
             overflow: auto;
-            scrollbar-width: thin;
-            &::-webkit-scrollbar {
-              width: 6px;
-            }
+            ${sheshaStyles.thinScrollbars}
 
             .${sidebarHeader} {
               .sidebar-header-title {
@@ -107,10 +104,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             height: calc(100vh - 60px - 56px - ${sidebarBtnHeight});
             padding: ${sheshaStyles.paddingLG}px;
             flex: 1;
-            scrollbar-width: thin;
-            &::-webkit-scrollbar {
-              width: 6px;
-            }
+            ${sheshaStyles.thinScrollbars}
     
             .sidebar-body-content {
               width: 100%;
@@ -174,23 +168,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         .${canvasWrapper} {
           height: calc(100vh - 120px);
           overflow: auto;
-          scrollbar-width: thin;
-          &::-webkit-scrollbar {
-            width: 6px;
-          }
-        }
-        
-        [data-sha-c-type="datatable"] {
-          .${canvasWrapper} {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          overflow: auto;
-          scrollbar-width: thin;
-          &::-webkit-scrollbar {
-            width: 6px;
-          }
-        }
+          ${sheshaStyles.thinScrollbars}
         }
 
         .${sidebarContainerMainArea} {
