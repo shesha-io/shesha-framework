@@ -19,12 +19,111 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
-import { containerDefaultStyles, defaultStyles } from './utils';
+import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles } from './utils';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
+
+const DEVICE_TYPES = ['desktop', 'mobile', 'tablet'] as const;
+type DeviceType = typeof DEVICE_TYPES[number];
+
+// Legacy properties from v0.43 that need migration
+type LegacyStyleProps = Partial<{
+  // Legacy container properties
+  stylingBox: string;
+  style: string;
+  width: string;
+  height: string;
+  maxWidth: string;
+  maxHeight: string;
+  minWidth: string;
+  minHeight: string;
+  containerStyle: string;
+  containerClass: string;
+  // Legacy font properties
+  fontSize: number;
+  fontColor: string;
+  fontWeight: string;
+  fontFamily: string;
+  fontAlign: string;
+}>;
+
+// Helper function to check if an object has legacy styling properties
+const hasLegacyStyleProperties = (props: LegacyStyleProps): boolean => {
+  const legacyContainerProps = [
+    'stylingBox', 'style', 'width', 'height', 'maxWidth', 'maxHeight',
+    'minWidth', 'minHeight', 'containerStyle', 'containerClass',
+  ] as const;
+
+  const legacyFontProps = [
+    'fontSize', 'fontColor', 'fontWeight', 'fontFamily', 'fontAlign',
+  ] as const;
+
+  return legacyContainerProps.some((prop) => props[prop] !== undefined) ||
+    legacyFontProps.some((prop) => props[prop] !== undefined);
+};
+
+// Helper function to migrate container-related properties
+const migrateContainerProperties = (
+  props: LegacyStyleProps,
+  existingContainer: Partial<IStyleType>,
+  defaultContainer: IStyleType,
+): Partial<IStyleType> => {
+  return {
+    stylingBox: props.stylingBox || existingContainer.stylingBox || defaultContainer.stylingBox,
+    style: props.style || props.containerStyle || existingContainer.style || defaultContainer.style,
+    dimensions: {
+      ...(existingContainer.dimensions || defaultContainer.dimensions),
+      width: props.width || existingContainer.dimensions?.width || 'auto',
+      height: props.height || existingContainer.dimensions?.height || 'auto',
+      maxWidth: props.maxWidth || existingContainer.dimensions?.maxWidth || 'auto',
+      maxHeight: props.maxHeight || existingContainer.dimensions?.maxHeight || '140px',
+      minWidth: props.minWidth || existingContainer.dimensions?.minWidth || '0px',
+      minHeight: props.minHeight || existingContainer.dimensions?.minHeight || '0px',
+    },
+  };
+};
+
+// Helper function to migrate font properties
+const migrateFontProperties = (
+  props: LegacyStyleProps,
+  existingFont: IStyleType['font'],
+): IStyleType['font'] => {
+  // Define valid text alignment values based on what AlignSetting accepts
+  const validAlignValues = ['left', 'center', 'right'] as const;
+  type ValidAlign = typeof validAlignValues[number];
+
+  const normalizeAlign = (align: string | undefined): ValidAlign => {
+    if (align && validAlignValues.includes(align as ValidAlign)) {
+      return align as ValidAlign;
+    }
+    return 'left'; // Default fallback
+  };
+
+  return {
+    ...existingFont,
+    size: props.fontSize || existingFont?.size,
+    color: props.fontColor || existingFont?.color,
+    weight: props.fontWeight || existingFont?.weight,
+    type: props.fontFamily || existingFont?.type,
+    align: normalizeAlign(props.fontAlign || existingFont?.align),
+  };
+};
+
+// Helper function to remove legacy properties from the result object
+const removeLegacyProperties = (result: Record<string, unknown>): void => {
+  const legacyProps = [
+    'stylingBox', 'style', 'width', 'height', 'maxWidth', 'maxHeight',
+    'minWidth', 'minHeight', 'containerStyle', 'containerClass',
+    'fontSize', 'fontColor', 'fontWeight', 'fontFamily', 'fontAlign',
+  ];
+
+  legacyProps.forEach((prop) => {
+    delete result[prop];
+  });
+};
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
   ownerId: string;
   ownerType: string | IEntityTypeIdentifier;
@@ -166,7 +265,73 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
     .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
-    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged })),
+    .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged }))
+    .add<IAttachmentsEditorProps>(9, (prev) => ({
+      ...prev,
+      desktop: {
+        ...defaultStyles(),
+        container: {
+          ...containerDefaultStyles(),
+          stylingBox: prev.stylingBox || '{}',
+          style: prev.style || '',
+        },
+      },
+      mobile: {
+        ...defaultStyles(),
+        container: {
+          ...containerDefaultStyles(),
+          stylingBox: prev.stylingBox || '{}',
+          style: prev.style || '',
+        },
+      },
+      tablet: {
+        ...defaultStyles(),
+        container: {
+          ...containerDefaultStyles(),
+          stylingBox: prev.stylingBox || '{}',
+          style: prev.style || '',
+        },
+      },
+    }))
+    .add<IAttachmentsEditorProps>(10, (prev) => ({ ...prev, downloadZip: prev.downloadZip || false, propertyName: prev.propertyName ?? '' }))
+    .add<IAttachmentsEditorProps>(11, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '', onChangeCustom: prev?.onFileChanged }))
+    .add<IAttachmentsEditorProps>(12, (prev) => ({
+      ...prev, desktop: { ...prev.desktop, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
+      mobile: { ...prev.mobile, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
+      tablet: { ...prev.tablet, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
+    }))
+    .add<IAttachmentsEditorProps>(13, (prev: IAttachmentsEditorProps & LegacyStyleProps) => {
+      // Handle components with root-level styling properties from legacy imports
+      // This covers v0.43 imports that have styling properties at root level instead of device-specific structure
+      if (!hasLegacyStyleProperties(prev)) return prev;
+
+      const result = { ...prev };
+
+      // Cache default styles to avoid repeated function calls
+      const defaultStylesCache = defaultStyles();
+      const containerDefaultsCache = containerDefaultStyles();
+
+      // Apply migrations to all device types without clobbering existing overrides
+      DEVICE_TYPES.forEach((device: DeviceType) => {
+        if (!result[device]) {
+          result[device] = { ...defaultStylesCache };
+        }
+
+        const existingContainer = result[device].container ?? { ...containerDefaultsCache };
+        const existingFont = result[device].font ?? { ...defaultStylesCache.font };
+
+        const containerUpdates = migrateContainerProperties(prev, existingContainer, containerDefaultsCache);
+        const fontUpdates = migrateFontProperties(prev, existingFont);
+
+        result[device].container = { ...existingContainer, ...containerUpdates };
+        result[device].font = fontUpdates;
+      });
+
+      // Clean up legacy properties
+      removeLegacyProperties(result);
+
+      return result;
+    }),
 };
 
 export default AttachmentsEditor;
