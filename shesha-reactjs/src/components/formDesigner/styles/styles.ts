@@ -172,10 +172,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${shaToolboxComponents}{
             height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
+            overflow-y: auto; 	            overflow-y: auto;
+            overflow-x: hidden; 	            overflow-x: hidden;
             margin-bottom: 1rem;
-            scrollbar-width: thin;
             ${sheshaStyles.thinScrollbars}
         }
         .${shaDesignerToolbar} {

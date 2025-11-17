@@ -15,7 +15,7 @@ const ComponentPropertiesPanelInner: FC = () => {
           description={readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'}
         />
       )}
-      <div ref={settingsPanelRef}></div>
+      <div style={{ paddingBottom: '50px' }} ref={settingsPanelRef}></div>
     </>
   );
 };
