@@ -1,4 +1,4 @@
-import { createStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
   const csHeader = "sha-cs-header";
@@ -18,7 +18,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const csQuickInfoIcons = 'sha-cs-quick-info-icons';
   const csDocTabs = 'sha-cs-doc-tabs';
   const csDocEditor = 'sha-cs-doc-editor';
-  const csMainArea = "sha-cs-main-area";
 
   const headerHeight = 60;
 
@@ -39,7 +38,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                 align-items: center;
             }
             .${csHeaderLeft}{
-            }
+            }s
             .${csHeaderCenter}{
                 .${csQuickInfoIcons}{
                     >.${iconPrefixCls} {
@@ -93,20 +92,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             height: calc(100vh - ${headerHeight}px);
                 >.ant-tabs-content-holder{
                     height: calc(100vh - ${headerHeight}px - 56px);
-                    scrollbar-width: thin;
-                    &::-webkit-scrollbar {
-                        width: 6px;
-                    }
-                    &::-webkit-scrollbar-track {
-                        background: transparent;
-                    }
-                    &::-webkit-scrollbar-thumb {
-                        background: #d3d3d3;
-                        border-radius: 3px;
-                    }
-                    &::-webkit-scrollbar-thumb:hover {
-                        background: #a0a0a0;
-                    }
+                    ${sheshaStyles.thinScrollbars}
                     >.ant-tabs-content{
                         height: 100%;
                         >.ant-tabs-tabpane {
@@ -117,9 +103,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             }
             .${csDocEditor}{
                 padding: 0;
-                .${csMainArea}{
-                    height: 100%;
-                }
             }
         }
   `);

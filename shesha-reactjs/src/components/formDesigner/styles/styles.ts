@@ -176,19 +176,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             overflow-x: hidden;
             margin-bottom: 1rem;
             scrollbar-width: thin;
-            &::-webkit-scrollbar {
-                width: 6px;
-            }
-            &::-webkit-scrollbar-track {
-                background: transparent;
-            }
-            &::-webkit-scrollbar-thumb {
-                background: #d3d3d3;
-                border-radius: 3px;
-            }
-            &::-webkit-scrollbar-thumb:hover {
-                background: #a0a0a0;
-            }
+            ${sheshaStyles.thinScrollbars}
         }
         .${shaDesignerToolbar} {
             background: white;

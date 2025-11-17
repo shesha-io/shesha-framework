@@ -26,20 +26,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       .${sidebarContainerMainAreaBody}{
         overflow: auto;
         height: 100%;
-        scrollbar-width: thin;
-        &::-webkit-scrollbar {
-          width: 6px;
-        }
-        &::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        &::-webkit-scrollbar-thumb {
-          background: #d3d3d3;
-          border-radius: 3px;
-        }
-        &::-webkit-scrollbar-thumb:hover {
-          background: #a0a0a0;
-        }
+        ${sheshaStyles.thinScrollbars}
       }
     
       .${sidebarContainerHeader} {
@@ -67,16 +54,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             scrollbar-width: thin;
             &::-webkit-scrollbar {
               width: 6px;
-            }
-            &::-webkit-scrollbar-track {
-              background: transparent;
-            }
-            &::-webkit-scrollbar-thumb {
-              background: #d3d3d3;
-              border-radius: 3px;
-            }
-            &::-webkit-scrollbar-thumb:hover {
-              background: #a0a0a0;
             }
 
             .${sidebarHeader} {
@@ -133,16 +110,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             scrollbar-width: thin;
             &::-webkit-scrollbar {
               width: 6px;
-            }
-            &::-webkit-scrollbar-track {
-              background: transparent;
-            }
-            &::-webkit-scrollbar-thumb {
-              background: #d3d3d3;
-              border-radius: 3px;
-            }
-            &::-webkit-scrollbar-thumb:hover {
-              background: #a0a0a0;
             }
     
             .sidebar-body-content {
@@ -211,16 +178,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           &::-webkit-scrollbar {
             width: 6px;
           }
-          &::-webkit-scrollbar-track {
-            background: transparent;
-          }
-          &::-webkit-scrollbar-thumb {
-            background: #d3d3d3;
-            border-radius: 3px;
-          }
-          &::-webkit-scrollbar-thumb:hover {
-            background: #a0a0a0;
-          }
         }
         
         [data-sha-c-type="datatable"] {
@@ -232,16 +189,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           scrollbar-width: thin;
           &::-webkit-scrollbar {
             width: 6px;
-          }
-          &::-webkit-scrollbar-track {
-            background: transparent;
-          }
-          &::-webkit-scrollbar-thumb {
-            background: #d3d3d3;
-            border-radius: 3px;
-          }
-          &::-webkit-scrollbar-thumb:hover {
-            background: #a0a0a0;
           }
         }
         }
