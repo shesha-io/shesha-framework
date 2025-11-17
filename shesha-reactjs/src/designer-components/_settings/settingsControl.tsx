@@ -58,7 +58,8 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   };
 
   useEffect(() => {
-    onInternalChange({ ...setting, _mode: mode }, mode);
+    if (setting._mode !== mode)
+      onInternalChange({ ...setting, _mode: mode }, mode);
   }, [mode]);
 
   const codeOnChange = (val: any): void => {

@@ -7,7 +7,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         justify-content: center;
         flex-direction: column;
         min-height: 60px;
-        border: 2px dashed ${token.colorPrimary}40;
         border-radius: 8px;
         background-color: ${token.colorPrimaryBg}20;
         margin: 4px 0;
@@ -15,7 +14,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         padding-top: 8px;
 
         &:hover {
-            border-color: ${token.colorPrimary}60;
             background-color: ${token.colorPrimaryBg}30;
         }
 
@@ -41,7 +39,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         align-items: center;
         justify-content: center;
         min-height: 60px;
-        border: 2px dashed ${token.colorWarning}40;
         border-radius: 8px;
         background-color: ${token.colorWarningBg}20;
         margin: 4px 0;
@@ -66,14 +63,12 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         display: flex;
         flex-direction: column;
         min-height: 40px;
-        border: 1px solid ${token.colorPrimary}60;
         border-radius: 6px;
         background-color: ${token.colorPrimaryBg}10;
         margin: 4px 0;
         transition: all 0.2s ease;
 
         &:hover {
-            border-color: ${token.colorPrimary}80;
             background-color: ${token.colorPrimaryBg}15;
         }
 
@@ -104,10 +99,11 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   const dataContextComponentsContainer = cx("sha-data-context-components-container", css`
         border: 2px dotted ${token.colorPrimary}30;
         border-radius: 4px;
-        margin: 8px;
-        min-height: 60px;
+        min-height: 100px !important;
         padding: 8px;
+        box-sizing: border-box; /* Include padding and border in width calculation */
         transition: all 0.2s ease;
+        width: 100%;
 
         &:hover {
             border-color: ${token.colorPrimary}50;
@@ -128,6 +124,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             display: flex;
             align-items: center;
             justify-content: center;
+            height: 100px;
         }
 
         .sha-drop-hint {

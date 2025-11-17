@@ -9,6 +9,7 @@ import {
 import { FormDesignerInstance } from './instance';
 import { FormDesignerSubscriptionType } from './models';
 import { useFormPersister } from '../formPersisterProvider';
+import { useIsDevMode } from '@/hooks/useIsDevMode';
 
 export interface IFormDesignerProviderProps {
   flatMarkup: IFlatComponentsStructure;
@@ -25,6 +26,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const formPersister = useFormPersister();
   const settingsPanelRef = useRef<HTMLDivElement>();
+  const devMode = useIsDevMode();
 
   const [formDesigner] = useState<IFormDesignerInstance>(() => {
     return new FormDesignerInstance({
@@ -34,9 +36,10 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
       formFlatMarkup: flatMarkup,
       formSettings,
       settingsPanelRef,
-      logEnabled: false,
+      logEnabled: devMode,
     });
   });
+
   useEffect(() => {
     formDesigner.setReadOnly(readOnly);
   }, [formDesigner, readOnly]);

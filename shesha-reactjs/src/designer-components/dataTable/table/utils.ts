@@ -132,8 +132,14 @@ export const propertyToDataColumn = (property: IPropertyMetadata, index: number)
 
 /**
  * Calculates default columns for a DataTable
+ *
+ * Processing order:
+ * 1. Filter out auditing and framework-related properties
+ * 2. Filter by supported data types
+ * 3. Apply maxNumber limit (8) to the resulting valid columns
+ *
  * @param metadata - Model metadata containing properties
- * @returns Promise resolving to array of DataTable column configurations
+ * @returns Promise resolving to array of DataTable column configurations (max 8 valid columns)
  */
 export const calculateDefaultColumns = async (metadata: IModelMetadata): Promise<IDataColumnsProps[]> => {
   if (!metadata || !metadata.properties) {
@@ -164,8 +170,14 @@ export const calculateDefaultColumns = async (metadata: IModelMetadata): Promise
   // Filter out auditing columns and framework-related properties
   const filteredProperties = filterPropertiesForTable(properties);
 
-  // Get properties suitable for table columns
-  const tableColumns = filterPropertiesBySupportedTypes(filteredProperties);
+  // Get properties suitable for table columns (filter by supported types)
+  const supportedProperties = filterPropertiesBySupportedTypes(filteredProperties);
+
+  // Apply maxNumber limit to the list of supported properties
+  const maxNumber = 8;
+  const tableColumns = maxNumber > 0 && supportedProperties.length > maxNumber
+    ? supportedProperties.slice(0, maxNumber)
+    : supportedProperties;
 
   // Create IDataColumnsProps from filtered properties
   const columnItems: IDataColumnsProps[] = tableColumns.map(propertyToDataColumn);

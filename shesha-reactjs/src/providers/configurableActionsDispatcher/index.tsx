@@ -22,7 +22,7 @@ import { ActionParametersDictionary, GenericDictionary } from '@/interfaces';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 import { isDefined } from '@/utils/nullables';
 
-const getActualActionArguments = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(action: IConfigurableActionDescriptor<TArguments>, actionArguments: TArguments): TArguments => {
+const getActualActionArguments = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(action: IConfigurableActionDescriptor<TArguments>, actionArguments: TArguments | undefined): TArguments | undefined => {
   const { migrator } = action;
   if (!migrator)
     return actionArguments;

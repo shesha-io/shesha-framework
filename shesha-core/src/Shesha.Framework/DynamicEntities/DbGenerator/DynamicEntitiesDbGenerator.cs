@@ -164,12 +164,15 @@ namespace Shesha.DynamicEntities.DbGenerator
                         ? typeof(StoredFile).FullName.NotNull()
                         : entityProperty.EntityFullClassName.NotNull()
                 )).NotNull();
+                var primarySchema = entityProperty.DataType == DataTypes.File
+                    ? MappingHelper.GetSchemaName(typeof(StoredFile))
+                    : referenceConfig?.SchemaName;
                 var primaryTable = entityProperty.DataType == DataTypes.File
                     ? MappingHelper.GetTableName(typeof(StoredFile))
                     : referenceConfig?.TableName.NotNull();
-                primaryTable = referenceConfig?.Source == Domain.Enums.MetadataSourceType.UserDefined
-                    ? $"dynamic.{primaryTable}"
-                    : primaryTable;
+                primaryTable = primarySchema.IsNullOrEmpty()
+                    ? primaryTable
+                    : $"{primarySchema}.{primaryTable}";
                 await _dbActions.CreateEntityReferenceColumnAsync($"{columnName}", primaryTable.NotNull(), "id"); // ToDo: AS - get Id Column
                 entityProperty.CreatedInDb = true;
                 await _entityPropertyRepository.UpdateAsync(entityProperty);

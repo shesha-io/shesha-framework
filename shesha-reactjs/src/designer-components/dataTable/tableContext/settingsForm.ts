@@ -49,7 +49,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       parentId: commonTabId,
                       label: 'Disable Refresh Data',
                       tooltip:
-                        "Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)",
+                        "Return 'true' if dataContext is not ready to refresh data (filter data is not ready, etc...)",
                       readOnly: {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
@@ -121,6 +121,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             parentId: dataTabId,
                             hidden: false,
                             jsSetting: true,
+                            width: '100%',
                           },
                         ],
                       })
@@ -153,6 +154,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             settingsValidationErrors: [],
                             jsSetting: true,
                             placeholder: '',
+                            width: '100%',
                           },
                         ],
                       })
@@ -268,6 +270,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                             jsSetting: false,
+                            width: '100%',
                           },
                         ],
                       })

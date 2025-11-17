@@ -1,12 +1,15 @@
 import { createNamedContext } from "@/utils/react";
 import { ConfigurationStudio, IConfigurationStudio } from "./configurationStudio";
-import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from "react";
+import React, { FC, PropsWithChildren, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { useHttpClient, useShaRouting } from "@/providers";
 import { asyncStorage } from "../storage";
 import { useModalApi } from "./modalApi";
 import { useNotificationApi } from "./notificationApi";
 import { isDefined } from "../../utils/nullables";
 import { useSearchParams } from "next/navigation";
+
+export const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
   const [, forceUpdate] = React.useState({});
@@ -42,16 +45,10 @@ const useConfigurationStudioSingletone = (): IConfigurationStudio[] => {
   }, [configurationStudio, docId]);
 
   useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent): void => {
-      if (configurationStudio.hasUnsavedChanges) {
-        e.preventDefault();
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [configurationStudio]);
-
+    return shaRouter.registerNavigationValidator((url) => {
+      return Promise.resolve(configurationStudio.confirmNavigation(url));
+    });
+  }, [configurationStudio, shaRouter]);
 
   return [configurationStudio];
 };

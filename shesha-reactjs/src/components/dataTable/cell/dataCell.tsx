@@ -48,6 +48,7 @@ export const DefaultDataDisplayCell = <D extends object = object, V = number>(pr
     case 'array': {
       switch (columnConfig.dataFormat) {
         case 'reference-list-item':
+        case 'multivalue-reference-list':
           return <MultivalueReferenceListCell<D, V> {...cellProps} />;
         case 'entity':
           return <MultiEntityCell<D, V> {...cellProps} />;

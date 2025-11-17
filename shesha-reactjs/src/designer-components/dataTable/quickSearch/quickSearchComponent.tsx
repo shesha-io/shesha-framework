@@ -1,7 +1,5 @@
 import React, { CSSProperties, useMemo } from 'react';
-import { IConfigurableFormComponent } from '@/providers/form/models';
 import { GlobalTableFilter } from '@/components';
-import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SearchOutlined, InfoCircleOutlined } from '@ant-design/icons';
@@ -13,17 +11,12 @@ import Search from 'antd/lib/input/Search';
 import { useDataTableStore } from '@/index';
 import { useStyles } from '../tableContext/styles';
 import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
-import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { useTheme } from '@/providers/theme';
+import { IQuickSearchComponentProps, QuickSearchComponentDefinition } from './interfaces';
 
-export interface IQuickSearchComponentProps extends IConfigurableFormComponent {
-  block?: boolean;
-  dimensions?: IDimensionsValue;
-}
-
-const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
+const QuickSearchComponent: QuickSearchComponentDefinition = {
   type: 'datatable.quickSearch',
   isInput: false,
   name: 'Quick Search',

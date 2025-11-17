@@ -1,17 +1,17 @@
 import { AutocompleteDataSourceType } from '@/components/autocomplete';
-import { CodeLanguages } from '../codeEditor/types';
 import { CodeTemplateSettings, ResultType } from '@/components/codeEditor/models';
-import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting } from '@/index';
-import { SizeType } from 'antd/es/config-provider/SizeContext';
-import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
-import { ComponentType } from '@/components/formComponentSelector';
-import { IConfigurableActionConfiguratorComponentProps } from '../configurableActionsConfigurator/interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
-import { GetResultTypeFunc } from '../codeEditor/interfaces';
-import { EndpointSelectionMode, IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
-import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { EntityTypeAutocompleteType } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
+import { EndpointSelectionMode, IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
+import { ComponentType } from '@/components/formComponentSelector';
+import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting, IToolboxComponent } from '@/interfaces';
+import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { SizeType } from 'antd/es/config-provider/SizeContext';
+import { GetResultTypeFunc } from '../codeEditor/interfaces';
+import { CodeLanguages } from '../codeEditor/types';
+import { IConfigurableActionConfiguratorComponentProps } from '../configurableActionsConfigurator/interfaces';
+import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
 
 export interface IRadioOption {
   value: string | number;
@@ -376,6 +376,7 @@ export interface IItemListConfiguratorModalSettingsInputProps extends ISettingsI
   buttonTextReadOnly?: string;
   modalSettings?: IItemListConfiguratorModalProps<any>['modalSettings'];
   modalReadonlySettings?: IItemListConfiguratorModalProps<any>['modalSettings'];
+  settings?: FormMarkup;
   settingsMarkupFactory?: FormMarkup;
 }
 export const isItemListConfiguratorModalProps = (value: ISettingsInputBase): value is IItemListConfiguratorModalSettingsInputProps => value.type === 'itemListConfiguratorModal';
@@ -450,6 +451,12 @@ export interface ITooltipSettingsInputProps extends ISettingsInputBase {
 }
 export const isTooltipProps = (value: ISettingsInputBase): value is ITooltipSettingsInputProps => value.type === 'tooltip';
 
+// Layer Selector Settings Modal
+export interface ILayerSelectorSettingsInputProps extends ISettingsInputBase {
+  type: 'layerSelectorSettingsModal';
+  settings?: FormMarkup;
+}
+
 // Common styling props that can be applied to multiple components
 export interface ICommonStylingProps {
   variant?: 'borderless' | 'filled' | 'outlined';
@@ -500,7 +507,8 @@ export type BaseInputProps =
   IFormAutocompleteSettingsInputProps |
   ICustomLabelValueEditorSettingsInputProps |
   IKeyInformationBarColumnsInputProps |
-  ISizableColumnsConfigSettingsInputProps;
+  ISizableColumnsConfigSettingsInputProps |
+  ILayerSelectorSettingsInputProps;
 
 export type InputTypes = BaseInputProps['type'];
 
@@ -517,3 +525,5 @@ export type ISettingsInputProps = BaseInputProps | ISettingsInputSettingsInputPr
 export const isSettingsInputProps = (value: unknown): value is ISettingsInputSettingsInputProps => typeof (value) === 'object' && 'type' in value && value.type === 'settingsInput';
 
 export const hasModelType = (value: unknown): value is IHasModelType => typeof (value) === 'object' && 'modelType' in value && (typeof (value.modelType) === 'string' || typeof (value.modelType) === 'object');
+
+export type SettingsInputDefinition = IToolboxComponent<ISettingsInputProps & IConfigurableFormComponent>;

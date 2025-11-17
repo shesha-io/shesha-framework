@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent, IPropertySetting } from '.';
+import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IPropertySetting, IToolboxComponent, SettingsMigrationContext } from '.';
 import { IAlertComponentProps } from '@/designer-components/alert/interfaces';
 import { ICodeEditorComponentProps } from '@/designer-components/codeEditor/interfaces';
 import { IColorPickerComponentProps } from '@/designer-components/colorPicker/interfaces';
@@ -7,7 +7,7 @@ import { IEndpointsAutocompleteComponentProps } from '@/designer-components/endp
 import { IFormAutocompleteComponentProps } from '@/designer-components/formAutocomplete/interfaces';
 import { IIconPickerComponentProps } from '@/designer-components/iconPicker/interfaces';
 import { IPropertyAutocompleteComponentProps } from '@/designer-components/propertyAutocomplete/interfaces';
-import { IReferenceListAutocompleteProps } from '@/designer-components/referenceListAutocomplete';
+import { IReferenceListAutocompleteProps } from '@/designer-components/referenceListAutocomplete/interfaces';
 import { ISectionSeparatorComponentProps } from '@/designer-components/sectionSeprator/interfaces';
 import { ISwitchComponentProps } from '@/designer-components/switch/interfaces';
 import { IAutocompleteComponentProps } from '@/designer-components/autocomplete/interfaces';
@@ -22,16 +22,16 @@ import { IQueryBuilderComponentProps } from '@/designer-components/queryBuilder/
 import { ITextFieldComponentProps } from '@/designer-components/textField/interfaces';
 import { IButtonsProps } from '@/designer-components/button/buttonGroup/buttonsComponent/interfaces';
 import { ILabelValueEditorComponentProps } from '@/designer-components/labelValueEditor/interfaces';
-import { IContextPropertyAutocompleteComponentProps } from '@/designer-components/contextPropertyAutocomplete';
+import { IContextPropertyAutocompleteComponentProps } from '@/designer-components/contextPropertyAutocomplete/interfaces';
 import { ITextAreaComponentProps } from '@/designer-components/textArea/interfaces';
-import { IRadioProps } from '@/designer-components/radio/utils';
-import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index';
+import { IRadioProps } from '@/designer-components/radio/interfaces';
+import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index'; /* TODO: check this component */
 import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfaces';
-import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
+import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete/interfaces';
 import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
 import { ILabelComponentProps } from '@/designer-components/styleLabel/interfaces';
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
-import { ISettingsInputRowProps } from '@/designer-components/settingsInputRow';
+import { ISettingsInputRowProps } from '@/designer-components/settingsInputRow/interfaces';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
 import { IRadioOption, ISettingsInputSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { IImageFieldProps } from '@/designer-components/image/image';
@@ -40,14 +40,16 @@ import { ITextTypographyProps } from '@/designer-components/text/models';
 import { IColumnsInputProps } from '@/designer-components/columns/interfaces';
 import { ITableContextComponentProps } from '@/designer-components/dataTable/tableContext/models';
 import { ITableComponentProps } from '@/designer-components/dataTable/table/models';
-import { IQuickSearchComponentProps } from '@/designer-components/dataTable/quickSearch/quickSearchComponent';
-import { IPagerComponentProps } from '@/designer-components/dataTable/pager/pagerComponent';
+import { IQuickSearchComponentProps } from '@/designer-components/dataTable/quickSearch/interfaces';
+import { IPagerComponentProps } from '@/designer-components/dataTable/pager/interfaces';
 import { ITableViewSelectorComponentProps } from '@/designer-components/dataTable/tableViewSelector/models';
 import { nanoid } from '@/utils/uuid';
 import { IDateFieldProps } from '@/designer-components/dateField/interfaces';
 import { ITimePickerProps } from '@/designer-components/timeField/models';
-import { IFileUploadProps } from '@/designer-components/fileUpload';
-import { IEntityTypeAutocompleteComponentProps } from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete';
+import { IFileUploadProps } from '@/designer-components/fileUpload/interfaces';
+import { IEntityTypeAutocompleteComponentProps } from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete/interfaces';
+import { upgradeComponent } from '@/providers/form/utils';
+import { Migrator } from '@/utils/fluentMigrator/migrator';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'id' | 'hidden' | 'type'> {
   id?: string | undefined;
@@ -74,8 +76,7 @@ type KeyInformationBarType = ToolbarSettingsProp & Omit<IKeyInformationBarProps,
 
 type TableViewSelectorType = ToolbarSettingsProp & Omit<ITableViewSelectorComponentProps, 'hidden' | 'type'>;
 
-type ContextPropertyAutocompleteType = ToolbarSettingsProp &
-  Omit<IContextPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
+type ContextPropertyAutocompleteType = ToolbarSettingsProp & Omit<IContextPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
 
 type PropertyAutocompleteType = ToolbarSettingsProp & Omit<IPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
 
@@ -123,8 +124,7 @@ type ColumnType = ToolbarSettingsProp & Omit<IColumnsInputProps, 'hidden' | 'typ
 
 type ButtonGroupType = ToolbarSettingsProp & Omit<IButtonsProps, 'hidden' | 'type'>;
 
-type ConfigurableActionConfiguratorType = ToolbarSettingsProp &
-  Omit<IConfigurableActionConfiguratorComponentProps, 'hidden' | 'type'>;
+type ConfigurableActionConfiguratorType = ToolbarSettingsProp & Omit<IConfigurableActionConfiguratorComponentProps, 'hidden' | 'type'>;
 
 type EditableTagGroupType = ToolbarSettingsProp & Omit<IEditableTagGroupComponentProps, 'hidden' | 'type'>;
 
@@ -160,9 +160,10 @@ export class DesignerToolbarSettings<T extends object = object> {
 
   protected readonly data?: T;
 
-  constructor();
-  constructor(model: T);
-  constructor(model?: T) {
+  private componentDefinitions: Map<string, IToolboxComponent> | undefined;
+
+  constructor(model?: T, componentDefinitions?: Map<string, IToolboxComponent>) {
+    this.componentDefinitions = componentDefinitions;
     this.data = model;
     this.form = [];
   }
@@ -389,18 +390,48 @@ export class DesignerToolbarSettings<T extends object = object> {
     return this.addProperty(obj, 'propertyRouter');
   }
 
+  private getComponentDefinition = (type: string): IToolboxComponent | undefined => {
+    return this.componentDefinitions?.get(type);
+  };
+
+  getLatestComponentVersion = (componentDefinition: IToolboxComponent): number | undefined => {
+    if (!componentDefinition.migrator)
+      return undefined;
+
+    const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent, SettingsMigrationContext>();
+    const fluent = componentDefinition.migrator(migrator);
+    return fluent.lastVersion;
+  };
+
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string): this {
     const obj = typeof props !== 'function' ? props : props(this.data);
+    const { id, hidden, version, ...restProps } = obj;
 
-    this.form.push({
-      ...obj,
-      id: obj.id ?? nanoid(),
+    const componentDefinition = this.getComponentDefinition(type);
+
+    let formComponent: IConfigurableFormComponent = {
+      id: id ?? nanoid(),
       type,
-      hidden: obj?.hidden as any,
-      version: typeof (obj?.version) === 'number'
-        ? obj?.version
-        : 'latest',
-    });
+      hidden: hidden as any,
+      version: typeof (version) === 'number'
+        ? version
+        : undefined,
+    };
+    if (componentDefinition) {
+      if (componentDefinition.initModel) formComponent = componentDefinition.initModel(formComponent);
+
+      if (componentDefinition.migrator) {
+        formComponent = upgradeComponent(formComponent, componentDefinition, DEFAULT_FORM_SETTINGS, {
+          allComponents: {},
+          componentRelations: {},
+        }, true);
+      }
+    } else
+      formComponent.version = "latest";
+
+    formComponent = { ...formComponent, ...restProps };
+
+    this.form.push(formComponent);
 
     return this;
   }

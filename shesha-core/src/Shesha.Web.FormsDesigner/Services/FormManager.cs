@@ -1,4 +1,5 @@
-﻿using Abp.Dependency;
+﻿using Abp.Authorization;
+using Abp.Dependency;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
@@ -18,15 +19,42 @@ namespace Shesha.Web.FormsDesigner.Services
     public class FormManager : ConfigurationItemManager<FormConfiguration>, IFormManager, ITransientDependency
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
-        
-        public FormManager(IPermissionedObjectManager permissionedObjectManager) : base()
+        private readonly IPermissionChecker _permissionChecker;
+
+
+        public FormManager(
+            IPermissionedObjectManager permissionedObjectManager,
+            IPermissionChecker permissionChecker
+        ) : base()
         {
             _permissionedObjectManager = permissionedObjectManager;
+            _permissionChecker = permissionChecker;
         }
 
         public static string GetFormPermissionedObjectName(string? module, string name)
         {
             return $"{module}.{name}";
+        }
+
+        public override async Task<bool> CurrentUserHasAccessToAsync(string module, string name)
+        {
+            var permission = await _permissionedObjectManager.GetOrDefaultAsync(
+                GetFormPermissionedObjectName(module, name),
+                ShaPermissionedObjectsTypes.Form
+            );
+
+            var access = permission?.Access == null || permission.Access < RefListPermissionedAccess.AnyAuthenticated
+                ? RefListPermissionedAccess.AnyAuthenticated
+                : permission.Access;
+            if (AbpSession.UserId == null
+                && (access == RefListPermissionedAccess.AnyAuthenticated || access == RefListPermissionedAccess.RequiresPermissions))
+                return false;
+            if (access == RefListPermissionedAccess.RequiresPermissions)
+            {
+                var permissions = permission?.Permissions?.ToArray() ?? [];
+                return await _permissionChecker.IsGrantedAsync(false, permissions);
+            }
+            return true;
         }
 
         public Task<List<FormConfiguration>> GetAllAsync()

@@ -1,20 +1,17 @@
-import { ITablePagerProps, TablePager } from '@/components';
+import { TablePager } from '@/components';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IToolboxComponent } from '@/interfaces';
-import { IConfigurableFormComponent } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { ControlOutlined } from '@ant-design/icons';
 import React, { CSSProperties } from 'react';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { IPagerComponentProps, PagerComponentDefinition } from './interfaces';
 
-export interface IPagerComponentProps extends Omit<ITablePagerProps, 'style'>, IConfigurableFormComponent {}
-
-const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
+const PagerComponent: PagerComponentDefinition = {
   type: 'datatable.pager',
   isInput: false,
   name: 'Table Pager',

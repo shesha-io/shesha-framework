@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { IDataCellProps } from '../interfaces';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
+import { asNumber } from '../utils';
 
 export type IMultivalueReferenceListCellProps<D extends object = object, V = any> = IDataCellProps<D, V>;
 
@@ -16,7 +17,13 @@ const MultivalueReferenceListCellInternal = <D extends object = object, V = any>
   const mapped = useMemo(() => {
     if (!refListItems || !Array.isArray(refListItems) || !value || !Array.isArray(value)) return null;
 
-    const mappedArray = value.map((item) => refListItems.find((i) => i.itemValue === item)?.item);
+    const mappedArray = value
+      .map((item) => {
+        const numericValue = asNumber(item);
+        const found = numericValue === null ? null : refListItems.find((i) => i.itemValue === numericValue);
+        return found?.item || null;
+      })
+      .filter((item) => item !== null && item !== undefined);
     return mappedArray.join(', ');
   }, [refListItems, value]);
 

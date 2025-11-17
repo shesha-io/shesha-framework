@@ -1,4 +1,5 @@
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
 export type JustifyContent =
@@ -186,3 +187,5 @@ export interface IContainerComponentProps extends IConfigurableFormComponent, Om
   mobile?: any;
   showAdvanced?: boolean;
 }
+
+export type ContainerComponentDefinition = IToolboxComponent<IContainerComponentProps>;

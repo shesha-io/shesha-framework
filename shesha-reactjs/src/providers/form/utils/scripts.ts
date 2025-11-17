@@ -84,7 +84,14 @@ export const executeScript = async <TResult, TArgs extends object = object>(
   if (isNullOrWhiteSpace(expression))
     throw new Error('Expression must be defined');
 
+  const functionBody = `
+    with(context) {
+      ${expression}
+    }
+  `;
+  const argsDefinition = 'context';
 
+  /*
   let argsDefinition = '';
   const argList: unknown[] = [];
   for (const argumentName in expressionArgs) {
@@ -93,10 +100,11 @@ export const executeScript = async <TResult, TArgs extends object = object>(
       argList.push(expressionArgs[argumentName]);
     }
   }
+  */
 
-  const asyncFn = new AsyncFunction(argsDefinition, expression) as AsyncFunctionWithArgs<TArgs, TResult>;
+  const asyncFn = new AsyncFunction(argsDefinition, functionBody) as AsyncFunctionWithArgs<TArgs, TResult>;
 
-  const awaiter = asyncFn.apply(null, argList) as Promise<TResult>;
+  const awaiter = asyncFn.apply(null, [expressionArgs]) as Promise<TResult>;
 
   return await awaiter;
 };

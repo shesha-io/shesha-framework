@@ -147,6 +147,8 @@ export interface IConfigurationStudio {
   readonly renderedDocs: Map<string, ReactNode>;
   readonly hasUnsavedChanges: boolean;
 
+  confirmNavigation: (newUrl: string) => boolean;
+
   setIsTreeDragging: (isDragging: boolean) => void;
 
   readonly itemTypes: ItemTypeDefinition[];
@@ -318,6 +320,14 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   get hasUnsavedChanges(): boolean {
     return this.docs.some((doc) => doc.isDataModified);
+  };
+
+  confirmNavigation = (newUrl: string): boolean => {
+    const csRoute = this.shaRouter.router.path;
+    const leaveCs = !newUrl.startsWith(csRoute);
+
+    const confirmationRequired = this.hasUnsavedChanges && leaveCs;
+    return !confirmationRequired || window.confirm("You have unsaved changes that will be lost.");
   };
 
   reorderDocumentsAsync = async (fromIndex: number, toIndex: number): Promise<void> => {
