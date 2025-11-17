@@ -90,7 +90,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     formName,
     formTitle,
     formNameParent,
-    mainArea,
   } = useStyles().styles;
 
   const quickEditModal = cx("sha-designer-modal", css`
@@ -145,14 +144,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
    `);
     */
   const formDesigner = cx(formDesignerClassName, css`
-    height: 100%;
-    .${mainArea} {
-      height: 100%;
-
-      .sidebar-container {
-        height: 100%;
-      }
-    };
         .${shaHelpIcon} {
             cursor: help;
             font-size: 14px;
@@ -399,33 +390,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
                 .${shaComponent} {
                     min-height: 30px;
-                }
-
-                /* Improve dropzone visibility during drag operations */
-                &.sha-components-container-inner {
-                    min-height: 20px;
-                    transition: background-color 0.2s ease, border 0.2s ease;
-
-                    &:empty {
-                        min-height: 40px;
-                        border: 2px dashed transparent;
-                        border-radius: 4px;
-                    }
-                }
-            }
-
-            /* Enhanced visual feedback when dragging */
-            &.${shaDragging} {
-                .${shaComponentsContainer} {
-                    &.sha-components-container-inner:empty {
-                        border-color: ${token.colorPrimary}40;
-                        background-color: ${token.colorPrimaryBg}20;
-                    }
-
-                    &.sha-components-container-inner:hover {
-                        border-color: ${token.colorPrimary};
-                        background-color: ${token.colorPrimaryBg}40;
-                    }
                 }
             }
 
