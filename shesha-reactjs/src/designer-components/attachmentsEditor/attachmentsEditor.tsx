@@ -324,7 +324,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         const fontUpdates = migrateFontProperties(prev, existingFont);
 
         result[device].container = { ...existingContainer, ...containerUpdates };
-        result[device] = { ...result[device], ...fontUpdates };
+        result[device].font = fontUpdates;
       });
 
       // Clean up legacy properties
