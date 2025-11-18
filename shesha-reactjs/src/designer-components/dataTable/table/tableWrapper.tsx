@@ -23,17 +23,12 @@ import {
   useSheshaApplication,
 } from '@/providers';
 import { GlobalTableStyles } from './styles/styles';
-import { Alert } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { FilterList } from '../filterList/filterList';
 import { useStyles } from './styles';
 import { TableEmptyState } from './tableEmptyState';
 import { useMetadata } from '@/providers/metadata';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
-
-const NotConfiguredWarning: FC = () => {
-  return <Alert className="sha-designer-warning" message="Table is not configured properly" type="warning" />;
-};
 
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
@@ -47,6 +42,13 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const metadata = useMetadata(false); // Don't require - DataTable may not be in a DataSource
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);
+  const componentIdRef = useRef(id);
+
+  // Reset auto-config flag when component ID changes (new DataTable instance)
+  if (componentIdRef.current !== id) {
+    componentIdRef.current = id;
+    hasAutoConfiguredRef.current = false;
+  }
 
   const { styles } = useStyles({
     fontFamily: props?.font?.type,
@@ -159,37 +161,43 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
   // Auto-configure columns when DataTable is dropped into a DataContext
   useEffect(() => {
-    const shouldAutoConfigureColumns =
-      isDesignMode &&
-      formDesigner &&
-      metadata?.metadata &&
-      (!items || items.length === 0) &&
-      !hasAutoConfiguredRef.current;
-
-    if (shouldAutoConfigureColumns) {
-      hasAutoConfiguredRef.current = true;
-
-      const autoConfigureColumns = async (): Promise<void> => {
-        try {
-          const defaultColumns = await calculateDefaultColumns(metadata.metadata);
-          if (defaultColumns.length > 0) {
-            formDesigner.updateComponent({
-              componentId: id,
-              settings: {
-                ...props,
-                items: defaultColumns,
-              } as ITableComponentProps,
-            });
-          }
-        } catch (error) {
-          console.warn('❌ Failed to auto-configure columns:', error);
-          hasAutoConfiguredRef.current = false; // Allow retry on next render
-        }
-      };
-
-      autoConfigureColumns();
+    // Only attempt auto-config if we have empty items and haven't tried yet
+    if (hasAutoConfiguredRef.current || !isDesignMode || !formDesigner) {
+      return;
     }
-  }, [isDesignMode, formDesigner, metadata?.metadata, items, id, props]);
+
+    // Check if we should auto-configure
+    const hasNoColumns = !items || items.length === 0;
+    const hasMetadata = metadata?.metadata != null;
+
+    if (!hasNoColumns || !hasMetadata) {
+      return;
+    }
+
+    // Mark as attempted to prevent multiple triggers
+    hasAutoConfiguredRef.current = true;
+
+    const autoConfigureColumns = async (): Promise<void> => {
+      try {
+        const defaultColumns = await calculateDefaultColumns(metadata.metadata);
+        if (defaultColumns.length > 0) {
+          formDesigner.updateComponent({
+            componentId: id,
+            settings: {
+              ...props,
+              items: defaultColumns,
+            } as ITableComponentProps,
+          });
+        }
+      } catch (error) {
+        console.warn('Failed to auto-configure DataTable columns:', error);
+        // Reset flag to allow retry if it failed
+        hasAutoConfiguredRef.current = false;
+      }
+    };
+
+    autoConfigureColumns();
+  }, [isDesignMode, formDesigner, metadata?.metadata, items, id, props, hasAutoConfiguredRef]);
 
   const renderSidebarContent = (): JSX.Element => {
     if (isFiltering) {
@@ -203,11 +211,9 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     return <Fragment />;
   };
 
-  if (isDesignMode && !repository) return <NotConfiguredWarning />;
-
   // Show empty state in designer mode when no columns are configured
   const hasNoColumns = !items || items.length === 0;
-  if (isDesignMode && hasNoColumns) {
+  if ((isDesignMode && hasNoColumns) || !repository) {
     return <TableEmptyState componentId={id} />;
   }
 

@@ -47,7 +47,7 @@ export const defaultStyles = (): IStyleType => {
       borderType: 'all',
       radiusType: 'all',
     },
-    dimensions: { width: '100%', height: 'auto', minHeight: '200px', maxHeight: 'none', minWidth: '0px', maxWidth: 'none' },
+    dimensions: { width: '100%', height: 'auto', minHeight: 'auto', maxHeight: 'auto', minWidth: '0px', maxWidth: 'none' },
     shadow: {
       offsetX: 0,
       offsetY: 2,
