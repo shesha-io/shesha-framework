@@ -23,6 +23,7 @@ export const SheshaConstants = {
   query: "shesha:query",
   metadataBuilder: "shesha:metadataBuilder",
   constantsBuilder: "shesha:constantsBuilder",
+  data: "shesha:data",
 };
 
 export const registerHttpAction: MetadataBuilderAction = (builder, name = "http") => {

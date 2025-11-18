@@ -154,8 +154,14 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       SheshaConstants.http,
       SheshaConstants.message,
       SheshaConstants.moment,
+      SheshaConstants.contexts,
+      SheshaConstants.message,
+      SheshaConstants.application,
+      SheshaConstants.setGlobalState,
+      SheshaConstants.data,
       SheshaConstants.pageContext,
       SheshaConstants.selectedRow,
+      SheshaConstants.fileSaver
       SheshaConstants.setGlobalState,
       SheshaConstants.application
     ],
