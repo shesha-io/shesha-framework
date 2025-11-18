@@ -54,7 +54,7 @@
       "parentId": "root",
       "validate": {},
       "settingsValidationErrors": [],
-      "description": "Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)",
+      "description": "Return 'true' if dataContext is not ready to refresh data (filter data is not ready, etc...)",
       "version": 4,
       "language": "typescript",
       "placeholder": "",

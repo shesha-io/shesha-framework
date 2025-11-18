@@ -85,6 +85,12 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
  */
   type: string;
   /**
+   * Optional array of deprecated type names that this component replaces.
+   * When specified, these deprecated types will automatically resolve to this component's type.
+   * Example: replacesTypes: ['datatableContext'] means old 'datatableContext' components will resolve to this component.
+   */
+  replacesTypes?: string[];
+  /**
    * If true, indicates that the component has data bindings and can be used as an input. Note: not all form components can be bound to the model (layout components etc.)
    */
   isInput: boolean;

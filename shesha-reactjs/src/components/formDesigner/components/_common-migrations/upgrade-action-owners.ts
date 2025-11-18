@@ -1,7 +1,7 @@
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { SettingsMigrationContext } from '@/interfaces';
 
-const actionOwnerTypes = ['datatableContext', 'subForm', 'list', 'wizard'];
+const actionOwnerTypes = ['dataContext', 'subForm', 'list', 'wizard'];
 const getActionOwner = (value: string, context: SettingsMigrationContext): string => {
   if (!value)
     return value;

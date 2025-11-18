@@ -120,7 +120,7 @@ export const migrateToTable = (
     : undefined;
   if (selectedFilter && selectedFilter.expression && context.flatStructure) {
     // search closest datatable context
-    const dataTableContext = getClosestComponent(context.flatStructure, props.id, (cmp) => cmp.type === 'datatableContext');
+    const dataTableContext = getClosestComponent(context.flatStructure, props.id, (cmp) => cmp.type === 'dataContext');
     if (dataTableContext) {
       dataTableContext['permanentFilter'] = selectedFilter.expression;
     }

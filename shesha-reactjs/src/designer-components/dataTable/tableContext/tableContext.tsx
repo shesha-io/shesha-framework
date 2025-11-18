@@ -75,7 +75,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       hasErrors: true,
       componentId: id,
       componentName: componentName,
-      componentType: 'datatableContext',
+      componentType: 'dataContext',
       errors: [{ propertyName: missingProperty, error: getErrorMessage(missingProperty) }],
     };
   } else if (!hasChildComponents) {
@@ -84,7 +84,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       hasErrors: true,
       componentId: id,
       componentName: componentName,
-      componentType: 'datatableContext',
+      componentType: 'dataContext',
       errors: [{ error: 'Drag and drop child components inside this Data Context to display data.' }],
     };
     validationType = 'info';

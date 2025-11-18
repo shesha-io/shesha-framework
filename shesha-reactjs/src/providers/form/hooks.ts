@@ -4,6 +4,7 @@ import { IToolboxComponent, IToolboxComponentGroup, IToolboxComponents } from '@
 import { getToolboxComponents } from './defaults/toolboxComponents';
 import { useFormPersisterIfAvailable } from '../formPersisterProvider';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
+import { registerComponentTypeAlias, resolveComponentType } from './componentTypeRegistry';
 
 export const useFormDesignerComponentGroups = (): IToolboxComponentGroup[] => {
   const app = useSheshaApplication(false);
@@ -29,6 +30,13 @@ export const toolbarGroupsToComponents = (availableComponents: IToolboxComponent
       group.components.forEach((component) => {
         if (component?.type) {
           allComponents[component.type] = component;
+
+          // Auto-register any deprecated type aliases
+          if (component.replacesTypes && component.replacesTypes.length > 0) {
+            component.replacesTypes.forEach(deprecatedType => {
+              registerComponentTypeAlias(deprecatedType, component.type);
+            });
+          }
         }
       });
     });
@@ -48,7 +56,8 @@ export type FormDesignerComponentGetter = (type: string) => IToolboxComponent;
 export const useFormDesignerComponentGetter = (): FormDesignerComponentGetter => {
   const components = useFormDesignerComponents();
   const getter = useCallback((type: string) => {
-    return components?.[type];
+    const resolvedType = resolveComponentType(type);
+    return components?.[resolvedType];
   }, [components]);
 
   return getter;

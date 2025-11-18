@@ -10,7 +10,8 @@ import { getSettings } from './settingsForm';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 const TableContextComponent: TableContextComponentDefinition = {
-  type: 'datatableContext',
+  type: 'dataContext',
+  replacesTypes: ['datatableContext'],
   isInput: true,
   isOutput: true,
   name: 'Data Context',
@@ -43,9 +44,10 @@ const TableContextComponent: TableContextComponentDefinition = {
       .add<ITableContextComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc', allowReordering: 'no' }))
       .add<ITableContextComponentProps>(6, (prev) => migrateVisibility(prev))
-      .add<ITableContextComponentProps>(7, (prev) => ({ ...migrateFormApi.properties(prev) })),
-  settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+      .add<ITableContextComponentProps>(7, (prev) => ({ ...migrateFormApi.properties(prev) }))
+      .add<ITableContextComponentProps>(8, (prev) => ({ ...prev, type: 'dataContext' })), // Migrate from 'datatableContext' to 'dataContext'
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   getFieldsToFetch: (propertyName, rawModel) => {
     return rawModel.sourceType === 'Form' ? [propertyName] : [];
   },

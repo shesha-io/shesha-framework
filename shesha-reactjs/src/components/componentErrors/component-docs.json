@@ -17,6 +17,7 @@
   "columns": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/columns",
   "container": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/container",
 
+  "dataContext": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable-context",
   "datalist": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datalist",
   "datatable": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable",
   "datatableContext": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable-context",
