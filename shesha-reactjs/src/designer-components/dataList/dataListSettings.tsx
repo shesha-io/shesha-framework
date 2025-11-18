@@ -80,74 +80,6 @@ const NEW_ROW_EXPOSED_VARIABLES = [
   }
 ];
 
-const ROW_SAVE_EXPOSED_VARIABLES = [
-  {
-    id: nanoid(),
-    name: 'data',
-    description: 'Current list item data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'contexts',
-    description: 'Contexts data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'fileSaver',
-    description: 'File saver API for downloading files',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'form',
-    description: 'Form instance',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'globalState',
-    description: 'The global model of the application',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'http',
-    description: 'axios instance used to make http requests',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'message',
-    description: 'Message API for notifications',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'moment',
-    description: 'The moment.js object',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'pageContext',
-    description: 'Page-specific context data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'selectedRow',
-    description: 'Currently selected list item',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'setGlobalState',
-    description: 'Function to update global state',
-    type: 'function',
-  }
-];
 
 const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
   {
@@ -224,7 +156,8 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       SheshaConstants.moment,
       SheshaConstants.pageContext,
       SheshaConstants.selectedRow,
-      SheshaConstants.setGlobalState
+      SheshaConstants.setGlobalState,
+      SheshaConstants.application
     ],
     onBuild: (builder) => {
       builder.addObject("data", "Current list item data", undefined);
@@ -496,7 +429,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             mode="dialog"
             label="On list item save"
             description="Allows custom business logic to be executed on saving of new/updated list item (e.g. custom validation / calculations)."
-            exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
             wrapInTemplate={true}
             templateSettings={{
               functionName: 'onListItemSave',
