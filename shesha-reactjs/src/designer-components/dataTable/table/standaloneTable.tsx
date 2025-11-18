@@ -1,6 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { ITableComponentProps } from './models';
-import { SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Popover } from 'antd';
+import { useForm } from '@/providers';
+import { useTheme } from '@/providers/theme';
+import { useDataTableStore } from '@/providers/dataTable';
+
 // Ignore any configured items to ensure clean state when dragged outside
 const columns = [
   { header: 'Heading 1', accessor: 'col1' },
@@ -14,6 +19,28 @@ const dummyRows = [
 ];
 
 export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
+  const { formMode } = useForm();
+  const { theme } = useTheme();
+  const store = useDataTableStore(false);
+  const isDesignMode = formMode === 'designer';
+  const hasNoColumns = !_props.items || _props.items.length === 0;
+  const isInsideDataContext = !!store;
+
+  // Inject CSS for hint popover arrow styling
+  useEffect(() => {
+    const styleId = 'sha-datatable-hint-popover-styles';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.innerHTML = `
+        .sha-datatable-hint-popover .ant-popover-arrow:before,
+        .sha-datatable-hint-popover .ant-popover-arrow:after {
+          background: #D9DCDC !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }, []);
   const tableStyle: React.CSSProperties = {
     width: '100%',
     borderCollapse: 'collapse',
@@ -54,21 +81,73 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
       padding: '16px',
       borderRadius: '6px',
       backgroundColor: '#fafafa',
+      position: 'relative',
     }}
     >
-      <div style={{
-        marginBottom: '12px',
-        fontSize: '12px',
-        color: '#8c8c8c',
-        textAlign: 'center',
-        padding: '4px 8px',
-        backgroundColor: '#fff',
-        border: '1px solid #e8e8e8',
-        borderRadius: '4px',
-      }}
-      >
-        ⚠️ Data Table must be placed inside a Data Context
-      </div>
+      {/* Show info icon in top-right corner in designer mode */}
+      {isDesignMode && (
+        <Popover
+          placement="left"
+          title="Hint:"
+          classNames={{ root: "sha-datatable-hint-popover" }}
+          styles={{ body: { backgroundColor: '#D9DCDC' } }}
+          content={
+            isInsideDataContext ? (
+              <p>
+                This Data Table has no columns configured.<br />
+                Click the Settings icon in the Properties Panel<br />
+                to configure columns.
+                <br /><br />
+                <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+                  See component documentation
+                </a>
+                <br />for setup and usage.
+              </p>
+            ) : hasNoColumns ? (
+              <p>
+                This Data Table is not inside a Data Context<br />
+                and has no columns configured.<br />
+                <br />
+                Drag it into a Data Context component to<br />
+                connect it to data, then configure columns<br />
+                in the Properties Panel.
+                <br /><br />
+                <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+                  See component documentation
+                </a>
+                <br />for setup and usage.
+              </p>
+            ) : (
+              <p>
+                This Data Table is not inside a Data Context.<br />
+                Drag it into a Data Context component to<br />
+                connect it to data.
+                <br /><br />
+                <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+                  See component documentation
+                </a>
+                <br />for setup and usage.
+              </p>
+            )
+          }
+        >
+          <InfoCircleOutlined
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              color: theme?.application?.warningColor || '#faad14',
+              fontSize: '20px',
+              zIndex: 10,
+              cursor: 'help',
+              backgroundColor: '#fff',
+              borderRadius: '50%',
+              padding: '4px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            }}
+          />
+        </Popover>
+      )}
 
       <table style={tableStyle}>
         <thead>
