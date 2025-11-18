@@ -266,31 +266,29 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             title="Hint:"
             classNames={{ root: "sha-datatable-hint-popover" }}
             styles={{ body: { backgroundColor: '#D9DCDC' } }}
-            content={
-              hasNoRepository ? (
-                <p>
-                  This Data Table is not inside a Data Context.<br />
-                  Drag it into a Data Context component to<br />
-                  connect it to data.
-                  <br /><br />
-                  <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-                    See component documentation
-                  </a>
-                  <br />for setup and usage.
-                </p>
-              ) : (
-                <p>
-                  This Data Table has no columns configured.<br />
-                  Click the Settings icon in the Properties Panel<br />
-                  to configure columns.
-                  <br /><br />
-                  <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-                    See component documentation
-                  </a>
-                  <br />for setup and usage.
-                </p>
-              )
-            }
+            content={hasNoRepository ? (
+              <p>
+                This Data Table is not inside a Data Context.<br />
+                Drag it into a Data Context component to<br />
+                connect it to data.
+                <br /><br />
+                <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+                  See component documentation
+                </a>
+                <br />for setup and usage.
+              </p>
+            ) : (
+              <p>
+                This Data Table has no columns configured.<br />
+                Click the Settings icon in the Properties Panel<br />
+                to configure columns.
+                <br /><br />
+                <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+                  See component documentation
+                </a>
+                <br />for setup and usage.
+              </p>
+            )}
           >
             <InfoCircleOutlined
               style={{
@@ -311,60 +309,60 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         )}
 
         <div className={styles.dataTable} style={finalStyle}>
-        <DataTable
-          onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
-          onMultiRowSelect={setMultiSelectedRow}
-          selectedRowIndex={selectedRow?.index}
-          useMultiselect={useMultiselect}
-          selectionMode={selectionMode}
-          freezeHeaders={props.stickyHeader || props.freezeHeaders}
-          allowReordering={allowReordering}
-          tableStyle={getStyle(tableStyle, formData, globalState)}
-          containerStyle={getStyle(containerStyle, formData, globalState)}
-          canAddInline={props.canAddInline}
-          canAddInlineExpression={props.canAddInlineExpression}
-          customCreateUrl={props.customCreateUrl}
-          newRowCapturePosition={props.newRowCapturePosition}
-          onNewRowInitialize={props.onNewRowInitialize}
-          canEditInline={props.canEditInline}
-          canEditInlineExpression={props.canEditInlineExpression}
-          customUpdateUrl={props.customUpdateUrl}
-          canDeleteInline={props.canDeleteInline}
-          canDeleteInlineExpression={props.canDeleteInlineExpression}
-          customDeleteUrl={props.customDeleteUrl}
-          onRowSave={props.onRowSave}
-          onRowSaveSuccessAction={props.onRowSaveSuccessAction}
-          onDblClick={props.dblClickActionConfiguration}
-          inlineSaveMode={props.inlineSaveMode}
-          inlineEditMode={props.inlineEditMode}
-          minHeight={props.minHeight}
-          maxHeight={props.maxHeight}
-          noDataText={props.noDataText}
-          noDataSecondaryText={props.noDataSecondaryText}
-          noDataIcon={props.noDataIcon}
-          showExpandedView={props.showExpandedView}
-          onRowClick={props.onRowClick}
-          onRowDoubleClick={props.onRowDoubleClick}
-          onRowHover={props.onRowHover}
-          onRowSelect={props.onRowSelect}
-          onSelectionChange={props.onSelectionChange}
-          rowBackgroundColor={props.rowBackgroundColor}
-          rowAlternateBackgroundColor={props.rowAlternateBackgroundColor}
-          rowHoverBackgroundColor={props.rowHoverBackgroundColor}
-          rowSelectedBackgroundColor={props.rowSelectedBackgroundColor}
-          border={props.border}
-          hoverHighlight={props.hoverHighlight}
-          backgroundColor={props.background?.color}
-          headerFontSize={props.headerFontSize}
-          headerFontWeight={props.headerFontWeight}
-          headerBackgroundColor={props.headerBackgroundColor}
-          headerTextColor={props.headerTextColor}
-          rowHeight={props.rowHeight}
-          rowPadding={props.rowPadding}
-          rowBorder={props.rowBorder}
-          boxShadow={props.boxShadow}
-          sortableIndicatorColor={props.sortableIndicatorColor}
-        />
+          <DataTable
+            onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
+            onMultiRowSelect={setMultiSelectedRow}
+            selectedRowIndex={selectedRow?.index}
+            useMultiselect={useMultiselect}
+            selectionMode={selectionMode}
+            freezeHeaders={props.stickyHeader || props.freezeHeaders}
+            allowReordering={allowReordering}
+            tableStyle={getStyle(tableStyle, formData, globalState)}
+            containerStyle={getStyle(containerStyle, formData, globalState)}
+            canAddInline={props.canAddInline}
+            canAddInlineExpression={props.canAddInlineExpression}
+            customCreateUrl={props.customCreateUrl}
+            newRowCapturePosition={props.newRowCapturePosition}
+            onNewRowInitialize={props.onNewRowInitialize}
+            canEditInline={props.canEditInline}
+            canEditInlineExpression={props.canEditInlineExpression}
+            customUpdateUrl={props.customUpdateUrl}
+            canDeleteInline={props.canDeleteInline}
+            canDeleteInlineExpression={props.canDeleteInlineExpression}
+            customDeleteUrl={props.customDeleteUrl}
+            onRowSave={props.onRowSave}
+            onRowSaveSuccessAction={props.onRowSaveSuccessAction}
+            onDblClick={props.dblClickActionConfiguration}
+            inlineSaveMode={props.inlineSaveMode}
+            inlineEditMode={props.inlineEditMode}
+            minHeight={props.minHeight}
+            maxHeight={props.maxHeight}
+            noDataText={props.noDataText}
+            noDataSecondaryText={props.noDataSecondaryText}
+            noDataIcon={props.noDataIcon}
+            showExpandedView={props.showExpandedView}
+            onRowClick={props.onRowClick}
+            onRowDoubleClick={props.onRowDoubleClick}
+            onRowHover={props.onRowHover}
+            onRowSelect={props.onRowSelect}
+            onSelectionChange={props.onSelectionChange}
+            rowBackgroundColor={props.rowBackgroundColor}
+            rowAlternateBackgroundColor={props.rowAlternateBackgroundColor}
+            rowHoverBackgroundColor={props.rowHoverBackgroundColor}
+            rowSelectedBackgroundColor={props.rowSelectedBackgroundColor}
+            border={props.border}
+            hoverHighlight={props.hoverHighlight}
+            backgroundColor={props.background?.color}
+            headerFontSize={props.headerFontSize}
+            headerFontWeight={props.headerFontWeight}
+            headerBackgroundColor={props.headerBackgroundColor}
+            headerTextColor={props.headerTextColor}
+            rowHeight={props.rowHeight}
+            rowPadding={props.rowPadding}
+            rowBorder={props.rowBorder}
+            boxShadow={props.boxShadow}
+            sortableIndicatorColor={props.sortableIndicatorColor}
+          />
         </div>
       </div>
     </SidebarContainer>
