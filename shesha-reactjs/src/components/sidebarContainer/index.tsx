@@ -6,18 +6,19 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import { DEFAULT_OPTIONS } from '@/providers/canvas/utils';
+import { SIDEBAR_COLLAPSE, useCanvas, useLocalStorage, useShaFormInstance } from '@/index';
+import { calculateAutoZoom, DEFAULT_OPTIONS, defaultDesignerWidth, usePinchZoom } from '@/providers/canvas/utils';
+import { IViewType } from '@/providers/canvas/contexts';
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;
   rightSidebarProps?: ISidebarProps;
   header?: ReactNode | (() => ReactNode);
   sideBarWidth?: number;
   allowFullCollapse?: boolean;
+  canZoom?: boolean;
   configTreePanelSize?: string | number;
   noPadding?: boolean;
-  onDragSizesChange?: (sizes: number[]) => void;
-  onToggleLeft?: (isOpen: boolean) => void;
-  onToggleRight?: (isOpen: boolean) => void;
+  viewType?: IViewType;
 }
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({
@@ -27,29 +28,68 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   children,
   allowFullCollapse = false,
   noPadding,
-  onDragSizesChange,
-  onToggleLeft,
-  onToggleRight,
+  canZoom = false,
+  viewType = 'configStudio',
 }) => {
+  const { formMode } = useShaFormInstance();
   const { styles } = useStyles();
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
+  const { zoom, setCanvasZoom, setViewType, designerWidth, autoZoom, configTreePanelSize } = useCanvas();
+  const [isSidebarCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, false);
 
   const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
+  const [windowSize, setWindowSize] = useState({ width: designerWidth });
 
   const handleDragSizesChange = useCallback((sizes: number[]) => {
     setCurrentSizes(sizes);
-    onDragSizesChange?.(sizes);
-  }, [onDragSizesChange]);
+  }, []);
 
-  // Notify parent when sidebars toggle
+  const handleZoomChange = useCallback((newZoom: number) => {
+    if (!canZoom) return;
+    setCanvasZoom(newZoom);
+  }, [setCanvasZoom, canZoom]);
+
+  const canvasRef = usePinchZoom(
+    handleZoomChange,
+    zoom,
+    DEFAULT_OPTIONS.minZoom,
+    DEFAULT_OPTIONS.maxZoom,
+    autoZoom,
+  );
+
+  // Set the view type on mount
   useEffect(() => {
-    onToggleLeft?.(isOpenLeft);
-  }, [isOpenLeft, onToggleLeft]);
+    setViewType(viewType);
+  }, [viewType, setViewType]);
+
+  // Track window resize
+  useEffect(() => {
+    const handleResize = (): void => {
+      setWindowSize({ width: (window?.innerWidth ?? parseInt(defaultDesignerWidth, 10)) + 'px' });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
-    onToggleRight?.(isOpenRight);
-  }, [isOpenRight, onToggleRight]);
+    if (canZoom) {
+      if (autoZoom) {
+        const newZoom = calculateAutoZoom({
+          currentZoom: zoom,
+          designerWidth,
+          sizes: currentSizes,
+          configTreePanelSize: configTreePanelSize,
+          viewType: viewType,
+          isSidebarCollapsed: isSidebarCollapsed,
+        });
+        if (newZoom !== zoom) {
+          setCanvasZoom(newZoom);
+        }
+      }
+    }
+  }, [canZoom, autoZoom, windowSize.width, designerWidth, currentSizes, configTreePanelSize, setCanvasZoom, viewType, isSidebarCollapsed]);
 
   useEffect(() => {
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
@@ -58,6 +98,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft],
   );
+
+  const isDesigner = formMode === 'designer';
 
   const renderSidebar = (side: SidebarPanelPosition): JSX.Element => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
@@ -109,9 +151,15 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
           )}
         >
           <div
+            ref={canvasRef}
             className={classNames(
               styles.sidebarContainerMainAreaBody,
+              { [styles.designerCanvas]: isDesigner && canZoom },
             )}
+            style={isDesigner && canZoom ? {
+              width: autoZoom ? "100%" : designerWidth,
+              zoom: `${zoom}%`,
+            } : {}}
           >
             {children}
           </div>

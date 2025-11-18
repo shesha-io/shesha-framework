@@ -25,6 +25,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
       .${sidebarContainerMainAreaBody}{
         overflow: auto;
+        height: 100%;
+
       }
     
       .${sidebarContainerHeader} {
@@ -162,7 +164,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           }
         }
     
-        .${designerCanvas} {
+        .${canvasWrapper} {
           height: calc(100vh - 120px);
         }
         
@@ -172,7 +174,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           display: flex;
           flex-direction: column;
           overflow: auto;
-          }
+        }
         }
 
         .${sidebarContainerMainArea} {

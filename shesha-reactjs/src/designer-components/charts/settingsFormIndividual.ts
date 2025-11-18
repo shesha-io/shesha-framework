@@ -249,6 +249,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
+                                inline: true,
                                 hidden: {
                                   _code: 'return getSettingValue(data?.dataMode) === `url`',
                                   _mode: 'code',
@@ -279,6 +280,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
+                                inline: true,
                                 hidden: {
                                   _code: 'return !getSettingValue(data?.axisProperty)',
                                   _mode: 'code',
@@ -317,12 +319,14 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                       _mode: 'code',
                                       _value: true,
                                     } as any,
+                                    width: '50%',
                                   },
                                 ],
                               })
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
+                                inline: true,
                                 hidden: {
                                   _code: 'return getSettingValue(data?.dataMode) === `url`',
                                   _mode: 'code',
@@ -353,6 +357,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
+                                inline: true,
                                 hidden: {
                                   _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
                                   _mode: 'code',
@@ -384,6 +389,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dataSettingsId,
+                                inline: true,
                                 hidden: {
                                   _code: 'return getSettingValue(data?.simpleOrPivot) !== `pivot` || !getSettingValue(data?.groupingProperty)',
                                   _mode: 'code',
@@ -791,6 +797,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
+                        inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.dataMode) === `url`',
                           _mode: 'code',
@@ -866,6 +873,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
+                        inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.dataMode) === `url`',
                           _mode: 'code',
@@ -896,6 +904,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
+                        inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
                           _mode: 'code',
@@ -927,6 +936,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
+                        inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.simpleOrPivot) !== `pivot` || !getSettingValue(data?.groupingProperty)',
                           _mode: 'code',
@@ -972,6 +982,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
+                        inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.dataMode) === `url`',
                           _mode: 'code',
@@ -1003,6 +1014,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
+                        inline: true,
                         inputs: [
                           {
                             id: nanoid(),
@@ -1046,6 +1058,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
+                        inline: true,
                         hidden: {
                           _code: 'return getSettingValue(data?.dataMode) === `url` || !getSettingValue(data?.entityType)',
                           _mode: 'code',
@@ -1548,6 +1561,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: styleRouterId,
+                                inline: true,
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
