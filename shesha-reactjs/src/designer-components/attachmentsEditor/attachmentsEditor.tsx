@@ -6,6 +6,7 @@ import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
 import { IStyleType, useDataContextManagerActions, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValueAsString,
@@ -164,6 +165,11 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState });
     const enabled = !model.readOnly;
 
+    // Process custom styles using the hook for container
+    const {
+      jsStyle: containerJsStyle,
+    } = useFormComponentStyles(model.container || {});
+
     const executeScript = (script, value): void => {
       executeScriptSync(script, {
         value,
@@ -206,23 +212,25 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               onDownload={onDownload}
               value={value}
             >
-              <CustomFile
-                isStub={form?.formMode === 'designer'}
-                allowAdd={enabled && model.allowAdd}
-                disabled={model.readOnly}
-                allowDelete={enabled && model.allowDelete}
-                allowReplace={enabled && model.allowReplace}
-                allowRename={enabled && model.allowRename}
-                allowedFileTypes={model.allowedFileTypes}
-                maxHeight={model.maxHeight}
-                isDragger={model?.isDragger}
-                downloadZip={model.downloadZip}
-                filesLayout={model.filesLayout}
-                listType={model.listType}
-                {...model}
-                enableStyleOnReadonly={model.enableStyleOnReadonly}
-                ownerId={ownerId}
-              />
+              <div style={containerJsStyle}>
+                <CustomFile
+                  isStub={form?.formMode === 'designer'}
+                  allowAdd={enabled && model.allowAdd}
+                  disabled={model.readOnly}
+                  allowDelete={enabled && model.allowDelete}
+                  allowReplace={enabled && model.allowReplace}
+                  allowRename={enabled && model.allowRename}
+                  allowedFileTypes={model.allowedFileTypes}
+                  maxHeight={model.maxHeight}
+                  isDragger={model?.isDragger}
+                  downloadZip={model.downloadZip}
+                  filesLayout={model.filesLayout}
+                  listType={model.listType}
+                  {...model}
+                  enableStyleOnReadonly={model.enableStyleOnReadonly}
+                  ownerId={ownerId}
+                />
+              </div>
             </StoredFilesProvider>
           );
         }}
