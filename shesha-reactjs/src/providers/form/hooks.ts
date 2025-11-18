@@ -33,7 +33,7 @@ export const toolbarGroupsToComponents = (availableComponents: IToolboxComponent
 
           // Auto-register any deprecated type aliases
           if (component.replacesTypes && component.replacesTypes.length > 0) {
-            component.replacesTypes.forEach(deprecatedType => {
+            component.replacesTypes.forEach((deprecatedType) => {
               registerComponentTypeAlias(deprecatedType, component.type);
             });
           }
