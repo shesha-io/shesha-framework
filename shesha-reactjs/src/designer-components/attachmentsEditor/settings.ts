@@ -232,13 +232,16 @@ export const getSettings = (): FormMarkupWithSettings => {
             id: validationTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'validate.required',
-                  label: 'Required',
-                  inputType: 'switch',
-                  jsSetting: true,
-                })
+              .addSettingsInput({
+                id: nanoid(),
+                propertyName: 'validate.required',
+                label: 'Required',
+                inputType: 'switch',
+                size: 'small',
+                layout: 'horizontal',
+                jsSetting: true,
+                parentId: validationTabId,
+              })
                 .toJson(),
             ],
           },

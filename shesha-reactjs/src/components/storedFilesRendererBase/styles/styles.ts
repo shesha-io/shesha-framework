@@ -177,7 +177,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      scrollbar-width: thin;
+      justify-content: center;
       &::-webkit-scrollbar {
         width: 8px;
         background-color: transparent;
