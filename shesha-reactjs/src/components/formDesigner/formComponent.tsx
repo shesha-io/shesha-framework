@@ -4,7 +4,7 @@ import { useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
-import ComponentError from '../componentErrors';
+import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
 import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
@@ -50,7 +50,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
 
   actualModel.hidden = shaForm.formMode !== 'designer' &&
     (
-      actualModel.hidden ||
+      actualModel?.hidden ||
       !anyOfPermissionsGranted(actualModel?.permissions || []) ||
       !isComponentFiltered(actualModel));
 
@@ -71,33 +71,47 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     />
   ), [actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
 
-  if (!toolboxComponent)
-    return (
-      <ComponentError
-        errors={{
-          hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type,
-        }}
-        message={`Component '${actualModel.type}' not found`}
-        type="error"
-      />
-    );
+  // Check for validation errors (in both designer and runtime modes)
+  let validationResult: IModelValidation | undefined;
 
-  if (shaForm.formMode === 'designer') {
-    const validationResult: IModelValidation = { hasErrors: false, errors: [] };
-    if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
-      validationResult.hasErrors = true;
-      validationResult.errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
-    }
-    toolboxComponent?.validateModel?.(actualModel, (propertyName, error) => {
-      validationResult.hasErrors = true;
-      validationResult.errors.push({ propertyName, error });
-    });
-    if (validationResult.hasErrors) {
-      validationResult.componentId = actualModel.id;
-      validationResult.componentName = actualModel.componentName;
-      validationResult.componentType = actualModel.type;
-      return <ComponentError errors={validationResult} message="" type="warning" />;
-    }
+  if (!toolboxComponent) {
+    validationResult = {
+      hasErrors: true,
+      componentId: actualModel.id,
+      componentName: actualModel.componentName,
+      componentType: actualModel.type,
+      errors: [{ error: `Component '${actualModel.type}' not found` }],
+    };
+    // Component not found - return early with just error message
+    return (
+      <div style={{ minHeight: '40px', position: 'relative', padding: '8px', border: '1px dashed #ccc' }}>
+        <ErrorIconPopover
+          errors={validationResult}
+          message={`Component '${actualModel.type}' not found`}
+          type="error"
+        >
+          <div style={{ color: '#999', fontSize: '12px' }}>Component &apos;{actualModel.type}&apos; not registered</div>
+        </ErrorIconPopover>
+      </div>
+    );
+  }
+
+  // Run validation in both designer and runtime modes
+  validationResult = { hasErrors: false, errors: [] };
+  if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
+    validationResult.hasErrors = true;
+    validationResult.errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
+  }
+  toolboxComponent?.validateModel?.(actualModel, (propertyName, error) => {
+    validationResult.hasErrors = true;
+    validationResult.errors.push({ propertyName, error });
+  });
+  if (validationResult.hasErrors) {
+    validationResult.componentId = actualModel.id;
+    validationResult.componentName = actualModel.componentName;
+    validationResult.componentType = actualModel.type;
+  } else {
+    validationResult = undefined;
   }
 
   if (shaForm.form.settings.isSettingsForm)
@@ -118,9 +132,16 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     attributes['data-sha-parent-form-name'] = `${(shaForm as any)?.formId?.module}/${(shaForm as any)?.formId?.name}`;
   }
 
+  // Wrap component with error icon if there are validation errors
+  const wrappedControl = validationResult?.hasErrors ? (
+    <ErrorIconPopover errors={validationResult} message="" type="warning">
+      {control}
+    </ErrorIconPopover>
+  ) : control;
+
   return (
     <AttributeDecorator attributes={attributes}>
-      {control}
+      {wrappedControl}
     </AttributeDecorator>
   );
 };

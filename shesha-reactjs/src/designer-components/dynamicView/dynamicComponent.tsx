@@ -4,7 +4,7 @@ import { IConfigurableFormComponent } from '@/interfaces';
 import { useActualContextData, useActualContextExecution, useCalculatedModel, useCanvas, useShaFormInstance, useSheshaApplication } from '@/index';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { IModelValidation } from '@/utils/errors';
-import ComponentError from '@/components/componentErrors';
+import ErrorIconPopover from '@/components/componentErrors/errorIconPopover';
 import { formComponentActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 import AttributeDecorator from '@/components/attributeDecorator';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
@@ -62,29 +62,43 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
     />
   ), [actualModel, actualModel.hidden, actualModel.jsStyle, calculatedModel]);
 
-  if (!toolboxComponent)
-    return (
-      <ComponentError
-        errors={{
-          hasErrors: true, componentId: componentModel.id, componentName: componentModel.componentName, componentType: componentModel.type,
-        }}
-        message={`Component '${componentModel.type}' not found`}
-        type="error"
-      />
-    );
+  // Check for validation errors (in both designer and runtime modes)
+  let validationResult: IModelValidation | undefined;
 
-  if (shaForm.formMode === 'designer') {
-    const validationResult: IModelValidation = { hasErrors: false, errors: [] };
-    toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
-      validationResult.hasErrors = true;
-      validationResult.errors.push({ propertyName, error });
-    });
-    if (validationResult.hasErrors) {
-      validationResult.componentId = componentModel.id;
-      validationResult.componentName = componentModel.componentName;
-      validationResult.componentType = componentModel.type;
-      return <ComponentError errors={validationResult} message="" type="warning" />;
-    }
+  if (!toolboxComponent) {
+    validationResult = {
+      hasErrors: true,
+      componentId: componentModel.id,
+      componentName: componentModel.componentName,
+      componentType: componentModel.type,
+      errors: [{ error: `Component '${componentModel.type}' not found` }],
+    };
+    // Component not found - return early with just error message
+    return (
+      <div style={{ minHeight: '40px', position: 'relative', padding: '8px', border: '1px dashed #ccc' }}>
+        <ErrorIconPopover
+          errors={validationResult}
+          message={`Component '${componentModel.type}' not found`}
+          type="error"
+        >
+          <div style={{ color: '#999', fontSize: '12px' }}>Component &apos;{componentModel.type}&apos; not registered</div>
+        </ErrorIconPopover>
+      </div>
+    );
+  }
+
+  // Run validation in both designer and runtime modes
+  validationResult = { hasErrors: false, errors: [] };
+  toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
+    validationResult.hasErrors = true;
+    validationResult.errors.push({ propertyName, error });
+  });
+  if (validationResult.hasErrors) {
+    validationResult.componentId = componentModel.id;
+    validationResult.componentName = componentModel.componentName;
+    validationResult.componentType = componentModel.type;
+  } else {
+    validationResult = undefined;
   }
 
   const attributes = {
@@ -99,10 +113,17 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
     attributes['data-sha-parent-form-name'] = `${(shaForm as any)?.formId?.module}/${(shaForm as any)?.formId?.name}`;
   }
 
+  // Wrap component with error icon if there are validation errors
+  const wrappedControl = validationResult?.hasErrors ? (
+    <ErrorIconPopover errors={validationResult} message="" type="warning">
+      {control}
+    </ErrorIconPopover>
+  ) : control;
+
   return (
     <CustomErrorBoundary>
       <AttributeDecorator attributes={attributes}>
-        {control}
+        {wrappedControl}
       </AttributeDecorator>
     </CustomErrorBoundary>
   );

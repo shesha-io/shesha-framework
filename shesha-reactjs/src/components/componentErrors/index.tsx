@@ -36,7 +36,7 @@ const ComponentError: FC<IComponentErrorProps> = ({
         : '';
 
   const messageText = !message
-    ? `'${errors.componentType}' has configuration issue(s)`
+    ? type === 'info' ? `'${errors.componentType}' Hint:` : `'${errors.componentType}' has configuration issue(s)`
     : message;
 
   const body = (
