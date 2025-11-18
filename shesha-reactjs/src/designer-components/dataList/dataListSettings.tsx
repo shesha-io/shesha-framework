@@ -161,7 +161,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       SheshaConstants.data,
       SheshaConstants.pageContext,
       SheshaConstants.selectedRow,
-      SheshaConstants.fileSaver
+      SheshaConstants.fileSaver,
       SheshaConstants.setGlobalState,
       SheshaConstants.application
     ],
