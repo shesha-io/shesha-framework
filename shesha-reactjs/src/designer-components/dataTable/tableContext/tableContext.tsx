@@ -4,12 +4,12 @@ import React, { FC, ReactElement, useMemo } from 'react';
 import { ConfigurableFormItem } from '@/components';
 import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
-import { useForm, useFormData, useNestedPropertyMetadatAccessor, useTheme } from '@/providers';
+import { useForm, useFormData, useNestedPropertyMetadatAccessor } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { ITableContextComponentProps } from './models';
 import { SheshaError } from '@/utils/errors';
 import { useActualContextExecution } from '@/hooks';
-import { DatabaseOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { DatabaseOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
 import { ShaForm } from '@/providers/form';
 import { useParent } from '@/providers/parentProvider';
@@ -25,7 +25,6 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const { styles, cx } = useStyles();
   const parent = useParent();
 
-  const { theme } = useTheme();
   const isDesignerMode = formMode === 'designer';
 
   // Use real-time child component tracking in designer mode, fallback to static components prop in runtime
@@ -67,23 +66,8 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       );
     }
 
-    // Show alert when using DummyTable entity
-    const showDummyAlert = entityType === 'Shesha.Core.DummyTable';
-
     return (
       <div className={cx(getStyleClass())}>
-        {isDesignerMode && (
-          <div className="data-context-label">
-            <DatabaseOutlined />
-            Data Context {hasChildComponents && `(${childComponentIds.length} child components)`}
-            {showDummyAlert && (
-              <span>
-                <InfoCircleOutlined style={{ marginLeft: 8, color: theme.application.warningColor }} />
-                <span>This Data Context is using dummy data. Please change the Entity Type in the settings to use real data.</span>
-              </span>
-            )}
-          </div>
-        )}
         <DataTableProvider
           userConfigId={props.id}
           entityType={entityType}
