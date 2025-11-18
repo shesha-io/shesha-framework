@@ -1,4 +1,6 @@
-﻿namespace Shesha.Authorization.Settings.Dto
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Shesha.Authorization.Settings.Dto
 {
     /// <summary>
     /// Authorization options
@@ -22,33 +24,45 @@
 
 
         /// <summary>
-        /// Passwords: require digits
+        /// Require digit in passwords
         /// </summary>
+        [Display(Name = "Require digit")]
         public bool RequireDigit { get; set; }
 
         /// <summary>
         /// Passwords: require lower case character
         /// </summary>
+        [Display(Name = "Require lowercase")]
         public bool RequireLowercase { get; set; }
 
         /// <summary>
         /// Passwords: non alphanumeric character
         /// </summary>
+        [Display(Name = "Require non alphanumeric")]
         public bool RequireNonAlphanumeric { get; set; }
+
         /// <summary>
         /// Passwords: require upper case character
         /// </summary>
+        [Display(Name = "Require uppercase")]
         public bool RequireUppercase { get; set; }
-        
+
         /// <summary>
         /// Passwords: min length
         /// </summary>
+        [Display(Name = "Required length")]
         public int RequiredLength { get; set; }
 
         /// <summary>
         /// Auto logoff timeout (in case of user inactivity). Set to 0 to disable
         /// </summary>
+        [Display(Name = "Auto logoff timeout (in case of user inactivity). Set to 0 to disable")]
         public int AutoLogoffTimeout { get; set; }
+
+        /// <summary>
+        /// Auto logoff timeout after inactivity
+        /// </summary>
+        public bool AutoLogoffAfterInactivity { get; set; }
 
         /// <summary>
         /// Allow users to reset passwords with reset link sent to their emails.

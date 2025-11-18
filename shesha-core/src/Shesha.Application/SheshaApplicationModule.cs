@@ -1,4 +1,7 @@
-﻿using Abp;
+﻿using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using Abp;
 using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
 using Abp.Configuration.Startup;
@@ -10,6 +13,7 @@ using Abp.Reflection;
 using Abp.Reflection.Extensions;
 using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
+using Shesha.Configuration.Security.Frontend;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -25,13 +29,10 @@ using Shesha.Notifications.SMS;
 using Shesha.Otp.Configuration;
 using Shesha.Reflection;
 using Shesha.Settings.Ioc;
+using Shesha.ShaRoleAppointedPersons;
 using Shesha.Sms;
 using Shesha.Sms.Configuration;
 using Shesha.Startup;
-using Shesha.UserManagements.Configurations;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Shesha
 {
@@ -119,34 +120,46 @@ namespace Shesha
 
         public override void Initialize()
         {
-            IocManager.RegisterSettingAccessor<IOtpSettings>(s => {
-                s.OneTimePins.WithDefaultValue(new OtpSettings
+            IocManager.RegisterSettingAccessor<IUserManagementSettings>(s =>
+            {
+                //s.UserManagementSettings.WithDefaultValue(new UserManagementSettings
+                //{
+                //    AdditionalRegistrationInfo = false,
+                //    AdditionalRegistrationInfoForm = null,
+                //    AllowSelfRegistration = true,
+                //    CreationMode = RefListCreationMode.Always,
+                //});
+
+                s.DefaultAuthentication.WithDefaultValue(new DefaultAuthenticationSettings
                 {
+                    // Account Creation
+                    RequireOtpVerification = true,
+                    UseDefaultRegistrationForm = true,
+                    UserEmailAsUsername = true,
+                    SupportedVerificationMethods = SupportedRegistrationMethods.MobileNumber,
+
+                    // Password Complexity
+                    RequireDigit = true,
+                    RequiredLength = 3,
+                    RequireLowercase = true,
+
+                    // One-Time-Pins
                     Alphabet = OtpDefaults.DefaultAlphabet,
                     PasswordLength = OtpDefaults.DefaultPasswordLength,
-                    DefaultLifetime = OtpDefaults.DefaultLifetime,
                     DefaultSubjectTemplate = OtpDefaults.DefaultSubjectTemplate,
                     DefaultBodyTemplate = OtpDefaults.DefaultBodyTemplate,
                     DefaultEmailSubjectTemplate = OtpDefaults.DefaultEmailSubjectTemplate,
-                    DefaultEmailBodyTemplate = OtpDefaults.DefaultEmailBodyTemplate
-                });
-            });
+                    DefaultEmailBodyTemplate = OtpDefaults.DefaultEmailBodyTemplate,
 
-            IocManager.RegisterSettingAccessor<IUserManagementSettings>(s => {
-                s.UserManagementSettings.WithDefaultValue(new UserManagementSettings
-                {
-                   SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber,
-                   RequireEmailVerification = false,
-                   GoToUrlAfterRegistration = "/",
-                   UserEmailAsUsername = false,
-                   AdditionalRegistrationInfo = false,
-                   AdditionalRegistrationInfoFormModule = null,
-                   AdditionalRegistrationInfoFormName = null
+                    // Password resets
+                    UseResetPasswordViaEmailLink = true,
+                    ResetPasswordEmailLinkLifetime = 300
                 });
             });
 
             IocManager.Register<ISheshaAuthorizationHelper, ApiAuthorizationHelper>(DependencyLifeStyle.Transient);
             IocManager.Register<ISheshaAuthorizationHelper, EntityCrudAuthorizationHelper>(DependencyLifeStyle.Transient);
+            IocManager.Register<IShaRoleAppointedPersonAppService, ShaRoleAppointedPersonActionsAppService>(DependencyLifeStyle.Transient);
 
             IocManager
                 .RegisterConfigurableItemManager<NotificationTypeConfig, INotificationManager, NotificationManager>()

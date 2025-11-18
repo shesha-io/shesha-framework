@@ -1,5 +1,6 @@
 ﻿using Abp.Net.Mail;
 using Moq;
+using Shesha.Configuration.Security.Frontend;
 using Shesha.Domain.Enums;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
@@ -57,7 +58,7 @@ namespace Shesha.Tests.Otp
             settings.SetupGet(s => s.PasswordLength).Returns(6);
             settings.SetupGet(s => s.Alphabet).Returns("0123456789");
             */
-            var settings = LocalIocManager.Resolve<IOtpSettings>();
+            var settings = LocalIocManager.Resolve<IUserManagementSettings>();
 
             var currentPin = string.Empty;
             var storage = new Dictionary<Guid, string>();
@@ -103,7 +104,7 @@ namespace Shesha.Tests.Otp
     
         private async Task<IVerifyPinResponse> CheckEmailLinkAsync(Action<VerifyPinInput>? action)
         {
-            var settings = LocalIocManager.Resolve<IOtpSettings>();
+            var settings = LocalIocManager.Resolve<IUserManagementSettings>();
 
             var currentEmailToken = string.Empty;
             var storage = new Dictionary<Guid, string>();

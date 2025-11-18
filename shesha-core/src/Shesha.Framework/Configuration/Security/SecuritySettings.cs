@@ -12,44 +12,9 @@ namespace Shesha.Configuration.Security
     public class SecuritySettings
     {
         /// <summary>
-        /// Auto logoff timeout
-        /// </summary>
-        public int AutoLogoffTimeout { get; set; }
-
-        /// <summary>
-        /// Use reset password via email
-        /// </summary>
-        public bool UseResetPasswordViaEmailLink { get; set; }
-
-        /// <summary>
-        /// Email link lifetime
-        /// </summary>
-        public int ResetPasswordEmailLinkLifetime { get; set; }
-
-        /// <summary>
-        /// Use reset password via sms
-        /// </summary>
-        public bool UseResetPasswordViaSmsOtp { get; set; }
-
-        /// <summary>
-        /// OTP lifetime
-        /// </summary>
-        public int ResetPasswordSmsOtpLifetime { get; set; }
-
-        /// <summary>
         /// OTP lifetime
         /// </summary>
         public int MobileLoginPinLifetime { get; set; }
-
-        /// <summary>
-        /// Use reset password via security questions
-        /// </summary>
-        public bool UseResetPasswordViaSecurityQuestions { get; set; }
-
-        /// <summary>
-        /// Num questions allowed
-        /// </summary>
-        public int ResetPasswordViaSecurityQuestionsNumQuestionsAllowed { get; set; }
 
         /// <summary>
         /// Default endpoint access

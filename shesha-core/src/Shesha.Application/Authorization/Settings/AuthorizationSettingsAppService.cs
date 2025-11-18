@@ -2,6 +2,7 @@
 using Shesha.Authorization.Settings.Dto;
 using Shesha.Configuration;
 using Shesha.Configuration.Security;
+using Shesha.Configuration.Security.Frontend;
 using System;
 using System.Threading.Tasks;
 
@@ -10,69 +11,75 @@ namespace Shesha.Authorization.Settings
     [Obsolete("To be removed, is used for backward compatibility only")]
     public class AuthorizationSettingsAppService: ApplicationService
     {
-        private readonly IPasswordComplexitySettings _passwordComplexitySettings;
-        private readonly ISecuritySettings _securitySettings;
+        private readonly IUserManagementSettings _userManagementSettings;
 
-        public AuthorizationSettingsAppService(IPasswordComplexitySettings passwordComplexitySettings, ISecuritySettings securitySettings)
+        public AuthorizationSettingsAppService(IUserManagementSettings userManagementSettings)
         {
-            _passwordComplexitySettings = passwordComplexitySettings;
-            _securitySettings = securitySettings;
+            _userManagementSettings = userManagementSettings;
         }
 
         public async Task UpdateSettingsAsync(AuthorizationSettingsDto dto)
         {
-            //Lockout
-            await _securitySettings.UserLockOutEnabled.SetValueAsync(dto.IsLockoutEnabled);
-            await _securitySettings.DefaultAccountLockoutSeconds.SetValueAsync(dto.DefaultAccountLockoutSeconds);
-            await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.SetValueAsync(dto.MaxFailedAccessAttemptsBeforeLockout);
-            await _securitySettings.SecuritySettings.SetValueAsync(new SecuritySettings 
-            { 
-                AutoLogoffTimeout = dto.AutoLogoffTimeout,
+            // Default Authentication
+            await _userManagementSettings.DefaultAuthentication.SetValueAsync(new DefaultAuthenticationSettings
+            {
+                // Lockout
+                UserLockOutEnabled = dto.IsLockoutEnabled,
+                DefaultAccountLockoutSeconds = dto.DefaultAccountLockoutSeconds,
+                MaxFailedAccessAttemptsBeforeLockout = dto.MaxFailedAccessAttemptsBeforeLockout,
+
+                // Password complexity
+                RequireDigit = dto.RequireDigit,
+                RequireLowercase = dto.RequireLowercase,
+                RequiredLength = dto.RequiredLength,
+                RequireNonAlphanumeric = dto.RequireNonAlphanumeric,
+                RequireUppercase = dto.RequireUppercase,
 
                 // Password reset
                 UseResetPasswordViaEmailLink = dto.ResetPasswordWithEmailLinkIsSupported,
                 ResetPasswordEmailLinkLifetime = dto.ResetPasswordWithEmailLinkExpiryDelay,
-
                 UseResetPasswordViaSmsOtp = dto.ResetPasswordWithSmsOtpIsSupported,
                 ResetPasswordSmsOtpLifetime = dto.ResetPasswordWithSmsOtpExpiryDelay,
-
                 UseResetPasswordViaSecurityQuestions = dto.ResetPasswordWithSecurityQuestionsIsSupported,
                 ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed
             });
 
-            //Password complexity
-            await _passwordComplexitySettings.RequireDigit.SetValueAsync(dto.RequireDigit);
-            await _passwordComplexitySettings.RequireLowercase.SetValueAsync(dto.RequireLowercase);
-            await _passwordComplexitySettings.RequireNonAlphanumeric.SetValueAsync(dto.RequireNonAlphanumeric);
-            await _passwordComplexitySettings.RequireUppercase.SetValueAsync(dto.RequireUppercase);
-            await _passwordComplexitySettings.RequiredLength.SetValueAsync(dto.RequiredLength);
+            await _userManagementSettings.GeneralFrontendSecuritySettings.SetValueAsync(new GeneralFrontendSecuritySettings
+            {
+                AutoLogoffAfterInactivity = dto.AutoLogoffAfterInactivity,
+                AutoLogoffTimeout = dto.AutoLogoffTimeout
+            });
         }
 
         public async Task<AuthorizationSettingsDto> GetSettingsAsync()
         {
-            var settings = await _securitySettings.SecuritySettings.GetValueAsync();
+            var defaultAuthSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            var generalFrontendSettings = await _userManagementSettings.GeneralFrontendSecuritySettings.GetValueAsync();
             var dto = new AuthorizationSettingsDto();
             
             //Lockout
-            dto.IsLockoutEnabled = await _securitySettings.UserLockOutEnabled.GetValueOrNullAsync();
-            dto.DefaultAccountLockoutSeconds = await _securitySettings.DefaultAccountLockoutSeconds.GetValueOrNullAsync();
-            dto.MaxFailedAccessAttemptsBeforeLockout = await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueOrNullAsync();
-            dto.AutoLogoffTimeout = settings.AutoLogoffTimeout;
+            dto.IsLockoutEnabled = defaultAuthSettings.UserLockOutEnabled;
+            dto.DefaultAccountLockoutSeconds = defaultAuthSettings.DefaultAccountLockoutSeconds;
+            dto.MaxFailedAccessAttemptsBeforeLockout = defaultAuthSettings.MaxFailedAccessAttemptsBeforeLockout;
 
             //Password complexity
-            dto.RequireDigit = await _passwordComplexitySettings.RequireDigit.GetValueOrNullAsync();
-            dto.RequireLowercase = await _passwordComplexitySettings.RequireLowercase.GetValueOrNullAsync();
-            dto.RequireNonAlphanumeric = await _passwordComplexitySettings.RequireNonAlphanumeric.GetValueOrNullAsync();
-            dto.RequireUppercase = await _passwordComplexitySettings.RequireUppercase.GetValueOrNullAsync();
-            dto.RequiredLength = await _passwordComplexitySettings.RequiredLength.GetValueOrNullAsync();
+            dto.RequireDigit = defaultAuthSettings.RequireDigit;
+            dto.RequireLowercase = defaultAuthSettings.RequireLowercase;
+            dto.RequireNonAlphanumeric = defaultAuthSettings.RequireNonAlphanumeric;
+            dto.RequireUppercase = defaultAuthSettings.RequireUppercase;
+            dto.RequiredLength = defaultAuthSettings.RequiredLength;
 
             // Password reset
-            dto.ResetPasswordWithEmailLinkIsSupported =  settings.UseResetPasswordViaEmailLink;
-            dto.ResetPasswordWithEmailLinkExpiryDelay = settings.ResetPasswordEmailLinkLifetime;
-            dto.ResetPasswordWithSmsOtpIsSupported = settings.UseResetPasswordViaSmsOtp;
-            dto.ResetPasswordWithSmsOtpExpiryDelay = settings.ResetPasswordSmsOtpLifetime;
-            dto.ResetPasswordWithSecurityQuestionsIsSupported = settings.UseResetPasswordViaSecurityQuestions;
-            dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed = settings.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed;
+            dto.ResetPasswordWithEmailLinkIsSupported = defaultAuthSettings.UseResetPasswordViaEmailLink;
+            dto.ResetPasswordWithEmailLinkExpiryDelay = defaultAuthSettings.ResetPasswordEmailLinkLifetime;
+            dto.ResetPasswordWithSmsOtpIsSupported = defaultAuthSettings.UseResetPasswordViaSmsOtp;
+            dto.ResetPasswordWithSmsOtpExpiryDelay = defaultAuthSettings.ResetPasswordSmsOtpLifetime;
+            dto.ResetPasswordWithSecurityQuestionsIsSupported = defaultAuthSettings.UseResetPasswordViaSecurityQuestions;
+            dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed = defaultAuthSettings.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed;
+
+            // General
+            dto.AutoLogoffAfterInactivity = generalFrontendSettings.AutoLogoffAfterInactivity;
+            dto.AutoLogoffTimeout = generalFrontendSettings.AutoLogoffTimeout;
 
             return dto;
         }
