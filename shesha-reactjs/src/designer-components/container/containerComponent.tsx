@@ -1,6 +1,6 @@
 import { GroupOutlined } from '@ant-design/icons';
 import React from 'react';
-import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
+import { ICommonContainerProps, IContainerComponentProps } from '@/interfaces';
 import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -14,8 +14,9 @@ import { defaultStyles } from './data';
 import { removeUndefinedProps } from '@/utils/object';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles';
+import { ContainerComponentDefinition } from './interfaces';
 
-const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
+const ContainerComponent: ContainerComponentDefinition = {
   type: 'container',
   isInput: false,
   name: 'Container',

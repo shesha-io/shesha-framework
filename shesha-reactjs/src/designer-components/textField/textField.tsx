@@ -3,12 +3,11 @@ import { Input } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import React, { useMemo } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
-import { IToolboxComponent } from '@/interfaces';
+import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { ITextFieldComponentProps } from './interfaces';
+import { ITextFieldComponentProps, TextFieldComponentDefinition } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
@@ -19,11 +18,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 
-interface ITextFieldComponentCalulatedValues {
-  eventHandlers?: IEventHandlers;
-}
-
-const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps, ITextFieldComponentCalulatedValues> = {
+const TextFieldComponent: TextFieldComponentDefinition = {
   type: 'textField',
   isInput: true,
   isOutput: true,

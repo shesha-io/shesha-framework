@@ -33,7 +33,7 @@ import PermissionedObjectsTree from '@/designer-components/permissions/permissio
 import PermissionsTree from '@/designer-components/permissions/permissionsTree/permissionsTree';
 import Progress from '@/designer-components/progress';
 import { PropertyAutocompleteComponent } from '@/designer-components/propertyAutocomplete';
-import Radio from '@/designer-components/radio/radio';
+import RadioComponent from '@/designer-components/radio/radio';
 import Rate from '@/designer-components/rate';
 import ReferenceListAutocompleteComponent from '@/designer-components/referenceListAutocomplete';
 import RichTextEditor from '@/designer-components/richTextEditor';
@@ -90,7 +90,7 @@ import { SortingEditorComponent } from '@/designer-components/sortingEditor/inde
 import TextAreaComponent from '@/designer-components/textArea/textArea';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
-import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
+import { IToolboxComponent, IToolboxComponentGroup } from '@/interfaces/formDesigner';
 import PermissionAutocompleteComponent from '@/designer-components/permissions/permissionAutocomplete';
 import EditModeToggler from '@/designer-components/editModeToggler';
 import ProfileDropdown from '@/designer-components/profileDropdown';
@@ -134,7 +134,7 @@ export const getToolboxComponents = (
         TextAreaComponent,
         Checkbox,
         CheckboxGroup,
-        Radio,
+        RadioComponent,
         Slider,
         Switch,
         DateField,
@@ -284,4 +284,15 @@ export const getToolboxComponents = (
       components: [EditModeToggler, ProfileDropdown],
     },
   ];
+};
+
+export const getComponentDefinitions = (): Map<string, IToolboxComponent> => {
+  const result = new Map<string, IToolboxComponent>();
+
+  for (const toolboxComponentGroup of getToolboxComponents(false, { formId: null, formProps: null })) {
+    for (const toolboxComponent of toolboxComponentGroup.components) {
+      result.set(toolboxComponent.type, toolboxComponent);
+    }
+  }
+  return result;
 };

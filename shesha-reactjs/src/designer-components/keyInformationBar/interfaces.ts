@@ -1,3 +1,4 @@
+import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import { AlignItems } from '../container/interfaces';
 
@@ -27,3 +28,5 @@ export interface IKeyInformationBarProps extends IConfigurableFormComponent, IIn
   stylingBox?: any;
   backgroundColor?: string;
 }
+
+export type ColumnsComponentDefinition = IToolboxComponent<IKeyInformationBarProps>;

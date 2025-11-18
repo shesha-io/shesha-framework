@@ -2,11 +2,12 @@ import { Radio, Space } from 'antd';
 import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 import { useGet } from '@/hooks';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
-import { getDataSourceList, IRadioProps } from './utils';
+import { getDataSourceList } from './utils';
 import { IAjaxResponse } from '@/interfaces';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { ILabelValue } from '../dropdown/model';
 import { executeScriptSync } from '@/providers/form/utils';
+import { IRadioProps } from './interfaces';
 
 type FetchResponse = ILabelValue<any>[] | {
   items?: ILabelValue<any>[];

@@ -1,4 +1,4 @@
-import { createStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
   const csHeader = "sha-cs-header";
@@ -55,7 +55,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         }
         .${csTreeArea}{
             height: calc(100vh - ${headerHeight}px);
-            overflow: 'auto';
+            overflow: auto;
             .${csNavPanelSpinner}{
                 height: 100%;
                 >.${prefixCls}-spin-container {
@@ -85,21 +85,22 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         }
         .${csWorkArea}{
             height: calc(100vh - ${headerHeight}px);
-            overflow: 'auto';
+            overflow: auto;
             .${csDocTabs}{
                 height: 100%;
                 >.ant-tabs-content-holder{
                     height: 100%;
+                    ${sheshaStyles.thinScrollbars}
                     >.ant-tabs-content{
                         height: 100%;
                         overflow: hidden;
                     }
                 }
             }
+        }
             .${csDocEditor}{
                 padding: 0;
             }
-        }
   `);
 
   return {

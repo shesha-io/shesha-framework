@@ -7,7 +7,7 @@ import { IToolboxComponent } from '@/interfaces';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { toBase64, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
-import { IFileUploadProps } from '../fileUpload';
+import { IFileUploadProps } from '../fileUpload/interfaces';
 import { getSettings } from './settings';
 
 interface IImageUploaderProps {

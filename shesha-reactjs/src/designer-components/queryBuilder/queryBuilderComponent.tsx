@@ -2,8 +2,7 @@ import React from 'react';
 import settingsFormJson from './settingsForm.json';
 import { FilterOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
-import { IQueryBuilderComponentProps } from './interfaces';
-import { IToolboxComponent } from '@/interfaces';
+import { IQueryBuilderComponentProps, QueryBuilderComponentDefinition } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -11,7 +10,7 @@ import { QueryBuilder } from './queryBuilder';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const QueryBuilderComponent: IToolboxComponent<IQueryBuilderComponentProps> = {
+const QueryBuilderComponent: QueryBuilderComponentDefinition = {
   type: 'queryBuilder',
   name: 'Query Builder',
   icon: <FilterOutlined />,
