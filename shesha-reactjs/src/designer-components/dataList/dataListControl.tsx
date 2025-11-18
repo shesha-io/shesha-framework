@@ -5,7 +5,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import classNames from 'classnames';
 import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
-import { useConfigurableAction, useConfigurableActionDispatcher, useDataContextManager } from '@/providers';
+import { IDataContextsData, useConfigurableAction, useConfigurableActionDispatcher, useDataContextManager } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 import { useStyles } from '@/components/dataList/styles/styles';
 import { useAvailableConstantsData } from '@/providers/form/utils';
@@ -110,11 +110,11 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       };
     }
 
-    const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState', onListItemSave);
+    const executer = new Function('data, contexts, fileSaver, form, globalState, http, message, moment, pageContext, selectedRow, setGlobalState, application', onListItemSave);
 
     return async (data, form, _, globalState) => {
       // Safely get contexts data - fallback to empty object if not available
-      const contextData = dataContextManager?.getDataContextsData?.() || {};
+      const contextData = dataContextManager?.getDataContextsData?.() || {} as IDataContextsData;
 
       // Create fileSaver API with safe error handling
       const fileSaver = {
@@ -143,7 +143,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
           allData.moment,
           pageContext,
           selectedRow || null,
-          allData.setGlobalState
+          allData.setGlobalState,
+          contextData?.application || null
         );
       } catch (executerError) {
         console.error('Error in executer function:', executerError);

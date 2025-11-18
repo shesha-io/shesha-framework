@@ -33,7 +33,11 @@
             "label": "Entity Filter",
             "labelAlign": "right",
             "parentId": "uEFBpy19tApJMiBuFyj9s",
-            "hidden": false,
+            "hidden": {
+              "_code": "return !getSettingValue(data?.entityTypeShortAlias);",
+              "_mode": "code",
+              "_value": false
+            },
             "isDynamic": false,
             "validate": {},
             "settingsValidationErrors": [],
