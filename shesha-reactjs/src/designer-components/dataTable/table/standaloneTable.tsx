@@ -1,10 +1,11 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { ITableComponentProps } from './models';
 import { SearchOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { Popover } from 'antd';
 import { useForm } from '@/providers';
 import { useTheme } from '@/providers/theme';
 import { useDataTableStore } from '@/providers/dataTable';
+import { useDatatableHintPopoverStyles } from './hintPopoverStyles';
 
 // Ignore any configured items to ensure clean state when dragged outside
 const columns = [
@@ -27,20 +28,8 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
   const isInsideDataContext = !!store;
 
   // Inject CSS for hint popover arrow styling
-  useEffect(() => {
-    const styleId = 'sha-datatable-hint-popover-styles';
-    if (!document.getElementById(styleId)) {
-      const style = document.createElement('style');
-      style.id = styleId;
-      style.innerHTML = `
-        .sha-datatable-hint-popover .ant-popover-arrow:before,
-        .sha-datatable-hint-popover .ant-popover-arrow:after {
-          background: #D9DCDC !important;
-        }
-      `;
-      document.head.appendChild(style);
-    }
-  }, []);
+  useDatatableHintPopoverStyles();
+
   const tableStyle: React.CSSProperties = {
     width: '100%',
     borderCollapse: 'collapse',
@@ -132,11 +121,11 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
           <InfoCircleOutlined
             style={{
               position: 'absolute',
-              top: '8px',
-              right: '8px',
+              top: '4px',
+              right: '4px',
               color: theme?.application?.warningColor || '#faad14',
               fontSize: '20px',
-              zIndex: 10,
+              zIndex: 9999,
               cursor: 'help',
               backgroundColor: '#fff',
               borderRadius: '50%',

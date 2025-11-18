@@ -32,6 +32,7 @@ import { Popover } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTheme } from '@/providers/theme';
 import { StandaloneTable } from './standaloneTable';
+import { useDatatableHintPopoverStyles } from './hintPopoverStyles';
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const { id, items, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
@@ -54,20 +55,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   }
 
   // Inject CSS for hint popover arrow styling
-  useEffect(() => {
-    const styleId = 'sha-datatable-hint-popover-styles';
-    if (!document.getElementById(styleId)) {
-      const style = document.createElement('style');
-      style.id = styleId;
-      style.innerHTML = `
-        .sha-datatable-hint-popover .ant-popover-arrow:before,
-        .sha-datatable-hint-popover .ant-popover-arrow:after {
-          background: #D9DCDC !important;
-        }
-      `;
-      document.head.appendChild(style);
-    }
-  }, []);
+  useDatatableHintPopoverStyles();
 
   const { styles } = useStyles({
     fontFamily: props?.font?.type,
@@ -216,7 +204,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     };
 
     autoConfigureColumns();
-  }, [isDesignMode, formDesigner, metadata?.metadata, items, id, props, hasAutoConfiguredRef]);
+  }, [isDesignMode, formDesigner, metadata?.metadata, items, id]);
 
   const renderSidebarContent = (): JSX.Element => {
     if (isFiltering) {
@@ -291,13 +279,16 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             )}
           >
             <InfoCircleOutlined
+              role="button"
+              tabIndex={0}
+              aria-label="Data table configuration help"
               style={{
                 position: 'absolute',
-                top: '8px',
-                right: '8px',
+                top: '4px',
+                right: '4px',
                 color: theme?.application?.warningColor || '#faad14',
                 fontSize: '20px',
-                zIndex: 10,
+                zIndex: 9999,
                 cursor: 'help',
                 backgroundColor: '#fff',
                 borderRadius: '50%',
