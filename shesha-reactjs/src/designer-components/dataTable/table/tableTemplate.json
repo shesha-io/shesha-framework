@@ -1,7 +1,7 @@
 [
   {
     "id": "{{NEW_KEY}}",
-    "type": "datatableContext",
+    "type": "dataContext",
     "propertyName": "dataTable1",
     "label": "Table",
     "labelAlign": "right",
