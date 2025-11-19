@@ -10,9 +10,11 @@ export interface IUpdateItemSettingsPayload {
 
 export interface IModelConfiguratorStateContext {
   id?: string;
+  initialConfiguration?: ModelConfigurationDto;
   modelConfiguration?: ModelConfigurationDto;
   form?: FormInstance;
   isCreateNew?: boolean;
+  isModified?: boolean;
 }
 
 export interface IModelConfiguratorActionsContext {
@@ -25,6 +27,7 @@ export interface IModelConfiguratorActionsContext {
   delete: () => Promise<void>;
   submit: () => void;
   getModelSettings: () => ModelConfigurationDto;
+  setModified: (isModified?: boolean) => void;
 
   /* NEW_ACTION_ACTION_DECLARATIOS_GOES_HERE */
 }

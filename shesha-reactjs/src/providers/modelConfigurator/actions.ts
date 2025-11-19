@@ -23,6 +23,8 @@ export enum ModelActionEnums {
 
   SetModelSettings = 'SET_MODEL_SETTINGS',
 
+  SetModified = 'SET_MODEFIED',
+
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
 
@@ -49,5 +51,7 @@ export const cancelAction = createAction(ModelActionEnums.Cancel);
 export const deleteRequestAction = createAction(ModelActionEnums.DeleteRequest);
 export const deleteSuccessAction = createAction(ModelActionEnums.DeleteSuccess);
 export const deleteErrorAction = createAction<IErrorInfo, IErrorInfo>(ModelActionEnums.DeleteError, (p) => p);
+
+export const setModifiedAction = createAction<boolean>(ModelActionEnums.SetModified);
 
 /* NEW_ACTION_GOES_HERE */
