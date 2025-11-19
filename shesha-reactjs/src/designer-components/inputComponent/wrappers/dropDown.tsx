@@ -12,9 +12,7 @@ export const DropDownWrapper: FC<IDropdownSettingsInputProps> = (props) => {
     <Select
       value={value}
       onChange={onChange}
-      onSelect={onChange}
       disabled={readOnly}
-
       size={size}
       mode={dropdownMode}
       allowClear={allowClear ?? true}
