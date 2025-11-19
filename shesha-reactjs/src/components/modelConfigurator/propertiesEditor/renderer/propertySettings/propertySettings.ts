@@ -20,6 +20,7 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
   const listRelFormatId = nanoid();
   const manyToOneFormatId = nanoid();
   const manyToManyFormatId = nanoid();
+  const defaultEditorId = nanoid();
 
   let editorsCode = `\n`;
   editorsCode += `const components = {\n`;
@@ -30,8 +31,20 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
   editorsCode += '}\n';
   editorsCode += DataTypes.allowedCompoenentsCode;
   editorsCode += '\n';
-  editorsCode += 'const editors = allowedComponents(data.dataType, data.dataFormat);\n';
-  editorsCode += 'return editors.map((e) => ({ value: e, label: components[e] }));\n';
+  editorsCode += 'const editors = allowedComponents(data.dataType, data.dataFormat) ?? [];\n';
+  editorsCode += 'return editors.filter((e) => components[e]).map((e) => ({ value: e, label: components[e] }));\n';
+
+  let editorsHiddenCode = `\n`;
+  editorsHiddenCode += `const components = {\n`;
+  for (const component in components) {
+    if (component.indexOf('.') > -1 || component.indexOf('-') > -1) continue;
+    editorsHiddenCode += `'${component}': '${components[component]?.name}',\n`;
+  }
+  editorsHiddenCode += '}\n';
+  editorsHiddenCode += DataTypes.allowedCompoenentsCode;
+  editorsHiddenCode += '\n';
+  editorsHiddenCode += 'const editors = (allowedComponents(data.dataType, data.dataFormat) ?? ).filter((e) => components[e]);\n';
+  editorsHiddenCode += 'return !editors?.length;\n';
 
   return {
     components: fbf()
@@ -134,7 +147,8 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
                         { label: 'Referencing Entities', value: 'entity' },
                         { label: 'Entities', value: 'many-entity' },
                         { label: 'Child Objects', value: 'object' },
-                        { label: 'Child Entities', value: 'child-entity' },
+                        // ToDo: AS - restore after full implementation
+                        // { label: 'Child Entities', value: 'child-entity' },
                         { label: 'Multi Value Reference List Item', value: 'multivalue-reference-list' },
                       ],
                     })
@@ -193,8 +207,13 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
 
               // Default editor
 
-                .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'formatting.defaultEditor', label: 'Default Editor',
-                  dropdownOptions: { _value: '', _mode: 'code', _code: editorsCode } as any,
+                .addContainer({ id: defaultEditorId, parentId: dataTabId, hidden: { _value: false, _mode: 'code', _code: editorsHiddenCode },
+                  components: [...fbf()
+                    .addSettingsInput({ parentId: defaultEditorId, inputType: 'dropdown', propertyName: 'formatting.defaultEditor', label: 'Default Editor',
+                      dropdownOptions: { _value: [], _mode: 'code', _code: editorsCode },
+                    })
+                    .toJson(),
+                  ],
                 })
 
               // Validation message

@@ -13,6 +13,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         ...state,
         isCreateNew: true,
         modelConfiguration: action.payload,
+        initialConfiguration: action.payload,
         id: '',
       };
     },
@@ -49,6 +50,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         ...state,
         isCreateNew: false,
         modelConfiguration: payload,
+        initialConfiguration: payload,
       };
     },
 
@@ -61,10 +63,9 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
       return {
         ...state,
         isCreateNew: false,
+        isModified: false,
         id: payload.id,
-        // Do not update modelConfiguration to avoid update interface
-        // ToDo: AS - think if we still need update intreface and restore selected property and settings tabs
-        // modelConfiguration: { ...payload },
+        modelConfiguration: { ...payload },
       };
     },
 
@@ -74,6 +75,16 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
       return {
         ...state,
         isCreateNew: false,
+      };
+    },
+
+    [ModelActionEnums.SetModified]: (
+      state: IModelConfiguratorStateContext,
+      action: ReduxActions.Action<boolean>,
+    ) => {
+      return {
+        ...state,
+        isModified: action.payload,
       };
     },
 

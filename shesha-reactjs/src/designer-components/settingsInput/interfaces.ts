@@ -64,7 +64,7 @@ export const isColorPickerProps = (value: ISettingsInputBase): value is IColorPi
 // Dropdown
 export interface IDropdownSettingsInputProps extends ISettingsInputBase {
   type: 'dropdown';
-  dropdownOptions?: IDropdownOption[];
+  dropdownOptions?: IDropdownOption[] | IPropertySetting<IDropdownOption[]>;
   allowClear?: boolean;
   allowSearch?: boolean;
   dropdownMode?: 'multiple' | 'tags';

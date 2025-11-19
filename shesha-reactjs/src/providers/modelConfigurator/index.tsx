@@ -21,6 +21,7 @@ import {
   saveErrorAction,
   saveRequestAction,
   saveSuccessAction,
+  setModifiedAction,
 } from './actions';
 import {
   IModelConfiguratorActionsContext,
@@ -52,6 +53,13 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     form: props.form,
   });
 
+  const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto => {
+    return {
+      ...data,
+      properties: data.properties.filter((p) => p.name.toLowerCase() !== 'id'), // remove Id filed
+    };
+  };
+
   const load = (): void => {
     if (state.id) {
       dispatch(loadRequestAction());
@@ -60,7 +68,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
       modelConfigurationsGetById({}, { id: state.id, base: backendUrl, headers: httpHeaders })
         .then((response) => {
           if (isAjaxSuccessResponse(response)) {
-            dispatch(loadSuccessAction(response.result));
+            dispatch(loadSuccessAction(prepareLoadedData(response.result)));
           } else dispatch(loadErrorAction(response.error));
         })
         .catch((e) => {
@@ -107,7 +115,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
       mutate(preparedValues, { base: backendUrl, headers: httpHeaders })
         .then((response) => {
           if (isAjaxSuccessResponse(response)) {
-            dispatch(saveSuccessAction(response.result));
+            dispatch(saveSuccessAction(prepareLoadedData(response.result)));
             resolve(response.result);
           } else {
             dispatch(saveErrorAction(response.error));
@@ -154,6 +162,10 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         });
     });
 
+  const setModified = (isModified?: boolean): void => {
+    dispatch(setModifiedAction(isModified ?? true));
+  };
+
   return (
     <ModelConfiguratorStateContext.Provider value={{ ...state }}>
       <ModelConfiguratorActionsContext.Provider
@@ -167,6 +179,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
           cancel,
           delete: deleteFunc,
           createNew,
+          setModified,
           /* NEW_ACTION_GOES_HERE */
         }}
       >
