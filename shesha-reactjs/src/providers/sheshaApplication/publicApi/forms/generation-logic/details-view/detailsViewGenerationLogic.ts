@@ -235,7 +235,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'right',
-                        isDynamic: false,
+            isDynamic: false,
             desktop: {
               stylingBox: '{"marginBottom":"14","marginRight":"14"}',
             },
