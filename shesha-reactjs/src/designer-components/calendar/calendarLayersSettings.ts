@@ -246,7 +246,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             title: 'Events',
             id: eventsTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: nanoid(),
