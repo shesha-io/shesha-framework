@@ -1,0 +1,96 @@
+[
+  {
+    "id": "root",
+    "type": "container",
+    "components": [
+      {
+        "id": "title-container",
+        "type": "container",
+        "propertyName": "titleContainer",
+        "parentId": "root",
+        "direction": "horizontal",
+        "justifyContent": "space-between",
+        "gap": 2,
+        "components": [
+          {
+            "id": "item-title",
+            "type": "text",
+            "propertyName": "itemTitle",
+            "parentId": "title-container",
+            "content": "{{data.name || 'Item Name'}}",
+            "textType": "span",
+            "style": {
+              "fontWeight": "600",
+              "fontSize": "16px"
+            }
+          },
+          {
+            "id": "item-badge",
+            "type": "text",
+            "propertyName": "itemBadge",
+            "parentId": "title-container",
+            "content": "{{data.status || 'Status'}}",
+            "textType": "span",
+            "style": {
+              "fontSize": "12px",
+              "padding": "2px 8px",
+              "borderRadius": "4px",
+              "backgroundColor": "#e6f7ff",
+              "color": "#1890ff"
+            }
+          }
+        ]
+      },
+      {
+        "id": "description",
+        "type": "text",
+        "propertyName": "itemDescription",
+        "parentId": "root",
+        "content": "{{data.description || 'Item description goes here'}}",
+        "textType": "paragraph",
+        "style": {
+          "fontSize": "14px",
+          "color": "#595959",
+          "marginTop": "8px"
+        }
+      },
+      {
+        "id": "metadata-container",
+        "type": "container",
+        "propertyName": "metadataContainer",
+        "parentId": "root",
+        "direction": "horizontal",
+        "gap": 3,
+        "style": {
+          "marginTop": "12px"
+        },
+        "components": [
+          {
+            "id": "created-date",
+            "type": "text",
+            "propertyName": "createdDate",
+            "parentId": "metadata-container",
+            "content": "Created: {{data.creationTime ? moment(data.creationTime).format('DD MMM YYYY') : 'N/A'}}",
+            "textType": "span",
+            "style": {
+              "fontSize": "12px",
+              "color": "#8c8c8c"
+            }
+          },
+          {
+            "id": "modified-date",
+            "type": "text",
+            "propertyName": "modifiedDate",
+            "parentId": "metadata-container",
+            "content": "Modified: {{data.lastModificationTime ? moment(data.lastModificationTime).format('DD MMM YYYY') : 'N/A'}}",
+            "textType": "span",
+            "style": {
+              "fontSize": "12px",
+              "color": "#8c8c8c"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

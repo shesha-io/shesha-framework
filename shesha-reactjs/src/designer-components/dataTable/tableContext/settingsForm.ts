@@ -121,6 +121,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             parentId: dataTabId,
                             hidden: false,
                             jsSetting: true,
+                            width: '100%',
                           },
                         ],
                       })
@@ -153,6 +154,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             settingsValidationErrors: [],
                             jsSetting: true,
                             placeholder: '',
+                            width: '100%',
                           },
                         ],
                       })
@@ -268,6 +270,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                             jsSetting: false,
+                            width: '100%',
                           },
                         ],
                       })

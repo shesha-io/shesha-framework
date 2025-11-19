@@ -48,6 +48,10 @@ export interface AuthenticatorArgs {
    * A callback for when the request headers are changed
    */
   onSetRequestHeaders?: ((headers: IHttpHeaders) => void) | undefined;
+  /**
+   * A callback that is called on token expiration
+   */
+  onTokenExpired?: () => void;
 }
 
 export class Authenticator implements IAuthenticator {
@@ -70,6 +74,8 @@ export class Authenticator implements IAuthenticator {
   #unauthorizedRedirectUrl: string;
 
   #homePageUrl: string;
+
+  #onTokenExpired: (() => void) | undefined;
 
   #loginInfo: GetCurrentLoginInfoOutput | undefined;
 
@@ -94,6 +100,7 @@ export class Authenticator implements IAuthenticator {
     this.#unauthorizedRedirectUrl = args.unauthorizedRedirectUrl || URL_LOGIN_PAGE;
     this.#homePageUrl = args.homePageUrl || URL_HOME_PAGE;
     this.#onSetRequestHeaders = args.onSetRequestHeaders;
+    this.#onTokenExpired = args.onTokenExpired;
   }
 
   #redirect = (url: string): void => {
@@ -122,10 +129,13 @@ export class Authenticator implements IAuthenticator {
 
   #saveUserToken = (token: IAccessToken): void => {
     saveUserToken(token, this.#tokenName);
+    // set token expiration timer
+    this.#startTokenExpirationTimer(token.expireOn);
   };
 
   #clearAccessToken = (): void => {
     removeAccessToken(this.#tokenName);
+    this.#clearTokenExpirationTimer();
   };
 
   #checkRegistrationCompletion = (
@@ -172,7 +182,6 @@ export class Authenticator implements IAuthenticator {
     if (token && token.accessToken) {
       // save token to the localStorage
       this.#saveUserToken(token);
-      // update http headers
     } else {
       throw new Error(ERROR_MESSAGES.GENERIC);
     }
@@ -264,8 +273,42 @@ export class Authenticator implements IAuthenticator {
     this.#redirect(this.#unauthorizedRedirectUrl);
   };
 
+  #timer: NodeJS.Timeout | undefined;
+
+  #startTokenExpirationTimer = (expireOn: string | undefined): void => {
+    this.#clearTokenExpirationTimer();
+
+    if (expireOn) {
+      const expirationDate = new Date(expireOn);
+      const timeUntilExpiration = expirationDate.getTime() - Date.now();
+      if (timeUntilExpiration > 0) {
+        this.#timer = setTimeout(() => {
+          this.#clearAccessToken();
+          this.#loginInfo = undefined;
+          this.#updateState('waiting');
+          this.#redirect(this.#unauthorizedRedirectUrl);
+          this.#onTokenExpired?.();
+          this.#timer = undefined;
+        }, timeUntilExpiration);
+      }
+    }
+  };
+
+  #clearTokenExpirationTimer = (): void => {
+    if (this.#timer) {
+      clearTimeout(this.#timer);
+      this.#timer = undefined;
+    }
+  };
+
+  #isTokenExpired = (): boolean => {
+    const token = this.#getToken();
+    return isDefined(token?.expireOn) && new Date(token.expireOn) < new Date();
+  };
+
   checkAuthAsync = async (notAuthorizedRedirectUrl: string): Promise<void> => {
-    if (this.loginInfo) return;
+    if (this.loginInfo && !this.#isTokenExpired())
+      return;
 
     const getRedirectUrlAsync = async (): Promise<string> => {
       const currentPath = this.#router.path;
@@ -297,6 +340,7 @@ export class Authenticator implements IAuthenticator {
         if (userProfile.user) {
           this.#loginInfo = userProfile;
           this.#updateState('ready');
+          this.#startTokenExpirationTimer(token.expireOn);
         } else {
           this.#updateState('waiting');
           this.#router.push(await getRedirectUrlAsync());
@@ -305,7 +349,8 @@ export class Authenticator implements IAuthenticator {
         this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, toErrorInfo(error));
         this.#router.push(await getRedirectUrlAsync());
       }
-    } else this.#router.push(await getRedirectUrlAsync());
+    } else
+      this.#router.push(await getRedirectUrlAsync());
   };
 
   anyOfPermissionsGranted = (permissions: string[], permissionedEntities?: IEntityReferenceDto[]): boolean => {

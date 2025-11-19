@@ -25,6 +25,7 @@ import { Alert } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { FilterList } from '../filterList/filterList';
 import { useStyles } from './styles';
+import { TableEmptyState } from './tableEmptyState';
 
 const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Table is not configured properly" type="warning" />;
@@ -162,6 +163,12 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   };
 
   if (isDesignMode && !repository) return <NotConfiguredWarning />;
+
+  // Show empty state in designer mode when no columns are configured
+  const hasNoColumns = !items || items.length === 0;
+  if (isDesignMode && hasNoColumns) {
+    return <TableEmptyState componentId={id} />;
+  }
 
   const toggleFieldPropertiesSidebar = (): void => {
     if (!isSelectingColumns && !isFiltering) setIsInProgressFlag({ isFiltering: true });
