@@ -1,14 +1,12 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { IDropdownComponentProps } from './model';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
 import { presetColors } from './utils';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -26,7 +24,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
   const tagShadowStyleId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -40,7 +38,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
             key: '1',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addContextPropertyAutocomplete({
                 id: nanoid(),
                 propertyName: 'propertyName',
@@ -110,7 +108,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
             key: '2',
             title: 'Data',
             id: dataTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
@@ -193,7 +191,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                 direction: 'vertical',
                 justifyContent: 'left',
                 settingsValidationErrors: [],
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInput({
                     id: nanoid(),
                     parentId: dataContainerId,
@@ -385,7 +383,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
             key: '3',
             title: 'Validation',
             id: validationTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'switch',
@@ -403,7 +401,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
             key: '4',
             title: 'Events',
             id: eventsTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'codeEditor',
@@ -420,7 +418,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
             key: '5',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -433,9 +431,9 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                   _mode: "code",
                   _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                },
+                } as any,
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: styleRouterId,
@@ -483,7 +481,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: nanoid(),
@@ -549,7 +547,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: nanoid(),
@@ -635,16 +633,16 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addContainer({
                             id: nanoid(),
                             parentId: nanoid(),
-                            components: getBorderInputs() as any,
+                            components: getBorderInputs(fbf),
                           })
                           .addContainer({
                             id: nanoid(),
                             parentId: nanoid(),
-                            components: getCornerInputs() as any,
+                            components: getCornerInputs(fbf),
                           })
                           .toJson(),
                         ],
@@ -662,7 +660,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       content: {
                         id: nanoid(),
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               parentId: nanoid(),
@@ -792,7 +790,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: nanoid(),
@@ -861,7 +859,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addStyleBox({
                             id: nanoid(),
                             label: 'Margin Padding',
@@ -883,7 +881,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
@@ -906,7 +904,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       content: {
                         id: DefaultTagStyleId,
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addCollapsiblePanel({
                               id: nanoid(),
                               propertyName: 'tagFontStyle',
@@ -917,7 +915,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               parentId: DefaultTagStyleId,
                               content: {
                                 id: nanoid(),
-                                components: [...new DesignerToolbarSettings()
+                                components: [...fbf()
                                   .addSettingsInputRow({
                                     id: nanoid(),
                                     parentId: nanoid(),
@@ -981,7 +979,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               parentId: DefaultTagStyleId,
                               content: {
                                 id: nanoid(),
-                                components: [...new DesignerToolbarSettings()
+                                components: [...fbf()
                                   .addSettingsInputRow({
                                     id: nanoid(),
                                     parentId: nanoid(),
@@ -1065,16 +1063,16 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               parentId: DefaultTagStyleId,
                               content: {
                                 id: tagBorderStyleId,
-                                components: [...new DesignerToolbarSettings()
+                                components: [...fbf()
                                   .addContainer({
                                     id: nanoid(),
                                     parentId: tagBorderStyleId,
-                                    components: getBorderInputs('tag') as any,
+                                    components: getBorderInputs(fbf, 'tag'),
                                   })
                                   .addContainer({
                                     id: nanoid(),
                                     parentId: tagBorderStyleId,
-                                    components: getCornerInputs('tag') as any,
+                                    components: getCornerInputs(fbf, 'tag'),
                                   })
                                   .toJson(),
                                 ],
@@ -1091,7 +1089,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               content: {
                                 id: tagBackgroundStyleId,
                                 components: [
-                                  ...new DesignerToolbarSettings()
+                                  ...fbf()
                                     .addSettingsInput({
                                       id: nanoid(),
                                       inputType: 'switch',
@@ -1228,7 +1226,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               collapsible: 'header',
                               content: {
                                 id: tagShadowStyleId,
-                                components: [...new DesignerToolbarSettings()
+                                components: [...fbf()
                                   .addSettingsInputRow({
                                     id: nanoid(),
                                     parentId: tagShadowStyleId,
@@ -1297,7 +1295,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               parentId: DefaultTagStyleId,
                               content: {
                                 id: tagCustomStyleId,
-                                components: [...new DesignerToolbarSettings()
+                                components: [...fbf()
                                   .addSettingsInput({
                                     id: nanoid(),
                                     inputType: 'codeEditor',
@@ -1320,7 +1318,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
             key: '6',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',

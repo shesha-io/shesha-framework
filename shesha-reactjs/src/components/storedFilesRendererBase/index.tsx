@@ -122,6 +122,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       hideFileName: rest.hideFileName && listType === 'thumbnail',
       isDragger,
       isStub,
+      downloadZip,
     },
   });
 
@@ -284,71 +285,69 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   return (
-    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
-      : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
-        : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
-    >
-      {isStub
-        ? (isDragger
-          ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
-          : (
-            <div
-              className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
-            >
-              {renderUploadContent()}
-              {listType !== 'text' && !rest.hideFileName && (
-                <span className="ant-upload-list-item-name ant-upload-list-item-name-stub">
-                  file name
-                </span>
-              )}
-            </div>
-          ))
-        : (props.disabled && fileList.length === 0
-          ? (
-            <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
-              {renderUploadContent()}
-            </div>
-          )
-          : props.disabled
-            ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
-            : isDragger
-              ? (
-                <Dragger {...props}>
-                  <DraggerStub styles={styles} />
-                </Dragger>
-              )
-              : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
-      {previewImage && (
-        <Image
-          wrapperStyle={{ display: 'none' }}
-          preview={{
-            visible: previewOpen,
-            onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage(null),
-            toolbarRender: (original) => {
-              return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })} />{original}</div>;
-            },
-          }}
-          src={previewImage.url}
-        />
-      )}
+    <div className={styles.storedFilesRendererWrapper}>
+      <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
+        : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
+          : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
+      >
+        {isStub
+          ? (isDragger
+            ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
+            : (
+              <div
+                className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
+              >
+                {renderUploadContent()}
+                {listType !== 'text' && !rest.hideFileName && (
+                  <span className="ant-upload-list-item-name ant-upload-list-item-name-stub">
+                    file name
+                  </span>
+                )}
+              </div>
+            ))
+          : (props.disabled && fileList.length === 0
+            ? null
+            : props.disabled
+              ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
+              : isDragger
+                ? (
+                  <Dragger {...props}>
+                    <DraggerStub styles={styles} />
+                  </Dragger>
+                )
+                : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
+        {previewImage && (
+          <Image
+            wrapperStyle={{ display: 'none' }}
+            preview={{
+              visible: previewOpen,
+              onVisibleChange: (visible) => setPreviewOpen(visible),
+              afterOpenChange: (visible) => !visible && setPreviewImage(null),
+              toolbarRender: (original) => {
+                return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })} />{original}</div>;
+              },
+            }}
+            src={previewImage.url}
+          />
+        )}
 
-      {fetchFilesError && (
-        <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
-      )}
+        {fetchFilesError && (
+          <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
+        )}
 
-      {downloadZipFileError && (
-        <Alert message="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
-      )}
+        {downloadZipFileError && (
+          <Alert message="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
+        )}
 
-      {downloadZip && hasFiles && !!downloadZipFile && (
-        <div className={styles.storedFilesRendererBtnContainer}>
-          <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
-            {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
-          </Button>
-        </div>
-      )}
+        {downloadZip && hasFiles && !!downloadZipFile && (
+          <div className={styles.storedFilesRendererBtnContainer}>
+            <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
+              {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
+            </Button>
+          </div>
+        )}
 
+      </div>
     </div>
   );
 };

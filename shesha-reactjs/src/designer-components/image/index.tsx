@@ -1,5 +1,5 @@
-import { IFormItem, IToolboxComponent } from '@/interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
+import { FormMarkup } from '@/providers/form/models';
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
@@ -10,8 +10,8 @@ import {
   migratePropertyName,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IStyleType, StoredFileProvider } from '@/providers';
-import { ImageField, ImageSourceType } from './image';
+import { StoredFileProvider } from '@/providers';
+import { ImageField } from './image';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeUndefinedProps } from '@/utils/object';
@@ -19,45 +19,8 @@ import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { useTheme } from 'antd-style';
-import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
-
-export interface IImageStyleProps {
-  height?: number | string;
-  width?: number | string;
-  objectFit?: 'fill' | 'contain' | 'cover' | 'scale-down' | 'none';
-  objectPosition?: string;
-  filter?: string;
-  filterIntensity?: number;
-  borderSize?: number;
-  borderRadius?: number;
-  borderType?: string;
-  borderColor?: string;
-  stylingBox?: string;
-  opacity?: number;
-  style?: string;
-}
-export interface IImageProps extends IConfigurableFormComponent, IFormItem, IImageStyleProps, IStyleType {
-  url?: string;
-  storedFileId?: string;
-  base64?: string;
-  dataSource?: ImageSourceType;
-  ownerType?: string | IEntityTypeIdentifier;
-  ownerId?: string;
-  fileCategory?: string;
-  allowPreview?: boolean;
-  allowedFileTypes?: string[];
-  alt?: string;
-  opacity?: number;
-  sepia?: number;
-  grayscale?: number;
-  blur?: number;
-  brightness?: number;
-  contrast?: number;
-  saturate?: number;
-  hueRotate?: number;
-  invert?: number;
-}
+import { IImageProps, IImageStyleProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -177,7 +140,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<IImageProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 

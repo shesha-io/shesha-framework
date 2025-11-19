@@ -1,8 +1,7 @@
-import { FormRawMarkup } from '@/interfaces';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (): FormRawMarkup =>
-  new DesignerToolbarSettings()
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+  return fbf()
     .addCollapsiblePanel({
       id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
       propertyName: 'pnlDisplay',
@@ -15,7 +14,7 @@ export const getSettings = (): FormRawMarkup =>
       hidden: { _code: 'return getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false } as any,
       content: {
         id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-        components: [...new DesignerToolbarSettings()
+        components: [...fbf()
           .addTextField({
             id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
             propertyName: 'propertyName',
@@ -29,7 +28,7 @@ export const getSettings = (): FormRawMarkup =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Label',
           })
-          .addEditMode({
+          .addEditModeSelector({
             id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
             propertyName: 'editMode',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
@@ -108,3 +107,4 @@ export const getSettings = (): FormRawMarkup =>
       },
     })
     .toJson();
+};

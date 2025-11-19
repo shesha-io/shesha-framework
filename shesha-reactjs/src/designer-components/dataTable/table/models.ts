@@ -4,6 +4,7 @@ import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigura
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ICommonContainerProps } from '../../container/interfaces';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 
 export type RowDroppedMode = 'executeScript' | 'showDialog';
 
@@ -58,3 +59,5 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
 
 /** Table component props */
 export interface ITableComponentProps extends ITableComponentBaseProps, IConfigurableFormComponent {}
+
+export type TableComponentDefinition = ComponentDefinition<"datatable", ITableComponentProps>;

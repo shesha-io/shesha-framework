@@ -8,6 +8,7 @@ import { ICacheProvider, IEntityMetadataFetcher } from '@/providers/metadataDisp
 import { NavigatorApi, INavigatorApi } from './navigator/api';
 import { IShaRouter } from '@/providers/shaRouting/contexts';
 import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
 
 export interface IApplicationPlugin {
   name: string;
@@ -47,6 +48,7 @@ export class ApplicationApi implements IApplicationApi {
     metadataFetcher: IEntityMetadataFetcher,
     shaRouter: IShaRouter,
     metadataDispatcher: IMetadataDispatcher,
+    fbf: FormBuilderFactory,
   ) {
     this.#plugins = new Map<string, IApplicationPlugin>();
 
@@ -54,7 +56,7 @@ export class ApplicationApi implements IApplicationApi {
     this.user = new CurrentUserApi(this.#httpClient);
     this.settings = new SettingsApi(this.#httpClient);
     this.entities = new EntitiesApi(this.#httpClient, cacheProvider, metadataFetcher);
-    this.forms = new FormsApi(this.#httpClient, metadataDispatcher);
+    this.forms = new FormsApi(this.#httpClient, metadataDispatcher, fbf);
     this.utils = new UtilsApi(this.#httpClient);
     this.navigator = new NavigatorApi(shaRouter);
   }

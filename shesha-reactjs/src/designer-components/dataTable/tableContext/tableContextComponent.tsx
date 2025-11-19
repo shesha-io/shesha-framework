@@ -1,16 +1,15 @@
 import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { TableContext } from './tableContext';
-import { ITableContextComponentProps } from './models';
+import { ITableContextComponentProps, TableContextComponentDefinition } from './models';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
-const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
+const TableContextComponent: TableContextComponentDefinition = {
   type: 'datatableContext',
   isInput: true,
   isOutput: true,
@@ -45,8 +44,8 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
       .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc', allowReordering: 'no' }))
       .add<ITableContextComponentProps>(6, (prev) => migrateVisibility(prev))
       .add<ITableContextComponentProps>(7, (prev) => ({ ...migrateFormApi.properties(prev) })),
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   getFieldsToFetch: (propertyName, rawModel) => {
     return rawModel.sourceType === 'Form' ? [propertyName] : [];
   },

@@ -1,3 +1,8 @@
+import React from 'react';
+import { IEventHandlers } from '@/components/formDesigner/components/utils';
+import { ComponentDefinition } from '@/interfaces';
+import { IConfigurableFormComponent } from '@/providers';
+
 export type TimePickerChangeEvent = (value: number | null, timeString: string) => void;
 export type RangePickerChangeEvent = (values: number[] | null, timeString: [string, string]) => void;
 
@@ -25,3 +30,14 @@ export interface ITimePickerProps {
   readOnly?: boolean;
   enableStyleOnReadonly?: boolean;
 }
+
+export interface ITimePickerComponentProps extends Omit<ITimePickerProps, 'defaultValue' | 'style'>, IConfigurableFormComponent {
+
+}
+
+interface ITimePickerComponentCalulatedValues {
+  defaultValue?: string;
+  eventHandlers?: IEventHandlers;
+}
+
+export type TimeFieldComponentDefinition = ComponentDefinition<"timePicker", ITimePickerComponentProps, ITimePickerComponentCalulatedValues>;

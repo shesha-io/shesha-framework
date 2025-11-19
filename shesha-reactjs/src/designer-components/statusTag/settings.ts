@@ -1,9 +1,8 @@
 import { nanoid } from '@/utils/uuid';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { FormRawMarkup } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (): FormRawMarkup =>
-  new DesignerToolbarSettings()
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+  return fbf()
     .addCollapsiblePanel({
       id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
       propertyName: 'pnlDisplay',
@@ -15,7 +14,7 @@ export const getSettings = (): FormRawMarkup =>
       collapsible: 'header',
       content: {
         id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-        components: [...new DesignerToolbarSettings()
+        components: [...fbf()
           .addContextPropertyAutocomplete({
             id: nanoid(),
             propertyName: 'propertyName',
@@ -113,7 +112,7 @@ export const getSettings = (): FormRawMarkup =>
       collapsible: 'header',
       content: {
         id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-        components: [...new DesignerToolbarSettings()
+        components: [...fbf()
           .addPermissionAutocomplete({
             id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
             propertyName: 'permissions',
@@ -128,3 +127,4 @@ export const getSettings = (): FormRawMarkup =>
       },
     })
     .toJson();
+};

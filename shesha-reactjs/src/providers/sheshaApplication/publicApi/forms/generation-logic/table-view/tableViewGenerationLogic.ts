@@ -6,6 +6,7 @@ import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { TableViewExtensionJson } from "../../models/TableViewExtensionJson";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
+import { IConfigurableColumnsProps, standardCellComponentTypes } from "@/providers/datatableColumnsConfigurator/models";
 
 /**
  * Implements generation logic for table views.
@@ -58,7 +59,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
       throw new Error("No table filter container found in the markup.");
     }
 
-    const builder = this.getFormBuilder({});
+    const builder = this.getFormBuilder();
 
     builder.addTableViewSelector({
       id: nanoid(),
@@ -105,14 +106,14 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     });
 
     // Implementation for adding columns to the markup
-    const builder = this.getFormBuilder({});
+    const builder = this.getFormBuilder();
 
-    const dataTableName = `datatable ${nanoid()}`;
+    const dataTableName = `datatable1`;
     builder.addDatatable({
       id: nanoid(),
       propertyName: dataTableName,
       componentName: dataTableName,
-      items: sortedProperties.map((prop, idx) => {
+      items: sortedProperties.map<IConfigurableColumnsProps>((prop, idx) => {
         // Get column width based on data type
         const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
 
@@ -128,12 +129,15 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
           minWidth: width.min,
           maxWidth: width.max,
           allowSorting: true,
+          displayComponent: { type: standardCellComponentTypes.defaultDisplay },
+          editComponent: { type: standardCellComponentTypes.notEditable },
+          createComponent: { type: standardCellComponentTypes.notEditable },
         };
       }),
     });
 
     if (tableContainer[0].components && Array.isArray(tableContainer[0].components)) {
-      tableContainer[0].components.push(...builder.toJson());
+      tableContainer[0].components = builder.toJson();
     }
   }
 }

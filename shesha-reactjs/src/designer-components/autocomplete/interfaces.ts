@@ -4,6 +4,7 @@ import { FormIdentifier } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { GroupingItem, ISortingItem } from '@/providers/dataTable/interfaces';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { ComponentDefinition } from '@/interfaces';
 
 interface IQueryParamProp {
   id: string;
@@ -52,3 +53,5 @@ export interface IAutocompleteComponentProps extends IConfigurableFormComponent 
   font?: any;
   dimensions?: any;
 }
+
+export type AutocompleteComponentDefinition = ComponentDefinition<"autocomplete", IAutocompleteComponentProps>;

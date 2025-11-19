@@ -11,7 +11,8 @@ import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y,
   COLUMN_WIDTH_STRING, COLUMN_WIDTH_STRING_MULTILINE, COLUMN_WIDTH_TIME, ROW_COUNT } from "../constants";
 import { FormMetadataHelper } from "./formMetadataHelper";
 import pluralize from 'pluralize';
-import { DesignerToolbarSettings, EditMode, IConfigurableFormComponent, isConfigurableFormComponent } from "@/interfaces";
+import { EditMode, IConfigurableFormComponent, isConfigurableFormComponent } from "@/interfaces";
+import { FormBuilderFactory } from "@/form-factory/interfaces";
 
 export function findContainersWithPlaceholderRecursive(
   token: unknown,
@@ -165,7 +166,7 @@ export function addDetailsPanel(
   metadata: PropertyMetadataDto[],
   markup: unknown,
   metadataHelper: FormMetadataHelper,
-  formBuilderFactory: () => DesignerToolbarSettings,
+  formBuilderFactory: FormBuilderFactory,
 ): void {
   const placeholderName = "//*DETAILSPANEL*//";
 

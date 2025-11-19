@@ -1,9 +1,8 @@
-
-import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/es/form/Form';
 
-export const getSettings = (): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -11,7 +10,7 @@ export const getSettings = (): FormMarkupWithSettings => {
   const eventsTabId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -26,7 +25,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
@@ -85,7 +84,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             title: 'Data',
             id: dataTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'dataSource',
@@ -248,19 +247,29 @@ export const getSettings = (): FormMarkupWithSettings => {
             id: eventsTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addConfigurableActionConfigurator({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  propertyName: 'onSelect',
-                  label: 'On Select',
-                  description: 'Action to be executed when the event is selected',
-                  jsSetting: false,
-                })
-                .addConfigurableActionConfigurator({
-                  id: nanoid(),
-                  propertyName: 'onDblClick',
-                  label: 'On Double Click',
-                  description: 'Action to be executed when the event is double clicked',
-                  jsSetting: false,
+                  parentId: nanoid(),
+                  inputs: [
+                    {
+                      type: 'configurableActionConfigurator',
+                      id: nanoid(),
+                      propertyName: 'onSelect',
+                      label: 'On Select',
+                      description: 'Action to be executed when the event is selected',
+                      jsSetting: false,
+                      hideLabel: true,
+                    },
+                    {
+                      type: 'configurableActionConfigurator',
+                      id: nanoid(),
+                      propertyName: 'onDblClick',
+                      label: 'On Double Click',
+                      description: 'Action to be executed when the event is double clicked',
+                      jsSetting: false,
+                      hideLabel: true,
+                    },
+                  ],
                 })
                 .toJson(),
             ],
@@ -270,7 +279,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: nanoid(),

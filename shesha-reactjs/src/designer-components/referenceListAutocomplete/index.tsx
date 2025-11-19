@@ -1,16 +1,13 @@
-import { IToolboxComponent } from '@/interfaces';
-import { IConfigurableFormComponent } from '@/providers/form/models';
 import { FileSearchOutlined } from '@ant-design/icons';
 import React from 'react';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { IConfigurableItemAutocompleteComponentProps } from '../configurableItemAutocomplete/interfaces';
-
-export type IReferenceListAutocompleteProps = IConfigurableFormComponent;
+import { IReferenceListAutocompleteProps, ReferenceListAutocompleteComponentDefinition } from './interfaces';
 
 /**
  * @deprecated. Use ConfigurableItemAutocompleteComponent instead
  */
-const ReferenceListAutocompleteComponent: IToolboxComponent<IReferenceListAutocompleteProps> = {
+const ReferenceListAutocompleteComponent: ReferenceListAutocompleteComponentDefinition = {
   type: 'referenceListAutocomplete',
   name: 'Reference List Autocomplete',
   icon: <FileSearchOutlined />,

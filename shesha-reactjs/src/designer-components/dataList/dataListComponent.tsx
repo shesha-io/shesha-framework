@@ -32,7 +32,14 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       : <NotConfiguredWarning />;
   },
   migrator: (m) => m
-    .add<IDataListComponentProps>(0, (prev) => ({ ...prev, formSelectionMode: 'name', selectionMode: 'none', items: [] }))
+    .add<IDataListComponentProps>(0, (prev) => ({
+      ...prev,
+      formSelectionMode: 'name',
+      selectionMode: 'none',
+      items: [],
+      // Set default form to the starter template
+      // formId: { name: 'data-list-dummy-default', module: 'Shesha' }
+    }))
     .add<IDataListComponentProps>(1, (prev) => ({ ...prev, orientation: 'vertical', listItemWidth: 1 }))
     .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IDataListComponentProps>(3, (prev) => migrateVisibility(prev))
@@ -46,6 +53,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         inlineEditMode: 'one-by-one',
         inlineSaveMode: 'manual',
         dblClickActionConfiguration: prev['actionConfiguration'],
+        showEditIcons: true,
 
       };
     })
@@ -62,7 +70,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         desktop: { ...prev.desktop,
           gap: prev.cardSpacing,
           dimensions: {
-            ...prev.desktop.dimensions,
+            ...prev.desktop?.dimensions,
             minWidth: prev.cardMinWidth,
             maxWidth: prev.cardMaxWidth,
             width: prev.customWidth,
@@ -93,7 +101,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       };
     })
     .add<IDataListComponentProps>(11, (prev) => ({ ...prev, showEditIcons: true })),
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
 };
 
 export default DataListComponent;

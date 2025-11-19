@@ -1,5 +1,5 @@
 import { IBorderType, IStyleType } from "@/index";
-import { IImageProps } from ".";
+import { IImageProps } from "./interfaces";
 
 export const defaultStyles = (prev: IImageProps): IStyleType => {
   const { borderColor, borderRadius, borderType } = prev;

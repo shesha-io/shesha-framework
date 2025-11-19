@@ -1,15 +1,15 @@
-import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
   const securityTabId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -24,7 +24,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -79,13 +79,13 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Data',
             id: dataTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContainer({
                   id: nanoid(),
                   parentId: dataTabId,
                   labelAlign: 'left',
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'sourceType',
@@ -121,6 +121,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             parentId: dataTabId,
                             hidden: false,
                             jsSetting: true,
+                            width: '100%',
                           },
                         ],
                       })
@@ -153,6 +154,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             settingsValidationErrors: [],
                             jsSetting: true,
                             placeholder: '',
+                            width: '100%',
                           },
                         ],
                       })
@@ -268,6 +270,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                             jsSetting: false,
+                            width: '100%',
                           },
                         ],
                       })
@@ -578,7 +581,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',

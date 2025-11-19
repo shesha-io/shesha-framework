@@ -1,12 +1,11 @@
 import { ButtonGroupConfigurator } from '../../../../components/buttonGroupConfigurator';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
-import { buttonsSettingsForm } from './settings';
+import { getSettings } from './settings';
 import { GroupOutlined } from '@ant-design/icons';
-import { IButtonsProps as IButtonsComponentProps } from './interfaces';
-import { IToolboxComponent } from '@/interfaces';
+import { ButtonsComponentDefinition } from './interfaces';
 
-const ButtonsComponent: IToolboxComponent<IButtonsComponentProps> = {
+const ButtonsComponent: ButtonsComponentDefinition = {
   type: 'buttons',
   isInput: true,
   name: 'Buttons',
@@ -19,7 +18,7 @@ const ButtonsComponent: IToolboxComponent<IButtonsComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: buttonsSettingsForm,
+  settingsFormMarkup: getSettings,
 };
 
 export default ButtonsComponent;

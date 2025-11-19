@@ -1,14 +1,13 @@
 import { Slider } from 'antd';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IToolboxComponent } from '@/interfaces';
 import { useFormData } from '@/providers';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SlidersFilled } from '@ant-design/icons';
-import { ISliderComponentProps } from './interfaces';
+import { SliderComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 
-const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
+const SliderComponent: SliderComponentDefinition = {
   type: 'slider',
   name: 'Slider',
   icon: <SlidersFilled />,
@@ -43,8 +42,8 @@ const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
       label: 'Slider',
     };
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
-export default SwitchComponent;
+export default SliderComponent;

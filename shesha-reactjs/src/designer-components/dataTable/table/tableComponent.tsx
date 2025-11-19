@@ -1,8 +1,7 @@
 import React from 'react';
 import { getSettings } from './tableSettings';
 import { IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
-import { ITableComponentProps } from './models';
-import { IToolboxComponent } from '@/interfaces';
+import { ITableComponentProps, TableComponentDefinition } from './models';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateV0toV1 } from './migrations/migrate-v1';
@@ -33,7 +32,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
   }
 };
 
-const TableComponent: IToolboxComponent<ITableComponentProps> = {
+const TableComponent: TableComponentDefinition = {
   type: 'datatable',
   isInput: true,
   name: 'Data Table',
@@ -47,7 +46,7 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
       items: [],
     };
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m

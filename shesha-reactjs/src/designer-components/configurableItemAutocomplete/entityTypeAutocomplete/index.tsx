@@ -1,19 +1,15 @@
 import React from 'react';
 import { ConfigurableFormItem } from "@/components";
-import EntityTypeAutocomplete, { EntityIdentifier, EntityTypeAutocompleteType } from "@/components/configurableItemAutocomplete/entityTypeAutocomplete";
-import { FormMarkup, IConfigurableFormComponent, IToolboxComponent } from "@/interfaces";
+import EntityTypeAutocomplete from "@/components/configurableItemAutocomplete/entityTypeAutocomplete";
+import { FormMarkup } from "@/interfaces";
 import { FileSearchOutlined } from "@ant-design/icons";
 import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import { EntityTypeAutocompleteComponentDefinition, IEntityTypeAutocompleteComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-export interface IEntityTypeAutocompleteComponentProps extends IConfigurableFormComponent {
-  entityTypeAutocompleteType?: EntityTypeAutocompleteType;
-  baseModel?: EntityIdentifier;
-}
-
-const EntityTypeAutocompleteComponent: IToolboxComponent<IEntityTypeAutocompleteComponentProps, IEntityTypeAutocompleteComponentProps> = {
+const EntityTypeAutocompleteComponent: EntityTypeAutocompleteComponentDefinition = {
   type: 'entityTypeAutocomplete',
   isInput: true,
   isOutput: true,
