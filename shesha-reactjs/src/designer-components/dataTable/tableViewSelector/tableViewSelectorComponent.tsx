@@ -107,8 +107,8 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
       { ...prev, filters: prev.filters.map((filter) => migrateFilterMustacheExpressions(filter)) }
     ))
     .add(2, (prev) => migratePropertyName(prev)),
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default TableViewSelectorComponent;

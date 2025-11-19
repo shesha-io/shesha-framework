@@ -42,8 +42,8 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IComponentSelectorComponentProps>(0, (prev) => ({ ...prev, componentType: 'input' }))
     .add<IComponentSelectorComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

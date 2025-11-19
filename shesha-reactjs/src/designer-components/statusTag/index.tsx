@@ -86,8 +86,8 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IStatusTagProps>(0, (prev) => ({
       ...prev,

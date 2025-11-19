@@ -1,11 +1,10 @@
-import { FormMarkupWithSettings } from '@/interfaces';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 
-export const getSettings = (): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const containerId = nanoid();
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSettingsInputRow({
         id: nanoid(),
         inputs: [
@@ -37,7 +36,7 @@ export const getSettings = (): FormMarkupWithSettings => {
           _mode: 'code',
           _value: false,
         } as any,
-        components: [...new DesignerToolbarSettings()
+        components: [...fbf()
           .addSettingsInputRow({
             id: nanoid(),
             parentId: containerId,

@@ -93,8 +93,8 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
       .add<IQuickSearchComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<IQuickSearchComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IQuickSearchComponentProps>(3, (prev) => ({ ...migratePrevStyles(prev, { size: 'small' }) })),
-  settingsFormMarkup: (context) => getSettings(context),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default QuickSearchComponent;

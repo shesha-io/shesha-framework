@@ -46,5 +46,4 @@ export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComp
   components?: IConfigurableFormComponent[];
 }
 
-
 export type CollapsiblePanelComponentDefinition = ComponentDefinition<"collapsiblePanel", ICollapsiblePanelComponentProps>;

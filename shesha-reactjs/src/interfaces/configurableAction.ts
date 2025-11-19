@@ -6,6 +6,7 @@ import { IObjectMetadata } from './metadata';
 import { ActionParametersDictionary, IApplicationApi } from '@/providers';
 import { IFormApi } from '@/providers/form/formApi';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
 
 export interface IHasPreviousActionResponse {
   actionResponse?: any;
@@ -50,6 +51,7 @@ export interface ISettingsFormFactoryArgs<TModel extends object = object> {
 export interface FormMarkupFactoryArgs {
   exposedVariables?: ICodeExposedVariable[];
   availableConstants?: IObjectMetadata;
+  fbf: FormBuilderFactory;
 }
 export type FormMarkupFactory = (factoryArgs: FormMarkupFactoryArgs) => FormMarkup;
 

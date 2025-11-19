@@ -3,15 +3,18 @@ import React, { FC, ReactElement, ReactNode, useEffect, useRef, useState } from 
 import { useDebouncedCallback } from 'use-debounce';
 import { getSettings } from './refListItemsSettingsForm';
 import { useRefListItemGroupConfigurator } from '../provider';
-import { ConfigurableFormInstance, FormMarkup } from '@/interfaces';
+import { ConfigurableFormInstance } from '@/interfaces';
 import { getComponentModel } from '../provider/utils';
 import { ConfigurableForm } from '@/components/configurableForm';
+import { useFormViaFactory } from '@/form-factory/hooks';
 
 export const RefListItemProperties: FC = () => {
   const { selectedItemId, getItem, updateItem, readOnly } = useRefListItemGroupConfigurator();
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);
   const [form] = Form.useForm();
+
+  const markup = useFormViaFactory(getSettings);
 
   const formRef = useRef<ConfigurableFormInstance>(null);
 
@@ -37,8 +40,6 @@ export const RefListItemProperties: FC = () => {
     if (!selectedItemId) return null;
 
     const componentModel = getComponentModel(getItem(selectedItemId));
-
-    const markup = getSettings() as FormMarkup;
 
     return (
       <ConfigurableForm

@@ -29,4 +29,4 @@ export interface IKeyInformationBarProps extends IConfigurableFormComponent, IIn
   backgroundColor?: string;
 }
 
-export type ColumnsComponentDefinition = ComponentDefinition<"KeyInformationBar", IKeyInformationBarProps>;
+export type KeyInformationBarComponentDefinition = ComponentDefinition<"KeyInformationBar", IKeyInformationBarProps>;

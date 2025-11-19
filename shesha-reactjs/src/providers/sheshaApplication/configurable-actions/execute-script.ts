@@ -1,7 +1,6 @@
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { FormMarkupFactory } from '@/interfaces/configurableAction';
 import { nanoid } from '@/utils/uuid';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { executeScript } from '../../form/utils';
@@ -10,7 +9,7 @@ export interface IExecuteScriptArguments {
   expression: string;
 }
 
-const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
+const executeScriptArgumentsForm: FormMarkupFactory = ({ exposedVariables, availableConstants, fbf }) => {
   const standardVariables: ICodeExposedVariable[] = [
     {
       id: '3b19a708-e81a-4625-bcbb-3fe8451d0491',
@@ -25,7 +24,7 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
       type: 'object',
     },
   ];
-  const customVariables = props.exposedVariables ?? [
+  const customVariables = exposedVariables ?? [
     { id: '724f460e-a121-44f0-ac6e-db4bb42d39c4', name: 'data', description: 'Selected form values', type: 'object' },
     {
       id: '81ce18bb-1ad5-423f-b308-359d0d7911dc',
@@ -87,7 +86,7 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
 
   const variables = [...standardVariables, ...customVariables];
 
-  return new DesignerToolbarSettings()
+  return fbf()
     .addSettingsInput({
       id: nanoid(),
       inputType: 'codeEditor',
@@ -99,7 +98,7 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
         functionName: "executeScriptAsync",
         useAsyncDeclaration: true,
       },
-      availableConstants: props.availableConstants,
+      availableConstants: availableConstants,
       /**
        * @deprecated to be removed
        */

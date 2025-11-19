@@ -59,7 +59,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
       throw new Error("No table filter container found in the markup.");
     }
 
-    const builder = this.getFormBuilder({});
+    const builder = this.getFormBuilder();
 
     builder.addTableViewSelector({
       id: nanoid(),
@@ -106,7 +106,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     });
 
     // Implementation for adding columns to the markup
-    const builder = this.getFormBuilder({});
+    const builder = this.getFormBuilder();
 
     const dataTableName = `datatable ${nanoid()}`;
     builder.addDatatable({

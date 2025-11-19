@@ -1,8 +1,8 @@
 import { App } from "antd";
 import { SheshaActionOwners } from "../../configurableActionsDispatcher/models";
 import { useConfigurableAction } from "@/providers/configurableActionsDispatcher";
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from "@/utils/uuid";
+import { FormMarkupFactory } from "@/interfaces/configurableAction";
 
 const messageTypes = ['info', 'success', 'error', 'warning', 'loading'] as const;
 type MessageType = typeof messageTypes[number];
@@ -13,8 +13,8 @@ export interface IShowMessageArguments {
   type: MessageType;
 }
 
-export const showMessageArgumentsForm = new DesignerToolbarSettings()
-  .addSettingsInput({
+const getShowMessageArgumentsForm: FormMarkupFactory = ({ fbf }) => {
+  return fbf().addSettingsInput({
     id: nanoid(),
     inputType: "textArea",
     propertyName: 'message',
@@ -22,18 +22,19 @@ export const showMessageArgumentsForm = new DesignerToolbarSettings()
     autoSize: true,
     validate: { required: true },
   })
-  .addSettingsInput({
-    id: nanoid(),
-    inputType: "dropdown",
-    propertyName: 'type',
-    label: 'Type',
-    dropdownOptions: messageTypes.map((v) => ({
-      label: v[0].toUpperCase() + v.slice(1),
-      value: v,
-      id: v,
-    })),
-  })
-  .toJson();
+    .addSettingsInput({
+      id: nanoid(),
+      inputType: "dropdown",
+      propertyName: 'type',
+      label: 'Type',
+      dropdownOptions: messageTypes.map((v) => ({
+        label: v[0].toUpperCase() + v.slice(1),
+        value: v,
+        id: v,
+      })),
+    })
+    .toJson();
+};
 
 export const useShowMessageAction = (): void => {
   const { message: messageApi } = App.useApp();
@@ -44,7 +45,7 @@ export const useShowMessageAction = (): void => {
     ownerUid: SheshaActionOwners.Common,
     name: 'Show Message',
     hasArguments: true,
-    argumentsFormMarkup: showMessageArgumentsForm,
+    argumentsFormMarkup: getShowMessageArgumentsForm,
     executer: (actionArgs, _context) => {
       const {
         message,

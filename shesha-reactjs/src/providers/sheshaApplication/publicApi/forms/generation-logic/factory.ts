@@ -5,6 +5,7 @@ import { DetailsViewGenerationLogic } from "./details-view/detailsViewGeneration
 import { CreateViewGenerationLogic } from "./create-view/createViewGenerationLogic";
 import { TableViewGenerationLogic } from "./table-view/tableViewGenerationLogic";
 import { BaseGenerationLogic } from "./baseGenerationLogic";
+import { FormBuilderFactory } from "@/form-factory/interfaces";
 
 /**
  * Factory for creating appropriate GenerationLogic implementations
@@ -12,13 +13,16 @@ import { BaseGenerationLogic } from "./baseGenerationLogic";
 export class GenerationLogicFactory {
   private _implementations: GenerationLogic[] = [];
 
-  private _logicConstructors: (new () => GenerationLogic)[] = [
+  private _logicConstructors: (new (fbf: FormBuilderFactory) => GenerationLogic)[] = [
     DetailsViewGenerationLogic,
     CreateViewGenerationLogic,
     TableViewGenerationLogic,
   ];
 
-  constructor() {
+  protected fbf: FormBuilderFactory;
+
+  constructor(fbf: FormBuilderFactory) {
+    this.fbf = fbf;
     // Register all available implementations
     this.initializeImplementations();
   }
@@ -27,7 +31,7 @@ export class GenerationLogicFactory {
    * Initialize the available implementations from registered constructors
    */
   private initializeImplementations(): void {
-    this._implementations = this._logicConstructors.map((Constructor) => new Constructor());
+    this._implementations = this._logicConstructors.map((Constructor) => new Constructor(this.fbf));
   }
 
   /**
@@ -53,7 +57,7 @@ export class GenerationLogicFactory {
 
     // If no specific implementation is found, return a default implementation
     if (!logic) {
-      return new DefaultGenerationLogic();
+      return new DefaultGenerationLogic(this.fbf);
     }
 
     return logic;

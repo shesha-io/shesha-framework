@@ -526,4 +526,6 @@ export const isSettingsInputProps = (value: unknown): value is ISettingsInputSet
 
 export const hasModelType = (value: unknown): value is IHasModelType => typeof (value) === 'object' && 'modelType' in value && (typeof (value.modelType) === 'string' || typeof (value.modelType) === 'object');
 
-export type SettingsInputDefinition = ComponentDefinition<"settingsInput", ISettingsInputProps & IConfigurableFormComponent>;
+export type SettingsInputComponentProps = ISettingsInputProps & IConfigurableFormComponent & { type: 'settingsInput' };
+
+export type SettingsInputDefinition = ComponentDefinition<"settingsInput", SettingsInputComponentProps>;

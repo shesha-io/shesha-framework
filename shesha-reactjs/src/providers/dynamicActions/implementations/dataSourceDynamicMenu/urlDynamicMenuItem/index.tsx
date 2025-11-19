@@ -1,5 +1,5 @@
 import { useGet } from '@/hooks';
-import { DynamicActionsProvider, DynamicItemsEvaluationHook, FormMarkup } from '@/providers';
+import { DynamicActionsProvider, DynamicItemsEvaluationHook } from '@/providers';
 import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { ButtonGroupItemProps, IButtonGroupItem } from '@/providers/buttonGroupConfigurator';
 import { IDataSourceArguments } from '../model';
@@ -8,8 +8,7 @@ import { getSettings } from './urlSettings';
 import { IAjaxResponse } from '@/interfaces';
 import { extractAjaxResponse } from '@/interfaces/ajaxResponse';
 import { ButtonType } from 'antd/lib/button';
-
-const settingsMarkup = getSettings() as FormMarkup;
+import { useFormViaFactory } from '@/form-factory/hooks';
 
 type ArrayOrObjectWithItems<T> = T[] | {
   items: T[];
@@ -65,6 +64,7 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
 };
 
 export const UrlActions: FC<PropsWithChildren> = ({ children }) => {
+  const settingsMarkup = useFormViaFactory(getSettings);
   return (
     <DynamicActionsProvider
       id="Url"

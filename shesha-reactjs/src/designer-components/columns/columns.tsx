@@ -197,7 +197,7 @@ const ColumnsComponent: ColumnsComponentDefinition = {
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
       .add<IColumnsComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   customContainerNames: ['columns'],
   getContainers: (model) => {
     return model.columns.map<IFormComponentContainer>((t) => ({ id: t.id }));

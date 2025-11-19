@@ -122,8 +122,8 @@ const FileUploadComponent: FileUploadComponentDefinition = {
         mobile: { ...defaultStyles() },
         tablet: { ...defaultStyles() },
       })),
-  settingsFormMarkup: getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default FileUploadComponent;

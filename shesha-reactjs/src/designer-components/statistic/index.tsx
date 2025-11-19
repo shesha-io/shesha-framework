@@ -148,8 +148,8 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<IStatisticComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))

@@ -6,7 +6,7 @@ import { PermissionedObjectDto, usePermissionedObjectGetAllTree } from '@/apis/p
 import { IConfigurableActionConfiguration, useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
 import { useLocalStorage } from '@/hooks';
 import { InterfaceOutlined } from '@/icons/interfaceOutlined';
-import { ISetGroupingArguments, setGroupingArgumentsForm } from './set-grouping-arguments';
+import { ISetGroupingArguments, getSetGroupingArgumentsForm } from './set-grouping-arguments';
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { ISetSearchTextArguments, setSearchTextArgumentsForm } from './set-search-text-arguments';
 import { ShaSpin, useAvailableConstantsData } from '@/index';
@@ -104,7 +104,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
       owner: props.formComponentName || "Permissioned objects tree",
       ownerUid: props.formComponentId,
       hasArguments: true,
-      argumentsFormMarkup: setGroupingArgumentsForm,
+      argumentsFormMarkup: getSetGroupingArgumentsForm,
       executer: (arg: ISetGroupingArguments) => {
         setGroupBy(arg.group);
         return Promise.resolve();

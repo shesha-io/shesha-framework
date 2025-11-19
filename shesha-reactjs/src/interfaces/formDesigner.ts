@@ -15,6 +15,7 @@ import { IModelMetadata, IPropertyMetadata } from './metadata';
 import { IAjaxResponseBase, IApplicationContext, IErrorInfo } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -46,6 +47,11 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
 }
 
 export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISettingsFormFactoryArgs<TModel>>;
+
+export type SettingsFormMarkupFactoryArgs = {
+  fbf: FormBuilderFactory;
+};
+export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) => FormMarkup;
 
 export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
   model: TModel;
@@ -149,7 +155,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   /**
    * Markup of the settings form. Applied when the @settingsFormFactory is not specified, in this case you can render settings for in the designer itself
    */
-  settingsFormMarkup?: FormMarkup;
+  settingsFormMarkup?: FormMarkup | SettingsFormMarkupFactory;
   /**
    * Settings validator
    */
