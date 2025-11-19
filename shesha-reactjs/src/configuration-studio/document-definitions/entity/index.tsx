@@ -21,11 +21,10 @@ export const EntityDocumentDefinition: DocumentDefinition = {
       });
       doc.setSaver(async (): Promise<void> => {
         await saveForm();
-        cs.setDocumentModified(doc.itemId, true);
       });
     }, [cs, doc, load, saveForm]);
     useEffect(() => {
-      cs.setDocumentModified(doc.itemId, isModified ?? false);
+      cs.setDocumentModified(doc.itemId, isModified);
     }, [cs, doc, isModified]);
     return (
       <div>

@@ -43,7 +43,7 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
   editorsHiddenCode += '}\n';
   editorsHiddenCode += DataTypes.allowedCompoenentsCode;
   editorsHiddenCode += '\n';
-  editorsHiddenCode += 'const editors = allowedComponents(data.dataType, data.dataFormat).filter((e) => components[e]);\n';
+  editorsHiddenCode += 'const editors = (allowedComponents(data.dataType, data.dataFormat) ?? ).filter((e) => components[e]);\n';
   editorsHiddenCode += 'return !editors?.length;\n';
 
   return {
@@ -147,6 +147,7 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
                         { label: 'Referencing Entities', value: 'entity' },
                         { label: 'Entities', value: 'many-entity' },
                         { label: 'Child Objects', value: 'object' },
+                        // ToDo: AS - restore after full implementation
                         // { label: 'Child Entities', value: 'child-entity' },
                         { label: 'Multi Value Reference List Item', value: 'multivalue-reference-list' },
                       ],
@@ -206,10 +207,10 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
 
               // Default editor
 
-                .addContainer({ id: defaultEditorId, parentId: dataTabId, hidden: { _value: '', _mode: 'code', _code: editorsHiddenCode },
-                  components: [...new DesignerToolbarSettings()
+                .addContainer({ id: defaultEditorId, parentId: dataTabId, hidden: { _value: false, _mode: 'code', _code: editorsHiddenCode },
+                  components: [...fbf()
                     .addSettingsInput({ parentId: defaultEditorId, inputType: 'dropdown', propertyName: 'formatting.defaultEditor', label: 'Default Editor',
-                      dropdownOptions: { _value: '', _mode: 'code', _code: editorsCode } as any,
+                      dropdownOptions: { _value: [], _mode: 'code', _code: editorsCode },
                     })
                     .toJson(),
                   ],

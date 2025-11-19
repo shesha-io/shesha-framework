@@ -23,7 +23,7 @@ export enum ModelActionEnums {
 
   SetModelSettings = 'SET_MODEL_SETTINGS',
 
-  SetModified = 'SET_MODEFIED',
+  SetModified = 'SET_MODIFIED',
 
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
