@@ -108,7 +108,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     // Implementation for adding columns to the markup
     const builder = this.getFormBuilder();
 
-    const dataTableName = `datatable ${nanoid()}`;
+    const dataTableName = `datatable1`;
     builder.addDatatable({
       id: nanoid(),
       propertyName: dataTableName,
@@ -137,7 +137,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     });
 
     if (tableContainer[0].components && Array.isArray(tableContainer[0].components)) {
-      tableContainer[0].components.push(...builder.toJson());
+      tableContainer[0].components = builder.toJson();
     }
   }
 }
