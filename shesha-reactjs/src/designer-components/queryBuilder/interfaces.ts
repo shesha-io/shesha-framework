@@ -1,4 +1,4 @@
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
@@ -8,4 +8,4 @@ export interface IQueryBuilderComponentProps extends IConfigurableFormComponent 
   fieldsUnavailableHint?: string;
 }
 
-export type QueryBuilderComponentDefinition = IToolboxComponent<IQueryBuilderComponentProps>;
+export type QueryBuilderComponentDefinition = ComponentDefinition<"queryBuilder", IQueryBuilderComponentProps>;

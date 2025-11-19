@@ -1,6 +1,6 @@
 import { TabPaneProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { EditMode, IConfigurableFormComponent, IInputStyles, IPropertySetting, IStyleType, IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition, EditMode, IConfigurableFormComponent, IInputStyles, IPropertySetting, IStyleType } from '@/interfaces';
 
 export interface ITabPaneProps
   extends IStyleType, Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled'> {
@@ -46,4 +46,4 @@ export interface ITabsComponentProps extends IConfigurableFormComponent, IStyleT
   tablet?: IInputStyles & ICardProps;
 }
 
-export type TabsComponentDefinition = IToolboxComponent<ITabsComponentProps>;
+export type TabsComponentDefinition = ComponentDefinition<"tabs", ITabsComponentProps>;

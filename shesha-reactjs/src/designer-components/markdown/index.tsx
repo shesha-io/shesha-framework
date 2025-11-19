@@ -44,8 +44,8 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => ({
     ...model,
     content: (model.content?.trim() ? model.content : `

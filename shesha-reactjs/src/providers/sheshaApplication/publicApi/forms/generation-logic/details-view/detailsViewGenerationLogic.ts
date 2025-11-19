@@ -42,7 +42,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
       });
 
       // Add details panel - using shared function with filtered properties
-      addDetailsPanel(propertiesForDetailsPanel, markup, metadataHelper, () => this.getFormBuilder({}));
+      addDetailsPanel(propertiesForDetailsPanel, markup, metadataHelper, () => this.getFormBuilder());
 
       // Add child tables if configured
       if (extensionJson.addChildTables) {
@@ -113,7 +113,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
         console.warn(`No key information properties found for the key information bar. Requested properties: ${extensionJson.keyInformationBarProperties?.join(', ')}`);
         return usedKeyInfoPropertyPaths;
       } else {
-        const keyInfoBarBuilder = this.getFormBuilder({});
+        const keyInfoBarBuilder = this.getFormBuilder();
 
         keyInfoBarBuilder.addKeyInformationBar({
           id: nanoid(),
@@ -124,7 +124,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           hidden: false,
           componentName: "keyInformationBar",
           columns: keyInfoProperties.map((prop, index) => {
-            const keyInfoBuilder = this.getFormBuilder({});
+            const keyInfoBuilder = this.getFormBuilder();
             const count = index + 1;
 
             keyInfoBuilder.addText({
@@ -175,7 +175,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
    * @param metadataHelper The metadata helper instance.
    */
   private async addChildTablesAsync(markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): Promise<void> {
-    const builder = this.getFormBuilder({});
+    const builder = this.getFormBuilder();
 
     const childTableContainer = findContainersWithPlaceholder(markup, "//*CHILDTABLES*//");
 
@@ -202,15 +202,15 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
         tabs: await Promise.all(entities.map(async (childTable, index) => {
           const nonFrameworkProperties = await metadataHelper.extractNonFrameworkProperties(childTable);
 
-          const childTableAccessoriesBuilder = this.getFormBuilder({});
-          childTableAccessoriesBuilder.addQuickSearch({
+          const childTableAccessoriesBuilder = this.getFormBuilder();
+          childTableAccessoriesBuilder.addDatatableQuickSearch({
             id: nanoid(),
             componentName: 'childTableQuickSearch',
             propertyName: "childTableQuickSearch",
             version: 1,
           });
 
-          childTableAccessoriesBuilder.addTablePager({
+          childTableAccessoriesBuilder.addDatatablePager({
             id: nanoid(),
             propertyName: "childTablePager",
             componentName: 'childTablePager',
@@ -218,7 +218,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             version: 1,
           });
 
-          const childTableBuilder = this.getFormBuilder({});
+          const childTableBuilder = this.getFormBuilder();
 
           childTableBuilder.addContainer({
             id: nanoid(),
@@ -288,7 +288,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
 
           const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
 
-          const childTableContextBuilder = this.getFormBuilder({});
+          const childTableContextBuilder = this.getFormBuilder();
           childTableContextBuilder.addDatatableContext({
             id: nanoid(),
             propertyName: "childTableContext",

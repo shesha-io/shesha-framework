@@ -1,11 +1,12 @@
 import React, { FC, MutableRefObject } from 'react';
-import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponentBase } from '@/interfaces';
+import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponentBase, SettingsFormMarkupFactory } from '@/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
 import { FormMarkup } from '@/providers/form/models';
 import GenericSettingsForm from '../genericSettingsForm';
 import { IConfigurableFormComponent } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { wrapDisplayName } from '@/utils/react';
+import { FormBuilderImplementation } from '@/form-factory/implementation';
 
 export interface IComponentPropertiesEditorProps {
   toolboxComponent: IToolboxComponentBase;
@@ -19,10 +20,11 @@ export interface IComponentPropertiesEditorProps {
   isInModal?: boolean;
 }
 
-const getDefaultFactory = (markup: FormMarkup, isInModal?: boolean): ISettingsFormFactory => {
+const getDefaultFactory = (markup: FormMarkup | SettingsFormMarkupFactory, isInModal?: boolean): ISettingsFormFactory => {
   const evaluatedMarkup = typeof markup === 'function'
-    ? markup({})
+    ? markup({ fbf: () => new FormBuilderImplementation() })
     : markup;
+
   return wrapDisplayName(({ readOnly, model, onSave, onCancel, onValuesChange, toolboxComponent, formRef, propertyFilter, layoutSettings }) => {
     return (
       <GenericSettingsForm

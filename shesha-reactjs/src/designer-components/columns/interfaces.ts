@@ -1,4 +1,4 @@
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 
 export interface IColumnProps {
@@ -30,4 +30,4 @@ export interface IColumnsComponentProps extends IConfigurableFormComponent, ICol
   customVisibility?: string;
 }
 
-export type ColumnsComponentDefinition = IToolboxComponent<IColumnsComponentProps>;
+export type ColumnsComponentDefinition = ComponentDefinition<"columns", IColumnsComponentProps>;

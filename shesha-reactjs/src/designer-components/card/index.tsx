@@ -104,8 +104,8 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
     content: { id: nanoid(), components: [] },
     stylingBox: "{\"marginBottom\":\"5\"}",
   }),
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   customContainerNames: ['header', 'content'],
   migrator: (m) => m
     .add<ICardComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))

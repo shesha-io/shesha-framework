@@ -1,14 +1,15 @@
 import { nanoid } from '@/utils/uuid';
-import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
+import { FormMarkupFactory } from '@/interfaces/configurableAction';
 
 export interface ISetSearchTextArguments {
   searchText?: string;
 }
 
-export const setSearchTextArgumentsForm = new DesignerToolbarSettings()
-  .addTextField({
+export const setSearchTextArgumentsForm: FormMarkupFactory = ({ fbf }) => {
+  return fbf().addTextField({
     id: nanoid(),
     propertyName: 'searchText',
     label: 'Search text',
   })
-  .toJson();
+    .toJson();
+};

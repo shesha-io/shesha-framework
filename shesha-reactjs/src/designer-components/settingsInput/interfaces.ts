@@ -4,7 +4,7 @@ import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { EntityTypeAutocompleteType } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
 import { EndpointSelectionMode, IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { ComponentType } from '@/components/formComponentSelector';
-import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting, IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition, FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata, IPropertySetting } from '@/interfaces';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
@@ -526,4 +526,6 @@ export const isSettingsInputProps = (value: unknown): value is ISettingsInputSet
 
 export const hasModelType = (value: unknown): value is IHasModelType => typeof (value) === 'object' && 'modelType' in value && (typeof (value.modelType) === 'string' || typeof (value.modelType) === 'object');
 
-export type SettingsInputDefinition = IToolboxComponent<ISettingsInputProps & IConfigurableFormComponent>;
+export type SettingsInputComponentProps = ISettingsInputProps & IConfigurableFormComponent & { type: 'settingsInput' };
+
+export type SettingsInputDefinition = ComponentDefinition<"settingsInput", SettingsInputComponentProps>;

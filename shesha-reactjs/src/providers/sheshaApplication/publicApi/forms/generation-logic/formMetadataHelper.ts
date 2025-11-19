@@ -1,4 +1,4 @@
-import { DataTypes, DesignerToolbarSettings, EditMode, IEntityMetadata } from "@/interfaces";
+import { DataTypes, EditMode, IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
@@ -6,6 +6,7 @@ import { PropertyMetadataDto } from "@/apis/metadata";
 import { isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import { IEntityTypeIdentifier } from "../../entities/models";
 import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
+import { FormBuilder } from "@/form-factory/interfaces";
 
 /**
  * Helper class for fetching entity metadata and generating form fields based on that metadata.
@@ -153,7 +154,7 @@ export class FormMetadataHelper {
    * @param isReadOnly Whether the field should be read-only (default: false).
    * @throws Error if required metadata is missing for certain property types.
    */
-  public getConfigFields(property: PropertyMetadataDto, builder: DesignerToolbarSettings, isReadOnly: boolean = false): void {
+  public getConfigFields(property: PropertyMetadataDto, builder: FormBuilder, isReadOnly: boolean = false): void {
     const commonProps = {
       id: nanoid(),
       propertyName: toCamelCase(property.path || ""),

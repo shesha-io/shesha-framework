@@ -1,7 +1,7 @@
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import { IconType } from '@/components';
 import { IEventHandlers } from '@/components/formDesigner/components/utils';
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 
 export type TextType = 'text' | 'password';
 
@@ -24,4 +24,4 @@ interface ITextFieldComponentCalulatedValues {
   eventHandlers?: IEventHandlers;
 }
 
-export type TextFieldComponentDefinition = IToolboxComponent<ITextFieldComponentProps, ITextFieldComponentCalulatedValues>;
+export type TextFieldComponentDefinition = ComponentDefinition<"textField", ITextFieldComponentProps, ITextFieldComponentCalulatedValues>;

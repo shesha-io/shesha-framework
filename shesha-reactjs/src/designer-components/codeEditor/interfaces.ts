@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent, IShaFormInstance, IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition, IConfigurableFormComponent, IShaFormInstance } from '@/interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { CodeLanguages } from './types';
 import { IMetadata, IObjectMetadata } from '@/interfaces/metadata';
@@ -57,4 +57,4 @@ export interface ICodeEditorComponentProps extends IConfigurableFormComponent, I
   resultTypeExpression?: string | GetResultTypeFunc;
 }
 
-export type CodeEditorComponentDefinition = IToolboxComponent<ICodeEditorComponentProps>;
+export type CodeEditorComponentDefinition = ComponentDefinition<"codeEditor", ICodeEditorComponentProps>;

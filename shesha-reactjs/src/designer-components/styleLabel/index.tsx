@@ -19,7 +19,7 @@ const LabelConfigurator: LabelConfiguratorDefinition = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: getSettings(),
+  settingsFormMarkup: getSettings,
 };
 
 export default LabelConfigurator;

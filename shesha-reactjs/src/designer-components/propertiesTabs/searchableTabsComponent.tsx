@@ -5,12 +5,12 @@ import { ComponentsContainer } from '@/components';
 import { useStyles } from './style';
 import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
-import { ITabsComponentProps } from './models';
+import { IPropertiesTabsComponentProps } from './models';
 import { useFormState, useFormActions } from '@/providers/form';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
 
 interface SearchableTabsProps {
-  model: ITabsComponentProps;
+  model: IPropertiesTabsComponentProps;
 }
 
 const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {

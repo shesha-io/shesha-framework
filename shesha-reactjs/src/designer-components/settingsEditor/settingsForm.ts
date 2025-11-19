@@ -1,14 +1,13 @@
-import { FormMarkupWithSettings } from '@/index';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -22,7 +21,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',

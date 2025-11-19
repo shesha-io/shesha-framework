@@ -6,7 +6,7 @@ import { Alert, Checkbox, Input, Select } from 'antd';
 import { CodeEditor, PermissionAutocomplete } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
-import { ITabPaneProps, ITabsComponentProps } from './models';
+import { ITabPaneProps, IPropertiesTabsComponentProps } from './models';
 import { nanoid } from '@/utils/uuid';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import { ItemListConfiguratorModal } from '@/designer-components/itemListConfigurator/itemListConfiguratorModal';
@@ -16,7 +16,7 @@ const { Option } = Select;
 
 const tabSettingsMarkup = itemSettings as FormMarkup;
 
-const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
+const TabSettings: FC<ISettingsFormFactoryArgs<IPropertiesTabsComponentProps>> = (props) => {
   const { readOnly } = props;
 
   const onAddNewItem = (items): ITabPaneProps => {
@@ -144,6 +144,6 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
   );
 };
 
-export const TabSettingsForm: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
-  return SettingsForm<ITabsComponentProps>({ ...props, children: <TabSettings {...props} /> });
+export const TabSettingsForm: FC<ISettingsFormFactoryArgs<IPropertiesTabsComponentProps>> = (props) => {
+  return SettingsForm<IPropertiesTabsComponentProps>({ ...props, children: <TabSettings {...props} /> });
 };

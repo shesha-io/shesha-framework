@@ -1,9 +1,8 @@
-import { FormMarkupWithSettings } from '@/interfaces';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const dataTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -11,7 +10,7 @@ export const getSettings = (): FormMarkupWithSettings => {
   const dataLoaderTypeId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -25,7 +24,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             key: 'data',
             title: 'Data',
             id: dataTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'entityTypeAutocomplete',
@@ -44,7 +43,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                 collapsible: 'header',
                 content: {
                   id: nanoid(),
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInput({
                       id: nanoid(),
                       inputType: 'radio',
@@ -85,7 +84,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       direction: "vertical",
                       justifyContent: "left",
                       flexWrap: "wrap",
-                      components: [...new DesignerToolbarSettings()
+                      components: [...fbf()
                         .addSettingsInput({
                           id: nanoid(),
                           parentId: 'root',
@@ -241,7 +240,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                 collapsible: 'header',
                 content: {
                   id: nanoid(),
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInput({
                       id: nanoid(),
                       inputType: 'radio',
@@ -425,7 +424,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                 collapsible: 'header',
                 content: {
                   id: nanoid(),
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInput({
                       id: nanoid(),
                       inputType: 'codeEditor',
@@ -451,7 +450,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             key: 'appearance',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'dropdown',
@@ -511,7 +510,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             key: 'security',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'dropdown',

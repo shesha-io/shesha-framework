@@ -1,5 +1,5 @@
 
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers';
 import { BaseType, EllipsisConfig } from 'antd/lib/typography/Base';
 import { CSSProperties } from 'react';
@@ -93,4 +93,4 @@ export interface ITextTypographyProps extends IConfigurableFormComponent {
   shadow?: IShadowValue;
 }
 
-export type TextComponentDefinition = IToolboxComponent<ITextTypographyProps>;
+export type TextComponentDefinition = ComponentDefinition<"text", ITextTypographyProps>;

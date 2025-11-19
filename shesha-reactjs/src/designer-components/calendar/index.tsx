@@ -36,8 +36,8 @@ const CalendarComponent: IToolboxComponent<ICalendarProps> = {
       </LayerGroupConfiguratorProvider>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m.add<any>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
       .add<ICalendarProps>(1, (prev) => ({ ...prev, displayPeriod: ['month', 'week', 'work_week', 'day', 'agenda'] })),

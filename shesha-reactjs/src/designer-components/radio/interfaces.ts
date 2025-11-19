@@ -2,7 +2,7 @@ import { RadioChangeEvent, SpaceProps } from 'antd';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { CSSProperties } from 'react';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
-import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition, IConfigurableFormComponent } from '@/interfaces';
 import { IEventHandlers } from '@/components/formDesigner/components/utils';
 
 export interface IRadioProps {
@@ -38,4 +38,4 @@ interface IRadioComopnentCalulatedValues {
   defaultValue?: any;
 }
 
-export type RadioComponentDefinition = IToolboxComponent<IEnhancedRadioProps, IRadioComopnentCalulatedValues>;
+export type RadioComponentDefinition = ComponentDefinition<"radio", IEnhancedRadioProps, IRadioComopnentCalulatedValues>;

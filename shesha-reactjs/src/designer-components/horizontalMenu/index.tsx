@@ -159,8 +159,8 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       </ConfigurableComponentRenderer>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IMenuListProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };

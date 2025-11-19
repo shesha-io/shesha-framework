@@ -111,8 +111,8 @@ const ImagePickerComponent: IToolboxComponent<IFileUploadProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default ImagePickerComponent;

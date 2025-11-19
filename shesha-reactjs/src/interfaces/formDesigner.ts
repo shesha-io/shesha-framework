@@ -15,6 +15,7 @@ import { IModelMetadata, IPropertyMetadata } from './metadata';
 import { IAjaxResponseBase, IApplicationContext, IErrorInfo } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -46,6 +47,11 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
 }
 
 export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISettingsFormFactoryArgs<TModel>>;
+
+export type SettingsFormMarkupFactoryArgs = {
+  fbf: FormBuilderFactory;
+};
+export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) => FormMarkup;
 
 export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
   model: TModel;
@@ -149,7 +155,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   /**
    * Markup of the settings form. Applied when the @settingsFormFactory is not specified, in this case you can render settings for in the designer itself
    */
-  settingsFormMarkup?: FormMarkup;
+  settingsFormMarkup?: FormMarkup | SettingsFormMarkupFactory;
   /**
    * Settings validator
    */
@@ -183,10 +189,12 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   editorAdapter?: IEditorAdapter;
 } & ToolboxComponentAsTemplate;
 
-export type IToolboxComponentBase = IToolboxComponent;
-// export type IToolboxComponentBase = IToolboxComponentGeneric<IConfigurableFormComponent>;
-// export type IToolboxComponent<TModel extends IConfigurableFormComponent, TCalculatedModel = any> = IToolboxComponentBase & IToolboxComponentGeneric<TModel, TCalculatedModel>;
+export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> =
+  Omit<IToolboxComponent<TModel, TCalculatedModel>, 'type'> & {
+    type: TType;
+  } & ToolboxComponentAsTemplate;
 
+export type IToolboxComponentBase = IToolboxComponent;
 
 export interface SettingsMigrationContext {
   formSettings?: IFormSettings;

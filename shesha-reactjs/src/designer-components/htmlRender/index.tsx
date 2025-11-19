@@ -33,8 +33,8 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalula
       </div>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IHtmlComponentProps>(1, (prev: IHtmlComponentProps) => ({
       ...migrateFormApi.properties(prev),

@@ -13,6 +13,7 @@ import { sheshaStyles } from '@/styles';
 import { usePrevious } from 'react-use';
 import { IMetadataContext } from '@/providers/metadata/contexts';
 import { getColumnSettings } from './columnSettings';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
 
 export interface IColumnPropertiesProps {
   item?: ColumnsItemProps;
@@ -24,9 +25,10 @@ export interface IColumnPropertiesProps {
 
 export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, readOnly, parentComponentType }) => {
   const [form] = Form.useForm();
+  const fbf = useFormBuilderFactory();
 
   const columnType = Form.useWatch('columnType', form);
-  const columnSettings = useMemo(() => getColumnSettings({ type: parentComponentType }), [parentComponentType]);
+  const columnSettings = useMemo(() => getColumnSettings(fbf, { type: parentComponentType }), [fbf, parentComponentType]);
 
   const prevColumnType = usePrevious(columnType);
   useEffect(() => {

@@ -1,44 +1,18 @@
-import React, { CSSProperties, ReactNode } from 'react';
-import { IToolboxComponent } from '@/interfaces';
-import { LinkOutlined } from '@ant-design/icons';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IInputStyles, IConfigurableFormComponent } from '@/providers';
-import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { AlignItems, JustifyContent, JustifyItems } from '@/designer-components/container/interfaces';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { IInputStyles } from '@/providers';
+import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
-import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
+import { LinkOutlined } from '@ant-design/icons';
+import React, { CSSProperties, ReactNode } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { IFontValue } from '../_settings/utils/font/interfaces';
+import { ILinkProps, LinkComponentDefinition } from './interfaces';
+import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 
-export interface IAlertProps extends IConfigurableFormComponent {
-  text: string;
-  description?: string;
-  showIcon?: boolean;
-  icon?: string;
-}
-export interface ILinkProps extends IConfigurableFormComponent {
-  href?: string;
-  content?: string;
-  propertyName: string;
-  target?: string;
-  download?: string;
-  direction?: ContainerDirection;
-  hasChildren?: boolean;
-  justifyContent?: JustifyContent;
-  alignItems?: AlignItems;
-  justifyItems?: JustifyItems;
-  className?: string;
-  icon?: ReactNode;
-  font?: IFontValue;
-  components?: IConfigurableFormComponent[];
-}
-
-const LinkComponent: IToolboxComponent<ILinkProps> = {
+const LinkComponent: LinkComponentDefinition = {
   type: 'link',
   isInput: false,
   name: 'link',
@@ -110,8 +84,8 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model: ILinkProps) => {
     const customProps: ILinkProps = {
       ...model,

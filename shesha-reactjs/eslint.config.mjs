@@ -43,6 +43,7 @@ const strictFolders = isLightBuild
 
         "src/providers/form/utils",
         "src/providers/formDesigner",
+        "src/form-factory",
     ];
 
 const stylisticOverrides = {
