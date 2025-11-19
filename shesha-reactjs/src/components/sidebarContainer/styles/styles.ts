@@ -166,12 +166,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             padding-bottom: 4px;
           }
         }
-    
-        .${canvasWrapper} {
-          height: calc(100vh - 120px);
-          overflow: auto;
-          ${sheshaStyles.thinScrollbars}
-        }
 
         .${sidebarContainerMainArea} {
           width: 100%;
