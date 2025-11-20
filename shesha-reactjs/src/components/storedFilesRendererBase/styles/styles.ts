@@ -53,6 +53,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     ${containerMinWidth ? `min-width: ${containerMinWidth} !important;` : ''}
     ${containerHeight ? `height: ${containerHeight} !important;` : ''}
     ${containerMinHeight ? `min-height: ${containerMinHeight} !important;` : ''}
+    ${containerMaxHeight ? `max-height: ${containerMaxHeight} !important;` : ''}
+    overflow: auto;
     
     .ant-upload:not(.ant-upload-disabled) {
       .icon {

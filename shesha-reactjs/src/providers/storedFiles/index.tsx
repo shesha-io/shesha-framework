@@ -226,7 +226,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         const responseFile = extractAjaxResponse(response);
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
-        onChange?.(addFile(responseFile, fileListRef.current));
+        const updatedFileList = addFile(responseFile, fileListRef.current);
+        onChange?.(updatedFileList);
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {

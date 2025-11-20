@@ -188,8 +188,16 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
             if (model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
           };
 
+          const onFileListChangeCustom = (fileList): void => {
+            onChange(fileList);
+            if (model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
+          };
+
           const onDownload = (fileList): void => {
             onChange(fileList);
+          };
+
+          const onDownloadCustom = (fileList): void => {
             if (model.onDownload) executeScript(model.onDownload, fileList);
           };
 
@@ -220,6 +228,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 filesLayout={model.filesLayout}
                 listType={model.listType}
                 {...model}
+                onChange={onFileListChangeCustom}
+                onDownload={onDownloadCustom}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
               />

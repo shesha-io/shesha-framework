@@ -55,6 +55,8 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   maxHeight?: string;
   layout: layoutType;
   listType: listType;
+  onChange?: (fileList: IStoredFile[]) => void;
+  onDownload?: (fileList: IStoredFile[]) => void;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;
@@ -92,6 +94,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   listType,
   gap,
   enableStyleOnReadonly = true,
+  onChange,
+  onDownload,
   ...rest
 }) => {
   const { message, notification, modal } = App.useApp();
@@ -201,6 +205,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       okType: 'danger',
       onOk: () => {
         deleteFile(file.uid);
+        onChange(fileList);
       },
     });
   };
@@ -232,6 +237,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       const normalizedFile = new File([options.file], fileName, { type: options.file.type });
 
       uploadFile({ file: normalizedFile, ownerId, ownerType });
+      onChange(fileList);
     },
     beforeUpload(file: RcFile) {
       const { type, size, name } = file;
@@ -259,6 +265,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     onDownload: ({ uid, name }) => {
       downloadFile({ fileId: uid, fileName: name });
+      onDownload(fileList);
     },
     onPreview: (file) => {
       const { uid, name } = file;
