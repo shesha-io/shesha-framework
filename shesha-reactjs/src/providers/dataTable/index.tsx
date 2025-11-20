@@ -132,7 +132,7 @@ interface IDataTableProviderBaseProps {
 
   /**
    * Disable refresh data expression
-   * Return 'true' if dataContext is not ready to refresh data (filter data is not ready, etc...)
+   * Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)
    */
   disableRefresh?: boolean;
 

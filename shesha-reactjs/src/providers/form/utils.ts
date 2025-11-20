@@ -515,7 +515,7 @@ export const getClosestComponent = (componentId: string, context: SettingsMigrat
 };
 
 export const getClosestTableId = (context: SettingsMigrationContext): string | null => {
-  const table = getClosestComponent(context.componentId, context, 'dataContext');
+  const table = getClosestComponent(context.componentId, context, 'datatableContext');
   return table ? table['uniqueStateId'] ?? table.propertyName : null;
 };
 

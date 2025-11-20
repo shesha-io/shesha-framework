@@ -17,9 +17,6 @@ export interface IDataContextComponentProps extends IConfigurableFormComponent {
   onChangeAction?: IConfigurableActionConfiguration;
 }
 
-/**
- * @deprecated The DatatableContext is being renamed to DataContext makes this entire component obsolete. Use `TableContextComponent` instead.
- */
 const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
   type: 'dataContext',
   isInput: false,
