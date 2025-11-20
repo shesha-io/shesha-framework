@@ -225,7 +225,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       okType: 'danger',
       onOk: () => {
         deleteFile(file.uid);
-        const updatedFileList = fileList.filter(f => f.uid !== file.uid);
+        const updatedFileList = fileList.filter((f) => f.uid !== file.uid);
         onChangeCustom?.(updatedFileList);
       },
     });
@@ -356,10 +356,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               onVisibleChange: (visible) => setPreviewOpen(visible),
               afterOpenChange: (visible) => !visible && setPreviewImage(null),
               toolbarRender: (original) => {
-                return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => {
-                  isDownloadingRef.current = true;
-                  downloadFile({ fileId: previewImage.uid, fileName: previewImage.name });
-                }} />{original}</div>;
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined
+                    className={styles.antPreviewDownloadIcon}
+                    onClick={() => {
+                      isDownloadingRef.current = true;
+                      downloadFile({ fileId: previewImage.uid, fileName: previewImage.name });
+                    }}
+                                                                                 />{original}
+                  </div>
+                );
               },
             }}
             src={previewImage.url}

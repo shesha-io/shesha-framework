@@ -30,7 +30,6 @@ export const fileIcons = {
 };
 
 export const getFileIcon = (type: string, fontSize: string): JSX.Element => {
-  console.log("Font size ::", fontSize);
   const fileIcon = fileIcons[type] || fileIcons.default;
   const Icon = fileIcon.icon;
   const style = { color: fileIcon.color, fontSize };
