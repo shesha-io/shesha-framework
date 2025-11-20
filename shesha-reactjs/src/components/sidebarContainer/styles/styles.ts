@@ -178,6 +178,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         .${designerCanvas} {
           margin: 0 auto;
           height: 100%;
+          overflow: auto;
           transform-origin: top left;
         }
       }
