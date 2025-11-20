@@ -63,10 +63,8 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   ), [actualModel, actualModel.hidden, actualModel.jsStyle, calculatedModel]);
 
   // Check for validation errors (in both designer and runtime modes)
-  let validationResult: IModelValidation | undefined;
-
   if (!toolboxComponent) {
-    validationResult = {
+    const validationResult: IModelValidation = {
       hasErrors: true,
       componentId: componentModel.id,
       componentName: componentModel.componentName,
@@ -87,18 +85,18 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   }
 
   // Run validation in both designer and runtime modes
-  validationResult = { hasErrors: false, errors: [] };
+  const validationErrors: Array<{ propertyName?: string; error: string }> = [];
   toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
-    validationResult.hasErrors = true;
-    validationResult.errors.push({ propertyName, error });
+    validationErrors.push({ propertyName, error });
   });
-  if (validationResult.hasErrors) {
-    validationResult.componentId = componentModel.id;
-    validationResult.componentName = componentModel.componentName;
-    validationResult.componentType = componentModel.type;
-  } else {
-    validationResult = undefined;
-  }
+
+  const validationResult: IModelValidation | undefined = validationErrors.length > 0 ? {
+    hasErrors: true,
+    componentId: componentModel.id,
+    componentName: componentModel.componentName,
+    componentType: componentModel.type,
+    errors: validationErrors,
+  } : undefined;
 
   const attributes = {
     'data-sha-c-id': `${componentModel.id}`,

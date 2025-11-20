@@ -20,6 +20,7 @@
   "datalist": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datalist",
   "datatable": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable",
   "datatableContext": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable-context",
+  "dataContext": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable-context",
   "datatable.filter": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/table-filter",
   "datatable.pager": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/table-pager",
   "datatable.quickSearch": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/quick-search",
