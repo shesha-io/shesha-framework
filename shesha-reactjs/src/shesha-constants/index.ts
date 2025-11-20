@@ -33,4 +33,4 @@ export const LAYOUT_CONSTANTS = {
   SIDEBAR_BTN_HEIGHT: "35px",
   TOOLBAR_HEIGHT: "56px",
   HEADER_HEIGHT: "60px",
-  };
+};
