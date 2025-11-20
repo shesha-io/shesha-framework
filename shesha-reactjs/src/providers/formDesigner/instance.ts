@@ -99,7 +99,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.subscriptions = new Map<FormDesignerSubscriptionType, Set<FormDesignerSubscription>>();
 
     // eslint-disable-next-line no-console
-    this.log = args.logEnabled ? console.log : () => {};
+    this.log = args.logEnabled ? console.log : () => { };
 
     const initialState: FormDesignerFormState = {
       formFlatMarkup: args.formFlatMarkup,
@@ -231,7 +231,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
           if (Array.isArray(srcContainer)) {
             (clone[cntName] as IConfigurableFormComponent[]) = srcContainer.map((c): IConfigurableFormComponent => {
               if (!isConfigurableFormComponent(c)) {
-                return { ...c, id: nanoid() } as IConfigurableFormComponent;
+                const patched = { ...c, id: nanoid() } as IConfigurableFormComponent;
+                return cloneChild(patched);
               }
               return cloneChild(c);
             });
