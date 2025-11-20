@@ -167,7 +167,7 @@ export const GlobalSheshaStyles = createGlobalStyle`
 
     }
 
-  .${(p) => p.theme.prefixCls}-modal-root .${(p) => p.theme.prefixCls}-modal-centered {
+  .${(p) => p.theme.prefixCls}-modal-root {
     .${(p) => p.theme.prefixCls}-modal {
       top: 100px !important;
       vertical-align: top !important;
