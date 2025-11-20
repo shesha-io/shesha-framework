@@ -85,17 +85,17 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   ), [actualModel, actualModel.hidden, actualModel.jsStyle, calculatedModel]);
 
   // Run validation in both designer and runtime modes
-  const validationErrors: Array<{ propertyName?: string; error: string }> = [];
+  const errors: Array<{ propertyName?: string; error: string }> = [];
   toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
-    validationErrors.push({ propertyName, error });
+    errors.push({ propertyName, error });
   });
 
-  const validationResult: IModelValidation | undefined = validationErrors.length > 0 ? {
-    hasErrors: true,
+  const validationResult: IModelValidation | undefined = errors.length > 0 ? {
+    hasErrors: Boolean(errors.length),
     componentId: componentModel.id,
     componentName: componentModel.componentName,
     componentType: componentModel.type,
-    errors: validationErrors,
+    errors,
   } : undefined;
 
   const attributes = {
