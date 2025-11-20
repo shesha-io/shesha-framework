@@ -372,8 +372,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
           clone.componentName = camelcaseDotNotation(componentName);
           clone.label = componentName;
 
-          if (clone.propertyName === camelcaseDotNotation(srcComponent.label as string || '')
-            || clone.propertyName === srcComponent.componentName) {
+          if (clone.propertyName === camelcaseDotNotation(srcComponent.label as string || '') ||
+            clone.propertyName === srcComponent.componentName) {
             clone.propertyName = camelcaseDotNotation(componentName);
           }
         }
