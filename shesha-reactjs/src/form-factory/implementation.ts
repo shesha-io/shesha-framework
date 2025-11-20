@@ -178,7 +178,7 @@ export class FormBuilderImplementation implements FormBuilder {
     this.form = [];
   }
 
-  protected addProperty(props: FluentSettings<IConfigurableFormComponent>, type: ComponentTypes, meta?: IPropertyMetadata): FormBuilder {
+  protected addProperty<T extends IConfigurableFormComponent>(props: FluentSettings<T>, type: ComponentTypes, meta?: IPropertyMetadata): FormBuilder {
     const { id, hidden, version, ...restProps } = props;
 
     const componentDefinition = this.getComponentDefinition(type);
