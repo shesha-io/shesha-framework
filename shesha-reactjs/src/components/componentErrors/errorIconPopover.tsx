@@ -111,7 +111,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
       <Popover
         content={<div className={cx(styles.popoverWrapper)}>{getPopoverContent()}</div>}
         title={popoverTitle}
-        trigger="hover"
+        trigger={["hover", "click"]}
         placement="leftTop"
         color="rgb(214, 214, 214)"
       >
