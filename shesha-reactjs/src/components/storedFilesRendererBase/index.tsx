@@ -274,8 +274,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       showDownloadIcon: true,
     },
     iconRender,
-    itemRender: (originNode, file) => {
-      const isDownloaded = (file as any).userHasDownloaded === true;
+    itemRender: (originNode, file: IStoredFile) => {
+      const isDownloaded = file.userHasDownloaded === true;
       return (
         <div className={isDownloaded ? styles.downloadedFile : ''}>
           {originNode}
