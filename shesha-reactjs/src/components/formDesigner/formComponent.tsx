@@ -8,6 +8,7 @@ import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
 import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { useStyles } from './styles/styles';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -27,6 +28,7 @@ export const formComponentActualModelPropertyFilter = (component: IToolboxCompon
 };
 
 const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
+  const { styles } = useStyles();
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
   const { isComponentFiltered } = useForm();
@@ -84,12 +86,12 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     };
     // Component not found - return early with just error message
     return (
-      <div style={{ minHeight: '40px', position: 'relative', padding: '8px', border: '1px dashed #ccc' }}>
+      <div className={styles.unregisteredComponentContainer}>
         <ErrorIconPopover
           validationResult={validationResult}
           type="error"
         >
-          <div style={{ color: '#999', fontSize: '12px' }}>Component &apos;{actualModel.type}&apos; not registered</div>
+          <div className={styles.unregisteredComponentMessage}>Component &apos;{actualModel.type}&apos; not registered</div>
         </ErrorIconPopover>
       </div>
     );
