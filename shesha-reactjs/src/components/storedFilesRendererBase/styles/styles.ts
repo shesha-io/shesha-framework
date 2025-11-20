@@ -172,6 +172,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       display: flex;
       margin-top: 4px;
       justify-content: flex-end;
+      height: ${fontSizeValue} !important;
     }
   
     .${prefixCls}-upload-list {
@@ -294,7 +295,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       ${containerMinHeight ? `min-height: calc(${containerMinHeight} - ${downloadZipBtnHeight}) !important;` : ''}
     }
 
-    .stored-files-renderer-btn-container {
+    .${storedFilesRendererBtnContainer} {
       justify-content: flex-start;
       .ant-btn {
         padding: 0;

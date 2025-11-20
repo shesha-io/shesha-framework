@@ -19,7 +19,7 @@ import {
 } from 'antd';
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { isValidGuid } from '../formDesigner/components/utils';
 import { useStyles } from './styles/styles';
 interface IUploaderFileTypes {
@@ -103,6 +103,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
+  const previousFileListRef = useRef<IStoredFile[]>(fileList);
+  const isUploadingRef = useRef(false);
+  const isDownloadingRef = useRef(false);
 
   const model = rest;
   const hasFiles = !!fileList.length;
@@ -173,6 +176,23 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     fetchImages();
   }, [fileList]);
 
+  // Call onChangeCustom when fileList changes due to upload completing
+  useEffect(() => {
+    if (isUploadingRef.current && fileList.length > previousFileListRef.current.length) {
+      onChangeCustom?.(fileList);
+      isUploadingRef.current = false;
+    }
+    previousFileListRef.current = fileList;
+  }, [fileList, onChangeCustom]);
+
+  // Call onDownload when fileList changes due to download flag update
+  useEffect(() => {
+    if (isDownloadingRef.current) {
+      onDownload?.(fileList);
+      isDownloadingRef.current = false;
+    }
+  }, [fileList, onDownload]);
+
   const handlePreview = (file: UploadFile): void => {
     setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
     setPreviewOpen(true);
@@ -205,7 +225,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       okType: 'danger',
       onOk: () => {
         deleteFile(file.uid);
-        onChangeCustom?.(fileList);
+        const updatedFileList = fileList.filter(f => f.uid !== file.uid);
+        onChangeCustom?.(updatedFileList);
       },
     });
   };
@@ -236,8 +257,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
       const normalizedFile = new File([options.file], fileName, { type: options.file.type });
 
+      isUploadingRef.current = true;
       uploadFile({ file: normalizedFile, ownerId, ownerType });
-      onChangeCustom?.(fileList);
+      // onChangeCustom will be called in useEffect when fileList updates
     },
     beforeUpload(file: RcFile) {
       const { type, size, name } = file;
@@ -264,14 +286,17 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       return isValidFileType && isAcceptableFileSize;
     },
     onDownload: ({ uid, name }) => {
+      isDownloadingRef.current = true;
       downloadFile({ fileId: uid, fileName: name });
-      onDownload?.(fileList);
     },
     onPreview: (file) => {
       const { uid, name } = file;
       if (isImageType(file.type)) {
         handlePreview(file);
-      } else downloadFile({ fileId: uid, fileName: name });
+      } else {
+        isDownloadingRef.current = true;
+        downloadFile({ fileId: uid, fileName: name });
+      }
     },
     showUploadList: {
       showRemoveIcon: allowDelete,
@@ -331,7 +356,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               onVisibleChange: (visible) => setPreviewOpen(visible),
               afterOpenChange: (visible) => !visible && setPreviewImage(null),
               toolbarRender: (original) => {
-                return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })} />{original}</div>;
+                return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => {
+                  isDownloadingRef.current = true;
+                  downloadFile({ fileId: previewImage.uid, fileName: previewImage.name });
+                }} />{original}</div>;
               },
             }}
             src={previewImage.url}
