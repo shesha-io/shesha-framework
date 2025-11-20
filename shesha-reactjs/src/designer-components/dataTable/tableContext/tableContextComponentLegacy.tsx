@@ -13,6 +13,7 @@ import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/uti
  * This component definition is kept for backward compatibility with existing forms.
  * All existing migrations are preserved here.
  * New forms should use the dataContext component instead.
+ * @deprecated Use dataContext component instead. This is kept only for migration of existing forms.
  */
 const TableContextComponentLegacy: TableContextComponentDefinition = {
   type: 'datatableContext',
