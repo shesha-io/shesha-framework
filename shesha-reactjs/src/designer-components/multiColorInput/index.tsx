@@ -3,7 +3,6 @@ import { Button, Row, Tag } from 'antd';
 import { nanoid } from '@/utils/uuid';
 import { PlusOutlined } from '@ant-design/icons';
 import { useTheme } from '@/providers';
-import FormItem from 'antd/es/form/FormItem';
 import { removeUndefinedProps } from '@/utils/object';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { gradientDirectionOptions } from '../_settings/utils/background/utils';
@@ -32,7 +31,7 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
 
   return (
     <>
-      <Row>
+      <Row style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
         {Object.entries(removeUndefinedProps(colors)).map(([id]) => {
           return (
             <Tag
@@ -56,6 +55,21 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
             </Tag>
           );
         })}
+        <Button
+          type="primary"
+          ghost
+          size="small"
+          onClick={() => {
+            const id = nanoid();
+            onChange({ ...value, [id]: '#000000' });
+            setColors({ ...value, [id]: '#000000' });
+          }}
+          disabled={readOnly}
+          icon={<PlusOutlined />}
+          style={{ marginTop: '5px' }}
+        >
+          Add Color
+        </Button>
       </Row>
 
       <InputRow inline={true} readOnly={readOnly}>
@@ -68,22 +82,6 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
           type="dropdown"
           dropdownOptions={gradientDirectionOptions}
         />
-        <FormItem>
-          <Button
-            type="primary"
-            ghost
-            size="small"
-            onClick={() => {
-              const id = nanoid();
-              onChange({ ...value, [id]: '#000000' });
-              setColors({ ...colors, [id]: '#000000' });
-            }}
-            disabled={readOnly}
-            icon={<PlusOutlined />}
-          >
-            Add Color
-          </Button>
-        </FormItem>
       </InputRow>
     </>
   );

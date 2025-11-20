@@ -10,11 +10,11 @@ import {
 import { IDropdownOption } from "../background/interfaces";
 import { addPx } from '@/utils/style';
 import { nanoid } from "@/utils/uuid";
-import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 import { IRadioOption } from "@/designer-components/settingsInput/interfaces";
 import { humanizeString } from "@/utils/string";
-import { FormRawMarkup, IConfigurableTheme } from "@/providers";
+import { FormRawMarkup, IConfigurableFormComponent, IConfigurableTheme } from "@/providers";
 import { readThemeColor } from "@/components/colorPicker";
+import { FormBuilderFactory } from "@/form-factory/interfaces";
 
 export const getBorderStyle = (input: IBorderValue | undefined, jsStyle: React.CSSProperties, theme?: IConfigurableTheme): React.CSSProperties => {
   if (!input) return {};
@@ -133,10 +133,10 @@ const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, pa
   return `return getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.${type}) !== "${isCustom ? "custom" : "all"}";`;
 };
 
-export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMiddle: boolean = false): FormRawMarkup => {
+export const getBorderInputs = (fbf: FormBuilderFactory, path = '', isResponsive: boolean = true, hasMiddle: boolean = false): IConfigurableFormComponent[] => {
   const borderProp = path ? `${path}.border.border` : 'border.border';
 
-  return [...new DesignerToolbarSettings()
+  return [...fbf()
     .addSettingsInput({
       id: nanoid(),
       inputType: 'radio',
@@ -191,7 +191,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
       components: borderSides.slice(0, hasMiddle ? 5 : 4).map((sideValue) => {
         const side = sideValue.value;
 
-        return new DesignerToolbarSettings()
+        return fbf()
           .addSettingsInputRow({
             id: nanoid(),
             inline: true,
@@ -246,8 +246,8 @@ interface IHideCornerConditions {
   bottomRight?: string;
 }
 
-export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCornerConditions: IHideCornerConditions = {}): FormRawMarkup => {
-  return [...new DesignerToolbarSettings()
+export const getCornerInputs = (fbf: FormBuilderFactory, path = '', isResponsive: boolean = true, hideCornerConditions: IHideCornerConditions = {}): FormRawMarkup => {
+  return [...fbf()
     .addSettingsInput({
       id: nanoid(),
       inputType: 'radio',

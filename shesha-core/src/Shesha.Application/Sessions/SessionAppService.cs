@@ -141,6 +141,6 @@ namespace Shesha.Sessions
         public Task ClearPermissionsCacheAsync()
         {
             return _permissionChecker.ClearPermissionsCacheAsync();
-        }
+        }        
     }
 }

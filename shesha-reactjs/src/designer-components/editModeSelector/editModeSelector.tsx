@@ -1,14 +1,13 @@
 import { CodeOutlined } from '@ant-design/icons';
 import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { FormMarkup } from '@/providers/form/models';
 import EditModeSelector from '@/components/editModeSelector/index';
 import { ConfigurableFormItem } from '@/components';
 import settingsFormJson from './settingsForm.json';
-
+import { EditModeSelectorComponentDefinition } from './interfaces';
 const settingsForm = settingsFormJson as FormMarkup;
 
-const EditModeSelectorComponent: IToolboxComponent<IConfigurableFormComponent> = {
+const EditModeSelectorComponent: EditModeSelectorComponentDefinition = {
   type: 'editModeSelector',
   isInput: true,
   isOutput: true,

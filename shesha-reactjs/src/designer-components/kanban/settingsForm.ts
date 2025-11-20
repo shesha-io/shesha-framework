@@ -1,13 +1,11 @@
-import { IKanbanProps } from '@/components/kanban/model';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   // Generate unique IDs for top-level components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -68,7 +66,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
   const colCustomStyleContentId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -83,7 +81,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'textField',
@@ -245,7 +243,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
             title: 'Data',
             id: columnsTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   parentId: columnsTabId,
@@ -276,7 +274,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -289,9 +287,9 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                     _mode: 'code',
                     _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: headerStylesPanelId,
                         propertyName: 'headerStyles',
@@ -303,7 +301,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                         content: {
                           id: headerStylesContentId,
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addCollapsiblePanel({
                                 id: fontStylePanelId,
                                 propertyName: 'pnlFontStyle',
@@ -315,7 +313,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: fontStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: fontStyleRowId,
                                         parentId: fontStyleContentId,
@@ -372,7 +370,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: bgStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: nanoid(),
                                         parentId: bgStyleContentId,
@@ -535,7 +533,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: shadowStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: shadowStyleRowId,
                                         parentId: shadowStyleContentId,
@@ -605,18 +603,18 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: borderStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addContainer({
                                         id: borderStyleRowId,
                                         parentId: borderStyleContentId,
                                         propertyName: 'borderContainer',
-                                        components: getBorderInputs() as any,
+                                        components: getBorderInputs(fbf),
                                       })
                                       .addContainer({
                                         id: borderRadiusRowId,
                                         parentId: borderStyleContentId,
                                         propertyName: 'borderRadiusContainer',
-                                        components: getCornerInputs() as any,
+                                        components: getCornerInputs(fbf),
                                       })
                                       .toJson(),
                                   ],
@@ -633,7 +631,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: customStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: nanoid(),
                                         inputType: 'codeEditor',
@@ -662,7 +660,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                         content: {
                           id: columnStylesContentId,
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'gap',
@@ -682,7 +680,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: colDimensionsContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: colDimensionsWidthRowId,
                                         parentId: colDimensionsContentId,
@@ -768,7 +766,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: colBgContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: nanoid(),
                                         parentId: colBgContentId,
@@ -940,7 +938,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: colShadowContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: colShadowRowId,
                                         parentId: colShadowContentId,
@@ -1010,7 +1008,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: colBorderContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: colBorderStyleId,
                                         parentId: colBorderContentId,
@@ -1035,12 +1033,12 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                       .addContainer({
                                         id: colBorderContainerId,
                                         parentId: colBorderContentId,
-                                        components: getBorderInputs('columnStyles', true) as any,
+                                        components: getBorderInputs(fbf, 'columnStyles', true),
                                       })
                                       .addContainer({
                                         id: colBorderRadiusRowId,
                                         parentId: colBorderContentId,
-                                        components: getCornerInputs('columnStyles', true) as any,
+                                        components: getCornerInputs(fbf, 'columnStyles', true),
                                       })
                                       .toJson(),
                                   ],
@@ -1056,7 +1054,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: colMarginPaddingContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addStyleBox({
                                         id: nanoid(),
                                         label: 'Margin Padding',
@@ -1078,7 +1076,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: colCustomStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: nanoid(),
                                         inputType: 'codeEditor',
@@ -1107,7 +1105,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',

@@ -1,12 +1,12 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import React, { useEffect, useMemo, FC } from 'react';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { DesignerToolbarSettings, FormMarkup } from '@/interfaces';
-
+import { FormMarkup } from '@/interfaces';
 import { ISettingIdentifier, SettingValue } from './provider/models';
 import { useSettingsEditor } from './provider';
 import { ISettingEditorWithValueProps } from './models';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
 
 type FormType = { value: SettingValue };
 
@@ -41,8 +41,10 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
     return { value: value };
   }, [value]);
 
+  const fbf = useFormBuilderFactory();
+
   const formMarkup: FormMarkup = useMemo(() => {
-    const builder = new DesignerToolbarSettings({});
+    const builder = fbf();
     if (configuration.description) {
       builder.addAlert({
         id: 'descriptionAlert',

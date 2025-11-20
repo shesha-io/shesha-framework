@@ -229,8 +229,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: () => getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   linkToModelMetadata: (model, metadata) => ({
     ...model,
     ownerId: '{data.id}',

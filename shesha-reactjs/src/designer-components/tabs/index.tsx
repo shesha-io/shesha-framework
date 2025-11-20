@@ -156,7 +156,7 @@ const TabsComponent: TabsComponentDefinition = {
         mobile: { ...newModel.mobile, card: { ...initialCardStyle } },
       };
     }),
-  settingsFormMarkup: () => getSettings(),
+  settingsFormMarkup: getSettings,
   customContainerNames: ['tabs'],
   getContainers: (model) => {
     return model.tabs.map<IFormComponentContainer>((t) => ({ id: t.id }));

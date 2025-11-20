@@ -11,6 +11,7 @@ import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entitie
 import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
 import { IMetadataBuilder, IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { createNamedContext } from '@/utils/react';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
 
 export interface ApplicationPluginRegistration {
   name: string;
@@ -39,10 +40,11 @@ export const ApplicationDataProvider: FC<PropsWithChildren> = ({ children }) => 
   const metadataFetcher = useEntityMetadataFetcher();
   const metadataDispatcher = useMetadataDispatcher();
   const shaRouter = useShaRouting();
+  const fbf = useFormBuilderFactory();
 
   // inject fields from plugins
   const [contextData] = useState<IApplicationApi>(
-    () => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter, metadataDispatcher),
+    () => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter, metadataDispatcher, fbf),
   );
 
   const { loginInfo } = useAuthOrUndefined() ?? {};

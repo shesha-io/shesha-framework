@@ -25,8 +25,8 @@ export const getAlignmentStyle = ({
   gridColumnsCount,
   display,
   flexDirection,
-  justifySelf,
-  alignSelf,
+  justifySelf: _justifySelf,
+  alignSelf: _alignSelf,
   textJustify,
   gap,
   flexWrap,
@@ -41,8 +41,8 @@ export const getAlignmentStyle = ({
     style['justifyContent'] = justifyContent;
     style['alignItems'] = alignItems;
     style['justifyItems'] = justifyItems;
-    style['justifySelf'] = justifySelf;
-    style['alignSelf'] = alignSelf;
+    // Note: justifySelf and alignSelf should be applied to the wrapper element, not the inner container
+    // They are handled in the wrapperStyle in containerComponent.tsx
     style['textJustify'] = textJustify as any;
     style['gap'] = gap;
   }

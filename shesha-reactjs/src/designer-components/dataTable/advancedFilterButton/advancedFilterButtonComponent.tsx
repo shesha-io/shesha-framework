@@ -47,8 +47,8 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
       label: '',
     };
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<IButtonComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))

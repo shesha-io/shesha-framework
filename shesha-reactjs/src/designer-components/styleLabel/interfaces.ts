@@ -1,6 +1,6 @@
 import { IConfigurableFormComponent } from "@/providers";
 import { IRadioOption } from "../settingsInput/interfaces";
-import { IToolboxComponent } from "@/interfaces";
+import { ComponentDefinition } from "@/interfaces";
 
 export interface ILabelComponentProps extends IConfigurableFormComponent {
   value?: boolean;
@@ -11,4 +11,4 @@ export interface ILabelComponentProps extends IConfigurableFormComponent {
   labelAlignOptions?: IRadioOption[];
 }
 
-export type LabelConfiguratorDefinition = IToolboxComponent<ILabelComponentProps>;
+export type LabelConfiguratorDefinition = ComponentDefinition<"labelConfigurator", ILabelComponentProps>;

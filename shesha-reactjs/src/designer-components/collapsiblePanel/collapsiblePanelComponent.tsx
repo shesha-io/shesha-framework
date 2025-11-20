@@ -95,8 +95,8 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
       </ParentProvider>
     );
   },
-  settingsFormMarkup: () => getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<ICollapsiblePanelComponentPropsV0>(0, (prev) => {

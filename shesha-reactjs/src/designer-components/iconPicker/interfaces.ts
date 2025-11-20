@@ -1,5 +1,5 @@
 import { ShaIconTypes } from '@/components/iconPicker';
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IIconPickerComponentProps extends IConfigurableFormComponent {
@@ -17,4 +17,4 @@ export interface IIconPickerComponentProps extends IConfigurableFormComponent {
   textAlign?: string;
 }
 
-export type IconPickerComponentDefinition = IToolboxComponent<IIconPickerComponentProps>;
+export type IconPickerComponentDefinition = ComponentDefinition<"iconPicker", IIconPickerComponentProps>;

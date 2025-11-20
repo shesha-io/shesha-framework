@@ -103,7 +103,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   initModel: (model) => ({
     ...model,
   }),
@@ -124,7 +124,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
       .add<INumberFieldComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
       ...model,

@@ -9,6 +9,8 @@ export const useStyles = createStyles(({ css, cx, responsive, token }, props: IS
   const shaGlobalTableFilter = cx(
     'sha-global-table-filter',
     css`
+      display: flex;
+      align-items: center;
       padding-right: ${sheshaStyles.paddingLG}px;
       width: ${props.block ? '100%' : '350px'};
 

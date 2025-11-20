@@ -7,7 +7,7 @@ import {
   SortMode,
 } from '@/providers/dataTable/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { IToolboxComponent, YesNoInherit } from '@/interfaces';
+import { ComponentDefinition, YesNoInherit } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
@@ -46,4 +46,4 @@ export interface IAfterRowReorderArguments {
   response?: any;
 }
 
-export type TableContextComponentDefinition = IToolboxComponent<ITableContextComponentProps>;
+export type TableContextComponentDefinition = ComponentDefinition<"datatableContext" | 'dataContext', ITableContextComponentProps>;
