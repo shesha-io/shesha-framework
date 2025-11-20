@@ -152,7 +152,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     // Wrap with error icon if there are validation errors
     if (validationResult?.hasErrors) {
       return (
-        <ErrorIconPopover validationResult={validationResult} message="" type={validationType}>
+        <ErrorIconPopover validationResult={validationResult} type={validationType}>
           {content}
         </ErrorIconPopover>
       );

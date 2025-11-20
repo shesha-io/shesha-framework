@@ -91,7 +91,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   });
 
   const validationResult: IModelValidation | undefined = errors.length > 0 ? {
-    hasErrors: Boolean(errors.length),
+    hasErrors: true,
     componentId: componentModel.id,
     componentName: componentModel.componentName,
     componentType: componentModel.type,
