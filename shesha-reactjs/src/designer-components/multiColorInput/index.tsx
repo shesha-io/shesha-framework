@@ -3,7 +3,6 @@ import { Button, Row, Tag } from 'antd';
 import { nanoid } from '@/utils/uuid';
 import { PlusOutlined } from '@ant-design/icons';
 import { useTheme } from '@/providers';
-import FormItem from 'antd/es/form/FormItem';
 import { removeUndefinedProps } from '@/utils/object';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { gradientDirectionOptions } from '../_settings/utils/background/utils';
