@@ -1,5 +1,6 @@
 import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
 import { createStyles, sheshaStyles } from '@/styles';
+import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
 const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",
@@ -52,9 +53,7 @@ export const useStyles = (): typeof useStylesResponse => {
 };
 
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
-  const SIDEBAR_BTN_HEIGHT = "35px";
-  const TOOLBAR_HEIGHT = "56px";
-  const HEADER_HEIGHT = "60px";
+  const { SIDEBAR_BTN_HEIGHT, TOOLBAR_HEIGHT, HEADER_HEIGHT } = LAYOUT_CONSTANTS;
 
   const {
     shaHelpIcon,
