@@ -5,13 +5,23 @@ import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { useStyles } from './styles/errorIconPopoverStyles';
 import componentDocs from './component-docs.json';
 
-export interface IErrorIconPopoverProps extends PropsWithChildren {
-  validationResult: IModelValidation;
+interface IErrorIconPopoverBaseProps extends PropsWithChildren {
   type?: ISheshaErrorTypes;
-  message?: string;
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   title?: string | null;
 }
+
+interface IErrorIconPopoverWithValidation extends IErrorIconPopoverBaseProps {
+  validationResult: IModelValidation;
+  message?: never;
+}
+
+interface IErrorIconPopoverWithMessage extends IErrorIconPopoverBaseProps {
+  validationResult?: never;
+  message: string;
+}
+
+export type IErrorIconPopoverProps = IErrorIconPopoverWithValidation | IErrorIconPopoverWithMessage;
 
 export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   children,
