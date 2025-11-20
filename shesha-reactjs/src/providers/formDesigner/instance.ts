@@ -181,6 +181,10 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     const toolboxComponent = component.type && !isNullOrWhiteSpace(component.type)
       ? this.getToolboxComponentOrUndefined(component.type)
       : undefined;
+
+    if (!toolboxComponent && component.type) {
+      this.log('FD: cloneComponent - toolbox component not found for type:', component.type);
+    }
     const containers = toolboxComponent?.customContainerNames ?? [];
 
     const { formFlatMarkup } = this.state;
