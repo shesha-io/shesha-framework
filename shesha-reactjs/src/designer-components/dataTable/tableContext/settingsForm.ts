@@ -244,7 +244,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code:
@@ -313,7 +312,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code:
@@ -507,7 +505,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
@@ -541,7 +538,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             id: nanoid(),
                             propertyName: 'onBeforeRowReorder',
                             label: 'On Before Row Reorder',
-                            hideLabel: true,
+                            hideLabel: false,
                             parentId: dataTabId,
                             type: 'configurableActionConfigurator',
                             description: 'Action to execute before row reorder. Can be used for validation and cancellation.',
@@ -563,7 +560,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             propertyName: 'onAfterRowReorder',
                             label: 'On After Row Reorder',
                             parentId: dataTabId,
-                            hideLabel: true,
+                            hideLabel: false,
                             type: 'configurableActionConfigurator',
                             description: 'Action to execute after row reorder. Receives the API response data.',
                             placeholder: '',
