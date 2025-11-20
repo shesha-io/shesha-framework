@@ -43,6 +43,8 @@ const designerClassNames = {
   formTitle: "form-title",
   formNameParent: "form-name-parent",
   toolbarWrapper: "form-toolbar-wrapper",
+  unregisteredComponentContainer: "unregistered-component-container",
+  unregisteredComponentMessage: "unregistered-component-message",
 };
 const useStylesResponse = {
   styles: designerClassNames,
@@ -90,6 +92,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     formName,
     formTitle,
     formNameParent,
+    unregisteredComponentContainer,
+    unregisteredComponentMessage,
   } = useStyles().styles;
 
   const quickEditModal = cx("sha-designer-modal", css`
@@ -420,9 +424,20 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         .${shaToolboxPanelComponents}{
             margin: -1rem -0.8rem;
         }
+        .${unregisteredComponentContainer} {
+            min-height: 40px;
+            position: relative;
+            padding: 8px;
+            border: 1px dashed #ccc;
+
+            .${unregisteredComponentMessage} {
+                color: #999;
+                font-size: 12px;
+            }
+        }
         .${shaComponent} {
             position: relative;
-        
+
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;
             }
