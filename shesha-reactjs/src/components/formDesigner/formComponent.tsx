@@ -86,7 +86,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     return (
       <div style={{ minHeight: '40px', position: 'relative', padding: '8px', border: '1px dashed #ccc' }}>
         <ErrorIconPopover
-          errors={validationResult}
+          validationResult={validationResult}
           message={`Component '${actualModel.type}' not found`}
           type="error"
         >
@@ -134,7 +134,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
 
   // Wrap component with error icon if there are validation errors
   const wrappedControl = validationResult?.hasErrors ? (
-    <ErrorIconPopover errors={validationResult} message="" type="warning">
+    <ErrorIconPopover validationResult={validationResult} message="" type="warning">
       {control}
     </ErrorIconPopover>
   ) : control;

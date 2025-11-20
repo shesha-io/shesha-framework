@@ -6,7 +6,7 @@ import { useStyles } from './styles/errorIconPopoverStyles';
 import componentDocs from './component-docs.json';
 
 export interface IErrorIconPopoverProps extends PropsWithChildren {
-  errors?: IModelValidation;
+  validationResult: IModelValidation;
   type?: ISheshaErrorTypes;
   message?: string;
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
@@ -15,7 +15,7 @@ export interface IErrorIconPopoverProps extends PropsWithChildren {
 
 export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   children,
-  errors,
+  validationResult,
   type = 'warning',
   message,
   position = 'top-right',
@@ -35,13 +35,13 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   };
 
   const getPopoverContent = (): React.ReactElement => {
-    const docUrl = errors?.componentType ? componentDocs[errors.componentType] : undefined;
+    const docUrl = validationResult?.componentType ? componentDocs[validationResult.componentType] : undefined;
 
-    if (errors?.errors?.length > 0) {
+    if (validationResult?.errors?.length > 0) {
       return (
         <>
-          {errors.errors.map((error, index) => (
-            <p key={index} style={{ margin: 0, marginBottom: index < errors.errors.length - 1 ? '4px' : 0 }}>
+          {validationResult.errors.map((error, index) => (
+            <p key={index} style={{ margin: 0, marginBottom: index < validationResult.errors.length - 1 ? '4px' : 0 }}>
               {error.propertyName && <strong>{error.propertyName}: </strong>}
               {error.error}
             </p>
@@ -84,7 +84,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
     }
   };
 
-  const hasError = errors?.hasErrors || message;
+  const hasError = validationResult?.hasErrors || message;
 
   // If no error, just render children without wrapper
   if (!hasError) {
@@ -92,7 +92,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   }
 
   // Determine the popover title
-  const popoverTitle = title !== undefined ? title : (type === 'info' ? 'Hint:' : `'${errors?.componentType}' has configuration issue(s)`);
+  const popoverTitle = title !== undefined ? title : (type === 'info' ? 'Hint:' : `'${validationResult?.componentType}' has configuration issue(s)`);
 
   return (
     <div className={cx(styles.errorIconContainer)}>
