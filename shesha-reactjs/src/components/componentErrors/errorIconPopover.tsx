@@ -27,8 +27,6 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
     switch (type) {
       case 'error':
         return <ExclamationCircleOutlined className={cx(styles.errorIcon)} />;
-      case 'warning':
-        return <WarningOutlined className={cx(styles.warningIcon)} />;
       case 'info':
         return <InfoCircleOutlined className={cx(styles.infoIcon)} />;
       default:
