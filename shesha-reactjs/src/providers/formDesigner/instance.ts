@@ -225,9 +225,9 @@ export class FormDesignerInstance implements IFormDesignerInstance {
           (clone[cntName] as IConfigurableFormComponent) = cloneChild(srcContainer);
         } else {
           if (Array.isArray(srcContainer)) {
-            (clone[cntName] as IConfigurableFormComponent[]) = srcContainer.map((c) => {
+            (clone[cntName] as IConfigurableFormComponent[]) = srcContainer.map((c): IConfigurableFormComponent => {
               if (!isConfigurableFormComponent(c)) {
-                return { ...c, id: nanoid() };
+                return { ...c, id: nanoid() } as IConfigurableFormComponent;
               }
               return cloneChild(c);
             });
@@ -372,8 +372,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
           clone.componentName = camelcaseDotNotation(componentName);
           clone.label = componentName;
 
-          if (clone.propertyName === camelcaseDotNotation(srcComponent.label as string || '') ||
-              clone.propertyName === srcComponent.componentName) {
+          if (clone.propertyName === camelcaseDotNotation(srcComponent.label as string || '')
+            || clone.propertyName === srcComponent.componentName) {
             clone.propertyName = camelcaseDotNotation(componentName);
           }
         }
