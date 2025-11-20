@@ -357,14 +357,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               afterOpenChange: (visible) => !visible && setPreviewImage(null),
               toolbarRender: (original) => {
                 return (
-                  <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined
-                    className={styles.antPreviewDownloadIcon}
-                    onClick={() => {
-                      isDownloadingRef.current = true;
-                      downloadFile({ fileId: previewImage.uid, fileName: previewImage.name });
-                    }}
-                                                                                 />
-                  {original}
+                  <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                    <DownloadOutlined
+                      className={styles.antPreviewDownloadIcon}
+                      onClick={() => {
+                        isDownloadingRef.current = true;
+                        downloadFile({ fileId: previewImage.uid, fileName: previewImage.name });
+                      }}
+                    />
+                    {original}
                   </div>
                 );
               },
