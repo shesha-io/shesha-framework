@@ -1,8 +1,8 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { FormMarkupFactory } from '@/interfaces/configurableAction';
 import { nanoid } from '@/utils/uuid';
 
-export const navigateArgumentsForm = new DesignerToolbarSettings()
-  .addSettingsInputRow({
+export const getNavigateArgumentsForm: FormMarkupFactory = ({ fbf }) => {
+  return fbf().addSettingsInputRow({
     id: 'navigation-url-form-row',
     inputs: [
       {
@@ -44,15 +44,16 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
       },
     ],
   })
-  .addSettingsInput({
-    id: nanoid(),
-    inputType: 'labelValueEditor',
-    propertyName: 'queryParameters',
-    label: 'Query String Parameters',
-    labelName: 'key',
-    parentId: 'root',
-    labelTitle: 'Key',
-    valueName: 'value',
-    valueTitle: 'Value',
-  })
-  .toJson();
+    .addSettingsInput({
+      id: nanoid(),
+      inputType: 'labelValueEditor',
+      propertyName: 'queryParameters',
+      label: 'Query String Parameters',
+      labelName: 'key',
+      parentId: 'root',
+      labelTitle: 'Key',
+      valueName: 'value',
+      valueTitle: 'Value',
+    })
+    .toJson();
+};

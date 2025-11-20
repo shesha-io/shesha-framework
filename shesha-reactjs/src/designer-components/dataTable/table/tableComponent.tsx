@@ -48,7 +48,7 @@ const TableComponent: TableComponentDefinition = {
       items: [],
     };
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m

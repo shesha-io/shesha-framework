@@ -4,7 +4,6 @@ import { ButtonGroupItemProps, IButtonGroupItem } from '@/providers/buttonGroupC
 import {
   DynamicActionsProvider,
   DynamicItemsEvaluationHook,
-  FormMarkup,
   useDataContextManagerActionsOrUndefined,
   useFormData,
   useGlobalState,
@@ -17,8 +16,7 @@ import { getSettings } from './entitySettings';
 import { IAjaxResponse } from '@/interfaces';
 import { extractAjaxResponse } from '@/interfaces/ajaxResponse';
 import { ButtonType } from 'antd/lib/button';
-
-const settingsMarkup = getSettings() as FormMarkup;
+import { useFormViaFactory } from '@/form-factory/hooks';
 
 type ArrayOrObjectWithItems<T> = T[] | {
   items: T[];
@@ -88,6 +86,8 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
 };
 
 export const EntityActions: FC<PropsWithChildren> = ({ children }) => {
+  const settingsMarkup = useFormViaFactory(getSettings);
+
   return (
     <DynamicActionsProvider
       id="Entity"

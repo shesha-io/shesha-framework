@@ -8,6 +8,8 @@ import { GenericSettingsEditor } from './genericSettingsEditor';
 import { IObjectMetadata } from '@/interfaces';
 import { IDynamicActionsContext } from '@/providers/dynamicActions/contexts';
 import { CollapsiblePanel } from '@/components';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
 export interface IProviderSettingsEditorProps {
   provider: IDynamicActionsContext;
   value?: any;
@@ -18,13 +20,14 @@ export interface IProviderSettingsEditorProps {
 }
 
 const getDefaultFactory = (
+  fbf: FormBuilderFactory,
   markup: FormMarkup | FormMarkupFactory,
   readOnly: boolean,
 ): IConfigurableActionArgumentsFormFactory => {
   const component = ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }): JSX.Element => {
     const markupFactory = typeof markup === 'function' ? (markup as FormMarkupFactory) : () => markup as FormMarkup;
 
-    const formMarkup = markupFactory({ exposedVariables, availableConstants });
+    const formMarkup = markupFactory({ fbf, exposedVariables, availableConstants });
     return (
       <GenericSettingsEditor
         model={model}
@@ -48,12 +51,13 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
   // exposedVariables,
   availableConstants,
 }) => {
+  const fbf = useFormBuilderFactory();
   const settingsEditor = useMemo(() => {
     if (provider) {
       const settingsFormFactory = provider.settingsFormFactory
         ? provider.settingsFormFactory
         : provider.settingsFormMarkup
-          ? getDefaultFactory(provider.settingsFormMarkup, readOnly)
+          ? getDefaultFactory(fbf, provider.settingsFormMarkup, readOnly)
           : null;
 
       const onCancel = (): void => {

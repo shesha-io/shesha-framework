@@ -38,7 +38,7 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   migrator: (m) => m
     .add<IAddressCompomentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAddressCompomentProps>(1, (prev) => migrateVisibility(prev))

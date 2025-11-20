@@ -1,5 +1,4 @@
-import { nanoid } from '@/utils/uuid';
-import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
+import { FormMarkupFactory } from '@/interfaces/configurableAction';
 
 export interface IUpdateItemArguments {
   name: string;
@@ -9,32 +8,28 @@ export interface IUpdateItemArguments {
   moduleName?: string | null | undefined;
 }
 
-export const updateItemArgumentsForm = new DesignerToolbarSettings()
-  .addTextField({
-    id: nanoid(),
+export const updateItemArgumentsForm: FormMarkupFactory = ({ fbf }) => {
+  return fbf().addTextField({
     propertyName: 'name',
     label: 'Name',
     validate: { required: true },
   })
-  .addTextField({
-    id: nanoid(),
-    propertyName: 'displayName',
-    label: 'Display Name',
-    validate: { required: true },
-  })
-  .addTextField({
-    id: nanoid(),
-    propertyName: 'description',
-    label: 'Description',
-  })
-  .addTextField({
-    id: nanoid(),
-    propertyName: 'moduleId',
-    label: 'Module id',
-  })
-  .addTextField({
-    id: nanoid(),
-    propertyName: 'moduleName',
-    label: 'Module name',
-  })
-  .toJson();
+    .addTextField({
+      propertyName: 'displayName',
+      label: 'Display Name',
+      validate: { required: true },
+    })
+    .addTextField({
+      propertyName: 'description',
+      label: 'Description',
+    })
+    .addTextField({
+      propertyName: 'moduleId',
+      label: 'Module id',
+    })
+    .addTextField({
+      propertyName: 'moduleName',
+      label: 'Module name',
+    })
+    .toJson();
+};

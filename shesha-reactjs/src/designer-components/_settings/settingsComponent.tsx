@@ -57,7 +57,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: getSettings(),
+  settingsFormMarkup: getSettings,
   migrator: (m) => m
     .add<ISettingsComponentProps>(0, (prev) => migrateReadOnly(prev)),
 };

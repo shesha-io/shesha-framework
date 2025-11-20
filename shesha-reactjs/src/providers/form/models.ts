@@ -2,10 +2,9 @@ import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
 import React, { CSSProperties, ReactNode } from 'react';
-import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/interfaces';
+import { IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
-import { nanoid } from '@/utils/uuid';
 import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid } from '@/interfaces/configurableItems';
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
@@ -25,21 +24,12 @@ export interface ISubmitActionArguments {
   validateFields?: boolean;
 }
 
-export const SubmitActionArgumentsMarkup = new DesignerToolbarSettings()
-  .addCheckbox({ id: nanoid(), propertyName: 'validateFields', parentId: 'root', label: 'Validate fields' })
-  .toJson();
-
 export type FormMode = 'designer' | 'edit' | 'readonly';
 
 export type LabelAlign = 'left' | 'right';
 
 export type PropertySettingMode = 'value' | 'code';
-/*
-export enum PropertySettingMode {
-  Value = 'value',
-  Code = 'code'
-}
-*/
+
 export interface IPropertySetting<Value = unknown> {
   _mode?: PropertySettingMode;
   _value?: Value;
@@ -382,10 +372,7 @@ export interface FormMarkupWithSettings {
   components: IConfigurableFormComponent[];
 }
 export type FormRawMarkup = IConfigurableFormComponent[];
-export type FormMarkup =
-  | FormRawMarkup |
-  FormMarkupWithSettings | ((data: any) => FormRawMarkup |
-    FormMarkupWithSettings);
+export type FormMarkup = FormRawMarkup | FormMarkupWithSettings;
 
 export type FormFullName = ConfigurableItemFullName;
 export type FormUid = ConfigurableItemUid;

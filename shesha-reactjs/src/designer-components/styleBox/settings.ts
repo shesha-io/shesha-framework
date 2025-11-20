@@ -1,9 +1,8 @@
-import { FormRawMarkup } from '@/interfaces';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 
-export const getSettings = (): FormRawMarkup =>
-  new DesignerToolbarSettings()
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+  return fbf()
     .addCollapsiblePanel({
       id: nanoid(),
       propertyName: 'pnlDisplay',
@@ -16,7 +15,7 @@ export const getSettings = (): FormRawMarkup =>
       content: {
         id: '7d8493e3-141f-4507-a983-7f3ff7f2cf86',
         components: [
-          ...new DesignerToolbarSettings()
+          ...fbf()
             .addContextPropertyAutocomplete({
               id: nanoid(),
               propertyName: 'propertyName',
@@ -53,3 +52,4 @@ export const getSettings = (): FormRawMarkup =>
       },
     })
     .toJson();
+};

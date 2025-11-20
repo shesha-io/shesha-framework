@@ -3,7 +3,6 @@ import React, {
   useMemo,
 } from 'react';
 import { Empty } from 'antd';
-import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
@@ -11,6 +10,7 @@ import { sheshaStyles } from '@/styles';
 import { ConfigurableForm } from '@/components';
 import { getGroupSettings } from './groupSettings';
 import { getItemSettings } from './itemSettings';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
 
 export interface ISidebarItemPropertiesProps {
   item?: ISidebarMenuItem;
@@ -27,14 +27,16 @@ export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, o
     300,
   );
 
+  const fbf = useFormBuilderFactory();
+
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const editor = useMemo(() => {
     const emptyEditor = null;
     if (!item) return emptyEditor;
 
     const markup = isSidebarGroup(item)
-      ? getGroupSettings(item) as FormMarkup
-      : (getItemSettings(item) as FormMarkup);
+      ? getGroupSettings({ fbf })
+      : getItemSettings({ fbf });
 
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>

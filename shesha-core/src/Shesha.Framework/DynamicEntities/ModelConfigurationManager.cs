@@ -662,17 +662,17 @@ namespace Shesha.DynamicEntities
                     : null;
             }
 
-            prop.Suppress = !hardCodedProp?.IsVisible ?? dbProp.Suppress;
-            prop.Required = hardCodedProp?.Required ?? dbProp.Required;
-            prop.ReadOnly = hardCodedProp?.Readonly ?? dbProp.ReadOnly;
-            prop.Audited = hardCodedProp?.Audited ?? dbProp.Audited;
+            prop.Suppress = hardCodedProp?.IsVisible == false ? true : dbProp.Suppress;
+            prop.Required = hardCodedProp?.Required == true ? true : dbProp.Required;
+            prop.ReadOnly = hardCodedProp?.Readonly == true ? true : dbProp.ReadOnly;
+            prop.Audited = hardCodedProp?.Audited == true ? true : dbProp.Audited;
             prop.MinLength = hardCodedProp?.MinLength ?? dbProp.MinLength;
             prop.MaxLength = hardCodedProp?.MaxLength ?? dbProp.MaxLength;
             prop.Min = hardCodedProp?.Min ?? dbProp.Min;
             prop.Max = hardCodedProp?.Max ?? dbProp.Max;
             prop.RegExp = string.IsNullOrWhiteSpace(hardCodedProp?.RegExp) ? dbProp.RegExp : hardCodedProp.RegExp;
             prop.ValidationMessage = string.IsNullOrWhiteSpace(hardCodedProp?.ValidationMessage)
-                ? prop.ValidationMessage
+                ? dbProp.ValidationMessage
                 : hardCodedProp.ValidationMessage;
 
             prop.SuppressHardcoded = !hardCodedProp?.IsVisible;

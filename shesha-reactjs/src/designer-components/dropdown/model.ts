@@ -1,7 +1,7 @@
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import { IDropdownProps } from '@/components/dropdown/model';
 import { CustomLabeledValue } from '@/components/refListDropDown/models';
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 
 export type DataSourceType = 'values' | 'referenceList' | 'url';
 
@@ -19,4 +19,4 @@ interface ITextFieldComponentCalulatedValues {
   defaultValue?: any;
 }
 
-export type DropdownComponentDefinition = IToolboxComponent<IDropdownComponentProps, ITextFieldComponentCalulatedValues>;
+export type DropdownComponentDefinition = ComponentDefinition<"dropdown", IDropdownComponentProps, ITextFieldComponentCalulatedValues>;

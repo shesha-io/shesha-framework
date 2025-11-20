@@ -6,17 +6,26 @@ import { EntityToolbar } from "./toolbar";
 import { Form, Space } from "antd";
 import ModelConfiguratorRenderer from "@/components/modelConfigurator/renderer";
 import { ModelConfiguratorProvider, useModelConfigurator } from "@/providers";
+import { useConfigurationStudio } from "@/configuration-studio/cs/contexts";
 
 export const EntityDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.ENTITY,
   Editor: ({ doc }: ItemEditorProps): ReactNode => {
-    const { load } = useModelConfigurator();
+    const cs = useConfigurationStudio();
+    const { load, saveForm, isModified } = useModelConfigurator();
+
     useEffect(() => {
       doc.setLoader(() => {
         load();
         return Promise.resolve();
       });
-    }, [doc, load]);
+      doc.setSaver(async (): Promise<void> => {
+        await saveForm();
+      });
+    }, [cs, doc, load, saveForm]);
+    useEffect(() => {
+      cs.setDocumentModified(doc.itemId, isModified);
+    }, [cs, doc, isModified]);
     return (
       <div>
         <ModelConfiguratorRenderer />

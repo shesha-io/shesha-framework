@@ -1,5 +1,5 @@
 import { IEventHandlers } from '@/components/formDesigner/components/utils';
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
 export interface ITextAreaComponentProps extends IConfigurableFormComponent, IInputStyles {
@@ -18,4 +18,4 @@ interface ITextFieldComponentCalulatedValues {
   eventHandlers?: IEventHandlers;
 }
 
-export type TextAreaComponentDefinition = IToolboxComponent<ITextAreaComponentProps, ITextFieldComponentCalulatedValues>;
+export type TextAreaComponentDefinition = ComponentDefinition<"textArea", ITextAreaComponentProps, ITextFieldComponentCalulatedValues>;
