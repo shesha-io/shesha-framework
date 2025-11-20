@@ -64,7 +64,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       onUpdated: migrateFormApi.withoutFormData(prev?.onUpdated),
     }))
     .add<ISubFormComponentProps>(4, (prev) => ({ ...prev, hideLabel: true })),
-  settingsFormMarkup: (props) => getSettings(props),
+  settingsFormMarkup: getSettings,
   initModel: (model) => {
     const customProps: ISubFormComponentProps = {
       ...model,

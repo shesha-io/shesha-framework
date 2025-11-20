@@ -35,7 +35,7 @@ const ColorPickerComponent: ColorPickerComponentDefinition = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   migrator: (m) => m
     .add<IColorPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IColorPickerComponentProps>(1, (prev) => migrateVisibility(prev))

@@ -131,7 +131,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     };
     return customModel;
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   linkToModelMetadata: (model, metadata) => ({
     ...model,
     ownerId: '{data.id}',

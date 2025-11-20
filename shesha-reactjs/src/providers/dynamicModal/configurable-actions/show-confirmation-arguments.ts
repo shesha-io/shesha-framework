@@ -1,5 +1,5 @@
 import { nanoid } from '@/utils/uuid';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { FormMarkupFactory } from '@/interfaces/configurableAction';
 
 export interface IShowConfirmationArguments {
   title: string;
@@ -9,8 +9,8 @@ export interface IShowConfirmationArguments {
   danger: boolean;
 }
 
-export const showConfirmationArgumentsForm = new DesignerToolbarSettings()
-  .addSettingsInputRow({
+export const getShowConfirmationArgumentsForm: FormMarkupFactory = ({ fbf }) => {
+  return fbf().addSettingsInputRow({
     id: 'title-content-row',
     inputs: [
       {
@@ -29,29 +29,30 @@ export const showConfirmationArgumentsForm = new DesignerToolbarSettings()
       },
     ],
   })
-  .addSettingsInputRow({
-    id: 'oktext-canceltext-row',
-    inputs: [
-      {
-        id: nanoid(),
-        type: 'textField',
-        propertyName: 'okText',
-        label: 'Ok Text',
-        validate: { required: true },
-      },
-      {
-        id: nanoid(),
-        type: 'textField',
-        propertyName: 'cancelText',
-        label: 'Cancel Text',
-        validate: { required: true },
-      },
-    ],
-  })
-  .addSettingsInput({
-    id: nanoid(),
-    inputType: 'switch',
-    propertyName: "danger",
-    label: "Danger",
-  })
-  .toJson();
+    .addSettingsInputRow({
+      id: 'oktext-canceltext-row',
+      inputs: [
+        {
+          id: nanoid(),
+          type: 'textField',
+          propertyName: 'okText',
+          label: 'Ok Text',
+          validate: { required: true },
+        },
+        {
+          id: nanoid(),
+          type: 'textField',
+          propertyName: 'cancelText',
+          label: 'Cancel Text',
+          validate: { required: true },
+        },
+      ],
+    })
+    .addSettingsInput({
+      id: nanoid(),
+      inputType: 'switch',
+      propertyName: "danger",
+      label: "Danger",
+    })
+    .toJson();
+};

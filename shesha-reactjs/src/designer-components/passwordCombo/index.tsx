@@ -58,8 +58,8 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
       />
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IPasswordComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IPasswordComponentProps>(1, (prev) => migrateReadOnly(prev))

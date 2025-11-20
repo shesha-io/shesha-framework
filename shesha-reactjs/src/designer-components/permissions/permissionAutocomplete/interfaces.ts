@@ -1,5 +1,5 @@
-import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces";
+import { ComponentDefinition, IConfigurableFormComponent } from "@/interfaces";
 
 export type IPermissionAutocompleteComponentProps = IConfigurableFormComponent;
 
-export type PermissionAutocompleteComponentDefinition = IToolboxComponent<IPermissionAutocompleteComponentProps>;
+export type PermissionAutocompleteComponentDefinition = ComponentDefinition<"permissionAutocomplete", IPermissionAutocompleteComponentProps>;

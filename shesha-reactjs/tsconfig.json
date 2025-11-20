@@ -19,5 +19,6 @@
       { "path": "./src/designer-components/_settings/utils/background" },      
       { "path": "./src/providers/formDesigner" },
       { "path": "./src/providers/sheshaApplication" },
+      { "path": "./src/form-factory" },
   ]
 }

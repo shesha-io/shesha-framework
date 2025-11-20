@@ -186,7 +186,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       </div>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   migrator: (m) => m
     .add<IProfileDropdown>(1, (prev) => (
       {
@@ -197,7 +197,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
         subTextFontSize: '12px',
       }
     )),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default ProfileDropdown;

@@ -7,14 +7,13 @@ import { Select } from 'antd';
 export const DropDownWrapper: FC<IDropdownSettingsInputProps> = (props) => {
   const { styles } = useStyles();
   const { value, onChange, readOnly, size, width, dropdownOptions, dropdownMode, allowClear, variant, className, showSearch, placeholder, tooltip } = props;
-  const options = (dropdownOptions ?? []).map((option) => ({ ...option, label: <Icon icon={option.label} size={option.value} className={styles.icon} hint={tooltip} /> }));
+  const resolvedOptions = Array.isArray(dropdownOptions) ? dropdownOptions : (dropdownOptions?._value ?? []);
+  const options = resolvedOptions.map((option) => ({ ...option, label: <Icon icon={option.label} size={option.value} className={styles.icon} hint={tooltip} /> }));
   return (
     <Select
       value={value}
       onChange={onChange}
-      onSelect={onChange}
       disabled={readOnly}
-
       size={size}
       mode={dropdownMode}
       allowClear={allowClear ?? true}

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces";
+import { ComponentDefinition, IConfigurableFormComponent } from "@/interfaces";
 import { ISettingsInputProps } from '../settingsInput/interfaces';
 
 export interface IInputRowProps {
@@ -13,4 +13,4 @@ export interface IInputRowProps {
 export interface ISettingsInputRowProps extends IConfigurableFormComponent, IInputRowProps {
 }
 
-export type SettingsInputRowDefinition = IToolboxComponent<ISettingsInputRowProps & IConfigurableFormComponent>;
+export type SettingsInputRowDefinition = ComponentDefinition<"settingsInputRow", ISettingsInputRowProps & IConfigurableFormComponent>;

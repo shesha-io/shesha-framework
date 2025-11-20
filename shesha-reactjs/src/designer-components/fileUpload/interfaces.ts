@@ -1,4 +1,4 @@
-import { IFormItem, IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition, IFormItem } from '@/interfaces';
 import { IStyleType } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { listType } from '../attachmentsEditor/attachmentsEditor';
@@ -20,4 +20,4 @@ export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IForm
   hideFileName?: boolean;
 }
 
-export type FileUploadComponentDefinition = IToolboxComponent<IFileUploadProps>;
+export type FileUploadComponentDefinition = ComponentDefinition<"fileUpload", IFileUploadProps>;

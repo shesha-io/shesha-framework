@@ -1,4 +1,4 @@
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { FormMode, IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IAlertComponentProps extends IConfigurableFormComponent {
@@ -18,4 +18,4 @@ interface IAlertComponentCalulatedValues {
   formMode: FormMode;
 }
 
-export type AlertComponentDefinition = IToolboxComponent<IAlertComponentProps, IAlertComponentCalulatedValues>;
+export type AlertComponentDefinition = ComponentDefinition<"alert", IAlertComponentProps, IAlertComponentCalulatedValues>;
