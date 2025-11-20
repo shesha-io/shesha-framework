@@ -48,7 +48,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
     const docUrl = validationResult?.componentType && validationResult.componentType in componentDocs
       ? componentDocs[validationResult.componentType as keyof typeof componentDocs]
       : undefined;
-    if (validationResult?.errors?.length > 0) {
+    if (validationResult?.hasErrors && validationResult.errors?.length > 0) {
       return (
         <>
           {validationResult.errors.map((error, index) => (
