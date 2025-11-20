@@ -76,7 +76,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   }, [source.error]);
 
   // update local store of values details
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if ((props.dataSourceType === 'entitiesList' && !isEntityTypeIdEmpty(props.entityType)) ||
       (props.dataSourceType === 'url' && props.dataSourceUrl)
     ) {

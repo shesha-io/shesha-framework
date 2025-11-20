@@ -387,12 +387,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const toolboxComponents = useFormDesignerComponents();
   const shaForm = useShaFormInstanceOrUndefined();
 
-  const onNewRowInitializeExecuter = useMemo<Function>(() => {
-    return props.onNewRowInitialize
-      ? new Function('form, globalState, http, moment, application', props.onNewRowInitialize)
-      : null;
-  }, [props.onNewRowInitialize]);
-
   const onNewRowInitialize = useMemo<RowDataInitializer>(() => {
     const result: RowDataInitializer = props.onNewRowInitialize
       ? () => {
@@ -406,7 +400,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       };
 
     return result;
-  }, [onNewRowInitializeExecuter, appContext.contexts.lastUpdate]);
+  }, [props.onNewRowInitialize, appContext.contexts.lastUpdate]);
 
   const evaluateYesNoInheritJs = (
     value: YesNoInheritJs,
@@ -527,40 +521,54 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [onRowSaveSuccess, backendUrl]);
 
-  const updater = (rowIndex: number, rowData: any): Promise<any> => {
-    const repository = store.getRepository();
-    if (!repository) return Promise.reject('Repository is not specified');
+  const performUpdate = (rowIndex: number, preparedData: any) => {
+    const options =
+      repository.repositoryType === BackendRepositoryType
+        ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
+        : undefined;
 
-    return executeScript(onRowSave, { ...appContext, data: rowData }).then((preparedData: object) => {
-      const options =
-        repository.repositoryType === BackendRepositoryType
-          ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
-          : undefined;
-
-      return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
-        setRowData(rowIndex, preparedData /* , response*/);
-        performOnRowSaveSuccess(preparedData);
-        return response;
-      });
+    return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
+      setRowData(rowIndex, preparedData /* , response*/);
+      performOnRowSaveSuccess(preparedData);
+      return response;
     });
   };
 
-  const creater = (rowData: any): Promise<any> => {
+  const updater = useMemo(() => (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return executeScript(onRowSave, { ...appContext, data: rowData }).then((preparedData: object) => {
-      const options =
-        repository.repositoryType === BackendRepositoryType
-          ? ({ customUrl: customCreateUrl } as ICreateOptions)
-          : undefined;
-
-      return repository.performCreate(0, preparedData, options).then(() => {
-        store.refreshTable();
-        performOnRowSaveSuccess(preparedData);
+    if (onRowSave)
+      return executeScript(onRowSave, { ...appContext, data: rowData }).then((preparedData: object) => {
+        return performUpdate(rowIndex, preparedData);
       });
+    
+    return performUpdate(rowIndex, rowData);
+  }, [store, onRowSave, appContext.contexts.lastUpdate]);
+
+  const performCreate = (preparedData: any) => {
+    const options =
+      repository.repositoryType === BackendRepositoryType
+        ? ({ customUrl: customCreateUrl } as ICreateOptions)
+        : undefined;
+
+    return repository.performCreate(0, preparedData, options).then(() => {
+      store.refreshTable();
+      performOnRowSaveSuccess(preparedData);
     });
   };
+
+  const creater = useMemo(() => (rowData: any): Promise<any> => {
+    const repository = store.getRepository();
+    if (!repository) return Promise.reject('Repository is not specified');
+
+    if (onRowSave)
+      return executeScript(onRowSave, { ...appContext, data: rowData }).then((preparedData: object) => {
+        return performCreate(preparedData);
+      });
+    
+    return performCreate(rowData);
+  }, [store, onRowSave, appContext.contexts.lastUpdate]);
 
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowDeleteSuccessAction)
