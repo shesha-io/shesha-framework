@@ -95,6 +95,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps): ReactElement => {
                   pointStyle: 'circle',
                   hidden: false,
                   index: i,
+                  fontColor: legendFont?.color || '#000000',
                 };
               });
             }

@@ -119,6 +119,7 @@ const PieChart = ({ data }: IPieChartProps): JSX.Element => {
                   pointStyle: 'circle',
                   hidden: false,
                   index: i,
+                  fontColor: legendFont?.color || '#000000',
                 };
               });
             }
