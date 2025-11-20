@@ -32,7 +32,6 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const hasChildComponents = isDesignerMode
     ? childComponentIds.length > 0
     : (components && components.length > 0) || childComponentIds.length > 0;
-  const showEmpty = useMemo(() => isDesignerMode && !hasChildComponents, [isDesignerMode, hasChildComponents]);
   const disableRefresh: boolean = useActualContextExecution(props.disableRefresh, null, false);
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
@@ -105,7 +104,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
     // Show only the empty state box when empty and in designer mode
     let content: ReactElement;
-    if (showEmpty) {
+    if (isDesignerMode && !hasChildComponents) {
       content = (
         <div className={cx(styles.dataContextDesignerEmpty)}>
           <TableContextEmptyState containerId={id} componentId={id} />

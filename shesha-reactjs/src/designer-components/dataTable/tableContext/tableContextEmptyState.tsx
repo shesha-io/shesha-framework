@@ -26,7 +26,7 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
   const primaryColor = theme?.application.primaryColor ?? '#8c8c8c';
   const iconColor = isSelected ? primaryColor : '#8c8c8c';
   const titleColor = isSelected ? primaryColor : '#8c8c8c';
-  
+
   return (
     <div style={style} className={cx(styles.emptyStateContainer, className)}>
       {/* Visual overlay showing the empty state message */}
