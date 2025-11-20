@@ -1,6 +1,6 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import DataTableProvider from '@/providers/dataTable';
-import React, { FC, ReactElement, use, useMemo } from 'react';
+import React, { FC, ReactElement, useMemo } from 'react';
 import { ConfigurableFormItem, ErrorIconPopover } from '@/components';
 import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
@@ -9,7 +9,6 @@ import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFi
 import { ITableContextComponentProps } from './models';
 import { IModelValidation } from '@/utils/errors';
 import { useActualContextExecution } from '@/hooks';
-import { DatabaseOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
 import { ShaForm } from '@/providers/form';
 import { useParent } from '@/providers/parentProvider';

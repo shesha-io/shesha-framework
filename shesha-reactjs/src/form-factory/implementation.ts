@@ -146,6 +146,7 @@ export class FormBuilderImplementation implements FormBuilder {
    * @deprecated use `addDataContext` instead
    */
   addDatatableContext = (props: FluentSettings<ITableContextComponentProps>): FormBuilder => this.addProperty(props, 'datatableContext');
+
   addDataContext = (props: FluentSettings<ITableContextComponentProps>): FormBuilder => this.addProperty(props, 'dataContext');
 
   addTableViewSelector = (props: FluentSettings<ITableViewSelectorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'tableViewSelector', meta);
