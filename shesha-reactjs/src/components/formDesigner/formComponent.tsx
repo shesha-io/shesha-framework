@@ -77,27 +77,6 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     );
   }, [toolboxComponent, actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
 
-  // Check for validation errors (in both designer and runtime modes)
-  if (!toolboxComponent) {
-    const componentNotFoundError: IModelValidation = {
-      hasErrors: true,
-      componentId: actualModel.id,
-      componentName: actualModel.componentName,
-      componentType: actualModel.type,
-      errors: [{ error: `Component '${actualModel.type}' not found` }],
-    };
-    // Component not found - return early with just error message
-    return (
-      <div className={styles.unregisteredComponentContainer}>
-        <ErrorIconPopover
-          validationResult={componentNotFoundError}
-          type="error"
-        >
-          <div className={styles.unregisteredComponentMessage}>Component &apos;{actualModel.type}&apos; not registered</div>
-        </ErrorIconPopover>
-      </div>
-    );
-  }
 
   // Run validation in both designer and runtime modes
   const validationResult = useMemo((): IModelValidation | undefined => {
@@ -124,6 +103,37 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     return undefined;
   }, [toolboxComponent, actualModel]);
 
+  // Wrap component with error icon if there are validation errors
+  const wrappedControl = useMemo(() => {
+    return validationResult?.hasErrors ? (
+      <ErrorIconPopover validationResult={validationResult} type="warning">
+        {control}
+      </ErrorIconPopover>
+    ) : control;
+  }, [validationResult, control]);
+
+  // Check for validation errors (in both designer and runtime modes)
+  if (!toolboxComponent) {
+    const componentNotFoundError: IModelValidation = {
+      hasErrors: true,
+      componentId: actualModel.id,
+      componentName: actualModel.componentName,
+      componentType: actualModel.type,
+      errors: [{ error: `Component '${actualModel.type}' not found` }],
+    };
+    // Component not found - return early with just error message
+    return (
+      <div className={styles.unregisteredComponentContainer}>
+        <ErrorIconPopover
+          validationResult={componentNotFoundError}
+          type="error"
+        >
+          <div className={styles.unregisteredComponentMessage}>Component &apos;{actualModel.type}&apos; not registered</div>
+        </ErrorIconPopover>
+      </div>
+    );
+  }
+
   if (shaForm.form.settings.isSettingsForm)
     return control;
 
@@ -141,15 +151,6 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     attributes['data-sha-parent-form-id'] = `${shaForm.form.id}`;
     attributes['data-sha-parent-form-name'] = `${(shaForm as any)?.formId?.module}/${(shaForm as any)?.formId?.name}`;
   }
-
-  // Wrap component with error icon if there are validation errors
-  const wrappedControl = useMemo(() => {
-    return validationResult?.hasErrors ? (
-      <ErrorIconPopover validationResult={validationResult} type="warning">
-        {control}
-      </ErrorIconPopover>
-    ) : control;
-  }, [validationResult, control]);
 
   return (
     <AttributeDecorator attributes={attributes}>
