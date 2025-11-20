@@ -363,7 +363,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                       isDownloadingRef.current = true;
                       downloadFile({ fileId: previewImage.uid, fileName: previewImage.name });
                     }}
-                                                                                 />{original}
+                                                                                 />
+                  {original}
                   </div>
                 );
               },
