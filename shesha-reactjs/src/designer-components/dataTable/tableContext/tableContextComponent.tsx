@@ -25,16 +25,19 @@ const TableContextComponent: TableContextComponentDefinition = {
   },
   migrator: (m) =>
     m
-      .add<ITableContextComponentProps>(0, (prev) => ({
-        ...prev, name: prev['uniqueStateId'] ?? prev['name'],
-        sourceType: 'Entity',
-        entityType: 'Shesha.Core.DummyTable',
-        dataFetchingMode: 'paging',
-        defaultPageSize: 10,
-        sortMode: 'standard',
-        strictSortOrder: 'asc',
-        allowReordering: 'no',
-      }))
+      .add<ITableContextComponentProps>(0, (prev) => {
+        return {
+          ...prev,
+          sourceType: 'Entity',
+          entityType: 'Shesha.Core.DummyTable',
+          dataFetchingMode: 'paging',
+          defaultPageSize: 10,
+          sortMode: 'standard',
+          strictSortOrder: 'asc',
+          allowReordering: 'no',
+          name: prev['uniqueStateId'] ?? prev['name'],
+        };
+      })
       .add<ITableContextComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ITableContextComponentProps>(2, (prev) => migrateVisibility(prev))
       .add<ITableContextComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) })),
