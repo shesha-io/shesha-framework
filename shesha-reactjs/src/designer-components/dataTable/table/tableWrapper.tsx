@@ -49,10 +49,12 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const { theme } = useTheme();
 
   // Reset auto-config flag when component ID changes (new DataTable instance)
-  if (componentIdRef.current !== id) {
-    componentIdRef.current = id;
-    hasAutoConfiguredRef.current = false;
-  }
+  useEffect(() => {
+    if (componentIdRef.current !== id) {
+      componentIdRef.current = id;
+      hasAutoConfiguredRef.current = false;
+    }
+  }, [id]);
 
   // Inject CSS for hint popover arrow styling
   useDatatableHintPopoverStyles();

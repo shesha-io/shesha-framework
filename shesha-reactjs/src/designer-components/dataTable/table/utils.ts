@@ -6,6 +6,7 @@ import { IModelMetadata, IPropertyMetadata, isPropertiesArray, isPropertiesLoade
 import { toCamelCase, humanizeString } from '@/utils/string';
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
+const MAX_NUMBER_OF_DEFAULT_COLS = 20;
 
 export const generateNewKey = (json: IConfigurableFormComponent[]): IConfigurableFormComponent[] => {
   try {
@@ -61,13 +62,13 @@ export const defaultStyles = (): IStyleType => {
 // Auditing columns to exclude from default column generation
 export const AUDITING_COLUMNS = Object.freeze([
   'id',
-  'isDeleted',
-  'deleterUserId',
-  'deletionTime',
-  'lastModificationTime',
-  'lastModifierUserId',
-  'creationTime',
-  'creatorUserId',
+  // 'isDeleted',
+  // 'deleterUserId',
+  // 'deletionTime',
+  // 'lastModificationTime',
+  // 'lastModifierUserId',
+  // 'creationTime',
+  // 'creatorUserId',
   'markup',
 ]);
 
@@ -88,9 +89,10 @@ export const SUPPORTED_COLUMN_DATA_TYPES = [
 export const filterPropertiesForTable = (properties: IPropertyMetadata[]): IPropertyMetadata[] => {
   return properties.filter((prop: IPropertyMetadata) => {
     const columnName = prop.path || prop.columnName || '';
-    const isAuditing = AUDITING_COLUMNS.includes(columnName.toLowerCase());
+    const isAuditing =  AUDITING_COLUMNS.includes(columnName.toLowerCase());
     const isFramework = prop.isFrameworkRelated === true;
-    return !isAuditing && !isFramework;
+    const isId = columnName.toLowerCase() === 'id';
+    return !isAuditing && !isFramework && !isId;
   });
 };
 
@@ -134,12 +136,12 @@ export const propertyToDataColumn = (property: IPropertyMetadata, index: number)
  * Calculates default columns for a DataTable
  *
  * Processing order:
- * 1. Filter out auditing and framework-related properties
- * 2. Filter by supported data types
- * 3. Apply maxNumber limit (8) to the resulting valid columns
+ * 1. Filter out 'id' and framework-related properties (auditing columns like isDeleted, creationTime, etc. are included)
+ * 2. Filter by supported data types (string, number, boolean, date, date-time)
+ * 3. Apply maxNumber limit (20) to the resulting valid columns
  *
  * @param metadata - Model metadata containing properties
- * @returns Promise resolving to array of DataTable column configurations (max 8 valid columns)
+ * @returns Promise resolving to array of DataTable column configurations (max 20 valid columns)
  */
 export const calculateDefaultColumns = async (metadata: IModelMetadata): Promise<IDataColumnsProps[]> => {
   if (!metadata || !metadata.properties) {
@@ -167,16 +169,15 @@ export const calculateDefaultColumns = async (metadata: IModelMetadata): Promise
     return [];
   }
 
-  // Filter out auditing columns and framework-related properties
-  const filteredProperties = filterPropertiesForTable(properties);
+  // Filter out framework-related properties (include auditing columns)
+  const filteredProperties = filterPropertiesForTable(properties, false);
 
   // Get properties suitable for table columns (filter by supported types)
   const supportedProperties = filterPropertiesBySupportedTypes(filteredProperties);
 
   // Apply maxNumber limit to the list of supported properties
-  const maxNumber = 8;
-  const tableColumns = maxNumber > 0 && supportedProperties.length > maxNumber
-    ? supportedProperties.slice(0, maxNumber)
+  const tableColumns = MAX_NUMBER_OF_DEFAULT_COLS > 0 && supportedProperties.length > MAX_NUMBER_OF_DEFAULT_COLS
+    ? supportedProperties.slice(0, MAX_NUMBER_OF_DEFAULT_COLS)
     : supportedProperties;
 
   // Create IDataColumnsProps from filtered properties
