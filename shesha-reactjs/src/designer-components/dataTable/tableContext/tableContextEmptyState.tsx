@@ -50,6 +50,7 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
         itemsLimit={-1}
         className={styles.emptyStateComponentsContainer}
         emptyInsertThreshold={20}
+        showHintWhenEmpty={false}
       />
     </div>
   );

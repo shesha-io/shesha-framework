@@ -10,6 +10,7 @@ export interface IComponentsContainerProps extends IComponentsContainerBaseProps
   dynamicComponents?: IConfigurableFormComponent[];
   wrapperStyle?: CSSProperties;
   emptyInsertThreshold?: number;
+  showHintWhenEmpty?: boolean;
 }
 
 const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {

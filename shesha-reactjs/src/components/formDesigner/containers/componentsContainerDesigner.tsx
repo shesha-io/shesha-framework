@@ -24,6 +24,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     style: incomingStyle,
     noDefaultStyling,
     emptyInsertThreshold = 20,
+    showHintWhenEmpty = true,
   } = props;
 
   const { styles } = useStyles();
@@ -121,7 +122,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
       )}
     >
       <>
-        {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
+        {childIds.length === 0 && showHintWhenEmpty && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
         <ReactSortable
           disabled={readOnly}
           onStart={onDragStart}
