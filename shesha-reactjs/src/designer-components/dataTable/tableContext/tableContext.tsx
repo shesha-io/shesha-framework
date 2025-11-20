@@ -148,6 +148,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
               containerId={id}
               className={isDesignerMode ? `${styles.dataContextComponentsContainer} ${!hasChildComponents ? styles.dataContextComponentsContainerEmpty : ''}` : undefined}
               itemsLimit={-1}
+              emptyInsertThreshold={5}
             />
           </DataTableProvider>
         </div>

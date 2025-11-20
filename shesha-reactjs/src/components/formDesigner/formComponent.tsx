@@ -78,10 +78,8 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   }, [toolboxComponent, actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
 
   // Check for validation errors (in both designer and runtime modes)
-  let validationResult: IModelValidation | undefined;
-
   if (!toolboxComponent) {
-    validationResult = {
+    const componentNotFoundError: IModelValidation = {
       hasErrors: true,
       componentId: actualModel.id,
       componentName: actualModel.componentName,
@@ -92,7 +90,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     return (
       <div className={styles.unregisteredComponentContainer}>
         <ErrorIconPopover
-          validationResult={validationResult}
+          validationResult={componentNotFoundError}
           type="error"
         >
           <div className={styles.unregisteredComponentMessage}>Component &apos;{actualModel.type}&apos; not registered</div>
@@ -102,22 +100,29 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   }
 
   // Run validation in both designer and runtime modes
-  validationResult = { hasErrors: false, errors: [] };
-  if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
-    validationResult.hasErrors = true;
-    validationResult.errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
-  }
-  toolboxComponent?.validateModel?.(actualModel, (propertyName, error) => {
-    validationResult.hasErrors = true;
-    validationResult.errors.push({ propertyName, error });
-  });
-  if (validationResult.hasErrors) {
-    validationResult.componentId = actualModel.id;
-    validationResult.componentName = actualModel.componentName;
-    validationResult.componentType = actualModel.type;
-  } else {
-    validationResult = undefined;
-  }
+  const validationResult = useMemo((): IModelValidation | undefined => {
+    const errors: Array<{ propertyName?: string; error: string }> = [];
+
+    if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
+      errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
+    }
+
+    toolboxComponent?.validateModel?.(actualModel, (propertyName, error) => {
+      errors.push({ propertyName, error });
+    });
+
+    if (errors.length > 0) {
+      return {
+        hasErrors: true,
+        componentId: actualModel.id,
+        componentName: actualModel.componentName,
+        componentType: actualModel.type,
+        errors,
+      };
+    }
+
+    return undefined;
+  }, [toolboxComponent, actualModel]);
 
   if (shaForm.form.settings.isSettingsForm)
     return control;
@@ -138,11 +143,13 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   }
 
   // Wrap component with error icon if there are validation errors
-  const wrappedControl = validationResult?.hasErrors ? (
-    <ErrorIconPopover validationResult={validationResult} type="warning">
-      {control}
-    </ErrorIconPopover>
-  ) : control;
+  const wrappedControl = useMemo(() => {
+    return validationResult?.hasErrors ? (
+      <ErrorIconPopover validationResult={validationResult} type="warning">
+        {control}
+      </ErrorIconPopover>
+    ) : control;
+  }, [validationResult, control]);
 
   return (
     <AttributeDecorator attributes={attributes}>
