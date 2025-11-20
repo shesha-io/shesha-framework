@@ -62,6 +62,7 @@ import CollapsiblePanel from '@/designer-components/collapsiblePanel/collapsible
 import ConfigurableActionConfigurator from '@/designer-components/configurableActionsConfigurator';
 import ContainerComponent from '@/designer-components/container/containerComponent';
 import ContextPropertyAutocompleteComponent from '@/designer-components/contextPropertyAutocomplete';
+import DataContextComponent from '@/designer-components/dataContextComponent';
 import DataContextSelector from '@/designer-components/dataContextSelector';
 import ChildTable from '@/designer-components/dataTable/childTable';
 import Pager from '@/designer-components/dataTable/pager/pagerComponent';
@@ -196,7 +197,7 @@ export const getToolboxComponents = (
     {
       name: 'Data Access',
       visible: false,
-      components: [DataSource],
+      components: [DataSource, DataContextComponent],
     },
     {
       name: 'Layout',

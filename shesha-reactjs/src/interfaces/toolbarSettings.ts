@@ -190,7 +190,7 @@ export class DesignerToolbarSettings<T extends object = object> {
   }
 
   public addDatatableContext(props: DatatableContextType | ((data: T) => DatatableContextType)): this {
-    return this.addProperty(props, 'dataContext');
+    return this.addProperty(props, 'datatableContext');
   }
 
   public addQuickSearch(props: QuickSearchType | ((data: T) => QuickSearchType)): this {
