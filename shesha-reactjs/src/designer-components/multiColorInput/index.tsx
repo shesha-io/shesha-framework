@@ -62,7 +62,7 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
           onClick={() => {
             const id = nanoid();
             onChange({ ...value, [id]: '#000000' });
-            setColors({ ...colors, [id]: '#000000' });
+            setColors({ ...value, [id]: '#000000' });
           }}
           disabled={readOnly}
           icon={<PlusOutlined />}
