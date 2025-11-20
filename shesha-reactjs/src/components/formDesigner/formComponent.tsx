@@ -50,7 +50,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
 
   actualModel.hidden = shaForm.formMode !== 'designer' &&
     (
-      actualModel?.hidden ||
+      actualModel.hidden ||
       !anyOfPermissionsGranted(actualModel?.permissions || []) ||
       !isComponentFiltered(actualModel));
 
