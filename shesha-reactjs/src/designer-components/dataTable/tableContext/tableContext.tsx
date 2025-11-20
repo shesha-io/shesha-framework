@@ -93,9 +93,14 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const provider = (getFieldValue = undefined, onChange = undefined): ReactElement => {
     // Determine the appropriate style class based on designer mode and child components
     const getStyleClass = (): string => {
-      if (!isDesignerMode && hasChildComponents) return styles.dataContextRuntime;
-      if (!isDesignerMode && !hasChildComponents) return styles.dataContextRuntimeEmpty;
-      return hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty;
+      if (isDesignerMode)
+        return hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty;
+      else {
+        if (hasChildComponents)
+          return styles.dataContextRuntime;
+        else
+          return styles.dataContextRuntimeEmpty;
+      }
     };
 
     // Show only the empty state box when empty and in designer mode
@@ -108,7 +113,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       );
     } else {
       content = (
-        <div className={cx(getStyleClass())}>
+        <div className={getStyleClass()}>
           <DataTableProvider
             userConfigId={props.id}
             entityType={entityType}
@@ -152,7 +157,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     // Wrap with error icon if there are validation errors
     if (validationResult?.hasErrors) {
       return (
-        <ErrorIconPopover validationResult={validationResult} type={validationType}>
+        <ErrorIconPopover validationResult={validationResult} message="" type={validationType}>
           {content}
         </ErrorIconPopover>
       );
