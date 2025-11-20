@@ -78,7 +78,6 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
       <div style={{ minHeight: '40px', position: 'relative', padding: '8px', border: '1px dashed #ccc' }}>
         <ErrorIconPopover
           validationResult={validationResult}
-          message={`Component '${componentModel.type}' not found`}
           type="error"
         >
           <div style={{ color: '#999', fontSize: '12px' }}>Component &apos;{componentModel.type}&apos; not registered</div>
@@ -115,7 +114,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
 
   // Wrap component with error icon if there are validation errors
   const wrappedControl = validationResult?.hasErrors ? (
-    <ErrorIconPopover validationErrors={validationResult} message="" type="warning">
+    <ErrorIconPopover validationResult={validationResult} type="warning">
       {control}
     </ErrorIconPopover>
   ) : control;
