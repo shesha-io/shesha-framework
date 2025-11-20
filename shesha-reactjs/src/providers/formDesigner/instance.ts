@@ -178,8 +178,10 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
     nestedComponents[clone.id] = clone;
 
-    const toolboxComponent = this.getToolboxComponent(component.type);
-    const containers = toolboxComponent.customContainerNames ?? [];
+    const toolboxComponent = component.type && !isNullOrWhiteSpace(component.type)
+      ? this.getToolboxComponentOrUndefined(component.type)
+      : undefined;
+    const containers = toolboxComponent?.customContainerNames ?? [];
 
     const { formFlatMarkup } = this.state;
 
@@ -224,8 +226,9 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         } else {
           if (Array.isArray(srcContainer)) {
             (clone[cntName] as IConfigurableFormComponent[]) = srcContainer.map((c) => {
-              if (!isConfigurableFormComponent(c))
-                throw new Error('Not configurable form component');
+              if (!isConfigurableFormComponent(c)) {
+                return { ...c, id: nanoid() };
+              }
               return cloneChild(c);
             });
           }
@@ -357,6 +360,24 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       const nestedComponents: IComponentsDictionary = {};
       const nestedRelations: IComponentRelations = {};
       const clone = this.cloneComponent(srcComponent, nestedComponents, nestedRelations);
+
+      if (clone.type && !isNullOrWhiteSpace(clone.type)) {
+        const toolboxComponent = this.getToolboxComponentOrUndefined(clone.type);
+        if (toolboxComponent) {
+          let count = 0;
+          for (const key in formFlatMarkup.allComponents) {
+            if (formFlatMarkup.allComponents[key]?.type === toolboxComponent.type) count++;
+          }
+          const componentName = `${toolboxComponent.name}${count + 1}`;
+          clone.componentName = camelcaseDotNotation(componentName);
+          clone.label = componentName;
+
+          if (clone.propertyName === camelcaseDotNotation(srcComponent.label as string || '') ||
+              clone.propertyName === srcComponent.componentName) {
+            clone.propertyName = camelcaseDotNotation(componentName);
+          }
+        }
+      }
 
       const parentRelations = srcComponent.parentId
         ? [...(formFlatMarkup.componentRelations[srcComponent.parentId] ?? [])]
