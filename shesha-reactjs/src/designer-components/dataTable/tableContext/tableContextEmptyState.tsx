@@ -49,7 +49,7 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
         containerId={containerId}
         itemsLimit={-1}
         className={styles.emptyStateComponentsContainer}
-        emptyInsertThreshold={5}
+        emptyInsertThreshold={20}
       />
     </div>
   );
