@@ -185,7 +185,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         {(value, onChange) => {
           const onFileListChanged = (fileList): void => {
             onChange(fileList);
-            if (model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
           };
 
           const onFileListChangeCustom = (fileList): void => {

@@ -65,7 +65,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       maxHeight={props?.maxHeight}
       layout={props?.filesLayout}
       listType={props?.listType}
-      onChange={props.onChange}
+      onChangeCustom={props.onChange}
       onDownload={props.onDownload}
     />
   );

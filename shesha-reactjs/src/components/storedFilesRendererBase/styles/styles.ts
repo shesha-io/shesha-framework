@@ -68,8 +68,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       margin: 0px !important;
       font-size: ${fontSizeValue} !important;
       display: flex;
-      ${layout ? `width: ${width ?? '54px'} !important;` : ''}
-      ${layout ? `height: ${height ?? '54px'} !important;` : ''}
+      width: ${layout ? width ?? '54px' : 'auto'} !important;
+      height: ${layout ? height ?? '54px' : 'auto'} !important;
 
       :before {
         top: 0;

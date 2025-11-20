@@ -231,16 +231,16 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             id: validationTabId,
             components: [
               ...fbf()
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: 'validate.required',
-                label: 'Required',
-                inputType: 'switch',
-                size: 'small',
-                layout: 'horizontal',
-                jsSetting: true,
-                parentId: validationTabId,
-              })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'validate.required',
+                  label: 'Required',
+                  inputType: 'switch',
+                  size: 'small',
+                  layout: 'horizontal',
+                  jsSetting: true,
+                  parentId: validationTabId,
+                })
                 .toJson(),
             ],
           },
