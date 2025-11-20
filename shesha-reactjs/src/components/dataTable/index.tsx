@@ -42,7 +42,7 @@ import {
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { executeScript, executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import moment from 'moment';
-import { DataTableColumn, IShaDataTableProps, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
+import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { isEqual } from 'lodash';
@@ -434,7 +434,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         props.canEditInlineExpression,
       ),
       inlineEditMode,
-      formMode: appContext.form.formMode,
+      formMode: appContext.form?.formMode,
       canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression),
       onNewRowInitialize,
     };
@@ -521,53 +521,47 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [onRowSaveSuccess, backendUrl]);
 
-  const performUpdate = (rowIndex: number, preparedData: any) => {
-    const options =
-      repository.repositoryType === BackendRepositoryType
-        ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
-        : undefined;
+  const performOnRowSave = useMemo<OnSaveHandler>(() => {
+    if (!onRowSave) return (data) => Promise.resolve(data);
 
-    return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
-      setRowData(rowIndex, preparedData /* , response*/);
-      performOnRowSaveSuccess(preparedData);
-      return response;
-    });
-  };
+    return (appContextData) => {
+      return executeScript(onRowSave, appContextData);
+    };
+  }, [onRowSave, appContext.contexts.lastUpdate]);
 
   const updater = useMemo(() => (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    if (onRowSave)
-      return executeScript(onRowSave, { ...appContext, data: rowData }).then((preparedData: object) => {
-        return performUpdate(rowIndex, preparedData);
+    return performOnRowSave({ ...appContext, data: rowData }).then((preparedData: object) => {
+      const options =
+        repository.repositoryType === BackendRepositoryType
+          ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
+          : undefined;
+
+      return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
+        setRowData(rowIndex, preparedData /* , response*/);
+        performOnRowSaveSuccess(preparedData);
+        return response;
       });
-    
-    return performUpdate(rowIndex, rowData);
-  }, [store, onRowSave, appContext.contexts.lastUpdate]);
-
-  const performCreate = (preparedData: any) => {
-    const options =
-      repository.repositoryType === BackendRepositoryType
-        ? ({ customUrl: customCreateUrl } as ICreateOptions)
-        : undefined;
-
-    return repository.performCreate(0, preparedData, options).then(() => {
-      store.refreshTable();
-      performOnRowSaveSuccess(preparedData);
     });
-  };
+  }, [store, onRowSave, appContext.contexts.lastUpdate]);
 
   const creater = useMemo(() => (rowData: any): Promise<any> => {
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    if (onRowSave)
-      return executeScript(onRowSave, { ...appContext, data: rowData }).then((preparedData: object) => {
-        return performCreate(preparedData);
+    return performOnRowSave({ ...appContext, data: rowData }).then((preparedData: object) => {
+      const options =
+        repository.repositoryType === BackendRepositoryType
+          ? ({ customUrl: customCreateUrl } as ICreateOptions)
+          : undefined;
+
+      return repository.performCreate(0, preparedData, options).then(() => {
+        store.refreshTable();
+        performOnRowSaveSuccess(preparedData);
       });
-    
-    return performCreate(rowData);
+    });
   }, [store, onRowSave, appContext.contexts.lastUpdate]);
 
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
