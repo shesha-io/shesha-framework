@@ -25,28 +25,6 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
 
   const toolboxComponent = getToolboxComponent(componentModel.type);
 
-  // Check for missing toolboxComponent immediately after retrieval
-  if (!toolboxComponent) {
-    const validationResult: IModelValidation = {
-      hasErrors: true,
-      componentId: componentModel.id,
-      componentName: componentModel.componentName,
-      componentType: componentModel.type,
-      errors: [{ error: `Component '${componentModel.type}' not found` }],
-    };
-    // Component not found - return early with just error message
-    return (
-      <div style={{ minHeight: '40px', position: 'relative', padding: '8px', border: '1px dashed #ccc' }}>
-        <ErrorIconPopover
-          validationResult={validationResult}
-          type="error"
-        >
-          <div style={{ color: '#999', fontSize: '12px' }}>Component &apos;{componentModel.type}&apos; not registered</div>
-        </ErrorIconPopover>
-      </div>
-    );
-  }
-
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
     ? { ...componentModel, ...componentModel?.[activeDevice] }
     : componentModel;
@@ -83,6 +61,28 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
       key={actualModel.id}
     />
   ), [actualModel, actualModel.hidden, actualModel.jsStyle, calculatedModel]);
+
+  // Check for missing toolboxComponent immediately after retrieval
+  if (!toolboxComponent) {
+    const validationResult: IModelValidation = {
+      hasErrors: true,
+      componentId: componentModel.id,
+      componentName: componentModel.componentName,
+      componentType: componentModel.type,
+      errors: [{ error: `Component '${componentModel.type}' not found` }],
+    };
+    // Component not found - return early with just error message
+    return (
+      <div style={{ minHeight: '40px', position: 'relative', padding: '8px', border: '1px dashed #ccc' }}>
+        <ErrorIconPopover
+          validationResult={validationResult}
+          type="error"
+        >
+          <div style={{ color: '#999', fontSize: '12px' }}>Component &apos;{componentModel.type}&apos; not registered</div>
+        </ErrorIconPopover>
+      </div>
+    );
+  }
 
   // Run validation in both designer and runtime modes
   const errors: Array<{ propertyName?: string; error: string }> = [];
