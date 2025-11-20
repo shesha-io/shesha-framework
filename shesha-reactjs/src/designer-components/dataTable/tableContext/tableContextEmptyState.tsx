@@ -3,6 +3,7 @@ import { DatabaseOutlined } from '@ant-design/icons';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
 import { useTheme } from '@/providers/theme';
+import { useStyles } from './styles';
 
 export interface ITableContextEmptyStateProps {
   containerId: string;
@@ -20,52 +21,24 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
   const selectedComponentId = useFormDesignerSelectedComponentId();
   const isSelected = selectedComponentId === componentId;
   const { theme } = useTheme();
+  const { styles, cx } = useStyles();
+
+  const iconColor = isSelected ? theme?.application.primaryColor : '#8c8c8c';
+  const titleColor = isSelected ? theme?.application.primaryColor : '#8c8c8c';
 
   return (
-    <div style={{ position: 'relative', minHeight: '120px', ...style, width: '100%' }} className={className}>
+    <div style={style} className={cx(styles.emptyStateContainer, className)}>
       {/* Visual overlay showing the empty state message */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '10px',
-          border: '2px dashed #d9d9d9',
-          borderRadius: '8px',
-          backgroundColor: '#fafafa',
-          minHeight: '120px',
-          width: '100%',
-          gap: '12px',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 1,
-          pointerEvents: 'none',
-        }}
-      >
-        <DatabaseOutlined style={{
-          fontSize: '48px',
-          color: isSelected ? theme?.application.primaryColor : '#8c8c8c',
-          flexShrink: 0,
-        }}
+      <div className={styles.emptyStateOverlay}>
+        <DatabaseOutlined
+          className={styles.emptyStateIcon}
+          style={{ color: iconColor }}
         />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{
-            color: isSelected ? theme?.application.primaryColor : '#8c8c8c',
-            fontSize: '14px',
-            fontWeight: '500',
-          }}
-          >
+        <div className={styles.emptyStateContent}>
+          <div className={styles.emptyStateTitle} style={{ color: titleColor }}>
             Data Context Component
           </div>
-          <div style={{
-            color: '#bfbfbf',
-            fontSize: '12px',
-          }}
-          >
+          <div className={styles.emptyStateSubtitle}>
             Drag & Drop a Form Component
           </div>
         </div>
@@ -75,7 +48,7 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
       <ComponentsContainer
         containerId={containerId}
         itemsLimit={-1}
-        style={{ minHeight: '140px', position: 'relative', zIndex: 2 }}
+        className={styles.emptyStateComponentsContainer}
       />
     </div>
   );
