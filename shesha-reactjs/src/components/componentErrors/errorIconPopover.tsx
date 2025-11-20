@@ -115,7 +115,11 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
         placement="leftTop"
         color="rgb(214, 214, 214)"
       >
-        <div className={cx(styles.iconWrapper, getPositionClass())}>
+        <div
+          className={cx(styles.iconWrapper, getPositionClass())}
+          role="img"
+          aria-label={`${type} indicator`}
+        >
           {getIcon()}
         </div>
       </Popover>
