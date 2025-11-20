@@ -141,7 +141,12 @@ export class FormBuilderImplementation implements FormBuilder {
 
   addColumnsEditorComponent = (props: FluentSettings<IColumnsEditorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'columnsEditorComponent', meta);
 
-  addDatatableContext = (props: FluentSettings<ITableContextComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'datatableContext', meta);
+  /**
+   *
+   * @deprecated use `addDataContext` instead
+   */
+  addDatatableContext = (props: FluentSettings<ITableContextComponentProps>): FormBuilder => this.addProperty(props, 'datatableContext');
+  addDataContext = (props: FluentSettings<ITableContextComponentProps>): FormBuilder => this.addProperty(props, 'dataContext');
 
   addTableViewSelector = (props: FluentSettings<ITableViewSelectorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'tableViewSelector', meta);
 

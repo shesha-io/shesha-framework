@@ -385,6 +385,41 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             entityType: extensionJson.childTablesList[index] || '',
             components: contextComponents,
           });
+          childTableContextBuilder.addDataContext({
+            id: nanoid(),
+            propertyName: "childTableContext",
+            editMode: 'inherited' as EditMode,
+            hideLabel: true,
+            hidden: false,
+            componentName: "childTableContext",
+            sourceType: "Entity",
+            dataFetchingMode: "paging",
+            defaultPageSize: ROW_COUNT,
+            sortMode: "standard",
+            permanentFilter: {
+              and: [
+                {
+                  "==": [
+                    {
+                      // Fallback to "parentId" if no matching property is found
+                      var: filterProperty ? toCamelCase(filterProperty) : "parentId",
+                    },
+                    {
+                      evaluate: [
+                        {
+                          expression: "{{data.id}}",
+                          required: true,
+                          type: "mustache",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            entityType: extensionJson.childTablesList[index] || '',
+            components: contextComponents,
+          });
 
           return {
             id: nanoid(),
