@@ -1,6 +1,6 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import DataTableProvider from '@/providers/dataTable';
-import React, { FC, ReactElement, useMemo } from 'react';
+import React, { FC, ReactElement, use, useMemo } from 'react';
 import { ConfigurableFormItem, ErrorIconPopover } from '@/components';
 import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
@@ -33,6 +33,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const hasChildComponents = isDesignerMode
     ? childComponentIds.length > 0
     : (components && components.length > 0) || childComponentIds.length > 0;
+  const showEmpty = useMemo(() => isDesignerMode && !hasChildComponents, [isDesignerMode, hasChildComponents]);
   const disableRefresh: boolean = useActualContextExecution(props.disableRefresh, null, false);
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
@@ -105,7 +106,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
     // Show only the empty state box when empty and in designer mode
     let content: ReactElement;
-    if (!hasChildComponents && isDesignerMode) {
+    if (showEmpty) {
       content = (
         <div className={cx(styles.dataContextDesignerEmpty)}>
           <TableContextEmptyState containerId={id} componentId={id} />
@@ -138,17 +139,12 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
             onBeforeRowReorder={onBeforeRowReorder}
             onAfterRowReorder={onAfterRowReorder}
           >
-            {!isDesignerMode && !hasChildComponents && (
-              <div className="data-context-label">
-                <DatabaseOutlined />
-                Data Context (No child components found)
-              </div>
-            )}
             <ComponentsContainer
               containerId={id}
               className={isDesignerMode ? `${styles.dataContextComponentsContainer} ${!hasChildComponents ? styles.dataContextComponentsContainerEmpty : ''}` : undefined}
               itemsLimit={-1}
               emptyInsertThreshold={20}
+              showHintWhenEmpty={false}
             />
           </DataTableProvider>
         </div>
