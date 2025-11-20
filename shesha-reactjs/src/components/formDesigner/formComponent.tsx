@@ -63,15 +63,19 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
 
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
 
-  const control = useMemo(() => (
-    <toolboxComponent.Factory
-      form={shaForm.antdForm}
-      model={actualModel}
-      calculatedModel={calculatedModel}
-      shaApplication={shaApplication}
-      key={actualModel.id}
-    />
-  ), [actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
+  const control = useMemo(() => {
+    if (!toolboxComponent) return null;
+
+    return (
+      <toolboxComponent.Factory
+        form={shaForm.antdForm}
+        model={actualModel}
+        calculatedModel={calculatedModel}
+        shaApplication={shaApplication}
+        key={actualModel.id}
+      />
+    );
+  }, [toolboxComponent, actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
 
   // Check for validation errors (in both designer and runtime modes)
   let validationResult: IModelValidation | undefined;
