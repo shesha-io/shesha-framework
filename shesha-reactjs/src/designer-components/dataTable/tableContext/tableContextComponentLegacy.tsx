@@ -3,25 +3,26 @@ import { DatabaseOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { TableContext } from './tableContext';
 import { ITableContextComponentProps, TableContextComponentDefinition } from './models';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
 /**
- * Data Context component (dataContext)
- * This is the new clean implementation of the data context component.
- * Legacy datatableContext components will be automatically migrated to this type.
+ * Legacy DataTable Context component (datatableContext)
+ * This component definition is kept for backward compatibility with existing forms.
+ * All existing migrations are preserved here.
+ * New forms should use the dataContext component instead.
  */
-const TableContextComponent: TableContextComponentDefinition = {
-  type: 'dataContext',
+const TableContextComponentLegacy: TableContextComponentDefinition = {
+  type: 'datatableContext',
   isInput: true,
   isOutput: true,
-  name: 'Data Context',
+  name: 'Data Context (Legacy)',
   icon: <DatabaseOutlined />,
-  Factory: ({ model }) => {
-    return model.hidden ? null : <TableContext {...model} />;
+  Factory: () => {
+    // No implementation - this is a legacy component that will be migrated
+    return null;
   },
   initModel: (model) => {
     // Only set defaults for completely new components (when dragging from toolbox)
@@ -35,24 +36,28 @@ const TableContextComponent: TableContextComponentDefinition = {
         dataFetchingMode: 'paging',
         defaultPageSize: 10,
       };
-
     }
+
     return model;
   },
   migrator: (m) =>
     m
-      .add<ITableContextComponentProps>(0, (prev) => ({
-        ...prev, name: prev['uniqueStateId'] ?? prev['name'],
-        sourceType: 'Entity',
-        defaultPageSize: 10,
-        dataFetchingMode: 'paging',
-        sortMode: 'standard',
-        strictSortOrder: 'asc',
-        allowReordering: 'no'
-      }))
-      .add<ITableContextComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<ITableContextComponentProps>(2, (prev) => migrateVisibility(prev))
-      .add<ITableContextComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) })),
+      .add<ITableContextComponentProps>(0, (prev) => ({ ...prev, name: prev['uniqueStateId'] ?? prev['name'] }))
+      .add<ITableContextComponentProps>(1, (prev) => ({ ...prev, sourceType: 'Entity' }))
+      .add<ITableContextComponentProps>(2, (prev) => ({ ...prev, defaultPageSize: 10 }))
+      .add<ITableContextComponentProps>(3, (prev) => ({ ...prev, dataFetchingMode: 'paging' }))
+      .add<ITableContextComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc', allowReordering: 'no' }))
+      .add<ITableContextComponentProps>(6, (prev) => migrateVisibility(prev))
+      .add<ITableContextComponentProps>(7, (prev) => ({ ...migrateFormApi.properties(prev) }))
+      .add<ITableContextComponentProps>(8, (prev) => {
+        // Migration to new component type
+        return {
+          ...prev,
+          type: 'dataContext',
+          version: undefined,
+        };
+      }),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   getFieldsToFetch: (propertyName, rawModel) => {
@@ -66,4 +71,4 @@ const TableContextComponent: TableContextComponentDefinition = {
   },
 };
 
-export default TableContextComponent;
+export default TableContextComponentLegacy;
