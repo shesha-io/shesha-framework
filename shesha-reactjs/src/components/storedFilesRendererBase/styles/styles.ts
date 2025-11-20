@@ -126,6 +126,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       ${containerWidth ? `width: calc(${containerWidth} - 32px) !important;` : ''}
       ${containerMaxWidth ? `max-width: calc(${containerMaxWidth} - 32px) !important;` : ''}
       ${containerMinWidth ? `min-width: calc(${containerMinWidth} - 32px) !important;` : ''}
+      gap: 0px !important;
     }
 
     .ant-upload-drag:hover:not(.ant-upload-disabled) {
@@ -174,7 +175,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
   
     .${prefixCls}-upload-list {
-      gap: ${gapValue} !important;
+      ${model.layout ? `gap: ${gapValue} !important` : ''};
       padding: 2px;
       overflow-y: auto;
       display: flex;
