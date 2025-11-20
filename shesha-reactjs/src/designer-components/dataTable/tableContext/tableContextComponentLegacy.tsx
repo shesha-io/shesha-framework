@@ -60,7 +60,7 @@ const TableContextComponentLegacy: TableContextComponentDefinition = {
         };
       }),
   settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   getFieldsToFetch: (propertyName, rawModel) => {
     return rawModel.sourceType === 'Form' ? [propertyName] : [];
   },
