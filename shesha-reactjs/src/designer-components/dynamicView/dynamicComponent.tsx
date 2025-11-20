@@ -111,7 +111,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
   }
 
   // Wrap component with error icon if there are validation errors
-  const wrappedControl = validationResult?.hasErrors ? (
+  const wrappedControl = validationResult ? (
     <ErrorIconPopover validationResult={validationResult} type="warning">
       {control}
     </ErrorIconPopover>
