@@ -12,7 +12,7 @@ import {
 } from './contexts';
 import { DataTypes } from '@/index';
 import { nanoid } from '@/utils/uuid';
-import { ArrayFormats, ObjectFormats } from '@/interfaces/dataTypes';
+import { ArrayFormats } from '@/interfaces/dataTypes';
 
 const findItemById = (items: IModelItem[], id: string): IModelItem => {
   for (const item of items) {
@@ -109,8 +109,6 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 
       const newArray = position.ownerArray;
       const prevItem = { ...newArray[position.index] };
-      const prevItemsTypeIndex = prevItem.properties?.findIndex((p) => p.isItemsType);
-      const prevItemsType = prevItemsTypeIndex !== undefined ? { ...prevItem.properties[prevItemsTypeIndex] } : null;
       const newItem = { ...prevItem, ...payload.settings };
 
 
@@ -148,7 +146,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
                 break;
               case ArrayFormats.childObjects:
                 itemsType.dataType = DataTypes.object;
-                itemsType.dataFormat = ObjectFormats.object;
+                itemsType.dataFormat = undefined;
                 break;
               case ArrayFormats.entityReference:
                 itemsType.dataType = DataTypes.entityReference;
@@ -165,10 +163,6 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
                 itemsType.dataFormat = undefined;
                 break;
             }
-          }
-
-          if (prevItemsType.dataType !== itemsType.dataType) {
-            itemsType.dataFormat = undefined;
           }
 
           newItem.itemsType = itemsType;
