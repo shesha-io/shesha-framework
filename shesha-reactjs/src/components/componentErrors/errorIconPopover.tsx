@@ -13,11 +13,11 @@ interface IErrorIconPopoverBaseProps extends PropsWithChildren {
 
 interface IErrorIconPopoverWithValidation extends IErrorIconPopoverBaseProps {
   validationResult: IModelValidation;
-  message?: never;
+  message?: string;
 }
 
 interface IErrorIconPopoverWithMessage extends IErrorIconPopoverBaseProps {
-  validationResult?: never;
+  validationResult?: IModelValidation;
   message: string;
 }
 
