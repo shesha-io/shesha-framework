@@ -52,6 +52,10 @@ export const useStyles = (): typeof useStylesResponse => {
 };
 
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
+    const SIDEBAR_BTN_HEIGHT = "35px";
+    const TOOLBAR_HEIGHT = "56px";
+    const HEADER_HEIGHT = "60px";
+
   const {
     shaHelpIcon,
     shaDragging,
@@ -376,7 +380,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
         .${designerWorkArea}{
             background-color: white;
-            height: 100%;
+            height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
             .${shaComponentsContainer} {
                 border-radius: 2px;
 

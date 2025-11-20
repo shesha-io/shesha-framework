@@ -169,6 +169,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
         .${sidebarContainerMainArea} {
           width: 100%;
+          overflow: auto;
 
           &::not(.no-padding) {
             padding: ${sheshaStyles.paddingLG}px;
