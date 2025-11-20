@@ -89,7 +89,7 @@ export const SUPPORTED_COLUMN_DATA_TYPES = [
 export const filterPropertiesForTable = (properties: IPropertyMetadata[]): IPropertyMetadata[] => {
   return properties.filter((prop: IPropertyMetadata) => {
     const columnName = prop.path || prop.columnName || '';
-    const isAuditing =  AUDITING_COLUMNS.includes(columnName.toLowerCase());
+    const isAuditing = AUDITING_COLUMNS.includes(columnName.toLowerCase());
     const isFramework = prop.isFrameworkRelated === true;
     const isId = columnName.toLowerCase() === 'id';
     return !isAuditing && !isFramework && !isId;
@@ -170,7 +170,7 @@ export const calculateDefaultColumns = async (metadata: IModelMetadata): Promise
   }
 
   // Filter out framework-related properties (include auditing columns)
-  const filteredProperties = filterPropertiesForTable(properties, false);
+  const filteredProperties = filterPropertiesForTable(properties);
 
   // Get properties suitable for table columns (filter by supported types)
   const supportedProperties = filterPropertiesBySupportedTypes(filteredProperties);
