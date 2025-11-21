@@ -519,13 +519,13 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         argumentsEvaluationContext: evaluationContext,
       });
     };
-  }, [onRowSaveSuccess, backendUrl]);
+  }, [onRowSaveSuccess, appContext.contexts.lastUpdate, backendUrl, executeAction]);
 
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onRowSave) return (data) => Promise.resolve(data);
 
-    return (appContextData) => {
-      return executeScript(onRowSave, appContextData);
+    return (data) => {
+      return executeScript(onRowSave, { ...appContext, data });
     };
   }, [onRowSave, appContext.contexts.lastUpdate]);
 
@@ -533,15 +533,16 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave({ ...appContext, data: rowData }).then((preparedData: object) => {
+    return performOnRowSave(rowData).then((preparedData: object | undefined) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
           : undefined;
 
-      return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
-        setRowData(rowIndex, preparedData /* , response*/);
-        performOnRowSaveSuccess(preparedData);
+      // use preparedData ?? rowData to handle the case when onRowSave returns undefined
+      return repository.performUpdate(rowIndex, preparedData ?? rowData, options).then((response) => {
+        setRowData(rowIndex, preparedData ?? rowData);
+        performOnRowSaveSuccess(preparedData ?? rowData);
         return response;
       });
     });
@@ -551,15 +552,16 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave({ ...appContext, data: rowData }).then((preparedData: object) => {
+    return performOnRowSave(rowData).then((preparedData: object | undefined) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customCreateUrl } as ICreateOptions)
           : undefined;
 
-      return repository.performCreate(0, preparedData, options).then(() => {
+      // use preparedData ?? rowData to handle the case when onRowSave returns undefined
+      return repository.performCreate(0, preparedData ?? rowData, options).then(() => {
         store.refreshTable();
-        performOnRowSaveSuccess(preparedData);
+        performOnRowSaveSuccess(preparedData ?? rowData);
       });
     });
   }, [store, onRowSave, appContext.contexts.lastUpdate]);
