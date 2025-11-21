@@ -157,7 +157,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
               { [styles.designerCanvas]: isDesigner && canZoom },
             )}
             style={isDesigner && canZoom ? {
-              width: autoZoom ? "100%" : designerWidth,
+              width: designerWidth,
               zoom: `${zoom}%`,
             } : {}}
           >
