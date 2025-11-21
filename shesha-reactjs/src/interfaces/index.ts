@@ -53,6 +53,7 @@ export { type IReferenceListIdentifier } from './referenceList';
 export * from './formDesigner';
 export * from './shesha';
 export * from '@/providers/form/models';
+export { type IStoredFile } from '@/providers/storedFile/contexts';
 export { type IShaFormInstance } from '@/providers/form/store/interfaces';
 export * from './errorInfo';
 export * from './publicApis';
