@@ -176,7 +176,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
   
     .${prefixCls}-upload-list {
-      gap: ${layout ? gapValue : '' } !important;
+      gap: ${layout ? gapValue : ''} !important;
       padding: 2px;
       overflow-y: auto;
       display: flex;
