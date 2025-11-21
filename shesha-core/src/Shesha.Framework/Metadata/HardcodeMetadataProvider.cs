@@ -391,12 +391,12 @@ namespace Shesha.Metadata
             if (propType == typeof(double) || propType == typeof(decimal))
                 return new DataTypeInfo(DataTypes.Number, NumberFormats.Double);
 
-            if (propType.IsListType())
+            if (propType.IsListType() || propType.IsArray)
             {
-                var paramType = GetListElementType(propType).NotNull();
-
+                var paramType = propType.IsArray
+                    ? propType.GetElementType().NotNull()
+                    : GetListElementType(propType).NotNull();
                 var elementDataType = GetDataTypeByPropertyType(paramType, null);
-
                 return new DataTypeInfo(DataTypes.Array, elementDataType?.DataType, elementDataType?.DataFormat);
             }
             else
