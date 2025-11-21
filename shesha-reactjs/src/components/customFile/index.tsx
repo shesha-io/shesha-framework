@@ -1,11 +1,9 @@
 import React, { FC } from 'react';
-import { IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import { IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
 import { IInputStyles, IStyleType, useSheshaApplication, useStoredFilesStore } from '@/providers';
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 export interface ICustomFileProps extends IInputStyles {
-  onChange?: (fileList: IStoredFile[]) => void;
-  onDownload?: (fileList: IStoredFile[]) => void;
   id?: string;
   ownerId?: string;
   uploadFile?: (payload: IUploadFilePayload) => void;
@@ -65,8 +63,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       maxHeight={props?.maxHeight}
       layout={props?.filesLayout}
       listType={props?.listType}
-      onChangeCustom={props.onChange}
-      onDownload={props.onDownload}
     />
   );
 };
