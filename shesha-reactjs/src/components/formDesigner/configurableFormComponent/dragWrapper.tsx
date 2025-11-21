@@ -73,7 +73,7 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
         </div>
       )}
 
-      <Tooltip title={tooltip} placement="right" open={isOpen}getPopupContainer={() => document.querySelector('.canvas-wrapper') || document.body}>
+      <Tooltip title={tooltip} placement="right" open={isOpen} getPopupContainer={() => document.querySelector('.canvas-wrapper') || document.body}>
         {props.children}
       </Tooltip>
     </div>
