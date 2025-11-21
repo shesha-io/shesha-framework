@@ -108,7 +108,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     offset = configTreePanelSize;
   } else if (viewType === 'page') {
     offset = isSidebarCollapsed ? SIDEBAR_WIDTH.COLLAPSED : SIDEBAR_WIDTH.EXPANDED;
-  } else if (viewType === 'modal'){
+  } else if (viewType === 'modal') {
     offset = DEFAULT_OPTIONS.modalMargins;
   } else {
     offset = SIDEBAR_WIDTH.MINIMAL;
