@@ -22,6 +22,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const pnlShadowStyleId = nanoid();
   const customStylePnlId = nanoid();
   const pnlFontStyleId = nanoid();
+  const downloadedStylesPnlId = nanoid();
+  const pnlDownloadedFileFontStylesId = nanoid();
 
   return {
     components: fbf()
@@ -901,6 +903,111 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Style',
                                   description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                   parentId: 'containerCustomStylePanel',
+                                })
+                                .toJson(),
+                              ],
+                            },
+                          })
+                          .addCollapsiblePanel({
+                            id: nanoid(),
+                            propertyName: 'pnlDownloadedStyles',
+                            label: 'Downloaded File Styles',
+                            labelAlign: 'right',
+                            ghost: true,
+                            collapsedByDefault: true,
+                            parentId: styleRouterId,
+                            collapsible: 'header',
+                            content: {
+                              id: downloadedStylesPnlId,
+                              components: [...fbf()
+                                .addCollapsiblePanel({
+                                  id: nanoid(),
+                                  propertyName: 'pnlDownloadedFileFontStyles',
+                                  label: 'Font',
+                                  labelAlign: 'right',
+                                  parentId: downloadedStylesPnlId,
+                                  ghost: true,
+                                  collapsible: 'header',
+                                  content: {
+                                    id: pnlDownloadedFileFontStylesId,
+                                    components: [...fbf()
+                                      .addSettingsInputRow({
+                                        id: nanoid(),
+                                        parentId: pnlDownloadedFileFontStylesId,
+                                        inline: true,
+                                        propertyName: 'downloadedFileStyles.font',
+                                        inputs: [
+                                          {
+                                            type: 'dropdown',
+                                            id: nanoid(),
+                                            label: 'Family',
+                                            propertyName: 'downloadedFileStyles.font.type',
+                                            hideLabel: true,
+                                            dropdownOptions: fontTypes,
+                                          },
+                                          {
+                                            type: 'numberField',
+                                            id: nanoid(),
+                                            label: 'Size',
+                                            propertyName: 'downloadedFileStyles.font.size',
+                                            hideLabel: true,
+                                            width: 50,
+                                          },
+                                          {
+                                            type: 'dropdown',
+                                            id: nanoid(),
+                                            label: 'Weight',
+                                            propertyName: 'downloadedFileStyles.font.weight',
+                                            hideLabel: true,
+                                            tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                            dropdownOptions: fontWeightsOptions,
+                                            width: 100,
+                                          },
+                                          {
+                                            type: 'colorPicker',
+                                            id: nanoid(),
+                                            label: 'Color',
+                                            hideLabel: true,
+                                            propertyName: 'downloadedFileStyles.font.color',
+                                          },
+                                          {
+                                            type: 'dropdown',
+                                            id: nanoid(),
+                                            label: 'Align',
+                                            propertyName: 'downloadedFileStyles.font.align',
+                                            hideLabel: true,
+                                            width: 60,
+                                            dropdownOptions: textAlignOptions,
+                                          },
+                                        ],
+                                      })
+                                      .toJson(),
+                                    ],
+                                  },
+                                })
+                                .addCollapsiblePanel({
+                                  id: nanoid(),
+                                  propertyName: 'pnlDownloadedFileCustomStylePanel',
+                                  label: 'Custom Styles',
+                                  labelAlign: 'right',
+                                  ghost: true,
+                                  parentId: downloadedStylesPnlId,
+                                  collapsible: 'header',
+                                  content: {
+                                    id: 'pnlDownloadedFileCustomStylePanel',
+                                    components: [...fbf()
+                                      .addSettingsInput({
+                                        id: nanoid(),
+                                        inputType: 'codeEditor',
+                                        propertyName: 'downloadedFileStyles.style',
+                                        hideLabel: false,
+                                        label: 'Style',
+                                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                        parentId: 'pnlDownloadedFileCustomStylePanel',
+                                      })
+                                      .toJson(),
+                                    ],
+                                  },
                                 })
                                 .toJson(),
                               ],

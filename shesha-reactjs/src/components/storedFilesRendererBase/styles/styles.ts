@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles }) => {
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, downloadedFileStyles }) => {
   const { background, backgroundImage, borderRadius: allRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
     borderBottomWidth, borderLeftWidth, borderLeftColor, borderLeftStyle, borderRightColor, borderRightStyle, borderColor, borderTopStyle, borderTopColor,
     borderTop, boxShadow, borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, backgroundColor, backgroundPosition,
@@ -33,6 +33,58 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     borderBottomLeftRadius ?? allRadius ?? '8px',
     borderTopLeftRadius ?? allRadius ?? '8px',
   ].join(' ');
+
+  const downloadedFile = cx("downloaded-file", css`
+    opacity: 0.8;
+    position: relative;
+    
+    .ant-upload-list-item-container {
+      opacity: 0.8;
+      position: relative;
+    }
+    
+    .ant-upload-list-item-thumbnail {
+      border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
+      box-shadow: 0 0 0 1px ${downloadedFileStyles?.color ?? token.colorSuccess}20;
+    }
+    
+    .ant-upload-list-item-name {
+      color: ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
+      font-size: ${downloadedFileStyles?.fontSize ?? '14px'} !important;
+      font-weight: ${downloadedFileStyles?.fontWeight ?? '400'} !important;
+      font-family: ${downloadedFileStyles?.fontFamily ?? 'Segoe UI'} !important;
+      text-align: ${downloadedFileStyles?.textAlign ?? 'left'} !important;
+    }
+    
+    .ant-upload-list-item-action {
+      .anticon-download {
+        color: ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
+      }
+    }
+    
+    /* Hide download status icon on hover */
+    &:hover .downloaded-icon {
+      display: none;
+    }
+  `);
+
+
+  const downloadedIcon = cx("downloaded-icon", css`
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: ${downloadedFileStyles?.color ?? token.colorSuccess};
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  `);
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const storedFilesRendererWrapper = cx("stored-files-renderer-wrapper", css`
@@ -374,5 +426,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     antPreviewDownloadIcon,
     thumbnailReadOnly,
     storedFilesRendererWrapper,
+    downloadedFile,
+    downloadedIcon,
   };
 });
