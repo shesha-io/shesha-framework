@@ -233,8 +233,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   linkToModelMetadata: (model, metadata) => ({
     ...model,
-    ownerId: '{data.id}',
-    ownerType: metadata.entityType && { module: metadata.entityModule, name: metadata.entityType ?? '' },
     filesCategory: metadata.path,
   }),
   migrator: (m) => m
