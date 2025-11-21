@@ -1,0 +1,99 @@
+import { createStyles } from '@/styles';
+
+export const useStyles = createStyles(({ css, cx }) => {
+  const youtubeVideoComponent = cx("youtube-video-component", css`
+    .youtube-video-title {
+      margin-bottom: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #1f1f1f;
+    }
+
+    .youtube-video-description {
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #606060;
+    }
+
+    .youtube-video-container {
+      background-color: #000;
+      border-radius: 8px;
+      overflow: hidden;
+
+      iframe {
+        border: none;
+        display: block;
+      }
+    }
+
+    .youtube-custom-thumbnail {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      .youtube-play-button {
+        position: relative;
+        z-index: 1;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 0, 0, 0.8);
+        border-radius: 50%;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(255, 0, 0, 1);
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    .youtube-completion-warning {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background-color: #fff7e6;
+      border: 1px solid #ffd591;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+  `);
+
+  const youtubeVideoPlaceholder = cx("youtube-video-placeholder", css`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    background: #f5f5f5;
+    border: 2px dashed #d9d9d9;
+    border-radius: 8px;
+    text-align: center;
+
+    p {
+      margin: 8px 0 0;
+      color: #595959;
+    }
+  `);
+
+  return {
+    youtubeVideoComponent,
+    youtubeVideoPlaceholder,
+  };
+});
