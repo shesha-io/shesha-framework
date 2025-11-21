@@ -105,10 +105,9 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const updatedEvents = useMemo(() =>
     events.map((event: any) => ({
       ...event,
-      title: evaluateString(event.title, event),
+      title: evaluateString(event.titleTemplate || event.title, event),
     })),
-  [events],
-  );
+  [events]);
 
 
   // Fetch initial data

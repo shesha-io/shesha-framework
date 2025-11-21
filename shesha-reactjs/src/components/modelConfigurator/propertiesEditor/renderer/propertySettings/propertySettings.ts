@@ -15,6 +15,7 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
   const entityFormatId = nanoid();
   const objectRefFormatId = nanoid();
   const listFormatId = nanoid();
+  const simpleFormatId = nanoid();
   const advancedFormatId = nanoid();
   const listDbFormatId = nanoid();
   const listRelFormatId = nanoid();
@@ -197,8 +198,8 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
 
                   // simple
 
-                    .addContainer({ id: listFormatId, parentId: dataTabId, hidden: { _code: 'return data?.dataFormat !== \'simple\';', _mode: 'code', _value: false },
-                      components: [...SimplePropertySettings(fbf, listFormatId, 'array', 'itemsType.').toJson()],
+                    .addContainer({ id: simpleFormatId, parentId: dataTabId, hidden: { _code: 'return data?.dataFormat !== \'simple\';', _mode: 'code', _value: false },
+                      components: [...SimplePropertySettings(fbf, simpleFormatId, 'array', 'itemsType.').toJson()],
                     })
 
                     .toJson(),
