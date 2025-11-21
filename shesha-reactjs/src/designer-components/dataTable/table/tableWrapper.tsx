@@ -2,8 +2,10 @@ import React, {
   FC,
   Fragment,
   useMemo,
+  useRef,
+  useEffect,
 } from 'react';
-import { filterVisibility } from './utils';
+import { filterVisibility, calculateDefaultColumns } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
 import {
@@ -21,16 +23,16 @@ import {
   useSheshaApplication,
 } from '@/providers';
 import { GlobalTableStyles } from './styles/styles';
-import { Alert } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { FilterList } from '../filterList/filterList';
 import { useStyles } from './styles';
-import { TableEmptyState } from './tableEmptyState';
-
-const NotConfiguredWarning: FC = () => {
-  return <Alert className="sha-designer-warning" message="Table is not configured properly" type="warning" />;
-};
-
+import { useMetadata } from '@/providers/metadata';
+import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
+import { Popover } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { useTheme } from '@/providers/theme';
+import { StandaloneTable } from './standaloneTable';
+import { useDatatableHintPopoverStyles } from './hintPopoverStyles';
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const { id, items, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
@@ -40,6 +42,22 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const { globalState } = useGlobalState();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const isDesignMode = formMode === 'designer';
+  const metadata = useMetadata(false); // Don't require - DataTable may not be in a DataSource
+  const formDesigner = useFormDesignerOrUndefined();
+  const hasAutoConfiguredRef = useRef(false);
+  const componentIdRef = useRef(id);
+  const { theme } = useTheme();
+
+  // Reset auto-config flag when component ID changes (new DataTable instance)
+  useEffect(() => {
+    if (componentIdRef.current !== id) {
+      componentIdRef.current = id;
+      hasAutoConfiguredRef.current = false;
+    }
+  }, [id]);
+
+  // Inject CSS for hint popover arrow styling
+  useDatatableHintPopoverStyles();
 
   const { styles } = useStyles({
     fontFamily: props?.font?.type,
@@ -150,6 +168,46 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     registerConfigurableColumns(id, permissibleColumns);
   }, [items, isDesignMode]);
 
+  // Auto-configure columns when DataTable is dropped into a DataContext
+  useEffect(() => {
+    // Only attempt auto-config if we have empty items and haven't tried yet
+    if (hasAutoConfiguredRef.current || !isDesignMode || !formDesigner) {
+      return;
+    }
+
+    // Check if we should auto-configure
+    const hasNoColumns = !items || items.length === 0;
+    const hasMetadata = metadata?.metadata != null;
+
+    if (!hasNoColumns || !hasMetadata) {
+      return;
+    }
+
+    // Mark as attempted to prevent multiple triggers
+    hasAutoConfiguredRef.current = true;
+
+    const autoConfigureColumns = async (): Promise<void> => {
+      try {
+        const defaultColumns = await calculateDefaultColumns(metadata.metadata);
+        if (defaultColumns.length > 0) {
+          formDesigner.updateComponent({
+            componentId: id,
+            settings: {
+              ...props,
+              items: defaultColumns,
+            } as ITableComponentProps,
+          });
+        }
+      } catch (error) {
+        console.warn('Failed to auto-configure DataTable columns:', error);
+        // Reset flag to allow retry if it failed
+        hasAutoConfiguredRef.current = false;
+      }
+    };
+
+    autoConfigureColumns();
+  }, [isDesignMode, formDesigner, metadata?.metadata, items, id]);
+
   const renderSidebarContent = (): JSX.Element => {
     if (isFiltering) {
       return <DatatableAdvancedFilter />;
@@ -162,19 +220,19 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     return <Fragment />;
   };
 
-  if (isDesignMode && !repository) return <NotConfiguredWarning />;
-
-  // Show empty state in designer mode when no columns are configured
   const hasNoColumns = !items || items.length === 0;
-  if (isDesignMode && hasNoColumns) {
-    return <TableEmptyState componentId={id} />;
-  }
+  const hasNoRepository = !repository;
 
   const toggleFieldPropertiesSidebar = (): void => {
     if (!isSelectingColumns && !isFiltering) setIsInProgressFlag({ isFiltering: true });
     else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
   };
 
+  // In designer mode, show StandaloneTable if columns were deliberately deleted
+  // (hasAutoConfiguredRef.current means auto-config was attempted, but we still have no columns)
+  if (isDesignMode && hasNoColumns && hasAutoConfiguredRef.current) {
+    return <StandaloneTable {...props} />;
+  }
 
   return (
     <SidebarContainer
@@ -189,61 +247,116 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     >
       <GlobalTableStyles />
       {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
-      <div className={styles.dataTable} style={finalStyle}>
-        <DataTable
-          onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
-          onMultiRowSelect={setMultiSelectedRow}
-          selectedRowIndex={selectedRow?.index}
-          useMultiselect={useMultiselect}
-          selectionMode={selectionMode}
-          freezeHeaders={props.stickyHeader || props.freezeHeaders}
-          allowReordering={allowReordering}
-          tableStyle={getStyle(tableStyle, formData, globalState)}
-          containerStyle={getStyle(containerStyle, formData, globalState)}
-          canAddInline={props.canAddInline}
-          canAddInlineExpression={props.canAddInlineExpression}
-          customCreateUrl={props.customCreateUrl}
-          newRowCapturePosition={props.newRowCapturePosition}
-          onNewRowInitialize={props.onNewRowInitialize}
-          canEditInline={props.canEditInline}
-          canEditInlineExpression={props.canEditInlineExpression}
-          customUpdateUrl={props.customUpdateUrl}
-          canDeleteInline={props.canDeleteInline}
-          canDeleteInlineExpression={props.canDeleteInlineExpression}
-          customDeleteUrl={props.customDeleteUrl}
-          onRowSave={props.onRowSave}
-          onRowSaveSuccessAction={props.onRowSaveSuccessAction}
-          onDblClick={props.dblClickActionConfiguration}
-          inlineSaveMode={props.inlineSaveMode}
-          inlineEditMode={props.inlineEditMode}
-          minHeight={props.minHeight}
-          maxHeight={props.maxHeight}
-          noDataText={props.noDataText}
-          noDataSecondaryText={props.noDataSecondaryText}
-          noDataIcon={props.noDataIcon}
-          showExpandedView={props.showExpandedView}
-          onRowClick={props.onRowClick}
-          onRowDoubleClick={props.onRowDoubleClick}
-          onRowHover={props.onRowHover}
-          onRowSelect={props.onRowSelect}
-          onSelectionChange={props.onSelectionChange}
-          rowBackgroundColor={props.rowBackgroundColor}
-          rowAlternateBackgroundColor={props.rowAlternateBackgroundColor}
-          rowHoverBackgroundColor={props.rowHoverBackgroundColor}
-          rowSelectedBackgroundColor={props.rowSelectedBackgroundColor}
-          border={props.border}
-          hoverHighlight={props.hoverHighlight}
-          backgroundColor={props.background?.color}
-          headerFontSize={props.headerFontSize}
-          headerFontWeight={props.headerFontWeight}
-          headerBackgroundColor={props.headerBackgroundColor}
-          headerTextColor={props.headerTextColor}
-          rowHeight={props.rowHeight}
-          rowPadding={props.rowPadding}
-          rowBorder={props.rowBorder}
-          boxShadow={props.boxShadow}
-          sortableIndicatorColor={props.sortableIndicatorColor}
-        />
+
+      <div style={{ position: 'relative' }}>
+        {/* Show info icon in top-right corner in designer mode for configuration issues */}
+        {isDesignMode && (hasNoRepository || hasNoColumns) && (
+          <Popover
+            placement="left"
+            title="Hint:"
+            classNames={{ root: "sha-datatable-hint-popover" }}
+            styles={{ body: { backgroundColor: '#D9DCDC' } }}
+            content={hasNoRepository ? (
+              <p>
+                This Data Table is not inside a Data Context.<br />
+                Drag it into a Data Context component to<br />
+                connect it to data.
+                <br /><br />
+                <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+                  See component documentation
+                </a>
+                <br />for setup and usage.
+              </p>
+            ) : (
+              <p>
+                This Data Table has no columns configured.<br />
+                Click the Settings icon in the Properties Panel<br />
+                to configure columns.
+                <br /><br />
+                <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+                  See component documentation
+                </a>
+                <br />for setup and usage.
+              </p>
+            )}
+          >
+            <InfoCircleOutlined
+              role="button"
+              tabIndex={0}
+              aria-label="Data table configuration help"
+              style={{
+                position: 'absolute',
+                top: '4px',
+                right: '4px',
+                color: theme?.application?.warningColor || '#faad14',
+                fontSize: '20px',
+                zIndex: 9999,
+                cursor: 'help',
+                backgroundColor: '#fff',
+                borderRadius: '50%',
+                padding: '4px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              }}
+            />
+          </Popover>
+        )}
+
+        <div className={styles.dataTable} style={finalStyle}>
+          <DataTable
+            onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
+            onMultiRowSelect={setMultiSelectedRow}
+            selectedRowIndex={selectedRow?.index}
+            useMultiselect={useMultiselect}
+            selectionMode={selectionMode}
+            freezeHeaders={props.stickyHeader || props.freezeHeaders}
+            allowReordering={allowReordering}
+            tableStyle={getStyle(tableStyle, formData, globalState)}
+            containerStyle={getStyle(containerStyle, formData, globalState)}
+            canAddInline={props.canAddInline}
+            canAddInlineExpression={props.canAddInlineExpression}
+            customCreateUrl={props.customCreateUrl}
+            newRowCapturePosition={props.newRowCapturePosition}
+            onNewRowInitialize={props.onNewRowInitialize}
+            canEditInline={props.canEditInline}
+            canEditInlineExpression={props.canEditInlineExpression}
+            customUpdateUrl={props.customUpdateUrl}
+            canDeleteInline={props.canDeleteInline}
+            canDeleteInlineExpression={props.canDeleteInlineExpression}
+            customDeleteUrl={props.customDeleteUrl}
+            onRowSave={props.onRowSave}
+            onRowSaveSuccessAction={props.onRowSaveSuccessAction}
+            onDblClick={props.dblClickActionConfiguration}
+            inlineSaveMode={props.inlineSaveMode}
+            inlineEditMode={props.inlineEditMode}
+            minHeight={props.minHeight}
+            maxHeight={props.maxHeight}
+            noDataText={props.noDataText}
+            noDataSecondaryText={props.noDataSecondaryText}
+            noDataIcon={props.noDataIcon}
+            showExpandedView={props.showExpandedView}
+            onRowClick={props.onRowClick}
+            onRowDoubleClick={props.onRowDoubleClick}
+            onRowHover={props.onRowHover}
+            onRowSelect={props.onRowSelect}
+            onSelectionChange={props.onSelectionChange}
+            rowBackgroundColor={props.rowBackgroundColor}
+            rowAlternateBackgroundColor={props.rowAlternateBackgroundColor}
+            rowHoverBackgroundColor={props.rowHoverBackgroundColor}
+            rowSelectedBackgroundColor={props.rowSelectedBackgroundColor}
+            border={props.border}
+            hoverHighlight={props.hoverHighlight}
+            backgroundColor={props.background?.color}
+            headerFontSize={props.headerFontSize}
+            headerFontWeight={props.headerFontWeight}
+            headerBackgroundColor={props.headerBackgroundColor}
+            headerTextColor={props.headerTextColor}
+            rowHeight={props.rowHeight}
+            rowPadding={props.rowPadding}
+            rowBorder={props.rowBorder}
+            boxShadow={props.boxShadow}
+            sortableIndicatorColor={props.sortableIndicatorColor}
+          />
+        </div>
       </div>
     </SidebarContainer>
   );
