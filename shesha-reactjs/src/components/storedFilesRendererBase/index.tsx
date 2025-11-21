@@ -185,7 +185,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     }
 
-    return getFileIcon(type);
+    return getFileIcon(type, model?.allStyles?.fontStyles?.fontSize);
   };
 
 

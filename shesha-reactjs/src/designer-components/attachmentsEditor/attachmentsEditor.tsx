@@ -12,7 +12,7 @@ import {
   executeScriptSync,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
-import StoredFilesProvider from '@/providers/storedFiles';
+import StoredFilesProvider, { IStoredFile } from '@/providers/storedFiles';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -183,14 +183,16 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       // File list uses propertyName only for support Required feature
       <ConfigurableFormItem model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.id}` }}>
         {(value, onChange) => {
-          const onFileListChanged = (fileList): void => {
+          const onFileListChanged = (fileList: IStoredFile[], isUserAction = false): void => {
             onChange(fileList);
-            if (model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
+            // Only execute custom script if this is a user action (upload/delete)
+            if (isUserAction && model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
           };
 
-          const onDownload = (fileList): void => {
+          const onDownload = (fileList: IStoredFile[], isUserAction = false): void => {
             onChange(fileList);
-            if (model.onDownload) executeScript(model.onDownload, fileList);
+            // Only execute custom script if this is a user action (download)
+            if (isUserAction && model.onDownload) executeScript(model.onDownload, fileList);
           };
 
           return (

@@ -61,8 +61,8 @@ export interface IStoredFilesProviderProps {
 
   // used for requered field validation
   value?: IStoredFile[];
-  onChange?: (fileList: IStoredFile[]) => void;
-  onDownload?: (fileList: IStoredFile[]) => void;
+  onChange?: (fileList: IStoredFile[], isUserAction?: boolean) => void;
+  onDownload?: (fileList: IStoredFile[], isUserAction?: boolean) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
@@ -137,7 +137,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           if (isAjaxSuccessResponse(resp)) {
             const fileList = filesReducer((resp?.result ?? []) as IStoredFile[]);
             dispatch(fetchFileListSuccessAction(fileList));
-            onChange?.(fileList);
+            onChange?.(fileList, false); // Not a user action - initial fetch
           } else {
             dispatch(fetchFileListErrorAction());
           }
@@ -168,14 +168,14 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
       dispatch(onFileAddedAction(patient));
       const next = [...(fileListRef.current ?? []).filter((f) => f.id !== patient?.id), fileReducer(patient)];
-      onChange?.(next);
+      onChange?.(next, false); // Not a user action - external SignalR event
     });
 
     connection?.on('OnFileDeleted', (eventData: IStoredFile | string) => {
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
 
       dispatch(onFileDeletedAction(patient?.id));
-      onChange?.(fileListRef.current?.filter((file) => file.id !== patient?.id) || []);
+      onChange?.(fileListRef.current?.filter((file) => file.id !== patient?.id) || [], false); // Not a user action - external SignalR event
     });
     return () => {
       connection?.off('OnFileAdded');
@@ -227,7 +227,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
         const updatedFileList = addFile(responseFile, fileListRef.current);
-        onChange?.(updatedFileList);
+        onChange?.(updatedFileList, true); // User action - file upload
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
@@ -270,7 +270,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then(() => {
         deleteFileSuccess(resolvedId);
         const updateList = removeFile(list, resolvedId);
-        onChange?.(updateList);
+        onChange?.(updateList, true); // User action - file delete
         if (typeof removeDelayedUpdate === 'function') {
           removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, resolvedId);
         }
@@ -307,7 +307,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
         dispatch(updateAllFilesDownloadedByCurrentUser());
         const updatedList = updateAllFilesDownloaded(fileListRef.current ?? []);
-        onDownload?.(updatedList);
+        onDownload?.(updatedList, true); // User action - zip download
       })
       .catch(() => {
         dispatch(downloadZipErrorAction());
@@ -328,7 +328,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
         dispatch(updateIsDownloadedByCurrentUser(payload.fileId));
         const nextList = updateDownloadedAFile(fileListRef.current ?? [], payload.fileId);
-        onDownload?.(nextList);
+        onDownload?.(nextList, true); // User action - file download
       })
       .catch((e) => {
         console.error(e);
@@ -411,3 +411,4 @@ export default StoredFilesProvider;
 const useStoredFiles = useStoredFilesStore;
 
 export { StoredFilesProvider, useStoredFiles, useStoredFilesActions, useStoredFilesState, useStoredFilesStore };
+export type { IStoredFile };
