@@ -53,13 +53,6 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     form: props.form,
   });
 
-  const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto => {
-    return {
-      ...data,
-      properties: data.properties.filter((p) => p.name.toLowerCase() !== 'id'), // remove Id filed
-    };
-  };
-
   const load = (): void => {
     if (state.id) {
       dispatch(loadRequestAction());
@@ -68,7 +61,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
       modelConfigurationsGetById({}, { id: state.id, base: backendUrl, headers: httpHeaders })
         .then((response) => {
           if (isAjaxSuccessResponse(response)) {
-            dispatch(loadSuccessAction(prepareLoadedData(response.result)));
+            dispatch(loadSuccessAction(response.result));
           } else dispatch(loadErrorAction(response.error));
         })
         .catch((e) => {
@@ -115,7 +108,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
       mutate(preparedValues, { base: backendUrl, headers: httpHeaders })
         .then((response) => {
           if (isAjaxSuccessResponse(response)) {
-            dispatch(saveSuccessAction(prepareLoadedData(response.result)));
+            dispatch(saveSuccessAction(response.result));
             resolve(response.result);
           } else {
             dispatch(saveErrorAction(response.error));

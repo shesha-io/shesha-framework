@@ -102,7 +102,7 @@ const DateField: DateFieldDefinition = {
     return {
       ...model,
       dateFormat: !!metadata.dataFormat ? metadata.dataFormat : model.dateFormat,
-      showTime: metadata.dataType === DataTypes.date ? false : model.showTime,
+      showTime: metadata.dataType === DataTypes.dateTime ? true : metadata.dataType === DataTypes.date ? false : model.showTime,
     };
   },
 };
