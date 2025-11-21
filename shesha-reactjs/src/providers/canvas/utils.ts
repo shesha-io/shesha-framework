@@ -73,12 +73,14 @@ export const DEFAULT_OPTIONS = {
   gutter: 4,
   designerWidth: defaultDesignerWidth,
   zoomStep: 1,
+  modalMargins: 32,
 };
 
 const SIDEBAR_WIDTH = {
   COLLAPSED: 60,
   EXPANDED: 250,
   MINIMAL: 32,
+  MODAL_MARGINS: 20,
 } as const;
 
 const valueToPercent = (value: number): number => value / 100;
@@ -104,8 +106,10 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   let offset: number;
   if (viewType === 'configStudio') {
     offset = configTreePanelSize;
-  } else if (viewType === 'page' || viewType === 'modal') {
+  } else if (viewType === 'page') {
     offset = isSidebarCollapsed ? SIDEBAR_WIDTH.COLLAPSED : SIDEBAR_WIDTH.EXPANDED;
+  } else if (viewType === 'modal'){
+    offset = DEFAULT_OPTIONS.modalMargins;
   } else {
     offset = SIDEBAR_WIDTH.MINIMAL;
   }
