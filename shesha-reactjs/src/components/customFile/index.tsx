@@ -3,6 +3,7 @@ import { IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
 import { IInputStyles, IStyleType, useSheshaApplication, useStoredFilesStore } from '@/providers';
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+
 export interface ICustomFileProps extends IInputStyles {
   id?: string;
   ownerId?: string;
