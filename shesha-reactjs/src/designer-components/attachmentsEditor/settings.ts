@@ -236,7 +236,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   propertyName: 'validate.required',
                   label: 'Required',
                   inputType: 'switch',
+                  size: 'small',
+                  layout: 'horizontal',
                   jsSetting: true,
+                  parentId: validationTabId,
                 })
                 .toJson(),
             ],

@@ -55,6 +55,8 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   maxHeight?: string;
   layout: layoutType;
   listType: listType;
+  onChange?: (fileList: IStoredFile[]) => void;
+  onDownload?: (fileList: IStoredFile[]) => void;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;
@@ -183,7 +185,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     }
 
-    return getFileIcon(type);
+    return getFileIcon(type, model?.allStyles?.fontStyles?.fontSize);
   };
 
 
