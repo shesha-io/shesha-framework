@@ -141,7 +141,14 @@ export class FormBuilderImplementation implements FormBuilder {
 
   addColumnsEditorComponent = (props: FluentSettings<IColumnsEditorComponentProps>): FormBuilder => this.addProperty(props, 'columnsEditorComponent');
 
-  addDatatableContext = (props: FluentSettings<ITableContextComponentProps>): FormBuilder => this.addProperty(props, 'datatableContext');
+  /**
+   *
+   * @deprecated use `addDataContext` instead
+   */
+  addDatatableContext = (props: FluentSettings<ITableContextComponentProps>): FormBuilder =>
+    this.addDataContext(props);
+
+  addDataContext = (props: FluentSettings<ITableContextComponentProps>): FormBuilder => this.addProperty(props, 'dataContext');
 
   addTableViewSelector = (props: FluentSettings<ITableViewSelectorComponentProps>): FormBuilder => this.addProperty(props, 'tableViewSelector');
 
@@ -171,7 +178,7 @@ export class FormBuilderImplementation implements FormBuilder {
     this.form = [];
   }
 
-  protected addProperty(props: FluentSettings<IConfigurableFormComponent>, type: ComponentTypes): FormBuilder {
+  protected addProperty<T extends IConfigurableFormComponent>(props: FluentSettings<T>, type: ComponentTypes): FormBuilder {
     const { id, hidden, version, ...restProps } = props;
 
     const componentDefinition = this.getComponentDefinition(type);

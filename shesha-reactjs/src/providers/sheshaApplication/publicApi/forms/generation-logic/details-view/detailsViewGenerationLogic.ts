@@ -9,6 +9,7 @@ import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson"
 import { ROW_COUNT } from "../../constants";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
 import { IEntityTypeIdentifier } from "../../../entities/models";
+import { ITableContextComponentProps } from "@/designer-components/dataTable/tableContext/models";
 
 /**
  * Implements generation logic for detail views.
@@ -307,7 +308,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           ];
 
           const childTableContextBuilder = this.getFormBuilder();
-          childTableContextBuilder.addDatatableContext({
+          childTableContextBuilder.addDataContext({
             id: nanoid(),
             propertyName: "childTableContext",
             editMode: 'inherited' as EditMode,
@@ -341,7 +342,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             },
             entityType: extensionJson.childTablesList[index] || '',
             components: contextComponents,
-          });
+          } as ITableContextComponentProps);
 
           return {
             id: nanoid(),

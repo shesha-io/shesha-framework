@@ -46,4 +46,4 @@ export interface IAfterRowReorderArguments {
   response?: any;
 }
 
-export type TableContextComponentDefinition = ComponentDefinition<"datatableContext", ITableContextComponentProps>;
+export type TableContextComponentDefinition = ComponentDefinition<"datatableContext" | 'dataContext', ITableContextComponentProps>;

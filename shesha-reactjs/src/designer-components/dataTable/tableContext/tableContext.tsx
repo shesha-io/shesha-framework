@@ -1,15 +1,14 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import DataTableProvider from '@/providers/dataTable';
 import React, { FC, ReactElement, useMemo } from 'react';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem, ErrorIconPopover } from '@/components';
 import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
-import { useForm, useFormData, useNestedPropertyMetadatAccessor, useTheme } from '@/providers';
+import { useForm, useFormData, useNestedPropertyMetadatAccessor } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { ITableContextComponentProps } from './models';
-import { SheshaError } from '@/utils/errors';
+import { IModelValidation } from '@/utils/errors';
 import { useActualContextExecution } from '@/hooks';
-import { DatabaseOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
 import { ShaForm } from '@/providers/form';
 import { useParent } from '@/providers/parentProvider';
@@ -25,7 +24,6 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const { styles, cx } = useStyles();
   const parent = useParent();
 
-  const { theme } = useTheme();
   const isDesignerMode = formMode === 'designer';
 
   // Use real-time child component tracking in designer mode, fallback to static components prop in runtime
@@ -41,88 +39,128 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
   const getDataPath = evaluateString(endpoint, { data });
 
-  if (!sourceType)
-    throw SheshaError.throwPropertyError('sourceType');
-  if (sourceType === 'Entity' && isEntityTypeIdEmpty(entityType))
-    throw SheshaError.throwPropertyError('entityType');
-  if (sourceType === 'Url' && !endpoint)
-    throw SheshaError.throwPropertyError('endpoint');
-  if (sourceType === 'Form' && !propertyName)
-    throw SheshaError.throwPropertyError('propertyName');
+  // Validation: Check for missing required properties
+  const missingProperty = !sourceType
+    ? 'sourceType'
+    : sourceType === 'Entity' && isEntityTypeIdEmpty(entityType)
+      ? 'entityType'
+      : sourceType === 'Url' && !endpoint
+        ? 'endpoint'
+        : sourceType === 'Form' && !propertyName
+          ? 'propertyName'
+          : null;
+
+  // Create validation result for error icon display (in both designer and runtime modes)
+  let validationResult: IModelValidation | undefined;
+  let validationType: 'error' | 'warning' | 'info' = 'warning';
+
+  if (missingProperty) {
+    const getErrorMessage = (prop: string): string => {
+      switch (prop) {
+        case 'entityType':
+          return 'Please configure a valid Entity Type in the component settings.';
+        case 'endpoint':
+          return 'Please configure a valid Endpoint in the component settings.';
+        case 'propertyName':
+          return 'Please configure a valid Property Name in the component settings.';
+        case 'sourceType':
+          return 'Please configure a Source Type in the component settings.';
+        default:
+          return 'Please configure the required properties in the component settings.';
+      }
+    };
+
+    validationResult = {
+      hasErrors: true,
+      componentId: id,
+      componentName: componentName,
+      componentType: 'datatableContext',
+      errors: [{ propertyName: missingProperty, error: getErrorMessage(missingProperty) }],
+    };
+  } else if (!hasChildComponents) {
+    // Show info icon when configured correctly but has no children
+    validationResult = {
+      hasErrors: true,
+      componentId: id,
+      componentName: componentName,
+      componentType: 'datatableContext',
+      errors: [{ error: 'Drag and drop child components inside this Data Context to display data.' }],
+    };
+    validationType = 'info';
+  }
 
   const provider = (getFieldValue = undefined, onChange = undefined): ReactElement => {
     // Determine the appropriate style class based on designer mode and child components
     const getStyleClass = (): string => {
-      if (!isDesignerMode && hasChildComponents) return styles.dataContextRuntime;
-      if (!isDesignerMode && !hasChildComponents) return styles.dataContextRuntimeEmpty;
-      return hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty;
+      if (isDesignerMode)
+        return hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty;
+      else {
+        if (hasChildComponents)
+          return styles.dataContextRuntime;
+        else
+          return styles.dataContextRuntimeEmpty;
+      }
     };
 
     // Show only the empty state box when empty and in designer mode
-    if (!hasChildComponents && isDesignerMode) {
-      return (
+    let content: ReactElement;
+    if (isDesignerMode && !hasChildComponents) {
+      content = (
         <div className={cx(styles.dataContextDesignerEmpty)}>
           <TableContextEmptyState containerId={id} componentId={id} />
         </div>
       );
+    } else {
+      content = (
+        <div className={getStyleClass()}>
+          <DataTableProvider
+            userConfigId={props.id}
+            entityType={entityType}
+            getDataPath={getDataPath}
+            propertyName={propertyName}
+            actionOwnerId={id}
+            actionOwnerName={componentName}
+            sourceType={props.sourceType}
+            initialPageSize={props.defaultPageSize ?? 10}
+            dataFetchingMode={props.dataFetchingMode ?? 'paging'}
+            getFieldValue={getFieldValue}
+            onChange={onChange}
+            grouping={props.grouping}
+            sortMode={props.sortMode}
+            strictSortBy={props.strictSortBy}
+            strictSortOrder={props.strictSortOrder}
+            standardSorting={props.standardSorting}
+            allowReordering={evaluateYesNo(allowReordering, formMode)}
+            permanentFilter={permanentFilter}
+            disableRefresh={disableRefresh}
+            customReorderEndpoint={customReorderEndpoint}
+            onBeforeRowReorder={onBeforeRowReorder}
+            onAfterRowReorder={onAfterRowReorder}
+          >
+            <ComponentsContainer
+              containerId={id}
+              className={isDesignerMode ? `${styles.dataContextComponentsContainer} ${!hasChildComponents ? styles.dataContextComponentsContainerEmpty : ''}` : undefined}
+              itemsLimit={-1}
+              emptyInsertThreshold={20}
+              showHintWhenEmpty={false}
+            />
+          </DataTableProvider>
+        </div>
+      );
     }
 
-    // Show alert when using DummyTable entity
-    const showDummyAlert = entityType === 'Shesha.Core.DummyTable';
+    // Wrap with error icon if there are validation errors
+    if (validationResult?.hasErrors) {
+      return (
+        <ErrorIconPopover validationResult={validationResult} type={validationType}>
+          {content}
+        </ErrorIconPopover>
+      );
+    }
 
-    return (
-      <div className={cx(getStyleClass())}>
-        {isDesignerMode && (
-          <div className="data-context-label">
-            <DatabaseOutlined />
-            Data Context {hasChildComponents && `(${childComponentIds.length} child components)`}
-            {showDummyAlert && (
-              <span>
-                <InfoCircleOutlined style={{ marginLeft: 8, color: theme.application.warningColor }} />
-                <span>This Data Context is using dummy data. Please change the Entity Type in the settings to use real data.</span>
-              </span>
-            )}
-          </div>
-        )}
-        <DataTableProvider
-          userConfigId={props.id}
-          entityType={entityType}
-          getDataPath={getDataPath}
-          propertyName={propertyName}
-          actionOwnerId={id}
-          actionOwnerName={componentName}
-          sourceType={props.sourceType}
-          initialPageSize={props.defaultPageSize ?? 10}
-          dataFetchingMode={props.dataFetchingMode ?? 'paging'}
-          getFieldValue={getFieldValue}
-          onChange={onChange}
-          grouping={props.grouping}
-          sortMode={props.sortMode}
-          strictSortBy={props.strictSortBy}
-          strictSortOrder={props.strictSortOrder}
-          standardSorting={props.standardSorting}
-          allowReordering={evaluateYesNo(allowReordering, formMode)}
-          permanentFilter={permanentFilter}
-          disableRefresh={disableRefresh}
-          customReorderEndpoint={customReorderEndpoint}
-          onBeforeRowReorder={onBeforeRowReorder}
-          onAfterRowReorder={onAfterRowReorder}
-        >
-          {!isDesignerMode && !hasChildComponents && (
-            <div className="data-context-label">
-              <DatabaseOutlined />
-              Data Context (No child components found)
-            </div>
-          )}
-          <ComponentsContainer
-            containerId={id}
-            className={isDesignerMode ? `${styles.dataContextComponentsContainer} ${!hasChildComponents ? styles.dataContextComponentsContainerEmpty : ''}` : undefined}
-            itemsLimit={-1}
-          />
-        </DataTableProvider>
-      </div>
-    );
+    return content;
   };
+
   if (props?.hidden) {
     return null;
   }

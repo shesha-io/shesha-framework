@@ -4,10 +4,11 @@ import { useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
-import ComponentError from '../componentErrors';
+import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
 import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { useStyles } from './styles/styles';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -27,6 +28,7 @@ export const formComponentActualModelPropertyFilter = (component: IToolboxCompon
 };
 
 const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
+  const { styles } = useStyles();
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
   const { isComponentFiltered } = useForm();
@@ -61,43 +63,75 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
 
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
 
-  const control = useMemo(() => (
-    <toolboxComponent.Factory
-      form={shaForm.antdForm}
-      model={actualModel}
-      calculatedModel={calculatedModel}
-      shaApplication={shaApplication}
-      key={actualModel.id}
-    />
-  ), [actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
+  const control = useMemo(() => {
+    if (!toolboxComponent) return null;
 
-  if (!toolboxComponent)
     return (
-      <ComponentError
-        errors={{
-          hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type,
-        }}
-        message={`Component '${actualModel.type}' not found`}
-        type="error"
+      <toolboxComponent.Factory
+        form={shaForm.antdForm}
+        model={actualModel}
+        calculatedModel={calculatedModel}
+        shaApplication={shaApplication}
+        key={actualModel.id}
       />
     );
+  }, [toolboxComponent, actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
 
-  if (shaForm.formMode === 'designer') {
-    const validationResult: IModelValidation = { hasErrors: false, errors: [] };
+
+  // Run validation in both designer and runtime modes
+  const validationResult = useMemo((): IModelValidation | undefined => {
+    const errors: Array<{ propertyName?: string; error: string }> = [];
+
     if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
-      validationResult.hasErrors = true;
-      validationResult.errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
+      errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
     }
+
     toolboxComponent?.validateModel?.(actualModel, (propertyName, error) => {
-      validationResult.hasErrors = true;
-      validationResult.errors.push({ propertyName, error });
+      errors.push({ propertyName, error });
     });
-    if (validationResult.hasErrors) {
-      validationResult.componentId = actualModel.id;
-      validationResult.componentName = actualModel.componentName;
-      validationResult.componentType = actualModel.type;
-      return <ComponentError errors={validationResult} message="" type="warning" />;
+
+    if (errors.length > 0) {
+      return {
+        hasErrors: true,
+        componentId: actualModel.id,
+        componentName: actualModel.componentName,
+        componentType: actualModel.type,
+        errors,
+      };
     }
+
+    return undefined;
+  }, [toolboxComponent, actualModel]);
+
+  // Wrap component with error icon if there are validation errors
+  const wrappedControl = useMemo(() => {
+    return validationResult?.hasErrors ? (
+      <ErrorIconPopover validationResult={validationResult} type="warning">
+        {control}
+      </ErrorIconPopover>
+    ) : control;
+  }, [validationResult, control]);
+
+  // Check for validation errors (in both designer and runtime modes)
+  if (!toolboxComponent) {
+    const componentNotFoundError: IModelValidation = {
+      hasErrors: true,
+      componentId: actualModel.id,
+      componentName: actualModel.componentName,
+      componentType: actualModel.type,
+      errors: [{ error: `Component '${actualModel.type}' not found` }],
+    };
+    // Component not found - return early with just error message
+    return (
+      <div className={styles.unregisteredComponentContainer}>
+        <ErrorIconPopover
+          validationResult={componentNotFoundError}
+          type="error"
+        >
+          <div className={styles.unregisteredComponentMessage}>Component &apos;{actualModel.type}&apos; not registered</div>
+        </ErrorIconPopover>
+      </div>
+    );
   }
 
   if (shaForm.form.settings.isSettingsForm)
@@ -120,7 +154,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
 
   return (
     <AttributeDecorator attributes={attributes}>
-      {control}
+      {wrappedControl}
     </AttributeDecorator>
   );
 };

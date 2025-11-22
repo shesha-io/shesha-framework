@@ -9,8 +9,13 @@ import { migrateFormApi } from '@/designer-components/_common-migrations/migrate
 import { getSettings } from './settingsForm';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
+/**
+ * Data Context component (dataContext)
+ * This is the new clean implementation of the data context component.
+ * Legacy datatableContext components will be automatically migrated to this type.
+ */
 const TableContextComponent: TableContextComponentDefinition = {
-  type: 'datatableContext',
+  type: 'dataContext',
   isInput: true,
   isOutput: true,
   name: 'Data Context',
@@ -18,33 +23,25 @@ const TableContextComponent: TableContextComponentDefinition = {
   Factory: ({ model }) => {
     return model.hidden ? null : <TableContext {...model} />;
   },
-  initModel: (model) => {
-    // Only set defaults for completely new components (when dragging from toolbox)
-    const isNewComponent = !model.sourceType && isEntityTypeIdEmpty(model.entityType);
-
-    if (isNewComponent) {
-      return {
-        ...model,
-        sourceType: 'Entity',
-        entityType: 'Shesha.Core.DummyTable',
-        dataFetchingMode: 'paging',
-        defaultPageSize: 10,
-      };
-    }
-
-    return model;
-  },
   migrator: (m) =>
     m
-      .add<ITableContextComponentProps>(0, (prev) => ({ ...prev, name: prev['uniqueStateId'] ?? prev['name'] }))
-      .add<ITableContextComponentProps>(1, (prev) => ({ ...prev, sourceType: 'Entity' }))
-      .add<ITableContextComponentProps>(2, (prev) => ({ ...prev, defaultPageSize: 10 }))
-      .add<ITableContextComponentProps>(3, (prev) => ({ ...prev, dataFetchingMode: 'paging' }))
-      .add<ITableContextComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc', allowReordering: 'no' }))
-      .add<ITableContextComponentProps>(6, (prev) => migrateVisibility(prev))
-      .add<ITableContextComponentProps>(7, (prev) => ({ ...migrateFormApi.properties(prev) })),
-  settingsFormMarkup: getSettings,
+      .add<ITableContextComponentProps>(0, (prev) => {
+        return {
+          ...prev,
+          sourceType: 'Entity',
+          entityType: 'Shesha.Core.DummyTable',
+          dataFetchingMode: 'paging',
+          defaultPageSize: 10,
+          sortMode: 'standard',
+          strictSortOrder: 'asc',
+          allowReordering: 'no',
+          name: prev['uniqueStateId'] ?? prev['name'],
+        };
+      })
+      .add<ITableContextComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ITableContextComponentProps>(2, (prev) => migrateVisibility(prev))
+      .add<ITableContextComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) })),
+  settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   getFieldsToFetch: (propertyName, rawModel) => {
     return rawModel.sourceType === 'Form' ? [propertyName] : [];

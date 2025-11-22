@@ -23,6 +23,8 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     wrapperStyle,
     style: incomingStyle,
     noDefaultStyling,
+    emptyInsertThreshold = 20,
+    showHintWhenEmpty = true,
   } = props;
 
   const { styles } = useStyles();
@@ -120,7 +122,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
       )}
     >
       <>
-        {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
+        {childIds.length === 0 && showHintWhenEmpty && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
         <ReactSortable
           disabled={readOnly}
           onStart={onDragStart}
@@ -129,6 +131,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
           setList={onSetList}
           fallbackOnBody={true}
           swapThreshold={0.5}
+          invertSwap={true}
           group={{
             name: 'shared',
           }}
@@ -136,7 +139,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
           draggable={`.${styles.shaComponent}`}
           animation={75}
           ghostClass={styles.shaComponentGhost}
-          emptyInsertThreshold={20}
+          emptyInsertThreshold={emptyInsertThreshold}
           handle={`.${styles.componentDragHandle}`}
           scroll={true}
           bubbleScroll={true}
