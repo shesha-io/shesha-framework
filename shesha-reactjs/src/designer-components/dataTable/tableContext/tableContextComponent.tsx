@@ -40,11 +40,6 @@ const TableContextComponent: TableContextComponentDefinition = {
 
     return initialModel;
   },
-  migrator: (m) =>
-    m
-      .add<ITableContextComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<ITableContextComponentProps>(1, (prev) => migrateVisibility(prev))
-      .add<ITableContextComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) })),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   getFieldsToFetch: (propertyName, rawModel) => {
