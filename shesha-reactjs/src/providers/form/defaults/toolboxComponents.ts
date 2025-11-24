@@ -183,6 +183,7 @@ export const getToolboxComponents = (
       name: 'Tables and Lists',
       visible: true,
       components: [
+        TableContextComponentLegacy,
         TableContext,
         DataTable,
         DataList,
