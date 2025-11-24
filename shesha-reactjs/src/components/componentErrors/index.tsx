@@ -1,6 +1,7 @@
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
-import { Alert, Button, Tooltip } from 'antd';
+import { Button } from 'antd';
 import React, { FC } from 'react';
+import ErrorIconPopover from './errorIconPopover';
 import { useStyles } from './styles/styles';
 
 export interface IComponentErrorProps {
@@ -17,24 +18,6 @@ const ComponentError: FC<IComponentErrorProps> = ({
 }) => {
   const { styles } = useStyles();
 
-  const errorTip = (errors: IModelValidation): JSX.Element => <ul>{errors.errors.map((error, index) => <li key={index}>{error.error}</li>)}</ul>;
-
-  const tooltipClassName = type === 'info'
-    ? styles.componentErrorInfo
-    : type === 'warning'
-      ? styles.componentErrorWaring
-      : type === 'error'
-        ? styles.componentErrorError
-        : '';
-
-  const alertClassName = type === 'info'
-    ? styles.componentErrorTextInfo
-    : type === 'warning'
-      ? styles.componentErrorTextWaring
-      : type === 'error'
-        ? styles.componentErrorTextError
-        : '';
-
   const componentLabel = errors?.componentType ?? 'Component';
   const messageText =
     message ??
@@ -42,19 +25,37 @@ const ComponentError: FC<IComponentErrorProps> = ({
       ? `'${componentLabel}' Hint:`
       : `'${componentLabel}' has configuration issue(s)`);
 
-  const body = (
-    <Alert
-      className={alertClassName}
-      type={type}
-      message={<strong>{messageText}</strong>}
-      action={Boolean(resetErrorBoundary) && <Button type="link" onClick={resetErrorBoundary}>Try again</Button>}
-      showIcon={true}
-    />
+  const containerClassName = type === 'info'
+    ? styles.componentErrorTextInfo
+    : type === 'warning'
+      ? styles.componentErrorTextWaring
+      : type === 'error'
+        ? styles.componentErrorTextError
+        : '';
+
+  const content = (
+    <div className={`${styles.componentErrorContainer} ${containerClassName}`}>
+      <div className={styles.componentErrorHeader}>
+        <strong className={styles.componentErrorMessage}>{messageText}</strong>
+        {Boolean(resetErrorBoundary) && (
+          <Button type="link" onClick={resetErrorBoundary} className={styles.componentErrorButton}>
+            Try again
+          </Button>
+        )}
+      </div>
+    </div>
   );
 
-  return errors?.errors?.length > 0
-    ? <Tooltip overlayClassName={tooltipClassName} title={errorTip(errors)}>{body}</Tooltip>
-    : body;
+  return (
+    <ErrorIconPopover
+      validationResult={errors}
+      type={type}
+      message={message}
+      position="top-right"
+    >
+      {content}
+    </ErrorIconPopover>
+  );
 };
 
 export default ComponentError;
