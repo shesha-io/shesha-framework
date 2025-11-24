@@ -150,6 +150,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
           customReorderEndpoint={customReorderEndpoint}
           onBeforeRowReorder={onBeforeRowReorder}
           onAfterRowReorder={onAfterRowReorder}
+          contextValidation={validationResult}
         >
           <ComponentsContainer
             containerId={id}

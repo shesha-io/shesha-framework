@@ -149,6 +149,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     clearFilters,
     removeColumnFilter,
     tableFilter,
+    contextValidation,
   } = useDataTableStore();
 
   const { totalRows } = useDataTable();
@@ -223,14 +224,21 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const hasNoColumns = !items || items.length === 0;
   const hasNoRepository = !repository;
 
+  // Check if DataContext has configuration errors (not just info messages)
+  const hasContextConfigErrors = contextValidation?.hasErrors && contextValidation?.validationType === 'warning';
+
   const toggleFieldPropertiesSidebar = (): void => {
     if (!isSelectingColumns && !isFiltering) setIsInProgressFlag({ isFiltering: true });
     else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
   };
 
-  // In designer mode, show StandaloneTable if columns were deliberately deleted
-  // (hasAutoConfiguredRef.current means auto-config was attempted, but we still have no columns)
-  if (isDesignMode && hasNoColumns && hasAutoConfiguredRef.current) {
+  // In designer mode, show StandaloneTable if:
+  // 1. Columns were deliberately deleted (hasAutoConfiguredRef.current means auto-config was attempted)
+  // 2. Parent DataContext has configuration errors
+  const shouldShowStandalone = hasNoColumns && hasAutoConfiguredRef.current;
+  const shouldShowEmptyDueToContextErrors = hasContextConfigErrors;
+
+  if (isDesignMode && (shouldShowStandalone || shouldShowEmptyDueToContextErrors)) {
     return <StandaloneTable {...props} />;
   }
 
