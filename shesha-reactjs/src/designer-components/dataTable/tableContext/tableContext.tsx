@@ -116,74 +116,58 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
   const provider = (getFieldValue = undefined, onChange = undefined): ReactElement => {
     // Determine the appropriate style class based on designer mode and child components
-    const getStyleClass = (): string => {
-      if (isDesignerMode)
-        return hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty;
-      else {
-        if (hasChildComponents)
-          return styles.dataContextRuntime;
-        else
-          return styles.dataContextRuntimeEmpty;
-      }
-    };
+    const styleClass = isDesignerMode
+      ? (hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty)
+      : (hasChildComponents ? styles.dataContextRuntime : styles.dataContextRuntimeEmpty);
 
     // Show only the empty state box when empty and in designer mode
-    let content: ReactElement;
-    if (isDesignerMode && !hasChildComponents) {
-      content = (
-        <div className={cx(styles.dataContextDesignerEmpty)}>
-          <TableContextEmptyState containerId={id} componentId={id} />
-        </div>
-      );
-    } else {
-      content = (
-        <div className={getStyleClass()}>
-          <DataTableProvider
-            userConfigId={props.id}
-            entityType={entityType}
-            getDataPath={getDataPath}
-            propertyName={propertyName}
-            actionOwnerId={id}
-            actionOwnerName={componentName}
-            sourceType={props.sourceType}
-            initialPageSize={props.defaultPageSize ?? 10}
-            dataFetchingMode={props.dataFetchingMode ?? 'paging'}
-            getFieldValue={getFieldValue}
-            onChange={onChange}
-            grouping={props.grouping}
-            sortMode={props.sortMode}
-            strictSortBy={props.strictSortBy}
-            strictSortOrder={props.strictSortOrder}
-            standardSorting={props.standardSorting}
-            allowReordering={evaluateYesNo(allowReordering, formMode)}
-            permanentFilter={permanentFilter}
-            disableRefresh={disableRefresh}
-            customReorderEndpoint={customReorderEndpoint}
-            onBeforeRowReorder={onBeforeRowReorder}
-            onAfterRowReorder={onAfterRowReorder}
-          >
-            <ComponentsContainer
-              containerId={id}
-              className={isDesignerMode ? `${styles.dataContextComponentsContainer} ${!hasChildComponents ? styles.dataContextComponentsContainerEmpty : ''}` : undefined}
-              itemsLimit={-1}
-              emptyInsertThreshold={20}
-              showHintWhenEmpty={false}
-            />
-          </DataTableProvider>
-        </div>
-      );
-    }
+    const content: ReactElement = (isDesignerMode && !hasChildComponents) ? (
+      <div className={cx(styles.dataContextDesignerEmpty)}>
+        <TableContextEmptyState containerId={id} componentId={id} />
+      </div>
+    ) : (
+      <div className={styleClass}>
+        <DataTableProvider
+          userConfigId={props.id}
+          entityType={entityType}
+          getDataPath={getDataPath}
+          propertyName={propertyName}
+          actionOwnerId={id}
+          actionOwnerName={componentName}
+          sourceType={props.sourceType}
+          initialPageSize={props.defaultPageSize ?? 10}
+          dataFetchingMode={props.dataFetchingMode ?? 'paging'}
+          getFieldValue={getFieldValue}
+          onChange={onChange}
+          grouping={props.grouping}
+          sortMode={props.sortMode}
+          strictSortBy={props.strictSortBy}
+          strictSortOrder={props.strictSortOrder}
+          standardSorting={props.standardSorting}
+          allowReordering={evaluateYesNo(allowReordering, formMode)}
+          permanentFilter={permanentFilter}
+          disableRefresh={disableRefresh}
+          customReorderEndpoint={customReorderEndpoint}
+          onBeforeRowReorder={onBeforeRowReorder}
+          onAfterRowReorder={onAfterRowReorder}
+        >
+          <ComponentsContainer
+            containerId={id}
+            className={isDesignerMode ? `${styles.dataContextComponentsContainer} ${!hasChildComponents ? styles.dataContextComponentsContainerEmpty : ''}` : undefined}
+            itemsLimit={-1}
+            emptyInsertThreshold={20}
+            showHintWhenEmpty={false}
+          />
+        </DataTableProvider>
+      </div>
+    );
 
     // Wrap with error icon if there are validation errors
-    if (validationResult?.hasErrors) {
-      return (
-        <ErrorIconPopover validationResult={validationResult}>
-          {content}
-        </ErrorIconPopover>
-      );
-    }
-
-    return content;
+    return validationResult?.hasErrors ? (
+      <ErrorIconPopover validationResult={validationResult}>
+        {content}
+      </ErrorIconPopover>
+    ) : content;
   };
 
   if (props?.hidden) {
