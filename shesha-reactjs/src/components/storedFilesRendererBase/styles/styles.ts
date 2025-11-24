@@ -69,7 +69,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       font-size: ${fontSizeValue} !important;
       display: flex;
       ${layout ? `width: ${width ?? thumbnailWidth} !important;` : ''}
-      ${layout ? `height: ${height ?? thumbnailWidth} !important;` : ''}
+      ${layout ? `height: ${height ?? thumbnailHeight} !important;` : ''}
 
       :before {
         top: 0;
