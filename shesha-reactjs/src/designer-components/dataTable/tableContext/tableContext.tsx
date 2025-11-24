@@ -17,6 +17,70 @@ import { getEntityTypeName, isEntityTypeIdEmpty } from '@/providers/metadataDisp
 
 type ITableContextInnerProps = ITableContextComponentProps;
 
+/**
+ * Validates the table context configuration and returns validation result
+ */
+const validateTableContext = (
+  sourceType: string,
+  entityType: ITableContextComponentProps['entityType'],
+  endpoint: string,
+  propertyName: string,
+  hasChildComponents: boolean,
+  componentId: string,
+  componentName: string,
+): IModelValidation | undefined => {
+  // Check for missing required properties
+  const missingProperty = !sourceType
+    ? 'sourceType'
+    : sourceType === 'Entity' && isEntityTypeIdEmpty(entityType)
+      ? 'entityType'
+      : sourceType === 'Url' && !endpoint
+        ? 'endpoint'
+        : sourceType === 'Form' && !propertyName
+          ? 'propertyName'
+          : null;
+
+  if (missingProperty) {
+    const getErrorMessage = (prop: string): string => {
+      switch (prop) {
+        case 'entityType':
+          return 'Please configure a valid Entity Type in the component settings.';
+        case 'endpoint':
+          return 'Please configure a valid Endpoint in the component settings.';
+        case 'propertyName':
+          return 'Please configure a valid Property Name in the component settings.';
+        case 'sourceType':
+          return 'Please configure a Source Type in the component settings.';
+        default:
+          return 'Please configure the required properties in the component settings.';
+      }
+    };
+
+    return {
+      hasErrors: true,
+      componentId,
+      componentName,
+      componentType: 'dataContext',
+      errors: [{ propertyName: missingProperty, error: getErrorMessage(missingProperty) }],
+      validationType: 'warning',
+    };
+  }
+
+  if (!hasChildComponents) {
+    // Show info icon when configured correctly but has no children
+    return {
+      hasErrors: true,
+      componentId,
+      componentName,
+      componentType: 'dataContext',
+      errors: [{ error: 'Drag and drop child components inside this Data Context to display data.' }],
+      validationType: 'info',
+    };
+  }
+
+  return undefined;
+};
+
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering, components, onBeforeRowReorder, onAfterRowReorder } = props;
   const { formMode } = useForm();
@@ -39,55 +103,16 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
   const getDataPath = evaluateString(endpoint, { data });
 
-  // Validation: Check for missing required properties
-  const missingProperty = !sourceType
-    ? 'sourceType'
-    : sourceType === 'Entity' && isEntityTypeIdEmpty(entityType)
-      ? 'entityType'
-      : sourceType === 'Url' && !endpoint
-        ? 'endpoint'
-        : sourceType === 'Form' && !propertyName
-          ? 'propertyName'
-          : null;
-
-  // Create validation result for error icon display (in both designer and runtime modes)
-  let validationResult: IModelValidation | undefined;
-  let validationType: 'error' | 'warning' | 'info' = 'warning';
-
-  if (missingProperty) {
-    const getErrorMessage = (prop: string): string => {
-      switch (prop) {
-        case 'entityType':
-          return 'Please configure a valid Entity Type in the component settings.';
-        case 'endpoint':
-          return 'Please configure a valid Endpoint in the component settings.';
-        case 'propertyName':
-          return 'Please configure a valid Property Name in the component settings.';
-        case 'sourceType':
-          return 'Please configure a Source Type in the component settings.';
-        default:
-          return 'Please configure the required properties in the component settings.';
-      }
-    };
-
-    validationResult = {
-      hasErrors: true,
-      componentId: id,
-      componentName: componentName,
-      componentType: 'dataContext',
-      errors: [{ propertyName: missingProperty, error: getErrorMessage(missingProperty) }],
-    };
-  } else if (!hasChildComponents) {
-    // Show info icon when configured correctly but has no children
-    validationResult = {
-      hasErrors: true,
-      componentId: id,
-      componentName: componentName,
-      componentType: 'dataContext',
-      errors: [{ error: 'Drag and drop child components inside this Data Context to display data.' }],
-    };
-    validationType = 'info';
-  }
+  // Validate component configuration
+  const validationResult = validateTableContext(
+    sourceType,
+    entityType,
+    endpoint,
+    propertyName,
+    hasChildComponents,
+    id,
+    componentName,
+  );
 
   const provider = (getFieldValue = undefined, onChange = undefined): ReactElement => {
     // Determine the appropriate style class based on designer mode and child components
@@ -152,7 +177,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     // Wrap with error icon if there are validation errors
     if (validationResult?.hasErrors) {
       return (
-        <ErrorIconPopover validationResult={validationResult} type={validationType}>
+        <ErrorIconPopover validationResult={validationResult}>
           {content}
         </ErrorIconPopover>
       );

@@ -26,15 +26,18 @@ export type IErrorIconPopoverProps = IErrorIconPopoverWithValidation | IErrorIco
 export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   children,
   validationResult,
-  type = 'warning',
+  type,
   message,
   position = 'top-right',
   title,
 }) => {
   const { styles } = useStyles();
 
+  // Use validationType from validationResult if available, otherwise fall back to type prop or 'warning'
+  const effectiveType = validationResult?.validationType ?? type ?? 'warning';
+
   const getIcon = (): React.ReactElement => {
-    switch (type) {
+    switch (effectiveType) {
       case 'error':
         return <ExclamationCircleOutlined className={styles.errorIcon} />;
       case 'info':
@@ -105,7 +108,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   }
 
   // Determine the popover title
-  const popoverTitle = title !== undefined ? title : (type === 'info' ? 'Hint:' : `'${validationResult?.componentType}' has configuration issue(s)`);
+  const popoverTitle = title !== undefined ? title : (effectiveType === 'info' ? 'Hint:' : `'${validationResult?.componentType}' has configuration issue(s)`);
 
   return (
     <div className={styles.errorIconContainer}>
@@ -120,7 +123,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
         <div
           className={`${styles.iconWrapper} ${getPositionClass()}`}
           role="img"
-          aria-label={`${type} indicator`}
+          aria-label={`${effectiveType} indicator`}
         >
           {getIcon()}
         </div>
