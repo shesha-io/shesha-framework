@@ -53,6 +53,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     ${containerMinWidth ? `min-width: ${containerMinWidth} !important;` : ''}
     ${containerHeight ? `height: ${containerHeight} !important;` : ''}
     ${containerMinHeight ? `min-height: ${containerMinHeight} !important;` : ''}
+    ${containerMaxHeight ? `max-height: ${containerMaxHeight} !important;` : ''}
+    overflow: auto;
     
     .ant-upload:not(.ant-upload-disabled) {
       .icon {
@@ -66,8 +68,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       margin: 0px !important;
       font-size: ${fontSizeValue} !important;
       display: flex;
-      ${layout ? `width: ${width ?? '54px'} !important;` : ''}
-      ${layout ? `height: ${height ?? '54px'} !important;` : ''}
+      ${layout ? `width: ${width ?? thumbnailWidth} !important;` : ''}
+      ${layout ? `height: ${height ?? thumbnailHeight} !important;` : ''}
 
       :before {
         top: 0;
@@ -124,6 +126,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       ${containerWidth ? `width: calc(${containerWidth} - 32px) !important;` : ''}
       ${containerMaxWidth ? `max-width: calc(${containerMaxWidth} - 32px) !important;` : ''}
       ${containerMinWidth ? `min-width: calc(${containerMinWidth} - 32px) !important;` : ''}
+      gap: 0px !important;
     }
 
     .ant-upload-drag:hover:not(.ant-upload-disabled) {
@@ -169,15 +172,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       display: flex;
       margin-top: 4px;
       justify-content: flex-end;
+      height: ${fontSizeValue} !important;
     }
   
     .${prefixCls}-upload-list {
-      gap: ${gapValue} !important;
+      ${layout ? `gap: ${gapValue} !important;` : ''}
       padding: 2px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      scrollbar-width: thin;
       &::-webkit-scrollbar {
         width: 8px;
         background-color: transparent;
@@ -291,7 +294,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       ${containerMinHeight ? `min-height: calc(${containerMinHeight} - ${downloadZipBtnHeight}) !important;` : ''}
     }
 
-    .stored-files-renderer-btn-container {
+    .${storedFilesRendererBtnContainer} {
       justify-content: flex-start;
       .ant-btn {
         padding: 0;
