@@ -361,7 +361,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             rowHeight={props.rowHeight}
             rowPadding={props.rowPadding}
             rowBorder={props.rowBorder}
-            boxShadow={props.boxShadow}
+            boxShadow={finalBoxShadow}
             sortableIndicatorColor={props.sortableIndicatorColor}
           />
         </div>
