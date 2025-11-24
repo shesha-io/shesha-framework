@@ -51,7 +51,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
             onFocus: calculatedModel.eventHandlers.onFocus,
             onChange: (e: CheckboxChangeEvent) => {
               calculatedModel.eventHandlers.onChange({ value: e.target.checked }, e);
-              if (typeof onChange === 'function') onChange(e);
+              if (typeof onChange === 'function') onChange(e.target.checked);
             },
           };
 
