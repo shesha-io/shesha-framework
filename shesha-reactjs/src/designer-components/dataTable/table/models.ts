@@ -4,6 +4,7 @@ import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigura
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ICommonContainerProps } from '../../container/interfaces';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { ComponentDefinition } from '@/interfaces';
 
 export type RowDroppedMode = 'executeScript' | 'showDialog';
@@ -53,6 +54,7 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   border?: IBorderValue;
   backgroundColor?: string;
   boxShadow?: string;
+  shadow?: IShadowValue;
   sortableIndicatorColor?: string;
   enableStyleOnReadonly?: boolean;
 }
