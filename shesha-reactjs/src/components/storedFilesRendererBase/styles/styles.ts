@@ -176,12 +176,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
   
     .${prefixCls}-upload-list {
-      ${layout ? `gap: ${gapValue}` : ''} !important;
+      ${layout ? `gap: ${gapValue} !important` : ''};
       padding: 2px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       &::-webkit-scrollbar {
         width: 8px;
         background-color: transparent;
