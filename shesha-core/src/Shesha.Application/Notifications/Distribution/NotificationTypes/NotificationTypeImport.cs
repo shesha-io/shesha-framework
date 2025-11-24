@@ -74,8 +74,8 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
                 item.AllowAttachments == distributedItem.AllowAttachments &&
                 item.Disable == distributedItem.Disable &&
                 item.CanOptOut == distributedItem.CanOptOut &&
-                item.Category == (distributedItem.Category ?? string.Empty) &&
-                item.OverrideChannels == (distributedItem.OverrideChannels ?? string.Empty);
+                (item.Category ?? string.Empty) == (distributedItem.Category ?? string.Empty) &&
+                (item.OverrideChannels ?? string.Empty) == (distributedItem.OverrideChannels ?? string.Empty);
 
             if (!equals)
                 return false;
