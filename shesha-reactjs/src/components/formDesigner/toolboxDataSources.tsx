@@ -22,7 +22,7 @@ const getVisibleProperties = (items: IPropertyMetadata[], searchText: string): I
   if (!items) return result;
 
   items.forEach((item) => {
-    if (!item.isFrameworkRelated && item.isVisible) {
+    if (!item.isFrameworkRelated && !item.isItemsType && item.isVisible) {
       const childItems = isPropertiesArray(item.properties) ? getVisibleProperties(item.properties, searchText) : [];
       const matched =
         (searchText ?? '') === '' ||

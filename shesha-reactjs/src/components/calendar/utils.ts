@@ -14,6 +14,7 @@ export const getLayerEventItems = (
 ): ICalendarLayersProps => {
   let events;
   const { startTime, endTime, title, icon, iconColor, showIcon, color, onDblClick, onSelect } = item;
+
   if (Array.isArray(layerDataItem)) {
     events = layerDataItem
       .filter((i) => i?.[startTime] && i?.[endTime])
@@ -33,7 +34,7 @@ export const getLayerEventItems = (
           showIcon,
           color,
           iconColor: iconColor || '#000000',
-          title,
+          titleTemplate: title,
           onDblClick,
           onSelect,
         };
@@ -56,7 +57,7 @@ export const getLayerEventItems = (
           showIcon,
           color,
           iconColor: iconColor || '#000000',
-          title,
+          titleTemplate: title,
           onDblClick,
           onSelect,
         },
@@ -82,7 +83,7 @@ export const getLayerOptions = (layers: ICalendarLayersProps[]): Array<{ label: 
       disabled: !i.allowChangeVisibility,
     }));
 
-export const getQueryProperties = ({ startTime, endTime, propertyList }: ICalendarLayersProps): string => {
+export const getQueryProperties = ({ startTime, endTime, propertyList, title }: ICalendarLayersProps): string => {
   const properties = new Set<string>(['id']);
   if (startTime?.trim()) {
     properties.add(startTime);
@@ -96,6 +97,10 @@ export const getQueryProperties = ({ startTime, endTime, propertyList }: ICalend
         properties.add(property);
       }
     });
+  }
+  // Add 'title' property if it's used in the template
+  if (title && typeof title === 'string' && title.includes('{{title}}')) {
+    properties.add('title');
   }
   return Array.from(properties).join(' ');
 };

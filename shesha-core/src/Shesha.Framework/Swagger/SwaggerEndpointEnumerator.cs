@@ -4,6 +4,7 @@ using Shesha.Application.Services;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -36,7 +37,7 @@ namespace Shesha.Swagger
 
                 foreach (var service in types)
                 {
-                    if (service.ImplementsGenericInterface(typeof(IDynamicCrudAppService<,,>)))
+                    if (service.IsSheshaDynamicCrudAppService())
                     {
                         // entity service
                         var genericInterface = service.GetGenericInterfaces(typeof(IDynamicCrudAppService<,,>)).First();

@@ -181,9 +181,8 @@ FOREIGN KEY([{CurrentColumn}]) REFERENCES {primarySchemaTable} ({primaryColumnNa
                 case DbColumnTypeEnum.Int32: return "int";
                 case DbColumnTypeEnum.Int64: return "bigint";
                 case DbColumnTypeEnum.Boolean: return "bit";
-                // ToDo: AS - what is the date and time in the DB?
                 case DbColumnTypeEnum.Date: return "datetime";
-                case DbColumnTypeEnum.Time: return "datetime";
+                case DbColumnTypeEnum.Time: return "bigint";
                 case DbColumnTypeEnum.DateTime: return "datetime";
                 case DbColumnTypeEnum.ReferenceListItem: return "int";
                 case DbColumnTypeEnum.Json: return "nvarchar(max)";

@@ -148,6 +148,9 @@ export interface IComponentRuntimeProps {
 
   /** Custom onFocus handler */
   onFocusCustom?: string;
+
+  /** Custom onSelect handler */
+  onSelectCustom?: string;
 }
 
 export interface IComponentBindingProps {

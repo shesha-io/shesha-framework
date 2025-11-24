@@ -26,6 +26,8 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
 
   if (model.hidden) return null;
 
+  // Show TableWrapper when inside DataContext (even with no columns, to allow auto-configuration)
+  // Show StandaloneTable only when outside DataContext
   if (store) {
     return <TableWrapper {...model} />;
   } else {
