@@ -17,6 +17,8 @@ import { getEntityTypeName, isEntityTypeIdEmpty } from '@/providers/metadataDisp
 
 type ITableContextInnerProps = ITableContextComponentProps;
 
+type MissingProp = 'sourceType' | 'entityType' | 'endpoint' | 'propertyName';
+
 /**
  * Validates the table context configuration and returns validation result
  */
@@ -30,7 +32,7 @@ const validateTableContext = (
   componentName: string,
 ): IModelValidation | undefined => {
   // Check for missing required properties
-  const missingProperty = !sourceType
+  const missingProperty: MissingProp | null = !sourceType
     ? 'sourceType'
     : sourceType === 'Entity' && isEntityTypeIdEmpty(entityType)
       ? 'entityType'
@@ -41,7 +43,7 @@ const validateTableContext = (
           : null;
 
   if (missingProperty) {
-    const getErrorMessage = (prop: string): string => {
+    const getErrorMessage = (prop: MissingProp): string => {
       switch (prop) {
         case 'entityType':
           return 'Please configure a valid Entity Type in the component settings.';
@@ -51,8 +53,6 @@ const validateTableContext = (
           return 'Please configure a valid Property Name in the component settings.';
         case 'sourceType':
           return 'Please configure a Source Type in the component settings.';
-        default:
-          return 'Please configure the required properties in the component settings.';
       }
     };
 
@@ -164,23 +164,24 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     );
 
     // Wrap with error icon if there are validation errors
-    return validationResult?.hasErrors ? (
-      <ErrorIconPopover validationResult={validationResult}>
-        {content}
-      </ErrorIconPopover>
-    ) : content;
+    const wrappedContent = validationResult?.hasErrors
+      ? <ErrorIconPopover validationResult={validationResult}>{content}</ErrorIconPopover>
+      : content;
+
+    return wrappedContent;
   };
 
   if (props?.hidden) {
     return null;
   }
-  return sourceType === 'Form'
-    ? (
-      <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
+
+  const componentContent = sourceType === 'Form'
+    ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
         {(value, onChange) => provider(() => value, onChange)}
       </ConfigurableFormItem>
-    )
     : provider();
+
+  return componentContent;
 };
 
 export const TableContext: FC<ITableContextComponentProps> = (props) => {
