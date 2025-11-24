@@ -1,10 +1,10 @@
 import { createStyles, sheshaStyles } from '@/styles';
+import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const LEFT_SIDEBAR_WIDTH = "550px";
-  const SIDEBAR_BTN_HEIGHT = "35px";
-  const TOOLBAR_HEIGHT = "56px";
-  const HEADER_HEIGHT = "60px";
+  const { SIDEBAR_BTN_HEIGHT, TOOLBAR_HEIGHT, HEADER_HEIGHT } = LAYOUT_CONSTANTS;
+
 
   const sidebarContainerHeader = "sidebar-container-header";
   const sidebarContainerBody = "sidebar-container-body";
@@ -169,6 +169,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
         .${sidebarContainerMainArea} {
           width: 100%;
+          overflow: auto;
 
           &::not(.no-padding) {
             padding: ${sheshaStyles.paddingLG}px;
@@ -178,6 +179,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         .${designerCanvas} {
           margin: 0 auto;
           height: 100%;
+          overflow: auto;
           transform-origin: top left;
         }
       }

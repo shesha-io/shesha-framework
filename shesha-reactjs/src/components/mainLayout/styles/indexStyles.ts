@@ -95,8 +95,6 @@ export const GlobalSheshaStyles = createGlobalStyle`
     }
   }
 
-
-
   .sha-form-designer {
     .sha-index-toolbar {
       max-height: unset !important;
@@ -166,6 +164,13 @@ export const GlobalSheshaStyles = createGlobalStyle`
         text-overflow: ellipsis;
         white-space: nowrap;
         }
-       
+
     }
+
+  .${(p) => p.theme.prefixCls}-modal-root {
+    .${(p) => p.theme.prefixCls}-modal {
+      top: 100px !important;
+      vertical-align: top !important;
+    }
+  }
 `;

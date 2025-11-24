@@ -1,4 +1,4 @@
-import { Empty, Select, Spin } from 'antd';
+import { Empty, Select, SelectProps, Spin } from 'antd';
 import { ValidationErrors } from '@/components';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import React, { useMemo } from 'react';
@@ -10,12 +10,9 @@ import ReflistTag from './reflistTag';
 export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListDropDownProps<TValue>): JSX.Element => {
   const {
     referenceListId,
-    showArrow = true,
     value,
     filters,
     disabledValues,
-    width,
-    base,
     mode,
     onChange,
     readOnly,
@@ -33,7 +30,10 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     solidColor,
     showItemName,
     placeholder,
-    ...rest
+    size,
+    variant,
+    className,
+    defaultValue,
   } = props;
   const { data: refList, loading: refListLoading, error: refListError } = useReferenceList(referenceListId);
 
@@ -128,10 +128,9 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     );
   }
 
-  const commonSelectProps = {
+  const commonSelectProps: Partial<SelectProps> = {
     labelInValue: true,
     defaultActiveFirstOption: false,
-    suffixIcon: showArrow ? undefined : null,
     notFoundContent: refListLoading ? (
       <Spin />
     ) : (
@@ -144,7 +143,10 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     loading: refListLoading,
     disabled,
     filterOption: filterOption,
-    ...rest,
+    size: size,
+    variant: variant,
+    className: className,
+    defaultValue: defaultValue,
     onChange: handleChange,
     value: wrapValue(value, options),
   };
