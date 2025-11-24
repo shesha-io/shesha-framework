@@ -45,9 +45,11 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   };
 
   const getPopoverContent = (): React.ReactElement => {
-    const docUrl = validationResult?.componentType && validationResult.componentType in componentDocs
-      ? componentDocs[validationResult.componentType as keyof typeof componentDocs]
+    const componentType = validationResult?.componentType;
+    const docUrl = componentType && componentType in componentDocs
+      ? componentDocs[componentType as keyof typeof componentDocs]
       : undefined;
+
     if (validationResult?.hasErrors && validationResult.errors?.length > 0) {
       return (
         <>
