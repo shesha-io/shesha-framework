@@ -31,16 +31,16 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   position = 'top-right',
   title,
 }) => {
-  const { styles, cx } = useStyles();
+  const { styles } = useStyles();
 
   const getIcon = (): React.ReactElement => {
     switch (type) {
       case 'error':
-        return <ExclamationCircleOutlined className={cx(styles.errorIcon)} />;
+        return <ExclamationCircleOutlined className={styles.errorIcon} />;
       case 'info':
-        return <InfoCircleOutlined className={cx(styles.infoIcon)} />;
+        return <InfoCircleOutlined className={styles.infoIcon} />;
       default:
-        return <WarningOutlined className={cx(styles.warningIcon)} />;
+        return <WarningOutlined className={styles.warningIcon} />;
     }
   };
 
@@ -106,17 +106,17 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   const popoverTitle = title !== undefined ? title : (type === 'info' ? 'Hint:' : `'${validationResult?.componentType}' has configuration issue(s)`);
 
   return (
-    <div className={cx(styles.errorIconContainer)}>
+    <div className={styles.errorIconContainer}>
       {children}
       <Popover
-        content={<div className={cx(styles.popoverWrapper)}>{getPopoverContent()}</div>}
+        content={<div className={styles.popoverWrapper}>{getPopoverContent()}</div>}
         title={popoverTitle}
         trigger={["hover", "click"]}
         placement="leftTop"
         color="rgb(214, 214, 214)"
       >
         <div
-          className={cx(styles.iconWrapper, getPositionClass())}
+          className={`${styles.iconWrapper} ${getPositionClass()}`}
           role="img"
           aria-label={`${type} indicator`}
         >

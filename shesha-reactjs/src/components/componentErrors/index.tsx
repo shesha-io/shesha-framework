@@ -17,22 +17,22 @@ const ComponentError: FC<IComponentErrorProps> = ({
 }) => {
   const { styles } = useStyles();
 
-  const errortip = (errors: IModelValidation): JSX.Element => <ul>{errors.errors.map((error, index) => <li key={index}>{error.error}</li>)}</ul>;
+  const errorTip = (errors: IModelValidation): JSX.Element => <ul>{errors.errors.map((error, index) => <li key={index}>{error.error}</li>)}</ul>;
 
   const tooltipClassName = type === 'info'
-    ? styles.cmoponentErrorInfo
+    ? styles.componentErrorInfo
     : type === 'warning'
-      ? styles.cmoponentErrorWaring
+      ? styles.componentErrorWaring
       : type === 'error'
-        ? styles.cmoponentErrorError
+        ? styles.componentErrorError
         : '';
 
   const alertClassName = type === 'info'
-    ? styles.cmoponentErrorTextInfo
+    ? styles.componentErrorTextInfo
     : type === 'warning'
-      ? styles.cmoponentErrorTextWaring
+      ? styles.componentErrorTextWaring
       : type === 'error'
-        ? styles.cmoponentErrorTextError
+        ? styles.componentErrorTextError
         : '';
 
   const componentLabel = errors?.componentType ?? 'Component';
@@ -53,7 +53,7 @@ const ComponentError: FC<IComponentErrorProps> = ({
   );
 
   return errors?.errors?.length > 0
-    ? <Tooltip overlayClassName={tooltipClassName} title={errortip(errors)}>{body}</Tooltip>
+    ? <Tooltip overlayClassName={tooltipClassName} title={errorTip(errors)}>{body}</Tooltip>
     : body;
 };
 

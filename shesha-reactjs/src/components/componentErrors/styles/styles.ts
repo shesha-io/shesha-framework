@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }) => {
-  const cmoponentErrorInfo = cx("component-error-info", css`
+  const componentErrorInfo = cx("component-error-info", css`
     .ant-tooltip-inner {
       background: var(--ant-color-info-bg);
       color: var(--ant-color-info-text);
@@ -11,7 +11,7 @@ export const useStyles = createStyles(({ css, cx }) => {
       background: var(--ant-color-info-bg);
     }
   `);
-  const cmoponentErrorWaring = cx("component-error-warning", css`
+  const componentErrorWaring = cx("component-error-warning", css`
     .ant-tooltip-inner {
       background: var(--ant-color-warning-bg);
       color: var(--ant-color-warning-text);
@@ -21,7 +21,7 @@ export const useStyles = createStyles(({ css, cx }) => {
       background: var(--ant-color-warning-bg);
     }
   `);
-  const cmoponentErrorError = cx("component-error-error", css`
+  const componentErrorError = cx("component-error-error", css`
     .ant-tooltip-inner {
       background: var(--ant-color-error-bg);
       color: var(--ant-color-error-text);
@@ -32,22 +32,22 @@ export const useStyles = createStyles(({ css, cx }) => {
     }
   `);
 
-  const cmoponentErrorTextInfo = cx("component-error-text-info", css`
+  const componentErrorTextInfo = cx("component-error-text-info", css`
     color: var(--ant-color-info-text);
   `);
-  const cmoponentErrorTextWaring = cx("component-error-text-warning", css`
+  const componentErrorTextWaring = cx("component-error-text-warning", css`
     color: var(--ant-color-warning-text);
   `);
-  const cmoponentErrorTextError = cx("component-error-text-error", css`
+  const componentErrorTextError = cx("component-error-text-error", css`
     color: var(--ant-color-error-text);
   `);
 
   return {
-    cmoponentErrorInfo,
-    cmoponentErrorWaring,
-    cmoponentErrorError,
-    cmoponentErrorTextInfo,
-    cmoponentErrorTextWaring,
-    cmoponentErrorTextError,
+    componentErrorInfo,
+    componentErrorWaring,
+    componentErrorError,
+    componentErrorTextInfo,
+    componentErrorTextWaring,
+    componentErrorTextError,
   };
 });
