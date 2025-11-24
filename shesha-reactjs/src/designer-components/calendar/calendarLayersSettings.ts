@@ -247,29 +247,21 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             id: eventsTabId,
             components: [
               ...fbf()
-                .addSettingsInputRow({
+                .addConfigurableActionConfigurator({
                   id: nanoid(),
-                  parentId: nanoid(),
-                  inputs: [
-                    {
-                      type: 'configurableActionConfigurator',
-                      id: nanoid(),
-                      propertyName: 'onSelect',
-                      label: 'On Select',
-                      description: 'Action to be executed when the event is selected',
-                      jsSetting: false,
-                      hideLabel: true,
-                    },
-                    {
-                      type: 'configurableActionConfigurator',
-                      id: nanoid(),
-                      propertyName: 'onDblClick',
-                      label: 'On Double Click',
-                      description: 'Action to be executed when the event is double clicked',
-                      jsSetting: false,
-                      hideLabel: true,
-                    },
-                  ],
+                  parentId: eventsTabId,
+                  propertyName: 'onSelect',
+                  label: 'On Select',
+                  description: 'Action to be executed when the event is selected',
+                  jsSetting: false,
+                })
+                .addConfigurableActionConfigurator({
+                  id: nanoid(),
+                  parentId: eventsTabId,
+                  propertyName: 'onDblClick',
+                  label: 'On Double Click',
+                  description: 'Action to be executed when the event is double clicked',
+                  jsSetting: false,
                 })
                 .toJson(),
             ],
