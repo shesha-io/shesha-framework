@@ -1,11 +1,8 @@
 import React from 'react';
 import { DatabaseOutlined } from '@ant-design/icons';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { TableContext } from './tableContext';
-import { ITableContextComponentProps, TableContextComponentDefinition } from './models';
-import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import { TableContextComponentDefinition } from './models';
 import { getSettings } from './settingsForm';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
