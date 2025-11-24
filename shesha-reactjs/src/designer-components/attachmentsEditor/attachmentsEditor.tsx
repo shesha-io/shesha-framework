@@ -22,7 +22,7 @@ import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles } from './utils';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
-
+import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
 
@@ -146,6 +146,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   borderRadius?: number;
   hideFileName?: boolean;
   container?: IStyleType;
+  downloadedFileStyles?: IStyleType;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -163,6 +164,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const pageContext = useDataContextManagerActions()?.getPageContext();
     const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState });
     const enabled = !model.readOnly;
+
+    const {
+      fullStyle: downloadedFileFullStyle,
+    } = useFormComponentStyles(model.downloadedFileStyles ?? downloadedFileDefaultStyles());
 
     const executeScript = (script, value): void => {
       executeScriptSync(script, {
@@ -224,6 +229,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 {...model}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
+                downloadedFileStyles={downloadedFileFullStyle}
               />
             </StoredFilesProvider>
           );
