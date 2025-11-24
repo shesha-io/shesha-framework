@@ -31,3 +31,5 @@ export { useConstantsEvaluator } from './designer-components/codeEditor/hooks/us
 export { useResultTypeEvaluator } from './designer-components/codeEditor/hooks/useResultType';
 
 export { default as ConfigurationStudio } from './configuration-studio';
+export { useFormViaFactory, useFormBuilderFactory } from './form-factory/hooks';
+export { type FormBuilder, type FormBuilderFactory } from './form-factory/interfaces';

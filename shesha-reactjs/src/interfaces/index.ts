@@ -28,7 +28,7 @@ export { type IChangeable } from './changeable';
 export { type IFormItem } from './formItem';
 export { type INamed } from './named';
 export { type IStylable } from './stylable';
-export { type ITableColumn, type IDataTableInstance } from '../providers/dataTable/interfaces';
+export { type ITableColumn, type IDataTableInstance, type IStoredFilter, type FilterExpression } from '../providers/dataTable/interfaces';
 export type { PageWithLayout } from './pageWithLayout';
 export type { InsertMode } from './insertMode';
 export type { IColor, IHsl, IHsv, IRgb } from './color';
@@ -42,10 +42,11 @@ export type {
   TypeDefinition,
   SourceFile,
   ITypeDefinitionLoadingContext,
+  IEntityReferencePropertyMetadata,
 } from './metadata';
-export { isPropertiesArray, isEntityReferencePropertyMetadata } from './metadata';
-export { isEntityMetadata } from './metadata';
-export type { IAjaxResponse, IAjaxResponseBase } from './ajaxResponse';
+export { isEntityMetadata, isPropertiesArray, isEntityReferencePropertyMetadata } from './metadata';
+export { type NestedPropertyMetadatAccessor } from '../providers/metadataDispatcher/contexts';
+export { type IAjaxResponse, type IAjaxResponseBase, type IAjaxErrorResponse, type IAjaxSuccessResponse, isAjaxSuccessResponse, isAjaxErrorResponse, extractAjaxResponse } from './ajaxResponse';
 export type { ICommonContainerProps, IContainerComponentProps } from '../designer-components/container/interfaces';
 export { DataTypes, StringFormats } from './dataTypes';
 export { type IReferenceListIdentifier } from './referenceList';
@@ -58,3 +59,5 @@ export { type IShaFormInstance } from '@/providers/form/store/interfaces';
 export * from './errorInfo';
 export * from './publicApis';
 export * from './configurableItems';
+export { type ISettingsComponent, type ISettingsComponentGroup } from '@/designer-components/settingsInput/settingsInput';
+export * from './gql';

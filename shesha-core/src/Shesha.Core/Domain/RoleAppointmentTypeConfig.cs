@@ -8,7 +8,7 @@ namespace Shesha.Domain
     [JoinedProperty("Core_RoleAppointmentTypeConfigs")]
     [Entity(TypeShortAlias = "Shesha.Core.RoleAppointmentTypeConfig")]
     [Prefix(UsePrefixes = false)]
-    public class RoleAppointmentTypeConfig : ConfigurationItemBase
+    public class RoleAppointmentTypeConfig : ConfigurationItem
     {
         public RoleAppointmentTypeConfig()
         {
