@@ -170,7 +170,7 @@ export const customAddressEventHandler = (
 ): IGooglePlacesAutocompleteProps => {
   const onChange = (e: string): void => {
     onChangeCustom(e);
-    const expression = model?.['onChangeCustom'];
+    const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { event: e, value: e }));
     }
@@ -178,16 +178,16 @@ export const customAddressEventHandler = (
 
   const onFocus = (e: string): void => {
     onFocusCustom(e);
-    const expression = model?.['onFocusCustom'];
-    if (expression) {
+    const expression = model?.onFocusCustom;
+    if (Boolean(expression)) {
       return executeScriptSync(expression, addContextData(context, { event: e, value: e }));
     }
   };
 
   const onGeocodeChange = (event: IAddressAndCoords): Promise<void> =>
     onSelectCustom(event).then((payload) => {
-      const expression = model?.['onSelectCustom'];
-      if (expression) {
+      const expression = model?.onSelectCustom;
+      if (Boolean(expression)) {
         // Ensure lat/lng are preserved from event in case they were lost
         const addressData = {
           ...payload,
