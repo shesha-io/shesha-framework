@@ -266,7 +266,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       font-size: 14px;
       height: ${headerHeight};
       min-height: ${headerMinHeight};
-      max-height: ${headerMaxHeight}
+      height: ${headerHeight};
+      min-height: ${headerMinHeight};
+      max-height: ${headerMaxHeight};
+      width: ${width};
       width: ${width};
       min-width: ${minWidth};
       max-width: ${maxWidth};
