@@ -88,6 +88,7 @@ export { FormWithFlatMarkup, type IFormWithFlatMarkupProps } from './configurabl
 export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from './configurableForm/models';
 export { default as Show, type IShowProps } from './show';
 export { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
+export { type ICodeEditorProps, type GetResultTypeFunc, type GetAvailableConstantsFunc } from '@/designer-components/codeEditor/interfaces';
 export { default as ModelConfigurator } from './modelConfigurator';
 export { ConfigurableApplicationComponent, type IConfigurableApplicationComponentProps } from './configurableComponent';
 export { Autocomplete, type IAutocompleteProps } from './autocomplete';
@@ -109,6 +110,7 @@ export { HelpTextPopover } from './helpTextPopover';
 export { StatusTag } from './statusTag';
 export { RefListStatus, type IRefListStatusProps } from './refListStatus';
 export { ListEditor } from './listEditor';
+export { type ListItem } from './listEditor/models';
 export { ButtonGroupConfigurator } from './buttonGroupConfigurator';
 export { ConfigurableComponentRenderer } from "./configurableComponentRenderer";
 export { PermissionAutocomplete, type IPermissionAutocompleteProps } from './permissionAutocomplete';

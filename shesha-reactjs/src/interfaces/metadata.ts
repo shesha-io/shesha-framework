@@ -221,6 +221,7 @@ export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
   prefix?: string;
   isVisible?: boolean;
   itemsType?: IPropertyMetadata | undefined;
+  isItemsType?: boolean;
 
   columnName?: string | null;
   createdInDb?: boolean;

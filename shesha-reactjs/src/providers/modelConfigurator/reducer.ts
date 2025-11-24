@@ -3,6 +3,13 @@ import { ModelConfigurationDto } from '@/apis/modelConfigurations';
 import { ModelActionEnums } from './actions';
 import { IModelConfiguratorStateContext, MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE } from './contexts';
 
+const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto => {
+  return {
+    ...data,
+    properties: data.properties.filter((p) => !p.isFrameworkRelated), // remove framework fields
+  };
+};
+
 const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
   {
     [ModelActionEnums.CreateNew]: (
@@ -12,8 +19,8 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
       return {
         ...state,
         isCreateNew: true,
-        modelConfiguration: action.payload,
-        initialConfiguration: action.payload,
+        modelConfiguration: prepareLoadedData(action.payload),
+        initialConfiguration: prepareLoadedData(action.payload),
         id: '',
       };
     },
@@ -49,8 +56,8 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
       return {
         ...state,
         isCreateNew: false,
-        modelConfiguration: payload,
-        initialConfiguration: payload,
+        modelConfiguration: prepareLoadedData(payload),
+        initialConfiguration: prepareLoadedData(payload),
       };
     },
 
@@ -65,7 +72,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         isCreateNew: false,
         isModified: false,
         id: payload.id,
-        modelConfiguration: { ...payload },
+        modelConfiguration: prepareLoadedData(payload),
       };
     },
 

@@ -7,7 +7,7 @@ import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { addPx } from '@/utils/style';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
-import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
   App,
@@ -19,7 +19,7 @@ import {
 } from 'antd';
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import React, { FC, useEffect, useState } from 'react';
+import React, { CSSProperties, FC, useEffect, useState } from 'react';
 import { isValidGuid } from '../formDesigner/components/utils';
 import { useStyles } from './styles/styles';
 interface IUploaderFileTypes {
@@ -55,6 +55,8 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   maxHeight?: string;
   layout: layoutType;
   listType: listType;
+  onChange?: (fileList: IStoredFile[]) => void;
+  onDownload?: (fileList: IStoredFile[]) => void;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;
@@ -64,6 +66,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   allStyles?: IFormComponentStyles;
   enableStyleOnReadonly?: boolean;
   thumbnail?: IStyleType;
+  downloadedFileStyles?: CSSProperties;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -92,6 +95,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   listType,
   gap,
   enableStyleOnReadonly = true,
+  downloadedFileStyles,
   ...rest
 }) => {
   const { message, notification, modal } = App.useApp();
@@ -106,6 +110,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
 
   const { styles } = useStyles({
+    downloadedFileStyles: downloadedFileStyles,
     containerStyles: {
       ...(containerDimensionsStyles ?? {}),
       width: layout === 'vertical' ? undefined : addPx(containerDimensionsStyles?.width),
@@ -183,7 +188,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     }
 
-    return getFileIcon(type);
+    return getFileIcon(type, model?.allStyles?.fontStyles?.fontSize);
   };
 
 
@@ -271,6 +276,19 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       showDownloadIcon: true,
     },
     iconRender,
+    itemRender: (originNode, file: IStoredFile) => {
+      const isDownloaded = file.userHasDownloaded === true;
+      return (
+        <div className={isDownloaded ? styles.downloadedFile : ''}>
+          {originNode}
+          {isDownloaded && (
+            <div className={styles.downloadedIcon}>
+              <CheckCircleOutlined />
+            </div>
+          )}
+        </div>
+      );
+    },
   };
 
 

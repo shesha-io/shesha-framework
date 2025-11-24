@@ -672,7 +672,7 @@ namespace Shesha.DynamicEntities
             prop.Max = hardCodedProp?.Max ?? dbProp.Max;
             prop.RegExp = string.IsNullOrWhiteSpace(hardCodedProp?.RegExp) ? dbProp.RegExp : hardCodedProp.RegExp;
             prop.ValidationMessage = string.IsNullOrWhiteSpace(hardCodedProp?.ValidationMessage)
-                ? prop.ValidationMessage
+                ? dbProp.ValidationMessage
                 : hardCodedProp.ValidationMessage;
 
             prop.SuppressHardcoded = !hardCodedProp?.IsVisible;

@@ -168,34 +168,34 @@ export const customAddressEventHandler = (
   onSelectCustom: (selected: IAddressAndCoords) => Promise<IOpenCageResponse | IAddressAndCoords>,
   onFocusCustom: (value: string) => void,
 ): IGooglePlacesAutocompleteProps => {
-  const onCustomEvent = (event: any, key: string): void => {
-    const expression = model?.[key];
-    if (Boolean(expression)) {
-      // if context is an ObservableProxy
-      if (typeof context['addAccessor'] === 'function') {
-        const ctx = context as any as ObservableProxy<IApplicationContext>;
-        ctx.addAccessor('event', () => event);
-        ctx.addAccessor('value', () => event?.currentTarget.value);
-        return executeScriptSync(expression, { ...context });
-      }
-
-      // if context is a simple object
-      return executeScriptSync(expression, { ...context, event, value: event?.currentTarget.value });
-    }
-  };
-
   const onChange = (e: string): void => {
     onChangeCustom(e);
-    onCustomEvent(e, 'onChangeCustom');
+    const expression = model?.onChangeCustom;
+    if (Boolean(expression)) {
+      return executeScriptSync(expression, addContextData(context, { event: e, value: e }));
+    }
   };
 
   const onFocus = (e: string): void => {
     onFocusCustom(e);
-    onCustomEvent(e, 'onFocusCustom');
+    const expression = model?.onFocusCustom;
+    if (Boolean(expression)) {
+      return executeScriptSync(expression, addContextData(context, { event: e, value: e }));
+    }
   };
 
   const onGeocodeChange = (event: IAddressAndCoords): Promise<void> =>
-    onSelectCustom(event).then((payload) => onCustomEvent({ ...event, ...(payload || {}) }, 'onSelectCustom'));
+    onSelectCustom(event).then((payload) => {
+      const expression = model?.onSelectCustom;
+      if (Boolean(expression)) {
+        // Ensure lat/lng are preserved from event in case they were lost
+        const addressData = {
+          ...payload,
+          ...event,
+        };
+        return executeScriptSync(expression, addContextData(context, { event: addressData }));
+      }
+    });
 
   return {
     onChange,
