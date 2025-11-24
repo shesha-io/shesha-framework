@@ -3,7 +3,7 @@ import { DatabaseOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { ITableContextComponentProps, TableContextComponentDefinition } from './models';
+import { ITableContextComponentProps, TableContextComponentLegacyDefinition } from './models';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
@@ -15,7 +15,7 @@ import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/uti
  * New forms should use the dataContext component instead.
  * @deprecated Use dataContext component instead. This is kept only for migration of existing forms.
  */
-const TableContextComponentLegacy: TableContextComponentDefinition = {
+const TableContextComponentLegacy: TableContextComponentLegacyDefinition = {
   type: 'datatableContext',
   isInput: true,
   isOutput: true,

@@ -46,4 +46,14 @@ export interface IAfterRowReorderArguments {
   response?: any;
 }
 
-export type TableContextComponentDefinition = ComponentDefinition<"datatableContext" | 'dataContext', ITableContextComponentProps>;
+/**
+ * Legacy DataTable Context component definition (datatableContext)
+ * @deprecated Use TableContextComponentDefinition instead. This is kept only for migration of existing forms.
+ */
+export type TableContextComponentLegacyDefinition = ComponentDefinition<"datatableContext", ITableContextComponentProps>;
+
+/**
+ * Data Context component definition (dataContext)
+ * This is the new clean implementation of the data context component.
+ */
+export type TableContextComponentDefinition = ComponentDefinition<'dataContext', ITableContextComponentProps>;
