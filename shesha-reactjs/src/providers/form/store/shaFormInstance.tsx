@@ -62,6 +62,9 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
     get formInstance(): FormInstance<Values> {
         return this.#form.antdForm;
     };
+    get shaForm(): IShaFormInstance<Values> {
+        return this.#form;
+    }
     get formSettings() {
         return this.#form.settings;
     };
@@ -76,7 +79,7 @@ class PublicFormApi<Values = any> implements IFormApi<Values> {
     };
     get formArguments() {
         return this.#form.formArguments;
-    }
+    }    
     get parentFormValues() {
         return this.#form.parentFormValues;
     }
