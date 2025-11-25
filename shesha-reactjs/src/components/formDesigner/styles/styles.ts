@@ -389,6 +389,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     color: darkgray;
                     padding: 10px;
                     height: 55px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
 
                 .${shaComponent} {
