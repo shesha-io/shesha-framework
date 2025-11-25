@@ -62,7 +62,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const [open, setOpen] = useState<boolean>(false);
   const [loadingValues, setLoadingValues] = useState<boolean>(false);
   const [loadingIndicator, setLoadingIndicator] = useState<boolean>(false);
-  const selected = useRef<Array<any>>([]);
+  const selected = useRef<Array<unknown>>([]);
   const lastSearchText = useRef<string>('');
   const [autocompleteText, setAutocompleteText] = useState(null);
 
@@ -101,7 +101,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         selected.current = getNormalizedValues(props.value);
       }
     }
-  }, [loadingValues, source?.tableData, keys, props.value, keyValueFunc, outcomeValueFunc]);
+  }, [loadingValues, source?.tableData, keys, props.value, keyValueFunc, outcomeValueFunc, allData]);
 
   // update local store of values details
   useDeepCompareEffect(() => {
@@ -313,13 +313,13 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       return null;
     const readonlyValue = props.mode === 'multiple'
       ? selected.current?.map((x) => ({
-        label: loadingValues ? x?._displayName : displayValueFunc(x, allData),
+        label: loadingValues ? (x as Record<string, unknown>)?._displayName : displayValueFunc(x, allData),
         value: keyValueFunc(outcomeValueFunc(x, allData), allData),
       }))
       : {
         id: keyValueFunc(outcomeValueFunc(selected.current[0], allData), allData),
-        _displayName: loadingValues ? selected.current[0]?._displayName : displayValueFunc(selected.current[0], allData),
-        _className: selected.current[0]?._className,
+        _displayName: loadingValues ? (selected.current[0] as Record<string, unknown>)?._displayName : displayValueFunc(selected.current[0], allData),
+        _className: (selected.current[0] as Record<string, unknown>)?._className,
       };
 
     return (
