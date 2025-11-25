@@ -154,7 +154,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
         >
           <ComponentsContainer
             containerId={id}
-            className={isDesignerMode ? `${styles.dataContextComponentsContainer} ${!hasChildComponents ? styles.dataContextComponentsContainerEmpty : ''}` : undefined}
+            className={isDesignerMode ? [styles.dataContextComponentsContainer, !hasChildComponents && styles.dataContextComponentsContainerEmpty].filter(Boolean).join(' ') : undefined}
             itemsLimit={-1}
             emptyInsertThreshold={20}
             showHintWhenEmpty={false}
@@ -171,7 +171,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     return wrappedContent;
   };
 
-  if (props?.hidden) {
+  if (props.hidden) {
     return null;
   }
 
