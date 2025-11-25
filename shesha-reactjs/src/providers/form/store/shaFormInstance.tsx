@@ -147,6 +147,10 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     return this.#form.antdForm;
   };
 
+  get shaForm(): IShaFormInstance<Values> {
+    return this.#form;
+  }
+
   get formSettings(): IFormSettings {
     return this.#form.settings;
   };
