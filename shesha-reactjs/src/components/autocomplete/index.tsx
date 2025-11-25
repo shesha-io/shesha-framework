@@ -18,6 +18,11 @@ import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAuto
 import { useStyles } from './style';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
+const getNormalizedValues = (value: unknown): unknown[] => {
+  const values = Array.isArray(value) ? value : [value];
+  return values.filter((v) => v != null);
+};
+
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
   const { allowClear = true, style = {} } = props;
 
@@ -33,22 +38,22 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const keyPropName = props.keyPropName || (props.dataSourceType === 'entitiesList' ? 'id' : 'value');
   const displayPropName = props.displayPropName || (props.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
   // ---
-  const keyValueFunc: KayValueFunc = props.keyValueFunc ??
-    ((value: any) => getValueByPropertyName(value, keyPropName) ?? value);
-  const filterKeysFunc: FilterSelectedFunc = props.filterKeysFunc ??
-    ((value: any) => ({ in: [{ var: `${keyPropName}` }, Array.isArray(value) ? value.map((x) => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]] }));
-  const filterNotKeysFunc: FilterSelectedFunc = (value: any) => {
+  const keyValueFunc: KayValueFunc = useMemo(() => props.keyValueFunc ??
+    ((value: any) => getValueByPropertyName(value, keyPropName) ?? value), [props.keyValueFunc, keyPropName]);
+  const filterKeysFunc: FilterSelectedFunc = useMemo(() => props.filterKeysFunc ??
+    ((value: any) => ({ in: [{ var: `${keyPropName}` }, Array.isArray(value) ? value.map((x) => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]] })), [props.filterKeysFunc, keyPropName, keyValueFunc, allData]);
+  const filterNotKeysFunc: FilterSelectedFunc = useMemo(() => (value: any) => {
     const filter = filterKeysFunc(value);
     return filter ? { "!": filter } : null;
-  };
-  const displayValueFunc: DisplayValueFunc = props.displayValueFunc ??
-    ((value: any) => (Boolean(value) ? getValueByPropertyName(value, displayPropName) ?? value?.toString() : ''));
-  const outcomeValueFunc: OutcomeValueFunc = props.outcomeValueFunc ??
+  }, [filterKeysFunc]);
+  const displayValueFunc: DisplayValueFunc = useMemo(() => props.displayValueFunc ??
+    ((value: any) => (Boolean(value) ? getValueByPropertyName(value, displayPropName) ?? value?.toString() : '')), [props.displayValueFunc, displayPropName]);
+  const outcomeValueFunc: OutcomeValueFunc = useMemo(() => props.outcomeValueFunc ??
     // --- For backward compatibility
     (props.dataSourceType === 'entitiesList' && !props.keyPropName
       ? (value: any) => ({ id: value.id, _displayName: getValueByPropertyName(value, displayPropName), _className: value._className })
       // ---
-      : (value: any) => getValueByPropertyName(value, keyPropName) ?? value);
+      : (value: any) => getValueByPropertyName(value, keyPropName) ?? value), [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName]);
 
   // register columns
   useDeepCompareEffect(() => source?.registerConfigurableColumns(props.uid, getColumns(props.fields)), [props.fields]);
@@ -89,16 +94,14 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
           selected.current = foundValues;
         } else {
           // Use original values as fallback
-          const values = Array.isArray(props.value) ? props.value : [props.value];
-          selected.current = values.filter((v) => v != null);
+          selected.current = getNormalizedValues(props.value);
         }
       } else {
         // Use original values as fallback
-        const values = Array.isArray(props.value) ? props.value : [props.value];
-        selected.current = values.filter((v) => v != null);
+        selected.current = getNormalizedValues(props.value);
       }
     }
-  }, [loadingValues, source?.tableData, keys, props.value]);
+  }, [loadingValues, source?.tableData, keys, props.value, keyValueFunc, outcomeValueFunc]);
 
   // update local store of values details
   useDeepCompareEffect(() => {
@@ -116,8 +119,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
           setLoadingValues(false);
           setLoadingIndicator(false);
           if (props.value && hasDisplayName) {
-            const values = Array.isArray(props.value) ? props.value : [props.value];
-            selected.current = values.filter((v) => v != null);
+            selected.current = getNormalizedValues(props.value);
           }
           return;
         }
@@ -134,13 +136,13 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
           if (source.setPredefinedFilters) {
             try {
               source.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
-            } catch {
+            } catch (error) {
+              console.error('Failed to set predefined filters:', error);
               setLoadingValues(false);
               setLoadingIndicator(false);
               // Fallback to using existing values
               if (props.value) {
-                const values = Array.isArray(props.value) ? props.value : [props.value];
-                selected.current = values.filter((v) => v != null);
+                selected.current = getNormalizedValues(props.value);
               }
             }
           } else {
@@ -148,14 +150,13 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
             setLoadingValues(false);
             setLoadingIndicator(false);
             if (props.value) {
-              const values = Array.isArray(props.value) ? props.value : [props.value];
-              selected.current = values.filter((v) => v != null);
+              selected.current = getNormalizedValues(props.value);
             }
           }
         }
         if (props.dataSourceType === 'entitiesList' && hasDisplayName && !loadingValues && !selected.current?.length) {
           setLoadingIndicator(false);
-          const values = Array.isArray(props.value) ? props.value : [props.value];
+          const values = getNormalizedValues(props.value);
           selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
         }
       } else {
