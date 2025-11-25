@@ -69,6 +69,7 @@ export interface IFormApi<Values = any> {
 
   /** antd form instance */
   formInstance?: FormInstance<Values>;
+  shaForm?: IShaFormInstance;
   /** Configurable form settings */
   formSettings: PublicFormSettings;
   /** Form mode */
@@ -94,7 +95,7 @@ class PublicFormApiWrapper implements IFormApi {
     this.#form = form;
   }
 
-  addDelayedUpdateData = (data: any): IDelayedUpdateGroup[]  => {
+  addDelayedUpdateData = (data: any): IDelayedUpdateGroup[] => {
     const delayedUpdateData = this.#form?.shaForm?.getDelayedUpdates();
     if (delayedUpdateData?.length > 0)
       data['_delayedUpdate'] = delayedUpdateData;
@@ -125,6 +126,9 @@ class PublicFormApiWrapper implements IFormApi {
   get formInstance(): FormInstance<any> {
     // antd form
     return this.#form?.form;
+  }
+  get shaForm(): IShaFormInstance {
+    return this.#form?.shaForm;
   }
   get formSettings(): PublicFormSettings {
     return this.#form?.formSettings ? { modelType: this.#form.formSettings.modelType } : {};
