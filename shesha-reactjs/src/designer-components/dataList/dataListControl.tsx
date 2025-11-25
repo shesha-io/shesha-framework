@@ -11,10 +11,10 @@ import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { OnSaveHandler, OnSaveSuccessHandler } from '@/components/dataTable/interfaces';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { WarningOutlined } from '@ant-design/icons';
 import { Popover } from 'antd';
 
-export const NotConfiguredWarning: FC<{ message?: string }> = ({ message }) => {
+export const NotConfiguredWarning: FC<{ message?: string; isWarning?: boolean }> = ({ message, isWarning = false }) => {
   const { theme } = useStyles();
 
   // Show preview items that look like actual list items
@@ -36,26 +36,7 @@ export const NotConfiguredWarning: FC<{ message?: string }> = ({ message }) => {
   );
 
   return (
-    <div
-      style={{
-        position: 'relative',
-      }}
-    >
-      {/* Info icon with popover - positioned at top right */}
-      <Popover content={popoverContent} title={null} trigger="hover" placement="leftTop">
-        <InfoCircleOutlined
-          style={{
-            position: 'absolute',
-            top: '16px',
-            right: '16px',
-            fontSize: '20px',
-            color: theme.colorPrimary,
-            cursor: 'pointer',
-            zIndex: 10,
-          }}
-        />
-      </Popover>
-
+    <div style={{ position: 'relative' }}>
       {/* Preview list items - clean placeholder style */}
       <div>
         {previewItems.map((item, index) => (
@@ -112,6 +93,49 @@ export const NotConfiguredWarning: FC<{ message?: string }> = ({ message }) => {
           </div>
         ))}
       </div>
+
+      {/* Info/Warning icon with popover - positioned at top right, below delete button (matching DataTable style) */}
+      <Popover content={popoverContent} title={null} trigger="hover" placement="left">
+        {isWarning ? (
+          <WarningOutlined
+            role="button"
+            tabIndex={0}
+            aria-label="Data list configuration warning"
+            style={{
+              position: 'absolute',
+              top: '44px',
+              right: '4px',
+              color: theme.colorWarning,
+              fontSize: '20px',
+              zIndex: 9999,
+              cursor: 'help',
+              backgroundColor: '#fff',
+              borderRadius: '50%',
+              padding: '4px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            }}
+          />
+        ) : (
+          <WarningOutlined
+            role="button"
+            tabIndex={0}
+            aria-label="Data list configuration help"
+            style={{
+              position: 'absolute',
+              top: '44px',
+              right: '4px',
+              color: theme.colorWarning,
+              fontSize: '20px',
+              zIndex: 9999,
+              cursor: 'help',
+              backgroundColor: '#fff',
+              borderRadius: '50%',
+              padding: '4px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            }}
+          />
+        )}
+      </Popover>
     </div>
   );
 };
@@ -388,7 +412,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       return null;
     }
     // In design mode, show configuration hint
-    return <NotConfiguredWarning message="This Data List has no data source configured. Selecting a Data Source tells the Data List where to fetch data from." />;
+    return <NotConfiguredWarning message="This Data List has no data source configured. Selecting a Data Source tells the Data List where to fetch data from." isWarning={true} />;
   }
 
   // Form configuration validation - check for invalid configurations
@@ -402,10 +426,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     if (!isDesignMode) {
       return null;
     }
-    // In design mode, show specific configuration hints
-    if (props.formSelectionMode === "name" && !props.formId) return <NotConfiguredWarning message="This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items." />;
-    if (props.formSelectionMode === "view" && !props.formType) return <NotConfiguredWarning message="This Data List has no form type specified. Selecting a Form Type tells the Data List what data structure it should use when rendering items." />;
-    if (props.formSelectionMode === "expression" && !props.formIdExpression) return <NotConfiguredWarning message="This Data List has no form identifier expression configured. Configuring an expression tells the Data List how to dynamically determine which form to use." />;
+    // In design mode, show specific configuration hints with warning icon
+    if (props.formSelectionMode === "name" && !props.formId) return <NotConfiguredWarning message="This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items." isWarning={true} />;
+    if (props.formSelectionMode === "view" && !props.formType) return <NotConfiguredWarning message="This Data List has no form type specified. Selecting a Form Type tells the Data List what data structure it should use when rendering items." isWarning={true} />;
+    if (props.formSelectionMode === "expression" && !props.formIdExpression) return <NotConfiguredWarning message="This Data List has no form identifier expression configured. Configuring an expression tells the Data List how to dynamically determine which form to use." isWarning={true} />;
   }
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;

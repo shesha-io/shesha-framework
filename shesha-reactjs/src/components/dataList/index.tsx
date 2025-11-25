@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
-import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Collapse, Divider, Popover, Typography } from 'antd';
+import { InfoCircleOutlined, PlusOutlined, WarningOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties, ReactElement, useMemo } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
@@ -422,56 +422,91 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       }
 
       // In designer mode, show the clean placeholder (matching NotConfiguredWarning style)
+      const popoverContent = (
+        <div style={{ maxWidth: '280px' }}>
+          <div style={{ fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>
+            Hint:
+          </div>
+          <div style={{ fontSize: '12px', lineHeight: '1.5' }}>
+            This Data List has no form configuration loaded. Make sure the form exists and is properly configured.
+          </div>
+        </div>
+      );
+
       return (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            padding: '12px 16px',
-            backgroundColor: theme.colorBgContainer,
-            borderTop: `1px solid ${theme.colorBorder}`,
-            borderBottom: `1px solid ${theme.colorBorder}`,
-          }}
-        >
-          {/* Icon placeholder */}
+        <div style={{ position: 'relative' }}>
           <div
             style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: theme.colorFillSecondary,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-              fontSize: '18px',
-              color: theme.colorTextQuaternary,
+              gap: '12px',
+              padding: '12px 16px',
+              backgroundColor: theme.colorBgContainer,
+              borderTop: `1px solid ${theme.colorBorder}`,
+              borderBottom: `1px solid ${theme.colorBorder}`,
             }}
           >
-            👤
-          </div>
-          {/* Text content */}
-          <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Icon placeholder */}
             <div
               style={{
-                fontWeight: 500,
-                fontSize: '14px',
-                color: theme.colorTextSecondary,
-                marginBottom: '4px',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                backgroundColor: theme.colorFillSecondary,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                fontSize: '18px',
+                color: theme.colorTextQuaternary,
               }}
             >
-              Heading
+              👤
             </div>
-            <div
-              style={{
-                fontSize: '12px',
-                color: theme.colorTextTertiary,
-              }}
-            >
-              Subtext
+            {/* Text content */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  color: theme.colorTextSecondary,
+                  marginBottom: '4px',
+                }}
+              >
+                Heading
+              </div>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: theme.colorTextTertiary,
+                }}
+              >
+                Subtext
+              </div>
             </div>
           </div>
+
+          {/* Warning icon with popover - positioned at top right, below delete button */}
+          <Popover content={popoverContent} title={null} trigger="hover" placement="left">
+            <WarningOutlined
+              role="button"
+              tabIndex={0}
+              aria-label="Data list configuration warning"
+              style={{
+                position: 'absolute',
+                top: '44px',
+                right: '4px',
+                color: theme.colorWarning,
+                fontSize: '20px',
+                zIndex: 9999,
+                cursor: 'help',
+                backgroundColor: '#fff',
+                borderRadius: '50%',
+                padding: '4px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              }}
+            />
+          </Popover>
         </div>
       );
     }
