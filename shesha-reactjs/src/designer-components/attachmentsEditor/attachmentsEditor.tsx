@@ -21,6 +21,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles } from './utils';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -124,6 +125,8 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   allowDelete: boolean;
   allowReplace: boolean;
   allowRename: boolean;
+  allowViewHistory: boolean;
+  customActions?: ButtonGroupItemProps[];
   isDragger?: boolean;
   maxHeight?: string;
   onFileChanged?: string;
@@ -213,6 +216,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}
                 allowRename={enabled && model.allowRename}
+                allowViewHistory={model.allowViewHistory}
+                customActions={model.customActions}
                 allowedFileTypes={model.allowedFileTypes}
                 maxHeight={model.maxHeight}
                 isDragger={model?.isDragger}
@@ -240,6 +245,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         allowDelete: true,
         allowReplace: true,
         allowRename: true,
+        allowViewHistory: true,
+        customActions: [],
         isDragger: false,
         ownerId: '',
         ownerType: '',

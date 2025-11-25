@@ -112,6 +112,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     min-height: var(--container-min-height) !important;
     overflow: auto;
     scrollbar-width: thin;
+    scrollbar-gutter: stable;
       &::-webkit-scrollbar {
         width: 8px;
         background-color: transparent;
@@ -134,11 +135,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       height: ${layout ? (height ?? '54px') + ' !important' : ''};
 
       :before {
-        top: 0;
-        width: 100% !important;
-        height: 100% !important;
-        border-radius: ${borderRadius ?? '8px'} !important;
         ${rest}
+        display: none;
       }
     }
 
