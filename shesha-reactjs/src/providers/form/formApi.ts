@@ -62,6 +62,7 @@ export interface FormApi<Values = any> {
 
   /** antd form instance */
   formInstance?: FormInstance<Values>;
+  shaForm?: IShaFormInstance;
   /** Configurable form settings */
   formSettings: PublicFormSettings;
   /** Form mode */
@@ -107,9 +108,8 @@ class PublicFormApiWrapper implements FormApi {
   setFormData = (payload: ISetFormDataPayload) => {
     this.#form?.setFormData(payload);
   };
-  get formInstance(): FormInstance<any> {
-    // antd form
-    return this.#form?.form;
+  get shaForm(): IShaFormInstance {
+    return this.#form?.shaForm;
   }
   get formSettings(): PublicFormSettings {
     return this.#form?.formSettings ? { modelType: this.#form.formSettings.modelType } : {};
