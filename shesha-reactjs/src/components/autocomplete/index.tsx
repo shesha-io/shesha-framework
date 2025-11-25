@@ -39,21 +39,21 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const displayPropName = props.displayPropName || (props.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
   // ---
   const keyValueFunc: KayValueFunc = useMemo(() => props.keyValueFunc ??
-    ((value: any) => getValueByPropertyName(value, keyPropName) ?? value), [props.keyValueFunc, keyPropName]);
+    ((value: unknown) => String(getValueByPropertyName(value as Record<string, unknown>, keyPropName) ?? value)), [props.keyValueFunc, keyPropName]);
   const filterKeysFunc: FilterSelectedFunc = useMemo(() => props.filterKeysFunc ??
-    ((value: any) => ({ in: [{ var: `${keyPropName}` }, Array.isArray(value) ? value.map((x) => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]] })), [props.filterKeysFunc, keyPropName, keyValueFunc, allData]);
-  const filterNotKeysFunc: FilterSelectedFunc = useMemo(() => (value: any) => {
+    ((value: unknown) => ({ in: [{ var: `${keyPropName}` }, Array.isArray(value) ? value.map((x) => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]] })), [props.filterKeysFunc, keyPropName, keyValueFunc, allData]);
+  const filterNotKeysFunc: FilterSelectedFunc = useMemo(() => (value: unknown) => {
     const filter = filterKeysFunc(value);
     return filter ? { "!": filter } : null;
   }, [filterKeysFunc]);
   const displayValueFunc: DisplayValueFunc = useMemo(() => props.displayValueFunc ??
-    ((value: any) => (Boolean(value) ? getValueByPropertyName(value, displayPropName) ?? value?.toString() : '')), [props.displayValueFunc, displayPropName]);
+    ((value: unknown) => (Boolean(value) ? String(getValueByPropertyName(value as Record<string, unknown>, displayPropName) ?? value?.toString()) : '')), [props.displayValueFunc, displayPropName]);
   const outcomeValueFunc: OutcomeValueFunc = useMemo(() => props.outcomeValueFunc ??
     // --- For backward compatibility
     (props.dataSourceType === 'entitiesList' && !props.keyPropName
-      ? (value: any) => ({ id: value.id, _displayName: getValueByPropertyName(value, displayPropName), _className: value._className })
+      ? (value: unknown) => ({ id: (value as Record<string, unknown>).id, _displayName: getValueByPropertyName(value as Record<string, unknown>, displayPropName), _className: (value as Record<string, unknown>)._className })
       // ---
-      : (value: any) => getValueByPropertyName(value, keyPropName) ?? value), [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName]);
+      : (value: unknown) => getValueByPropertyName(value as Record<string, unknown>, keyPropName) ?? value), [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName]);
 
   // register columns
   useDeepCompareEffect(() => source?.registerConfigurableColumns(props.uid, getColumns(props.fields)), [props.fields]);
@@ -202,7 +202,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     selectRef.current.blur();
   };
 
-  const handleChange = (_value, option: any): void => {
+  const handleChange = (_value: unknown, option: unknown): void => {
     selected.current = Boolean(option)
       ? Array.isArray(option)
         ? (option as ISelectOption[]).map((o) => o.data)
@@ -229,7 +229,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       props.onChange(selectedValue);
   };
 
-  const renderOption = (row, index): JSX.Element => {
+  const renderOption = (row: unknown, index: React.Key): JSX.Element => {
     const value = outcomeValueFunc(row, allData);
     const key = keyValueFunc(value, allData);
     const label = displayValueFunc(row, allData);
@@ -240,7 +240,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   };
 
-  const renderGroupTitle = (value: any, propertyName: string): JSX.Element => {
+  const renderGroupTitle = (value: unknown, propertyName: string): JSX.Element => {
     if (value === null || value === undefined)
       return <Typography.Text type="secondary">(empty)</Typography.Text>;
     const column = source?.groupingColumns.find((c) => isDataColumn(c) && c.propertyName === propertyName);
