@@ -134,7 +134,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
           if (source.setPredefinedFilters) {
             try {
               source.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
-            } catch (error) {
+            } catch {
               setLoadingValues(false);
               setLoadingIndicator(false);
               // Fallback to using existing values
