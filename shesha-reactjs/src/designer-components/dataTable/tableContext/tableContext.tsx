@@ -85,7 +85,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering, components, onBeforeRowReorder, onAfterRowReorder } = props;
   const { formMode } = useForm();
   const { data } = useFormData();
-  const { styles, cx } = useStyles();
+  const { styles } = useStyles();
   const parent = useParent();
 
   const isDesignerMode = formMode === 'designer';
@@ -122,7 +122,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
     // Show only the empty state box when empty and in designer mode
     const content: ReactElement = (isDesignerMode && !hasChildComponents) ? (
-      <div className={cx(styles.dataContextDesignerEmpty)}>
+      <div className={styles.dataContextDesignerEmpty}>
         <TableContextEmptyState containerId={id} componentId={id} />
       </div>
     ) : (

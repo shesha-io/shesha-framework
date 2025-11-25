@@ -21,14 +21,14 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
   const selectedComponentId = useFormDesignerSelectedComponentId();
   const isSelected = selectedComponentId === componentId;
   const { theme } = useTheme();
-  const { styles, cx } = useStyles();
+  const { styles } = useStyles();
 
   const primaryColor = theme?.application.primaryColor ?? '#8c8c8c';
   const iconColor = isSelected ? primaryColor : '#8c8c8c';
   const titleColor = isSelected ? primaryColor : '#8c8c8c';
 
   return (
-    <div style={style} className={cx(styles.emptyStateContainer, className)}>
+    <div style={style} className={`${styles.emptyStateContainer} ${className || ''}`}>
       {/* Visual overlay showing the empty state message */}
       <div className={styles.emptyStateOverlay}>
         <DatabaseOutlined
