@@ -193,7 +193,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   id: nanoid(),
                   propertyName: 'customActionsPanel',
                   parentId: commonTabId,
-                  label: 'Custom Actions',
+                  label: 'Custom',
                   labelAlign: 'left',
                   expandIconPosition: 'start',
                   ghost: true,
@@ -202,14 +202,28 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     id: nanoid(),
                     components: [
                       ...new DesignerToolbarSettings()
-                        .addSettingsInput({
-                          id: nanoid(),
-                          propertyName: 'customActions',
-                          parentId: 'customActionsPanel',
-                          label: 'Actions Configuration',
-                          inputType: 'buttonGroupConfigurator',
-                          description: 'Configure custom actions that appear when hovering over files. Each action should have: id, name, label, icon (optional), tooltip (optional), hidden (optional), and actionConfiguration.',
-                          jsSetting: false,
+                        .addSettingsInputRow({
+                          id: "customActionsPanel",
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'customActions',
+                              parentId: 'customActionsPanel',
+                              label: 'Actions Configuration',
+                              type: 'buttonGroupConfigurator',
+                              description: 'Configure custom actions that appear when hovering over files. Each action should have: id, name, label, icon (optional), tooltip (optional), hidden (optional), and actionConfiguration.',
+                              jsSetting: false,
+                            },
+                            {
+                              id: nanoid(),
+                              propertyName: 'customContent',
+                              parentId: 'customActionsPanel',
+                              label: 'Actions Configuration',
+                              type: 'switch',
+                              description: 'Configure custom actions that appear when hovering over files. Each action should have: id, name, label, icon (optional), tooltip (optional), hidden (optional), and actionConfiguration.',
+                              jsSetting: false,
+                            }
+                          ]
                         })
                         .toJson(),
                     ],

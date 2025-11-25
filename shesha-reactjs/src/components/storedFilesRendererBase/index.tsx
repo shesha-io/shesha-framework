@@ -45,6 +45,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   allowReplace?: boolean;
   allowViewHistory?: boolean;
   customActions?: ButtonGroupItemProps[];
+  customContent?: string;
   showDragger?: boolean;
   ownerId?: string;
   ownerType?: string;
@@ -156,6 +157,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   allowReplace = true,
   allowViewHistory = true,
   customActions = [],
+  customContent = "",
   layout,
   listType,
   gap,
@@ -432,6 +434,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               </div>
             )}
           </div>
+          {customContent && <>
+          </>}
         </Popover>
       );
     },
