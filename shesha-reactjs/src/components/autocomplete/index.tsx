@@ -75,6 +75,31 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     setLoadingValues(false);
   }, [source.error]);
 
+  // Complete loading when data source finishes loading (success or failure)
+  useEffect(() => {
+    if (loadingValues && source?.tableData !== undefined) {
+      setLoadingValues(false);
+      setLoadingIndicator(false);
+
+      // Use loaded data or fallback to original values
+      if (source.tableData.length > 0) {
+        const foundValues = keys.map((x) => source.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x))
+          .filter(v => v != null);
+        if (foundValues.length > 0) {
+          selected.current = foundValues;
+        } else {
+          // Use original values as fallback
+          const values = Array.isArray(props.value) ? props.value : [props.value];
+          selected.current = values.filter(v => v != null);
+        }
+      } else {
+        // Use original values as fallback
+        const values = Array.isArray(props.value) ? props.value : [props.value];
+        selected.current = values.filter(v => v != null);
+      }
+    }
+  }, [loadingValues, source?.tableData, keys, props.value]);
+
   // update local store of values details
   useDeepCompareEffect(() => {
     if ((props.dataSourceType === 'entitiesList' && !isEntityTypeIdEmpty(props.entityType)) ||
@@ -84,29 +109,65 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
         const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
 
+        // Check if we have all the data we need without loading
+        if (!hasDisplayName && !loadingValues) {
+          // Don't return here - allow loading to proceed for proper data resolution
+        }
+
+        // Check if we have a valid data source for loading
+        if (!source) {
+          // No data source available - use existing values if they have display info
+          setLoadingValues(false);
+          setLoadingIndicator(false);
+          if (props.value && hasDisplayName) {
+            const values = Array.isArray(props.value) ? props.value : [props.value];
+            selected.current = values.filter(v => v != null);
+          }
+          return;
+        }
+
         props.disableRefresh(false);
         const allExist = keys.every((x) => selected.current?.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
+
+        // Attempt to load if we don't have all the values resolved from the data source
         if (!loadingValues && !allExist) {
           setLoadingValues(true);
           const selectedFilter = filterKeysFunc(props.value);
-          source?.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
+
+          // Check if the source is ready for filtering
+          if (source.setPredefinedFilters) {
+            try {
+              source.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
+            } catch (error) {
+              setLoadingValues(false);
+              setLoadingIndicator(false);
+              // Fallback to using existing values
+              if (props.value) {
+                const values = Array.isArray(props.value) ? props.value : [props.value];
+                selected.current = values.filter(v => v != null);
+              }
+            }
+          } else {
+            // Data source not ready - reset loading and use existing values
+            setLoadingValues(false);
+            setLoadingIndicator(false);
+            if (props.value) {
+              const values = Array.isArray(props.value) ? props.value : [props.value];
+              selected.current = values.filter(v => v != null);
+            }
+          }
         }
         if (props.dataSourceType === 'entitiesList' && hasDisplayName && !loadingValues && !selected.current?.length) {
           setLoadingIndicator(false);
           const values = Array.isArray(props.value) ? props.value : [props.value];
           selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
         }
-        if (loadingValues) {
-          setLoadingIndicator(false);
-          setLoadingValues(false);
-          selected.current = keys.map((x) => source?.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
-        }
       } else {
         setLoadingIndicator(false);
         setLoadingValues(false);
       }
     }
-  }, [props.value, source?.tableData, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
+  }, [props.value, source?.tableData, source?.isInProgress?.fetchTableData, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
 
   useEffect(() => {
     if (open) {
@@ -238,7 +299,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     return selected.current.length === 1 ? displayValueFunc(selected.current[0], allData) : null;
   }, [selected.current]);
 
-  const shouldShowLoading = keys.length > 0 && (loadingIndicator || (!props.readOnly && loadingValues));
+  // Show loading when actively fetching data
+  const shouldShowLoading = (loadingIndicator || (!props.readOnly && loadingValues));
 
   if (shouldShowLoading) {
     return (

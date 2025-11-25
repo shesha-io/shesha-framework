@@ -11,8 +11,8 @@ export const migrateV12toV13 = (props: ITableComponentProps, _context: SettingsM
     // If useMultiselect was explicitly set
     if (typeof useMultiselect === 'boolean') {
       // If useMultiselect was true, set selectionMode to 'multiple'
-      // If useMultiselect was false, set selectionMode to 'single'
-      const newSelectionMode = useMultiselect ? 'multiple' : 'single';
+      // If useMultiselect was false, set selectionMode to 'none' (no checkboxes)
+      const newSelectionMode = useMultiselect ? 'multiple' : 'none';
 
       // Remove the old useMultiselect property and set the new selectionMode
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

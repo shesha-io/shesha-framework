@@ -80,10 +80,13 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   const { styles } = useStyles();
   const { dragState, setDragState } = useDataTableStore();
   const tableRef = useRef(null);
-  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDoubleClickRef = useRef(false);
 
   const handleRowClick = (): void => {
+    // Reset double-click flag for a fresh click sequence
+    isDoubleClickRef.current = false;
+
     // Clear any existing timeout
     if (clickTimeoutRef.current) {
       clearTimeout(clickTimeoutRef.current);

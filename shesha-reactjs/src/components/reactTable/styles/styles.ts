@@ -166,7 +166,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         display: inline-block;
         min-width: 100%;
         background-color: ${backgroundColor}
-        ${boxShadow ? `box-shadow: ${boxShadow};` : 'box-shadow: 30 3px 6px rgba(25, 25, 217, 0.2)'}
+        ${boxShadow ? `box-shadow: ${boxShadow};` : ''}
 
         /* Apply border styles to the inner table */
         ${Object.entries(borderStyles).map(([key, value]) => {
