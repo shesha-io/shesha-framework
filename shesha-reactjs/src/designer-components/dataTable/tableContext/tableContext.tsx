@@ -120,46 +120,46 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       ? (hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty)
       : (hasChildComponents ? styles.dataContextRuntime : styles.dataContextRuntimeEmpty);
 
-    // Show only the empty state box when empty and in designer mode
-    const content: ReactElement = (isDesignerMode && !hasChildComponents) ? (
-      <div className={styles.dataContextDesignerEmpty}>
-        <TableContextEmptyState containerId={id} componentId={id} />
-      </div>
-    ) : (
+    // Render wrapper div with computed styleClass; inner children differ based on empty state
+    const content: ReactElement = (
       <div className={styleClass}>
-        <DataTableProvider
-          userConfigId={props.id}
-          entityType={entityType}
-          getDataPath={getDataPath}
-          propertyName={propertyName}
-          actionOwnerId={id}
-          actionOwnerName={componentName}
-          sourceType={props.sourceType}
-          initialPageSize={props.defaultPageSize ?? 10}
-          dataFetchingMode={props.dataFetchingMode ?? 'paging'}
-          getFieldValue={getFieldValue}
-          onChange={onChange}
-          grouping={props.grouping}
-          sortMode={props.sortMode}
-          strictSortBy={props.strictSortBy}
-          strictSortOrder={props.strictSortOrder}
-          standardSorting={props.standardSorting}
-          allowReordering={evaluateYesNo(allowReordering, formMode)}
-          permanentFilter={permanentFilter}
-          disableRefresh={disableRefresh}
-          customReorderEndpoint={customReorderEndpoint}
-          onBeforeRowReorder={onBeforeRowReorder}
-          onAfterRowReorder={onAfterRowReorder}
-          contextValidation={validationResult}
-        >
-          <ComponentsContainer
-            containerId={id}
-            className={isDesignerMode ? [styles.dataContextComponentsContainer, !hasChildComponents && styles.dataContextComponentsContainerEmpty].filter(Boolean).join(' ') : undefined}
-            itemsLimit={-1}
-            emptyInsertThreshold={20}
-            showHintWhenEmpty={false}
-          />
-        </DataTableProvider>
+        {(isDesignerMode && !hasChildComponents) ? (
+          <TableContextEmptyState containerId={id} componentId={id} />
+        ) : (
+          <DataTableProvider
+            userConfigId={props.id}
+            entityType={entityType}
+            getDataPath={getDataPath}
+            propertyName={propertyName}
+            actionOwnerId={id}
+            actionOwnerName={componentName}
+            sourceType={props.sourceType}
+            initialPageSize={props.defaultPageSize ?? 10}
+            dataFetchingMode={props.dataFetchingMode ?? 'paging'}
+            getFieldValue={getFieldValue}
+            onChange={onChange}
+            grouping={props.grouping}
+            sortMode={props.sortMode}
+            strictSortBy={props.strictSortBy}
+            strictSortOrder={props.strictSortOrder}
+            standardSorting={props.standardSorting}
+            allowReordering={evaluateYesNo(allowReordering, formMode)}
+            permanentFilter={permanentFilter}
+            disableRefresh={disableRefresh}
+            customReorderEndpoint={customReorderEndpoint}
+            onBeforeRowReorder={onBeforeRowReorder}
+            onAfterRowReorder={onAfterRowReorder}
+            contextValidation={validationResult}
+          >
+            <ComponentsContainer
+              containerId={id}
+              className={isDesignerMode ? [styles.dataContextComponentsContainer, !hasChildComponents && styles.dataContextComponentsContainerEmpty].filter(Boolean).join(' ') : undefined}
+              itemsLimit={-1}
+              emptyInsertThreshold={20}
+              showHintWhenEmpty={false}
+            />
+          </DataTableProvider>
+        )}
       </div>
     );
 
