@@ -258,12 +258,29 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     // If it's a string, it should not be empty
     if (typeof formId === 'string') {
-      return formId.trim().length > 0;
+      const isValid = formId.trim().length > 0;
+      if (!isValid) {
+        console.warn('Invalid formId: empty string');
+      }
+      return isValid;
     }
 
     // If it's an object (FormFullName), it should have both name and module
     if (typeof formId === 'object') {
-      return !!(formId.name && formId.module);
+      const hasName = formId.name && typeof formId.name === 'string' && formId.name.trim().length > 0;
+      const hasModule = formId.module && typeof formId.module === 'string' && formId.module.trim().length > 0;
+      const isValid = hasName && hasModule;
+
+      if (!isValid) {
+        console.warn('Invalid formId object:', {
+          name: formId.name,
+          module: formId.module,
+          hasName,
+          hasModule,
+        });
+      }
+
+      return isValid;
     }
 
     return false;
