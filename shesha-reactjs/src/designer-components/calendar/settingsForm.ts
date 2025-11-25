@@ -135,25 +135,17 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             id: eventsTabId,
             components: [
               ...fbf()
-                .addSettingsInput({
-                  inputType: 'configurableActionConfigurator',
+                .addConfigurableActionConfigurator({
                   id: nanoid(),
                   parentId: eventsTabId,
                   propertyName: 'onSlotClick',
                   label: 'On Slot Click',
-                  editorConfig: null,
-                  level: 1,
-                  hideLabel: true,
                 })
-                .addSettingsInput({
-                  inputType: 'configurableActionConfigurator',
+                .addConfigurableActionConfigurator({
                   id: nanoid(),
                   parentId: eventsTabId,
                   propertyName: 'onViewChange',
                   label: 'On View Change',
-                  editorConfig: null,
-                  level: 1,
-                  hideLabel: true,
                 })
                 .toJson(),
             ],
