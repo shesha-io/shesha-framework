@@ -342,7 +342,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             },
             entityType: extensionJson.childTablesList[index] || '',
             components: contextComponents,
-          } as ITableContextComponentProps);
+          });
 
           return {
             id: nanoid(),
