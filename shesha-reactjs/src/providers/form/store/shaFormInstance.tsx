@@ -62,6 +62,9 @@ class PublicFormApi<Values = any> implements FormApi<Values> {
     get formInstance(): FormInstance<Values> {
         return this.#form.antdForm;
     };
+    get shaForm(): IShaFormInstance<Values> {
+        return this.#form;
+    }
     get formSettings() {
         return this.#form.settings;
     };
@@ -76,7 +79,7 @@ class PublicFormApi<Values = any> implements FormApi<Values> {
     };
     get formArguments() {
         return this.#form.formArguments;
-    }
+    }    
 };
 
 class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
