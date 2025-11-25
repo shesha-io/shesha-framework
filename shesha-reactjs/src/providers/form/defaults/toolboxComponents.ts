@@ -235,7 +235,6 @@ export const getToolboxComponents = (
         DividerComponent,
         DynamicView,
         AutocompleteTagGroup,
-        TableContextComponentLegacy,
       ],
     },
     {
