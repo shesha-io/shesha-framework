@@ -119,6 +119,9 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
           )}
         >
           <InfoCircleOutlined
+            role="button"
+            tabIndex={0}
+            aria-label="Data table configuration help"
             style={{
               position: 'absolute',
               top: '4px',
