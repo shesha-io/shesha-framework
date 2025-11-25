@@ -294,7 +294,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
               aria-label="Data table configuration help"
               style={{
                 position: 'absolute',
-                top: '4px',
+                top: '44px',
                 right: '4px',
                 color: theme?.application?.warningColor || '#faad14',
                 fontSize: '20px',

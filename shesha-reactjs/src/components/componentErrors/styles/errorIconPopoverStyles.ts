@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }) => {
+export const useStyles = createStyles(({ css, cx, token }, { isDesignerMode = false }: { isDesignerMode?: boolean }) => {
   const errorIconContainer = cx("sha-error-icon-container", css`
     position: relative;
     display: contents;
@@ -27,7 +27,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   `);
 
   const iconTopRight = cx("sha-error-icon-top-right", css`
-    top: 4px;
+    top: ${isDesignerMode ? '44px' : '4px'};
     right: 4px;
 
     &:hover {

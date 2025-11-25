@@ -77,6 +77,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
         <ErrorIconPopover
           validationResult={validationResult}
           type="error"
+          isDesignerMode={shaForm.formMode === 'designer'}
         >
           <div style={{ color: '#999', fontSize: '12px' }}>Component &apos;{componentModel.type}&apos; not registered</div>
         </ErrorIconPopover>
@@ -112,7 +113,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
 
   // Wrap component with error icon if there are validation errors
   const wrappedControl = validationResult ? (
-    <ErrorIconPopover validationResult={validationResult} type="warning">
+    <ErrorIconPopover validationResult={validationResult} type="warning" isDesignerMode={shaForm.formMode === 'designer'}>
       {control}
     </ErrorIconPopover>
   ) : control;

@@ -165,7 +165,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
     // Wrap with error icon if there are validation errors
     const wrappedContent = validationResult?.hasErrors
-      ? <ErrorIconPopover validationResult={validationResult}>{content}</ErrorIconPopover>
+      ? <ErrorIconPopover validationResult={validationResult} isDesignerMode={isDesignerMode}>{content}</ErrorIconPopover>
       : content;
 
     return wrappedContent;

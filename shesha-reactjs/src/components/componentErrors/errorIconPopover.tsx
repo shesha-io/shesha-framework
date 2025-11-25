@@ -9,6 +9,7 @@ interface IErrorIconPopoverBaseProps extends PropsWithChildren {
   type?: ISheshaErrorTypes;
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   title?: string | null;
+  isDesignerMode?: boolean;
 }
 
 interface IErrorIconPopoverWithValidation extends IErrorIconPopoverBaseProps {
@@ -30,8 +31,9 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   message,
   position = 'top-right',
   title,
+  isDesignerMode = false,
 }) => {
-  const { styles } = useStyles();
+  const { styles } = useStyles({ isDesignerMode });
 
   // Use validationType from validationResult if available, otherwise fall back to type prop or 'warning'
   const effectiveType = validationResult?.validationType ?? type ?? 'warning';
