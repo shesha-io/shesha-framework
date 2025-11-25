@@ -9,7 +9,6 @@ import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson"
 import { ROW_COUNT } from "../../constants";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
 import { IEntityTypeIdentifier } from "../../../entities/models";
-import { ITableContextComponentProps } from "@/designer-components/dataTable/tableContext/models";
 
 /**
  * Implements generation logic for detail views.
