@@ -2,7 +2,7 @@ import axios from 'axios';
 import FileSaver from 'file-saver';
 import { DataTypes, IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
-import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
 import { useGet, useMutate } from '@/hooks';
 import { IApiEndpoint, IObjectMetadata } from '@/interfaces/metadata';
@@ -40,7 +40,7 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
-import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
+import { addFile, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
@@ -86,6 +86,14 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const [state, dispatch] = useReducer(storedFilesReducer, {
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
   });
+
+  // Synced ref to avoid stale closures in upload/delete/download handlers
+  const fileListRef = useRef<IStoredFile[]>(state.fileList ?? []);
+
+  // Update ref whenever state.fileList changes to maintain freshness
+  useEffect(() => {
+    fileListRef.current = state.fileList;
+  }, [state.fileList]);
 
   const { message } = App.useApp();
   const { connection } = useSignalR(false) ?? {};
@@ -136,14 +144,20 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
 
       dispatch(onFileAddedAction(patient));
+      const next = [...(fileListRef.current ?? []).filter((f) => f.id !== patient?.id), fileReducer(patient)];
+      onChange?.(next);
     });
 
     connection?.on('OnFileDeleted', (eventData: IStoredFile | string) => {
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
-      const deletedId = patient?.id;
-      if (!deletedId) return;
-      dispatch(onFileDeletedAction(deletedId));
+
+      dispatch(onFileDeletedAction(patient?.id));
+      onChange?.(fileListRef.current?.filter((file) => file.id !== patient?.id) || []);
     });
+    return () => {
+      connection?.off('OnFileAdded');
+      connection?.off('OnFileDeleted');
+    };
   }, []);
   //#endregion
 
@@ -160,8 +174,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       formData.append('filesCategory', `${filesCategory}`);
     formData.append('propertyName', '');
 
-    // @ts-ignore
-    const newFile: IStoredFile = { uid: '', ...file, status: 'uploading', name: file.name };
+    const tempUid = (file as any)?.uid ?? Math.random().toString(36).slice(2);
+    const newFile: IStoredFile = { uid: tempUid, ...(file as any), status: 'uploading', name: file.name };
 
     if (!Boolean(payload.ownerId || ownerId) && typeof addDelayedUpdate !== 'function') {
       console.error('File list component is not configured');
@@ -184,7 +198,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         const responseFile = response.result as IStoredFile;
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
-        onChange?.([...state.fileList, responseFile]);
+        onChange?.(addFile(responseFile, fileListRef.current));
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
@@ -251,7 +265,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           ownerName: ownerName,
         }
         : {
-          filesId: state.fileList?.map(x => x.id).filter(x => !!x),
+          filesId: fileListRef.current?.map((x) => x.id).filter((x) => !!x),
         };
     axios({
       url: `${baseUrl ?? backendUrl}/api/StoredFile/DownloadZip?${qs.stringify(query)}`,
@@ -263,7 +277,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         dispatch(downloadZipSuccessAction());
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
         dispatch(updateAllFilesDownloadedByCurrentUser());
-        const updatedList = updateAllFilesDownloaded(state.fileList ?? []);
+        const updatedList = updateAllFilesDownloaded(fileListRef.current ?? []);
         onDownload?.(updatedList);
       })
       .catch(() => {
@@ -284,7 +298,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
         dispatch(updateIsDownloadedByCurrentUser(payload.fileId));
-        const nextList = updateDownloadedAFile(state.fileList ?? [], payload.fileId);
+        const nextList = updateDownloadedAFile(fileListRef.current ?? [], payload.fileId);
         onDownload?.(nextList);
       })
       .catch((e) => {

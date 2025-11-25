@@ -1,11 +1,11 @@
 import flagsReducer from '../utils/flagsReducer';
 import { StoredFilesActionEnums } from './actions';
 import { IStoredFilesStateContext } from './contexts';
-import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
+import { addFile, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 
 export function storedFilesReducer(
   incomingState: IStoredFilesStateContext,
-  action: ReduxActions.Action<IStoredFilesStateContext>
+  action: ReduxActions.Action<IStoredFilesStateContext>,
 ): IStoredFilesStateContext {
   //#region Register flags reducer
   const state = flagsReducer(incomingState, action) as IStoredFilesStateContext;
@@ -18,10 +18,7 @@ export function storedFilesReducer(
     case StoredFilesActionEnums.DownloadFileSuccess:
     case StoredFilesActionEnums.DownloadFileError:
     case StoredFilesActionEnums.FetchFileListSuccess:
-    case StoredFilesActionEnums.DowloadZipRequest:
-    case StoredFilesActionEnums.DowloadZipSuccess:
     case StoredFilesActionEnums.DeleteFileRequest:
-    case StoredFilesActionEnums.DowloadZipError:
     case StoredFilesActionEnums.FetchFileListRequest:
     case StoredFilesActionEnums.FetchFileListError:
     case StoredFilesActionEnums.DownloadZipRequest:
@@ -52,16 +49,7 @@ export function storedFilesReducer(
 
       return {
         ...state,
-        fileList: fileList.map((file) => {
-          if (file.uid === newFile.uid) {
-            return {
-              ...newFile,
-              uid: newFile.id, // We want to reset the uid to the id because we use it to delete the file
-            };
-          } else {
-            return file;
-          }
-        }),
+        fileList: addFile(newFile, fileList),
       };
     }
     case StoredFilesActionEnums.OnFileAdded: {
@@ -97,14 +85,14 @@ export function storedFilesReducer(
       };
     }
     case StoredFilesActionEnums.DeleteFileError: {
-      if (state.fileList?.find(x => x.uid === payload.fileId || x.id === payload.fileId)?.status === 'error')
+      if (state.fileList?.find((x) => x.uid === payload.fileId || x.id === payload.fileId)?.status === 'error')
         return {
           ...state,
           fileList: state.fileList.filter(
-            ({ id, uid }) => id !== payload.fileId && uid !== payload.fileId
+            (x) => !(x.uid === payload.fileId && x.status === 'error'),
           ),
         };
-      
+
       return state;
     }
 
@@ -113,14 +101,14 @@ export function storedFilesReducer(
 
       return {
         ...state,
-        fileList: updateDownloadedAFile(state.fileList, fileId) || [],
+        fileList: updateDownloadedAFile(state.fileList, fileId) ?? state.fileList,
       };
     }
 
     case StoredFilesActionEnums.UpdateAllFilesDownloadedSuccess: {
       return {
         ...state,
-        fileList: updateAllFilesDownloaded(state.fileList) || [],
+        fileList: updateAllFilesDownloaded(state.fileList) ?? state.fileList,
       };
     }
 
