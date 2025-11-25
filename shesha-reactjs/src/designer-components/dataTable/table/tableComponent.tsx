@@ -6,6 +6,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
+import { migrateV12toV13 } from './migrations/migrate-v13';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
 import { TableOutlined } from '@ant-design/icons';
@@ -46,6 +47,7 @@ const TableComponent: TableComponentDefinition = {
     return {
       ...model,
       items: [],
+      striped: true,
     };
   },
   settingsFormMarkup: getSettings,
@@ -61,6 +63,7 @@ const TableComponent: TableComponentDefinition = {
           selectionMode: prev['selectionMode'] ?? 'none',
           crud: prev['crud'] ?? false,
           flexibleHeight: prev['flexibleHeight'] ?? false,
+          striped: prev['striped'] ?? true,
         };
       })
       .add<ITableComponentProps>(1, migrateV0toV1)
@@ -114,7 +117,10 @@ const TableComponent: TableComponentDefinition = {
         noDataText: prev.noDataText ?? 'No Data',
         noDataSecondaryText: prev.noDataSecondaryText ?? 'No data is available for this table',
       }))
-      .add<ITableComponentProps>(12, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<ITableComponentProps>(12, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+      .add<ITableComponentProps>(13, migrateV12toV13)
+      .add<ITableComponentProps>(14, (prev) => ({ ...prev, striped: true }))
+      .add<ITableComponentProps>(15, (prev) => ({ ...prev, striped: prev.striped ?? true })),
   actualModelPropertyFilter: (name, value) => name !== 'items' || isPropertySettings(value),
 };
 

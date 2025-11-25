@@ -8,6 +8,7 @@ import React, {
 import { filterVisibility, calculateDefaultColumns } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
+import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 import {
   SidebarContainer,
   DataTable,
@@ -59,6 +60,13 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   // Inject CSS for hint popover arrow styling
   useDatatableHintPopoverStyles();
 
+  // Process shadow settings using getShadowStyle utility
+  const shadowStyles = useMemo(() => getShadowStyle(props?.shadow), [props?.shadow]);
+  const finalBoxShadow = useMemo(() => {
+    // If there's a shadow object, use the processed styles, otherwise use the boxShadow string
+    return props?.shadow ? shadowStyles?.boxShadow : props?.boxShadow;
+  }, [props?.shadow, shadowStyles?.boxShadow, props?.boxShadow]);
+
   const { styles } = useStyles({
     fontFamily: props?.font?.type,
     fontWeight: props?.font?.weight,
@@ -83,7 +91,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     rowHeight: props?.rowHeight,
     rowPadding: props?.rowPadding,
     rowBorder: props?.rowBorder,
-    boxShadow: props?.boxShadow,
+    boxShadow: finalBoxShadow,
     sortableIndicatorColor: props?.sortableIndicatorColor,
   });
 
@@ -353,7 +361,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             rowHeight={props.rowHeight}
             rowPadding={props.rowPadding}
             rowBorder={props.rowBorder}
-            boxShadow={props.boxShadow}
+            boxShadow={finalBoxShadow}
             sortableIndicatorColor={props.sortableIndicatorColor}
           />
         </div>

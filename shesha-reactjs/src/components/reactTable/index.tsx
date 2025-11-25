@@ -106,6 +106,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   rowBorder,
   boxShadow,
   sortableIndicatorColor,
+  striped = true,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -133,6 +134,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     rowBorder,
     boxShadow,
     sortableIndicatorColor,
+    striped,
   });
 
   const { setDragState } = useDataTableStore();
@@ -611,6 +613,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         inlineSaveMode={inlineSaveMode}
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
+        striped={striped}
         onMouseOver={(activeCell, isContentOverflowing) => {
           setActiveCell(activeCell);
           setIsCellContentOverflowing(isContentOverflowing && activeCell?.current?.innerText);
