@@ -107,6 +107,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     ${containerMinHeight ? `min-height: ${containerMinHeight} !important;` : ''}
     ${containerMaxHeight ? `max-height: ${containerMaxHeight} !important;` : ''}
     overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-gutter: stable;
+      &::-webkit-scrollbar {
+        width: 8px;
+        background-color: transparent;
+      }
+
     
     .ant-upload:not(.ant-upload-disabled) {
       .icon {
@@ -124,11 +131,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       ${layout ? `height: ${height ?? thumbnailHeight} !important;` : ''}
 
       :before {
-        top: 0;
-        width: 100% !important;
-        height: 100% !important;
-        border-radius: ${borderRadius ?? '8px'} !important;
         ${rest}
+        display: none;
       }
     }
 

@@ -6,22 +6,33 @@ import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from
 import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { addPx } from '@/utils/style';
-import { isFileTypeAllowed } from '@/utils/fileValidation';
-import { CheckCircleOutlined, DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, DeleteOutlined, DownloadOutlined, EyeOutlined, FileZipOutlined, HistoryOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
   App,
   Button,
   ButtonProps,
   Image,
+  Popconfirm,
+  Popover,
+  Space,
   Upload,
   UploadFile,
 } from 'antd';
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import React, { CSSProperties, FC, useEffect, useState } from 'react';
+import React, { CSSProperties, FC, useEffect, useRef, useState } from 'react';
 import { isValidGuid } from '../formDesigner/components/utils';
 import { useStyles } from './styles/styles';
+import { Skeleton } from 'antd';
+import { DateDisplay } from '@/components';
+import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
+import filesize from 'filesize';
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
+import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
+import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
+import { isFileTypeAllowed } from '@/utils/fileValidation';
+
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -31,6 +42,9 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   fileList?: IStoredFile[];
   allowUpload?: boolean;
   allowDelete?: boolean;
+  allowReplace?: boolean;
+  allowViewHistory?: boolean;
+  customActions?: ButtonGroupItemProps[];
   showDragger?: boolean;
   ownerId?: string;
   ownerType?: string;
@@ -69,6 +83,54 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadedFileStyles?: CSSProperties;
 }
 
+// Inline FileVersionsButton component that doesn't depend on StoredFileProvider
+const FileVersionsButton: FC<{ fileId: string; onDownload: (versionNo: number, fileName: string) => void }> = ({ fileId, onDownload }) => {
+  const {
+    loading: loading,
+    refetch: fetchHistory,
+    data: serverData,
+  } = useStoredFileGetFileVersions({
+    fileId,
+    lazy: true,
+  });
+
+  if (fileId == null) return null;
+
+  const handleVisibleChange = () => {
+    if (!serverData) fetchHistory();
+  };
+
+  const uploads = serverData?.result;
+
+  const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto) => {
+    onDownload(fileVersion.versionNo, fileVersion.fileName);
+  };
+
+  const content = (
+    <Skeleton loading={loading}>
+      <ul>
+        {uploads &&
+          uploads.map((item, i) => (
+            <li key={i}>
+              <strong>Version {i + 1}</strong> Uploaded {item.dateUploaded && <DateDisplay date={item.dateUploaded} />}{' '}
+              by {item.uploadedBy}
+              <br />
+              <Button type="link" onClick={() => handleVersionDownloadClick(item)}>
+                {item.fileName} ({filesize(item.size)})
+              </Button>
+            </li>
+          ))}
+      </ul>
+    </Skeleton>
+  );
+
+  return (
+    <Popover content={content} title="History" trigger="hover" onOpenChange={handleVisibleChange}>
+      <Button size="small" icon={<HistoryOutlined />} title="View history" />
+    </Popover>
+  );
+};
+
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   multiple = true,
   fileList = [],
@@ -91,6 +153,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   allowedFileTypes = [],
   downloadZip,
   allowDelete,
+  allowReplace = true,
+  allowViewHistory = true,
+  customActions = [],
   layout,
   listType,
   gap,
@@ -98,12 +163,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   downloadedFileStyles,
   ...rest
 }) => {
-  const { message, notification, modal } = App.useApp();
+  const { message, notification } = App.useApp();
   const { httpHeaders } = useSheshaApplication();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
-  const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
-
+  const [imageUrls, setImageUrls] = useState<{ [key: string]: string}>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
+  const [fileToReplace, setFileToReplace] = useState<string | null>(null);
+  const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const model = rest;
   const hasFiles = !!fileList.length;
 
@@ -179,12 +245,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     setPreviewOpen(true);
   };
 
-  const iconRender = (file): JSX.Element => {
+  const iconRender = (file: UploadFile) => {
     const { type, uid } = file;
 
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
-        return <Image src={imageUrls[uid]} alt={file.name} preview={false} />;
+        return <Space size="small" direction='vertical'>
+        <Image src={imageUrls[uid]} alt={file.name} preview={true} />
+        <p className='ant-upload-list-item-name'>{file.name}</p>
+        </Space>;
       }
     }
 
@@ -196,18 +265,32 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
 
+  const handleReplaceClick = (file: UploadFile) => {
+    setFileToReplace(file.uid);
+    hiddenUploadInputRef.current?.click();
+  };
 
-  const showDeleteConfirmation = (file): void => {
-    modal.confirm({
-      title: 'Delete Attachment',
-      content: 'Are you sure you want to delete this attachment?',
-      okText: 'Yes',
-      cancelText: 'Cancel',
-      okType: 'danger',
-      onOk: () => {
-        deleteFile(file.uid);
-      },
-    });
+  const handleReplaceFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0 && fileToReplace) {
+      const newFile = files[0];
+
+      // First delete the old file
+      deleteFile(fileToReplace);
+
+      // Then upload the new file
+      uploadFile({
+        file: newFile,
+        ownerId,
+        ownerType,
+      });
+
+      // Reset file to replace
+      setFileToReplace(null);
+      if (hiddenUploadInputRef.current) {
+        hiddenUploadInputRef.current.value = '';
+      }
+    }
   };
 
   const props: DraggerProps = {
@@ -223,10 +306,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
       }
-    },
-    onRemove(file) {
-      showDeleteConfirmation(file);
-      return false;
     },
     customRequest(options: any) {
       // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
@@ -259,34 +338,101 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       if (!isAcceptableFileSize) {
         message.error(`Image must smaller than ${maxFileLength}MB!`);
       }
-
       return isValidFileType && isAcceptableFileSize;
     },
-    onDownload: ({ uid, name }) => {
-      downloadFile({ fileId: uid, fileName: name });
-    },
-    onPreview: (file) => {
-      const { uid, name } = file;
-      if (isImageType(file.type)) {
-        handlePreview(file);
-      } else downloadFile({ fileId: uid, fileName: name });
-    },
-    showUploadList: {
-      showRemoveIcon: allowDelete,
-      showDownloadIcon: true,
-    },
     iconRender,
-    itemRender: (originNode, file: IStoredFile) => {
-      const isDownloaded = file.userHasDownloaded === true;
-      return (
-        <div className={isDownloaded ? styles.downloadedFile : ''}>
-          {originNode}
-          {isDownloaded && (
-            <div className={styles.downloadedIcon}>
-              <CheckCircleOutlined />
-            </div>
+    itemRender: (originNode, file) => {
+      const isDownloaded = (file as any).userHasDownloaded === true;
+      const fileId = (file as any).id || file.uid;
+
+      const actions = (
+        <Space size={5}>
+          <Button 
+          size="small"
+          icon={<EyeOutlined/>}
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePreview(file);
+          }}
+          />
+          {allowReplace && !disabled && (
+            <Button
+              size="small"
+              icon={<SyncOutlined />}
+              title="Replace file"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleReplaceClick(file);
+              }}
+            />
           )}
-        </div>
+          {allowDelete && !disabled && (
+            <Popconfirm title='Delete Attachment' onConfirm={()=>
+              deleteFile(file.uid)}
+              description="Are you sure you want to delete this attachment?"
+              >
+              <Button
+              size="small"
+              icon={<DeleteOutlined />}
+              title="Delete file"
+            />
+            </Popconfirm>
+            
+          )}
+          {allowViewHistory && fileId && isValidGuid(fileId) && (
+            <FileVersionsButton
+              fileId={fileId}
+              onDownload={(versionNo, fileName) => {
+                downloadFile({ fileId, versionNo, fileName });
+              }}
+            />
+          )}
+          <Button
+            size="small"
+            icon={<DownloadOutlined />}
+            title="Download file"
+            onClick={(e) => {
+              e.stopPropagation();
+              downloadFile({ fileId: file.uid, fileName: file.name });
+            }}
+          />
+          {/* Custom Actions Button Group */}
+          {customActions && customActions.length > 0 && (
+            <DataContextBinder
+              id={`file_ctx_${fileId}`}
+              name="fileContext"
+              description="File context for custom actions"
+              type="control"
+              data={{
+                file: file,
+                fileId: fileId,
+                fileName: file.name,
+                fileType: file.type,
+              }}
+            >
+              <ButtonGroup
+                id={`file_actions_${fileId}`}
+                items={customActions}
+                size="small"
+                spaceSize="small"
+                isInline={true}
+              />
+            </DataContextBinder>
+          )}
+        </Space>
+      );
+
+      return (
+        <Popover content={actions} trigger="hover" placement="top">
+          <div className={isDownloaded ? styles.downloadedFile : ''}>
+            {originNode}
+            {isDownloaded && (
+              <div className={styles.downloadedIcon}>
+                <CheckCircleOutlined />
+              </div>
+            )}
+          </div>
+        </Popover>
       );
     },
   };
@@ -365,7 +511,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           </div>
         )}
 
-      </div>
+      {/* Hidden file input for replace functionality */}
+      <input
+        type="file"
+        ref={hiddenUploadInputRef}
+        style={{ display: 'none' }}
+        accept={allowedFileTypes?.join(',')}
+        onChange={handleReplaceFileChange}
+      />
+
+    </div>
     </div>
   );
 };

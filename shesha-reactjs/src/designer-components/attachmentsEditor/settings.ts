@@ -147,12 +147,73 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     },
                   ],
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  propertyName: 'downloadZip',
-                  label: 'Download Zip',
-                  inputType: 'switch',
-                  jsSetting: true,
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'allowReplace',
+                      label: 'Allow Replace',
+                      type: 'switch',
+                      jsSetting: true,
+                      hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+                    },
+                    {
+                      id: nanoid(),
+                      propertyName: 'allowRename',
+                      label: 'Allow Rename',
+                      type: 'switch',
+                      hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+                      jsSetting: true,
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'allowViewHistory',
+                      label: 'Allow View History',
+                      type: 'switch',
+                      jsSetting: true,
+                    },
+                    {
+                      id: nanoid(),
+                      propertyName: 'downloadZip',
+                      label: 'Download Zip',
+                      type: 'switch',
+                      jsSetting: true,
+                    },
+                  ],
+                })
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  propertyName: 'customActionsPanel',
+                  parentId: commonTabId,
+                  label: 'Custom Actions',
+                  labelAlign: 'left',
+                  expandIconPosition: 'start',
+                  ghost: true,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [
+                      ...new DesignerToolbarSettings()
+                        .addSettingsInput({
+                          id: nanoid(),
+                          propertyName: 'customActions',
+                          parentId: 'customActionsPanel',
+                          label: 'Actions Configuration',
+                          inputType: 'buttonGroupConfigurator',
+                          description: 'Configure custom actions that appear when hovering over files. Each action should have: id, name, label, icon (optional), tooltip (optional), hidden (optional), and actionConfiguration.',
+                          jsSetting: false,
+                        })
+                        .toJson(),
+                    ],
+                  },
                 })
                 .toJson(),
             ],
