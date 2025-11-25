@@ -84,18 +84,18 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       // Use loaded data or fallback to original values
       if (source.tableData.length > 0) {
         const foundValues = keys.map((x) => source.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x))
-          .filter(v => v != null);
+          .filter((v) => v != null);
         if (foundValues.length > 0) {
           selected.current = foundValues;
         } else {
           // Use original values as fallback
           const values = Array.isArray(props.value) ? props.value : [props.value];
-          selected.current = values.filter(v => v != null);
+          selected.current = values.filter((v) => v != null);
         }
       } else {
         // Use original values as fallback
         const values = Array.isArray(props.value) ? props.value : [props.value];
-        selected.current = values.filter(v => v != null);
+        selected.current = values.filter((v) => v != null);
       }
     }
   }, [loadingValues, source?.tableData, keys, props.value]);
@@ -109,10 +109,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
         const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
 
-        // Check if we have all the data we need without loading
-        if (!hasDisplayName && !loadingValues) {
-          // Don't return here - allow loading to proceed for proper data resolution
-        }
 
         // Check if we have a valid data source for loading
         if (!source) {
@@ -121,7 +117,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
           setLoadingIndicator(false);
           if (props.value && hasDisplayName) {
             const values = Array.isArray(props.value) ? props.value : [props.value];
-            selected.current = values.filter(v => v != null);
+            selected.current = values.filter((v) => v != null);
           }
           return;
         }
@@ -144,7 +140,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
               // Fallback to using existing values
               if (props.value) {
                 const values = Array.isArray(props.value) ? props.value : [props.value];
-                selected.current = values.filter(v => v != null);
+                selected.current = values.filter((v) => v != null);
               }
             }
           } else {
@@ -153,7 +149,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
             setLoadingIndicator(false);
             if (props.value) {
               const values = Array.isArray(props.value) ? props.value : [props.value];
-              selected.current = values.filter(v => v != null);
+              selected.current = values.filter((v) => v != null);
             }
           }
         }

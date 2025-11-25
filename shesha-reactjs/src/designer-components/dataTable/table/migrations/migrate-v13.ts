@@ -15,7 +15,6 @@ export const migrateV12toV13 = (props: ITableComponentProps, _context: SettingsM
       const newSelectionMode = useMultiselect ? 'multiple' : 'none';
 
       // Remove the old useMultiselect property and set the new selectionMode
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { useMultiselect: removed, ...propsWithoutUseMultiselect } = props;
 
       return {
