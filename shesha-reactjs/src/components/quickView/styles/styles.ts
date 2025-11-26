@@ -50,6 +50,32 @@ export const useStyles = createStyles(({ css, cx }) => {
         height: 100%;
       }
     }
+
+    .ant-form-item-control {
+      .read-only-display-form-item {
+        white-space: normal !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-all;
+
+        > div {
+          white-space: normal !important;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          word-break: break-all;
+          height: auto !important;
+          min-height: 32px;
+
+          > div {
+            white-space: normal !important;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-all;
+            flex: auto !important;
+          }
+        }
+      }
+    }
   `);
 
   return {
