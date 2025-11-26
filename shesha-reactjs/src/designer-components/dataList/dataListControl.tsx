@@ -95,7 +95,7 @@ export const NotConfiguredWarning: FC<{ message?: string; isWarning?: boolean }>
       </div>
 
       {/* Info/Warning icon with popover - positioned at top right, below delete button (matching DataTable style) */}
-      <Popover content={popoverContent} title={null} trigger="hover" placement="left">
+      <Popover content={popoverContent} title={null} trigger="hover" placement="left" styles={{ body: { backgroundColor: '#D9DCDC' } }}>
         {isWarning ? (
           <WarningOutlined
             role="button"
