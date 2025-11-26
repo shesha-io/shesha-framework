@@ -40,16 +40,17 @@ export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
  * - _displayName: The entity's display name
  * - Any additional properties for display (accessed via displayProperty)
  */
-export type EntityReferenceValue = string |
-  number |
-  {
-    id?: string | number;
-    _className?: string;
-    _displayName?: string;
-    [key: string]: unknown; // Allow indexed access for displayProperty
-  } |
-  null |
-  undefined;
+export type EntityReferenceValue = 
+  | string 
+  | number 
+  | { 
+      id?: string | number; 
+      _className?: string; 
+      _displayName?: string; 
+      [key: string]: unknown; 
+    } 
+  | null 
+  | undefined;
 
 export interface IEntityReferenceProps {
   // common properties
@@ -123,7 +124,9 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const entityId = useMemo(() => {
     if (!props.value) return undefined;
     if (typeof props.value === 'string') return props.value;
-    return props.value?.id ?? props.value;
+    if (typeof props.value === 'number') return props.value;
+    // For objects, only return the id (or undefined if missing)
+    return props.value?.id;
   }, [props.value]);
 
   // Extract entity type - handles both string (GUID) and object formats
