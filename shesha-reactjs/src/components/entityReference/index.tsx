@@ -316,7 +316,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   ]);
 
   const displayTextByType = useMemo((): React.ReactNode => {
-    const displayIfNotIcon: React.ReactNode = props.displayType === 'textTitle' ? props.textTitle : displayText;
+    const displayIfNotIcon = props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined);
 
     return props.displayType === 'icon' ? (
       <ShaIcon iconName={props.iconName} style={props.style} />
@@ -360,7 +360,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       return (
         <GenericQuickView
           displayProperty={props.displayProperty}
-          displayName={displayText}
+          displayName={displayText as string}
           dataProperties={properties}
           entityId={props.value?.id ?? props.value}
           entityType={entityType}
@@ -400,7 +400,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   if (!props.value || !entityId)
     return (
       <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
-        <span className={styles.innerEntityReferenceSpanBoxStyle} title={typeof displayText === 'string' ? displayText : undefined}>{displayText}</span>
+        <span className={styles.innerEntityReferenceSpanBoxStyle} title={typeof displayText === 'string' ? displayText : undefined}>{displayText as string}</span>
       </Button>
     );
 
