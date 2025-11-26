@@ -40,16 +40,7 @@ export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
  * - _displayName: The entity's display name
  * - Any additional properties for display (accessed via displayProperty)
  */
-export type EntityReferenceValue = string |
-  number |
-  {
-    id?: string | number;
-    _className?: string;
-    _displayName?: string;
-    [key: string]: unknown;
-  } |
-  null |
-  undefined;
+export type EntityReferenceValue = null | string | { id?: string; _className?: string; _displayName?: string; [key: string]: unknown };
 
 export interface IEntityReferenceProps {
   // common properties
@@ -356,13 +347,13 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     if (props.entityReferenceType === 'Quickview') {
       // Cap quickview width at 98% if it's a percentage value
       const cappedWidth = capPercentageWidth(props.quickviewWidth);
-
+      const entityId = typeof props.value === 'object' ? props.value?.id : props.value;
       return (
         <GenericQuickView
           displayProperty={props.displayProperty}
           displayName={displayText as string}
           dataProperties={properties}
-          entityId={props.value?.id ?? props.value}
+          entityId={entityId}
           entityType={entityType}
           getEntityUrl={props.getEntityUrl}
           width={addPx(cappedWidth)}

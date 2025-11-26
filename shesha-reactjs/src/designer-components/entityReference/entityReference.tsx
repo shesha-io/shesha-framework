@@ -28,9 +28,9 @@ export interface IEntityReferenceControlProps extends Omit<IEntityReferenceProps
 
 // Helper function to normalize entity reference values to extract ID
 const normalizeEntityReferenceValue = (
-  value: EntityReferenceValue,
-): string | number | null | undefined => {
-  if (value === null || value === undefined) return value;
+  value: EntityReferenceValue | string,
+): string | null => {
+  if (!value) return value as null;
   if (typeof value === 'string' || typeof value === 'number') return value;
   // If it's an object, extract and return the id; otherwise undefined
   if (typeof value === 'object' && value !== null && 'id' in value) {
