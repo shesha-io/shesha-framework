@@ -35,7 +35,17 @@ export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
  * Represents the possible value types for an entity reference.
  * Can be a string (GUID), a number (ID), an object with an optional id property, or null/undefined.
  */
-export type EntityReferenceValue = string | number | { id?: string | number } | null | undefined;
+export type EntityReferenceValue = 
+  | string 
+  | number 
+  | { 
+      id?: string | number; 
+      _className?: string; 
+      _displayName?: string; 
+      [key: string]: unknown; 
+    } 
+  | null 
+  | undefined;
 
 export interface IEntityReferenceProps {
   // common properties
