@@ -1,8 +1,10 @@
-import { DependencyList, useEffect, useState } from 'react';
+import { DependencyList, useEffect, useRef, useState } from 'react';
 import { useDeepCompareEffect } from './useDeepCompareEffect';
+import { isEqual } from 'lodash';
 
 export function useAsyncMemo<T>(factory: () => Promise<T> | undefined | null, deps: DependencyList, initial?: T) {
   const [val, setVal] = useState<T | undefined>(initial);
+  const previousValueRef = useRef<T | undefined>(initial);
 
   useEffect(() => {
     let cancel = false;
@@ -12,9 +14,10 @@ export function useAsyncMemo<T>(factory: () => Promise<T> | undefined | null, de
         /*nop*/
       };
 
-    promise.then((val) => {
-      if (!cancel) {
-        setVal(val);
+    promise.then((newVal) => {
+      if (!cancel && newVal !== previousValueRef.current) {
+        previousValueRef.current = newVal;
+        setVal(newVal);
       }
     });
 
@@ -28,6 +31,7 @@ export function useAsyncMemo<T>(factory: () => Promise<T> | undefined | null, de
 
 export function useAsyncDeepCompareMemo<T>(factory: () => Promise<T> | undefined | null, deps: DependencyList, initial?: T) {
   const [val, setVal] = useState<T | undefined>(initial);
+  const previousValueRef = useRef<T | undefined>(initial);
 
   useDeepCompareEffect(() => {
     let cancel = false;
@@ -37,9 +41,10 @@ export function useAsyncDeepCompareMemo<T>(factory: () => Promise<T> | undefined
         /*nop*/
       };
 
-    promise.then((val) => {
-      if (!cancel) {
-        setVal(val);
+    promise.then((newVal) => {
+      if (!cancel && !isEqual(newVal, previousValueRef.current)) {
+        previousValueRef.current = newVal;
+        setVal(newVal);
       }
     });
 
