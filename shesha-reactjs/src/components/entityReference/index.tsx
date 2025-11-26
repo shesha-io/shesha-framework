@@ -202,7 +202,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (!fetched && needsFetch) {
       const queryParams = {
-        id: entityId,
+        id: String(entityId),
         properties: `id ${props.displayProperty ? props.displayProperty : ''} _displayName`,
       };
       const fetcher = props.getEntityUrl
@@ -235,7 +235,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     } else if (typeof props.value === 'string') {
       displayValue = ''; // String GUID - will be fetched
     } else if (typeof props.value === 'object') {
-      displayValue = props.value[props.displayProperty] || props.value._displayName || '';
+      const propValue = props.value[props.displayProperty];
+      displayValue = (typeof propValue === 'string' ? propValue : '') || props.value._displayName || '';
     }
     setDisplayText(displayValue);
   }, [entityId, entityType, props?.placeholder, props?.value, props.displayProperty]);
@@ -314,8 +315,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     props.submitHttpVerb,
   ]);
 
-  const displayTextByType = useMemo(() => {
-    const displayIfNotIcon = props.displayType === 'textTitle' ? props.textTitle : displayText;
+  const displayTextByType = useMemo((): React.ReactNode => {
+    const displayIfNotIcon: React.ReactNode = props.displayType === 'textTitle' ? props.textTitle : displayText;
 
     return props.displayType === 'icon' ? (
       <ShaIcon iconName={props.iconName} style={props.style} />
