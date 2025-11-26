@@ -443,7 +443,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   id: nanoid(),
                   propertyName: 'onListItemSaveSuccessAction',
                   label: 'On List Item Save Success',
-                  hideLabel: true,
+                  hideLabel: false,
                   description: 'Custom Action configuration executed when saving list items (validation, calculations, etc.)',
                 })
                 .addSettingsInput({
@@ -456,13 +456,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
                   description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                   exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
+                  hideLabel: false,
                 })
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
                   propertyName: 'onRowDeleteSuccessAction',
                   label: 'On List Item Delete Success',
                   description: 'Custom business logic to be executed after successful deletion of a list item.',
-                  hideLabel: true,
+                  hideLabel: false,
                 })
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
