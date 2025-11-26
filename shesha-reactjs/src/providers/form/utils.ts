@@ -9,6 +9,7 @@ import {
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
+  SettingsFormMarkupFactory,
   SettingsMigrationContext,
 } from '@/interfaces';
 import { IPropertyMetadata, NestedProperties, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
@@ -1029,7 +1030,11 @@ export const getFormValidationRules = (markup: FormMarkup): Rules => {
   return rules;
 };
 
-export const validateConfigurableComponentSettings = (markup: FormMarkup, values: ValidateSource): Promise<void> => {
+export const validateConfigurableComponentSettings = (markup: FormMarkup | SettingsFormMarkupFactory, values: ValidateSource): Promise<void> => {
+  // TODO: restore validation
+  if (typeof (markup) === 'function')
+    return Promise.resolve();
+
   const rules = getFormValidationRules(markup);
   const validator = new Schema(rules);
 

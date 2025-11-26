@@ -46,8 +46,8 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       />
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => {
     const buttonModel: IButtonComponentProps = {
       ...model,

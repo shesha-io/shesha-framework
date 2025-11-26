@@ -1,4 +1,4 @@
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IEditableTagGroupComponentProps extends IConfigurableFormComponent {
@@ -6,4 +6,4 @@ export interface IEditableTagGroupComponentProps extends IConfigurableFormCompon
   onChange?: (values?: string[]) => void;
 }
 
-export type EditableTagGroupComponentDefinition = IToolboxComponent<IEditableTagGroupComponentProps>;
+export type EditableTagGroupComponentDefinition = ComponentDefinition<"editableTagGroup", IEditableTagGroupComponentProps>;

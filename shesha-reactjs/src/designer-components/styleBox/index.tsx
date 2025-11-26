@@ -36,8 +36,8 @@ const StyleBox: StyleBoxDefinition = {
       label: 'Style Box',
     };
   },
-  settingsFormMarkup: getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<IStyleBoxComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

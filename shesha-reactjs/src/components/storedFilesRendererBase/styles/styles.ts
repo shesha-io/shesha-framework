@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles }) => {
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, downloadedFileStyles }) => {
   const { background, backgroundImage, borderRadius: allRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
     borderBottomWidth, borderLeftWidth, borderLeftColor, borderLeftStyle, borderRightColor, borderRightStyle, borderColor, borderTopStyle, borderTopColor,
     borderTop, boxShadow, borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, backgroundColor, backgroundPosition,
@@ -34,6 +34,58 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     borderTopLeftRadius ?? allRadius ?? '8px',
   ].join(' ');
 
+  const downloadedFile = cx("downloaded-file", css`
+    opacity: 0.8;
+    position: relative;
+    
+    .ant-upload-list-item-container {
+      opacity: 0.8;
+      position: relative;
+    }
+    
+    .ant-upload-list-item-thumbnail {
+      border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
+      box-shadow: 0 0 0 1px ${downloadedFileStyles?.color ?? token.colorSuccess}20;
+    }
+    
+    .ant-upload-list-item-name {
+      color: ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
+      font-size: ${downloadedFileStyles?.fontSize ?? '14px'} !important;
+      font-weight: ${downloadedFileStyles?.fontWeight ?? '400'} !important;
+      font-family: ${downloadedFileStyles?.fontFamily ?? 'Segoe UI'} !important;
+      text-align: ${downloadedFileStyles?.textAlign ?? 'left'} !important;
+    }
+    
+    .ant-upload-list-item-action {
+      .anticon-download {
+        color: ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
+      }
+    }
+    
+    /* Hide download status icon on hover */
+    &:hover .downloaded-icon {
+      display: none;
+    }
+  `);
+
+
+  const downloadedIcon = cx("downloaded-icon", css`
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: ${downloadedFileStyles?.color ?? token.colorSuccess};
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  `);
+
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const storedFilesRendererWrapper = cx("stored-files-renderer-wrapper", css`
     margin-top: ${marginTop};
@@ -53,6 +105,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     ${containerMinWidth ? `min-width: ${containerMinWidth} !important;` : ''}
     ${containerHeight ? `height: ${containerHeight} !important;` : ''}
     ${containerMinHeight ? `min-height: ${containerMinHeight} !important;` : ''}
+    ${containerMaxHeight ? `max-height: ${containerMaxHeight} !important;` : ''}
+    overflow: auto;
     
     .ant-upload:not(.ant-upload-disabled) {
       .icon {
@@ -66,8 +120,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       margin: 0px !important;
       font-size: ${fontSizeValue} !important;
       display: flex;
-      ${layout ? `width: ${width ?? '54px'} !important;` : ''}
-      ${layout ? `height: ${height ?? '54px'} !important;` : ''}
+      ${layout ? `width: ${width ?? thumbnailWidth} !important;` : ''}
+      ${layout ? `height: ${height ?? thumbnailHeight} !important;` : ''}
 
       :before {
         top: 0;
@@ -124,6 +178,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       ${containerWidth ? `width: calc(${containerWidth} - 32px) !important;` : ''}
       ${containerMaxWidth ? `max-width: calc(${containerMaxWidth} - 32px) !important;` : ''}
       ${containerMinWidth ? `min-width: calc(${containerMinWidth} - 32px) !important;` : ''}
+      gap: 0px !important;
     }
 
     .ant-upload-drag:hover:not(.ant-upload-disabled) {
@@ -169,15 +224,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       display: flex;
       margin-top: 4px;
       justify-content: flex-end;
+      height: ${fontSizeValue} !important;
     }
   
     .${prefixCls}-upload-list {
-      gap: ${gapValue} !important;
+      ${layout ? `gap: ${gapValue} !important;` : ''}
       padding: 2px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      scrollbar-width: thin;
       &::-webkit-scrollbar {
         width: 8px;
         background-color: transparent;
@@ -291,7 +346,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       ${containerMinHeight ? `min-height: calc(${containerMinHeight} - ${downloadZipBtnHeight}) !important;` : ''}
     }
 
-    .stored-files-renderer-btn-container {
+    .${storedFilesRendererBtnContainer} {
       justify-content: flex-start;
       .ant-btn {
         padding: 0;
@@ -374,5 +429,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     antPreviewDownloadIcon,
     thumbnailReadOnly,
     storedFilesRendererWrapper,
+    downloadedFile,
+    downloadedIcon,
   };
 });

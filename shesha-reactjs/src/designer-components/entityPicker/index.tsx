@@ -211,8 +211,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       // should explicitly set entityType for other entity types
       entityType: context.isNew && !prev.entityType ? 'Shesha.Core.Person' : prev.entityType,
     })),
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 
   linkToModelMetadata: (model, propMetadata): IEntityPickerComponentProps => {
     return {

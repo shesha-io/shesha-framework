@@ -1,4 +1,4 @@
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 interface IPropertyRouterContent {
@@ -19,4 +19,4 @@ export interface IPropertyRouterComponent extends IConfigurableFormComponent {
   components?: IConfigurableFormComponent[];
 }
 
-export type PropertyRouterComponentDefinition = IToolboxComponent<IPropertyRouterComponent>;
+export type PropertyRouterComponentDefinition = ComponentDefinition<"propertyRouter", IPropertyRouterComponent>;

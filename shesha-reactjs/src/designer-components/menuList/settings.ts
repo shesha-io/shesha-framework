@@ -1,11 +1,11 @@
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from 'antd/lib/form/Form';
-import { DesignerToolbarSettings, FormMarkupWithSettings } from "@/index";
 import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { SettingsFormMarkupFactory } from "@/interfaces";
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -13,7 +13,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
   const pnlFontStyleId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -27,7 +27,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: 'common',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addContextPropertyAutocomplete({
                 id: nanoid(),
                 propertyName: "propertyName",
@@ -81,7 +81,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -94,9 +94,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     _mode: "code",
                     _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: "",
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlFontStyle',
@@ -107,7 +107,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: pnlFontStyleId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: pnlFontStyleId,
@@ -172,7 +172,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: styleRouterId,
@@ -255,16 +255,16 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              components: getBorderInputs() as any,
+                              components: getBorderInputs(fbf),
                             })
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              components: getCornerInputs() as any,
+                              components: getCornerInputs(fbf),
                             })
                             .toJson(),
                           ],
@@ -281,7 +281,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 parentId: styleRouterId,
@@ -410,7 +410,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addStyleBox({
                               id: nanoid(),
                               label: 'Margin Padding',
@@ -431,7 +431,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: styleRouterId,
@@ -462,7 +462,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             // .addSectionSeparator({
                             //   id: nanoid(),
                             //   parentId: styleRouterId,
@@ -479,7 +479,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               content: {
                                 id: nanoid(),
                                 components: [
-                                  ...new DesignerToolbarSettings()
+                                  ...fbf()
                                     .addSettingsInputRow({
                                       id: nanoid(),
                                       parentId: styleRouterId,
@@ -516,7 +516,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               content: {
                                 id: nanoid(),
                                 components: [
-                                  ...new DesignerToolbarSettings()
+                                  ...fbf()
                                     .addSettingsInputRow({
                                       id: nanoid(),
                                       parentId: styleRouterId,
@@ -553,7 +553,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               content: {
                                 id: nanoid(),
                                 components: [
-                                  ...new DesignerToolbarSettings()
+                                  ...fbf()
                                     .addSettingsInputRow({
                                       id: nanoid(),
                                       parentId: styleRouterId,
@@ -593,7 +593,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',

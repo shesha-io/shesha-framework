@@ -3,6 +3,13 @@ import { ModelConfigurationDto } from '@/apis/modelConfigurations';
 import { ModelActionEnums } from './actions';
 import { IModelConfiguratorStateContext, MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE } from './contexts';
 
+const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto => {
+  return {
+    ...data,
+    properties: data.properties.filter((p) => !p.isFrameworkRelated), // remove framework fields
+  };
+};
+
 const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
   {
     [ModelActionEnums.CreateNew]: (
@@ -12,7 +19,8 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
       return {
         ...state,
         isCreateNew: true,
-        modelConfiguration: action.payload,
+        modelConfiguration: prepareLoadedData(action.payload),
+        initialConfiguration: prepareLoadedData(action.payload),
         id: '',
       };
     },
@@ -48,7 +56,8 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
       return {
         ...state,
         isCreateNew: false,
-        modelConfiguration: payload,
+        modelConfiguration: prepareLoadedData(payload),
+        initialConfiguration: prepareLoadedData(payload),
       };
     },
 
@@ -61,10 +70,9 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
       return {
         ...state,
         isCreateNew: false,
+        isModified: false,
         id: payload.id,
-        // Do not update modelConfiguration to avoid update interface
-        // ToDo: AS - think if we still need update intreface and restore selected property and settings tabs
-        // modelConfiguration: { ...payload },
+        modelConfiguration: prepareLoadedData(payload),
       };
     },
 
@@ -74,6 +82,16 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
       return {
         ...state,
         isCreateNew: false,
+      };
+    },
+
+    [ModelActionEnums.SetModified]: (
+      state: IModelConfiguratorStateContext,
+      action: ReduxActions.Action<boolean>,
+    ) => {
+      return {
+        ...state,
+        isModified: action.payload,
       };
     },
 

@@ -185,7 +185,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       }
       return prev;
     }),
-  settingsFormMarkup: (props) => getSettings(props),
+  settingsFormMarkup: getSettings,
 };
 
 export default ButtonGroupComponent;

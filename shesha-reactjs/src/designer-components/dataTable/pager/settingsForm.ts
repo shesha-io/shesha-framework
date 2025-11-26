@@ -1,10 +1,9 @@
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '@/designer-components/_settings/utils/font/utils';
-import { FormMarkupWithSettings } from '@/interfaces';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: 'W_m7doMyCpCYwAYDfRh6I',
         propertyName: 'settingsTabs',
@@ -19,7 +18,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Common',
             id: 's4gmBg31azZC0UjZjpfTm',
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -72,7 +71,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Appearance',
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: 'styleRouter',
                   propertyName: 'propertyRouter1',
@@ -85,9 +84,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: 'fontStyleCollapsiblePanel',
                         propertyName: 'pnlFontStyle',
@@ -99,7 +98,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: 'fontStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: 'try26voxhs-HxJ5k5ngYE',
                                 parentId: 'fontStylePnl',
@@ -164,7 +163,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: 'stylePnl-M5-911',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addStyleBox({
                                 id: 'styleBoxPnl',
                                 label: 'Margin Padding',
@@ -186,7 +185,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: 'stylePnl-M500-911MFR',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
@@ -211,7 +210,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Security',
             id: '6Vw9iiDw9d0MD_Rh5cbIn',
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                   inputType: 'permissions',

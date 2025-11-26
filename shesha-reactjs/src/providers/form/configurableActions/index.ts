@@ -55,12 +55,19 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
       hasArguments: false,
       executer: async (args: ISubmitActionArguments, actionContext) => {
         var formInstance = (actionContext?.form?.formInstance ?? shaForm.antdForm);
-        var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
-        if (args?.validateFields === true || fieldsToValidate?.length > 0) {
-          await formInstance.validateFields(fieldsToValidate);
+
+        var skipValidation = args?.validateFields === false;
+        if (!skipValidation) {
+          var customFieldsToValidate = actionContext?.fieldsToValidate ?? null;
+          if (customFieldsToValidate?.length > 0) {
+            await formInstance.validateFields(customFieldsToValidate);
+          } else {
+            await formInstance.validateFields();
+          }
         }
-        formInstance.submit();
-        return Promise.resolve();
+
+        const realShaForm = actionContext?.form?.shaForm ?? shaForm;
+        await realShaForm.submitData();
       },
     },
     actionDependencies,

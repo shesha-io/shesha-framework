@@ -50,8 +50,8 @@ const DateField: DateFieldDefinition = {
       </Fragment>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => {
     const customModel: IDateFieldProps = {
       ...model,
@@ -102,7 +102,7 @@ const DateField: DateFieldDefinition = {
     return {
       ...model,
       dateFormat: !!metadata.dataFormat ? metadata.dataFormat : model.dateFormat,
-      showTime: metadata.dataType === DataTypes.date ? false : model.showTime,
+      showTime: metadata.dataType === DataTypes.dateTime ? true : metadata.dataType === DataTypes.date ? false : model.showTime,
     };
   },
 };

@@ -55,12 +55,14 @@ export const TimeFieldComponent: TimeFieldComponentDefinition = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => {
     const customModel: ITimePickerComponentProps = {
       ...model,
       format: DATE_TIME_FORMAT,
+      showNow: true,
+      allowClear: true,
     };
     return customModel;
   },

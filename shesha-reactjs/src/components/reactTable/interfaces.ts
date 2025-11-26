@@ -250,6 +250,7 @@ export interface IReactTableProps extends ITableRowDragProps {
   backgroundColor?: string;
   boxShadow?: string;
   sortableIndicatorColor?: string;
+  striped?: boolean;
 
   canDeleteInline?: boolean;
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;

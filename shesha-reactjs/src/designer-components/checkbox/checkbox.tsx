@@ -51,7 +51,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
             onFocus: calculatedModel.eventHandlers.onFocus,
             onChange: (e: CheckboxChangeEvent) => {
               calculatedModel.eventHandlers.onChange({ value: e.target.checked }, e);
-              if (typeof onChange === 'function') onChange(e);
+              if (typeof onChange === 'function') onChange(e.target.checked);
             },
           };
 
@@ -60,8 +60,8 @@ const CheckboxComponent: CheckboxComponentDefinition = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<ICheckboxComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

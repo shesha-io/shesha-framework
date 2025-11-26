@@ -72,8 +72,6 @@ const ContainerComponent: ContainerComponentDefinition = {
           }}
           style={{
             ...getStyle(model?.style, formData),
-            width: '100%',
-            height: '100%',
           }}
           noDefaultStyling={model.noDefaultStyling}
           className={cx(model.className, styles.container)}
@@ -83,8 +81,8 @@ const ContainerComponent: ContainerComponentDefinition = {
       </ParentProvider>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<IContainerComponentProps>(0, (prev) => ({

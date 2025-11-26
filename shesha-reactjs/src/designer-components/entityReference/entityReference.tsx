@@ -45,8 +45,8 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<IEntityReferenceControlProps>(0, (prev) => {

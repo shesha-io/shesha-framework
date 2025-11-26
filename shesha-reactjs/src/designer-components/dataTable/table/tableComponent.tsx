@@ -6,6 +6,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
+import { migrateV12toV13 } from './migrations/migrate-v13';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
 import { TableOutlined } from '@ant-design/icons';
@@ -25,6 +26,8 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
 
   if (model.hidden) return null;
 
+  // Show TableWrapper when inside DataContext (even with no columns, to allow auto-configuration)
+  // Show StandaloneTable only when outside DataContext
   if (store) {
     return <TableWrapper {...model} />;
   } else {
@@ -44,9 +47,10 @@ const TableComponent: TableComponentDefinition = {
     return {
       ...model,
       items: [],
+      striped: true,
     };
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
@@ -59,6 +63,7 @@ const TableComponent: TableComponentDefinition = {
           selectionMode: prev['selectionMode'] ?? 'none',
           crud: prev['crud'] ?? false,
           flexibleHeight: prev['flexibleHeight'] ?? false,
+          striped: prev['striped'] ?? true,
         };
       })
       .add<ITableComponentProps>(1, migrateV0toV1)
@@ -112,7 +117,10 @@ const TableComponent: TableComponentDefinition = {
         noDataText: prev.noDataText ?? 'No Data',
         noDataSecondaryText: prev.noDataSecondaryText ?? 'No data is available for this table',
       }))
-      .add<ITableComponentProps>(12, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<ITableComponentProps>(12, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+      .add<ITableComponentProps>(13, migrateV12toV13)
+      .add<ITableComponentProps>(14, (prev) => ({ ...prev, striped: true }))
+      .add<ITableComponentProps>(15, (prev) => ({ ...prev, striped: prev.striped ?? true })),
   actualModelPropertyFilter: (name, value) => name !== 'items' || isPropertySettings(value),
 };
 

@@ -1,10 +1,9 @@
-import { DesignerToolbarSettings, FormMarkupWithSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
-import { ITableComponentProps } from "./models";
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../../_settings/utils/background/utils';
+import { SettingsFormMarkupFactory } from "@/interfaces";
 
 const NEW_ROW_EXPOSED_VARIABLES = [
   {
@@ -87,7 +86,7 @@ const ENABLE_CRUD_EXPOSED_VARIABLES = [
   },
 ].map((item) => JSON.stringify(item));
 
-export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const crudTabId = nanoid();
@@ -97,7 +96,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
   const styleRouterId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -112,7 +111,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'componentName',
@@ -151,14 +150,14 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
             title: 'Data',
             id: crudTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   inputs: [
                     {
                       id: nanoid(),
                       propertyName: 'items',
-                      label: data.readOnly ? 'View Columns' : 'Customize Columns',
+                      label: 'Customize Columns',
                       type: 'columnsConfig',
                       parentId: commonTabId,
                       jsSetting: true,
@@ -452,7 +451,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
             title: 'Events',
             id: eventsTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
                   propertyName: 'onRowClick',
@@ -494,7 +493,6 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                   parentId: eventsTabId,
                   label: 'On Row Save Success',
                   description: 'Custom business logic to be executed after successfull saving of new/updated row.',
-                  hideLabel: true,
                 })
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
@@ -502,7 +500,6 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                   label: 'On Row Delete Success',
                   parentId: eventsTabId,
                   description: 'Custom business logic to be executed after successfull deletion of a row.',
-                  hideLabel: true,
                 })
                 .toJson(),
             ],
@@ -511,7 +508,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
             key: 'appearance',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -524,9 +521,9 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                   _mode: "code",
                   _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                },
+                } as any,
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addCollapsiblePanel({
                       id: nanoid(),
                       propertyName: 'pnlFontStyle',
@@ -537,7 +534,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -602,7 +599,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -685,16 +682,16 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addContainer({
                             id: nanoid(),
                             parentId: styleRouterId,
-                            components: getBorderInputs() as any,
+                            components: getBorderInputs(fbf),
                           })
                           .addContainer({
                             id: nanoid(),
                             parentId: styleRouterId,
-                            components: getCornerInputs() as any,
+                            components: getCornerInputs(fbf),
                           })
                           .toJson(),
                         ],
@@ -711,7 +708,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                       content: {
                         id: nanoid(),
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               parentId: styleRouterId,
@@ -840,7 +837,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -908,7 +905,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addStyleBox({
                             id: nanoid(),
                             label: 'Margin Padding',
@@ -929,7 +926,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             inputs: [
@@ -940,6 +937,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                                 type: 'switch',
                                 tooltip: 'Enable alternating row colors',
                                 jsSetting: true,
+                                value: 'checked',
                               },
                               {
                                 id: nanoid(),
@@ -1015,7 +1013,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             inputs: [
@@ -1073,7 +1071,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             inputs: [
@@ -1117,7 +1115,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             id: nanoid(),
                             propertyName: 'sortableIndicatorColor',
@@ -1140,7 +1138,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
@@ -1180,7 +1178,7 @@ export const getSettings = (data: ITableComponentProps): FormMarkupWithSettings 
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'permissions',

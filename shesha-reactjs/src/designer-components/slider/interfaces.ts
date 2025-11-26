@@ -1,4 +1,4 @@
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface ISliderComponentProps extends IConfigurableFormComponent {
@@ -6,4 +6,4 @@ export interface ISliderComponentProps extends IConfigurableFormComponent {
   max?: string;
 }
 
-export type SliderComponentDefinition = IToolboxComponent<ISliderComponentProps>;
+export type SliderComponentDefinition = ComponentDefinition<"slider", ISliderComponentProps>;

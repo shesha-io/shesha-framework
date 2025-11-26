@@ -292,6 +292,7 @@ namespace Shesha.Metadata
             if (modelConfig != null)
             {
                 var idx = 0;
+                // Use Hardcoded properties because all dynamic properties should be created as properties of class
                 var props = hardCodedProps?.Select(p =>
                     {
                         var dbProp = modelConfig.Properties.FirstOrDefault(pp => pp.Name == p.Path);
@@ -308,6 +309,8 @@ namespace Shesha.Metadata
                         prop.IsNullable = p?.IsNullable ?? false;
                         prop.OrderIndex = idx;
                         prop.GroupName = p?.GroupName;
+
+                        prop.IsVisible = !(dbProp.Suppress ?? false);
 
                         return prop;
                     })
@@ -350,7 +353,7 @@ namespace Shesha.Metadata
         public async Task<Type?> GetContainerTypeOrNullAsync(string? moduleName, string container)
         {
             var allModels = await GetAllModelsAsync();
-            var models = allModels.Where(m => m.Name == container || m.Alias == container || m.FullClassName == container).ToList();
+            var models = allModels.Where(m => !m.IsExposed && (m.Name == container || m.Alias == container || m.FullClassName == container)).ToList();
             if (!string.IsNullOrWhiteSpace(moduleName))
             {
                 models = models.Where(m => m is EntityModelDto em

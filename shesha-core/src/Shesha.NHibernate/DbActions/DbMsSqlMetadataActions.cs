@@ -93,8 +93,8 @@ namespace Shesha.DbActions
             var session = ((_unitOfWorkManager.Current as NhUnitOfWork)?.GetSession()).NotNull("DbMsSqlGenerateActions - session should be opened");
 
             var (_, table, schemaTable, _) = ParseTableName(tableName);
-            var (_, _, primarySchemaTable, snakedPrimarySchemaTable) = ParseTableName(primaryTableName);
-            var (_, _, foreignSchemaTable, snakedForeignSchemaTable) = ParseTableName(foreignTableName);
+            var (_, _, primarySchemaTable, _) = ParseTableName(primaryTableName);
+            var (_, _, foreignSchemaTable, _) = ParseTableName(foreignTableName);
 
             await session
                 .CreateSQLQuery(@$"CREATE TABLE {schemaTable} ([{keyColumnName}] [uniqueidentifier] NOT NULL, [{foreignColumnName}] [uniqueidentifier] NOT NULL)")
@@ -102,13 +102,13 @@ namespace Shesha.DbActions
 
             await session
                 .CreateSQLQuery($@"
-ALTER TABLE {schemaTable} WITH CHECK ADD CONSTRAINT [FK_{table}_{keyColumnName}_{snakedPrimarySchemaTable}] 
+ALTER TABLE {schemaTable} WITH CHECK ADD CONSTRAINT [FK_{table}_{keyColumnName}] 
 FOREIGN KEY([{keyColumnName}]) REFERENCES {primarySchemaTable} ([{primaryIdName}])")
                 .ExecuteUpdateAsync();
 
             await session
                 .CreateSQLQuery($@"
-ALTER TABLE {schemaTable} WITH CHECK ADD CONSTRAINT [FK_{table}_{foreignColumnName}_{snakedForeignSchemaTable}] 
+ALTER TABLE {schemaTable} WITH CHECK ADD CONSTRAINT [FK_{table}_{foreignColumnName}] 
 FOREIGN KEY([{foreignColumnName}]) REFERENCES {foreignSchemaTable} ([{foreignIdName}])")
                 .ExecuteUpdateAsync();
         }
@@ -175,15 +175,14 @@ FOREIGN KEY([{CurrentColumn}]) REFERENCES {primarySchemaTable} ({primaryColumnNa
             {
                 case DbColumnTypeEnum.Guid: return "uniqueidentifier";
                 case DbColumnTypeEnum.String: return $"nvarchar({(type.Size == null ? "max" : type.Size.ToString())})";
-                case DbColumnTypeEnum.Decimal: return $"decimal(18, {(type.Size == null ? "0" : type.Size.ToString())})";
+                case DbColumnTypeEnum.Decimal: return $"decimal(19, {(type.Size == null ? "5" : type.Size.ToString())})";
                 case DbColumnTypeEnum.Double: return "float";
                 case DbColumnTypeEnum.Float: return "float";
                 case DbColumnTypeEnum.Int32: return "int";
                 case DbColumnTypeEnum.Int64: return "bigint";
                 case DbColumnTypeEnum.Boolean: return "bit";
-                // ToDo: AS - what is the date and time in the DB?
                 case DbColumnTypeEnum.Date: return "datetime";
-                case DbColumnTypeEnum.Time: return "datetime";
+                case DbColumnTypeEnum.Time: return "bigint";
                 case DbColumnTypeEnum.DateTime: return "datetime";
                 case DbColumnTypeEnum.ReferenceListItem: return "int";
                 case DbColumnTypeEnum.Json: return "nvarchar(max)";

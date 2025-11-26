@@ -1,6 +1,7 @@
 import { IconType } from '@/components';
-import { IToolboxComponent } from '@/interfaces';
-import { IConfigurableFormComponent, IInputStyles, IStyleType } from '@/providers/form/models'; ;
+import { ComponentDefinition } from '@/interfaces';
+import { IConfigurableFormComponent, IInputStyles, IStyleType } from '@/providers/form/models';
+;
 
 export interface INumberFieldComponentProps extends IConfigurableFormComponent, IInputStyles, IStyleType {
   hideBorder?: boolean;
@@ -20,5 +21,5 @@ interface INumberFieldComponentCalulatedValues {
   eventHandlers?: any;
 }
 
-export type NumberFieldComponentDefinition = IToolboxComponent<INumberFieldComponentProps, INumberFieldComponentCalulatedValues>;
+export type NumberFieldComponentDefinition = ComponentDefinition<"numberField", INumberFieldComponentProps, INumberFieldComponentCalulatedValues>;
 

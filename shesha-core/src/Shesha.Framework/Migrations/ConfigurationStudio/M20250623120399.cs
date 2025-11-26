@@ -8,6 +8,18 @@ namespace Shesha.Migrations.ConfigurationStudio
     {
         public override void Up()
         {
+            IfDatabase("SqlServer").Execute.Sql(@"delete from Core_NotificationMessageAttachments where MessageId in (
+	select 
+		m.Id 
+	from 
+		Core_NotificationMessages m
+		inner join Core_Notifications n on m.PartOfId = n.Id
+	where 
+		n.NotificationTypeId is null
+);
+delete from Core_NotificationMessages where PartOfId in (select Id from Core_Notifications where NotificationTypeId is null);
+delete from Core_Notifications where NotificationTypeId is null;");
+
             Delete.ForeignKey("FK_Core_NotificationMessages_ChannelId_Core_NotificationChannelConfigs_Id").OnTable("Core_NotificationMessages");
 
             Create.ForeignKey("FK_Core_NotificationMessages_ChannelId")
@@ -27,6 +39,18 @@ namespace Shesha.Migrations.ConfigurationStudio
                 .PrimaryColumn("id");
 
             Delete.ForeignKey("FK_Core_Notifications_NotificationTypeId_Core_NotificationTypeConfigs_Id").OnTable("Core_Notifications");
+
+            Execute.Sql(@"update
+	""Core_Notifications""
+set
+	""NotificationTypeId"" = (
+		select
+			configuration_item_id
+		from
+			frwk.configuration_item_revisions rev
+		where
+			rev.id = ""Core_Notifications"".""NotificationTypeId""
+	)");
 
             Create.ForeignKey("FK_Core_Notifications_NotificationTypeId")
                 .FromTable("Core_Notifications")

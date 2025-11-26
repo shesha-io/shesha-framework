@@ -117,7 +117,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IAutocompleteComponentProps>(0, (prev) => ({

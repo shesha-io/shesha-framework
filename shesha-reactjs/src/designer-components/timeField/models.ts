@@ -1,6 +1,6 @@
 import React from 'react';
 import { IEventHandlers } from '@/components/formDesigner/components/utils';
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers';
 
 export type TimePickerChangeEvent = (value: number | null, timeString: string) => void;
@@ -40,4 +40,4 @@ interface ITimePickerComponentCalulatedValues {
   eventHandlers?: IEventHandlers;
 }
 
-export type TimeFieldComponentDefinition = IToolboxComponent<ITimePickerComponentProps, ITimePickerComponentCalulatedValues>;
+export type TimeFieldComponentDefinition = ComponentDefinition<"timePicker", ITimePickerComponentProps, ITimePickerComponentCalulatedValues>;

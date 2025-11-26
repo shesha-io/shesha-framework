@@ -6,8 +6,7 @@ import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sources
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 import { getSettings } from './formSettings';
-
-const formSettingsMarkup = getSettings();
+import { useFormViaFactory } from '@/form-factory/hooks';
 
 export interface IFormSettingsEditorProps {
   isVisible: boolean;
@@ -20,6 +19,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
   const { updateFormSettings } = useFormDesigner();
   const { formProps } = useFormPersister();
   const formRef = useShaFormRef();
+  const formSettingsMarkup = useFormViaFactory(getSettings);
 
   const onSave = (values): void => {
     if (!readOnly) {

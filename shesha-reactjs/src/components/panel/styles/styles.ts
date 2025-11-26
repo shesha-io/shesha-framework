@@ -204,13 +204,15 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       > .ant-collapse-item {
         > .ant-collapse-header {
           --ant-collapse-header-padding: 5px 0px !important;
-          border-bottom-left-radius: unset;
-          border-bottom-right-radius: unset; 
+          border-radius: 0 !important;
           border: none;
-          ${accentStyle && `border-bottom: 2px solid ${token.colorPrimary};`}
+          border-bottom: 2px solid ${token.colorPrimary};
           ${accentStyle && `border-top: 3px solid var(--primary-color);`}
           font-weight: ${fontWeight || '500'};
-        
+
+          .ant-collapse-header-text {
+            margin-left: -8px;
+          }
         }
         > .ant-collapse-content {
           border: none;
@@ -264,7 +266,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       font-size: 14px;
       height: ${headerHeight};
       min-height: ${headerMinHeight};
-      max-height: ${headerMaxHeight}
+      height: ${headerHeight};
+      min-height: ${headerMinHeight};
+      max-height: ${headerMaxHeight};
+      width: ${width};
       width: ${width};
       min-width: ${minWidth};
       max-width: ${maxWidth};

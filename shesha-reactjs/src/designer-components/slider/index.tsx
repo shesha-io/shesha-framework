@@ -42,8 +42,8 @@ const SliderComponent: SliderComponentDefinition = {
       label: 'Slider',
     };
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default SliderComponent;

@@ -1,5 +1,5 @@
 import { IEventHandlers } from '@/components/formDesigner/components/utils';
-import { IToolboxComponent } from '@/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 
 export interface ISwitchComponentProps extends IConfigurableFormComponent, IStyleType {
@@ -11,4 +11,4 @@ interface ISwitchComponentCalulatedValues {
   eventHandlers: IEventHandlers;
 }
 
-export type SwitchComponentDefinition = IToolboxComponent<ISwitchComponentProps, ISwitchComponentCalulatedValues>;
+export type SwitchComponentDefinition = ComponentDefinition<"switch", ISwitchComponentProps, ISwitchComponentCalulatedValues>;

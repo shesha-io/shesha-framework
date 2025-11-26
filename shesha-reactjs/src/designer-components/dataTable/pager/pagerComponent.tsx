@@ -50,8 +50,8 @@ const PagerComponent: PagerComponentDefinition = {
       .add<IPagerComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IPagerComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 
-  settingsFormMarkup: (context) => getSettings(context),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default PagerComponent;

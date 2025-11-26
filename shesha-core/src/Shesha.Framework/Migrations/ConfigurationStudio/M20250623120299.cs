@@ -82,6 +82,9 @@ namespace Shesha.Migrations.ConfigurationStudio
 
             if (Schema.Table("SheshaFunctionalTests_TestAccounts").Exists())
                 IfDatabase("PostgreSql").Execute.Sql(@"ALTER TABLE ""SheshaFunctionalTests_TestAccounts"" DROP CONSTRAINT IF EXISTS ""FK_SheshaFunctionalTests_TestAccounts_CaptureFormId_Frwk_FormCo""");
+
+            this.Shesha().MoveForeignKeys("Frwk_FormConfigurations", null, "Id", "form_configuration_revisions", "frwk", "id");
+
             Delete.Table("Frwk_FormConfigurations");
             Delete.Table("Frwk_PermissionDefinitions");
             Delete.Table("Frwk_ConfigurableComponents");

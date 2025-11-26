@@ -8,11 +8,11 @@ import { BorderLeftOutlined } from '@ant-design/icons';
 import React from 'react';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { removeComponents } from '../_common-migrations/removeComponents';
-import { ColumnsComponentDefinition, IKeyInformationBarProps } from './interfaces';
+import { KeyInformationBarComponentDefinition, IKeyInformationBarProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 
-const ColumnsComponent: ColumnsComponentDefinition = {
+const KeyInformationBarComponent: KeyInformationBarComponentDefinition = {
   type: 'KeyInformationBar',
   isInput: false,
   name: 'Key Information Bar',
@@ -67,9 +67,9 @@ const ColumnsComponent: ColumnsComponentDefinition = {
 
     return tabsModel;
   },
-  settingsFormMarkup: () => getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   customContainerNames: ['columns'],
 };
 
-export default ColumnsComponent;
+export default KeyInformationBarComponent;

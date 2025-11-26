@@ -1,11 +1,10 @@
 import { buttonTypes } from '@/designer-components/button/util';
-import { FormMarkupWithSettings } from '@/interfaces';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { FormMarkupFactory } from '@/interfaces/configurableAction';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getGroupSettings = (): FormMarkupWithSettings => {
+export const getGroupSettings: FormMarkupFactory = ({ fbf }) => {
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSearchableTabs({
         id: 'W_m7doMyCpCYwAYDfRh6I',
         propertyName: 'settingsTabs',
@@ -19,7 +18,7 @@ export const getGroupSettings = (): FormMarkupWithSettings => {
             key: '1',
             title: 'Common',
             id: 's4gmBg31azZC0UjZjpfTm',
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: 'f061d971-8b38-4b82-b192-563259afc159',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -128,7 +127,7 @@ export const getGroupSettings = (): FormMarkupWithSettings => {
             key: '2',
             title: 'Security',
             id: '6Vw9iiDw9d0MD_Rh5cbIn',
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                 inputType: 'permissions',

@@ -21,6 +21,7 @@ import {
   saveErrorAction,
   saveRequestAction,
   saveSuccessAction,
+  setModifiedAction,
 } from './actions';
 import {
   IModelConfiguratorActionsContext,
@@ -154,6 +155,10 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
         });
     });
 
+  const setModified = (isModified?: boolean): void => {
+    dispatch(setModifiedAction(isModified ?? true));
+  };
+
   return (
     <ModelConfiguratorStateContext.Provider value={{ ...state }}>
       <ModelConfiguratorActionsContext.Provider
@@ -167,6 +172,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
           cancel,
           delete: deleteFunc,
           createNew,
+          setModified,
           /* NEW_ACTION_GOES_HERE */
         }}
       >

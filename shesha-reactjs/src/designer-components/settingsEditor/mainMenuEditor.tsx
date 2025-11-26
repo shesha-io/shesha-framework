@@ -131,8 +131,8 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
       </div>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default MainMenuEditorComponent;
