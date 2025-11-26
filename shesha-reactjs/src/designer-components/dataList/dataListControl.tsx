@@ -104,7 +104,7 @@ export const NotConfiguredWarning: FC<{ message?: string; isWarning?: boolean }>
             style={{
               position: 'absolute',
               top: '44px',
-              right: '4px',
+              right: '0px',
               color: theme.colorWarning,
               fontSize: '20px',
               zIndex: 9999,
@@ -123,7 +123,7 @@ export const NotConfiguredWarning: FC<{ message?: string; isWarning?: boolean }>
             style={{
               position: 'absolute',
               top: '44px',
-              right: '4px',
+              right: '0px',
               color: theme.colorWarning,
               fontSize: '20px',
               zIndex: 9999,

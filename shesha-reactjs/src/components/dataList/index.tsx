@@ -495,7 +495,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               style={{
                 position: 'absolute',
                 top: '44px',
-                right: '4px',
+                right: '0px',
                 color: theme.colorWarning,
                 fontSize: '20px',
                 zIndex: 9999,
