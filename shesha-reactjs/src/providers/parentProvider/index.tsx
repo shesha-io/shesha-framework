@@ -1,5 +1,5 @@
 import React, { useContext, FC, PropsWithChildren, useMemo, useId, useRef, useEffect } from "react";
-import { ConfigurableActionDispatcherProvider, DataContextManager, DataContextProvider, FormMode, IConfigurableFormComponent, IDataContextProviderProps, IFlatComponentsStructure, useShaFormInstanceOrUndefined } from "../index";
+import { ConfigurableActionDispatcherProvider, DataContextManager, DataContextProvider, FormMode, IConfigurableFormComponent, IDataContextProviderProps, IFlatComponentsStructure, isConfigurableFormComponent, useShaFormInstanceOrUndefined } from "../index";
 import { createNamedContext } from "@/utils/react";
 import ConditionalWrap from "@/components/conditionalWrapper";
 import ValidateProvider from "../validateProvider";
@@ -76,8 +76,10 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
     if (!!formFlatMarkupLocal) {
       const childIds = formFlatMarkupLocal.componentRelations[componentId];
       if (!childIds) return [];
-      const components = childIds.map((childId) => {
-        return formFlatMarkupLocal.allComponents[childId];
+      const components: IConfigurableFormComponent[] = [];
+      childIds.forEach((childId) => {
+        if (isConfigurableFormComponent(formFlatMarkupLocal.allComponents[childId]))
+          components.push(formFlatMarkupLocal.allComponents[childId]);
       });
       return components;
     }

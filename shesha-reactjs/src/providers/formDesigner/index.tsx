@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import { useFormDesignerComponentGroups } from '../form/hooks';
-import { FormMode, IFlatComponentsStructure, IFormSettings } from '../form/models';
+import { FormMode, IConfigurableFormComponent, IFlatComponentsStructure, IFormSettings, isConfigurableFormComponent } from '../form/models';
 import {
   FormDesignerContext,
   IFormDesignerInstance,
@@ -10,6 +10,7 @@ import { FormDesignerInstance } from './instance';
 import { FormDesignerSubscriptionType } from './models';
 import { useFormPersister } from '../formPersisterProvider';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
+import { isDefined } from '@/utils/nullables';
 
 export interface IFormDesignerProviderProps {
   flatMarkup: IFlatComponentsStructure;
@@ -91,6 +92,16 @@ const useFormDesignerSelectedComponentId = (): string | undefined => {
   useFormDesignerSubscription('selection');
   return useFormDesigner().selectedComponentId;
 };
+const useFormDesignerSelectedComponent = (): IConfigurableFormComponent | undefined => {
+  const id = useFormDesignerSelectedComponentId();
+  const markup = useFormDesignerMarkup();
+
+  return isDefined(id) && isConfigurableFormComponent(markup.allComponents[id])
+    ? markup.allComponents[id]
+    : undefined;
+};
+
+
 const useFormDesignerReadOnly = (): boolean => {
   useFormDesignerSubscription('readonly');
   return useFormDesigner().readOnly;
@@ -130,6 +141,7 @@ export {
   useFormDesignerMarkup,
   useFormDesignerSettings,
   useFormDesignerSelectedComponentId,
+  useFormDesignerSelectedComponent,
   useFormDesignerReadOnly,
   useFormDesignerIsDebug,
   useFormDesignerFormMode,
