@@ -42,8 +42,8 @@ const normalizeEntityReferenceValue = (
 // Component wrapper that normalizes the value for display and form storage
 const EntityReferenceWrapper: React.FC<{
   model: IEntityReferenceControlProps;
-  value: EntityReferenceValue;
-  onChange?: (value: string | number | null | undefined) => void;
+  value: unknown;
+  onChange?: (value: unknown) => void;
   style?: React.CSSProperties;
 }> = ({ model, value, onChange, style }) => {
   // Normalize value for display: if it's an object, extract the id
