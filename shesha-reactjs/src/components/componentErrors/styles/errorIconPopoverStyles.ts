@@ -27,8 +27,8 @@ export const useStyles = createStyles(({ css, cx, token }, { isDesignerMode = fa
   `);
 
   const iconTopRight = cx("sha-error-icon-top-right", css`
-    top: ${isDesignerMode ? '44px' : '4px'};
-    right: 4px;
+    top: ${isDesignerMode ? '42px' : '4px'};
+    right: 2px;
 
     &:hover {
       transform: scale(1.1);

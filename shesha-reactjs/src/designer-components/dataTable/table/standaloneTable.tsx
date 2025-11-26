@@ -126,7 +126,7 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
             className="sha-standalone-table-hint-icon"
             style={{
               position: 'absolute',
-              top: '60px',
+              top: '44px',
               right: '0px',
               color: '#faad14',
               fontSize: '20px',
