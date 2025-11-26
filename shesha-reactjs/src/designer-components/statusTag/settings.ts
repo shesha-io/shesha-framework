@@ -1,4 +1,3 @@
-import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { SettingsFormMarkupFactory } from '@/interfaces';
 
@@ -81,15 +80,24 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   size: 'small',
                   jsSetting: true,
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  inputType: 'textField',
-                  propertyName: 'value',
                   parentId: commonTabId,
-                  label: 'Value',
-                  size: 'small',
-                  jsSetting: true,
-                  hidden: { _code: 'return  getSettingValue(data?.valueSource) !== "manual";', _mode: 'code', _value: false } as any,
+                  hidden: {
+                    _code: 'return getSettingValue(data?.valueSource) !== "manual";',
+                    _mode: 'code',
+                    _value: false,
+                  },
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      type: 'textField',
+                      propertyName: 'value',
+                      label: 'Value',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                  ],
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -152,7 +160,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
       .toJson(),
     formSettings: {
       colon: false,
-      layout: 'vertical' as FormLayout,
+      layout: 'vertical',
       labelCol: { span: 24 },
       wrapperCol: { span: 24 },
     },
