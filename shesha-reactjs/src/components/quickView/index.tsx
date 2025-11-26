@@ -139,31 +139,33 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     const canRenderForm = formArguments ? formIdentifier : (formMarkup && formData);
 
     return canRenderForm ? (
-      <FormItemProvider namePrefix={undefined}>
-        <MetadataProvider id="dynamic" modelType={formArguments ? entityType : formMarkup?.formSettings.modelType}>
-          <ParentProvider
-            formMode="readonly"
-            model={{ editMode: 'readOnly', readOnly: true } /* force readonly to show popup dialog always read only */}
-          >
-            <ConfigurableForm
-              mode="readonly"
-              {...formItemLayout}
-              // Use formId when available to enable proper data loading (same as dialog mode)
-              formId={formArguments ? formIdentifier : undefined}
-              // Fall back to markup when not using formArguments (backward compatibility)
-              markup={formArguments ? undefined : formMarkup}
-              // Use formArguments to enable form's data loader (same as dialog mode)
-              formArguments={formArguments}
-              // Only use initialValues when formArguments is not provided (backward compatibility)
-              initialValues={formArguments ? undefined : getQuickViewInitialValues(formData, dataProperties)}
-            />
-          </ParentProvider>
-        </MetadataProvider>
-      </FormItemProvider>
+      <div className={cx(styles.formLabel)}>
+        <FormItemProvider namePrefix={undefined}>
+          <MetadataProvider id="dynamic" modelType={formArguments ? entityType : formMarkup?.formSettings.modelType}>
+            <ParentProvider
+              formMode="readonly"
+              model={{ editMode: 'readOnly', readOnly: true } /* force readonly to show popup dialog always read only */}
+            >
+              <ConfigurableForm
+                mode="readonly"
+                {...formItemLayout}
+                // Use formId when available to enable proper data loading (same as dialog mode)
+                formId={formArguments ? formIdentifier : undefined}
+                // Fall back to markup when not using formArguments (backward compatibility)
+                markup={formArguments ? undefined : formMarkup}
+                // Use formArguments to enable form's data loader (same as dialog mode)
+                formArguments={formArguments}
+                // Only use initialValues when formArguments is not provided (backward compatibility)
+                initialValues={formArguments ? undefined : getQuickViewInitialValues(formData, dataProperties)}
+              />
+            </ParentProvider>
+          </MetadataProvider>
+        </FormItemProvider>
+      </div>
     ) : (
       <></>
     );
-  }, [formMarkup, formData, dataProperties, formArguments, formIdentifier, entityType]);
+  }, [formMarkup, formData, dataProperties, formArguments, formIdentifier, entityType, cx, styles.formLabel]);
 
   const render = (): ReactNode => {
     if (children) {

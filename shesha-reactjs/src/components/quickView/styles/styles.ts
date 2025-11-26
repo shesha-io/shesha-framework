@@ -38,10 +38,25 @@ export const useStyles = createStyles(({ css, cx }) => {
     vertical-align: middle;
   `);
 
+  const formLabel = cx('sha-quick-view-form-label', css`
+    .ant-form-item-label {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      > label {
+        display: flex;
+        align-items: center;
+        height: 100%;
+      }
+    }
+  `);
+
   return {
     innerEntityReferenceSpanBoxStyle,
     innerEntityReferenceButtonBoxStyle,
     spin,
     inlineBlock,
+    formLabel,
   };
 });
