@@ -1,4 +1,4 @@
-import { EntityReference, IEntityReferenceProps } from '@/components/entityReference';
+import { EntityReference, EntityReferenceValue, IEntityReferenceProps } from '@/components/entityReference';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { ShaIconTypes } from '@/components/iconPicker';
 import {
@@ -27,20 +27,23 @@ export interface IEntityReferenceControlProps extends Omit<IEntityReferenceProps
 }
 
 // Helper function to normalize entity reference values to extract ID
-const normalizeEntityReferenceValue = (value: any): any => {
-  if (!value) return value;
-  if (typeof value === 'string') return value;
-  if (typeof value === 'object' && value !== null) {
-    return value.id ?? value;
+const normalizeEntityReferenceValue = (
+  value: EntityReferenceValue,
+): string | number | null | undefined => {
+  if (value === null || value === undefined) return value;
+  if (typeof value === 'string' || typeof value === 'number') return value;
+  // If it's an object, extract and return the id; otherwise undefined
+  if (typeof value === 'object' && value !== null && 'id' in value) {
+    return value.id ?? undefined;
   }
-  return value;
+  return undefined;
 };
 
 // Component wrapper that normalizes the value for display and form storage
 const EntityReferenceWrapper: React.FC<{
   model: IEntityReferenceControlProps;
-  value: any;
-  onChange?: (...args: any[]) => void;
+  value: EntityReferenceValue;
+  onChange?: (value: string | number | null | undefined) => void;
   style?: React.CSSProperties;
 }> = ({ model, value, onChange, style }) => {
   // Normalize value for display: if it's an object, extract the id
@@ -48,7 +51,7 @@ const EntityReferenceWrapper: React.FC<{
 
   // Normalize the form value if it's an object (ensure form stores just the ID)
   // This effect runs when value changes from non-object to object, or when object structure changes
-  const previousValueRef = React.useRef<any>(value);
+  const previousValueRef = React.useRef<EntityReferenceValue>(value);
 
   React.useEffect(() => {
     // Normalize the form value if it's an object: extract and store just the ID

@@ -24,32 +24,23 @@ import { App, Button, Spin } from 'antd';
 import moment from 'moment';
 import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
-import { addPx } from '@/utils/style';
+import { addPx, capPercentageWidth } from '@/utils/style';
 import { useStyles } from './styles/styles';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
-// Helper function to cap percentage values at 98%
-const capPercentageWidth = (value: number | string | null | undefined): number | string | null | undefined => {
-  if (!value) return value;
-
-  // Check if it's a percentage string (e.g., "99%", "100%")
-  if (typeof value === 'string' && value.endsWith('%')) {
-    const numericValue = parseFloat(value);
-    if (!isNaN(numericValue) && numericValue > 98) {
-      return '98%';
-    }
-  }
-
-  return value;
-};
-
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
+
+/**
+ * Represents the possible value types for an entity reference.
+ * Can be a string (GUID), a number (ID), an object with an optional id property, or null/undefined.
+ */
+export type EntityReferenceValue = string | number | { id?: string | number } | null | undefined;
 
 export interface IEntityReferenceProps {
   // common properties
   entityReferenceType: EntityReferenceTypes;
-  value?: any;
+  value?: EntityReferenceValue;
   disabled?: boolean;
   placeholder?: string;
   entityType?: string | IEntityTypeIdentifier;

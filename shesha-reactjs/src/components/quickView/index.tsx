@@ -7,6 +7,7 @@ import { useFormConfiguration } from '@/providers/form/api';
 import { FormIdentifier } from '@/providers/form/models';
 import ParentProvider from '@/providers/parentProvider';
 import { get } from '@/utils/fetchers';
+import { capPercentageWidth } from '@/utils/style';
 import { App, Button, Popover, PopoverProps } from 'antd';
 import React, { CSSProperties, FC, PropsWithChildren, ReactNode, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
@@ -15,21 +16,6 @@ import { useStyles } from './styles/styles';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
-
-// Helper function to cap percentage values at 98%
-const capPercentageWidth = (value: number | string | null | undefined): number | string | null | undefined => {
-  if (!value) return value;
-
-  // Check if it's a percentage string (e.g., "99%", "100%")
-  if (typeof value === 'string' && value.endsWith('%')) {
-    const numericValue = parseFloat(value);
-    if (!isNaN(numericValue) && numericValue > 98) {
-      return '98%';
-    }
-  }
-
-  return value;
-};
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
