@@ -29,8 +29,7 @@ import { useStyles } from './styles';
 import { useMetadata } from '@/providers/metadata';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { Popover } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { useTheme } from '@/providers/theme';
+import { InfoCircleFilled } from '@ant-design/icons';
 import { StandaloneTable } from './standaloneTable';
 import { useDatatableHintPopoverStyles } from './hintPopoverStyles';
 
@@ -46,7 +45,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);
   const componentIdRef = useRef(id);
-  const { theme } = useTheme();
 
   // Reset auto-config flag when component ID changes (new DataTable instance)
   useEffect(() => {
@@ -58,6 +56,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
   // Inject CSS for hint popover arrow styling
   useDatatableHintPopoverStyles();
+
 
   const { styles } = useStyles({
     fontFamily: props?.font?.type,
@@ -256,7 +255,10 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
       <GlobalTableStyles />
       {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
 
-      <div style={{ position: 'relative' }}>
+      <div
+        style={{ position: 'relative' }}
+        className="sha-datatable-wrapper"
+      >
         {/* Show info icon in top-right corner in designer mode for configuration issues */}
         {isDesignMode && (hasNoRepository || hasNoColumns) && (
           <Popover
@@ -288,17 +290,18 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
               </p>
             )}
           >
-            <InfoCircleOutlined
+            <InfoCircleFilled
               role="button"
               tabIndex={0}
               aria-label="Data table configuration help"
+              className="sha-datatable-hint-icon"
               style={{
                 position: 'absolute',
                 top: '44px',
                 right: '0px',
-                color: theme?.application?.warningColor || '#faad14',
+                color: '#faad14',
                 fontSize: '20px',
-                zIndex: 9999,
+                zIndex: 1000,
                 cursor: 'help',
                 backgroundColor: '#fff',
                 borderRadius: '50%',

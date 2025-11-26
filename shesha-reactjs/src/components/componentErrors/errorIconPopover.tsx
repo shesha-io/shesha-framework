@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren } from 'react';
-import { ExclamationCircleOutlined, InfoCircleOutlined, WarningOutlined } from '@ant-design/icons';
+import { InfoCircleFilled } from '@ant-design/icons';
 import { Popover } from 'antd';
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { useStyles } from './styles/errorIconPopoverStyles';
@@ -39,14 +39,8 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   const effectiveType = validationResult?.validationType ?? type ?? 'warning';
 
   const getIcon = (): React.ReactElement => {
-    switch (effectiveType) {
-      case 'error':
-        return <ExclamationCircleOutlined className={styles.errorIcon} />;
-      case 'info':
-        return <InfoCircleOutlined className={styles.infoIcon} />;
-      default:
-        return <WarningOutlined className={styles.warningIcon} />;
-    }
+    // Always use filled info icon with hard-coded orange-yellowish warning color
+    return <InfoCircleFilled style={{ color: '#faad14', fontSize: '16px' }} />;
   };
 
   const getPopoverContent = (): React.ReactElement => {
@@ -112,6 +106,11 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   // Determine the popover title
   const popoverTitle = title !== undefined ? title : (effectiveType === 'info' ? 'Hint:' : `'${validationResult?.componentType}' has configuration issue(s)`);
 
+  // Add class to distinguish info icons from error/warning icons
+  const iconWrapperClass = effectiveType === 'info'
+    ? `${styles.iconWrapper} ${getPositionClass()} sha-info-icon-wrapper`
+    : `${styles.iconWrapper} ${getPositionClass()}`;
+
   return (
     <div className={styles.errorIconContainer}>
       {children}
@@ -123,7 +122,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
         color="rgb(214, 214, 214)"
       >
         <div
-          className={`${styles.iconWrapper} ${getPositionClass()}`}
+          className={iconWrapperClass}
           role="img"
           aria-label={`${effectiveType} indicator`}
         >

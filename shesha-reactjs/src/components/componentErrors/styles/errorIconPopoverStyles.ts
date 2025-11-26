@@ -3,7 +3,7 @@ import { createStyles } from '@/styles';
 export const useStyles = createStyles(({ css, cx, token }, { isDesignerMode = false }: { isDesignerMode?: boolean }) => {
   const errorIconContainer = cx("sha-error-icon-container", css`
     position: relative;
-    display: contents;
+    ${isDesignerMode ? 'display: block; width: 100%;' : 'display: contents;'}
   `);
 
   const iconWrapper = cx("sha-error-icon-wrapper", css`
@@ -17,7 +17,7 @@ export const useStyles = createStyles(({ css, cx, token }, { isDesignerMode = fa
     border-radius: 50%;
     background-color: ${token.colorBgContainer};
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 9999;
+    z-index: 1000;
     transition: all 0.2s ease;
 
     &:hover {

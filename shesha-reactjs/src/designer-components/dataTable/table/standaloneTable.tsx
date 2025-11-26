@@ -1,9 +1,8 @@
 import React, { FC } from 'react';
 import { ITableComponentProps } from './models';
-import { SearchOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { SearchOutlined, EditOutlined, DeleteOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { Popover } from 'antd';
 import { useForm } from '@/providers';
-import { useTheme } from '@/providers/theme';
 import { useDataTableStore } from '@/providers/dataTable';
 import { useDatatableHintPopoverStyles } from './hintPopoverStyles';
 
@@ -21,7 +20,6 @@ const dummyRows = [
 
 export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
   const { formMode } = useForm();
-  const { theme } = useTheme();
   const store = useDataTableStore(false);
   const isDesignMode = formMode === 'designer';
   const hasNoColumns = !_props.items || _props.items.length === 0;
@@ -29,6 +27,7 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
 
   // Inject CSS for hint popover arrow styling
   useDatatableHintPopoverStyles();
+
 
   const tableStyle: React.CSSProperties = {
     width: '100%',
@@ -66,12 +65,14 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
   };
 
   return (
-    <div style={{
-      padding: '16px',
-      borderRadius: '6px',
-      backgroundColor: '#fafafa',
-      position: 'relative',
-    }}
+    <div
+      className="sha-standalone-table-wrapper"
+      style={{
+        padding: '16px',
+        borderRadius: '6px',
+        backgroundColor: '#fafafa',
+        position: 'relative',
+      }}
     >
       {/* Show info icon in top-right corner in designer mode */}
       {isDesignMode && (
@@ -118,17 +119,18 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
             </p>
           )}
         >
-          <InfoCircleOutlined
+          <InfoCircleFilled
             role="img"
             tabIndex={0}
             aria-label="Data table configuration help"
+            className="sha-standalone-table-hint-icon"
             style={{
               position: 'absolute',
               top: '60px',
               right: '0px',
-              color: theme?.application?.warningColor || '#faad14',
+              color: '#faad14',
               fontSize: '20px',
-              zIndex: 9999,
+              zIndex: 1000,
               cursor: 'help',
               backgroundColor: '#fff',
               borderRadius: '50%',
