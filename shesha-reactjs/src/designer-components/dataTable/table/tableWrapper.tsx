@@ -295,7 +295,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
               style={{
                 position: 'absolute',
                 top: '44px',
-                right: '4px',
+                right: '0px',
                 color: theme?.application?.warningColor || '#faad14',
                 fontSize: '20px',
                 zIndex: 9999,
