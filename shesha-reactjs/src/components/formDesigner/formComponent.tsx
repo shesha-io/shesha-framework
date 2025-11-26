@@ -104,13 +104,12 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   }, [toolboxComponent, actualModel]);
 
   // Wrap component with error icon if there are validation errors
-  const wrappedControl = useMemo(() => {
-    return validationResult?.hasErrors ? (
-      <ErrorIconPopover validationResult={validationResult} type="warning" isDesignerMode={shaForm.formMode === 'designer'}>
-        {control}
-      </ErrorIconPopover>
-    ) : control;
-  }, [validationResult, control, shaForm.formMode]);
+  // Wrap component with error icon if there are validation errors
+  const wrappedControl = validationResult?.hasErrors ? (
+    <ErrorIconPopover validationResult={validationResult} type="warning" isDesignerMode={shaForm.formMode === 'designer'}>
+      {control}
+    </ErrorIconPopover>
+  ) : control;
 
   // Check for validation errors (in both designer and runtime modes)
   if (!toolboxComponent) {
