@@ -99,10 +99,33 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const [fetched, setFetched] = useState(false);
   const [properties, setProperties] = useState<IPropertyMetadata[]>([]);
 
-  const [displayText, setDisplayText] = useState((!props.value ? props.placeholder : props.value._displayName) ?? '');
+  // Extract entity ID - handles both string (GUID) and object ({id, _className, _displayName}) formats
+  const entityId = useMemo(() => {
+    if (!props.value) return undefined;
+    if (typeof props.value === 'string') return props.value;
+    return props.value?.id ?? props.value;
+  }, [props.value]);
 
-  const entityId = props.value?.id ?? props.value;
-  const entityType = props.entityType ?? (props.value?._className as string | undefined);
+  // Extract entity type - handles both string (GUID) and object formats
+  const entityType = useMemo(() => {
+    if (props.entityType) return props.entityType;
+    if (props.value && typeof props.value === 'object') {
+      return props.value._className as string | undefined;
+    }
+    return undefined;
+  }, [props.entityType, props.value]);
+
+  // Extract initial display text - handles both string (GUID) and object formats
+  const initialDisplayText = useMemo(() => {
+    if (!props.value) return props.placeholder ?? '';
+    if (typeof props.value === 'string') return ''; // String GUID - will be fetched
+    if (typeof props.value === 'object') {
+      return props.value[props.displayProperty] || props.value._displayName || '';
+    }
+    return '';
+  }, [props.value, props.placeholder, props.displayProperty]);
+
+  const [displayText, setDisplayText] = useState(initialDisplayText);
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
 
   const { styles, cx } = useStyles();
@@ -124,7 +147,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     };
 
     fetchFormId();
-  }, [entityType, formType, props.formSelectionMode, props.entityReferenceType]);
+  }, [entityType, formType, props.formSelectionMode, props.entityReferenceType, getEntityFormIdAsync]);
 
   useEffect(() => {
     const fetchMetadata = async (): Promise<void> => {
@@ -139,17 +162,20 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     };
 
     fetchMetadata();
-  }, [entityType]);
+  }, [entityType, getMetadata]);
 
   useEffect(() => {
     // Fetch minimal data needed for display text
     // Quickview needs display text for the button/trigger, but the form will handle comprehensive data loading
 
     // Determine if we need to fetch: if we don't have display text or if value is not an object with display properties
+    // Handles both binding scenarios:
+    // 1. value as GUID string: "guid-string"
+    // 2. value as object: {id: "guid-string", _className: "EntityName", _displayName: "Display Name"}
     const needsFetch = entityId && (
-      !props.value || // No value at all (just a GUID string)
-      typeof props.value !== 'object' || // Value is not an object (primitive GUID)
-      (!props.value._displayName && !props.value[props.displayProperty]) // Object exists but missing display properties
+      !props.value || // No value at all
+      typeof props.value === 'string' || // Value is a GUID string (needs fetch for display name)
+      (typeof props.value === 'object' && !props.value._displayName && !props.value[props.displayProperty]) // Object exists but missing display properties
     );
 
     if (!fetched && needsFetch) {
@@ -180,13 +206,16 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   useEffect(() => {
     setFetched(false);
-    // Try to get display text from existing value object
-    if (props?.value && typeof props?.value === 'object') {
-      const displayValue = props.value[props.displayProperty] || props.value._displayName || '';
-      setDisplayText(displayValue);
-    } else {
-      setDisplayText(!props?.value ? (props?.placeholder || '') : '');
+    // Try to get display text from existing value - handles both string (GUID) and object formats
+    let displayValue = '';
+    if (!props.value) {
+      displayValue = props.placeholder ?? '';
+    } else if (typeof props.value === 'string') {
+      displayValue = ''; // String GUID - will be fetched
+    } else if (typeof props.value === 'object') {
+      displayValue = props.value[props.displayProperty] || props.value._displayName || '';
     }
+    setDisplayText(displayValue);
   }, [entityId, entityType, props?.placeholder, props?.value, props.displayProperty]);
 
   useEffect(() => {
@@ -314,7 +343,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       </Button>
     );
 
-  if (!props.value)
+  // Handle empty/null/undefined values - works for both string and object formats
+  if (!props.value || !entityId)
     return (
       <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
         <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={typeof displayText === 'string' ? displayText : undefined}>{displayText}</span>
