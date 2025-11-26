@@ -40,17 +40,16 @@ export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
  * - _displayName: The entity's display name
  * - Any additional properties for display (accessed via displayProperty)
  */
-export type EntityReferenceValue = 
-  | string 
-  | number 
-  | { 
-      id?: string | number; 
-      _className?: string; 
-      _displayName?: string; 
-      [key: string]: unknown; 
-    } 
-  | null 
-  | undefined;
+export type EntityReferenceValue = string |
+  number |
+  {
+    id?: string | number;
+    _className?: string;
+    _displayName?: string;
+    [key: string]: unknown;
+  } |
+  null |
+  undefined;
 
 export interface IEntityReferenceProps {
   // common properties
