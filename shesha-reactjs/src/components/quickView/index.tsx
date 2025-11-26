@@ -16,6 +16,21 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
+// Helper function to cap percentage values at 98%
+const capPercentageWidth = (value: number | string | null | undefined): number | string | null | undefined => {
+  if (!value) return value;
+
+  // Check if it's a percentage string (e.g., "99%", "100%")
+  if (typeof value === 'string' && value.endsWith('%')) {
+    const numericValue = parseFloat(value);
+    if (!isNaN(numericValue) && numericValue > 98) {
+      return '98%';
+    }
+  }
+
+  return value;
+};
+
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
   entityId?: string;
@@ -71,6 +86,8 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   textTitle,
   emptyText = 'No Display Name',
 }) => {
+  // Cap width at 98% if it's a percentage value
+  const cappedWidth = useMemo(() => capPercentageWidth(width), [width]);
   const [loadingState, setLoadingState] = useState<'loading' | 'error' | 'success'>('loading');
   const [formData, setFormData] = useState(initialFormData);
   const [formTitle, setFormTitle] = useState(displayName);
@@ -218,16 +235,16 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   return (
     <Popover
       styles={{
-        root: typeof width === 'string' && /%$/.test(width as string) ? { width } : undefined,
-        body: typeof width === 'string' && /%$/.test(width as string)
+        root: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string) ? { width: cappedWidth } : undefined,
+        body: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string)
           ? { width: '100%', maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' }
-          : { width, minWidth: width, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' },
+          : { width: cappedWidth, minWidth: cappedWidth, maxHeight: '80vh', overflowY: 'auto', overflowX: 'auto' },
       }}
       content={formContent}
       title={(
         <div
           style={{
-            width: typeof width === 'string' && /%$/.test(width) ? '100%' : (width as number | string),
+            width: typeof cappedWidth === 'string' && /%$/.test(cappedWidth) ? '100%' : (cappedWidth as number | string),
             textOverflow: 'ellipsis',
             overflow: 'hidden',
             whiteSpace: 'nowrap',

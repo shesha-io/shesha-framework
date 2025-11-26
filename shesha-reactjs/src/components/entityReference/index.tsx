@@ -22,12 +22,27 @@ import { useAvailableConstantsData } from '@/providers/form/utils';
 import { get } from '@/utils/fetchers';
 import { App, Button, Spin } from 'antd';
 import moment from 'moment';
-import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles/styles';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+
+// Helper function to cap percentage values at 98%
+const capPercentageWidth = (value: number | string | null | undefined): number | string | null | undefined => {
+  if (!value) return value;
+
+  // Check if it's a percentage string (e.g., "99%", "100%")
+  if (typeof value === 'string' && value.endsWith('%')) {
+    const numericValue = parseFloat(value);
+    if (!isNaN(numericValue) && numericValue > 98) {
+      return '98%';
+    }
+  }
+
+  return value;
+};
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -128,7 +143,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const [displayText, setDisplayText] = useState(initialDisplayText);
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
 
-  const { styles, cx } = useStyles();
+  const { styles } = useStyles();
 
   useEffect(() => {
     const fetchFormId = async (): Promise<void> => {
@@ -225,7 +240,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   }, [props.formIdentifier]);
 
   /* Dialog */
-  const dialogExecute = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
+  const dialogExecute = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
     event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
 
     const actionConfiguration: IConfigurableActionConfiguration = {
@@ -267,7 +282,30 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: evaluationContext,
     });
-  };
+  }, [
+    executeAction,
+    executionContext,
+    entityId,
+    props.value,
+    formData,
+    formMode,
+    localForm,
+    httpClient,
+    message,
+    globalState,
+    formIdentifier,
+    props.handleSuccess,
+    props.handleFail,
+    props.onFail,
+    props.onSuccess,
+    props.modalTitle,
+    props.buttons,
+    props.footerButtons,
+    props.additionalProperties,
+    props.modalWidth,
+    props.skipFetchData,
+    props.submitHttpVerb,
+  ]);
 
   const displayTextByType = useMemo(() => {
     const displayIfNotIcon = props.displayType === 'textTitle' ? props.textTitle : displayText;
@@ -281,10 +319,10 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     // Show loading state for all modes when data is not yet fetched
     if (!fetched)
       return (
-        <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
-          <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={typeof displayText === 'string' ? displayText : undefined}>
-            <Spin size="small" className={cx(styles.spin)} />
-            <span className={cx(styles.inlineBlock)}>Loading...</span>
+        <Button type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+          <span className={styles.innerEntityReferenceSpanBoxStyle} title={typeof displayText === 'string' ? displayText : undefined}>
+            <Spin size="small" className={styles.spin} />
+            <span className={styles.inlineBlock}>Loading...</span>
           </span>
         </Button>
       );
@@ -292,7 +330,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     if (props.disabled && props.entityReferenceType !== 'Quickview')
       return (
         <ShaLink disabled={true} linkToForm={formIdentifier} params={{ id: entityId }} style={props.style}>
-          <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>
+          <span className={styles.innerEntityReferenceSpanBoxStyle} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>
             {displayTextByType}
           </span>
         </ShaLink>
@@ -301,13 +339,16 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     if (props.entityReferenceType === 'NavigateLink')
       return (
         <ShaLink linkToForm={formIdentifier} params={{ id: entityId }} style={props?.style}>
-          <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>
+          <span className={styles.innerEntityReferenceSpanBoxStyle} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>
             {displayTextByType}
           </span>
         </ShaLink>
       );
 
-    if (props.entityReferenceType === 'Quickview')
+    if (props.entityReferenceType === 'Quickview') {
+      // Cap quickview width at 98% if it's a percentage value
+      const cappedWidth = capPercentageWidth(props.quickviewWidth);
+
       return (
         <GenericQuickView
           displayProperty={props.displayProperty}
@@ -316,7 +357,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           entityId={props.value?.id ?? props.value}
           entityType={entityType}
           getEntityUrl={props.getEntityUrl}
-          width={addPx(props.quickviewWidth)}
+          width={addPx(cappedWidth)}
           formIdentifier={formIdentifier}
           formType={formType}
           // Pass formArguments with entity ID to enable form's data loader (same algorithm as dialog mode)
@@ -328,26 +369,30 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           textTitle={props.textTitle}
         />
       );
+    }
 
     return (
-      <Button type="link" onClick={dialogExecute} className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
-        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>{displayTextByType}</span>
+      <Button type="link" onClick={dialogExecute} className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+        <span className={styles.innerEntityReferenceSpanBoxStyle} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>{displayTextByType}</span>
       </Button>
     );
-  }, [props.formIdentifier, displayText, entityId, props.disabled, properties.length, displayTextByType, fetched]);
+  }, [fetched, styles.innerEntityReferenceButtonBoxStyle, styles.innerEntityReferenceSpanBoxStyle, styles.spin,
+    styles.inlineBlock, props.style, props.disabled, props.entityReferenceType, props.displayType, props.textTitle,
+    props.quickviewWidth, props.displayProperty, props.value, props.getEntityUrl, props.iconName, displayText,
+    formIdentifier, entityId, displayTextByType, dialogExecute, properties, entityType, formType]);
 
   if (props.formSelectionMode === 'name' && !props.formIdentifier)
     return (
-      <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
-        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title="Form identifier is not configured">Form identifier is not configured</span>
+      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+        <span className={styles.innerEntityReferenceSpanBoxStyle} title="Form identifier is not configured">Form identifier is not configured</span>
       </Button>
     );
 
   // Handle empty/null/undefined values - works for both string and object formats
   if (!props.value || !entityId)
     return (
-      <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
-        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={typeof displayText === 'string' ? displayText : undefined}>{displayText}</span>
+      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+        <span className={styles.innerEntityReferenceSpanBoxStyle} title={typeof displayText === 'string' ? displayText : undefined}>{displayText}</span>
       </Button>
     );
 
