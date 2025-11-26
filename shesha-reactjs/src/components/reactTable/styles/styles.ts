@@ -54,6 +54,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowBorder,
   boxShadow,
   sortableIndicatorColor,
+  striped: _striped,
 }: {
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
@@ -70,6 +71,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowBorder?: string;
   boxShadow?: string;
   sortableIndicatorColor?: string;
+  striped?: boolean;
 }) => {
   const {
     shaTable,
@@ -185,6 +187,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${tbody} {
           overflow-x: hidden;
+          ${backgroundColor ? `background-color: ${backgroundColor};` : ''}
 
           > .${shaSortable}:not(.${shaDragging}) {
             .${tr}.${trBody}:hover {
@@ -424,7 +427,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             display: inline-block;
             position: relative;
             z-index: -100;
-            background-color: ${backgroundColor} !important;
           }
 
           &.${boxShadowLeft} {
@@ -485,7 +487,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             display: inline-block;
             position: relative;
             z-index: 0;
-            background-color: ${backgroundColor} !important;
           }
           &.${boxShadowLeft} {
             box-shadow: 5px 0 3px -2px #ccc;

@@ -206,7 +206,7 @@ select
 	,""Category""
 	,""Description""
     ,""FileName""
-    ,""FileType""
+    ,coalesce(""FileType"", '')
     ,""Folder""
     ,""IsVersionControlled""
 	,""SortOrder""

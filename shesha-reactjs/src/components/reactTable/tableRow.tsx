@@ -32,6 +32,7 @@ export interface ISortableRowProps {
   onMouseOver?: (cellRef?: any, isContentOverflowing?: boolean) => void;
   onMouseLeave?: (event: React.MouseEvent<HTMLElement>) => void;
   showExpandedView?: boolean;
+  striped?: boolean;
 }
 
 interface RowDragHandleProps {
@@ -73,22 +74,61 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     inlineDisplayComponents,
     onMouseOver,
     showExpandedView,
+    striped,
   } = props;
 
   const { styles } = useStyles();
   const { dragState, setDragState } = useDataTableStore();
   const tableRef = useRef(null);
+  const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isDoubleClickRef = useRef(false);
 
   const handleRowClick = (): void => {
-    onClick(row);
-    if (onRowClick) {
-      onRowClick();
+    // Reset double-click flag for a fresh click sequence
+    isDoubleClickRef.current = false;
+
+    // Clear any existing timeout
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
     }
+
+    // Use a timeout to detect if this is part of a double-click
+    clickTimeoutRef.current = setTimeout(() => {
+      // Only execute click logic if it wasn't part of a double-click
+      if (!isDoubleClickRef.current) {
+        onClick(row);
+        if (onRowClick) {
+          onRowClick();
+        }
+      }
+      isDoubleClickRef.current = false;
+      clickTimeoutRef.current = null;
+    }, 250); // 250ms timeout to detect double-click
   };
 
   const handleRowDoubleClick = (): void => {
+    // Mark that a double-click occurred
+    isDoubleClickRef.current = true;
+
+    // Clear any pending click timeout
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+    }
+
+    // Execute double-click logic
     onDoubleClick(row, index);
   };
+
+  // Cleanup timeout on unmount
+  React.useEffect(() => {
+    return () => {
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleRowMouseEnter = (): void => {
     if (dragState === 'finished')
@@ -125,7 +165,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         className={classNames(
           styles.tr,
           styles.trBody,
-          { [styles.trOdd]: index % 2 === 0 },
+          { [styles.trOdd]: striped && index % 2 === 0 },
           { [styles.trSelected]: selectedRowIndex === row?.index },
         )}
         key={rowId}

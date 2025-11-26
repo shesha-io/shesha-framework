@@ -353,7 +353,7 @@ namespace Shesha.Metadata
         public async Task<Type?> GetContainerTypeOrNullAsync(string? moduleName, string container)
         {
             var allModels = await GetAllModelsAsync();
-            var models = allModels.Where(m => m.Name == container || m.Alias == container || m.FullClassName == container).ToList();
+            var models = allModels.Where(m => !m.IsExposed && (m.Name == container || m.Alias == container || m.FullClassName == container)).ToList();
             if (!string.IsNullOrWhiteSpace(moduleName))
             {
                 models = models.Where(m => m is EntityModelDto em

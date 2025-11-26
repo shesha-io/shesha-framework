@@ -33,6 +33,7 @@ namespace Shesha.Migrations.ConfigurationStudio
             IfDatabase("SqlServer").Execute.Sql(@"IF (OBJECT_ID('dbo.FK_entpr_HomeUrlRoutes_AppId_Frwk_FrontEndApps_Id', 'F') IS NOT NULL)
 	ALTER TABLE entpr_HomeUrlRoutes DROP CONSTRAINT FK_entpr_HomeUrlRoutes_AppId_Frwk_FrontEndApps_Id;");
 
+            this.Shesha().MoveForeignKeys("Frwk_FrontEndApps", null, "Id", "front_end_apps", "frwk", "id");
             Delete.Table("Frwk_FrontEndApps");
 
             // Shesha.Domain.PermissionedObject
