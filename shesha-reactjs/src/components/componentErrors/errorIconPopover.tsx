@@ -107,10 +107,11 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   const popoverTitle = title !== undefined ? title : (effectiveType === 'info' ? 'Hint:' : `'${validationResult?.componentType}' has configuration issue(s)`);
 
   // Add class to distinguish info icons from error/warning icons
-  const iconWrapperClass = effectiveType === 'info'
-    ? `${styles.iconWrapper} ${getPositionClass()} sha-info-icon-wrapper`
-    : `${styles.iconWrapper} ${getPositionClass()}`;
-
+  const iconWrapperClass = [
+    styles.iconWrapper,
+    getPositionClass(),
+    effectiveType === 'info' && 'sha-info-icon-wrapper'
+  ].filter(Boolean).join(' ');
   return (
     <div className={styles.errorIconContainer}>
       {children}
