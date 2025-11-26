@@ -11,6 +11,7 @@ import {
   IFlatComponentsStructure,
   IFormDto,
   IFormSettings,
+  isConfigurableFormComponent,
 } from './models';
 import { GetDataError, useGet } from '@/hooks';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
@@ -235,7 +236,7 @@ export const filterDataByOutputComponents = (
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       var component = components[key];
-      if (component.propertyName &&
+      if (isConfigurableFormComponent(component) && component.propertyName &&
         component.type &&
         data.hasOwnProperty(component.propertyName) &&
         !toolboxComponents[component.type]?.isOutput) {

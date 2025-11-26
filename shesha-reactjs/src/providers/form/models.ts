@@ -288,8 +288,14 @@ export interface IComponentsContainer {
   components: IConfigurableFormComponent[];
 }
 
+export type IRawComponentsContainer = IFormComponentContainer & {
+  components: IConfigurableFormComponent[];
+};
+export const isRawComponentsContainer = (obj: unknown): obj is IRawComponentsContainer =>
+  isDefined(obj) && "id" in obj && typeof (obj.id) === "string" && "components" in obj && Array.isArray(obj.components);
+
 export interface IComponentsDictionary {
-  [index: string]: IConfigurableFormComponent;
+  [index: string]: IConfigurableFormComponent | IRawComponentsContainer;
 }
 
 export interface IComponentRelations {

@@ -1,6 +1,6 @@
 import { IContainerComponentProps } from '@/designer-components/container/interfaces';
 import React from 'react';
-import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from '@/interfaces';
+import { IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from '@/interfaces';
 import { useStyles } from './styles/styles';
 
 /**
@@ -160,28 +160,6 @@ export const updateJsSettingsForComponents = (
   return components.map((c) => {
     return processComponent(c);
   });
-};
-
-export const updateSettingsComponentsDict = (
-  toolboxComponents: IToolboxComponents,
-  components: IComponentsDictionary,
-): IComponentsDictionary => {
-  const comps: IConfigurableFormComponent[] = [];
-
-  for (const key in components) {
-    if (components.hasOwnProperty(key)) {
-      comps.push(components[key]);
-    }
-  }
-
-  const updComps = updateSettingsComponents(toolboxComponents, comps);
-
-  const res: IComponentsDictionary = {};
-  updComps.forEach((comp) => {
-    res[comp.id] = comp;
-  });
-
-  return res;
 };
 
 export const StyledLabel = ({ label }: { label: string }): JSX.Element => {

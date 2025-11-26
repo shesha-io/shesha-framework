@@ -67,10 +67,10 @@ export const migrateDefaults = (settings: IFormSettings, context: IFormMigration
     if (!flatStructure.allComponents.hasOwnProperty(id)) continue;
     const component = flatStructure.allComponents[id];
 
-    if ('defaultValue' in component && typeof (component.defaultValue) === 'string')
+    if ('defaultValue' in component && typeof (component.defaultValue) === 'string' && "propertyName" in component)
       initialData.push({ key: component.propertyName, value: component.defaultValue });
 
-    if (component['initialValue'] !== undefined)
+    if (component['initialValue'] !== undefined && "propertyName" in component)
       initialData.push({ key: component.propertyName, value: component['initialValue'] });
   }
   const onAfterDataLoad = getAfterDataLoad(settings.onAfterDataLoad, initialData);
