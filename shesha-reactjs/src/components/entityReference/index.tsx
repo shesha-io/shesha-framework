@@ -144,7 +144,15 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   useEffect(() => {
     // Fetch minimal data needed for display text
     // Quickview needs display text for the button/trigger, but the form will handle comprehensive data loading
-    if (!fetched && entityId && (!props.value || typeof props.value !== 'object')) {
+
+    // Determine if we need to fetch: if we don't have display text or if value is not an object with display properties
+    const needsFetch = entityId && (
+      !props.value || // No value at all (just a GUID string)
+      typeof props.value !== 'object' || // Value is not an object (primitive GUID)
+      (!props.value._displayName && !props.value[props.displayProperty]) // Object exists but missing display properties
+    );
+
+    if (!fetched && needsFetch) {
       const queryParams = {
         id: entityId,
         properties: `id ${props.displayProperty ? props.displayProperty : ''} _displayName`,
