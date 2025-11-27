@@ -34,7 +34,18 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     borderTopLeftRadius ?? allRadius ?? '8px',
   ].join(' ');
 
-  const fileName = "item-file-name";
+  const fileName = cx("item-file-name", css`
+      font-family: ${fontFamily ?? 'Segoe UI'};
+      font-size: ${fontSize ?? '14px'};
+      font-weight: ${fontWeight ?? '400'};
+      text-align: ${textAlign ?? 'center'};
+      width: ${(layout && width) ?? '54px'};
+      font-size: ${fontSize};
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: ${color ?? token.colorPrimary};
+    `);
 
   const downloadedFile = cx("downloaded-file", css`
     opacity: 0.8;
@@ -50,7 +61,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       box-shadow: 0 0 0 1px ${downloadedFileStyles?.color ?? token.colorSuccess}20;
     }
     
-    .${fileName} {
+    .item-file-name {
       color: ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
       font-size: ${downloadedFileStyles?.fontSize ?? '14px'} !important;
       font-weight: ${downloadedFileStyles?.fontWeight ?? '400'} !important;
@@ -70,7 +81,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
   `);
 
-
   const downloadedIcon = cx("downloaded-icon", css`
     position: absolute;
     top: 4px;
@@ -87,6 +97,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     z-index: 1;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   `);
+
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const storedFilesRendererWrapper = cx("stored-files-renderer-wrapper", css`
@@ -167,20 +178,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-name {
       display: none !important;
-    }
-
-    .${fileName} {
-      font-family: ${fontFamily ?? 'Segoe UI'};
-      font-size: ${fontSize ?? '14px'};
-      font-weight: ${fontWeight ?? '400'};
-      text-align: ${textAlign ?? 'center'};
-      padding: 0 8px !important;
-      width: ${(layout && width) ?? '54px'};
-      font-size: var(--font-size, 14px);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: ${color ?? token.colorPrimary};
     }
 
     .ant-upload-list-text {
