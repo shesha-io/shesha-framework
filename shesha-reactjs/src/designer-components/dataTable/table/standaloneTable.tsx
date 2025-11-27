@@ -111,7 +111,6 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
   // Inject CSS for hint popover arrow styling
   useDatatableHintPopoverStyles();
 
-
   const tableStyle: React.CSSProperties = {
     width: '100%',
     borderCollapse: 'collapse',
