@@ -6,7 +6,6 @@ import { SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { TableViewSelector } from './tableViewSelector';
 import { Popover } from 'antd';
 import { ConfigurableFormItem, useDataTableStore, validateConfigurableComponentSettings } from '@/index';
-import { useTheme } from '@/providers/theme';
 import { getSettings } from './settingsForm';
 import { useStyles } from '../tableContext/styles';
 
@@ -17,7 +16,6 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   icon: <SelectOutlined />,
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
-    const { theme } = useTheme();
     const { styles } = useStyles();
 
     return (
