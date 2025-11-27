@@ -2,7 +2,7 @@ import React, { CSSProperties, FC, useMemo } from 'react';
 import ShaSpin from '@/components/shaSpin';
 import ValidationErrors from '@/components/validationErrors';
 import { useSubForm } from '@/providers/subForm';
-import { FormItemProvider, ROOT_COMPONENT_KEY, useForm, useSheshaApplication } from '@/providers';
+import { FormItemProvider, isConfigurableFormComponent, ROOT_COMPONENT_KEY, useForm, useSheshaApplication } from '@/providers';
 import FormInfo from '@/components/configurableForm/formInfo';
 import { IPersistedFormProps } from '@/providers/form/models';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
@@ -45,7 +45,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
           for (const comp in allComponents)
             if (Object.hasOwn(allComponents, comp)) {
               const component = allComponents[comp];
-              if (component.propertyName && !component.context)
+              if (isConfigurableFormComponent(component) && component.propertyName && !component.context)
                 properties.push([...propertyName.split('.'), ...component.propertyName.split('.')]);
             }
 

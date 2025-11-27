@@ -1,7 +1,7 @@
 import { componentsTreeToFlatStructure, useAvailableConstantsData } from '@/providers/form/utils';
 import { getStepDescritpion, getWizardStep } from './utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { IConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
+import { IConfigurableFormComponent, isConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useEffect, useMemo, useState } from 'react';
@@ -76,7 +76,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     for (const comp in flat.allComponents)
       if (Object.hasOwn(flat.allComponents, comp)) {
         const component = flat.allComponents[comp];
-        if (component.propertyName && !component.context)
+        if (isConfigurableFormComponent(component) && component.propertyName && !component.context)
           properties.push(component.propertyName.split("."));
       }
     return properties;

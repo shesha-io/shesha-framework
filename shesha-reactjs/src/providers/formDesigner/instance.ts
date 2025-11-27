@@ -7,8 +7,10 @@ import {
   IFlatComponentsStructure,
   IFormSettings,
   IFormValidationErrors,
+  IRawComponentsContainer,
   isConfigurableFormComponent,
   ISettingsFormFactory,
+  isRawComponentsContainer,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
@@ -99,7 +101,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.subscriptions = new Map<FormDesignerSubscriptionType, Set<FormDesignerSubscription>>();
 
     // eslint-disable-next-line no-console
-    this.log = args.logEnabled ? console.log : () => {};
+    this.log = args.logEnabled ? console.log : () => { };
 
     const initialState: FormDesignerFormState = {
       formFlatMarkup: args.formFlatMarkup,
@@ -160,7 +162,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     return component;
   };
 
-  private getComponent = (id: string): IConfigurableFormComponent => {
+  private getComponentOrContainer = (id: string): IConfigurableFormComponent | IRawComponentsContainer => {
     const { formFlatMarkup } = this.state;
     const component = formFlatMarkup.allComponents[id];
     if (!isDefined(component))
@@ -168,18 +170,28 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     return component;
   };
 
-  private cloneComponent = (
-    component: IConfigurableFormComponent,
+  private getComponent = (id: string): IConfigurableFormComponent => {
+    const result = this.getComponentOrContainer(id);
+    if (!isConfigurableFormComponent(result))
+      throw new Error(`Item with id ${id} is not a configurable form component`);
+
+    return result;
+  };
+
+  private setParentId = (item: IConfigurableFormComponent | IRawComponentsContainer, parentId: string): void => {
+    if ("parentId" in item && typeof (item.parentId) === "string")
+      item.parentId = parentId;
+  };
+
+  private cloneComponent = <TC extends IConfigurableFormComponent | IRawComponentsContainer = IConfigurableFormComponent | IRawComponentsContainer>(
+    component: TC,
     nestedComponents: IComponentsDictionary,
     nestedRelations: IComponentRelations,
-  ): IConfigurableFormComponent => {
+  ): TC => {
     const newId = nanoid();
-    const clone: IConfigurableFormComponent = { ...component, id: newId };
+    const clone: TC = { ...component, id: newId };
 
-    nestedComponents[clone.id] = clone;
-
-    const toolboxComponent = this.getToolboxComponent(component.type);
-    const containers = toolboxComponent.customContainerNames ?? [];
+    nestedComponents[newId] = clone;
 
     const { formFlatMarkup } = this.state;
 
@@ -190,49 +202,60 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       nestedRelations[clone.id] = relations;
 
       srcNestedComponents.forEach((childId) => {
-        const child = this.getComponent(childId);
+        const child = this.getComponentOrContainer(childId);
         const childClone = this.cloneComponent(child, nestedComponents, nestedRelations);
-        childClone.parentId = clone.id;
+        this.setParentId(childClone, clone.id);
 
         relations.push(childClone.id);
       });
     }
 
-    // handle containers
-    containers.forEach((key) => {
-      const cntName = key as keyof IConfigurableFormComponent;
-      const srcContainer = cntName in component && typeof (component[cntName]) === 'object' && (isConfigurableFormComponent(component[cntName]) || Array.isArray(component[cntName]))
-        ? component[cntName]
-        : undefined;
-      if (srcContainer) {
-        // add clone recursively
-        const relations: string[] = [];
-        nestedRelations[clone.id] = relations;
+    // component.type is empty for raw containers
+    if (isConfigurableFormComponent(component) && !isNullOrWhiteSpace(component.type)) {
+      if (!isConfigurableFormComponent(clone))
+        throw new Error('Clone is not a configurable form component');
 
-        const cloneChild = (c: IConfigurableFormComponent): IConfigurableFormComponent => {
-          // child may be component or any object with id
-          const childClone = this.cloneComponent(c, nestedComponents, nestedRelations);
-          if (childClone.hasOwnProperty('parentId')) childClone.parentId = clone.id;
+      const toolboxComponent = this.getToolboxComponent(component.type);
 
-          relations.push(childClone.id);
+      const containers = toolboxComponent.customContainerNames ?? [];
+      // handle containers
+      containers.forEach((key) => {
+        const cntName = key as keyof IConfigurableFormComponent;
+        const srcContainer = cntName in component && typeof (component[cntName]) === 'object' && (isConfigurableFormComponent(component[cntName]) || isRawComponentsContainer(component[cntName]) || Array.isArray(component[cntName]))
+          ? component[cntName]
+          : undefined;
+        if (srcContainer) {
+          // add clone recursively
+          const relations: string[] = [];
+          nestedRelations[clone.id] = relations;
 
-          return childClone;
-        };
+          const cloneChild = <T extends IConfigurableFormComponent | IRawComponentsContainer = IConfigurableFormComponent | IRawComponentsContainer>(c: T): T => {
+            // child may be component or any object with id
+            const childClone = this.cloneComponent<T>(c, nestedComponents, nestedRelations);
+            this.setParentId(childClone, clone.id);
 
-        if (isConfigurableFormComponent(srcContainer)) {
-          (clone[cntName] as IConfigurableFormComponent) = cloneChild(srcContainer);
-        } else {
-          if (Array.isArray(srcContainer)) {
-            (clone[cntName] as IConfigurableFormComponent[]) = srcContainer.map((c) => {
-              if (!isConfigurableFormComponent(c))
-                throw new Error('Not configurable form component');
-              return cloneChild(c);
-            });
-          }
+            relations.push(childClone.id);
+
+            return childClone;
+          };
+
+          if (isConfigurableFormComponent(srcContainer)) {
+            (clone[cntName] as IConfigurableFormComponent) = cloneChild(srcContainer);
+          } else
+            if (isRawComponentsContainer(srcContainer)) {
+              (clone[cntName] as IRawComponentsContainer) = cloneChild(srcContainer);
+            } else {
+              if (Array.isArray(srcContainer)) {
+                (clone[cntName] as IConfigurableFormComponent[]) = srcContainer.map((c) => {
+                  if (!isConfigurableFormComponent(c))
+                    throw new Error('Not configurable form component');
+                  return cloneChild(c);
+                });
+              }
+            }
         }
-      }
-    });
-
+      });
+    }
     return clone;
   };
 
@@ -328,7 +351,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       delete componentRelations[payload.componentId];
 
       // delete self as child
-      if (component.parentId) {
+      if (isConfigurableFormComponent(component) && component.parentId) {
         const parentRelations = [...(componentRelations[component.parentId] ?? [])];
         const childIndex = parentRelations.indexOf(payload.componentId);
         parentRelations.splice(childIndex, 1);
@@ -348,6 +371,20 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     }, `Removed component ${payload.componentId}`);
   };
 
+  getComponentsCount = (components: IComponentsDictionary, type: string): number => {
+    let count = 0;
+    for (const key in components) {
+      if (isDefined(components[key]) && isConfigurableFormComponent(components[key]) && components[key].type === type)
+        count++;
+    }
+    return count;
+  };
+
+  generateNewComponentName = (components: IComponentsDictionary, toolboxComponent: IToolboxComponent): string => {
+    const count = this.getComponentsCount(components, toolboxComponent.type);
+    return `${toolboxComponent.name}${count + 1}`;
+  };
+
   duplicateComponent = (payload: IComponentDuplicatePayload): void => {
     this.log('FD: duplicateComponent', payload);
     this.updateState((state): FormDesignerFormState => {
@@ -357,6 +394,11 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       const nestedComponents: IComponentsDictionary = {};
       const nestedRelations: IComponentRelations = {};
       const clone = this.cloneComponent(srcComponent, nestedComponents, nestedRelations);
+
+      const toolboxComponent = this.getToolboxComponent(clone.type);
+      const componentName = this.generateNewComponentName(formFlatMarkup.allComponents, toolboxComponent);
+      clone.componentName = camelcaseDotNotation(componentName);
+      clone.label = componentName;
 
       const parentRelations = srcComponent.parentId
         ? [...(formFlatMarkup.componentRelations[srcComponent.parentId] ?? [])]
@@ -513,11 +555,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         newComponents = this.cloneComponents(builtResult);
       } else {
         // create new component
-        let count = 0;
-        for (const key in newFlatMarkup.allComponents) {
-          if (newFlatMarkup.allComponents[key]?.type === toolboxComponent.type) count++;
-        }
-        const componentName = `${toolboxComponent.name}${count + 1}`;
+        const componentName = this.generateNewComponentName(newFlatMarkup.allComponents, toolboxComponent);
 
         let formComponent: IConfigurableFormComponent = {
           id: nanoid(),
