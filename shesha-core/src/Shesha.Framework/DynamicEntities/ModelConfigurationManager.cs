@@ -61,6 +61,9 @@ namespace Shesha.DynamicEntities
         }
 
         // ToDo: AS - decide if we will generate entities on fly
+        /// <summary>
+        /// Is generate entities on fly
+        /// </summary>
         private readonly bool metadataRefresh = false;
 
         private readonly IPermissionedObjectManager _permissionedObjectManager;
@@ -456,6 +459,7 @@ namespace Shesha.DynamicEntities
                     {
                         dbProp.ListConfiguration = dbProp.ListConfiguration ?? new EntityPropertyListConfiguration();
                         dbProp.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToOne;
+                        dbProp.ListConfiguration.ForeignProperty = inputProp.ListConfiguration?.ForeignProperty;
                     }
                     if (dbProp.DataFormat == ArrayFormats.ManyToManyEntities)
                     {
@@ -555,10 +559,9 @@ namespace Shesha.DynamicEntities
                     }
                 }
 
-                if (isNew)
-                {
-                    if (metadataRefresh)
-                        await _dbGenerator.ProcessEntityPropertyAsync(dbProp);
+                if (isNew && metadataRefresh)
+                { 
+                    await _dbGenerator.ProcessEntityPropertyAsync(dbProp);
                 }
 
                 itemsType = inputProp.IsItemsType ? dbProp : null;
