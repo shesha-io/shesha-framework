@@ -145,7 +145,7 @@ const ExtraContent: FC<{
   formId?: FormIdentifier;
   formSelectionMode?: 'name' | 'dynamic';
   formType?: string;
-}> = ({file, formId}) => {
+}> = ({ file, formId }) => {
 
   if (!formId) {
     return null;
@@ -202,7 +202,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const { httpHeaders } = useSheshaApplication();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
-  const [imageUrls, setImageUrls] = useState<{ [key: string]: string}>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
+  const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
   const [fileToReplace, setFileToReplace] = useState<string | null>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const model = rest;
@@ -232,7 +232,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
   });
 
-  const {width, minWidth, maxWidth} = model?.allStyles?.dimensionsStyles;
+  const { width, minWidth, maxWidth } = model?.allStyles?.dimensionsStyles;
 
   const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
 
@@ -288,8 +288,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
         return <Space size="small" direction='vertical'>
-        <Image src={imageUrls[uid]} alt={file.name} preview={false}/>
-        <p className='ant-upload-list-item-name'>{file.name}</p>
+          <Image src={imageUrls[uid]} alt={file.name} preview={false} />
+          <p className='ant-upload-list-item-name'>{file.name}</p>
         </Space>;
       }
     }
@@ -396,17 +396,17 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             />
           )}
           {allowDelete && !disabled && (
-            <Popconfirm title='Delete Attachment' onConfirm={()=>
+            <Popconfirm title='Delete Attachment' onConfirm={() =>
               deleteFile(file.uid)}
               description="Are you sure you want to delete this attachment?"
-              >
+            >
               <Button
-              size="small"
-              icon={<DeleteOutlined />}
-              title="Delete file"
-            />
+                size="small"
+                icon={<DeleteOutlined />}
+                title="Delete file"
+              />
             </Popconfirm>
-            
+
           )}
           {allowViewHistory && fileId && isValidGuid(fileId) && (
             <FileVersionsButton
@@ -426,7 +426,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             }}
           />
           {/* Custom Actions Button Group */}
-          {customActions && customActions.length > 0 && !disabled &&  (
+          {customActions && customActions.length > 0 && !disabled && (
             <DataContextProvider
               id={`file_ctx_${fileId}`}
               name="fileContext"
@@ -463,16 +463,19 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
       return (
         <div>
-            <div className={isDownloaded ? styles.downloadedFile : ''} onClick={handleItemClick}>
-            <Popover content={actions} trigger="hover" placement="top">
+          <div className={isDownloaded ? styles.downloadedFile : ''} onClick={handleItemClick}>
+            <Popover content={actions} trigger="hover" placement="top" style={{ padding: '0px' }}>
               {originNode}
-          </Popover>
-              {isDownloaded && (
-                <div className={styles.downloadedIcon}>
-                  <CheckCircleOutlined />
-                </div>
-              )}
-            </div>
+            </Popover>
+            {isDownloaded && (
+              <div className={styles.downloadedIcon}>
+                <CheckCircleOutlined />
+              </div>
+            )}
+          </div>
+          <div className={isDownloaded ? styles.downloadedFile : ''} >
+            <div className='item-file-name'>{file.name}</div>
+          </div>
           {hasExtraContent && extraFormId && (
             <ExtraContent
               file={file}
@@ -490,6 +493,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       showRemoveIcon: false,
       showPreviewIcon: false,
       showDownloadIcon: false,
+
     }
   };
 
@@ -525,32 +529,32 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         ? (isDragger
           ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
           : <>
-          <div
-            className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
-          >
-        <Button type="link" icon={<PictureOutlined />} disabled={disabled} {...uploadBtnProps}>
-        {listType === 'text' && '(press to upload)'}
-      </Button>
-            {listType !== 'text' && !rest.hideFileName &&
-              <span className='ant-upload-list-item-name ant-upload-list-item-name-stub'>
-                {'file name'}
-              </span>}
-          </div>
-          <div style={{width, minWidth, maxWidth }}>
-            {hasExtraContent && extraFormId && (
-            <ExtraContent
-              file={placeholderFile}
-              isDynamic={isDynamic}
-              extraContent={extraContent}
-              formId={extraFormId}
-              formSelectionMode={extraFormSelectionMode}
-              formType={extraFormType}
-            />
-          )}
-          </div>
-          
+            <div
+              className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
+            >
+              <Button type="link" icon={<PictureOutlined />} disabled={disabled} {...uploadBtnProps} style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model.allStyles.fontStyles }}>
+                {listType === 'text' && '(press to upload)'}
+              </Button>
+            </div>
+            <div style={(listType === 'thumbnail' && !isDragger) ? { width, minWidth, maxWidth } : {}}>
+              {listType !== 'text' && !rest.hideFileName &&
+                <div className='file-item-name'>
+                  {'file name'}
+                </div>}
+              {hasExtraContent && extraFormId && (
+                <ExtraContent
+                  file={placeholderFile}
+                  isDynamic={isDynamic}
+                  extraContent={extraContent}
+                  formId={extraFormId}
+                  formSelectionMode={extraFormSelectionMode}
+                  formType={extraFormType}
+                />
+              )}
+            </div>
+
           </>
-          )
+        )
         : (props.disabled && fileList.length === 0
           ? <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
             {renderUploadContent()}

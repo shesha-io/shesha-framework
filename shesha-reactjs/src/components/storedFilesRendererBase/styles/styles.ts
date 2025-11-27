@@ -14,7 +14,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     minWidth: containerMinWidth, marginTop, marginLeft, marginRight, marginBottom, paddingTop,
     paddingLeft, paddingRight, paddingBottom, ...restContainerStyles } = containerStyles;
 
-  const { gap, layout, hideFileName, isDragger } = model;
+  const { gap, layout, isDragger } = model;
 
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
@@ -34,6 +34,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     borderTopLeftRadius ?? allRadius ?? '8px',
   ].join(' ');
 
+  const fileName = "item-file-name";
+
   const downloadedFile = cx("downloaded-file", css`
     opacity: 0.8;
     position: relative;
@@ -48,7 +50,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       box-shadow: 0 0 0 1px ${downloadedFileStyles?.color ?? token.colorSuccess}20;
     }
     
-    .ant-upload-list-item-name {
+    .${fileName} {
       color: ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
       font-size: ${downloadedFileStyles?.fontSize ?? '14px'} !important;
       font-weight: ${downloadedFileStyles?.fontWeight ?? '400'} !important;
@@ -164,14 +166,21 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .ant-upload-list-item-name {
-      display: ${hideFileName ? 'none !important' : 'block'};
-      color: ${color ?? token.colorPrimary};
-      font-family: ${fontFamilyValue};
-      font-size: ${fontSizeValue} !important;
-      font-weight: ${fontWeightValue};
-      text-align: ${textAlign ?? 'center'} !important;
+      display: none !important;
+    }
+
+    .${fileName} {
+      font-family: ${fontFamily ?? 'Segoe UI'};
+      font-size: ${fontSize ?? '14px'};
+      font-weight: ${fontWeight ?? '400'};
+      text-align: ${textAlign ?? 'center'};
       padding: 0 8px !important;
-      width: ${(layout && width) ?? '54px'} !important;
+      width: ${(layout && width) ?? '54px'};
+      font-size: var(--font-size, 14px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: ${color ?? token.colorPrimary};
     }
 
     .ant-upload-list-text {
@@ -278,13 +287,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       ${rest}
     }
 
-    .ant-upload-list-item-name-stub { 
-      position: absolute;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      width: 100%;
-    }
 `);
 
   const shaStoredFilesRendererHorizontal = cx("sha-stored-files-renderer-horizontal", css`
@@ -423,6 +425,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     storedFilesRendererBtnContainer,
     storedFilesRendererNoFiles,
     antUploadDragIcon,
-    thumbnailReadOnly
+    thumbnailReadOnly,
+    fileName,
   };
 });
