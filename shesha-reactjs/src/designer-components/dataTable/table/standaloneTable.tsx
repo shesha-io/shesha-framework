@@ -74,72 +74,92 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
         position: 'relative',
       }}
     >
-      {/* Show info icon in top-right corner in designer mode */}
-      {isDesignMode && (
-        <Popover
-          placement="left"
-          title="Hint:"
-          classNames={{ root: "sha-datatable-hint-popover" }}
-          styles={{ body: { backgroundColor: '#D9DCDC' } }}
-          content={isInsideDataContext ? (
-            <p>
-              This Data Table has no columns configured.<br />
-              Click the Settings icon in the Properties Panel<br />
-              to configure columns.
-              <br /><br />
-              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-                See component documentation
-              </a>
-              <br />for setup and usage.
-            </p>
-          ) : hasNoColumns ? (
-            <p>
-              This Data Table is not inside a Data Context<br />
-              and has no columns configured.<br />
-              <br />
-              Drag it into a Data Context component to<br />
-              connect it to data, then configure columns<br />
-              in the Properties Panel.
-              <br /><br />
-              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-                See component documentation
-              </a>
-              <br />for setup and usage.
-            </p>
-          ) : (
-            <p>
-              This Data Table is not inside a Data Context.<br />
-              Drag it into a Data Context component to<br />
-              connect it to data.
-              <br /><br />
-              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-                See component documentation
-              </a>
-              <br />for setup and usage.
-            </p>
-          )}
-        >
-          <InfoCircleFilled
-            role="img"
-            tabIndex={0}
-            aria-label="Data table configuration help"
-            className="sha-standalone-table-hint-icon"
-            style={{
-              position: 'absolute',
-              top: '44px',
-              right: '0px',
-              color: '#faad14',
-              fontSize: '16px',
-              zIndex: 1000,
-              cursor: 'help',
-              backgroundColor: '#fff',
-              borderRadius: '50%',
-              padding: '4px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            }}
-          />
-        </Popover>
-      )}
+      {/* Show info icon in top-right corner */}
+      <Popover
+        placement="left"
+        title="Hint:"
+        classNames={{ root: "sha-datatable-hint-popover" }}
+        styles={{ body: { backgroundColor: '#D9DCDC' } }}
+        content={isInsideDataContext ? (
+          <p>
+            This Data Table has no columns configured.<br />
+            {isDesignMode && (
+              <>
+                Click the Settings icon in the Properties Panel<br />
+                to configure columns.
+                <br /><br />
+              </>
+            )}
+            <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+              See component documentation
+            </a>
+            <br />for setup and usage.
+          </p>
+        ) : hasNoColumns ? (
+          <p>
+            This Data Table is not inside a Data Context<br />
+            and has no columns configured.<br />
+            <br />
+            {isDesignMode ? (
+              <>
+                Drag it into a Data Context component to<br />
+                connect it to data, then configure columns<br />
+                in the Properties Panel.
+              </>
+            ) : (
+              <>
+                Place it inside a Data Context component to<br />
+                connect it to data and configure columns.
+              </>
+            )}
+            <br /><br />
+            <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+              See component documentation
+            </a>
+            <br />for setup and usage.
+          </p>
+        ) : (
+          <p>
+            This Data Table is not inside a Data Context.<br />
+            {isDesignMode ? (
+              <>
+                Drag it into a Data Context component to<br />
+                connect it to data.
+              </>
+            ) : (
+              <>
+                Place it inside a Data Context component to<br />
+                connect it to data.
+              </>
+            )}
+            <br /><br />
+            <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+              See component documentation
+            </a>
+            <br />for setup and usage.
+          </p>
+        )}
+      >
+        <InfoCircleFilled
+          role="img"
+          tabIndex={0}
+          aria-label="Data table configuration help"
+          className="sha-standalone-table-hint-icon"
+          style={{
+            position: 'absolute',
+            top: '44px',
+            right: '0px',
+            color: '#faad14',
+            fontSize: '16px',
+            zIndex: 1000,
+            cursor: 'help',
+            backgroundColor: '#fff',
+            borderRadius: '50%',
+            padding: '4px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          }}
+        />
+      </Popover>
 
       <table style={tableStyle}>
         <thead>
