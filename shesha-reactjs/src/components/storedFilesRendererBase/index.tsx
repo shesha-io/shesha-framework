@@ -2,7 +2,7 @@ import { DraggerStub } from '@/components/fileUpload/stubs';
 import { IAttachmentContent, layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
-import { IInputStyles, IStyleType, useAuth, useSheshaApplication, ValidationErrors } from '@/index';
+import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
 import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { addPx } from '@/utils/style';
@@ -158,7 +158,7 @@ const ExtraContent: FC<{
       initialValues={file}
     />
   );
-}
+};
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   multiple = true,
