@@ -13,72 +13,26 @@ interface IErrorIconPopoverBaseProps extends PropsWithChildren {
 }
 
 interface IErrorIconPopoverWithValidation extends IErrorIconPopoverBaseProps {
+  mode: 'validation';
   validationResult: IModelValidation;
-  message?: string;
+  message?: never;
 }
 
 interface IErrorIconPopoverWithMessage extends IErrorIconPopoverBaseProps {
-  validationResult?: IModelValidation;
+  mode: 'message';
+  validationResult?: never;
   message: string;
 }
 
 export type IErrorIconPopoverProps = IErrorIconPopoverWithValidation | IErrorIconPopoverWithMessage;
 
-export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
-  children,
-  validationResult,
-  type,
-  message,
-  position = 'top-right',
-  title,
-  isDesignerMode = false,
-}) => {
+export const ErrorIconPopover: FC<IErrorIconPopoverProps> = (props) => {
+  const { children, mode, type, position = 'top-right', title, isDesignerMode = false } = props;
   const { styles } = useStyles({ isDesignerMode });
-
-  // Use validationType from validationResult if available, otherwise fall back to type prop or 'warning'
-  const effectiveType = validationResult?.validationType ?? type ?? 'warning';
 
   const getIcon = (): React.ReactElement => {
     // Always use filled info icon with hard-coded orange-yellowish warning color
     return <InfoCircleFilled style={{ color: '#faad14', fontSize: '16px' }} />;
-  };
-
-  const getPopoverContent = (): React.ReactElement => {
-    const componentType = validationResult?.componentType;
-    const docUrl = componentType && componentType in componentDocs
-      ? componentDocs[componentType as keyof typeof componentDocs]
-      : undefined;
-
-    if (validationResult?.hasErrors && validationResult.errors?.length > 0) {
-      return (
-        <>
-          {validationResult.errors.map((error, index) => (
-            <p key={index} style={{ margin: 0, marginBottom: index < validationResult.errors.length - 1 ? '4px' : 0 }}>
-              {error.propertyName && <strong>{error.propertyName}: </strong>}
-              {error.error}
-            </p>
-          ))}
-          {docUrl && (
-            <>
-              <br />
-              <a href={docUrl} target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
-            </>
-          )}
-        </>
-      );
-    }
-
-    return (
-      <>
-        <p style={{ margin: 0, fontWeight: 600 }}>{message || 'Component Error'}</p>
-        {docUrl && (
-          <>
-            <br />
-            <a href={docUrl} target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
-          </>
-        )}
-      </>
-    );
   };
 
   const getPositionClass = (): string => {
@@ -96,42 +50,129 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
     }
   };
 
-  const hasError = validationResult?.hasErrors || message;
+  // Use discriminator to narrow the type and access the correct properties
+  if (mode === 'validation') {
+    const { validationResult } = props;
 
-  // If no error, just render children without wrapper
-  if (!hasError) {
-    return <>{children}</>;
-  }
+    // Use validationType from validationResult if available, otherwise fall back to type prop or 'warning'
+    const effectiveType = validationResult.validationType ?? type ?? 'warning';
 
-  // Determine the popover title
-  const popoverTitle = title !== undefined ? title : (effectiveType === 'info' ? 'Hint:' : `'${validationResult?.componentType}' has configuration issue(s)`);
+    const componentType = validationResult.componentType;
+    const docUrl = componentType && componentType in componentDocs
+      ? componentDocs[componentType as keyof typeof componentDocs]
+      : undefined;
 
-  // Add class to distinguish info icons from error/warning icons
-  const iconWrapperClass = [
-    styles.iconWrapper,
-    getPositionClass(),
-    effectiveType === 'info' && 'sha-info-icon-wrapper',
-  ].filter(Boolean).join(' ');
-  return (
-    <div className={styles.errorIconContainer}>
-      {children}
-      <Popover
-        content={<div className={styles.popoverWrapper}>{getPopoverContent()}</div>}
-        title={popoverTitle}
-        trigger={["hover", "click"]}
-        placement="leftTop"
-        color="rgb(214, 214, 214)"
-      >
-        <div
-          className={iconWrapperClass}
-          role="img"
-          aria-label={`${effectiveType} indicator`}
+    const getPopoverContent = (): React.ReactElement => {
+      if (validationResult.hasErrors && validationResult.errors?.length > 0) {
+        return (
+          <>
+            {validationResult.errors.map((error, index) => (
+              <p key={index} style={{ margin: 0, marginBottom: index < validationResult.errors.length - 1 ? '4px' : 0 }}>
+                {error.propertyName && <strong>{error.propertyName}: </strong>}
+                {error.error}
+              </p>
+            ))}
+            {docUrl && (
+              <>
+                <br />
+                <a href={docUrl} target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
+              </>
+            )}
+          </>
+        );
+      }
+
+      return (
+        <>
+          <p style={{ margin: 0, fontWeight: 600 }}>Component Error</p>
+          {docUrl && (
+            <>
+              <br />
+              <a href={docUrl} target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
+            </>
+          )}
+        </>
+      );
+    };
+
+    const hasError = validationResult.hasErrors;
+
+    // If no error, just render children without wrapper
+    if (!hasError) {
+      return <>{children}</>;
+    }
+
+    // Determine the popover title
+    const popoverTitle = title !== undefined ? title : (effectiveType === 'info' ? 'Hint:' : `'${validationResult.componentType}' has configuration issue(s)`);
+
+    // Add class to distinguish info icons from error/warning icons
+    const iconWrapperClass = [
+      styles.iconWrapper,
+      getPositionClass(),
+      effectiveType === 'info' && 'sha-info-icon-wrapper',
+    ].filter(Boolean).join(' ');
+
+    return (
+      <div className={styles.errorIconContainer}>
+        {children}
+        <Popover
+          content={<div className={styles.popoverWrapper}>{getPopoverContent()}</div>}
+          title={popoverTitle}
+          trigger={["hover", "click"]}
+          placement="leftTop"
+          color="rgb(214, 214, 214)"
         >
-          {getIcon()}
-        </div>
-      </Popover>
-    </div>
-  );
+          <div
+            className={iconWrapperClass}
+            role="img"
+            aria-label={`${effectiveType} indicator`}
+          >
+            {getIcon()}
+          </div>
+        </Popover>
+      </div>
+    );
+  } else {
+    // mode === 'message'
+    const { message } = props;
+
+    const effectiveType = type ?? 'warning';
+
+    const getPopoverContent = (): React.ReactElement => {
+      return <p style={{ margin: 0, fontWeight: 600 }}>{message || 'Component Error'}</p>;
+    };
+
+    // Determine the popover title
+    const popoverTitle = title !== undefined ? title : (effectiveType === 'info' ? 'Hint:' : 'Configuration issue');
+
+    // Add class to distinguish info icons from error/warning icons
+    const iconWrapperClass = [
+      styles.iconWrapper,
+      getPositionClass(),
+      effectiveType === 'info' && 'sha-info-icon-wrapper',
+    ].filter(Boolean).join(' ');
+
+    return (
+      <div className={styles.errorIconContainer}>
+        {children}
+        <Popover
+          content={<div className={styles.popoverWrapper}>{getPopoverContent()}</div>}
+          title={popoverTitle}
+          trigger={["hover", "click"]}
+          placement="leftTop"
+          color="rgb(214, 214, 214)"
+        >
+          <div
+            className={iconWrapperClass}
+            role="img"
+            aria-label={`${effectiveType} indicator`}
+          >
+            {getIcon()}
+          </div>
+        </Popover>
+      </div>
+    );
+  }
 };
 
 export default ErrorIconPopover;
