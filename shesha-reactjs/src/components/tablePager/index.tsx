@@ -64,7 +64,12 @@ const EmptyPager: FC<EmptyPagerProps> = ({ message, style }) => {
             </p>
           )}
         >
-          <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
+          <InfoCircleFilled 
+            role="img"
+            tabIndex={0}
+            aria-label="Table pager configuration help"
+            style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} 
+          />
         </Popover>
       </div>
     </>
