@@ -261,10 +261,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
       <GlobalTableStyles />
       {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
 
-      <div
-        style={{ position: 'relative' }}
-        className="sha-datatable-wrapper"
-      >
+      <div className="sha-datatable-wrapper">
         {/* Show info icon in top-right corner in designer mode for configuration issues */}
         {isDesignMode && (hasNoRepository || hasNoColumns) && (
           <Popover
