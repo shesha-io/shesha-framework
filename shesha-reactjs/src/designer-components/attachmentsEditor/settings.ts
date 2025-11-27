@@ -218,12 +218,54 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               id: nanoid(),
                               propertyName: 'customContent',
                               parentId: 'customActionsPanel',
-                              label: 'Actions Configuration',
+                              label: 'Show Custom Content',
                               type: 'switch',
-                              description: 'Configure custom actions that appear when hovering over files. Each action should have: id, name, label, icon (optional), tooltip (optional), hidden (optional), and actionConfiguration.',
+                              description: 'Enable to show custom content below each file.',
                               jsSetting: false,
                             }
                           ]
+                        })
+                        .addSettingsInput({
+                          id: nanoid(),
+                          inputType: "dropdown",
+                          propertyName: "extraFormSelectionMode",
+                          parentId: 'customActionsPanel',
+                          label: "Form Selection Mode",
+                          tooltip: "Choose how to select the form for custom content",
+                          defaultValue: 'name',
+                          dropdownOptions: [
+                            { label: "Name", value: "name" },
+                            { label: "Dynamic", value: "dynamic" }
+                          ],
+                          hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false } as any,
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: 'customActionsPanel',
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: "formTypeAutocomplete",
+                              propertyName: "extraFormType",
+                              label: "Form Type",
+                              jsSetting: true,
+                            }
+                          ],
+                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: 'customActionsPanel',
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: "formAutocomplete",
+                              propertyName: "extraFormId",
+                              label: "Form",
+                              jsSetting: true
+                            }
+                          ],
+                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) === "dynamic";', _mode: 'code', _value: false } as any,
                         })
                         .toJson(),
                     ],

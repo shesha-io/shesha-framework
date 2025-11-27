@@ -2,7 +2,9 @@ import React, { CSSProperties, FC } from 'react';
 import { IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
 import { IInputStyles, IStyleType, useSheshaApplication, useStoredFilesStore } from '@/providers';
-import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { IAttachmentContent, layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { FormIdentifier } from '@/providers/form/models';
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 
 export interface ICustomFileProps extends IInputStyles {
   id?: string;
@@ -13,6 +15,14 @@ export interface ICustomFileProps extends IInputStyles {
   allowReplace?: boolean;
   allowDelete?: boolean;
   allowRename?: boolean;
+  allowViewHistory?: boolean;
+  customActions?: ButtonGroupItemProps[];
+  hasExtraContent?: boolean;
+  extraContent?: IAttachmentContent;
+  isDynamic?: boolean;
+  extraFormSelectionMode?: 'name' | 'dynamic';
+  extraFormId?: FormIdentifier;
+  extraFormType?: string;
   isStub?: boolean;
   disabled?: boolean;
   allowedFileTypes?: string[];
@@ -46,27 +56,35 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
 
   return (
-    <StoredFilesRendererBase
-      {...props}
-      isStub={props.isStub}
-      disabled={props.disabled || !props.allowAdd}
-      isDragger={props?.isDragger}
-      fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
-      allowUpload={false}
-      allowDelete={props.allowDelete}
-      deleteFile={deleteFile}
-      uploadFile={props.uploadFile ?? uploadFile}
-      downloadZipFile={downloadZipFile}
-      downloadZip={props.downloadZip}
-      downloadFile={downloadFile}
-      isDownloadingFileListZip={downloadZip}
-      isDownloadZipSucceeded={downloadZipSuccess}
-      allowedFileTypes={props?.allowedFileTypes}
-      maxHeight={props?.maxHeight}
-      layout={props?.filesLayout}
-      listType={props?.listType}
-      downloadedFileStyles={props?.downloadedFileStyles}
-    />
+    <div className="stored-files-renderer-wrapper">
+      <StoredFilesRendererBase
+        {...props}
+        isStub={props.isStub}
+        disabled={props.disabled || !props.allowAdd}
+        isDragger={props?.isDragger}
+        fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
+        allowUpload={false}
+        allowDelete={props.allowDelete}
+        deleteFile={deleteFile}
+        uploadFile={props.uploadFile ?? uploadFile}
+        downloadZipFile={downloadZipFile}
+        downloadZip={props.downloadZip}
+        downloadFile={downloadFile}
+        isDownloadingFileListZip={downloadZip}
+        isDownloadZipSucceeded={downloadZipSuccess}
+        allowedFileTypes={props?.allowedFileTypes}
+        maxHeight={props?.maxHeight}
+        layout={props?.filesLayout}
+        listType={props?.listType}
+        hasExtraContent={props.hasExtraContent}
+        extraContent={props.extraContent}
+        isDynamic={props.isDynamic}
+        extraFormSelectionMode={props.extraFormSelectionMode}
+        extraFormId={props.extraFormId}
+        extraFormType={props.extraFormType}
+        downloadedFileStyles={props?.downloadedFileStyles}
+      />
+    </div>
   );
 };
 

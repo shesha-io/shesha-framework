@@ -1,12 +1,12 @@
 import { DraggerStub } from '@/components/fileUpload/stubs';
-import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { IAttachmentContent, layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
-import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
+import { IInputStyles, IStyleType, useAuth, useSheshaApplication, ValidationErrors } from '@/index';
 import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { addPx } from '@/utils/style';
-import { CheckCircleOutlined, DeleteOutlined, DownloadOutlined, EyeOutlined, FileZipOutlined, HistoryOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, DeleteOutlined, DownloadOutlined, FileZipOutlined, HistoryOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
   App,
@@ -25,12 +25,13 @@ import React, { CSSProperties, FC, useEffect, useRef, useState } from 'react';
 import { isValidGuid } from '../formDesigner/components/utils';
 import { useStyles } from './styles/styles';
 import { Skeleton } from 'antd';
-import { DateDisplay } from '@/components';
+import { ConfigurableForm, DateDisplay } from '@/components';
 import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
 import filesize from 'filesize';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
-import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
+import { FormIdentifier } from '@/providers/form/models';
+import { DataContextProvider } from '@/providers/dataContextProvider';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 
 interface IUploaderFileTypes {
@@ -45,7 +46,12 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   allowReplace?: boolean;
   allowViewHistory?: boolean;
   customActions?: ButtonGroupItemProps[];
-  customContent?: string;
+  hasExtraContent?: boolean;
+  extraContent?: IAttachmentContent;
+  isDynamic?: boolean;
+  extraFormSelectionMode?: 'name' | 'dynamic';
+  extraFormId?: FormIdentifier;
+  extraFormType?: string;
   showDragger?: boolean;
   ownerId?: string;
   ownerType?: string;
@@ -113,7 +119,7 @@ const FileVersionsButton: FC<{ fileId: string; onDownload: (versionNo: number, f
         {uploads &&
           uploads.map((item, i) => (
             <li key={i}>
-              <strong>Version {i + 1}</strong> Uploaded {item.dateUploaded && <DateDisplay date={item.dateUploaded} />}{' '}
+              <strong>Version {i + 1}</strong> Uploaded {item.dateUploaded && <DateDisplay>{item.dateUploaded}</DateDisplay>}{' '}
               by {item.uploadedBy}
               <br />
               <Button type="link" onClick={() => handleVersionDownloadClick(item)}>
@@ -131,6 +137,28 @@ const FileVersionsButton: FC<{ fileId: string; onDownload: (versionNo: number, f
     </Popover>
   );
 };
+
+const ExtraContent: FC<{
+  file: IStoredFile;
+  extraContent?: IAttachmentContent;
+  isDynamic?: boolean;
+  formId?: FormIdentifier;
+  formSelectionMode?: 'name' | 'dynamic';
+  formType?: string;
+}> = ({file, formId}) => {
+
+  if (!formId) {
+    return null;
+  }
+
+  return (
+    <ConfigurableForm
+      formId={formId}
+      mode="readonly"
+      initialValues={file}
+    />
+  );
+}
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   multiple = true,
@@ -157,7 +185,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   allowReplace = true,
   allowViewHistory = true,
   customActions = [],
-  customContent = "",
+  hasExtraContent,
+  extraContent,
+  isDynamic,
+  extraFormSelectionMode,
+  extraFormId,
+  extraFormType,
   layout,
   listType,
   gap,
@@ -198,6 +231,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       downloadZip,
     },
   });
+
+  const {width, minWidth, maxWidth} = model?.allStyles?.dimensionsStyles;
 
   const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
 
@@ -253,7 +288,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
         return <Space size="small" direction='vertical'>
-        <Image src={imageUrls[uid]} alt={file.name} preview={true} />
+        <Image src={imageUrls[uid]} alt={file.name} preview={false}/>
         <p className='ant-upload-list-item-name'>{file.name}</p>
         </Space>;
       }
@@ -349,14 +384,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
       const actions = (
         <Space size={5}>
-          <Button 
-          size="small"
-          icon={<EyeOutlined/>}
-          onClick={(e) => {
-            e.stopPropagation();
-            handlePreview(file);
-          }}
-          />
           {allowReplace && !disabled && (
             <Button
               size="small"
@@ -399,50 +426,88 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             }}
           />
           {/* Custom Actions Button Group */}
-          {customActions && customActions.length > 0 && (
-            <DataContextBinder
+          {customActions && customActions.length > 0 && !disabled &&  (
+            <DataContextProvider
               id={`file_ctx_${fileId}`}
               name="fileContext"
               description="File context for custom actions"
               type="control"
-              data={{
+              initialData={Promise.resolve({
                 file: file,
                 fileId: fileId,
                 fileName: file.name,
                 fileType: file.type,
-              }}
+              })}
             >
               <ButtonGroup
                 id={`file_actions_${fileId}`}
                 items={customActions}
                 size="small"
+                readOnly={disabled}
                 spaceSize="small"
                 isInline={true}
               />
-            </DataContextBinder>
+            </DataContextProvider>
           )}
         </Space>
       );
 
+      const handleItemClick = (e: React.MouseEvent) => {
+        // If it's an image, trigger preview instead of download
+        if (isImageType(file.type)) {
+          e.preventDefault();
+          e.stopPropagation();
+          handlePreview(file);
+        }
+      };
+
       return (
-        <Popover content={actions} trigger="hover" placement="top">
-          <div className={isDownloaded ? styles.downloadedFile : ''}>
-            {originNode}
-            {isDownloaded && (
-              <div className={styles.downloadedIcon}>
-                <CheckCircleOutlined />
-              </div>
-            )}
-          </div>
-          {customContent && <>
-          </>}
-        </Popover>
+        <div>
+            <div className={isDownloaded ? styles.downloadedFile : ''} onClick={handleItemClick}>
+            <Popover content={actions} trigger="hover" placement="top">
+              {originNode}
+          </Popover>
+              {isDownloaded && (
+                <div className={styles.downloadedIcon}>
+                  <CheckCircleOutlined />
+                </div>
+              )}
+            </div>
+          {hasExtraContent && extraFormId && (
+            <ExtraContent
+              file={file}
+              isDynamic={isDynamic}
+              extraContent={extraContent}
+              formId={extraFormId}
+              formSelectionMode={extraFormSelectionMode}
+              formType={extraFormType}
+            />
+          )}
+        </div>
       );
     },
+    showUploadList: {
+      showRemoveIcon: false,
+      showPreviewIcon: false,
+      showDownloadIcon: false,
+    }
   };
 
 
-  const renderUploadContent = (): JSX.Element => {
+  const placeholderFile: IStoredFile = {
+    uid: 'placeholder-file-1',
+    name: 'example-file.pdf',
+    status: 'done',
+    url: '',
+    type: 'application/pdf',
+    size: 1024000,
+    id: 'placeholder-id',
+    fileCategory: 'documents',
+    temporary: false,
+    userHasDownloaded: false,
+  };
+
+  const renderUploadContent = () => {
     return (
       !disabled && (
         <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
@@ -453,51 +518,62 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   return (
-    <div className={styles.storedFilesRendererWrapper}>
-      <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
-        : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
-          : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
-      >
-        {isStub
-          ? (isDragger
-            ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
-            : (
-              <div
-                className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
-              >
-                {renderUploadContent()}
-                {listType !== 'text' && !rest.hideFileName && (
-                  <span className="ant-upload-list-item-name ant-upload-list-item-name-stub">
-                    file name
-                  </span>
-                )}
-              </div>
-            ))
-          : (props.disabled && fileList.length === 0
-            ? null
-            : props.disabled
-              ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
-              : isDragger
-                ? (
-                  <Dragger {...props}>
-                    <DraggerStub styles={styles} />
-                  </Dragger>
-                )
-                : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
-        {previewImage && (
-          <Image
-            wrapperStyle={{ display: 'none' }}
-            preview={{
-              visible: previewOpen,
-              onVisibleChange: (visible) => setPreviewOpen(visible),
-              afterOpenChange: (visible) => !visible && setPreviewImage(null),
-              toolbarRender: (original) => {
-                return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })} />{original}</div>;
-              },
-            }}
-            src={previewImage.url}
-          />
-        )}
+    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal :
+      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical :
+        layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
+      {isStub
+        ? (isDragger
+          ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
+          : <>
+          <div
+            className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
+          >
+        <Button type="link" icon={<PictureOutlined />} disabled={disabled} {...uploadBtnProps}>
+        {listType === 'text' && '(press to upload)'}
+      </Button>
+            {listType !== 'text' && !rest.hideFileName &&
+              <span className='ant-upload-list-item-name ant-upload-list-item-name-stub'>
+                {'file name'}
+              </span>}
+          </div>
+          <div style={{width, minWidth, maxWidth }}>
+            {hasExtraContent && extraFormId && (
+            <ExtraContent
+              file={placeholderFile}
+              isDynamic={isDynamic}
+              extraContent={extraContent}
+              formId={extraFormId}
+              formSelectionMode={extraFormSelectionMode}
+              formType={extraFormType}
+            />
+          )}
+          </div>
+          
+          </>
+          )
+        : (props.disabled && fileList.length === 0
+          ? <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
+            {renderUploadContent()}
+          </div>
+          : props.disabled
+            ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
+            : isDragger ?
+              <Dragger {...props}>
+                <DraggerStub styles={styles} />
+              </Dragger>
+              : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)
+      }
+      {previewImage && (
+        <Image
+          wrapperStyle={{ display: 'none' }}
+          preview={{
+            visible: previewOpen,
+            onVisibleChange: (visible) => setPreviewOpen(visible),
+            afterOpenChange: (visible) => !visible && setPreviewImage(null),
+          }}
+          src={previewImage.url}
+        />
+      )}
 
         {fetchFilesError && (
           <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
@@ -524,7 +600,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         onChange={handleReplaceFileChange}
       />
 
-    </div>
     </div>
   );
 };
