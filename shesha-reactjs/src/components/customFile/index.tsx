@@ -2,7 +2,9 @@ import React, { CSSProperties, FC, } from 'react';
 import { IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
 import { IInputStyles, IStyleType, useSheshaApplication, useStoredFilesStore } from '@/providers';
-import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { IAttachmentContent, layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { FormIdentifier } from '@/providers/form/models';
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 
 export interface ICustomFileProps extends IInputStyles {
   id?: string;
@@ -13,6 +15,14 @@ export interface ICustomFileProps extends IInputStyles {
   allowReplace?: boolean;
   allowDelete?: boolean;
   allowRename?: boolean;
+  allowViewHistory?: boolean;
+  customActions?: ButtonGroupItemProps[];
+  hasExtraContent?: boolean;
+  extraContent?: IAttachmentContent;
+  isDynamic?: boolean;
+  extraFormSelectionMode?: 'name' | 'dynamic';
+  extraFormId?: FormIdentifier;
+  extraFormType?: string;
   isStub?: boolean;
   disabled?: boolean;
   allowedFileTypes?: string[];
@@ -66,6 +76,12 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         maxHeight={props?.maxHeight}
         layout={props?.filesLayout}
         listType={props?.listType}
+        hasExtraContent={props.hasExtraContent}
+        extraContent={props.extraContent}
+        isDynamic={props.isDynamic}
+        extraFormSelectionMode={props.extraFormSelectionMode}
+        extraFormId={props.extraFormId}
+        extraFormType={props.extraFormType}
         downloadedFileStyles={props?.downloadedFileStyles}
       />
     </div>

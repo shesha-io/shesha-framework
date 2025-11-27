@@ -6,7 +6,7 @@ import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
 import { IStyleType, useDataContextManagerActions, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
-import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
+import { FormIdentifier, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValue,
   executeScriptSync,
@@ -115,6 +115,11 @@ const removeLegacyProperties = (result: Record<string, unknown>): void => {
     delete result[prop];
   });
 };
+
+export interface IAttachmentContent {
+  id: string;
+  components?: IConfigurableFormComponent[];
+}
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
   ownerId: string;
   ownerType: string;
@@ -127,6 +132,11 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   allowRename: boolean;
   allowViewHistory: boolean;
   customActions?: ButtonGroupItemProps[];
+  customContent?: boolean;
+  extraContent?: IAttachmentContent;
+  extraFormSelectionMode?: 'name' | 'dynamic';
+  extraFormId?: FormIdentifier;
+  extraFormType?: string;
   isDragger?: boolean;
   maxHeight?: string;
   onFileChanged?: string;
@@ -179,6 +189,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       });
     };
 
+    const hasExtraContent = model?.customContent;
+
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
@@ -224,6 +236,12 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 downloadZip={model.downloadZip}
                 filesLayout={model.filesLayout}
                 listType={model.listType}
+                hasExtraContent={hasExtraContent}
+                extraContent={model.extraContent}
+                isDynamic={model.isDynamic}
+                extraFormSelectionMode={model.extraFormSelectionMode}
+                extraFormId={model.extraFormId}
+                extraFormType={model.extraFormType}
                 {...model}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
@@ -331,7 +349,24 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       removeLegacyProperties(result);
 
       return result;
-    }),
+    })
+    .add<IAttachmentsEditorProps>(12, (prev, context) => {
+      const { nanoid } = require('@/utils/uuid');
+      const extraContent = { id: nanoid(), components: [] };
+
+      // Register the container in the flat structure
+      context.flatStructure.componentRelations[extraContent.id] = [];
+
+      return {
+        ...prev,
+        extraContent,
+      };
+    })
+    .add<IAttachmentsEditorProps>(13, (prev) => ({
+      ...prev,
+      extraFormSelectionMode: prev.extraFormSelectionMode ?? 'name',
+    })),
+  customContainerNames: ['extraContent'],
 };
 
 export default AttachmentsEditor;
