@@ -141,7 +141,7 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
         )}
       >
         <InfoCircleFilled
-          role="img"
+          role="note"
           tabIndex={0}
           aria-label="Data table configuration help"
           className="sha-standalone-table-hint-icon"
