@@ -27,7 +27,8 @@ const TextFieldComponent: TextFieldComponentDefinition = {
   icon: <CodeOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string &&
-    (dataFormat === StringFormats.singleline ||
+    (!dataFormat ||
+      dataFormat === StringFormats.singleline ||
       dataFormat === StringFormats.emailAddress ||
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
