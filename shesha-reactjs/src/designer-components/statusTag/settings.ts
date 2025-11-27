@@ -99,15 +99,20 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     },
                   ],
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'mappings',
-                  parentId: commonTabId,
-                  label: 'Default Mappings',
-                  description: 'Enter the JSON object that should match the structure of the default one provided',
-                  language: 'json',
-                })
+                .addSettingsInput(
+                    {
+                      inputType: 'codeEditor',
+                      id: nanoid(),
+                      propertyName: 'mappings',
+                      label: 'Default Mappings',
+                      parentId: commonTabId,
+                      hideLabel: false,
+                      description: 'Enter the JSON object that should match the structure of the default one provided',
+
+                      language: 'json',
+                      wrapInTemplate: false,
+                    },
+                )
                 .toJson(),
             ],
           },
