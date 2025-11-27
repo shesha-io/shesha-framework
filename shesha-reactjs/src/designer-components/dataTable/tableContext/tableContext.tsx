@@ -23,13 +23,13 @@ type MissingProp = 'sourceType' | 'entityType' | 'endpoint' | 'propertyName';
  * Validates the table context configuration and returns validation result
  */
 const validateTableContext = (
-  sourceType: string,
+  sourceType: ITableContextComponentProps['sourceType'],
   entityType: ITableContextComponentProps['entityType'],
-  endpoint: string,
-  propertyName: string,
+  endpoint: ITableContextComponentProps['endpoint'],
+  propertyName: ITableContextComponentProps['propertyName'],
   hasChildComponents: boolean,
-  componentId: string,
-  componentName: string,
+  componentId: ITableContextComponentProps['id'],
+  componentName: ITableContextComponentProps['componentName'],
 ): IModelValidation | undefined => {
   // Check for missing required properties
   const missingProperty: MissingProp | null = !sourceType
@@ -165,7 +165,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
     // Wrap with error icon if there are validation errors
     const wrappedContent = validationResult?.hasErrors
-      ? <ErrorIconPopover validationResult={validationResult} isDesignerMode={isDesignerMode}>{content}</ErrorIconPopover>
+      ? <ErrorIconPopover mode="validation" validationResult={validationResult} isDesignerMode={isDesignerMode}>{content}</ErrorIconPopover>
       : content;
 
     return wrappedContent;

@@ -46,15 +46,26 @@ const ComponentError: FC<IComponentErrorProps> = ({
     </div>
   );
 
-  return (
+  return errors ? (
     <ErrorIconPopover
+      mode="validation"
       validationResult={errors}
       type={type}
-      message={message}
       position="top-right"
     >
       {content}
     </ErrorIconPopover>
+  ) : message ? (
+    <ErrorIconPopover
+      mode="message"
+      message={message}
+      type={type}
+      position="top-right"
+    >
+      {content}
+    </ErrorIconPopover>
+  ) : (
+    content
   );
 };
 

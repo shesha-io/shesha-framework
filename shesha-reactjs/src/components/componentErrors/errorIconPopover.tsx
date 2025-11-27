@@ -110,7 +110,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = ({
   const iconWrapperClass = [
     styles.iconWrapper,
     getPositionClass(),
-    effectiveType === 'info' && 'sha-info-icon-wrapper'
+    effectiveType === 'info' && 'sha-info-icon-wrapper',
   ].filter(Boolean).join(' ');
   return (
     <div className={styles.errorIconContainer}>
