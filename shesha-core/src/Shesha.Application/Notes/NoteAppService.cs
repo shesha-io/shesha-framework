@@ -28,12 +28,12 @@ namespace Shesha.Notes
 
         private async Task<string> GetFullClassNameFromEntityTypeIdAsync(EntityTypeIdInput? ownerType)
         {
-            return ((ownerType?.FullClassName).IsNullOrEmpty()
+            return ((ownerType?.EntityType).IsNullOrEmpty()
                 ? (await _modelConfigManager.GetByEntityTypeIdAsync(
-                    new EntityTypeIdentifier(ownerType?.Module, ownerType?.Name ?? "", ownerType?.FullClassName)))
+                    new EntityTypeIdentifier(ownerType?.Module, ownerType?.Name ?? "", ownerType?.EntityType)))
                     .NotNull($"Owner type not found '{ownerType}'")
                     .FullClassName
-                : ownerType?.FullClassName)
+                : ownerType?.EntityType)
                 .NotNull("FullClassName should not be empty");
         }
 

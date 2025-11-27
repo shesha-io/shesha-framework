@@ -161,7 +161,7 @@ export interface IExcelColumn {
 }
 
 export interface IExportExcelPayload extends Omit<IGenericGetAllPayload, 'entityType' | 'fullClassName' | 'module' | 'name'> {
-  entityType: IHasEntityTypeIdPayload;
+  entityTypeId: IHasEntityTypeIdPayload;
   columns: IExcelColumn[];
 }
 
