@@ -25,13 +25,12 @@ const ComponentError: FC<IComponentErrorProps> = ({
       ? `'${componentLabel}' Hint:`
       : `'${componentLabel}' has configuration issue(s)`);
 
-  const containerClassName = type === 'info'
-    ? styles.componentErrorTextInfo
-    : type === 'warning'
-      ? styles.componentErrorTextWaring
-      : type === 'error'
-        ? styles.componentErrorTextError
-        : '';
+  const containerClassMap: Record<string, string | undefined> = {
+    info: styles.componentErrorTextInfo,
+    warning: styles.componentErrorTextWaring,
+    error: styles.componentErrorTextError,
+  };
+  const containerClassName = containerClassMap[type] ?? '';
 
   const content = (
     <div className={`${styles.componentErrorContainer} ${containerClassName}`}>

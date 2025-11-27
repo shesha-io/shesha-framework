@@ -82,6 +82,8 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = (props) => {
         );
       }
 
+      // Fallback case: hasErrors is true but errors array is empty/undefined
+      // This shouldn't normally occur but provides a safe default
       return (
         <>
           <p style={{ margin: 0, fontWeight: 600 }}>Component Error</p>
