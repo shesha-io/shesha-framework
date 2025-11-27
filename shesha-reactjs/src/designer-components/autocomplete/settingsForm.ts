@@ -299,7 +299,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                                         } else {
                                                             const prevValueFormat = getSettingValue(data?.valueFormat);
                                                             if (prevValueFormat === 'entityReference') {
-                                                                form.setFieldValue('valueFormat', 'simple');
+                                                                setTimeout(() => form.setFieldValue('valueFormat', 'simple'), 0);
                                                             }
                                                             return [
                                                                 {\"label\": \"Simple ID\",\"value\": \"simple\",\"id\": \"1\"},
@@ -429,16 +429,17 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         tooltip: 'Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.',
                         parentId: dataTabId,
                         modelType: {
-                          _code: `    
-                                                         if (getSettingValue(data.dataSourceType) === 'entitiesList'){
-                                                            return getSettingValue(data?.entityType)
-                                                         } else{
-                                                            if (!getSettingValue(data?.dataSourceUrl)){
-                                                                form.setFieldValue('displayPropName', undefined);
-                                                            }
-                                                          return getSettingValue(data?.dataSourceUrl)
-                                                         }
-                                                        `,
+                          _code: `
+                                if (getSettingValue(data.dataSourceType) === 'entitiesList'){
+                                  return getSettingValue(data?.entityType)
+                                } else{
+                                  if (!getSettingValue(data?.dataSourceUrl)){
+                                      // Defer setState to avoid updating during render
+                                      setTimeout(() => form.setFieldValue('displayPropName', undefined), 0);
+                                  }
+                                return getSettingValue(data?.dataSourceUrl)
+                                }
+                              `,
                           _mode: 'code',
                           _value: false,
                         } as any,
