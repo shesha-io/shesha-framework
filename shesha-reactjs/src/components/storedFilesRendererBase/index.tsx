@@ -470,7 +470,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             )}
           </div>
           <div className={isDownloaded ? styles.downloadedFile : ''} >
-            <div className='item-file-name'>{file.name}</div>
+            <div className={styles.fileName}>{file.name}</div>
           </div>
           {hasExtraContent && extraFormId && (
             <ExtraContent
@@ -533,7 +533,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             </div>
             <div style={(listType === 'thumbnail' && !isDragger) ? { width, minWidth, maxWidth } : {}}>
               {listType !== 'text' && !rest.hideFileName &&
-                <div className='file-item-name'>
+                <div className={styles.fileName}>
                   {'file name'}
                 </div>}
               {hasExtraContent && extraFormId && (
