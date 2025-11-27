@@ -104,7 +104,6 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   }, [toolboxComponent, actualModel]);
 
   // Wrap component with error icon if there are validation errors
-  // Wrap component with error icon if there are validation errors
   const wrappedControl = validationResult?.hasErrors ? (
     <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={shaForm.formMode === 'designer'}>
       {control}

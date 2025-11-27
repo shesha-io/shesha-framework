@@ -129,7 +129,7 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
               top: '44px',
               right: '0px',
               color: '#faad14',
-              fontSize: '20px',
+              fontSize: '16px',
               zIndex: 1000,
               cursor: 'help',
               backgroundColor: '#fff',

@@ -2,7 +2,7 @@ import React, { CSSProperties, useMemo } from 'react';
 import { GlobalTableFilter } from '@/components';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { SearchOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { SearchOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './tabbedSettingsForm';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
@@ -13,7 +13,6 @@ import { useStyles } from '../tableContext/styles';
 import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
-import { useTheme } from '@/providers/theme';
 import { IQuickSearchComponentProps, QuickSearchComponentDefinition } from './interfaces';
 
 const QuickSearchComponent: QuickSearchComponentDefinition = {
@@ -23,7 +22,6 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
   icon: <SearchOutlined />,
   Factory: ({ model: { block, hidden, dimensions, size: _size } }) => {
     const store = useDataTableStore(false);
-    const { theme } = useTheme();
     const { styles } = useStyles();
     const size = useMemo(() => _size, [_size]);
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
@@ -74,7 +72,7 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
                   </p>
                 )}
               >
-                <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
+                <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
               </Popover>
             </div>
           </>

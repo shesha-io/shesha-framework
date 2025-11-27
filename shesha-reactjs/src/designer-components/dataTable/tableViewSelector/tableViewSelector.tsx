@@ -1,11 +1,10 @@
 import _ from 'lodash';
 import React, { FC, useEffect } from 'react';
 import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { InfoCircleFilled } from '@ant-design/icons';
 import { Popover } from 'antd';
 import { evaluateDynamicFilters } from '@/utils/datatable';
 import { ITableViewSelectorComponentProps } from './models';
-import { useTheme } from '@/providers/theme';
 import {
   useDataContextManagerOrUndefined,
   useDataFetchDependency,
@@ -35,8 +34,6 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     changePersistedFiltersToggle,
     modelType,
   } = useDataTableStore();
-
-  const { theme } = useTheme();
 
   // ToDo: AS - need to optimize
   useShaFormDataUpdate();
@@ -147,7 +144,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
               </p>
             )}
           >
-            <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
+            <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
           </Popover>
         </div>
       );

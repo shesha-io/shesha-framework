@@ -8,9 +8,8 @@ import { IFontValue } from '@/designer-components/_settings/utils/font/interface
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { InfoCircleFilled } from '@ant-design/icons';
 import { Popover, Pagination } from 'antd';
-import { useTheme } from '@/providers/theme';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 
 export interface ITablePagerProps {
@@ -29,7 +28,6 @@ type EmptyPagerProps = {
 };
 const EmptyPager: FC<EmptyPagerProps> = ({ message, style }) => {
   const { styles } = useStyles();
-  const { theme } = useTheme();
   return (
     <>
       <style>
@@ -66,7 +64,7 @@ const EmptyPager: FC<EmptyPagerProps> = ({ message, style }) => {
             </p>
           )}
         >
-          <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
+          <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
         </Popover>
       </div>
     </>
