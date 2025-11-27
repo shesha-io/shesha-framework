@@ -1,3 +1,4 @@
+import { IReferenceListIdentifier } from '@/interfaces';
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import * as RestfulShesha from '@/utils/fetchers';
@@ -77,8 +78,6 @@ export interface ModelPropertyDto {
   createdInDb?: boolean;
   inheritedFromId?: string | null;
 
-  listConfiguration?: IEntityPropertyListConfiguration;
-
   id?: string | null;
   /**
    * Property Name
@@ -105,13 +104,13 @@ export interface ModelPropertyDto {
    */
   entityType?: IEntityTypeIdentifier | null;
   /**
-   * Reference list name
+   * Reference list
    */
-  referenceListName?: string | null;
+
+  referenceListId?: IReferenceListIdentifier | null;
   /**
-   * Reference list module
+   * Metadata Source Type
    */
-  referenceListModule?: string | null;
   source?: MetadataSourceType;
   /**
    * Default sort order
@@ -200,6 +199,12 @@ export interface ModelPropertyDto {
   cascadeDeleteUnreferencedHardcoded?: boolean;
 
   formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting);
+
+  listConfiguration?: IEntityPropertyListConfiguration;
+
+  itemsType?: ModelPropertyDto | null;
+
+  isItemsType?: boolean;
 }
 
 /**

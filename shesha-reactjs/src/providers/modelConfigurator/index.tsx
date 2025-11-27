@@ -21,6 +21,7 @@ import {
   saveErrorAction,
   saveRequestAction,
   saveSuccessAction,
+  setErrorsAction,
   setModifiedAction,
 } from './actions';
 import {
@@ -32,6 +33,7 @@ import {
 } from './contexts';
 import modelReducer from './reducer';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import propertyModelValidator from '@/components/modelConfigurator/propertiesEditor/renderer/propertySettings/propertyModelValidator';
 
 export interface IModelConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -96,11 +98,27 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
       : { ...values, className: values.name, namespace: values.module };
   };
 
+  const validateModel = (model: ModelConfigurationDto): string[] => {
+    let errors: string[] = [];
+    model.properties.forEach((prop) => {
+      errors = errors.concat(propertyModelValidator(prop, [prop]));
+    });
+
+    return errors;
+  };
+
   const save = (values: ModelConfigurationDto): Promise<ModelConfigurationDto> =>
     new Promise<ModelConfigurationDto>((resolve, reject) => {
-      // TODO: validate all properties
+      const errors = validateModel(values);
+      if (errors.length > 0) {
+        dispatch(setErrorsAction(errors));
+        reject();
+        return;
+      }
+
       const preparedValues = prepareValues(values);
 
+      dispatch(setErrorsAction([]));
       dispatch(saveRequestAction());
 
       const mutate = state.id ? modelConfigurationsUpdate : modelConfigurationsCreate;

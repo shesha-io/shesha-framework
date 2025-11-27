@@ -1,9 +1,9 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import modelSettingsMarkup from '../modelSettings.json';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { CustomErrorBoundary } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
-import { App } from 'antd';
+import { Alert, App } from 'antd';
 import { PermissionEditorComponent } from '../permissionEditor';
 import { PropertiesEditorComponent } from '../propertiesEditor';
 import { useModelConfigurator } from '@/providers';
@@ -17,7 +17,16 @@ const markup = modelSettingsMarkup as FormMarkup;
 export const ModelConfiguratorRenderer: FC = () => {
   const { styles } = useStyles({ height: 180 });
   const { message } = App.useApp();
-  const { modelConfiguration, initialConfiguration, form, saveForm, setModified } = useModelConfigurator();
+  const { errors, modelConfiguration, initialConfiguration, form, saveForm, setModified } = useModelConfigurator();
+
+  const errorsText = useMemo(() => {
+    return (
+      <>
+        <div>Please fix the following errors:</div>
+        {errors?.map((e, index) => <div key={index}>• {e}</div>)}
+      </>
+    );
+  }, [errors]);
 
   const onSettingsSave = (): void => {
     saveForm()
@@ -58,6 +67,7 @@ export const ModelConfiguratorRenderer: FC = () => {
   return (
     <div className={styles.shaModelConfigurator}>
       <CustomErrorBoundary>
+        {errors?.length > 0 && <Alert type="error" message={errorsText} showIcon />}
         <ConfigurableForm
           className={styles.shaModelConfiguratorForm}
           layout="horizontal"

@@ -14,6 +14,7 @@ import { getSettings } from './propertySettings/propertySettings';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { useModelConfigurator } from '@/index';
 
 export const ToolbarItemProperties: FC = () => {
   const { selectedItemId, getItem, updateItem } = usePropertiesEditor();
@@ -22,6 +23,7 @@ export const ToolbarItemProperties: FC = () => {
   const formRef = useShaFormRef();
   const components = useFormDesignerComponents();
   const fbf = useFormBuilderFactory();
+  const modelConfigurator = useModelConfigurator();
 
   const debouncedSave = useDebouncedCallback(
     (values) => {
@@ -49,7 +51,7 @@ export const ToolbarItemProperties: FC = () => {
 
     const componentModel = getItem(selectedItemId);
 
-    const markup = getSettings(fbf, components);
+    const markup = getSettings(fbf, components, modelConfigurator.modelConfiguration);
 
     return (
       <div>
