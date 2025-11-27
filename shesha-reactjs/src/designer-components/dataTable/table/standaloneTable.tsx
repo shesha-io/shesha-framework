@@ -18,6 +18,89 @@ const dummyRows = [
   { col1: 'Record 2', col2: 'Placeholder Info' },
 ];
 
+// Constants for repeated content
+const DOCUMENTATION_LINK = 'https://docs.shesha.io/docs/category/tables-and-lists';
+
+const DocumentationLink: FC = () => (
+  <>
+    <a href={DOCUMENTATION_LINK} target="_blank" rel="noopener noreferrer">
+      See component documentation
+    </a>
+    <br />for setup and usage.
+  </>
+);
+
+const getDataContextMessage = (isDesignMode: boolean): JSX.Element => (
+  <>
+    {isDesignMode ? (
+      <>
+        Drag it into a Data Context component to<br />
+        connect it to data.
+      </>
+    ) : (
+      <>
+        Place it inside a Data Context component to<br />
+        connect it to data.
+      </>
+    )}
+  </>
+);
+
+const getPopoverContent = (
+  isInsideDataContext: boolean,
+  hasNoColumns: boolean,
+  isDesignMode: boolean,
+): JSX.Element => {
+  if (isInsideDataContext) {
+    return (
+      <p>
+        This Data Table has no columns configured.<br />
+        {isDesignMode && (
+          <>
+            Click the Settings icon in the Properties Panel<br />
+            to configure columns.
+            <br /><br />
+          </>
+        )}
+        <DocumentationLink />
+      </p>
+    );
+  }
+
+  if (hasNoColumns) {
+    return (
+      <p>
+        This Data Table is not inside a Data Context<br />
+        and has no columns configured.<br />
+        <br />
+        {isDesignMode ? (
+          <>
+            Drag it into a Data Context component to<br />
+            connect it to data, then configure columns<br />
+            in the Properties Panel.
+          </>
+        ) : (
+          <>
+            Place it inside a Data Context component to<br />
+            connect it to data and configure columns.
+          </>
+        )}
+        <br /><br />
+        <DocumentationLink />
+      </p>
+    );
+  }
+
+  return (
+    <p>
+      This Data Table is not inside a Data Context.<br />
+      {getDataContextMessage(isDesignMode)}
+      <br /><br />
+      <DocumentationLink />
+    </p>
+  );
+};
+
 export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
   const { formMode } = useForm();
   const store = useDataTableStore(false);
@@ -80,65 +163,7 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
         title="Hint:"
         classNames={{ root: "sha-datatable-hint-popover" }}
         styles={{ body: { backgroundColor: '#D9DCDC' } }}
-        content={isInsideDataContext ? (
-          <p>
-            This Data Table has no columns configured.<br />
-            {isDesignMode && (
-              <>
-                Click the Settings icon in the Properties Panel<br />
-                to configure columns.
-                <br /><br />
-              </>
-            )}
-            <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-              See component documentation
-            </a>
-            <br />for setup and usage.
-          </p>
-        ) : hasNoColumns ? (
-          <p>
-            This Data Table is not inside a Data Context<br />
-            and has no columns configured.<br />
-            <br />
-            {isDesignMode ? (
-              <>
-                Drag it into a Data Context component to<br />
-                connect it to data, then configure columns<br />
-                in the Properties Panel.
-              </>
-            ) : (
-              <>
-                Place it inside a Data Context component to<br />
-                connect it to data and configure columns.
-              </>
-            )}
-            <br /><br />
-            <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-              See component documentation
-            </a>
-            <br />for setup and usage.
-          </p>
-        ) : (
-          <p>
-            This Data Table is not inside a Data Context.<br />
-            {isDesignMode ? (
-              <>
-                Drag it into a Data Context component to<br />
-                connect it to data.
-              </>
-            ) : (
-              <>
-                Place it inside a Data Context component to<br />
-                connect it to data.
-              </>
-            )}
-            <br /><br />
-            <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-              See component documentation
-            </a>
-            <br />for setup and usage.
-          </p>
-        )}
+        content={getPopoverContent(isInsideDataContext, hasNoColumns, isDesignMode)}
       >
         <InfoCircleFilled
           role="note"
