@@ -242,9 +242,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   // 1. Columns were deliberately deleted (hasAutoConfiguredRef.current means auto-config was attempted)
   // 2. Parent DataContext has configuration errors
   const shouldShowStandalone = hasNoColumns && hasAutoConfiguredRef.current;
-  const shouldShowEmptyDueToContextErrors = hasContextConfigErrors;
 
-  if (isDesignMode && (shouldShowStandalone || shouldShowEmptyDueToContextErrors)) {
+  if (isDesignMode && (shouldShowStandalone || hasContextConfigErrors)) {
     return <StandaloneTable {...props} />;
   }
 

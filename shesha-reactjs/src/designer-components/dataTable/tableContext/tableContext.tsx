@@ -73,7 +73,7 @@ const validateTableContext = (
       componentId,
       componentName,
       componentType: 'dataContext',
-      errors: [{ error: 'Drag and drop child components inside this Data Context to display data.' }],
+      errors: [{ error: 'Drag and drop child components\ninside this Data Context to display data.' }],
       validationType: 'info',
     };
   }
