@@ -388,8 +388,11 @@ namespace Shesha.Metadata
             if (propType == typeof(Single) || propType == typeof(float))
                 return new DataTypeInfo(DataTypes.Number, NumberFormats.Float);
 
-            if (propType == typeof(double) || propType == typeof(decimal))
-                return new DataTypeInfo(DataTypes.Number, NumberFormats.Double);
+            if (propType == typeof(double))
+                return new DataTypeInfo(DataTypes.Number, NumberFormats.Float);
+
+            if (propType == typeof(decimal))
+                return new DataTypeInfo(DataTypes.Number, NumberFormats.Decimal);
 
             if (propType.IsListType() || propType.IsArray)
             {

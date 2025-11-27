@@ -450,16 +450,16 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                             case NumberFormats.Int64:
                                 return typeof(long?);
                             case NumberFormats.Float:
-                                return typeof(float?);
+                                return typeof(double?);
                             case NumberFormats.Double:
-                                return typeof(decimal?);
+                                return typeof(double?);
                             default:
                                 return typeof(decimal?);
                         }
                     }
 
                 case DataTypes.EntityReference:
-                    return property.EntityFullClassName.IsNullOrWhiteSpace()
+                    return property.DataFormat == EntityFormats.GenericEntity
                         ? typeof(GenericEntityReference)
                         : GetReferenceType(property, context);
 
