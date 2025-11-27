@@ -243,6 +243,7 @@ export interface IPropertyAutocompleteSettingsInputProps extends ISettingsInputB
   allowClear?: boolean;
   showSearch?: boolean;
   autoFillProps?: boolean;
+  propertyModelType?: string | IEntityTypeIdentifier;
   mode?: 'single' | 'multiple' | 'tags';
 }
 export const isPropertyAutocompleteProps = (value: ISettingsInputBase): value is IPropertyAutocompleteSettingsInputProps => value.type === 'propertyAutocomplete';
