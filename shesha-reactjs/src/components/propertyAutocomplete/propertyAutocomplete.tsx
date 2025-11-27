@@ -123,7 +123,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
         setProperties([], '');
       });
     }
-  }, [metadata, metadata?.properties, containerPath, containerPathMultiple, getContainerProperties, onPropertiesLoaded]);
+  }, [metadata, metadata?.properties, containerPath, containerPathMultiple, props.propertyModelType, getContainerProperties, onPropertiesLoaded]);
 
   const onSelect = (data: string): void => {
     if (props.onChange) props.onChange(data);

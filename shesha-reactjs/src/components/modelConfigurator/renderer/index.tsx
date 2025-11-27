@@ -19,7 +19,7 @@ export const ModelConfiguratorRenderer: FC = () => {
   const { message } = App.useApp();
   const { errors, modelConfiguration, initialConfiguration, form, saveForm, setModified } = useModelConfigurator();
 
-  const errorsText = useMemo(() => {
+  const errorsText = useMemo((): React.ReactNode => {
     return (
       <>
         <div>Please fix the following errors:</div>

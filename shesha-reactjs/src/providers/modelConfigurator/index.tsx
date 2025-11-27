@@ -100,8 +100,8 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
 
   const validateModel = (model: ModelConfigurationDto): string[] => {
     let errors: string[] = [];
-    model.properties.forEach((prop) => {
-      errors = errors.concat(propertyModelValidator(prop, [prop]));
+    model.properties?.forEach((prop) => {
+      errors = errors.concat(propertyModelValidator(prop));
     });
 
     return errors;
