@@ -50,6 +50,35 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = (props) => {
     }
   };
 
+  const renderPopover = (content: React.ReactElement, popoverTitle: string | null, effectiveType: ISheshaErrorTypes): React.ReactElement => {
+    const iconWrapperClass = [
+      styles.iconWrapper,
+      getPositionClass(),
+      effectiveType === 'info' && 'sha-info-icon-wrapper',
+    ].filter(Boolean).join(' ');
+
+    return (
+      <div className={styles.errorIconContainer}>
+        {children}
+        <Popover
+          content={<div className={styles.popoverWrapper}>{content}</div>}
+          title={popoverTitle}
+          trigger={["hover", "click"]}
+          placement="leftTop"
+          color="rgb(214, 214, 214)"
+        >
+          <div
+            className={iconWrapperClass}
+            role="img"
+            aria-label={`${effectiveType} indicator`}
+          >
+            {getIcon()}
+          </div>
+        </Popover>
+      </div>
+    );
+  };
+
   // Use discriminator to narrow the type and access the correct properties
   if (mode === 'validation') {
     const { validationResult } = props;
@@ -107,33 +136,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = (props) => {
     // Determine the popover title
     const popoverTitle = title !== undefined ? title : (effectiveType === 'info' ? 'Hint:' : `'${validationResult.componentType}' has configuration issue(s)`);
 
-    // Add class to distinguish info icons from error/warning icons
-    const iconWrapperClass = [
-      styles.iconWrapper,
-      getPositionClass(),
-      effectiveType === 'info' && 'sha-info-icon-wrapper',
-    ].filter(Boolean).join(' ');
-
-    return (
-      <div className={styles.errorIconContainer}>
-        {children}
-        <Popover
-          content={<div className={styles.popoverWrapper}>{getPopoverContent()}</div>}
-          title={popoverTitle}
-          trigger={["hover", "click"]}
-          placement="leftTop"
-          color="rgb(214, 214, 214)"
-        >
-          <div
-            className={iconWrapperClass}
-            role="img"
-            aria-label={`${effectiveType} indicator`}
-          >
-            {getIcon()}
-          </div>
-        </Popover>
-      </div>
-    );
+    return renderPopover(getPopoverContent(), popoverTitle, effectiveType);
   } else {
     // mode === 'message'
     const { message } = props;
@@ -147,33 +150,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = (props) => {
     // Determine the popover title
     const popoverTitle = title !== undefined ? title : (effectiveType === 'info' ? 'Hint:' : 'Configuration issue');
 
-    // Add class to distinguish info icons from error/warning icons
-    const iconWrapperClass = [
-      styles.iconWrapper,
-      getPositionClass(),
-      effectiveType === 'info' && 'sha-info-icon-wrapper',
-    ].filter(Boolean).join(' ');
-
-    return (
-      <div className={styles.errorIconContainer}>
-        {children}
-        <Popover
-          content={<div className={styles.popoverWrapper}>{getPopoverContent()}</div>}
-          title={popoverTitle}
-          trigger={["hover", "click"]}
-          placement="leftTop"
-          color="rgb(214, 214, 214)"
-        >
-          <div
-            className={iconWrapperClass}
-            role="img"
-            aria-label={`${effectiveType} indicator`}
-          >
-            {getIcon()}
-          </div>
-        </Popover>
-      </div>
-    );
+    return renderPopover(getPopoverContent(), popoverTitle, effectiveType);
   }
 };
 
