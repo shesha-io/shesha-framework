@@ -8,6 +8,9 @@ import { IPropertyMetadata, asPropertiesArray } from '@/interfaces/metadata';
 import camelcase from 'camelcase';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
 import { useConfigurableFormActions } from '@/providers/form/actions';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { isEntityTypeIdentifier } from '@/providers/metadataDispatcher/entities/utils';
+import { DataTypes } from '@/interfaces';
 
 export interface IPropertyAutocompleteProps {
   id?: string;
@@ -22,6 +25,7 @@ export interface IPropertyAutocompleteProps {
   autoFillProps?: boolean;
   readOnly?: boolean;
   allowClear?: boolean;
+  propertyModelType?: string | IEntityTypeIdentifier;
 }
 
 interface IOption {
@@ -107,7 +111,14 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       setProperties([], '');
     } else {
       getContainerProperties({ metadata, containerPath: containerPath ?? containerPathMultiple }).then((properties) => {
-        setProperties(properties, containerPath ?? containerPathMultiple);
+        const propertyModeltype = props.propertyModelType;
+        const preparedProperties = Boolean(propertyModeltype)
+          // Filter properties by propertyModelType
+          ? isEntityTypeIdentifier(propertyModeltype)
+            ? properties.filter((p) => p.dataType === DataTypes.entityReference && p.entityModule === propertyModeltype.module && p.entityType === propertyModeltype.name)
+            : properties.filter((p) => p.dataType === DataTypes.entityReference && (('fullClassName' in p && p.fullClassName === propertyModeltype) || !('fullClassName' in p)))
+          : properties;
+        setProperties(preparedProperties, containerPath ?? containerPathMultiple);
       }).catch(() => {
         setProperties([], '');
       });
