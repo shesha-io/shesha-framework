@@ -21,7 +21,7 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
     { value: 'array', label: 'List' },
     { value: 'file', label: 'File' },
     { value: 'advanced', label: 'Advanced' },
-    { value: 'geometry', label: 'Geometry' },
+    // { value: 'geometry', label: 'Geometry' },
   ];
 
   const typesArrayList = [
@@ -31,7 +31,7 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
     { value: 'date', label: 'Date' },
     { value: 'time', label: 'Time' },
     { value: 'boolean', label: 'Boolean' },
-    { value: 'geometry', label: 'Geometry' },
+    // { value: 'geometry', label: 'Geometry' },
   ];
 
   return fbf()
@@ -89,7 +89,8 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
 
     .addContainer({ id: numberFormatId, parentId: dataTabId, hidden: { _code: `return data?.${codePropName}dataType !== \'number\';`, _mode: 'code', _value: false },
       components: [...fbf()
-        .addSettingsInput({ parentId: numberFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'Number format',
+        .addSettingsInput({ parentId: numberFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'Number Format',
+          validate: { required: true },
           editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
           dropdownOptions: [
             { label: 'Integer', value: 'int64' },
@@ -123,7 +124,7 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
 
     .addContainer({ id: refListFormatId, parentId: dataTabId, hidden: { _code: `return data?.${codePropName}dataType !== \'reference-list-item\';`, _mode: 'code', _value: false },
       components: [...fbf()
-        .addSettingsInput({ parentId: refListFormatId, inputType: 'referenceListAutocomplete', propertyName: `${propName}referenceListId`, label: 'Reference List' })
+        .addSettingsInput({ parentId: refListFormatId, inputType: 'referenceListAutocomplete', propertyName: `${propName}referenceListId`, label: 'Reference List', validate: { required: true } })
         .toJson(),
       ],
     })

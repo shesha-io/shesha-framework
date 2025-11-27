@@ -15,6 +15,7 @@ export interface IModelConfiguratorStateContext {
   form?: FormInstance;
   isCreateNew?: boolean;
   isModified: boolean;
+  errors?: string[];
 }
 
 export interface IModelConfiguratorActionsContext {

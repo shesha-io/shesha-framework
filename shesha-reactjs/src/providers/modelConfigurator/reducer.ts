@@ -6,7 +6,8 @@ import { IModelConfiguratorStateContext, MODEL_CONFIGURATOR_CONTEXT_INITIAL_STAT
 const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto => {
   return {
     ...data,
-    properties: data.properties.filter((p) => !p.isFrameworkRelated), // remove framework fields
+    properties: data.properties
+      .filter((p) => !p.isFrameworkRelated), // remove framework fields
   };
 };
 
@@ -94,6 +95,17 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         isModified: action.payload,
       };
     },
+
+    [ModelActionEnums.SetErrors]: (
+      state: IModelConfiguratorStateContext,
+      action: ReduxActions.Action<string[]>,
+    ) => {
+      return {
+        ...state,
+        errors: action.payload,
+      };
+    },
+
 
   },
 
