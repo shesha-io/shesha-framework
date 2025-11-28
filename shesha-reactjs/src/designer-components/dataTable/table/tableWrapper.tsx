@@ -30,8 +30,7 @@ import { useStyles } from './styles';
 import { useMetadata } from '@/providers/metadata';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { Popover } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { useTheme } from '@/providers/theme';
+import { InfoCircleFilled } from '@ant-design/icons';
 import { StandaloneTable } from './standaloneTable';
 import { useDatatableHintPopoverStyles } from './hintPopoverStyles';
 
@@ -47,7 +46,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);
   const componentIdRef = useRef(id);
-  const { theme } = useTheme();
 
   // Reset auto-config flag when component ID changes (new DataTable instance)
   useEffect(() => {
@@ -157,6 +155,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     clearFilters,
     removeColumnFilter,
     tableFilter,
+    contextValidation,
   } = useDataTableStore();
 
   const { totalRows } = useDataTable();
@@ -231,14 +230,20 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const hasNoColumns = !items || items.length === 0;
   const hasNoRepository = !repository;
 
+  // Check if DataContext has configuration errors (not just info messages)
+  const hasContextConfigErrors = contextValidation?.hasErrors && contextValidation?.validationType === 'warning';
+
   const toggleFieldPropertiesSidebar = (): void => {
     if (!isSelectingColumns && !isFiltering) setIsInProgressFlag({ isFiltering: true });
     else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
   };
 
-  // In designer mode, show StandaloneTable if columns were deliberately deleted
-  // (hasAutoConfiguredRef.current means auto-config was attempted, but we still have no columns)
-  if (isDesignMode && hasNoColumns && hasAutoConfiguredRef.current) {
+  // In designer mode, show StandaloneTable if:
+  // 1. Columns were deliberately deleted (hasAutoConfiguredRef.current means auto-config was attempted)
+  // 2. Parent DataContext has configuration errors
+  const shouldShowStandalone = hasNoColumns && hasAutoConfiguredRef.current;
+
+  if (isDesignMode && (shouldShowStandalone || hasContextConfigErrors)) {
     return <StandaloneTable {...props} />;
   }
 
@@ -256,7 +261,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
       <GlobalTableStyles />
       {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
 
-      <div style={{ position: 'relative' }}>
+      <div className="sha-datatable-wrapper">
         {/* Show info icon in top-right corner in designer mode for configuration issues */}
         {isDesignMode && (hasNoRepository || hasNoColumns) && (
           <Popover
@@ -288,17 +293,18 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
               </p>
             )}
           >
-            <InfoCircleOutlined
+            <InfoCircleFilled
               role="button"
               tabIndex={0}
               aria-label="Data table configuration help"
+              className="sha-datatable-hint-icon"
               style={{
                 position: 'absolute',
-                top: '4px',
-                right: '4px',
-                color: theme?.application?.warningColor || '#faad14',
-                fontSize: '20px',
-                zIndex: 9999,
+                top: '44px',
+                right: '0px',
+                color: '#faad14',
+                fontSize: '16px',
+                zIndex: 1000,
                 cursor: 'help',
                 backgroundColor: '#fff',
                 borderRadius: '50%',

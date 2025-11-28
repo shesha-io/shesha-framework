@@ -58,6 +58,7 @@ import {
   setStandardSortingAction,
   onGroupAction,
   removeColumFilterAction,
+  setContextValidationAction,
 } from './actions';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
@@ -97,6 +98,7 @@ import { dataTableContextCode } from '@/publicJsApis';
 import { DataTypes, IObjectMetadata } from '@/index';
 import { IModelMetadata } from '@/interfaces/metadata';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { IModelValidation } from '@/utils/errors';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -151,6 +153,11 @@ interface IDataTableProviderBaseProps {
    * Action to execute after row reorder (receives API response)
    */
   onAfterRowReorder?: IConfigurableActionConfiguration;
+
+  /**
+   * Validation result from parent DataContext component
+   */
+  contextValidation?: IModelValidation;
 }
 
 interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
@@ -286,6 +293,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     needToRegisterContext = true,
     onBeforeRowReorder,
     onAfterRowReorder,
+    contextValidation,
   } = props;
 
   const [state, dispatch] = useThunkReducer(dataTableReducer, {
@@ -304,6 +312,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     customReorderEndpoint,
     onBeforeRowReorder,
     onAfterRowReorder,
+    contextValidation,
   });
 
   const metadata = useMetadata(false); // Don't require metadata - may not be in DataSource context
@@ -377,6 +386,12 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   useEffect(() => {
     if (modelType !== state.modelType) dispatch(setModelTypeAction(modelType));
   }, [modelType]);
+
+  // sync contextValidation
+  useEffect(() => {
+    const contextValidationChanged = !isEqual(state.contextValidation, contextValidation);
+    if (contextValidationChanged) dispatch(setContextValidationAction(contextValidation));
+  }, [contextValidation]);
 
   const requireColumnRef = useRef<boolean>(false);
   const requireColumns = (): void => {

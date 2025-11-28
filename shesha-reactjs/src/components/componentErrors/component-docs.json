@@ -1,0 +1,82 @@
+{
+  "_comment": "This file maps component type names to their documentation URLs",
+
+  "alert": "https://docs.shesha.io/docs/front-end-basics/form-components/data-display/alert",
+  "address": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/address",
+  "autocomplete": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/autocomplete",
+
+  "button": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/button",
+  "buttonGroup": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/button-group",
+
+  "card": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/cards",
+  "checkbox": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/checkbox",
+  "checkboxgroup": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/checkboxgroup",
+  "chevron": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/chevron",
+  "collapsiblePanel": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/panel",
+  "colorPicker": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/color-picker",
+  "columns": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/columns",
+  "container": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/container",
+
+  "datalist": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datalist",
+  "datatable": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable",
+  "dataContext": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable-context",
+  "datatable.filter": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/table-filter",
+  "datatable.pager": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/table-pager",
+  "datatable.quickSearch": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/quick-search",
+  "datatable.selectColumnsButton": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable",
+  "dateField": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/date-field",
+  "drawer": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/drawer",
+  "dropdown": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/dropdown",
+
+  "entityPicker": "https://docs.shesha.io/docs/front-end-basics/form-components/Entity-References/entity-picker",
+  "entityReference": "https://docs.shesha.io/docs/front-end-basics/form-components/Entity-References/",
+
+  "file": "https://docs.shesha.io/docs/front-end-basics/form-components/Entity-References/files",
+  "fileList": "https://docs.shesha.io/docs/front-end-basics/form-components/Entity-References/files",
+
+  "htmlRender": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/htmlrender",
+
+  "iconPicker": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/icon-picker",
+  "image": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/image",
+
+  "kanban": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/kanban",
+  "keyInformationBar": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/key-information-bar",
+
+  "labelValueEditor": "https://docs.shesha.io/docs/category/form-components",
+  "link": "https://docs.shesha.io/docs/front-end-basics/form-components/data-display/link",
+
+  "markdown": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/markdown",
+
+  "notes": "https://docs.shesha.io/docs/front-end-basics/form-components/Entity-References/notes",
+  "numberField": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/numberfield",
+
+  "panel": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/panel",
+  "passwordCombo": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/password-combo",
+  "progress": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/progress",
+
+  "queryBuilder": "https://docs.shesha.io/docs/category/form-components",
+  "quickSearch": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/quick-search",
+
+  "radio": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/radio",
+  "rate": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/rate",
+  "referenceListStatus": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/reference-list-status",
+  "richTextEditor": "https://docs.shesha.io/docs/front-end-basics/form-components/Advanced/rich-text-editor",
+
+  "sectionSeparator": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/section-separator",
+  "sizableColumns": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/sizable-columns",
+  "slider": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/slider",
+  "statistic": "https://docs.shesha.io/docs/front-end-basics/form-components/data-display/statistic",
+  "subForm": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/subform",
+  "switch": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/switch",
+
+  "tableViewSelector": "https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/table-view-selector",
+  "tabs": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/tabs",
+  "text": "https://docs.shesha.io/docs/front-end-basics/form-components/data-display/text",
+  "textArea": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/text-area",
+  "textField": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/text-field",
+  "timePicker": "https://docs.shesha.io/docs/front-end-basics/form-components/data-entry/time-picker",
+
+  "validationErrors": "https://docs.shesha.io/docs/front-end-basics/form-components/data-display/validation-errors",
+
+  "wizard": "https://docs.shesha.io/docs/front-end-basics/form-components/Layouts/wizard"
+}
