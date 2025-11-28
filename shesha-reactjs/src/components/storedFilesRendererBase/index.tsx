@@ -133,6 +133,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const [fileToReplace, setFileToReplace] = useState<string | null>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const fileContextCache = useRef<Map<string, Promise<{ file: UploadFile; fileId: string; fileName: string; fileType: string }>>>(new Map());
+  // Track blob URLs that need to be revoked to prevent memory leaks
+  const blobUrlsRef = useRef<Set<string>>(new Set());
   const model = rest;
   const hasFiles = !!fileList.length;
 
@@ -163,13 +165,31 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const { width, minWidth, maxWidth } = model?.allStyles?.dimensionsStyles ?? {};
   const listTypeAndLayout = getListTypeAndLayout(listType, isDragger);
 
+  // Helper to check if a URL is a blob URL
+  const isBlobUrl = useCallback((url: string): boolean => {
+    return url?.startsWith('blob:') ?? false;
+  }, []);
+
+  // Helper to revoke a blob URL and remove from tracking
+  const revokeBlobUrl = useCallback((url: string) => {
+    if (isBlobUrl(url)) {
+      URL.revokeObjectURL(url);
+      blobUrlsRef.current.delete(url);
+    }
+  }, [isBlobUrl]);
+
   // Memoize the fetch function to prevent recreating on every render
   const fetchStoredFile = useCallback(
     async (url: string): Promise<string> => {
       const fetchFn = createFetchStoredFile(httpHeaders);
-      return fetchFn(url);
+      const blobUrl = await fetchFn(url);
+      // Track blob URLs for cleanup
+      if (isBlobUrl(blobUrl)) {
+        blobUrlsRef.current.add(blobUrl);
+      }
+      return blobUrl;
     },
-    [httpHeaders]
+    [httpHeaders, isBlobUrl]
   );
 
   const openFilesZipNotification = (): void =>
@@ -198,33 +218,75 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     });
   }, [fileList]);
 
+  // Store current imageUrls in a ref to avoid stale closures
+  const imageUrlsRef = useRef(imageUrls);
   useEffect(() => {
-    const fetchImages = async () => {
-      const newImageUrls: { [key: string]: string } = {};
+    imageUrlsRef.current = imageUrls;
+  }, [imageUrls]);
 
-      for (const file of fileList) {
-        if (isImageType(file.type)) {
-          // Check if we already have this image URL cached
-          if (imageUrls[file.uid]) {
-            newImageUrls[file.uid] = imageUrls[file.uid];
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchImages = async () => {
+      const currentFileUids = new Set(fileList.map(f => f.uid));
+
+      // First pass: clean up removed files and keep existing URLs
+      setImageUrls(prevUrls => {
+        const newImageUrls: { [key: string]: string } = {};
+
+        // Revoke blob URLs for files that are no longer in the list
+        Object.entries(prevUrls).forEach(([uid, url]) => {
+          if (!currentFileUids.has(uid)) {
+            revokeBlobUrl(url);
           } else {
-            try {
-              const imageUrl = await fetchStoredFile(file.url);
-              newImageUrls[file.uid] = imageUrl;
-            } catch (error) {
-              console.error('Error fetching image for file:', file.name, error);
-            }
+            // Keep existing URL
+            newImageUrls[uid] = url;
           }
+        });
+
+        return newImageUrls;
+      });
+
+      // Second pass: fetch new images for files without cached URLs
+      const currentUrls = imageUrlsRef.current;
+      const filesToFetch = fileList.filter(
+        file => isImageType(file.type) && !currentUrls[file.uid]
+      );
+
+      for (const file of filesToFetch) {
+        try {
+          const imageUrl = await fetchStoredFile(file.url);
+          if (isMounted) {
+            setImageUrls(prev => ({ ...prev, [file.uid]: imageUrl }));
+          } else {
+            // Component unmounted, revoke the URL we just created
+            revokeBlobUrl(imageUrl);
+          }
+        } catch (error) {
+          console.error('Error fetching image for file:', file.name, error);
         }
       }
-
-      setImageUrls(prev => ({ ...prev, ...newImageUrls }));
     };
 
     if (fileList.length > 0) {
       fetchImages();
+    } else {
+      // No files - revoke all existing blob URLs
+      setImageUrls(prevUrls => {
+        Object.values(prevUrls).forEach(revokeBlobUrl);
+        return {};
+      });
     }
-  }, [fileList, fetchStoredFile]);
+
+    // Cleanup on unmount
+    return () => {
+      isMounted = false;
+      blobUrlsRef.current.forEach(url => {
+        URL.revokeObjectURL(url);
+      });
+      blobUrlsRef.current.clear();
+    };
+  }, [fileList, fetchStoredFile, revokeBlobUrl]);
 
   const handlePreview = (file: UploadFile): void => {
     setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
@@ -369,8 +431,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           )}
           {allowDelete && !disabled && (
             <Popconfirm title='Delete Attachment' onConfirm={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
+              e?.preventDefault();
+              e?.stopPropagation();
               deleteFile(file.uid);
             }
             }

@@ -195,7 +195,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       });
     };
 
-    const hasExtraContent = model?.customContent;
+    const hasExtraContent = Boolean(model?.customContent);
 
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
