@@ -133,8 +133,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const [fileToReplace, setFileToReplace] = useState<string | null>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const fileContextCache = useRef<Map<string, Promise<{ file: UploadFile; fileId: string; fileName: string; fileType: string }>>>(new Map());
-  // Track blob URLs that need to be revoked to prevent memory leaks
-  const blobUrlsRef = useRef<Set<string>>(new Set());
+  // Track blob URLs and their revoke functions to prevent memory leaks
+  const blobUrlsRef = useRef<Map<string, () => void>>(new Map());
   const model = rest;
   const hasFiles = !!fileList.length;
 
@@ -173,8 +173,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   // Helper to revoke a blob URL and remove from tracking
   const revokeBlobUrl = useCallback((url: string) => {
     if (isBlobUrl(url)) {
-      URL.revokeObjectURL(url);
-      blobUrlsRef.current.delete(url);
+      const revokeFunc = blobUrlsRef.current.get(url);
+      if (revokeFunc) {
+        revokeFunc();
+        blobUrlsRef.current.delete(url);
+      } else {
+        // Fallback for URLs not tracked (shouldn't happen in normal flow)
+        URL.revokeObjectURL(url);
+      }
     }
   }, [isBlobUrl]);
 
@@ -182,14 +188,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const fetchStoredFile = useCallback(
     async (url: string): Promise<string> => {
       const fetchFn = createFetchStoredFile(httpHeaders);
-      const blobUrl = await fetchFn(url);
-      // Track blob URLs for cleanup
-      if (isBlobUrl(blobUrl)) {
-        blobUrlsRef.current.add(blobUrl);
-      }
-      return blobUrl;
+      const result = await fetchFn(url);
+      // Track blob URL and its revoke function for cleanup
+      blobUrlsRef.current.set(result.url, result.revoke);
+      return result.url;
     },
-    [httpHeaders, isBlobUrl]
+    [httpHeaders]
   );
 
   const openFilesZipNotification = (): void =>
@@ -207,7 +211,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   // Cleanup cache when file list changes to prevent memory leaks
   useEffect(() => {
-    const currentFileIds = new Set(fileList.map(f => f.uid));
+    const currentFileIds = new Set(
+      fileList.map(f => (f as IStoredFile).id || f.uid)
+    );
     const cachedKeys = Array.from(fileContextCache.current.keys());
 
     cachedKeys.forEach(key => {
@@ -218,7 +224,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     });
   }, [fileList]);
 
-  // Store current imageUrls in a ref to avoid stale closures
   const imageUrlsRef = useRef(imageUrls);
   useEffect(() => {
     imageUrlsRef.current = imageUrls;
@@ -281,8 +286,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     // Cleanup on unmount
     return () => {
       isMounted = false;
-      blobUrlsRef.current.forEach(url => {
-        URL.revokeObjectURL(url);
+      blobUrlsRef.current.forEach((revokeFunc) => {
+        revokeFunc();
       });
       blobUrlsRef.current.clear();
     };
