@@ -589,7 +589,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           preview={{
             visible: previewOpen,
             onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage({ url: '', uid: '', name: '' }),          }}
+            afterOpenChange: (visible) => !visible && setPreviewImage(null),
+          }}
           src={previewImage.url}
         />
       )}
