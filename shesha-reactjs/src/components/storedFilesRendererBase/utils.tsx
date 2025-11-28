@@ -6,11 +6,7 @@ import { ConfigurableForm, DateDisplay } from '@/components';
 import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
 import { IStoredFile } from '@/providers/storedFiles/contexts';
 import { FormIdentifier } from '@/providers/form/models';
-import { IAttachmentContent, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
-
-// ============================================================================
-// Types
-// ============================================================================
+import {  listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 
 export interface IFileVersionsButtonProps {
   fileId: string;
@@ -19,20 +15,10 @@ export interface IFileVersionsButtonProps {
 
 export interface IExtraContentProps {
   file: IStoredFile;
-  extraContent?: IAttachmentContent;
-  isDynamic?: boolean;
   formId?: FormIdentifier;
-  formSelectionMode?: 'name' | 'dynamic';
-  formType?: string;
 }
 
-// ============================================================================
-// Helper Functions
-// ============================================================================
 
-/**
- * Creates a placeholder file for use in designer mode
- */
 export const createPlaceholderFile = (): IStoredFile => ({
   uid: 'placeholder-file-1',
   name: 'example-file.pdf',
@@ -46,9 +32,8 @@ export const createPlaceholderFile = (): IStoredFile => ({
   userHasDownloaded: false,
 });
 
-/**
- * Determines the appropriate list type for Ant Design Upload component
- */
+
+
 export const getListTypeAndLayout = (
   listType: listType | undefined,
   isDragger: boolean
@@ -56,27 +41,23 @@ export const getListTypeAndLayout = (
   return listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
 };
 
-/**
- * Factory function to create a fetchStoredFile function with headers
- */
+
+
 export const createFetchStoredFile = (httpHeaders: Record<string, string>) => {
   return async (url: string): Promise<string> => {
     const response = await fetch(`${url}&skipMarkDownload=true`, {
       headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
     });
+    if(!response.ok) {
+      throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
+    }
     const blob = await response.blob();
     return URL.createObjectURL(blob);
   };
 };
 
-// ============================================================================
-// Components
-// ============================================================================
 
-/**
- * FileVersionsButton - Displays file version history in a popover
- * This component doesn't depend on StoredFileProvider
- */
+
 export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDownload }) => {
   const {
     loading,
@@ -124,10 +105,8 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
   );
 };
 
-/**
- * ExtraContent - Renders a configurable form below each file
- * Passes file data as initial values to the form
- */
+
+
 export const ExtraContent: FC<IExtraContentProps> = ({ file, formId }) => {
   if (!formId) {
     return null;

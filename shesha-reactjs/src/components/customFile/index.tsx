@@ -19,7 +19,6 @@ export interface ICustomFileProps extends IInputStyles {
   customActions?: ButtonGroupItemProps[];
   hasExtraContent?: boolean;
   extraContent?: IAttachmentContent;
-  isDynamic?: boolean;
   extraFormSelectionMode?: 'name' | 'dynamic';
   extraFormId?: FormIdentifier;
   extraFormType?: string;
@@ -66,6 +65,9 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         allowUpload={false}
         allowDelete={props.allowDelete}
         deleteFile={deleteFile}
+        allowViewHistory={props.allowViewHistory}
+        customActions={props.customActions}
+        allowReplace={props.allowReplace}
         uploadFile={props.uploadFile ?? uploadFile}
         downloadZipFile={downloadZipFile}
         downloadZip={props.downloadZip}
@@ -78,7 +80,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         listType={props?.listType}
         hasExtraContent={props.hasExtraContent}
         extraContent={props.extraContent}
-        isDynamic={props.isDynamic}
         extraFormSelectionMode={props.extraFormSelectionMode}
         extraFormId={props.extraFormId}
         extraFormType={props.extraFormType}
