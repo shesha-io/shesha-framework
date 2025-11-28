@@ -6,7 +6,7 @@ import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
 import { IStyleType, useDataContextManagerActions, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
-import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
+import { FormIdentifier, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValue,
   executeScriptSync,
@@ -21,6 +21,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles } from './utils';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -114,6 +115,11 @@ const removeLegacyProperties = (result: Record<string, unknown>): void => {
     delete result[prop];
   });
 };
+
+export interface IAttachmentContent {
+  id: string;
+  components?: IConfigurableFormComponent[];
+}
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
   ownerId: string;
   ownerType: string;
@@ -124,6 +130,11 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   allowDelete: boolean;
   allowReplace: boolean;
   allowRename: boolean;
+  allowViewHistory: boolean;
+  customActions?: ButtonGroupItemProps[];
+  customContent?: boolean;
+  extraFormId?: FormIdentifier;
+  isDynamic?: boolean;
   isDragger?: boolean;
   maxHeight?: string;
   onFileChanged?: string;
@@ -176,6 +187,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       });
     };
 
+    const hasExtraContent = Boolean(model?.customContent);
+
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
@@ -213,12 +226,17 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}
                 allowRename={enabled && model.allowRename}
+                allowViewHistory={model.allowViewHistory}
+                customActions={model.customActions}
                 allowedFileTypes={model.allowedFileTypes}
                 maxHeight={model.maxHeight}
                 isDragger={model?.isDragger}
                 downloadZip={model.downloadZip}
                 filesLayout={model.filesLayout}
                 listType={model.listType}
+                hasExtraContent={hasExtraContent}
+                isDynamic={model.isDynamic}
+                extraFormId={model.extraFormId}
                 {...model}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
@@ -240,6 +258,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         allowDelete: true,
         allowReplace: true,
         allowRename: true,
+        allowViewHistory: true,
+        customActions: [],
         isDragger: false,
         ownerId: '',
         ownerType: '',
