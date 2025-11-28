@@ -6,7 +6,7 @@ import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from
 import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { addPx } from '@/utils/style';
-import { CheckCircleOutlined, DeleteOutlined, DownloadOutlined, FileZipOutlined, HistoryOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
   App,
@@ -21,17 +21,14 @@ import {
 } from 'antd';
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import React, { CSSProperties, FC, useEffect, useRef, useState } from 'react';
+import React, { CSSProperties, FC, useCallback, useEffect, useRef, useState } from 'react';
 import { isValidGuid } from '../formDesigner/components/utils';
 import { useStyles } from './styles/styles';
-import { Skeleton } from 'antd';
-import { ConfigurableForm, DateDisplay } from '@/components';
-import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
-import filesize from 'filesize';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { FormIdentifier } from '@/providers/form/models';
 import { DataContextProvider } from '@/providers/dataContextProvider';
+import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, createFetchStoredFile } from './utils';
 
 interface IUploaderFileTypes {
   name: string;
@@ -88,76 +85,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadedFileStyles?: CSSProperties;
 }
 
-// Inline FileVersionsButton component that doesn't depend on StoredFileProvider
-const FileVersionsButton: FC<{ fileId: string; onDownload: (versionNo: number, fileName: string) => void }> = ({ fileId, onDownload }) => {
-  const {
-    loading: loading,
-    refetch: fetchHistory,
-    data: serverData,
-  } = useStoredFileGetFileVersions({
-    fileId,
-    lazy: true,
-  });
-
-  if (fileId == null) return null;
-
-  const handleVisibleChange = () => {
-    if (!serverData) fetchHistory();
-  };
-
-  const uploads = serverData?.result;
-
-  const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto) => {
-    onDownload(fileVersion.versionNo, fileVersion.fileName);
-  };
-
-  const content = (
-    <Skeleton loading={loading}>
-      <ul>
-        {uploads &&
-          uploads.map((item, i) => (
-            <li key={i}>
-              <strong>Version {i + 1}</strong> Uploaded {item.dateUploaded && <DateDisplay>{item.dateUploaded}</DateDisplay>}{' '}
-              by {item.uploadedBy}
-              <br />
-              <Button type="link" onClick={() => handleVersionDownloadClick(item)}>
-                {item.fileName} ({filesize(item.size)})
-              </Button>
-            </li>
-          ))}
-      </ul>
-    </Skeleton>
-  );
-
-  return (
-    <Popover content={content} title="History" trigger="hover" onOpenChange={handleVisibleChange}>
-      <Button size="small" icon={<HistoryOutlined />} title="View history" />
-    </Popover>
-  );
-};
-
-const ExtraContent: FC<{
-  file: IStoredFile;
-  extraContent?: IAttachmentContent;
-  isDynamic?: boolean;
-  formId?: FormIdentifier;
-  formSelectionMode?: 'name' | 'dynamic';
-  formType?: string;
-}> = ({ file, formId }) => {
-
-  if (!formId) {
-    return null;
-  }
-
-  return (
-    <ConfigurableForm
-      formId={formId}
-      mode="readonly"
-      initialValues={file}
-    />
-  );
-};
-
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   multiple = true,
   fileList = [],
@@ -213,8 +140,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     downloadedFileStyles: downloadedFileStyles,
     containerStyles: {
       ...(containerDimensionsStyles ?? {}),
-      width: layout === 'vertical' ? undefined : addPx(containerDimensionsStyles?.width),
-      height: layout === 'horizontal' ? undefined : addPx(containerDimensionsStyles?.height),
+      width: layout === 'vertical' && listType === 'thumbnail' ? undefined : addPx(containerDimensionsStyles?.width),
+      height: layout === 'horizontal' && listType === 'thumbnail' ? undefined : addPx(containerDimensionsStyles?.height),
       ...containerJsStyle,
       ...stylingBoxAsCSS,
     },
@@ -233,7 +160,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const { width, minWidth, maxWidth } = model?.allStyles?.dimensionsStyles;
 
-  const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
+  const listTypeAndLayout = getListTypeAndLayout(listType, isDragger);
+
+  // Memoize the fetch function to prevent recreating on every render
+  const fetchStoredFile = useCallback(
+    async (url: string): Promise<string> => {
+      const fetchFn = createFetchStoredFile(httpHeaders);
+      return fetchFn(url);
+    },
+    [httpHeaders]
+  );
 
   const openFilesZipNotification = () =>
     notification.success({
@@ -241,19 +177,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       description: 'Your files have been downloaded successfully. Please check your download folder.',
       placement: 'topRight',
     });
-
-  const fetchStoredFile = (url: string) => {
-    const response = fetch(`${url}&skipMarkDownload=true`,
-      { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-      .then((response) => {
-        return response.blob();
-      })
-      .then((blob) => {
-        return URL.createObjectURL(blob);
-      });
-
-    return response;
-  };
 
   useEffect(() => {
     if (isDownloadZipSucceeded) {
@@ -263,18 +186,33 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   useEffect(() => {
     const fetchImages = async () => {
-      const newImageUrls = { ...imageUrls };
+      const newImageUrls: { [key: string]: string } = {};
+
       for (const file of fileList) {
-        if (isImageType(file.type) && !newImageUrls[file.uid]) {
-          const imageUrl = await fetchStoredFile(file.url);
-          newImageUrls[file.uid] = imageUrl;
+        if (isImageType(file.type)) {
+          // Check if we already have this image URL cached
+          if (imageUrls[file.uid]) {
+            newImageUrls[file.uid] = imageUrls[file.uid];
+          } else {
+            try {
+              console.log('Fetching image for file:', file.name, 'URL:', file.url);
+              const imageUrl = await fetchStoredFile(file.url);
+              newImageUrls[file.uid] = imageUrl;
+              console.log('Successfully fetched image:', file.name, 'Blob URL:', imageUrl);
+            } catch (error) {
+              console.error('Error fetching image for file:', file.name, error);
+            }
+          }
         }
       }
-      setImageUrls(newImageUrls);
+
+      setImageUrls(prev => ({ ...prev, ...newImageUrls }));
     };
 
-    fetchImages();
-  }, [fileList]);
+    if (fileList.length > 0) {
+      fetchImages();
+    }
+  }, [fileList, fetchStoredFile]);
 
 
   const handlePreview = async (file: UploadFile) => {
@@ -289,7 +227,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       if (listType === 'thumbnail' && !isDragger) {
         return <Space size="small" direction='vertical'>
           <Image src={imageUrls[uid]} alt={file.name} preview={false} />
-          <p className='ant-upload-list-item-name'>{file.name}</p>
+          <p className='ant-upload-list-item-name'>{file.name} - {file.size}</p>
         </Space>;
       }
     }
@@ -386,14 +324,19 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               icon={<SyncOutlined />}
               title="Replace file"
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 handleReplaceClick(file);
               }}
             />
           )}
           {allowDelete && !disabled && (
-            <Popconfirm title='Delete Attachment' onConfirm={() =>
-              deleteFile(file.uid)}
+            <Popconfirm title='Delete Attachment' onConfirm={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              deleteFile(file.uid);
+            }
+            }
               description="Are you sure you want to delete this attachment?"
             >
               <Button
@@ -469,9 +412,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               </div>
             )}
           </div>
-          <div className={isDownloaded ? styles.downloadedFile : ''} >
+          {listType === 'thumbnail' && <div className={isDownloaded ? styles.downloadedFile : ''} >
             <div className={styles.fileName}>{file.name}</div>
-          </div>
+          </div>}
           {hasExtraContent && extraFormId && (
             <ExtraContent
               file={file}
@@ -494,18 +437,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
 
-  const placeholderFile: IStoredFile = {
-    uid: 'placeholder-file-1',
-    name: 'example-file.pdf',
-    status: 'done',
-    url: '',
-    type: 'application/pdf',
-    size: 1024000,
-    id: 'placeholder-id',
-    fileCategory: 'documents',
-    temporary: false,
-    userHasDownloaded: false,
-  };
+  const placeholderFile = createPlaceholderFile();
 
   const renderUploadContent = () => {
     return (
