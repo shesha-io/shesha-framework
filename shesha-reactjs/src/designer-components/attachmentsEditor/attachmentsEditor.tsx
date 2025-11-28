@@ -134,6 +134,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   customActions?: ButtonGroupItemProps[];
   customContent?: boolean;
   extraFormId?: FormIdentifier;
+  isDynamic?: boolean;
   isDragger?: boolean;
   maxHeight?: string;
   onFileChanged?: string;
