@@ -133,10 +133,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   allowViewHistory: boolean;
   customActions?: ButtonGroupItemProps[];
   customContent?: boolean;
-  extraContent?: IAttachmentContent;
-  extraFormSelectionMode?: 'name' | 'dynamic';
   extraFormId?: FormIdentifier;
-  extraFormType?: string;
   isDragger?: boolean;
   maxHeight?: string;
   onFileChanged?: string;
@@ -237,11 +234,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 filesLayout={model.filesLayout}
                 listType={model.listType}
                 hasExtraContent={hasExtraContent}
-                extraContent={model.extraContent}
                 isDynamic={model.isDynamic}
-                extraFormSelectionMode={model.extraFormSelectionMode}
                 extraFormId={model.extraFormId}
-                extraFormType={model.extraFormType}
                 {...model}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
@@ -349,24 +343,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       removeLegacyProperties(result);
 
       return result;
-    })
-    .add<IAttachmentsEditorProps>(12, (prev, context) => {
-      const { nanoid } = require('@/utils/uuid');
-      const extraContent = { id: nanoid(), components: [] };
-
-      // Register the container in the flat structure
-      context.flatStructure.componentRelations[extraContent.id] = [];
-
-      return {
-        ...prev,
-        extraContent,
-      };
-    })
-    .add<IAttachmentsEditorProps>(13, (prev) => ({
-      ...prev,
-      extraFormSelectionMode: prev.extraFormSelectionMode ?? 'name',
-    })),
-  customContainerNames: ['extraContent'],
+    }),
 };
 
 export default AttachmentsEditor;

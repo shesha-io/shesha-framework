@@ -21,7 +21,7 @@ import {
 } from 'antd';
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import React, { CSSProperties, FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { isValidGuid } from '../formDesigner/components/utils';
 import { useStyles } from './styles/styles';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
@@ -56,7 +56,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   isDownloadZipSucceeded?: boolean;
   fetchFilesError?: boolean;
   downloadZipFileError?: boolean;
-  deleteFile: (fileIdToDelete: string) => void;
+  deleteFile: (fileIdToDelete: string) => void | Promise<void>;
   uploadFile: (payload: IUploadFilePayload) => void;
   downloadZipFile?: () => void;
   downloadZip?: boolean;
@@ -127,10 +127,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const { message, notification } = App.useApp();
   const { httpHeaders } = useSheshaApplication();
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
+  const [previewImage, setPreviewImage] = useState<{ url: string; uid: string; name: string } | null>(null);
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
   const [fileToReplace, setFileToReplace] = useState<string | null>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
+  const fileContextCache = useRef<Map<string, Promise<{ file: UploadFile; fileId: string; fileName: string; fileType: string }>>>(new Map());
   const model = rest;
   const hasFiles = !!fileList.length;
 
@@ -158,8 +159,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     primaryColor
   });
 
-  const { width, minWidth, maxWidth } = model?.allStyles?.dimensionsStyles;
-
+  const { width, minWidth, maxWidth } = model?.allStyles?.dimensionsStyles ?? {};
   const listTypeAndLayout = getListTypeAndLayout(listType, isDragger);
 
   // Memoize the fetch function to prevent recreating on every render
@@ -183,6 +183,19 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       openFilesZipNotification();
     }
   }, [isDownloadZipSucceeded]);
+
+  // Cleanup cache when file list changes to prevent memory leaks
+  useEffect(() => {
+    const currentFileIds = new Set(fileList.map(f => f.uid));
+    const cachedKeys = Array.from(fileContextCache.current.keys());
+
+    cachedKeys.forEach(key => {
+      const fileId = key.split('_')[0];
+      if (!currentFileIds.has(fileId)) {
+        fileContextCache.current.delete(key);
+      }
+    });
+  }, [fileList]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -233,6 +246,26 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return getFileIcon(type);
   };
 
+    // Helper function to get or create cached file context data
+    const getFileContextData = useCallback((file: UploadFile, fileId: string) => {
+      const cacheKey = `${fileId}_${file.name}_${file.type}`;
+  
+      if (!fileContextCache.current.has(cacheKey)) {
+        fileContextCache.current.set(
+          cacheKey,
+          Promise.resolve({
+            file: file,
+            fileId: fileId,
+            fileName: file.name,
+            fileType: file.type,
+          })
+        );
+      }
+  
+      return fileContextCache.current.get(cacheKey)!;
+    }, []);
+
+    const placeholderFile = useMemo(() => createPlaceholderFile(), []);
 
   if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
@@ -243,25 +276,27 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     hiddenUploadInputRef.current?.click();
   };
 
-  const handleReplaceFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleReplaceFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0 && fileToReplace) {
       const newFile = files[0];
 
-      // First delete the old file
-      deleteFile(fileToReplace);
+      try {
+        await Promise.resolve(deleteFile(fileToReplace));
 
-      // Then upload the new file
-      uploadFile({
-        file: newFile,
-        ownerId,
-        ownerType,
-      });
-
-      // Reset file to replace
-      setFileToReplace(null);
-      if (hiddenUploadInputRef.current) {
-        hiddenUploadInputRef.current.value = '';
+        uploadFile({
+          file: newFile,
+          ownerId,
+          ownerType,
+        });
+      } catch (error) {
+        console.error('Error replacing file:', error);
+        message.error('Failed to replace file. Please try again.');
+      } finally {
+        setFileToReplace(null);
+        if (hiddenUploadInputRef.current) {
+          hiddenUploadInputRef.current.value = '';
+        }
       }
     }
   };
@@ -311,8 +346,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     iconRender,
     itemRender: (originNode, file) => {
-      const isDownloaded = (file as any).userHasDownloaded === true;
-      const fileId = (file as any).id || file.uid;
+      const isDownloaded = (file as IStoredFile).userHasDownloaded === true;
+      const fileId = (file as IStoredFile).id || file.uid;
 
       const actions = (
         <Space size={5}>
@@ -369,12 +404,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               name="fileContext"
               description="File context for custom actions"
               type="control"
-              initialData={Promise.resolve({
-                file: file,
-                fileId: fileId,
-                fileName: file.name,
-                fileType: file.type,
-              })}
+              initialData={getFileContextData(file, fileId)}
             >
               <ButtonGroup
                 id={`file_actions_${fileId}`}
@@ -416,11 +446,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           {hasExtraContent && extraFormId && (
             <ExtraContent
               file={file}
-              isDynamic={isDynamic}
-              extraContent={extraContent}
               formId={extraFormId}
-              formSelectionMode={extraFormSelectionMode}
-              formType={extraFormType}
             />
           )}
         </div>
@@ -433,10 +459,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
     }
   };
-
-
-  const placeholderFile = createPlaceholderFile();
-
+  
   const renderUploadContent = () => {
     return (
       !disabled &&
@@ -469,11 +492,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               {hasExtraContent && extraFormId && (
                 <ExtraContent
                   file={placeholderFile}
-                  isDynamic={isDynamic}
-                  extraContent={extraContent}
                   formId={extraFormId}
-                  formSelectionMode={extraFormSelectionMode}
-                  formType={extraFormType}
                 />
               )}
             </div>
@@ -498,8 +517,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           preview={{
             visible: previewOpen,
             onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage(null),
-          }}
+            afterOpenChange: (visible) => !visible && setPreviewImage({ url: '', uid: '', name: '' }),          }}
           src={previewImage.url}
         />
       )}
