@@ -381,7 +381,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         })
                         .addSettingsInputRow({
                           id: nanoid(),
-                          parentId: appearanceTabId,
+                          parentId: dataTabId,
                           readOnly: {
                             _code: 'return getSettingValue(data?.readOnly);',
                             _mode: 'code',
@@ -479,7 +479,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               label: 'Handle Fail',
                               parentId: dataTabId,
                               type: 'switch',
-                              jsSetting: false,
+                              jsSetting: true,
                             },
                           ],
                         })
