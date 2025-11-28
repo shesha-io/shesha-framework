@@ -196,10 +196,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             newImageUrls[file.uid] = imageUrls[file.uid];
           } else {
             try {
-              console.log('Fetching image for file:', file.name, 'URL:', file.url);
               const imageUrl = await fetchStoredFile(file.url);
               newImageUrls[file.uid] = imageUrl;
-              console.log('Successfully fetched image:', file.name, 'Blob URL:', imageUrl);
             } catch (error) {
               console.error('Error fetching image for file:', file.name, error);
             }
