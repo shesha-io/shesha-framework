@@ -217,7 +217,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     const cachedKeys = Array.from(fileContextCache.current.keys());
 
     cachedKeys.forEach(key => {
-      const fileId = key.split('_')[0];
+      const fileId = key.substring(0, key.indexOf('_'));
       if (!currentFileIds.has(fileId)) {
         fileContextCache.current.delete(key);
       }

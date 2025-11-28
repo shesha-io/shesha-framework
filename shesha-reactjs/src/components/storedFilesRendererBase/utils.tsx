@@ -35,10 +35,9 @@ export const createPlaceholderFile = (): IStoredFile => ({
 
 
 export const getListTypeAndLayout = (
-  listType: listType | undefined,
-  isDragger: boolean
+  type: listType | undefined,  isDragger: boolean
 ): 'text' | 'picture' | 'picture-card' => {
-  return listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
+  return type === 'text' || !type || isDragger ? 'text' : 'picture-card';
 };
 
 
@@ -94,7 +93,7 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
       <ul>
         {uploads &&
           uploads.map((item, i) => (
-            <li key={i}>
+            <li key={item.versionNo ?? i}>
               <strong>Version {i + 1}</strong> Uploaded{' '}
               {item.dateUploaded && <DateDisplay>{item.dateUploaded}</DateDisplay>} by {item.uploadedBy}
               <br />
