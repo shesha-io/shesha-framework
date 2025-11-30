@@ -35,7 +35,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     .add<IDataListComponentProps>(0, (prev) => ({
       ...prev,
       formSelectionMode: 'name',
-      selectionMode: 'none',
+      selectionMode: 'single',
       items: [],
       // Set default form to the starter template
       // formId: { name: 'data-list-dummy-default', module: 'Shesha' }

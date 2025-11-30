@@ -352,6 +352,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             rowHoverBackgroundColor={props.rowHoverBackgroundColor}
             rowSelectedBackgroundColor={props.rowSelectedBackgroundColor}
             border={props.border}
+            striped={props.striped}
             hoverHighlight={props.hoverHighlight}
             backgroundColor={props.background?.color}
             headerFontSize={props.headerFontSize}

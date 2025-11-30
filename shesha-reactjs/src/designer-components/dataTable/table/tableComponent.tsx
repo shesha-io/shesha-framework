@@ -44,8 +44,10 @@ const TableComponent: TableComponentDefinition = {
     return <TableComponentFactory model={model} />;
   },
   initModel: (model: ITableComponentProps) => {
+    const defaults = defaultStyles();
     return {
       ...model,
+      ...defaults,
       items: [],
       striped: true,
     };
@@ -60,7 +62,7 @@ const TableComponent: TableComponentDefinition = {
           ...prev,
           items: items,
           useMultiselect: prev['useMultiselect'] ?? false,
-          selectionMode: prev['selectionMode'] ?? 'none',
+          selectionMode: prev['selectionMode'] ?? 'single',
           crud: prev['crud'] ?? false,
           flexibleHeight: prev['flexibleHeight'] ?? false,
           striped: prev['striped'] ?? true,
