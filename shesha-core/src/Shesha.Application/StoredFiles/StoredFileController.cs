@@ -169,7 +169,7 @@ namespace Shesha.StoredFiles
             if (!input.OwnerType.IsEmpty() && !string.IsNullOrWhiteSpace(input.OwnerId))
             {
                 var entityConfig = await _modelConfigManager.GetByEntityTypeIdAsync(
-                    new EntityTypeIdentifier(input.OwnerType?.Module, input.OwnerType?.Name ?? "", input.OwnerType?.FullClassName)
+                    new EntityTypeIdentifier(input.OwnerType?.Module, input.OwnerType?.Name ?? "", input.OwnerType?.EntityType)
                 );
                 if (entityConfig == null)
                     throw new Exception($"Owner type not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
@@ -465,12 +465,12 @@ namespace Shesha.StoredFiles
 
         private async Task<string> GetFullClassNameFromEntityTypeIdAsync(EntityTypeIdInput? ownerType)
         {
-            return ((ownerType?.FullClassName).IsNullOrEmpty()
+            return ((ownerType?.EntityType).IsNullOrEmpty()
                 ? (await _modelConfigManager.GetByEntityTypeIdAsync(
-                    new EntityTypeIdentifier(ownerType?.Module, ownerType?.Name ?? "", ownerType?.FullClassName)))
+                    new EntityTypeIdentifier(ownerType?.Module, ownerType?.Name ?? "", ownerType?.EntityType)))
                     .NotNull($"Owner type not found '{ownerType}'")
                     .FullClassName
-                : ownerType?.FullClassName)
+                : ownerType?.EntityType)
                 .NotNull("FullClassName should not be empty");
         }
 

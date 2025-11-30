@@ -5,7 +5,7 @@ import { ArrayFormats, EntityFormats, ObjectFormats } from "@/interfaces/dataTyp
 const propertyModelValidator = (model: ModelPropertyDto, parentModels?: ModelPropertyDto[]): string[] => {
   let errors: string[] = [];
 
-  const path = parentModels ? `${parentModels.map((m) => m.name).join('.')}: ` : '';
+  const path = `${[...(parentModels ?? []), model].map((m) => m.name).join('.')}: `;
 
   if (!model.name) errors.push(path + "Name is required.");
   if (!model.label) errors.push(path + "Label is required.");
@@ -24,6 +24,11 @@ const propertyModelValidator = (model: ModelPropertyDto, parentModels?: ModelPro
     if (model.dataFormat === ObjectFormats.interface) {
       if (!model.entityType) errors.push(path + "Part Of Entity Type is required.");
     }
+    if (model.dataFormat === ObjectFormats.object) {
+      if (model.properties?.length) {
+        model.properties.forEach((p) => errors = errors.concat(propertyModelValidator(p, [...(parentModels ?? []), model])));
+      }
+    }
   }
   if (model.dataType === DataTypes.advanced) {
     if (!model.dataFormat) errors.push(path + "Advanced Format is required.");
@@ -34,7 +39,7 @@ const propertyModelValidator = (model: ModelPropertyDto, parentModels?: ModelPro
       if (!model.itemsType)
         errors.push(path + "Check property configuration.");
       else
-        errors = errors.concat(propertyModelValidator(model.itemsType, [...(parentModels ?? []), model]));
+        errors = errors.concat(propertyModelValidator(model.itemsType, (parentModels ?? [])));
     }
     if (model.dataFormat === ArrayFormats.entityReference) {
       if (!model.entityType) errors.push(path + "Entity Type is required.");
@@ -50,6 +55,11 @@ const propertyModelValidator = (model: ModelPropertyDto, parentModels?: ModelPro
       if (!model.itemsType?.dataFormat) errors.push(path + "Object Format is required.");
       if (model.itemsType?.dataFormat === ObjectFormats.interface) {
         if (!model.entityType) errors.push(path + "Part Of Entity Type is required.");
+      }
+      if (model.itemsType?.dataFormat === ObjectFormats.object) {
+        if (model.itemsType?.properties?.length) {
+          model.itemsType?.properties.forEach((p) => errors = errors.concat(propertyModelValidator(p, [...(parentModels ?? []), model])));
+        }
       }
     }
   }
