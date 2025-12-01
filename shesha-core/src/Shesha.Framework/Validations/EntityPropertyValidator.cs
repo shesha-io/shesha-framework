@@ -147,7 +147,7 @@ namespace Shesha.Validations
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage
-                            : $"Property '{friendlyName}' should have value length more then {propConfig.MinLength - 1} symbols"));
+                            : $"Property '{friendlyName}' should have value length more than {propConfig.MinLength - 1} symbols"));
                         return false;
                     }
                     if (propConfig.MaxLength.HasValue && stringValueOrEmpty.Length > propConfig.MaxLength)
