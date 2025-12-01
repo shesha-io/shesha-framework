@@ -21,7 +21,7 @@ namespace Shesha.Domain
     public class EntityProperty: FullAuditedEntity<Guid>
     {
         public virtual EntityInitFlags InitStatus { get; set; }
-        public virtual string InitMessage { get; set; }
+        public virtual string? InitMessage { get; set; }
 
         public virtual bool CreatedInDb { get; set; }
 

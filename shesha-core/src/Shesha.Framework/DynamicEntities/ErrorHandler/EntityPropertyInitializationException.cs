@@ -5,7 +5,7 @@ namespace Shesha.DynamicEntities.ErrorHandler
 {
     public class EntityPropertyInitializationException : Exception
     {
-        public EntityProperty? EntityProperty { get; set; }
+        public EntityProperty? EntityProperty { get; }
 
         public EntityPropertyInitializationException(EntityProperty? entityProperty, Exception? exception = null, string? actionText = "initialize", string? message = null)
             : base

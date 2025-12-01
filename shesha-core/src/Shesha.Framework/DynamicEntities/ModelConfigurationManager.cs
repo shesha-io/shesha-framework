@@ -378,8 +378,8 @@ namespace Shesha.DynamicEntities
             await _unitOfWorkManager.Current.SaveChangesAsync();
 
             var needRestart = await PropertyConfigRepo.GetAll()
-                .AnyAsync(x => 
-                    x.EntityConfig == entityConfig 
+                .AnyAsync(x =>
+                    x.EntityConfig == entityConfig
                     && (x.InitStatus.HasFlag(EntityInitFlags.InitializationRequired) || x.InitStatus.HasFlag(EntityInitFlags.DbActionRequired)));
             if (needRestart)
             {
@@ -584,7 +584,7 @@ namespace Shesha.DynamicEntities
                 }
 
                 if (isNew && metadataRefresh)
-                { 
+                {
                     await _dbGenerator.ProcessEntityPropertyAsync(dbProp);
                 }
 
@@ -595,8 +595,13 @@ namespace Shesha.DynamicEntities
 
         private bool IsDbInitializationRequired(EntityProperty dbProp)
         {
-            return !(dbProp.DataType == DataTypes.Advanced
-                || dbProp.DataType == DataTypes.Array && dbProp.DataFormat == ArrayFormats.EntityReference);
+            // Advanced types and one-to-many entity reference arrays don't require DB column creation
+            // (they use foreign keys on the referenced entity side)
+            if (dbProp.DataType == DataTypes.Advanced)
+                return false;
+            if (dbProp.DataType == DataTypes.Array && dbProp.DataFormat == ArrayFormats.EntityReference)
+                return false;
+            return true;
         }
 
         private async Task MapPropertyToDbAsync(ModelPropertyDto dto, EntityProperty dbProp, ModelUpdateType updateType)
@@ -617,9 +622,9 @@ namespace Shesha.DynamicEntities
                 //dbProp.Name = dbProp.CreatedInDb ? dbProp.Name : dto.Name; // update only if the property is not created in DB yet
                 dbProp.EntityModule = dto.EntityType?.Module;
                 dbProp.EntityType = dto.EntityType?.Name;
-                dbProp.EntityFullClassName = (await Repository.FirstOrDefaultAsync(x => 
-                    x.Name == dbProp.EntityType 
-                    && (x.Module  != null && x.Module.Name == dbProp.EntityModule
+                dbProp.EntityFullClassName = (await Repository.FirstOrDefaultAsync(x =>
+                    x.Name == dbProp.EntityType
+                    && (x.Module != null && x.Module.Name == dbProp.EntityModule
                         || x.Module != null && dbProp.EntityModule == null
                     )))?.FullClassName;
                 dbProp.DataFormat = dto.DataFormat;
@@ -682,7 +687,7 @@ namespace Shesha.DynamicEntities
                 ? null
                 : new ReferenceListIdentifier(dbProp.ReferenceListModule, dbProp.ReferenceListName.NotNull());
 
-            if (dbProp.DataType == DataTypes.EntityReference || (new []{ObjectFormats.Interface, ArrayFormats.EntityReference}).Contains(dbProp.DataFormat))
+            if (dbProp.DataType == DataTypes.EntityReference || (new[] { ObjectFormats.Interface, ArrayFormats.EntityReference }).Contains(dbProp.DataFormat))
             {
                 var baseProp = dbProp;
                 while (baseProp == dbProp && baseProp?.InheritedFrom != null)

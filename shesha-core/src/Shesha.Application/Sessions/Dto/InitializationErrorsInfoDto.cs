@@ -7,6 +7,6 @@ namespace Shesha.Sessions.Dto
     {
         public DateTime LastInitialization { get; set; }
 
-        public List<string> Errors { get; set; }
+        public List<string> Errors { get; set; } = new List<string>();
     }
 }

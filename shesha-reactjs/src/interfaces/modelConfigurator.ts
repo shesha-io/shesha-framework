@@ -1,6 +1,7 @@
 import { MetadataSourceType } from './metadata';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { IReferenceListIdentifier } from './referenceList';
+import { EntityInitFlags } from '@/apis/modelConfigurations';
 
 export interface IModelItem {
   id: string;
@@ -54,6 +55,6 @@ export interface IModelItem {
   createdInDb?: boolean;
   inheritedFromId?: string;
 
-  initStatus?: number;
+  initStatus?: EntityInitFlags;
   initMessage?: string;
 }

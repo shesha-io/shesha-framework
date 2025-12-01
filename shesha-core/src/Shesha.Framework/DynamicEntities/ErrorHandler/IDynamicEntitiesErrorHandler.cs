@@ -7,7 +7,7 @@ namespace Shesha.DynamicEntities.ErrorHandler
 {
     public interface IDynamicEntitiesErrorHandler
     {
-        List<Exception> Exceptions { get; }
+        IReadOnlyCollection<Exception> Exceptions { get; }
         DateTime LastComplete { get; }
 
         Task HandleInitializationErrorAsync(Exception exception);

@@ -24,7 +24,6 @@ namespace Shesha.DynamicEntities.DbGenerator
 
         public GenerateDynamicEntitiesDb(
             IIocManager ioc,
-            ILogger logger,
             IDynamicEntitiesDbGenerator dbGenerator,
             IRepository<EntityConfig, Guid> entityConfigRepository,
             IUnitOfWorkManager unitOfWorkManager,

@@ -111,10 +111,6 @@ namespace Shesha.Metadata
             var cascadeAttribute = property.GetAttributeOrNull<CascadeUpdateRulesAttribute>()
                 ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>();
 
-            if (property.DeclaringType != null && property.DeclaringType.Name.Contains("ReferenceListItem"))
-            {
-            }
-
             var result = new PropertyMetadataDto
             {
                 Path = path,

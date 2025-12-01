@@ -79,7 +79,7 @@ namespace Shesha.Metadata
     public static class NumberFormats
     {
         public const string Float = "float";
-        [Obsolete("Use 'float' instead")]
+        [Obsolete("Use NumberFormats.Float instead")]
         public const string Double = "double";
         public const string Int32 = "int32";
         public const string Int64 = "int64";

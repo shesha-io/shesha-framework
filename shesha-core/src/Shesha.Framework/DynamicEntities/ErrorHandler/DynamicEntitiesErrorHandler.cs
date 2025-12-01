@@ -3,7 +3,9 @@ using Abp.Domain.Repositories;
 using Castle.Core.Logging;
 using Shesha.Domain;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +18,8 @@ namespace Shesha.DynamicEntities.ErrorHandler
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepo;
         private readonly IRepository<EntityProperty, Guid> _propertyRepo;
 
-        public List<Exception> Exceptions { get; private set; } = new List<Exception>();
+        private readonly ConcurrentBag<Exception> _exceptions = new ConcurrentBag<Exception>();
+        public IReadOnlyCollection<Exception> Exceptions => _exceptions.ToList();
 
         public DateTime LastComplete { get; private set; }
 
@@ -49,7 +52,7 @@ namespace Shesha.DynamicEntities.ErrorHandler
             }
             Logger.Error(message.ToString(), exception);
 
-            Exceptions.Add(exception);
+            _exceptions.Add(exception);
 
             await ProceedAsync(exception, rootMessage);
         }
@@ -57,15 +60,15 @@ namespace Shesha.DynamicEntities.ErrorHandler
         private async Task ProceedAsync(Exception? e, string message)
         {
             var error = e;
-            while(error != null)
+            while (error != null)
             {
                 if (error is EntityDbInitializationException entityDbError)
                     await HandleEntityDbErrorAsync(entityDbError, message);
-                if (error is EntityPropertyDbInitializationException propertyDbError)
+                else if (error is EntityPropertyDbInitializationException propertyDbError)
                     await HandlePropertyDbErrorAsync(propertyDbError, message);
-                if (error is EntityInitializationException entityError)
+                else if (error is EntityInitializationException entityError)
                     await HandleEntityErrorAsync(entityError, message);
-                if (error is EntityPropertyInitializationException propertyError)
+                else if (error is EntityPropertyInitializationException propertyError)
                     await HandlePropertyErrorAsync(propertyError, message);
                 error = error.InnerException;
             }
@@ -73,51 +76,81 @@ namespace Shesha.DynamicEntities.ErrorHandler
 
         private async Task HandlePropertyDbErrorAsync(EntityPropertyDbInitializationException error, string message)
         {
-            // Get entity as Session can be closed
-            var prop = await _propertyRepo.GetAsync(error.EntityProperty.Id);
-            prop.InitStatus |= Enums.EntityInitFlags.DbActionFailed;
-            prop.InitMessage = message;
+            try
+            {
+                // Get entity as Session can be closed
+                var prop = await _propertyRepo.GetAsync(error.EntityProperty.Id);
+                prop.InitStatus |= Enums.EntityInitFlags.DbActionFailed;
+                prop.InitMessage = message;
 
-            await _propertyRepo.UpdateAsync(prop);
+                await _propertyRepo.UpdateAsync(prop);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to persist DB error status for EntityProperty {error.EntityProperty.Id}", ex);
+            }
         }
 
         private async Task HandleEntityDbErrorAsync(EntityDbInitializationException error, string message)
         {
-            // Get entity as Session can be closed
-            var entity = await _entityConfigRepo.GetAsync(error.EntityConfig.Id);
-            entity.InitStatus |= Enums.EntityInitFlags.DbActionFailed;
-            entity.InitMessage = error.InnerException is EntityPropertyDbInitializationException
-                ? "Check the properties errors"
-                : message;
-            entity.IsCodegenPending = true;
+            try
+            {
+                // Get entity as Session can be closed
+                var entity = await _entityConfigRepo.GetAsync(error.EntityConfig.Id);
+                entity.InitStatus |= Enums.EntityInitFlags.DbActionFailed;
+                entity.InitMessage = error.InnerException is EntityPropertyDbInitializationException
+                    ? "Check the properties errors"
+                    : message;
+                entity.IsCodegenPending = true;
 
-            await _entityConfigRepo.UpdateAsync(entity);
+                await _entityConfigRepo.UpdateAsync(entity);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to persist DB error status for EntityConfig {error.EntityConfig.Id}", ex);
+            }
         }
 
         private async Task HandlePropertyErrorAsync(EntityPropertyInitializationException error, string message)
         {
             if (error.EntityProperty != null)
             {
-                // Get entity as Session can be closed
-                var prop = await _propertyRepo.GetAsync(error.EntityProperty.Id);
-                prop.InitStatus |= Enums.EntityInitFlags.InitializationFailed;
-                prop.InitMessage = message;
+                try
+                {
+                    // Get entity as Session can be closed
+                    var prop = await _propertyRepo.GetAsync(error.EntityProperty.Id);
+                    prop.InitStatus |= Enums.EntityInitFlags.InitializationFailed;
+                    prop.InitMessage = message;
 
-                await _propertyRepo.UpdateAsync(prop);
+                    await _propertyRepo.UpdateAsync(prop);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Failed to persist error status for EntityProperty {error.EntityProperty.Id}", ex);
+                }
+
             }
         }
 
         private async Task HandleEntityErrorAsync(EntityInitializationException error, string message)
         {
-            // Get entity as Session can be closed
-            var entity = await _entityConfigRepo.GetAsync(error.EntityConfig.Id);
-            entity.InitStatus |= Enums.EntityInitFlags.InitializationFailed;
-            entity.InitMessage = error.InnerException is EntityPropertyInitializationException
-                ? "Check the properties errors"
-                : message;
-            entity.IsCodegenPending = true;
+            try
+            {
+                // Get entity as Session can be closed
+                var entity = await _entityConfigRepo.GetAsync(error.EntityConfig.Id);
+                entity.InitStatus |= Enums.EntityInitFlags.InitializationFailed;
+                entity.InitMessage = error.InnerException is EntityPropertyInitializationException
+                    ? "Check the properties errors"
+                    : message;
+                entity.IsCodegenPending = true;
 
-            await _entityConfigRepo.UpdateAsync(entity);
+                await _entityConfigRepo.UpdateAsync(entity);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to persist error status for EntityConfig {error.EntityConfig.Id}", ex);
+            }
+
         }
     }
 }

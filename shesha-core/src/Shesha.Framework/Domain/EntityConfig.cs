@@ -34,7 +34,7 @@ namespace Shesha.Domain
         public virtual EntityConfig? InheritedFrom { get; set; }
 
         public virtual EntityInitFlags InitStatus { get; set; }
-        public virtual string InitMessage { get; set; }
+        public virtual string? InitMessage { get; set; }
 
         public virtual bool CreatedInDb { get; set; }
 

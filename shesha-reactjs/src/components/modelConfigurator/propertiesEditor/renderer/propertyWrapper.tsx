@@ -51,7 +51,7 @@ export const PropertyWrapper: FC<PropsWithChildren<IProps>> = (props) => {
         {needRestart && (
           <Tooltip
             title={hasError
-              ? "This property has initialization errors which require a fix and an application restart: " + props.initMessage
+              ? `This property has initialization errors which require a fix and an application restart: ${props.initMessage ?? 'undefined'}`
               : "This property has changes which require an application restart before they can take effect"}
           >
             <span style={{ color: 'red' }}><WarningFilled /> </span>
