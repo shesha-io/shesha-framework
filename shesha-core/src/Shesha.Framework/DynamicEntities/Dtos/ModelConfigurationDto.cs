@@ -2,6 +2,7 @@
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Dto.Interfaces;
+using Shesha.DynamicEntities.Enums;
 using Shesha.Permissions;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,9 @@ namespace Shesha.DynamicEntities.Dtos
     public class ModelConfigurationDto : EntityDto<Guid>, IConfigurationItemDto
     {
         public bool CreatedInDb { get; set; }
+
+        public EntityInitFlags? InitStatus { get; set; }
+        public string? InitMessage { get; set; }
 
         public string? DiscriminatorValue { get; set; }
         

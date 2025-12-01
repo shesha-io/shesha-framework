@@ -4,7 +4,7 @@ import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { IEntityReferenceDto, IErrorInfo, ILoginForm, toErrorInfo } from '@/interfaces';
 import { HttpClientApi, HttpResponse } from '@/publicJsApis/httpClient';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
-import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, UserLoginInfoDto } from '@/apis/session';
+import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, InitializationErrorsInfoDto, UserLoginInfoDto } from '@/apis/session';
 import { getQueryParam, isSameUrls, removeURLParameter } from '@/utils/url';
 import { IRouter } from '../shaRouting';
 import React from 'react';
@@ -83,6 +83,10 @@ export class Authenticator implements IAuthenticator {
 
   get loginInfo(): UserLoginInfoDto | undefined {
     return this.#loginInfo?.user;
+  }
+
+  get errorsInfo(): InitializationErrorsInfoDto | undefined {
+    return this.#loginInfo?.initializationErrors;
   }
 
   get isLoggedIn(): boolean {

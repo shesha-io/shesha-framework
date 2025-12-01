@@ -53,4 +53,7 @@ export interface IModelItem {
   columnName?: string;
   createdInDb?: boolean;
   inheritedFromId?: string;
+
+  initStatus?: number;
+  initMessage?: string;
 }

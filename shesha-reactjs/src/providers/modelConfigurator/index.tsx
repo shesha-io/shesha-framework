@@ -4,10 +4,9 @@ import {
   ModelConfigurationDto,
   entityConfigDelete,
   modelConfigurationsCreate,
-  modelConfigurationsGetById,
   modelConfigurationsUpdate,
 } from '@/apis/modelConfigurations';
-import { useSheshaApplication } from '@/providers';
+import { useHttpClient, useSheshaApplication } from '@/providers';
 import {
   cancelAction,
   changeModelIdAction,
@@ -32,7 +31,7 @@ import {
   ModelConfiguratorStateContext,
 } from './contexts';
 import modelReducer from './reducer';
-import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { IAjaxResponse, isAjaxErrorResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import propertyModelValidator from '@/components/modelConfigurator/propertiesEditor/renderer/propertySettings/propertyModelValidator';
 
 export interface IModelConfiguratorProviderPropsBase {
@@ -48,6 +47,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
   const { children } = props;
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const httpClient = useHttpClient();
 
   const [state, dispatch] = useReducer(modelReducer, {
     ...MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
@@ -59,19 +59,20 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     if (state.id) {
       dispatch(loadRequestAction());
 
-      // { name: state.className, namespace: state.namespace }
-      modelConfigurationsGetById({}, { id: state.id, base: backendUrl, headers: httpHeaders })
+      httpClient.get<IAjaxResponse<ModelConfigurationDto>>(`/api/ModelConfigurations/${state.id}`)
         .then((response) => {
-          if (isAjaxSuccessResponse(response)) {
-            dispatch(loadSuccessAction(response.result));
-          } else dispatch(loadErrorAction(response.error));
+          if (isAjaxSuccessResponse(response.data))
+            dispatch(loadSuccessAction(response.data.result));
+          else
+            dispatch(loadErrorAction(response.data.error));
         })
         .catch((e) => {
-          dispatch(loadErrorAction({ message: 'Failed to load model', details: e }));
+          if (isAjaxErrorResponse(e.response?.data))
+            dispatch(loadErrorAction(e.response.data.error));
+          else
+            dispatch(loadErrorAction({ message: 'Failed to load model' }));
         });
-    } /*
-    else
-      console.error("Failed to fetch a model configuraiton by Id - Id not specified");*/
+    }
   };
 
   useEffect(() => {

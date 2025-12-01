@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,7 +20,11 @@ namespace Shesha.Domain
     [Table("entity_properties", Schema = "frwk")]
     public class EntityProperty: FullAuditedEntity<Guid>
     {
+        public virtual EntityInitFlags InitStatus { get; set; }
+        public virtual string InitMessage { get; set; }
+
         public virtual bool CreatedInDb { get; set; }
+
 
         /// <summary>
         /// Entity Config Revision

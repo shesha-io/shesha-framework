@@ -17,6 +17,7 @@ using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.DbGenerator;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.EntityTypeBuilder;
+using Shesha.DynamicEntities.Enums;
 using Shesha.DynamicEntities.Exceptions;
 using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;
@@ -139,7 +140,11 @@ namespace Shesha.DynamicEntities
                 {
                     Source = MetadataSourceType.UserDefined,
                     InheritedFromId = x.Id.ToGuidOrNull(),
-                    CreatedInDb = true,
+
+                    CreatedInDb = x.CreatedInDb,
+                    InitStatus = x.InitStatus,
+                    InitMessage = x.InitMessage,
+
                     ColumnName = x.ColumnName,
                     IsItemsType = x.IsItemsType,
 
@@ -294,6 +299,8 @@ namespace Shesha.DynamicEntities
 
             if (isNew)
             {
+                entityConfig.IsCodegenPending = true;
+                entityConfig.InitStatus = EntityInitFlags.DbActionRequired | EntityInitFlags.InitializationRequired;
                 entityConfig.DiscriminatorValue = input.DiscriminatorValue?.Trim();
                 entityConfig.SchemaName = input.SchemaName?.Trim();
                 entityConfig.TableName = input.TableName?.Trim();
@@ -366,6 +373,19 @@ namespace Shesha.DynamicEntities
             {
                 input.PermissionDelete.Type = ShaPermissionedObjectsTypes.EntityAction;
                 await _permissionedObjectManager.SetAsync(input.PermissionDelete);
+            }
+
+            await _unitOfWorkManager.Current.SaveChangesAsync();
+
+            var needRestart = await PropertyConfigRepo.GetAll()
+                .AnyAsync(x => 
+                    x.EntityConfig == entityConfig 
+                    && (x.InitStatus.HasFlag(EntityInitFlags.InitializationRequired) || x.InitStatus.HasFlag(EntityInitFlags.DbActionRequired)));
+            if (needRestart)
+            {
+                entityConfig.IsCodegenPending = true;
+                entityConfig.InitStatus = EntityInitFlags.InitializationRequired;
+                await Repository.UpdateAsync(entityConfig);
             }
 
             await _unitOfWorkManager.Current.SaveChangesAsync();
@@ -470,6 +490,7 @@ namespace Shesha.DynamicEntities
 
                 if (isNew)
                 {
+                    dbProp.InitStatus = EntityInitFlags.InitializationRequired;
                     dbProp.ParentProperty = parentProperty;
                     dbProp.InheritedFrom = inputProp.InheritedFromId != null
                         ? await PropertyConfigRepo.GetAsync(inputProp.InheritedFromId.Value)
@@ -513,6 +534,9 @@ namespace Shesha.DynamicEntities
                         dbProp.ReferenceListName = dbProp.ItemsType?.ReferenceListName;
                     }
                 }
+
+                if (isNew && IsDbInitializationRequired(dbProp))
+                    dbProp.InitStatus |= EntityInitFlags.DbActionRequired;
 
                 await PropertyConfigRepo.InsertOrUpdateAsync(dbProp);
 
@@ -567,6 +591,12 @@ namespace Shesha.DynamicEntities
                 itemsType = inputProp.IsItemsType ? dbProp : null;
             }
             return itemsType;
+        }
+
+        private bool IsDbInitializationRequired(EntityProperty dbProp)
+        {
+            return !(dbProp.DataType == DataTypes.Advanced
+                || dbProp.DataType == DataTypes.Array && dbProp.DataFormat == ArrayFormats.EntityReference);
         }
 
         private async Task MapPropertyToDbAsync(ModelPropertyDto dto, EntityProperty dbProp, ModelUpdateType updateType)
@@ -627,6 +657,8 @@ namespace Shesha.DynamicEntities
                 CascadeUpdate = dbProp.CascadeUpdate,
                 ColumnName = dbProp.ColumnName,
                 CreatedInDb = dbProp.CreatedInDb,
+                InitMessage = dbProp.InitMessage,
+                InitStatus = dbProp.InitStatus,
                 DataFormat = dbProp.DataFormat,
                 DataType = dbProp.DataType,
                 Description = dbProp.Description,
@@ -739,6 +771,8 @@ namespace Shesha.DynamicEntities
                     && (entityAttr == null || entityAttr.GenerateApplicationService == GenerateApplicationServiceState.UseConfiguration),
                 ClassName = entityConfig.ClassName,
                 CreatedInDb = entityConfig.CreatedInDb,
+                InitMessage = entityConfig.InitMessage,
+                InitStatus = entityConfig.InitStatus,
                 Description = entityConfig.Description,
                 DiscriminatorValue = entityConfig.DiscriminatorValue,
                 EntityConfigType = entityConfig.EntityConfigType,
