@@ -41,29 +41,17 @@ export const getListTypeAndLayout = (
 };
 
 
-export interface IFetchedFileResult {
-  /** The blob URL for the fetched file. Must be revoked when no longer needed. */
-  url: string;
-  /** Cleanup function to revoke the blob URL and free memory */
-  revoke: () => void;
-}
-
-export const createFetchStoredFile = (httpHeaders: Record<string, string>) => {
-  return async (url: string): Promise<IFetchedFileResult> => {
-    const response = await fetch(`${url}&skipMarkDownload=true`, {
-      headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
+export const fetchStoredFile = (url: string, httpHeaders) => {
+  const response = fetch(`${url}`,
+    { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
+    .then((response) => {
+      return response.blob();
+    })
+    .then((blob) => {
+      return URL.createObjectURL(blob);
     });
-    if (!response.ok) {
-      throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
-    }
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
 
-    return {
-      url: blobUrl,
-      revoke: () => URL.revokeObjectURL(blobUrl),
-    };
-  };
+  return response;
 };
 
 export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDownload }) => {
