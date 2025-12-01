@@ -22,7 +22,6 @@ const SliderComponent: SliderComponentDefinition = {
     const max = model?.max ? parseInt(model.max, 10) : undefined;
 
     return (
-      {/* Wrapper prevents scrollbar when slider is at max value (margin-right spacing) */}
       <div className={styles.sliderWrapper}>
         <ConfigurableFormItem model={model}>
           {(value, onChange) => (
