@@ -461,7 +461,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
                 color: theme.colorTextQuaternary,
               }}
             >
-              👤
+              <span role="img" aria-label="User placeholder">👤</span>
             </div>
             {/* Text content */}
             <div style={{ flex: 1, minWidth: 0 }}>
