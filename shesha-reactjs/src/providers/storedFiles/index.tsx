@@ -40,7 +40,7 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
-import { removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
+import { updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
@@ -86,6 +86,22 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const [state, dispatch] = useReducer(storedFilesReducer, {
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
   });
+
+  // Track when we need to call onChange after state updates
+  const pendingOnChangeRef = React.useRef(false);
+  const prevFileListRef = React.useRef(state.fileList);
+
+  // Call onChange when fileList changes due to upload/delete operations
+  React.useEffect(() => {
+    const fileListChanged = prevFileListRef.current !== state.fileList;
+
+    if (pendingOnChangeRef.current && fileListChanged) {
+      pendingOnChangeRef.current = false;
+      onChange?.(state.fileList);
+    }
+
+    prevFileListRef.current = state.fileList;
+  }, [state.fileList]);
 
   const { message } = App.useApp();
   const { connection } = useSignalR(false) ?? {};
@@ -160,8 +176,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       formData.append('filesCategory', `${filesCategory}`);
     formData.append('propertyName', '');
 
+    // Generate a unique UID for each file to track it during upload
+    const uniqueUid = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     // @ts-ignore
-    const newFile: IStoredFile = { uid: '', ...file, status: 'uploading', name: file.name };
+    const newFile: IStoredFile = { uid: uniqueUid, ...file, status: 'uploading', name: file.name };
 
     if (!Boolean(payload.ownerId || ownerId) && typeof addDelayedUpdate !== 'function') {
       console.error('File list component is not configured');
@@ -183,8 +201,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         const responseFile = response.result as IStoredFile;
         responseFile.uid = newFile.uid;
+
+        // Mark that we need to call onChange after the state updates
+        pendingOnChangeRef.current = true;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
-        onChange?.([...state.fileList, responseFile]);
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
@@ -225,9 +245,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
     deleteFileHttp({ id: resolvedId })
       .then(() => {
+        // Mark that we need to call onChange after the state updates
+        pendingOnChangeRef.current = true;
         deleteFileSuccess(resolvedId);
-        const updateList = removeFile(list, resolvedId);
-        onChange?.(updateList);
+
         if (typeof removeDelayedUpdate === 'function') {
           removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, resolvedId);
         }
