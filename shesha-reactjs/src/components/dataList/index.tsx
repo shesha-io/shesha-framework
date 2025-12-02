@@ -487,7 +487,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           </div>
 
           {/* Warning icon with popover - positioned at top right, below delete button */}
-          <Popover content={popoverContent} title={null} trigger="hover" placement="left" styles={{ body: { backgroundColor: '#D9DCDC' } }}>
+          <Popover content={popoverContent} title={null} trigger={['hover', 'focus']} placement="left" styles={{ body: { backgroundColor: '#D9DCDC' } }}>
             <WarningOutlined
               role="button"
               tabIndex={0}
