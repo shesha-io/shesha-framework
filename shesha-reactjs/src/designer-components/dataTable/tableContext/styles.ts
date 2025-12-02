@@ -135,32 +135,32 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   const quickSearchHintPopover = cx("sha-quick-search-hint-popover", css`
         background-color:rgb(214, 214, 214) !important;
         border-radius: 8px !important;
+
+        &.ant-popover .ant-popover-arrow::before,
+        &.ant-popover .ant-popover-arrow::after {
+          background-color: rgb(214, 214, 214) !important;
+        }
     `);
 
   const tableViewSelectorHintPopover = cx("sha-table-view-selector-hint-popover", css`
         background-color:rgb(214, 214, 214) !important;
         border-radius: 8px !important;
+
+        &.ant-popover .ant-popover-arrow::before,
+        &.ant-popover .ant-popover-arrow::after {
+          background-color: rgb(214, 214, 214) !important;
+        }
     `);
 
   const tablePagerHintPopover = cx("sha-table-pager-hint-popover", css`
         background-color:rgb(214, 214, 214) !important;
         border-radius: 8px !important;
-    `);
 
-  const quickSearchPopoverArrowStyles = `
-    .ant-popover.sha-quick-search-hint-popover .ant-popover-arrow::before,
-    .ant-popover.sha-quick-search-hint-popover .ant-popover-arrow::after {
-      background-color: rgb(214, 214, 214) !important;
-    }
-    .ant-popover.sha-table-view-selector-hint-popover .ant-popover-arrow::before,
-    .ant-popover.sha-table-view-selector-hint-popover .ant-popover-arrow::after {
-      background-color: rgb(214, 214, 214) !important;
-    }
-    .ant-popover.sha-table-pager-hint-popover .ant-popover-arrow::before,
-    .ant-popover.sha-table-pager-hint-popover .ant-popover-arrow::after {
-      background-color: rgb(214, 214, 214) !important;
-    }
-  `;
+        &.ant-popover .ant-popover-arrow::before,
+        &.ant-popover .ant-popover-arrow::after {
+          background-color: rgb(214, 214, 214) !important;
+        }
+    `);
 
   const quickSearchContainer = cx("sha-quick-search-container", css`
         display: flex;
@@ -192,6 +192,40 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
     `);
 
+  const hintContainer = cx("sha-hint-container", css`
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    `);
+
+  const disabledComponentWrapper = cx("sha-disabled-component-wrapper", css`
+        opacity: 0.5;
+    `);
+
+  const filterButtonMockup = cx("sha-filter-button-mockup", css`
+        padding: 8px;
+        border: 1px dashed #d9d9d9;
+        border-radius: 4px;
+        min-height: 32px;
+        color: #8c8c8c;
+        background-color: #fafafa;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+    `);
+
+  const viewSelectorMockup = cx("sha-view-selector-mockup", css`
+        display: flex;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid #d9d9d9;
+        border-radius: 6px;
+        background-color: #fafafa;
+        color: #8c8c8c;
+        font-size: 14px;
+        font-weight: 600;
+    `);
+
   return {
     dataContextDesignerEmpty,
     dataContextRuntimeEmpty,
@@ -202,9 +236,12 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     quickSearchHintPopover,
     tableViewSelectorHintPopover,
     tablePagerHintPopover,
-    quickSearchPopoverArrowStyles,
     quickSearchContainer,
     tablePagerContainer,
     tablePagerMockup,
+    hintContainer,
+    disabledComponentWrapper,
+    filterButtonMockup,
+    viewSelectorMockup,
   };
 });

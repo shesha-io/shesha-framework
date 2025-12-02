@@ -33,56 +33,40 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
 
     if (!store) {
       return (
-        <>
-          <style>
-            {styles.quickSearchPopoverArrowStyles}
-          </style>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ opacity: 0.5 }}>
-              <div style={{
-                padding: '8px',
-                border: '1px dashed #d9d9d9',
-                borderRadius: '4px',
-                minHeight: '32px',
-                color: '#8c8c8c',
-                backgroundColor: '#fafafa',
-                display: 'flex',
-                alignItems: 'center',
-                whiteSpace: 'nowrap',
-              }}
-              >
-                <FilterOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
-                Table Filter
-              </div>
+        <div className={styles.hintContainer}>
+          <div className={styles.disabledComponentWrapper}>
+            <div className={styles.filterButtonMockup}>
+              <FilterOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
+              Table Filter
             </div>
-            <Popover
-              placement="right"
-              title="Hint:"
-              rootClassName={styles.tablePagerHintPopover}
-              classNames={{
-                body: styles.tablePagerHintPopover,
-              }}
-              content={(
-                <p>The Table Filter component must be<br />
-                  placed inside of a Data Table Context<br />
-                  component to be fully functional.
-                  <br />
-                  <br />
-                  <a
-                    href="https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/table-filter"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    See component documentation
-                  </a><br />
-                  for setup and usage.
-                </p>
-              )}
-            >
-              <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
-            </Popover>
           </div>
-        </>
+          <Popover
+            placement="right"
+            title="Hint:"
+            rootClassName={styles.tablePagerHintPopover}
+            classNames={{
+              body: styles.tablePagerHintPopover,
+            }}
+            content={(
+              <p>The Table Filter component must be<br />
+                placed inside of a Data Table Context<br />
+                component to be fully functional.
+                <br />
+                <br />
+                <a
+                  href="https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/table-filter"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  See component documentation
+                </a><br />
+                for setup and usage.
+              </p>
+            )}
+          >
+            <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
+          </Popover>
+        </div>
       );
     }
 
