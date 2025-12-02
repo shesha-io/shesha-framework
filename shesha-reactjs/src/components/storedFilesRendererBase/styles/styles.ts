@@ -41,7 +41,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     cursor: pointer;
     &:hover {
       background-color: #282828 !important;
-      color: white !important;
       opacity: 1 !important;
       overflow: visible;
       width: max-content;

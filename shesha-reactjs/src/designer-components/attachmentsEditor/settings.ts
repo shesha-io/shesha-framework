@@ -1057,11 +1057,19 @@ export const getSettings = () => {
                             content: {
                               id: pnlDownloadedFileFontStylesId,
                               components: [...new DesignerToolbarSettings()
+                                .addSettingsInput({
+                                  inputType: "switch",
+                                  id: nanoid(),
+                                  label: 'Style Downloaded File',
+                                  propertyName: 'styleDownloadedFiles'
+
+                                })
                                 .addSettingsInputRow({
                                   id: nanoid(),
                                   parentId: pnlDownloadedFileFontStylesId,
                                   inline: true,
                                   propertyName: 'downloadedFileStyles.font',
+                                  hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
                                       type: 'dropdown',
@@ -1107,6 +1115,13 @@ export const getSettings = () => {
                                     },
                                   ],
                                 })
+                                .addSettingsInput({
+                                  inputType: 'iconPicker',
+                                  id: nanoid(),
+                                  propertyName: 'downloadedIcon',
+                                  label: 'Icon',
+                                  hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                                })
                                 .toJson()
                               ]
                             }
@@ -1119,6 +1134,7 @@ export const getSettings = () => {
                             ghost: true,
                             parentId: downloadedStylesPnlId,
                             collapsible: 'header',
+                            hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                             content: {
                               id: 'pnlDownloadedFileCustomStylePanel',
                               components: [...new DesignerToolbarSettings()
