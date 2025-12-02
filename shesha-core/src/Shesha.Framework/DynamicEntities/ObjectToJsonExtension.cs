@@ -11,7 +11,7 @@ using Shesha.JsonLogic;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -97,7 +97,7 @@ namespace Shesha.DynamicEntities
                 || ObjectExtensions.IsDictionaryType(propType))
             {
                 jval = jval.IsNullOrEmpty() ? new JArray() : jval;
-                if (val is IEnumerable<object> list && list.Any() && jval is JArray jlist)
+                if (val is IEnumerable list && jval is JArray jlist)
                 {
                     var lType = propType.GetGenericArguments()[0];
                     var i = 0;

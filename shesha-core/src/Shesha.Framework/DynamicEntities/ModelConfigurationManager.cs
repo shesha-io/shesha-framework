@@ -227,7 +227,8 @@ namespace Shesha.DynamicEntities
 
             var module = input.ModuleId != null ? await _moduleManager.GetModuleAsync(input.ModuleId.Value) : null;
 
-            var entityName = input.Name.ToSnakeCase().Replace("-", "_").Trim();
+            var entityName = input.Name.Replace("-", "_").Trim();
+            var tableName = entityName.ToSnakeCase();
 
             var dynamicNamespace = (module?.Accessor).IsNullOrEmpty() ? DynamicEntityTypeBuilder.SheshaDynamicNamespace : $"{module?.Accessor}.{DynamicEntityTypeBuilder.SheshaDynamicNamespace}";
             var discriminatorValue = (module?.Accessor).IsNullOrEmpty() ? entityName : $"{dynamicNamespace}.{entityName}";
@@ -253,7 +254,7 @@ namespace Shesha.DynamicEntities
 
                 // ToDo: AS - use name conventions
                 SchemaName = inheritedFrom != null ? inheritedFrom.SchemaName : schemaName.ToSnakeCase(),
-                TableName = inheritedFrom != null ? inheritedFrom.TableName : entityName,
+                TableName = inheritedFrom != null ? inheritedFrom.TableName : tableName,
                 DiscriminatorValue = discriminatorValue,
 
                 ClassName = entityName,
@@ -262,9 +263,9 @@ namespace Shesha.DynamicEntities
                 AllowConfigureAppService = true,
                 ModuleId = module?.Id,
                 Module = module?.Name,
-                Name = input.Name,
-                Label = input.Label,
-                Description = input.Description,
+                Name = input.Name.Trim(),
+                Label = input.Label?.Trim(),
+                Description = input.Description?.Trim(),
                 Suppress = false,
                 //NotImplemented = false,
                 Source = MetadataSourceType.UserDefined,

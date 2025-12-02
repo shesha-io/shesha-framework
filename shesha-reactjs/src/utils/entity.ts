@@ -7,6 +7,15 @@ import { getValueByPropertyName, setValueByPropertyName } from "./object";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEqual } from "@/providers/metadataDispatcher/entities/utils";
 import { IEntityTypeIdentifierQueryParams } from "@/interfaces/metadata";
+import { IEntityReferenceDto } from "@/interfaces";
+
+export const isEntityReferenceId = (data: unknown): data is IEntityReferenceDto => {
+  if (data === null || typeof data !== "object" || Array.isArray(data))
+    return false;
+
+  const candidate = data as { id?: unknown; _className?: unknown };
+  return typeof candidate.id === "string" && typeof candidate._className === "string";
+};
 
 export interface IUseEntityDisplayTextProps {
   entityType?: string | IEntityTypeIdentifier;

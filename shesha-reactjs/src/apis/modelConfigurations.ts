@@ -83,7 +83,7 @@ export interface IEntityPropertyListConfiguration{
  */
 export interface ModelPropertyDto {
 
-  initStatus?: number;
+  initStatus?: EntityInitFlags;
   initMessage?: string;
 
   columnName?: string | null;
@@ -268,7 +268,7 @@ export interface ModelConfigurationDto {
   permissionDelete?: PermissionedObjectDto;
   viewConfigurations?: EntityViewConfigurationDto[] | null;
 
-  initStatus?: number;
+  initStatus?: EntityInitFlags;
   initMessage?: string;
 }
 
