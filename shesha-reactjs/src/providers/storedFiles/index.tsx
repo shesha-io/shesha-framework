@@ -101,7 +101,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     }
 
     prevFileListRef.current = state.fileList;
-  }, [state.fileList, onChange]);
+  }, [state.fileList]);
 
   const { message } = App.useApp();
   const { connection } = useSignalR(false) ?? {};
@@ -176,8 +176,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       formData.append('filesCategory', `${filesCategory}`);
     formData.append('propertyName', '');
 
+    // Generate a unique UID for each file to track it during upload
+    const uniqueUid = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     // @ts-ignore
-    const newFile: IStoredFile = { uid: '', ...file, status: 'uploading', name: file.name };
+    const newFile: IStoredFile = { uid: uniqueUid, ...file, status: 'uploading', name: file.name };
 
     if (!Boolean(payload.ownerId || ownerId) && typeof addDelayedUpdate !== 'function') {
       console.error('File list component is not configured');
