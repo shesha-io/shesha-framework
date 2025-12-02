@@ -4,6 +4,8 @@ using Abp.Extensions;
 using Shesha.Domain;
 using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.DynamicEntities.Cache;
+using Shesha.DynamicEntities.Enums;
+using Shesha.DynamicEntities.ErrorHandler;
 using Shesha.Extensions;
 using Shesha.Generators;
 using Shesha.Metadata;
@@ -38,6 +40,23 @@ namespace Shesha.DynamicEntities.DbGenerator
             _nameGenerator = nameGenerator;
         }
 
+        private async Task UpdateSuccessAsync(EntityConfig config)
+        {
+            config.CreatedInDb = true;
+            config.InitStatus &= ~EntityInitFlags.DbActionRequired;
+            config.InitStatus &= ~EntityInitFlags.DbActionFailed;
+            config.InitMessage = "";
+            await _entityConfigRepository.UpdateAsync(config);
+        }
+        private async Task UpdateSuccessAsync(EntityProperty property)
+        {
+            property.CreatedInDb = true;
+            property.InitStatus &= ~EntityInitFlags.DbActionRequired;
+            property.InitStatus &= ~EntityInitFlags.DbActionFailed;
+            property.InitMessage = "";
+            await _entityPropertyRepository.UpdateAsync(property);
+        }
+
         private async Task<bool> UseSchemaAndTableAsync(EntityConfig entityConfig)
         {
             var tableName = entityConfig.TableName.NotNull();
@@ -52,23 +71,38 @@ namespace Shesha.DynamicEntities.DbGenerator
 
         public async Task ProcessEntityConfigAsync(EntityConfig entityConfig, List<EntityProperty>? properties = null)
         {
-            // Force to skip exist checks for new tables
-            var force = await UseSchemaAndTableAsync(entityConfig);
-
-            var props = properties 
-                ?? await _entityPropertyRepository.GetAll()
-                // Process only top level properties and not "Id" property
-                .Where(x => x.EntityConfig.Id == entityConfig.Id && x.ParentProperty == null && x.Name != "id" && x.Name != "Id").ToListAsync();
-            if (props != null)
+            try
             {
-                foreach (var property in props.Where(x => !x.CreatedInDb))
-                {
-                    await ProcessEntityPropertyAsync(property, force);
-                }
-            }
+                // Get force to skip exist checks for new tables
+                var force = await UseSchemaAndTableAsync(entityConfig);
 
-            entityConfig.CreatedInDb = true;
-            await _entityConfigRepository.UpdateAsync(entityConfig);
+                var props = await _entityPropertyRepository.GetAll()
+                    .Where(x =>
+                        x.EntityConfig.Id == entityConfig.Id
+                        && x.InitStatus.HasFlag(EntityInitFlags.DbActionRequired)
+                        && (x.InheritedFrom == null || x.InheritedFrom.IsDeleted)
+                        && x.ParentProperty == null
+                        && !x.IsFrameworkRelated)
+                    .ToListAsync();
+
+                foreach (var property in props)
+                {
+                    try
+                    {
+                        await ProcessEntityPropertyAsync(property, force);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new EntityPropertyDbInitializationException(property, e, "initialize DB");
+                    }
+                }
+
+                await UpdateSuccessAsync(entityConfig);
+            }
+            catch (Exception e)
+            {
+                throw new EntityDbInitializationException(entityConfig, e, "initialize DB");
+            }
         }
 
         public async Task ProcessEntityPropertyAsync(EntityProperty entityProperty)
@@ -139,15 +173,13 @@ namespace Shesha.DynamicEntities.DbGenerator
 
                     await _dbActions.CreateManyToManyTableAsync(
                         (dbMapping?.ManyToManyTableName).NotNull(),
-                        primaryTable.NotNull(),foreignTable.NotNull(),
+                        primaryTable.NotNull(), foreignTable.NotNull(),
                         "id", "id", // ToDo: AS - get Id Column
-                        (dbMapping?.ManyToManyKeyColumnName).NotNull(),(dbMapping?.ManyToManyChildColumnName).NotNull()
+                        (dbMapping?.ManyToManyKeyColumnName).NotNull(), (dbMapping?.ManyToManyChildColumnName).NotNull()
                     );
                 }
 
-                entityProperty.CreatedInDb = true;
-                await _entityPropertyRepository.UpdateAsync(entityProperty);
-
+                await UpdateSuccessAsync(entityProperty);
                 await UpdateInheritedProperttiesAsync(entityProperty);
                 return;
             }
@@ -174,8 +206,8 @@ namespace Shesha.DynamicEntities.DbGenerator
                     ? primaryTable
                     : $"{primarySchema}.{primaryTable}";
                 await _dbActions.CreateEntityReferenceColumnAsync($"{columnName}", primaryTable.NotNull(), "id"); // ToDo: AS - get Id Column
-                entityProperty.CreatedInDb = true;
-                await _entityPropertyRepository.UpdateAsync(entityProperty);
+
+                await UpdateSuccessAsync(entityProperty);
                 await UpdateInheritedProperttiesAsync(entityProperty);
                 return;
             }
@@ -185,16 +217,16 @@ namespace Shesha.DynamicEntities.DbGenerator
                 await _dbActions.CreateColumnAsync($"{columnName}_id", new DbColumnType(DbColumnTypeEnum.String, 100));
                 await _dbActions.CreateColumnAsync($"{columnName}_class_name", new DbColumnType(DbColumnTypeEnum.String, 1000));
                 await _dbActions.CreateColumnAsync($"{columnName}_display_name", new DbColumnType(DbColumnTypeEnum.String));
-                entityProperty.CreatedInDb = true;
-                await _entityPropertyRepository.UpdateAsync(entityProperty);
+
+                await UpdateSuccessAsync(entityProperty);
                 await UpdateInheritedProperttiesAsync(entityProperty);
                 return;
             }
             if (force || !await _dbActions.IsColumnExistsAsync(columnName))
             {
                 await _dbActions.CreateColumnAsync(columnName, propertyDbType);
-                entityProperty.CreatedInDb = true;
-                await _entityPropertyRepository.UpdateAsync(entityProperty);
+
+                await UpdateSuccessAsync(entityProperty);
                 await UpdateInheritedProperttiesAsync(entityProperty);
                 return;
             }
@@ -209,8 +241,7 @@ namespace Shesha.DynamicEntities.DbGenerator
 
             }*/
 
-            entityProperty.CreatedInDb = true;
-            await _entityPropertyRepository.UpdateAsync(entityProperty);
+            await UpdateSuccessAsync(entityProperty);
             await UpdateInheritedProperttiesAsync(entityProperty);
             return;
 
@@ -235,8 +266,11 @@ namespace Shesha.DynamicEntities.DbGenerator
 
                 inheritedProp.ColumnName = property.ColumnName;
                 inheritedProp.CreatedInDb = property.CreatedInDb;
+                inheritedProp.InitStatus = property.InitStatus;
+                inheritedProp.InitMessage = property.InitMessage;
 
-                await _entityPropertyRepository.UpdateAsync(inheritedProp);
+                // Update all flags just in case
+                await UpdateSuccessAsync(inheritedProp);
             }
         }
 
@@ -289,7 +323,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                 case DataTypes.Time: return new DbColumnType(DbColumnTypeEnum.Time);
                 case DataTypes.DateTime: return new DbColumnType(DbColumnTypeEnum.DateTime);
                 case DataTypes.EntityReference:
-                    return entityProperty.EntityFullClassName.IsNullOrEmpty()
+                    return entityProperty.DataFormat == EntityFormats.GenericEntity
                     ? new DbColumnType(DbColumnTypeEnum.GenericEntityReference)
                     : new DbColumnType(DbColumnTypeEnum.EntityReference);
                 case DataTypes.File: return new DbColumnType(DbColumnTypeEnum.EntityReference);

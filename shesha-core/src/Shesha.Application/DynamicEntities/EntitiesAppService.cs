@@ -56,22 +56,22 @@ namespace Shesha.DynamicEntities
             await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.GetRequiredFullName(), crudMethod.NotNull(), ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
         }
 
-        private EntityTypeConfiguration GetConfig(EntityTypeIdInput entityType)
+        private EntityTypeConfiguration GetConfig(EntityTypeIdInput entityTypeId)
         {
-            var entityConfig = entityType.FullClassName.IsNullOrEmpty()
-                ? _entityConfigStore.Get(entityType.Module, entityType.Name.NotNull())
-                : _entityConfigStore.Get(entityType.FullClassName.NotNull());
+            var entityConfig = entityTypeId.EntityType.IsNullOrEmpty()
+                ? _entityConfigStore.Get(entityTypeId.Module, entityTypeId.Name.NotNull())
+                : _entityConfigStore.Get(entityTypeId.EntityType.NotNull());
             if (entityConfig == null)
-                throw new EntityTypeNotFoundException(entityType.ToString());
+                throw new EntityTypeNotFoundException(entityTypeId.ToString());
             return entityConfig;
         }
 
         [HttpGet]
-        public virtual async Task<IDynamicDataResult> GetAsync(EntityTypeIdInput entityType, GetDynamicEntityInput<string> input)
+        public virtual async Task<IDynamicDataResult> GetAsync(EntityTypeIdInput entityTypeId, GetDynamicEntityInput<string> input)
         {
             try
             {
-                var entityConfig = GetConfig(entityType);
+                var entityConfig = GetConfig(entityTypeId);
                 var typeName = entityConfig.EntityType.FullName;
                 var appServiceType = entityConfig.ApplicationServiceType;
 
@@ -118,11 +118,11 @@ namespace Shesha.DynamicEntities
         }
 
         [HttpGet]
-        public virtual async Task<IDynamicDataResult> GetAllAsync(EntityTypeIdInput entityType, PropsFilteredPagedAndSortedResultRequestDto input)
+        public virtual async Task<IDynamicDataResult> GetAllAsync(EntityTypeIdInput entityTypeId, PropsFilteredPagedAndSortedResultRequestDto input)
         {
             try
             {
-                var entityConfig = GetConfig(entityType);
+                var entityConfig = GetConfig(entityTypeId);
                 var appServiceType = entityConfig.ApplicationServiceType;
 
                 if (entityConfig.ApplicationServiceType == null)
@@ -147,7 +147,7 @@ namespace Shesha.DynamicEntities
         {
             try
             {
-                var entityConfig = GetConfig(input.EntityType);
+                var entityConfig = GetConfig(input.EntityTypeId);
                 var typeName = entityConfig.EntityType.FullName;
                 var appServiceType = entityConfig.ApplicationServiceType;
 
@@ -209,9 +209,9 @@ namespace Shesha.DynamicEntities
         /// Get specifications available for the specified entityType
         /// </summary>
         /// <returns></returns>
-        public Task<List<SpecificationDto>> SpecificationsAsync(EntityTypeIdInput entityType) 
+        public Task<List<SpecificationDto>> SpecificationsAsync(EntityTypeIdInput entityTypeId) 
         {
-            var entityConfig = GetConfig(entityType);
+            var entityConfig = GetConfig(entityTypeId);
 
             var specifications = _specificationsFinder.AllSpecifications.Where(s => entityConfig.EntityType.IsAssignableFrom(s.EntityType) /* include base classes */ && !s.IsGlobal).ToList();
 

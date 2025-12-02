@@ -126,7 +126,7 @@ namespace Shesha.Metadata
                 .Where(m => !m.GetGenericArguments().Any() && !m.HasAttribute<ObsoleteAttribute>() &&
                     MethodSupported(m, (type) =>
                     {
-                        var dt = _hardcodeMetadataProvider.GetDataTypeByPropertyType(type, null);
+                        var dt = _hardcodeMetadataProvider.GetDataTypeByPropertyType(type, null, containerType);
                         if (dt == null)
                             return false;
 
@@ -175,7 +175,7 @@ namespace Shesha.Metadata
 
         private Task<DataTypeInfo?> GetMethodReturnTypeAsync(MethodInfo method)
         {
-            var result = _hardcodeMetadataProvider.GetDataTypeByPropertyType(method.ReturnType, null);
+            var result = _hardcodeMetadataProvider.GetDataTypeByPropertyType(method.ReturnType, null, method.DeclaringType.NotNull());
             return Task.FromResult(result);
         }
 
@@ -190,7 +190,7 @@ namespace Shesha.Metadata
                     result.Add(new VariableDef
                     {
                         Name = parameter.Name,
-                        DataType = _hardcodeMetadataProvider.GetDataTypeByPropertyType(parameter.ParameterType, null).NotNull(),
+                        DataType = _hardcodeMetadataProvider.GetDataTypeByPropertyType(parameter.ParameterType, null, method.DeclaringType.NotNull()).NotNull(),
                     });
             }
 

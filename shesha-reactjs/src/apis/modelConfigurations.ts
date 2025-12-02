@@ -63,6 +63,15 @@ export interface IEntityPropertyListDbMapping
 
 export type EntityPropertyListMappingType = "many-to-many" | "many-to-one";
 
+export enum EntityInitFlags {
+  None = 0,
+  DbActionRequired = 1,
+  InitializationRequired = 2,
+
+  DbActionFailed = 32,
+  InitializationFailed = 64,
+}
+
 export interface IEntityPropertyListConfiguration{
   mappingType?: EntityPropertyListMappingType;
   foreignProperty?: string | null;
@@ -73,6 +82,9 @@ export interface IEntityPropertyListConfiguration{
  * Model property DTO
  */
 export interface ModelPropertyDto {
+
+  initStatus?: number;
+  initMessage?: string;
 
   columnName?: string | null;
   createdInDb?: boolean;
@@ -255,6 +267,9 @@ export interface ModelConfigurationDto {
   permissionUpdate?: PermissionedObjectDto;
   permissionDelete?: PermissionedObjectDto;
   viewConfigurations?: EntityViewConfigurationDto[] | null;
+
+  initStatus?: number;
+  initMessage?: string;
 }
 
 interface EmptyQueryParams {

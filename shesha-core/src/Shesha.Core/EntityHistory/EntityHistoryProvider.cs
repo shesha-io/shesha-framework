@@ -368,7 +368,7 @@ namespace Shesha.EntityHistory
                 {
                     var ownFields = manyToManyType.GetProperties().Where(x => x.PropertyType.IsAssignableFrom(itemType)).ToList();
                     if (ownFields.Count() > 1)
-                        throw new Exception($"Found more then 1 field with parent type {itemType.FullName}");
+                        throw new Exception($"Found more than 1 field with parent type {itemType.FullName}");
                     ownField = ownFields.FirstOrDefault();
                     if (ownField == null)
                         throw new Exception($"Filed with parent type {itemType.FullName} not found in many-to-many type {manyToManyType.FullName}");
@@ -500,7 +500,7 @@ namespace Shesha.EntityHistory
                 {
                     var ownFields = manyToOneType.GetProperties().Where(x => x.PropertyType.IsAssignableFrom(itemType)).ToList();
                     if (ownFields.Count() > 1)
-                        throw new Exception($"Found more then 1 field with parent type {itemType.FullName}");
+                        throw new Exception($"Found more than 1 field with parent type {itemType.FullName}");
                     ownField = ownFields.FirstOrDefault();
                     if (ownField == null)
                         throw new Exception($"Filed with parent type {itemType.FullName} not found in many-to-many type {manyToOneType.FullName}");

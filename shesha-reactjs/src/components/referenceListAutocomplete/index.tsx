@@ -61,7 +61,7 @@ const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAll
   return {
     skipCount: 0,
     maxResultCount: maxResultCount ?? 10,
-    fullClassName: REFERENCE_LIST_ENTITY_TYPE,
+    entityType: REFERENCE_LIST_ENTITY_TYPE,
     properties: REFERENCE_LIST_PROPERTIES,
     quickSearch: null,
     filter: getFilter(term),
@@ -85,7 +85,7 @@ const getSelectedValueQueryParams = (value?: IReferenceListIdentifier): IGeneric
     ? {
       skipCount: 0,
       maxResultCount: 1000,
-      fullClassName: REFERENCE_LIST_ENTITY_TYPE,
+      entityType: REFERENCE_LIST_ENTITY_TYPE,
       properties: REFERENCE_LIST_PROPERTIES,
       filter: JSON.stringify(expression),
     }
