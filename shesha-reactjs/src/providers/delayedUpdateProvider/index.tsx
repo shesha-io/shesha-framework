@@ -12,57 +12,62 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
   const [state, setState] = useState<IDelayedUpdateStateContext>(DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE);
 
   const addItem = useCallback((groupName: string, id: any, data?: any) => {
-    const group = state.groups?.find((x) => x.name === groupName);
-    if (Boolean(group)) {
-      const item = group.items?.find((x) => x.id === id);
-      if (Boolean(item)) {
-        setState({
-          groups: [
-            ...state.groups.map((gr) => {
-              return gr.name === groupName
-                ? {
-                    name: groupName,
-                    items: [
-                      ...gr.items.map((it) => {
-                        return it.id === id ? { id, data } : it;
-                      }),
-                    ],
-                  }
-                : gr;
-            }),
-          ],
-        });
+    setState((prevState) => {
+      const group = prevState.groups?.find((x) => x.name === groupName);
+      if (Boolean(group)) {
+        const item = group.items?.find((x) => x.id === id);
+        if (Boolean(item)) {
+          return {
+            groups: [
+              ...prevState.groups.map((gr) => {
+                return gr.name === groupName
+                  ? {
+                      name: groupName,
+                      items: [
+                        ...gr.items.map((it) => {
+                          return it.id === id ? { id, data } : it;
+                        }),
+                      ],
+                    }
+                  : gr;
+              }),
+            ],
+          };
+        } else {
+          return {
+            groups: [
+              ...prevState.groups.map((gr) => {
+                return gr.name === groupName ? { ...gr, items: [...gr.items, { id, data }] } : gr;
+              }),
+            ],
+          };
+        }
       } else {
-        setState({
-          groups: [
-            ...state.groups.map((gr) => {
-              return gr.name === groupName ? { ...gr, items: [...gr.items, { id, data }] } : gr;
-            }),
-          ],
-        });
+        return { groups: [...prevState.groups, { name: groupName, items: [{ id, data }] }] };
       }
-    } else {
-      setState({ groups: [...state.groups, { name: groupName, items: [{ id, data }] }] });
-    }
-  }, [state]);
+    });
+  }, []);
 
   const removeItem = useCallback((groupName: string, id: any) => {
-    const group = state.groups.find((x) => x.name === groupName);
-    if (Boolean(group)) {
-      const item = group.items.find((x) => x.id === id);
-      if (Boolean(item)) {
-        setState({
-          groups: [
-            ...state.groups.map((gr) => {
-              return gr.name === groupName
-                ? { name: groupName, items: [...gr.items.filter((it) => it.id !== id)] }
-                : gr;
-            }),
-          ],
-        });
+    setState((prevState) => {
+      const group = prevState.groups.find((x) => x.name === groupName);
+      if (Boolean(group)) {
+        const item = group.items.find((x) => x.id === id);
+        if (Boolean(item)) {
+          return {
+            groups: [
+              ...prevState.groups.map((gr) => {
+                return gr.name === groupName
+                  ? { name: groupName, items: [...gr.items.filter((it) => it.id !== id)] }
+                  : gr;
+              }),
+            ],
+          };
+        }
       }
-    }
-  }, [state]);
+      return prevState;
+    });
+  }, []);
 
   const getPayload = useCallback(() => {
     const obj = [...state.groups?.filter((g) => g.items?.length > 0)];
