@@ -1,3 +1,9 @@
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+using MimeKit.Utils;
+using NUglify;
+using Shesha.Configuration;
 using System;
 using System.IO;
 using System.Linq;
@@ -6,11 +12,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using MimeKit;
-using MimeKit.Utils;
-using Shesha.Configuration;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace Shesha.Email
 {
@@ -56,8 +58,8 @@ namespace Shesha.Email
 
             var htmlView = mail.AlternateViews
                 .Cast<AlternateView>()
-                .FirstOrDefault(v => string.Equals(v.ContentType.MediaType, "text", StringComparison.OrdinalIgnoreCase)
-                    && string.Equals(v.ContentType.MediaSubtype, "html", StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(v => string.Equals(v.ContentType.MediaType.Split('/')[0], "text", StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(v.ContentType.MediaType.Split('/')[1], "html", StringComparison.OrdinalIgnoreCase));
 
             if (htmlView != null)
             {
@@ -78,8 +80,12 @@ namespace Shesha.Email
                 if (alternateView == htmlView)
                     continue;
 
-                if (string.Equals(alternateView.ContentType.MediaType, "text", StringComparison.OrdinalIgnoreCase)
-                    && string.Equals(alternateView.ContentType.MediaSubtype, "plain", StringComparison.OrdinalIgnoreCase))
+                var alternateViewMediaType = alternateView.ContentType.MediaType;
+                var mediaTypeMain = alternateViewMediaType.Split('/')[0];
+                var mediaTypeSub = alternateViewMediaType.Split('/')[1];
+
+                if (string.Equals(mediaTypeMain, "text", StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(mediaTypeSub, "plain", StringComparison.OrdinalIgnoreCase))
                 {
                     builder.TextBody = ReadAlternateView(alternateView);
                 }
@@ -139,34 +145,40 @@ namespace Shesha.Email
             }
         }
 
-        private static MimeEntity CreateAttachmentPart(Attachment attachment)
+        private static MimePart CreateAttachmentPart(Attachment attachment)
         {
-            var mediaType = attachment.ContentType.MediaType ?? "application";
-            var mediaSubType = attachment.ContentType.MediaSubtype ?? "octet-stream";
+            var contentType = attachment.ContentType.MediaType;
+            var mediaType = contentType.Split('/')[0] ?? "application";
+            var mediaSubType = contentType.Split('/')[1] ?? "octet-stream";
+
             var mimePart = new MimePart(mediaType, mediaSubType)
             {
-                Content = new MimeContent(CopyToMemoryStream(attachment.ContentStream)),
+                Content = new MimeContent(attachment.ContentStream),
                 ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
                 ContentTransferEncoding = ContentEncoding.Base64,
                 FileName = attachment.Name
             };
 
+            // The created MemoryStream is now owned by MimeContent, which will dispose it when disposed.
             return mimePart;
         }
 
         private static MimeEntity CreateLinkedResource(LinkedResource resource)
         {
-            var mediaType = resource.ContentType.MediaType ?? "application";
-            var mediaSubType = resource.ContentType.MediaSubtype ?? "octet-stream";
+            var contentType = resource.ContentType.MediaType;
+            var mediaType = contentType.Split('/')[0] ?? "application";
+            var mediaSubType = contentType.Split('/')[1] ?? "octet-stream";
+            using MemoryStream memoryStream = CopyToMemoryStream(resource.ContentStream);
             var mimePart = new MimePart(mediaType, mediaSubType)
             {
-                Content = new MimeContent(CopyToMemoryStream(resource.ContentStream)),
+                Content = new MimeContent(memoryStream),
                 ContentDisposition = new ContentDisposition(ContentDisposition.Inline),
                 ContentTransferEncoding = ContentEncoding.Base64,
                 ContentId = string.IsNullOrWhiteSpace(resource.ContentId) ? MimeUtils.GenerateMessageId() : resource.ContentId,
                 FileName = resource.ContentId
             };
 
+            // The created MemoryStream is now owned by MimeContent, which will dispose it when disposed.
             return mimePart;
         }
 

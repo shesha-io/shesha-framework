@@ -86,7 +86,7 @@ namespace Shesha.Notifications
         {
             try
             {
-                var mimeMessage = MailKitEmailHelper.ConvertToMimeMessage(mail);
+                using var mimeMessage = MailKitEmailHelper.ConvertToMimeMessage(mail);
                 var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
                 await MailKitEmailHelper.SendAsync(mimeMessage, smtpSettings);
             }

@@ -77,7 +77,7 @@ namespace Shesha.Email
             if (!PrepareAndCheckMail(mail, smtpSettings))
                 return;
 
-            var mimeMessage = MailKitEmailHelper.ConvertToMimeMessage(mail);
+            using var mimeMessage = MailKitEmailHelper.ConvertToMimeMessage(mail);
             await MailKitEmailHelper.SendAsync(mimeMessage, smtpSettings);
         }
 
@@ -92,7 +92,7 @@ namespace Shesha.Email
             if (!PrepareAndCheckMail(mail, smtpSettings))
                 return;
 
-            var mimeMessage = MailKitEmailHelper.ConvertToMimeMessage(mail);
+            using var mimeMessage = MailKitEmailHelper.ConvertToMimeMessage(mail);
             MailKitEmailHelper.Send(mimeMessage, smtpSettings);
         }
 
