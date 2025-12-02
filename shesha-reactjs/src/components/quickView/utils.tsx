@@ -16,10 +16,10 @@ export const formItemLayout = {
   },
 };
 
-export const loadingBox = (cx: (className: string) => string, styles: { innerEntityReferenceSpanBoxStyle: string; spin: string; inlineBlock: string }): ReactNode => (
-  <span className={cx(styles.innerEntityReferenceSpanBoxStyle)}>
-    <Spin size="small" className={cx(styles.spin)} />
-    <span className={cx(styles.inlineBlock)}>Loading...</span>
+export const loadingBox = (styles: { innerEntityReferenceSpanBoxStyle: string; spin: string; inlineBlock: string }): ReactNode => (
+  <span className={styles.innerEntityReferenceSpanBoxStyle}>
+    <Spin size="small" className={styles.spin} />
+    <span className={styles.inlineBlock}>Loading...</span>
   </span>
 );
 

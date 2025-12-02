@@ -31,7 +31,7 @@ import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
-import { DataContextTopLevels, isScriptActionConfiguration, useMetadataDispatcher } from "@/providers";
+import { DataContextTopLevels, isConfigurableFormComponent, isScriptActionConfiguration, useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
 import { getQueryParams } from "@/utils/url";
 import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
@@ -98,10 +98,12 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     for (const componentId in this.#form.flatStructure.allComponents) {
       if (Object.hasOwn(this.#form.flatStructure.allComponents, componentId)) {
         const component = this.#form.flatStructure.allComponents[componentId];
-        const addComponent: IPropertiesWithScripts = {};
-        proceed(addComponent, component, '');
-        if (!isEmpty(addComponent)) {
-          components[component.componentName] = addComponent;
+        if (isConfigurableFormComponent(component)) {
+          const addComponent: IPropertiesWithScripts = {};
+          proceed(addComponent, component, '');
+          if (!isEmpty(addComponent)) {
+            components[component.componentName] = addComponent;
+          }
         }
       }
     };

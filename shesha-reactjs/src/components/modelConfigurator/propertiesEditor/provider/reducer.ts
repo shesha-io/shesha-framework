@@ -13,6 +13,7 @@ import {
 import { DataTypes } from '@/index';
 import { nanoid } from '@/utils/uuid';
 import { ArrayFormats } from '@/interfaces/dataTypes';
+import { EntityInitFlags } from '@/apis/modelConfigurations';
 
 const findItemById = (items: IModelItem[], id: string): IModelItem => {
   for (const item of items) {
@@ -50,6 +51,7 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
         id: payload.item?.id ?? '00000000-0000-0000-0000-000000000000', // Guid.Empty
         source: MetadataSourceType.UserDefined,
         dataType: 'string',
+        initStatus: EntityInitFlags.InitializationRequired,
       };
 
       const newItems = [...state.items];

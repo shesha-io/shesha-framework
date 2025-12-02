@@ -263,7 +263,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     const getDataPayload = await convertPayload(payload);
 
     const excelPayload: IExportExcelPayload = {
-      entityType: getEntityTypeIdentifierQueryParams(entityType),
+      entityTypeId: getEntityTypeIdentifierQueryParams(entityType),
       skipCount: getDataPayload.skipCount,
       properties: getDataPayload.properties,
       quickSearch: getDataPayload.quickSearch,

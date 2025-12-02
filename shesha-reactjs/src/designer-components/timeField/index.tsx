@@ -61,6 +61,8 @@ export const TimeFieldComponent: TimeFieldComponentDefinition = {
     const customModel: ITimePickerComponentProps = {
       ...model,
       format: DATE_TIME_FORMAT,
+      showNow: true,
+      allowClear: true,
     };
     return customModel;
   },

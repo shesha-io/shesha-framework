@@ -1,3 +1,4 @@
+import { IReferenceListIdentifier } from '@/interfaces';
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import * as RestfulShesha from '@/utils/fetchers';
@@ -62,6 +63,15 @@ export interface IEntityPropertyListDbMapping
 
 export type EntityPropertyListMappingType = "many-to-many" | "many-to-one";
 
+export enum EntityInitFlags {
+  None = 0,
+  DbActionRequired = 1,
+  InitializationRequired = 2,
+
+  DbActionFailed = 32,
+  InitializationFailed = 64,
+}
+
 export interface IEntityPropertyListConfiguration{
   mappingType?: EntityPropertyListMappingType;
   foreignProperty?: string | null;
@@ -73,11 +83,12 @@ export interface IEntityPropertyListConfiguration{
  */
 export interface ModelPropertyDto {
 
+  initStatus?: number;
+  initMessage?: string;
+
   columnName?: string | null;
   createdInDb?: boolean;
   inheritedFromId?: string | null;
-
-  listConfiguration?: IEntityPropertyListConfiguration;
 
   id?: string | null;
   /**
@@ -105,13 +116,13 @@ export interface ModelPropertyDto {
    */
   entityType?: IEntityTypeIdentifier | null;
   /**
-   * Reference list name
+   * Reference list
    */
-  referenceListName?: string | null;
+
+  referenceListId?: IReferenceListIdentifier | null;
   /**
-   * Reference list module
+   * Metadata Source Type
    */
-  referenceListModule?: string | null;
   source?: MetadataSourceType;
   /**
    * Default sort order
@@ -200,6 +211,12 @@ export interface ModelPropertyDto {
   cascadeDeleteUnreferencedHardcoded?: boolean;
 
   formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting);
+
+  listConfiguration?: IEntityPropertyListConfiguration;
+
+  itemsType?: ModelPropertyDto | null;
+
+  isItemsType?: boolean;
 }
 
 /**
@@ -250,6 +267,9 @@ export interface ModelConfigurationDto {
   permissionUpdate?: PermissionedObjectDto;
   permissionDelete?: PermissionedObjectDto;
   viewConfigurations?: EntityViewConfigurationDto[] | null;
+
+  initStatus?: number;
+  initMessage?: string;
 }
 
 interface EmptyQueryParams {

@@ -1,5 +1,5 @@
 export interface IHasEntityTypeIdPayload {
-  fullClassName?: string;
+  entityType?: string;
   module?: string;
   name?: string;
 }

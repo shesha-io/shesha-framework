@@ -916,13 +916,13 @@ const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTabl
 };
 
 const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props) => {
-  const component = useMemo(() => {
+  const Component = useMemo(() => {
     return getTableProviderComponent(props);
   }, [props.sourceType]);
 
   return (
     <DataTableWithMetadataProvider {...props}>
-      {component(props)}
+      <Component {...props} />
     </DataTableWithMetadataProvider>
   );
 };

@@ -222,7 +222,7 @@ namespace Shesha.DynamicEntities
                                 simpleType = typeof(double?);
                                 break;
                             case NumberFormats.Float:
-                                simpleType = typeof(float?);
+                                simpleType = typeof(double?);
                                 break;
                         }
                         break;

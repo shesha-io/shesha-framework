@@ -35,7 +35,7 @@ const AttributeDecorator: React.FC<AttributeDecoratorProps> = (props) => {
       }
       setWrapper(React.Fragment);
     }
-  }, [ref.current]);
+  }, [ref.current, props.attributes]);
 
   return (
     <>

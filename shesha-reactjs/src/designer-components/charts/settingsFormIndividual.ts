@@ -425,24 +425,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   },
                                 ],
                               })
-
-                              .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'aggregationMethod',
-                                parentId: dataSettingsId,
-                                label: 'Aggregation Method',
-                                inputType: 'dropdown',
-                                allowClear: true,
-                                dropdownOptions: [
-                                  { label: 'Sum', value: 'sum' },
-                                  { label: 'Count', value: 'count' },
-                                  { label: 'Average', value: 'average' },
-                                  { label: 'Min', value: 'min' },
-                                  { label: 'Max', value: 'max' },
-                                ],
-                                validate: { required: true },
-                                jsSetting: true,
-                              })
                               .toJson(),
                           ],
                         })
@@ -760,142 +742,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            type: 'entityTypeAutocomplete',
-                            propertyName: 'entityType',
-                            label: 'Entity Type',
-                            description: 'The entity type you want to use.',
-                            labelAlign: 'right',
-                            parentId: dataTabId,
-                            hidden: false,
-                            jsSetting: true,
-                          },
-                          {
-                            id: nanoid(),
-                            type: 'numberField',
-                            propertyName: 'maxResultCount',
-                            label: 'Data Size Limit',
-                            description: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." +
-                              "-1 means no limit, 250 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
-                            tooltip: "The maximum number of items to be fetched from the data source. If not provided, the data will be fetched without a limit." +
-                              "-1 means no limit, 250 is the default limit. Higher values may cause performance issues, for higher values aggregating data in the backend is advised.",
-                            parentId: dataTabId,
-                            validate: { required: false },
-                            min: -1,
-                            jsSetting: true,
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.dataMode) === `url`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'axisProperty',
-                            label: 'Axis Property',
-                            labelAlign: 'right',
-                            parentId: dataTabId,
-                            type: 'propertyAutocomplete',
-                            isDynamic: false,
-                            description: 'The property to be used on the x-axis.',
-                            validate: { required: true },
-                            modelType: {
-                              _code: 'return getSettingValue(data?.entityType);',
-                              _mode: 'code',
-                              _value: false,
-                            } as any,
-                            autoFillProps: false,
-                            settingsValidationErrors: [],
-                            jsSetting: true,
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        hidden: {
-                          _code: 'return !getSettingValue(data?.axisProperty)',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            type: 'switch',
-                            propertyName: 'isAxisTimeSeries',
-                            label: 'Is Axis Property Time Series?',
-                            description: 'If the x-axis is a time series, switch to true.',
-                            tooltip: 'If the x-axis is a time series i.e. the Axis Property is a DateTime / ISO string data property, switch to true.',
-                            parentId: dataTabId,
-                            validate: { required: false },
-                            jsSetting: true,
-                          },
-                          {
-                            id: nanoid(),
-                            propertyName: 'timeSeriesFormat',
-                            parentId: dataTabId,
-                            label: 'Axis Property Time Series Format',
-                            type: 'dropdown',
-                            allowClear: true,
-                            dropdownOptions: [
-                              { label: 'Day', value: 'day' },
-                              { label: 'Month', value: 'month' },
-                              { label: 'Year', value: 'year' },
-                              { label: 'Day-Month', value: 'day-month' },
-                              { label: 'Day-Month-Year', value: 'day-month-year' },
-                              { label: 'Month-Year', value: 'month-year' },
-                            ],
-                            validate: { required: true },
-                            jsSetting: true,
-                            hidden: {
-                              _code: 'return getSettingValue(data?.isAxisTimeSeries) !== true',
-                              _mode: 'code',
-                              _value: false,
-                            } as any,
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.dataMode) === `url`',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'valueProperty',
-                            label: 'Value Property',
-                            labelAlign: 'right',
-                            parentId: dataTabId,
-                            type: 'propertyAutocomplete',
-                            isDynamic: false,
-                            description: 'The property to be used on the x-axis.',
-                            validate: { required: true },
-                            modelType: {
-                              _code: 'return getSettingValue(data?.entityType);',
-                              _mode: 'code',
-                              _value: false,
-                            } as any,
-                            autoFillProps: false,
-                            settingsValidationErrors: [],
-                            jsSetting: true,
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: dataTabId,
                         hidden: {
                           _code: 'return getSettingValue(data?.simpleOrPivot) === `simple`',
                           _mode: 'code',
@@ -1069,7 +915,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               _value: false,
                             } as any,
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                            jsSetting: true,
+                            jsSetting: false,
                           },
                         ],
                       })

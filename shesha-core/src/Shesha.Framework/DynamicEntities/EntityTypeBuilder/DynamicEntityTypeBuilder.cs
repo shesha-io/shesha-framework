@@ -14,6 +14,7 @@ using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.EntityTypeBuilder.Model;
+using Shesha.DynamicEntities.ErrorHandler;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
@@ -25,6 +26,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.EntityTypeBuilder
 {
@@ -34,6 +36,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
     public class DynamicEntityTypeBuilder : IDynamicEntityTypeBuilder, ISingletonDependency
     {
         public const string SheshaDynamicNamespace = "ShaDynamic";
+        public ILogger Logger { get; set; }
 
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepo;
@@ -41,7 +44,8 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
         private readonly ApplicationPartManager _appPartManager;
         private readonly IModuleList _moduleList;
         private readonly ITypeFinder _typeFinder;
-        private readonly ILogger _logger;
+        private readonly IDynamicEntitiesErrorHandler _errorHandler;
+
 
         public DynamicEntityTypeBuilder(
             IUnitOfWorkManager unitOfWorkManager,
@@ -50,50 +54,73 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             ApplicationPartManager appPartManager,
             IModuleList moduleList,
             ITypeFinder typeFinder,
-            ILogger logger
+            IDynamicEntitiesErrorHandler errorHandler
         )
         {
+            Logger = NullLogger.Instance;
+
             _unitOfWorkManager = unitOfWorkManager;
             _propertyConfigRepo = propertyConfigRepo;
             _entityConfigRepo = entityConfigRepo;
             _appPartManager = appPartManager;
             _moduleList = moduleList;
             _typeFinder = typeFinder;
-            _logger = logger;
+            _errorHandler = errorHandler;
         }
 
-        public List<Type> GenerateTypes(IEntityTypeConfigurationStore entityConfigurationStore)
+        public async Task<List<Type>> GenerateTypesAsync(IEntityTypeConfigurationStore entityConfigurationStore)
         {
             List<Type> list;
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
                 using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                 {
-                    list = GenerateTypesInternal(entityConfigurationStore);
+                    list = await GenerateTypesInternalAsync(entityConfigurationStore);
                 }
-                unitOfWork.Complete();
+                await unitOfWork.CompleteAsync();
             }
             return list;
         }
 
-        private List<Type> GenerateTypesInternal(IEntityTypeConfigurationStore entityConfigurationStore)
+        private async Task<List<Type>> GenerateTypesInternalAsync(IEntityTypeConfigurationStore entityConfigurationStore)
         {
-            _logger.Warn("DynamicEntityTypeBuilder: GetTypes");
+            Logger.Warn("DynamicEntityTypeBuilder: GetTypes");
 
             var context = new EntityTypeBuilderContext() { EntityConfigurationStore = entityConfigurationStore };
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             // Get all user configs
-            var userConfigs = _entityConfigRepo.GetAll().Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && !x.IsDeleted).ToList();
+            var userConfigs = await _entityConfigRepo.GetAll()
+                .Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && !x.IsDeleted)
+                .ToListAsync();
+
+            Logger.Warn("DynamicEntityTypeBuilder: CreateDynamicAssemblies");
 
             // Generate dynamic assembly per module
             CreateDynamicAssemblies(context, assemblies, userConfigs);
 
+            Logger.Warn("DynamicEntityTypeBuilder: CreateTypeBuilders");
+
             // Create all type builders without creating types to get all types for reference properties
-            CreateTypeBuilders(userConfigs, context);
+            await CreateTypeBuildersAsync(userConfigs, context);
+
+            Logger.Warn("DynamicEntityTypeBuilder: CreateTypes");
 
             // Process all type builders to create types with all properties
-            var types = context.Types.Map(t => CreateType(t, context));
+            var types = new List<Type>();
+            foreach (var typeBuilder in context.Types)
+            {
+                try
+                {
+                    types.Add(await CreateTypeAsync(typeBuilder, context));
+                }
+                catch (Exception e)
+                {
+                    await _errorHandler.HandleInitializationErrorAsync(new EntityInitializationException(typeBuilder.EntityConfig, e, "initialize type for"));
+                }
+            }
+
+            Logger.Warn($"DynamicEntityTypeBuilder: {types.Count} created");
 
             // Refresh Application Parts
             foreach (var module in context.ModuleBuilders)
@@ -119,6 +146,8 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             // Run the Garbage Collector in an attempt to unload old unused dynamic entities assemblies
             GC.Collect();
             GC.WaitForPendingFinalizers();
+
+            _errorHandler.Complete();
 
             return types;
         }
@@ -180,7 +209,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             }
         }
 
-        public void CreateTypeBuilders(List<EntityConfig> configs, EntityTypeBuilderContext context)
+        public async Task CreateTypeBuildersAsync(List<EntityConfig> configs, EntityTypeBuilderContext context)
         {
             var allCount = configs.Count;
             var sortedToAdd = configs.Where(x => configs.All(y => x.InheritedFrom != y)).ToList();
@@ -190,24 +219,35 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                 sortedToAdd.AddRange(nextLevel);
                 nextLevel = configs.Where(x => !sortedToAdd.Contains(x) && sortedToAdd.Any(y => x.InheritedFrom == y)).ToList();
             }
-            foreach (var config in sortedToAdd.Where(x => !x.IsDeleted).ToList())
+            foreach (var config in sortedToAdd.Where(x => !x.IsDeleted && !x.InitStatus.HasFlag(Enums.EntityInitFlags.DbActionFailed)).ToList())
             {
-                var moduleBuilder = context.ModuleBuilders.FirstOrDefault(x => x.Key == config.Module).Value;
-                CreateTypeBuilder(moduleBuilder, config, context);
+                try
+                {
+                    var moduleBuilder = context.ModuleBuilders.FirstOrDefault(x => x.Key == config.Module).Value;
+                    CreateTypeBuilder(moduleBuilder, config, context);
+                }
+                catch (Exception e)
+                {
+                    await _errorHandler.HandleInitializationErrorAsync(new EntityInitializationException(config, e, "initialize type builder for"));
+                }
             }
         }
 
-        public Type CreateType(EntityTypeBuilderType typeBuilderType, EntityTypeBuilderContext context)
+        public async Task<Type> CreateTypeAsync(EntityTypeBuilderType typeBuilderType, EntityTypeBuilderContext context)
         {
-            var properties = _propertyConfigRepo.GetAll().Where(x => x.EntityConfig.Id == typeBuilderType.EntityConfig.Id && !x.IsDeleted).ToList();
-            return CreateType(typeBuilderType, properties, context);
+            var properties = await _propertyConfigRepo.GetAll().Where(x => x.EntityConfig.Id == typeBuilderType.EntityConfig.Id && !x.IsDeleted).ToListAsync();
+            var t = await CreateTypeAsync(typeBuilderType, properties, context);
+
+            typeBuilderType.EntityConfig.InitStatus &= ~Enums.EntityInitFlags.InitializationRequired;
+            typeBuilderType.EntityConfig.InitStatus &= ~Enums.EntityInitFlags.InitializationFailed;
+            typeBuilderType.EntityConfig.InitMessage = "";
+            typeBuilderType.EntityConfig.IsCodegenPending = false;
+            await _entityConfigRepo.UpdateAsync(typeBuilderType.EntityConfig);
+            return t;
         }
 
         public EntityTypeBuilderType CreateTypeBuilder(ModuleBuilder moduleBuilder, EntityConfig entityConfig, EntityTypeBuilderContext context)
         {
-            // ToDo: AS - remove logging
-            _logger.Warn($"DynamicEntityTypeBuilder: CreateTypeBuilder - {entityConfig.Accessor}");
-
             Type? baseType = null;
 
             // Find first not deleted config (or null)
@@ -244,8 +284,8 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                     TypeAttributes.AutoLayout,
                     baseType,
                     entityConfig.EntityConfigType == Domain.Enums.EntityConfigTypes.Class
-                        ? [ typeof(IEntity<Guid>) ]
-                        : null );
+                        ? [typeof(IEntity<Guid>)]
+                        : null);
 
             // Class Attributes
             if (entityConfig.EntityConfigType == Domain.Enums.EntityConfigTypes.Class)
@@ -297,11 +337,8 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             }
         }
 
-        public Type CreateType(EntityTypeBuilderType typeBuilderType, List<EntityProperty>? properties, EntityTypeBuilderContext context)
+        public async Task<Type> CreateTypeAsync(EntityTypeBuilderType typeBuilderType, List<EntityProperty>? properties, EntityTypeBuilderContext context)
         {
-            // ToDo: AS - remove logging
-            _logger.Warn($"DynamicEntityTypeBuilder: CreateType (typeBuilderType) - {typeBuilderType.TypeBuilder.FullName}");
-
             // Class properties
             if (properties != null)
             {
@@ -315,7 +352,21 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                 {
                     var propType = GetPropertyType(property, context);
                     if (propType != null)
-                        CreateProperty(typeBuilderType.TypeBuilder, property, propType);
+                    {
+                        try
+                        {
+                            CreateProperty(typeBuilderType.TypeBuilder, property, propType);
+
+                            property.InitStatus &= ~Enums.EntityInitFlags.InitializationRequired;
+                            property.InitStatus &= ~Enums.EntityInitFlags.InitializationFailed;
+                            property.InitMessage = "";
+                            await _propertyConfigRepo.UpdateAsync(property);
+                        }
+                        catch (Exception e)
+                        {
+                            throw new EntityPropertyInitializationException(property, e, "initialize property for");
+                        }
+                    }
                 }
             }
 
@@ -450,16 +501,16 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                             case NumberFormats.Int64:
                                 return typeof(long?);
                             case NumberFormats.Float:
-                                return typeof(float?);
+                                return typeof(double?);
                             case NumberFormats.Double:
-                                return typeof(decimal?);
+                                return typeof(double?);
                             default:
                                 return typeof(decimal?);
                         }
                     }
 
                 case DataTypes.EntityReference:
-                    return property.EntityFullClassName.IsNullOrWhiteSpace()
+                    return property.DataFormat == EntityFormats.GenericEntity
                         ? typeof(GenericEntityReference)
                         : GetReferenceType(property, context);
 

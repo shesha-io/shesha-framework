@@ -493,7 +493,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   parentId: eventsTabId,
                   label: 'On Row Save Success',
                   description: 'Custom business logic to be executed after successfull saving of new/updated row.',
-                  hideLabel: true,
                 })
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
@@ -501,7 +500,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   label: 'On Row Delete Success',
                   parentId: eventsTabId,
                   description: 'Custom business logic to be executed after successfull deletion of a row.',
-                  hideLabel: true,
                 })
                 .toJson(),
             ],
@@ -939,6 +937,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 type: 'switch',
                                 tooltip: 'Enable alternating row colors',
                                 jsSetting: true,
+                                value: 'checked',
                               },
                               {
                                 id: nanoid(),

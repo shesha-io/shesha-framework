@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, useContext, useMemo } from 'react';
-import { IConfigurableFormComponent, IFlatComponentsStructure } from '../models';
+import { IConfigurableFormComponent, IFlatComponentsStructure, isConfigurableFormComponent } from '../models';
 import { createNamedContext } from '@/utils/react';
 
 export interface IFormFlatMarkupProviderProps {
@@ -29,8 +29,11 @@ export const useFormMarkup = (require: boolean = true): IFlatComponentsStructure
 /** Returns component model by component id  */
 export const useComponentModel = (id: string): IConfigurableFormComponent => {
   const markup = useFormMarkup();
+  const component = markup.allComponents[id];
+  if (!isConfigurableFormComponent(component))
+    throw new Error(`Component with id ${id} is not found`);
 
-  return markup.allComponents[id];
+  return component;
 };
 
 export const useChildComponents = (containerId: string): IConfigurableFormComponent[] => {
@@ -41,8 +44,11 @@ export const useChildComponents = (containerId: string): IConfigurableFormCompon
     const childIds = componentRelations[containerId];
     if (!childIds)
       return [];
-    const components = childIds.map((childId) => {
-      return allComponents[childId];
+    const components: IConfigurableFormComponent[] = [];
+    childIds.forEach((childId) => {
+      const component = allComponents[childId];
+      if (isConfigurableFormComponent(component))
+        components.push(component);
     });
     return components;
   }, [markup, containerId]);

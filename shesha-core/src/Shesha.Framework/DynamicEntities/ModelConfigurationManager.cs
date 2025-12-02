@@ -17,6 +17,7 @@ using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.DbGenerator;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.EntityTypeBuilder;
+using Shesha.DynamicEntities.Enums;
 using Shesha.DynamicEntities.Exceptions;
 using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;
@@ -61,6 +62,9 @@ namespace Shesha.DynamicEntities
         }
 
         // ToDo: AS - decide if we will generate entities on fly
+        /// <summary>
+        /// Is generate entities on fly
+        /// </summary>
         private readonly bool metadataRefresh = false;
 
         private readonly IPermissionedObjectManager _permissionedObjectManager;
@@ -136,7 +140,11 @@ namespace Shesha.DynamicEntities
                 {
                     Source = MetadataSourceType.UserDefined,
                     InheritedFromId = x.Id.ToGuidOrNull(),
-                    CreatedInDb = true,
+
+                    CreatedInDb = x.CreatedInDb,
+                    InitStatus = x.InitStatus,
+                    InitMessage = x.InitMessage,
+
                     ColumnName = x.ColumnName,
                     IsItemsType = x.IsItemsType,
 
@@ -291,6 +299,8 @@ namespace Shesha.DynamicEntities
 
             if (isNew)
             {
+                entityConfig.IsCodegenPending = true;
+                entityConfig.InitStatus = EntityInitFlags.DbActionRequired | EntityInitFlags.InitializationRequired;
                 entityConfig.DiscriminatorValue = input.DiscriminatorValue?.Trim();
                 entityConfig.SchemaName = input.SchemaName?.Trim();
                 entityConfig.TableName = input.TableName?.Trim();
@@ -363,6 +373,19 @@ namespace Shesha.DynamicEntities
             {
                 input.PermissionDelete.Type = ShaPermissionedObjectsTypes.EntityAction;
                 await _permissionedObjectManager.SetAsync(input.PermissionDelete);
+            }
+
+            await _unitOfWorkManager.Current.SaveChangesAsync();
+
+            var needRestart = await PropertyConfigRepo.GetAll()
+                .AnyAsync(x =>
+                    x.EntityConfig == entityConfig
+                    && (x.InitStatus.HasFlag(EntityInitFlags.InitializationRequired) || x.InitStatus.HasFlag(EntityInitFlags.DbActionRequired)));
+            if (needRestart)
+            {
+                entityConfig.IsCodegenPending = true;
+                entityConfig.InitStatus = EntityInitFlags.InitializationRequired;
+                await Repository.UpdateAsync(entityConfig);
             }
 
             await _unitOfWorkManager.Current.SaveChangesAsync();
@@ -456,6 +479,7 @@ namespace Shesha.DynamicEntities
                     {
                         dbProp.ListConfiguration = dbProp.ListConfiguration ?? new EntityPropertyListConfiguration();
                         dbProp.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToOne;
+                        dbProp.ListConfiguration.ForeignProperty = inputProp.ListConfiguration?.ForeignProperty;
                     }
                     if (dbProp.DataFormat == ArrayFormats.ManyToManyEntities)
                     {
@@ -466,6 +490,7 @@ namespace Shesha.DynamicEntities
 
                 if (isNew)
                 {
+                    dbProp.InitStatus = EntityInitFlags.InitializationRequired;
                     dbProp.ParentProperty = parentProperty;
                     dbProp.InheritedFrom = inputProp.InheritedFromId != null
                         ? await PropertyConfigRepo.GetAsync(inputProp.InheritedFromId.Value)
@@ -509,6 +534,9 @@ namespace Shesha.DynamicEntities
                         dbProp.ReferenceListName = dbProp.ItemsType?.ReferenceListName;
                     }
                 }
+
+                if (isNew && IsDbInitializationRequired(dbProp))
+                    dbProp.InitStatus |= EntityInitFlags.DbActionRequired;
 
                 await PropertyConfigRepo.InsertOrUpdateAsync(dbProp);
 
@@ -555,15 +583,25 @@ namespace Shesha.DynamicEntities
                     }
                 }
 
-                if (isNew)
+                if (isNew && metadataRefresh)
                 {
-                    if (metadataRefresh)
-                        await _dbGenerator.ProcessEntityPropertyAsync(dbProp);
+                    await _dbGenerator.ProcessEntityPropertyAsync(dbProp);
                 }
 
                 itemsType = inputProp.IsItemsType ? dbProp : null;
             }
             return itemsType;
+        }
+
+        private bool IsDbInitializationRequired(EntityProperty dbProp)
+        {
+            // Advanced types and one-to-many entity reference arrays don't require DB column creation
+            // (they use foreign keys on the referenced entity side)
+            if (dbProp.DataType == DataTypes.Advanced)
+                return false;
+            if (dbProp.DataType == DataTypes.Array && dbProp.DataFormat == ArrayFormats.EntityReference)
+                return false;
+            return true;
         }
 
         private async Task MapPropertyToDbAsync(ModelPropertyDto dto, EntityProperty dbProp, ModelUpdateType updateType)
@@ -584,9 +622,9 @@ namespace Shesha.DynamicEntities
                 //dbProp.Name = dbProp.CreatedInDb ? dbProp.Name : dto.Name; // update only if the property is not created in DB yet
                 dbProp.EntityModule = dto.EntityType?.Module;
                 dbProp.EntityType = dto.EntityType?.Name;
-                dbProp.EntityFullClassName = (await Repository.FirstOrDefaultAsync(x => 
-                    x.Name == dbProp.EntityType 
-                    && (x.Module  != null && x.Module.Name == dbProp.EntityModule
+                dbProp.EntityFullClassName = (await Repository.FirstOrDefaultAsync(x =>
+                    x.Name == dbProp.EntityType
+                    && (x.Module != null && x.Module.Name == dbProp.EntityModule
                         || x.Module != null && dbProp.EntityModule == null
                     )))?.FullClassName;
                 dbProp.DataFormat = dto.DataFormat;
@@ -624,6 +662,8 @@ namespace Shesha.DynamicEntities
                 CascadeUpdate = dbProp.CascadeUpdate,
                 ColumnName = dbProp.ColumnName,
                 CreatedInDb = dbProp.CreatedInDb,
+                InitMessage = dbProp.InitMessage,
+                InitStatus = dbProp.InitStatus,
                 DataFormat = dbProp.DataFormat,
                 DataType = dbProp.DataType,
                 Description = dbProp.Description,
@@ -647,7 +687,7 @@ namespace Shesha.DynamicEntities
                 ? null
                 : new ReferenceListIdentifier(dbProp.ReferenceListModule, dbProp.ReferenceListName.NotNull());
 
-            if (dbProp.DataType == DataTypes.EntityReference || (new []{ObjectFormats.Interface, ArrayFormats.EntityReference}).Contains(dbProp.DataFormat))
+            if (dbProp.DataType == DataTypes.EntityReference || (new[] { ObjectFormats.Interface, ArrayFormats.EntityReference }).Contains(dbProp.DataFormat))
             {
                 var baseProp = dbProp;
                 while (baseProp == dbProp && baseProp?.InheritedFrom != null)
@@ -736,6 +776,8 @@ namespace Shesha.DynamicEntities
                     && (entityAttr == null || entityAttr.GenerateApplicationService == GenerateApplicationServiceState.UseConfiguration),
                 ClassName = entityConfig.ClassName,
                 CreatedInDb = entityConfig.CreatedInDb,
+                InitMessage = entityConfig.InitMessage,
+                InitStatus = entityConfig.InitStatus,
                 Description = entityConfig.Description,
                 DiscriminatorValue = entityConfig.DiscriminatorValue,
                 EntityConfigType = entityConfig.EntityConfigType,

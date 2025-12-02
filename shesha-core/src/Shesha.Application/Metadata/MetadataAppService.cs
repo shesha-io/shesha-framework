@@ -62,7 +62,7 @@ namespace Shesha.Metadata
         private async Task<List<EntityModelDto>> GetAllModelsAsync()
         {
             return (await _entityModelProvider.GetModelsAsync())
-                .Where(x => !x.FullClassName.StartsWith("Abp.")) // Remove ABP entities from Autocomplete
+                .Where(x => !x.IsExposed && !x.FullClassName.StartsWith("Abp.")) // Remove ABP entities from Autocomplete
                 .ToList();
         }
 
@@ -217,16 +217,16 @@ namespace Shesha.Metadata
 
         /// inheritedDoc
         [HttpGet]
-        public async Task<MetadataDto> GetAsync(EntityTypeIdInput entityType)
+        public async Task<MetadataDto> GetAsync(EntityTypeIdInput entityTypeId)
         {
-            if (entityType == null)
-                throw new AbpValidationException($"'{nameof(entityType)}' is mandatory");
+            if (entityTypeId == null)
+                throw new AbpValidationException($"'{nameof(entityTypeId)}' is mandatory");
 
-            var containerName = entityType.Name.GetDefaultIfEmpty(entityType.FullClassName);
+            var containerName = entityTypeId.Name.GetDefaultIfEmpty(entityTypeId.EntityType);
             if (string.IsNullOrWhiteSpace(containerName))
-                throw new AbpValidationException($"Either '{nameof(entityType.Name)}' or '{nameof(entityType.FullClassName)}' must be provided");
+                throw new AbpValidationException($"Either '{nameof(entityTypeId.Name)}' or '{nameof(entityTypeId.EntityType)}' must be provided");
             
-            var containerType = await _metadataProvider.GetContainerTypeAsync(entityType.Module, containerName);
+            var containerType = await _metadataProvider.GetContainerTypeAsync(entityTypeId.Module, containerName);
             return await _metadataProvider.GetAsync(containerType);
         }
 

@@ -21,6 +21,8 @@ export enum ModelActionEnums {
   DeleteSuccess = 'DELETE_SUCCESS',
   DeleteError = 'DELETE_ERROR',
 
+  SetErrors = 'SET_ERRORS',
+
   SetModelSettings = 'SET_MODEL_SETTINGS',
 
   SetModified = 'SET_MODIFIED',
@@ -53,5 +55,6 @@ export const deleteSuccessAction = createAction(ModelActionEnums.DeleteSuccess);
 export const deleteErrorAction = createAction<IErrorInfo, IErrorInfo>(ModelActionEnums.DeleteError, (p) => p);
 
 export const setModifiedAction = createAction<boolean>(ModelActionEnums.SetModified);
+export const setErrorsAction = createAction<string[]>(ModelActionEnums.SetErrors);
 
 /* NEW_ACTION_GOES_HERE */

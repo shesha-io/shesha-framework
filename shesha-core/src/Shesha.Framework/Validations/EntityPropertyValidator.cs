@@ -147,14 +147,14 @@ namespace Shesha.Validations
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage
-                            : $"Property '{friendlyName}' should have value length more then {propConfig.MinLength - 1} symbols"));
+                            : $"Property '{friendlyName}' should have value length more than {propConfig.MinLength - 1} symbols"));
                         return false;
                     }
                     if (propConfig.MaxLength.HasValue && stringValueOrEmpty.Length > propConfig.MaxLength)
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage
-                            : $"Property '{friendlyName}' should have value length less then {propConfig.MaxLength + 1} symbols"));
+                            : $"Property '{friendlyName}' should have value length less than {propConfig.MaxLength + 1} symbols"));
                         return false;
                     }
                     if (!string.IsNullOrWhiteSpace(propConfig.RegExp) && !(new Regex(propConfig.RegExp)).IsMatch(stringValueOrEmpty))
@@ -181,14 +181,14 @@ namespace Shesha.Validations
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage
-                            : $"Property '{friendlyName}' should have value more or equal then {propConfig.Min}"));
+                            : $"Property '{friendlyName}' should have value more or equal than {propConfig.Min}"));
                         return false;
                     }
                     if (propConfig.Max.HasValue && val > propConfig.Max)
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage
-                            : $"Property '{friendlyName}' should have value less or equal then {propConfig.Max}"));
+                            : $"Property '{friendlyName}' should have value less or equal than {propConfig.Max}"));
                         return false;
                     }
                     break;

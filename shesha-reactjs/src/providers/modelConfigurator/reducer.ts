@@ -1,12 +1,14 @@
 import { handleActions } from 'redux-actions';
-import { ModelConfigurationDto } from '@/apis/modelConfigurations';
+import { EntityInitFlags, ModelConfigurationDto } from '@/apis/modelConfigurations';
 import { ModelActionEnums } from './actions';
 import { IModelConfiguratorStateContext, MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE } from './contexts';
+import { IErrorInfo } from '@/interfaces';
 
 const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto => {
   return {
     ...data,
-    properties: data.properties.filter((p) => !p.isFrameworkRelated), // remove framework fields
+    properties: data.properties
+      .filter((p) => !p.isFrameworkRelated), // remove framework fields
   };
 };
 
@@ -43,6 +45,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
     [ModelActionEnums.LoadRequest]: (state: IModelConfiguratorStateContext) => {
       return {
         ...state,
+        isLoading: true,
         // id: payload
       };
     },
@@ -53,11 +56,44 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
     ) => {
       const { payload } = action;
 
-      return {
+      const preparedData = prepareLoadedData(payload);
+
+      const newState = {
         ...state,
         isCreateNew: false,
-        modelConfiguration: prepareLoadedData(payload),
-        initialConfiguration: prepareLoadedData(payload),
+        modelConfiguration: preparedData,
+        initialConfiguration: preparedData,
+        isLoading: false,
+      };
+
+      if (payload.initStatus & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed)) { // eslint-disable-line no-bitwise
+        newState.errors = [
+          payload.initMessage,
+          ...(preparedData.properties
+            .filter((p) => p.initStatus & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed)) // eslint-disable-line no-bitwise
+            ?.map((p) => `${p.name}: ${p.initMessage}`) ?? []),
+        ];
+      }
+
+      return newState;
+    },
+
+    [ModelActionEnums.LoadError]: (
+      state: IModelConfiguratorStateContext,
+      action: ReduxActions.Action<IErrorInfo>,
+    ) => {
+      return {
+        ...state,
+        isLoading: false,
+        errors: [action.payload?.message, ...(action.payload?.validationErrors?.map((e) => e.message) ?? [])],
+      };
+    },
+
+    [ModelActionEnums.SaveRequest]: (state: IModelConfiguratorStateContext) => {
+      return {
+        ...state,
+        isSaving: true,
+        // id: payload
       };
     },
 
@@ -71,10 +107,23 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         ...state,
         isCreateNew: false,
         isModified: false,
+        isSaving: false,
         id: payload.id,
         modelConfiguration: prepareLoadedData(payload),
       };
     },
+
+    [ModelActionEnums.SaveError]: (
+      state: IModelConfiguratorStateContext,
+      action: ReduxActions.Action<IErrorInfo>,
+    ) => {
+      return {
+        ...state,
+        isSaving: false,
+        errors: [action.payload?.message, ...(action.payload?.validationErrors?.map((e) => e.message) ?? [])],
+      };
+    },
+
 
     [ModelActionEnums.Cancel]: (
       state: IModelConfiguratorStateContext,
@@ -94,6 +143,17 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         isModified: action.payload,
       };
     },
+
+    [ModelActionEnums.SetErrors]: (
+      state: IModelConfiguratorStateContext,
+      action: ReduxActions.Action<string[]>,
+    ) => {
+      return {
+        ...state,
+        errors: action.payload,
+      };
+    },
+
 
   },
 

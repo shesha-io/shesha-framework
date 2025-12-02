@@ -77,6 +77,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   borderRadius?: string;
   border?: IBorderValue;
   hoverHighlight?: boolean;
+  striped?: boolean;
   backgroundColor?: string;
 
   // Header styling
@@ -134,6 +135,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowSelectedBackgroundColor,
   border,
   hoverHighlight,
+  striped = true,
   onRowClick,
   onRowDoubleClick,
   onRowHover,
@@ -370,6 +372,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       // Check if the selection actually changed by comparing the arrays
       const currentIds = selectedIds || [];
       const prevIds = previousIds || [];
+
+      // Don't trigger on first selection (when moving from no selection to first selection)
+      if (prevIds.length === 0 && currentIds.length > 0) {
+        return; // Skip first selection - only fire when moving FROM one selection TO another
+      }
 
       // Compare sorted arrays for efficient comparison
       const currentSorted = [...currentIds].sort();
@@ -927,6 +934,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowHoverBackgroundColor: hoverHighlight ? rowHoverBackgroundColor : undefined,
     rowSelectedBackgroundColor,
     border,
+    striped,
     backgroundColor,
     headerFontSize,
     headerFontWeight,

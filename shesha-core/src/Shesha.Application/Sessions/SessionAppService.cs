@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
+using Shesha.DynamicEntities.ErrorHandler;
 using Shesha.Extensions;
 using Shesha.Sessions.Dto;
 using System;
@@ -18,13 +19,19 @@ namespace Shesha.Sessions
     {
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _roleAppointmentRepository;
         private readonly IShaPermissionChecker _permissionChecker;
+        private readonly IDynamicEntitiesErrorHandler _dynamicEntitiesErrorHandler;
 
         public IHomePageRouter HomePageRouter { get; set; } = new NullHomePageRouter();
 
-        public SessionAppService(IRepository<ShaRoleAppointedPerson, Guid> roleAppointmentRepository, IShaPermissionChecker permissionChecker)
+        public SessionAppService(
+            IRepository<ShaRoleAppointedPerson, Guid> roleAppointmentRepository,
+            IShaPermissionChecker permissionChecker,
+            IDynamicEntitiesErrorHandler dynamicEntitiesErrorHandler
+        )
         {
             _roleAppointmentRepository = roleAppointmentRepository;
             _permissionChecker = permissionChecker;
+            _dynamicEntitiesErrorHandler = dynamicEntitiesErrorHandler;
         }
 
         [AllowAnonymous]
@@ -58,6 +65,14 @@ namespace Shesha.Sessions
                     PersonId = person.Id,
                     HomeUrl = homeUrl
                 };
+
+                // Send initialization errors only for Application Configurators
+                if (await _permissionChecker.IsGrantedAsync(ShaPermissionNames.Application_Configurator))
+                    output.InitializationErrors = new InitializationErrorsInfoDto()
+                    {
+                        LastInitialization = _dynamicEntitiesErrorHandler.LastComplete,
+                        Errors = _dynamicEntitiesErrorHandler.Exceptions.Select(x => x.Message).ToList(),
+                    };
             }
 
             return output;
@@ -93,7 +108,7 @@ namespace Shesha.Sessions
                     }
                 }
 
-                foreach(var role in roles)
+                foreach (var role in roles)
                 {
                     var permissions = role.Role?.Permissions;
                     if (permissions == null || permissions.Any())
@@ -141,6 +156,6 @@ namespace Shesha.Sessions
         public Task ClearPermissionsCacheAsync()
         {
             return _permissionChecker.ClearPermissionsCacheAsync();
-        }        
+        }
     }
 }
