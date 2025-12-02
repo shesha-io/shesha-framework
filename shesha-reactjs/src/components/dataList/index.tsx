@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
 import { Button, Checkbox, Collapse, Divider, Popover, Typography } from 'antd';
-import { InfoCircleOutlined, PlusOutlined, WarningOutlined } from '@ant-design/icons';
+import { PlusOutlined, WarningOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties, ReactElement, useMemo } from 'react';
 import { useMeasure, usePrevious } from 'react-use';

@@ -31,7 +31,7 @@ class DataListItemErrorBoundary extends Component<ErrorBoundaryProps, ErrorBound
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error for debugging
     if (error instanceof ConfigurationLoadingError) {
       console.error('Configuration loading error in DataList item:', error.message);
@@ -40,7 +40,7 @@ class DataListItemErrorBoundary extends Component<ErrorBoundaryProps, ErrorBound
     }
   }
 
-  render() {
+  render(): ReactNode {
     if (this.state.hasError) {
       // Return fallback or null to show placeholder
       return this.props.fallback || null;
