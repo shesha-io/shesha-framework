@@ -6,6 +6,7 @@ import { useGlobalState } from '@/providers/globalState';
 import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContextManager';
 import { evaluateString } from '@/providers/form/utils';
 import { FetcherOptions, IQueryParams } from '@/utils/fetchers';
+import { getEntityTypeIdentifierQueryParams } from '@/providers/metadataDispatcher/entities/utils';
 
 type UseUrlTemplatesResponse = {
   getUrlTemplateState: (evaluatedFilters?: any) => FetcherOptions;
@@ -48,17 +49,18 @@ export const useUrlTemplates = (settings: IDataSourceArguments): UseUrlTemplates
 };
 
 type UseEntityTemplatesResponse = {
-  getEntityTemplateState: (evaluatedFilters?: any) => FetcherOptions;
+  getEntityTemplateState: (evaluatedFilters?: any, proprties?: string) => FetcherOptions;
 };
 
 export const useEntityTemplates = (settings: IDataSourceArguments): UseEntityTemplatesResponse => {
-  const { entityTypeShortAlias, maxResultCount } = settings ?? {};
-  const getEntityTemplateState = (evaluatedFilters?: any): FetcherOptions => {
+  const { entityType, maxResultCount } = settings ?? {};
+  const getEntityTemplateState = (evaluatedFilters?: any, proprties?: string): FetcherOptions => {
     return {
       path: `/api/services/app/Entities/GetAll`,
       queryParams: {
-        entityType: entityTypeShortAlias,
+        ...getEntityTypeIdentifierQueryParams(entityType),
         maxResultCount: maxResultCount || 100,
+        properties: proprties,
         filter: evaluatedFilters,
       },
     };

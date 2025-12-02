@@ -13,6 +13,7 @@ import {
 import {
   ButtonGroupItemProps,
   IButtonGroup,
+  IButtonGroupItemBase,
   isGroup,
   isItem,
 } from '@/providers/buttonGroupConfigurator/models';
@@ -31,9 +32,10 @@ import {
 } from '@/providers/dynamicActions/evaluator/utils';
 import { SingleDynamicItemEvaluator } from '@/providers/dynamicActions/evaluator/singleDynamicItemEvaluator';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
 
 interface IProfileDropdown extends IConfigurableFormComponent {
-  items?: IButtonGroup[];
+  items?: IButtonGroupItemBase[];
   subText?: string;
   subTextColor?: string;
   subTextFontSize?: string;
@@ -196,7 +198,8 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
         subTextColor: '#000000',
         subTextFontSize: '12px',
       }
-    )),
+    ))
+    .add<IProfileDropdown>(2, (prev) => ({ ...prev, items: migrateButtonGroupDynamicItems(prev.items) })),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 

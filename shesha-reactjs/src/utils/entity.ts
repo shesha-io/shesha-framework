@@ -7,6 +7,11 @@ import { getValueByPropertyName, setValueByPropertyName } from "./object";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEqual } from "@/providers/metadataDispatcher/entities/utils";
 import { IEntityTypeIdentifierQueryParams } from "@/interfaces/metadata";
+import { IEntityReferenceDto } from "@/interfaces";
+
+export const isEntityReferenceId = (data: unknown): data is IEntityReferenceDto => {
+  return typeof data === 'object' && 'id' in data && '_className' in data;
+};
 
 export interface IUseEntityDisplayTextProps {
   entityType?: string | IEntityTypeIdentifier;

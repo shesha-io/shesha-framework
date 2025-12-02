@@ -10,15 +10,13 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
         inputs: [
           {
             id: nanoid(),
-            type: 'autocomplete',
-            propertyName: 'entityTypeShortAlias',
+            type: 'entityTypeAutocomplete',
+            propertyName: 'entityType',
             label: 'Entity Type',
             labelAlign: 'right',
             hidden: false,
-            dataSourceType: 'url',
+            entityAutocompleteType: 'Entity',
             validate: {},
-            dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-            useRawValues: true,
           },
           {
             id: nanoid(),
@@ -35,7 +33,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
       .addContainer({
         id: containerId,
         hidden: {
-          _code: 'return !getSettingValue(data?.entityTypeShortAlias);',
+          _code: 'return !getSettingValue(data?.entityType);',
           _mode: 'code',
           _value: false,
         } as any,
@@ -53,7 +51,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               validate: {},
               settingsValidationErrors: [],
               modelType: {
-                _code: 'return getSettingValue(data?.entityTypeShortAlias);',
+                _code: 'return getSettingValue(data?.entityType);',
                 _mode: 'code',
                 _value: false,
               } as any,
@@ -76,7 +74,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   required: true,
                 },
                 modelType: {
-                  _code: 'return getSettingValue(data?.entityTypeShortAlias);',
+                  _code: 'return getSettingValue(data?.entityType);',
                   _mode: 'code',
                   _value: false,
                 } as any,
@@ -100,7 +98,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             description: 'Name of the property that should be used for the tooltip of the button.',
             validate: {},
             modelType: {
-              _code: 'return getSettingValue(data?.entityTypeShortAlias);',
+              _code: 'return getSettingValue(data?.entityType);',
               _mode: 'code',
               _value: false,
             } as any,

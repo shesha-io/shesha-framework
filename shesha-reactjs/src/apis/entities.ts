@@ -9,6 +9,9 @@ export interface IDynamicDataResult {
 }
 
 export interface EntitiesGetQueryParams {
+  name?: string | undefined;
+  module?: string | undefined;
+
   entityType?: string;
   /**
    * List of properties to fetch in GraphQL-like syntax. Supports nested properties
@@ -30,6 +33,9 @@ export const entitiesGet = (queryParams: EntitiesGetQueryParams, props: entities
   );
 
 export interface EntitiesGetAllQueryParams {
+  name?: string | undefined;
+  module?: string | undefined;
+  
   entityType?: string;
   /**
    * List of properties to fetch in GraphQL-like syntax. Supports nested properties

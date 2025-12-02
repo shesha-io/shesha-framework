@@ -18,6 +18,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -169,7 +170,8 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
           if (/^\d+(px|%)$/.test(prev.quickviewWidth)) return prev.quickviewWidth; // already valid
           return prev.quickviewWidth; // keep keywords like 'auto', 'fit-content', etc.
         })(),
-      })),
+      }))
+      .add<IEntityReferenceControlProps>(11, (prev) => ({ ...prev, buttons: migrateButtonGroupDynamicItems(prev.buttons) })),
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {
       ...model,
