@@ -98,7 +98,24 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       });
   }, [componentsNames]);
 
-  const argumentsEvaluationContext = { ...allData, fieldsToValidate: componentsNames, validate: validator?.validate };
+  const wizardContextData = useMemo(() => ({
+    current,
+    currentStep,
+    visibleSteps,
+  }), [current, currentStep, visibleSteps]);
+
+  const argumentsEvaluationContext = useMemo(() => {
+    const contexts = { ...allData.contexts };
+    if (actionOwnerName) {
+      contexts[actionOwnerName] = wizardContextData;
+    }
+    return {
+      ...allData,
+      contexts,
+      fieldsToValidate: componentsNames,
+      validate: validator?.validate
+    };
+  }, [allData, actionOwnerName, wizardContextData, componentsNames, validator?.validate]);
 
   useEffect(() => {
     setCurrent(getDefaultStepIndex(defaultActiveStep));
