@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties, ReactElement, useMemo } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
 import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
+import { ConfigurableItemIdentifierToString } from '@/interfaces/configurableItems';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
@@ -370,8 +371,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         formEntityType = entityType ?? item?._className;
       }
       if (formSelectionMode === 'expression') {
-        formEntityType = '$expressionForm$';
         fId = getFormIdFromExpression(item);
+        // Use the form ID itself as the entity type to ensure unique caching per form
+        formEntityType = fId ? ConfigurableItemIdentifierToString(fId) : '$expressionForm$';
       }
       if (!!fId || !!fType)
         isReady = getEntityForm(formEntityType, fId, fType, entityFormInfo) && isReady;
@@ -395,7 +397,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       fType = formType;
     }
     if (formSelectionMode === 'expression') {
-      formEntityType = '$expressionForm$';
+      const expressionFormId = getFormIdFromExpression(item);
+      formEntityType = expressionFormId ? ConfigurableItemIdentifierToString(expressionFormId) : '$expressionForm$';
     }
 
     let entityForm = entityForms.current.find((x) => isEntityTypeIdEqual(x.entityType, formEntityType) && x.formType === fType);
