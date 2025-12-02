@@ -6,7 +6,7 @@ import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from
 import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { addPx } from '@/utils/style';
-import { CheckCircleOutlined, DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
+import { DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
   App,
@@ -31,6 +31,7 @@ import { DataContextProvider } from '@/providers/dataContextProvider';
 import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile } from './utils';
 import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
+import ShaIcon, { IconType } from '@/components/shaIcon';
 
 interface IUploaderFileTypes {
   name: string;
@@ -86,6 +87,8 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   enableStyleOnReadonly?: boolean;
   thumbnail?: IStyleType;
   downloadedFileStyles?: CSSProperties;
+  styleDownloadedFiles?: boolean;
+  downloadedIcon?: IconType;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -124,6 +127,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   gap,
   enableStyleOnReadonly = true,
   downloadedFileStyles,
+  styleDownloadedFiles = true,
+  downloadedIcon = 'CheckCircleOutlined',
   ...rest
 }) => {
   const { message, notification } = App.useApp();
@@ -441,15 +446,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       const renderContent = () => {
         if (listType === 'text') {
           return (
-            <div className={classNames(isDownloaded ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
+            <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
               <div className={styles.fileName}>
                 <Popover content={actions} trigger="hover" placement="top" style={{ padding: '0px' }}>
                   {iconRender(file)}{file.name}
                 </Popover>
               </div>
-              {isDownloaded && (
+              {isDownloaded && styleDownloadedFiles && (
                 <div className={styles.downloadedIcon}>
-                  <CheckCircleOutlined />
+                  <ShaIcon iconName={downloadedIcon} />
                 </div>
               )}
             </div>
@@ -458,11 +463,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
         // For thumbnail and other types, wrap entire content
         const content = (
-          <div className={isDownloaded ? styles.downloadedFile : ''} onClick={handleItemClick}>
+          <div className={isDownloaded && styleDownloadedFiles ? styles.downloadedFile : ''} onClick={handleItemClick}>
             {originNode}
-            {isDownloaded && (
+            {isDownloaded && styleDownloadedFiles && (
               <div className={styles.downloadedIcon}>
-                <CheckCircleOutlined />
+                <ShaIcon iconName={downloadedIcon} />
               </div>
             )}
           </div>
