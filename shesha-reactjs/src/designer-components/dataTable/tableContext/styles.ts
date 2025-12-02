@@ -226,6 +226,16 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         font-weight: 600;
     `);
 
+  const datatableHintPopover = cx("sha-datatable-hint-popover", css`
+        background-color: #D9DCDC !important;
+        border-radius: 8px !important;
+
+        &.ant-popover .ant-popover-arrow::before,
+        &.ant-popover .ant-popover-arrow::after {
+          background-color: #D9DCDC !important;
+        }
+    `);
+
   return {
     dataContextDesignerEmpty,
     dataContextRuntimeEmpty,
@@ -243,5 +253,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     disabledComponentWrapper,
     filterButtonMockup,
     viewSelectorMockup,
+    datatableHintPopover,
   };
 });

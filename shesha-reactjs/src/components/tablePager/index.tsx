@@ -26,6 +26,7 @@ type EmptyPagerProps = {
   message: ReactElement;
   style: CSSProperties;
 };
+
 const EmptyPager: FC<EmptyPagerProps> = ({ message, style }) => {
   const { styles } = useStyles();
   return (
