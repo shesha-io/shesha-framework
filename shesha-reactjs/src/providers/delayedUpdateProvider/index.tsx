@@ -11,7 +11,7 @@ interface IDelayedUpdateProps {}
 const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ children }) => {
   const [state, setState] = useState<IDelayedUpdateStateContext>(DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE);
 
-  const addItem = useCallback((groupName: string, id: any, data?: any) => {
+  const addItem = useCallback((groupName: string, id: unknown, data?: unknown) => {
     setState((prevState) => {
       const group = prevState.groups?.find((x) => x.name === groupName);
       if (Boolean(group)) {
@@ -48,24 +48,24 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
     });
   }, []);
 
-  const removeItem = useCallback((groupName: string, id: any) => {
+  const removeItem = useCallback((groupName: string, id: unknown) => {
     setState((prevState) => {
       const group = prevState.groups.find((x) => x.name === groupName);
-      if (Boolean(group)) {
-        const item = group.items.find((x) => x.id === id);
-        if (Boolean(item)) {
-          return {
-            groups: [
-              ...prevState.groups.map((gr) => {
-                return gr.name === groupName
-                  ? { name: groupName, items: [...gr.items.filter((it) => it.id !== id)] }
-                  : gr;
-              }),
-            ],
-          };
-        }
+      if (!group) {
+        return prevState;
       }
-      return prevState;
+      const item = group.items.find((x) => x.id === id);
+      if (!item) {
+        return prevState;
+      }
+      return {
+        ...prevState,
+        groups: prevState.groups.map((gr) =>
+          gr.name === groupName
+            ? { ...gr, items: gr.items.filter((it) => it.id !== id) }
+            : gr,
+        ),
+      };
     });
   }, []);
 
