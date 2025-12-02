@@ -34,7 +34,7 @@ namespace Shesha.Notes
                     .NotNull($"Owner type not found '{ownerType}'")
                     .FullClassName
                 : ownerType?.EntityType)
-                .NotNull("FullClassName should not be empty");
+                .NotNull("EntityType should not be empty");
         }
 
         /// <summary>

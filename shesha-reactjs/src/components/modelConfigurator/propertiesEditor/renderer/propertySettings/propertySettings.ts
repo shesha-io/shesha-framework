@@ -169,8 +169,8 @@ export const getSettings = (
                       editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
                       dropdownOptions: [
                         { label: 'Simple Values', value: 'simple' },
-                        { label: 'Referencing Entities', value: 'entity' },
-                        { label: 'Entities', value: 'many-entity' },
+                        { label: 'Referencing Entities (many to one)', value: 'entity' },
+                        { label: 'Entities (many to many)', value: 'many-entity' },
                         { label: 'Child Objects', value: 'object' },
                         // ToDo: AS - restore after full implementation
                         // { label: 'Child Entities', value: 'child-entity' },
@@ -190,6 +190,7 @@ export const getSettings = (
                       modelType: { _code: 'return data?.entityType;', _mode: 'code', _value: false } as any,
                       propertyModelType: { module: modelConfiguration.module, name: modelConfiguration.name } as IEntityTypeIdentifier,
                       hidden: { _code: 'return data?.dataFormat !== \'entity\';', _mode: 'code', _value: false },
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
                       tooltip: `Allow to select only the properties with the type of edited entity ${modelConfiguration.name ? '(' + modelConfiguration.name + ')' : ''}.`,
                       validate: { required: true },
                     })

@@ -3,6 +3,7 @@ using Shesha.Attributes;
 using Shesha.Authorization;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Runtime;
+using Shesha.DynamicEntities.DbGenerator;
 using System.Threading.Tasks;
 
 namespace Shesha

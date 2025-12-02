@@ -16,7 +16,6 @@ export interface ISaveButtonProps extends Pick<ButtonProps, 'size' | 'type'> {
 export const SaveButton: FC<ISaveButtonProps> = (props) => {
   const configurator = useModelConfigurator();
   const { message } = App.useApp();
-  const isModified = true;
 
   const onSaveClick = (): void => {
     message.loading('Saving model..', 0);
@@ -42,7 +41,7 @@ export const SaveButton: FC<ISaveButtonProps> = (props) => {
       onClick={onSaveClick}
       type={props.type}
       size={props.size}
-      disabled={!isModified}
+      disabled={!configurator.isModified || configurator.isSaving || configurator.isLoading}
     />
   );
 };

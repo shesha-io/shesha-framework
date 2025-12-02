@@ -1,5 +1,5 @@
 import { IEntityReferenceDto, IErrorInfo, ILoginForm } from '@/interfaces';
-import { GetCurrentLoginInfoOutput, UserLoginInfoDto } from '@/apis/session';
+import { GetCurrentLoginInfoOutput, InitializationErrorsInfoDto, UserLoginInfoDto } from '@/apis/session';
 
 export type AuthenticationStatus = 'waiting' | 'inprogress' | 'ready' | 'failed';
 export interface AuthenticationState {
@@ -32,6 +32,7 @@ export const ERROR_MESSAGES = {
 export interface IAuthenticator {
   loginInfo: UserLoginInfoDto | undefined;
   isLoggedIn: boolean;
+  errorsInfo: InitializationErrorsInfoDto | undefined;
 
   loginUserAsync: (loginFormData: ILoginForm) => Promise<LoginUserResponse>;
   logoutUser: () => Promise<void>;

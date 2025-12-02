@@ -4,43 +4,44 @@ using Abp.Domain.Uow;
 using Castle.Core.Logging;
 using Shesha.Bootstrappers;
 using Shesha.Domain;
-using Shesha.DynamicEntities.DbGenerator;
+using Shesha.DynamicEntities.ErrorHandler;
 using Shesha.Extensions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Shesha
+namespace Shesha.DynamicEntities.DbGenerator
 {
     public class GenerateDynamicEntitiesDb : IInitializatorFromDb, ITransientDependency
     {
+        public ILogger Logger { get; set; }
+
         public readonly IIocManager _ioc;
         public readonly IDynamicEntitiesDbGenerator _dbGenerator;
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
-        private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
-        private readonly ILogger _logger;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly IDynamicEntitiesErrorHandler _errorHandler;
 
         public GenerateDynamicEntitiesDb(
             IIocManager ioc,
-            ILogger logger,
             IDynamicEntitiesDbGenerator dbGenerator,
             IRepository<EntityConfig, Guid> entityConfigRepository,
-            IRepository<EntityProperty, Guid> entityPropertyRepository,
-            IUnitOfWorkManager unitOfWorkManager
-        ) 
+            IUnitOfWorkManager unitOfWorkManager,
+            IDynamicEntitiesErrorHandler errorHandler
+        )
         {
+            Logger = NullLogger.Instance;
+
             _ioc = ioc;
-            _logger = logger;
             _dbGenerator = dbGenerator;
             _entityConfigRepository = entityConfigRepository;
-            _entityPropertyRepository = entityPropertyRepository;
             _unitOfWorkManager = unitOfWorkManager;
+            _errorHandler = errorHandler;
         }
 
         public async Task ProcessAsync()
         {
-            _logger.Warn($"DB changes for Dynamic Entities");
+            Logger.Warn($"DB changes for Dynamic Entities");
 
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
@@ -57,32 +58,23 @@ namespace Shesha
                     nextLevel = configs.Where(x => !sortedToAdd.Contains(x) && sortedToAdd.Any(y => x.InheritedFrom == y)).ToList();
                 }
 
-                var otherConfigs = sortedToAdd.Where(x => x.CreatedInDb);
-                // check for properties
-                foreach (var config in otherConfigs)
+                foreach (var config in sortedToAdd)
                 {
-                    var properties = await _entityPropertyRepository.GetAll()
-                        .Where(x => 
-                            x.EntityConfig.Id == config.Id
-                            && !x.CreatedInDb 
-                            && (x.InheritedFrom == null || x.InheritedFrom.IsDeleted)
-                            && x.ParentProperty == null 
-                            && x.Name != "Id")
-                        .ToListAsync();
-                    foreach (var property in properties)
+                    try
                     {
-                        await _dbGenerator.ProcessEntityPropertyAsync(property);
+                        await _dbGenerator.ProcessEntityConfigAsync(config);
                     }
-                }
-
-                var createTableConfigs = sortedToAdd.Where(x => !x.CreatedInDb);
-                foreach (var config in createTableConfigs)
-                {
-                    await _dbGenerator.ProcessEntityConfigAsync(config);
+                    catch (Exception e)
+                    {
+                        await _errorHandler.HandleInitializationErrorAsync(e);
+                    }
                 }
                 await unitOfWork.CompleteAsync();
             }
-            _logger.Warn($"DB changes for Dynamic Entities - finished");
+
+            _errorHandler.Complete();
+
+            Logger.Warn($"DB changes for Dynamic Entities - finished");
         }
     }
 }

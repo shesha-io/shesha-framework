@@ -15,6 +15,8 @@ export interface IModelConfiguratorStateContext {
   form?: FormInstance;
   isCreateNew?: boolean;
   isModified: boolean;
+  isLoading: boolean;
+  isSaving: boolean;
   errors?: string[];
 }
 
@@ -33,7 +35,11 @@ export interface IModelConfiguratorActionsContext {
   /* NEW_ACTION_ACTION_DECLARATIOS_GOES_HERE */
 }
 
-export const MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE: IModelConfiguratorStateContext = { isModified: false };
+export const MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE: IModelConfiguratorStateContext = {
+  isModified: false,
+  isLoading: false,
+  isSaving: false,
+};
 
 export const ModelConfiguratorStateContext = createNamedContext<IModelConfiguratorStateContext>(
   MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
