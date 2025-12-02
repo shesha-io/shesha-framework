@@ -9,8 +9,8 @@ export interface IDynamicDataResult {
 }
 
 export interface EntitiesGetQueryParams {
-  name?: string | undefined;
-  module?: string | undefined;
+  name?: string;
+  module?: string;
 
   entityType?: string;
   /**
@@ -33,8 +33,8 @@ export const entitiesGet = (queryParams: EntitiesGetQueryParams, props: entities
   );
 
 export interface EntitiesGetAllQueryParams {
-  name?: string | undefined;
-  module?: string | undefined;
+  name?: string;
+  module?: string;
   
   entityType?: string;
   /**

@@ -49,18 +49,18 @@ export const useUrlTemplates = (settings: IDataSourceArguments): UseUrlTemplates
 };
 
 type UseEntityTemplatesResponse = {
-  getEntityTemplateState: (evaluatedFilters?: any, proprties?: string) => FetcherOptions;
+  getEntityTemplateState: (evaluatedFilters?: any, properties?: string) => FetcherOptions;
 };
 
 export const useEntityTemplates = (settings: IDataSourceArguments): UseEntityTemplatesResponse => {
   const { entityType, maxResultCount } = settings ?? {};
-  const getEntityTemplateState = (evaluatedFilters?: any, proprties?: string): FetcherOptions => {
+  const getEntityTemplateState = (evaluatedFilters?: any, properties?: string): FetcherOptions => {
     return {
       path: `/api/services/app/Entities/GetAll`,
       queryParams: {
         ...getEntityTypeIdentifierQueryParams(entityType),
         maxResultCount: maxResultCount || 100,
-        properties: proprties,
+        properties: properties,
         filter: evaluatedFilters,
       },
     };

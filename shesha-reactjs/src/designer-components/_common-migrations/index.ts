@@ -12,3 +12,4 @@ export * from './migrateUseExpression';
 export * from './migrateVisibility';
 export * from './models';
 export * from './removeComponents';
+export * from './migrateButtonGroupDynamicItems';

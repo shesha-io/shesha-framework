@@ -11,14 +11,16 @@ export const migrateButtonGroupDynamicItems = (items: IButtonGroupItemBase[]): I
       : isDynamicItem(item)
         ? {
           ...item,
-          dynamicItemsConfiguration: {
-            ...item.dynamicItemsConfiguration,
-            settings: {
-              ...item.dynamicItemsConfiguration?.settings,
-              entityType: item.dynamicItemsConfiguration?.settings?.entityTypeShortAlias,
-              entityTypeShortAlias: undefined,
-            },
-          },
+          dynamicItemsConfiguration: item.dynamicItemsConfiguration
+            ? {
+              ...item.dynamicItemsConfiguration,
+              settings: {
+                ...item.dynamicItemsConfiguration?.settings,
+                entityType: item.dynamicItemsConfiguration?.settings?.entityTypeShortAlias,
+                entityTypeShortAlias: undefined,
+              },
+            }
+            : item.dynamicItemsConfiguration,
         }
         : item
     ;
