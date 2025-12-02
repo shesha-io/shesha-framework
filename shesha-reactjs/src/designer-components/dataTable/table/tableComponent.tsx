@@ -143,7 +143,7 @@ const TableComponent: TableComponentDefinition = {
     const allowedStyleProperties = [
       'rowHeight', 'rowPadding', 'rowBorder',
       'headerFontSize', 'headerFontWeight',
-      'tableSettings' // For nested structure
+      'tableSettings', // For nested structure
     ];
 
     return (name !== 'items' || isPropertySettings(value)) || allowedStyleProperties.includes(name);
