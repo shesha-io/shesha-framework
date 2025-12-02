@@ -57,6 +57,15 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   shadow?: IShadowValue;
   sortableIndicatorColor?: string;
   enableStyleOnReadonly?: boolean;
+
+  // Table settings nested structure for form binding
+  tableSettings?: {
+    rowHeight?: string;
+    rowPadding?: string;
+    rowBorder?: string;
+    headerFontSize?: string;
+    headerFontWeight?: string;
+  };
 }
 
 /** Table component props */

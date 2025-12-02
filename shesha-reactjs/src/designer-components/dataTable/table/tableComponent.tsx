@@ -7,6 +7,7 @@ import { migrateNavigateAction } from '@/designer-components/_common-migrations/
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateV12toV13 } from './migrations/migrate-v13';
+import { migrateV15toV16 } from './migrations/migrate-v16';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
 import { TableOutlined } from '@ant-design/icons';
@@ -17,7 +18,7 @@ import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { StandaloneTable } from './standaloneTable';
 import { useDataTableStore } from '@/providers/dataTable';
-import { defaultStyles } from './utils';
+import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './utils';
 
 
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
@@ -45,11 +46,16 @@ const TableComponent: TableComponentDefinition = {
   },
   initModel: (model: ITableComponentProps) => {
     const defaults = defaultStyles();
+    const tableDefaults = getTableDefaults();
+    const tableSettingsDefaults = getTableSettingsDefaults();
+
     return {
-      ...model,
-      ...defaults,
       items: [],
       striped: true,
+      ...defaults,
+      ...tableDefaults,
+      ...tableSettingsDefaults,
+      ...model,
     };
   },
   settingsFormMarkup: getSettings,
@@ -122,8 +128,26 @@ const TableComponent: TableComponentDefinition = {
       .add<ITableComponentProps>(12, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
       .add<ITableComponentProps>(13, migrateV12toV13)
       .add<ITableComponentProps>(14, (prev) => ({ ...prev, striped: true }))
-      .add<ITableComponentProps>(15, (prev) => ({ ...prev, striped: prev.striped ?? true })),
-  actualModelPropertyFilter: (name, value) => name !== 'items' || isPropertySettings(value),
+      .add<ITableComponentProps>(15, (prev) => ({ ...prev, striped: prev.striped ?? true }))
+      .add<ITableComponentProps>(16, migrateV15toV16)
+      .add<ITableComponentProps>(17, (prev) => ({
+        ...prev,
+        rowHeight: prev.rowHeight ?? '40px',
+        rowPadding: prev.rowPadding ?? '8px 12px',
+        rowBorder: prev.rowBorder ?? '1px solid #f0f0f0',
+        headerFontSize: prev.headerFontSize ?? '14px',
+        headerFontWeight: prev.headerFontWeight ?? '600',
+      })),
+  actualModelPropertyFilter: (name, value) => {
+    // Allow all styling properties through to the settings form
+    const allowedStyleProperties = [
+      'rowHeight', 'rowPadding', 'rowBorder',
+      'headerFontSize', 'headerFontWeight',
+      'tableSettings' // For nested structure
+    ];
+
+    return (name !== 'items' || isPropertySettings(value)) || allowedStyleProperties.includes(name);
+  },
 };
 
 export default TableComponent;

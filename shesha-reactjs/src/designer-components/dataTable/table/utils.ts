@@ -59,6 +59,40 @@ export const defaultStyles = (): IStyleType => {
   };
 };
 
+export const getTableDefaults = (): {
+  rowHeight: string;
+  rowPadding: string;
+  rowBorder: string;
+  headerFontSize: string;
+  headerFontWeight: string;
+} => {
+  return {
+    // Row styling defaults
+    rowHeight: '40px',
+    rowPadding: '8px 12px',
+    rowBorder: '1px solid #f0f0f0',
+
+    // Header styling defaults
+    headerFontSize: '14px',
+    headerFontWeight: '600',
+  };
+};
+
+export const getTableSettingsDefaults = (): {
+  tableSettings: {
+    rowHeight: string;
+    rowPadding: string;
+    rowBorder: string;
+    headerFontSize: string;
+    headerFontWeight: string;
+  };
+} => {
+  const flatDefaults = getTableDefaults();
+  return {
+    tableSettings: flatDefaults,
+  };
+};
+
 // Auditing columns to exclude from default column generation
 export const AUDITING_COLUMNS = Object.freeze([
   'id',
