@@ -28,6 +28,7 @@ export interface ICustomFileProps extends IInputStyles {
   container?: IStyleType;
   primaryColor?: string;
   enableStyleOnReadonly?: boolean;
+  
   downloadedFileStyles?: CSSProperties;
 }
 
