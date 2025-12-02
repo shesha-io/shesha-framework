@@ -22,7 +22,7 @@ export const ModelConfiguratorRenderer: FC = () => {
   const errorsText = useMemo((): React.ReactNode => {
     return (
       <>
-        <div>Please fix the following errors:</div>
+        <div>Please check the following errors:</div>
         {errors?.map((e, index) => <div key={index}>• {e}</div>)}
       </>
     );

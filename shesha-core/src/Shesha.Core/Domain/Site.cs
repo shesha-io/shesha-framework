@@ -43,7 +43,7 @@ namespace Shesha.Domain
         public virtual decimal? Altitude { get; set; }
         public virtual RefListSiteSubType? SiteSubType { get; set; }
 
-        public virtual Single? Area { get; set; }
+        public virtual int? Area { get; set; }
 
 		[MaxLength(20)]
 		public virtual string ContactNumber { get; set; }

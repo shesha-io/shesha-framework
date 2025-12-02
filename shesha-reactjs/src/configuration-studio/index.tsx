@@ -15,6 +15,7 @@ import { ItemToolbarHolder } from './components/item-toolbar-holder';
 import { DocumentDefinitionRegistration } from './document-definitions/documentDefinitionRegistration';
 import { SheshaDocumentDefinitions } from './document-definitions';
 import { useCanvas } from '@/providers';
+import { InitializationErrorsModal } from './components/initializationErrorsModal';
 
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
@@ -68,6 +69,7 @@ const ConfigurationStudio: FC = () => {
           </Splitter>
         </Layout.Content>
       </Layout>
+      <InitializationErrorsModal />
     </ConfigurationStudioProvider>
   );
 };

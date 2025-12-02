@@ -87,7 +87,7 @@ namespace Shesha.Configuration.Runtime
         [UnitOfWork]
         public async Task InitializeDynamicAsync(List<EntityConfig>? entityConfigs = null)
         {
-            var userEntityTypes = _dynamicEntityTypeBuilder.GenerateTypes(this);
+            var userEntityTypes = await _dynamicEntityTypeBuilder.GenerateTypesAsync(this);
             entityConfigs = entityConfigs ?? await _entityConfigRepository.GetAllListAsync(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined);
             foreach (var entityType in userEntityTypes)
             {

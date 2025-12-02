@@ -1,11 +1,13 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Json;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain;
+using ElmahCore;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
 using Shesha;
 using Shesha.Domain;
 using Shesha.DynamicEntities.EntityTypeBuilder;
+using Shesha.DynamicEntities.ErrorHandler;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Services;
@@ -104,5 +106,11 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 
             return Task.FromResult(JsonConvert.SerializeObject(linkGeneratorContext.State) ?? string.Empty);
         }        
+
+        public async Task TestElmahAsync()
+        {
+            ElmahExtensions.RiseError(new Exception("Shurik"));
+            await Task.CompletedTask;
+        }
     }
 }
