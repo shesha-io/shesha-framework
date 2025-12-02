@@ -97,18 +97,25 @@ export class MetadataDispatcher implements IMetadataDispatcher {
     if (loadedModel) return loadedModel;
 
     if (dataType === DataTypes.entityReference || dataType === DataTypes.object || dataType === null) {
-      const promise = this.#entityMetaFetcher.isEntity(modelType).then((isEntity) => {
-        if (isEntity)
-          return isEntityTypeIdentifier(modelType)
-            ? this.#entityMetaFetcher.getByTypeId(modelType)
-            : this.#entityMetaFetcher.getByClassName(modelType);
+      const promise = this.#entityMetaFetcher.isEntity(modelType).then(async (isEntity) => {
+        if (isEntity) {
+          const entityMetadata = isEntityTypeIdentifier(modelType)
+            ? await this.#entityMetaFetcher.getByTypeId(modelType)
+            : await this.#entityMetaFetcher.getByClassName(modelType);
+
+          // If entity meta fetcher returns null, fall back to API
+          if (entityMetadata) {
+            return entityMetadata;
+          }
+        }
 
         const mapProperty = (property: PropertyMetadataDto, prefix: string = ''): IPropertyMetadata => {
-          const { properties, itemsType, ...rest } = property;
+          const { properties, itemsType, containerType, ...rest } = property;
           return {
             ...rest,
             path: property.path,
             prefix,
+            containerType: containerType ?? '',
             itemsType: itemsType ? mapProperty(itemsType) : undefined,
             entityType: property.entityType ?? '',
             properties: properties
@@ -144,6 +151,8 @@ export class MetadataDispatcher implements IMetadataDispatcher {
             fullClassName: container,
             dataType: 'object',
             properties: [],
+            apiEndpoints: {},
+            specifications: [],
           };
           return meta;
         });

@@ -174,6 +174,10 @@ export class GqlLoader implements IFormDataLoader {
 
     const metadata = await getMetadata({ dataType: DataTypes.entityReference, modelType: formSettings.modelType });
 
+    if (!metadata) {
+      return Promise.resolve([]);
+    }
+
     let fields: IFieldData[] = [];
 
     const fieldNames = this.#getFormFields(payload, metadata);
