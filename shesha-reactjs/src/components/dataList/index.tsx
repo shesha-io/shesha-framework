@@ -370,6 +370,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         formEntityType = entityType ?? item?._className;
       }
       if (formSelectionMode === 'expression') {
+        formEntityType = '$expressionForm$';
         fId = getFormIdFromExpression(item);
       }
       if (!!fId || !!fType)
@@ -392,6 +393,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     if (formSelectionMode === 'view') {
       formEntityType = entityType ?? item?._className;
       fType = formType;
+    }
+    if (formSelectionMode === 'expression') {
+      formEntityType = '$expressionForm$';
     }
 
     let entityForm = entityForms.current.find((x) => isEntityTypeIdEqual(x.entityType, formEntityType) && x.formType === fType);
