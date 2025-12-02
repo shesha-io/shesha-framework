@@ -14,37 +14,36 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
   const addItem = useCallback((groupName: string, id: unknown, data?: unknown) => {
     setState((prevState) => {
       const group = prevState.groups?.find((x) => x.name === groupName);
-      if (Boolean(group)) {
-        const item = group.items?.find((x) => x.id === id);
-        if (Boolean(item)) {
-          return {
-            groups: [
-              ...prevState.groups.map((gr) => {
-                return gr.name === groupName
-                  ? {
-                      name: groupName,
-                      items: [
-                        ...gr.items.map((it) => {
-                          return it.id === id ? { id, data } : it;
-                        }),
-                      ],
-                    }
-                  : gr;
-              }),
-            ],
-          };
-        } else {
-          return {
-            groups: [
-              ...prevState.groups.map((gr) => {
-                return gr.name === groupName ? { ...gr, items: [...gr.items, { id, data }] } : gr;
-              }),
-            ],
-          };
-        }
-      } else {
-        return { groups: [...prevState.groups, { name: groupName, items: [{ id, data }] }] };
+      if (!group) {
+        // Create new group with the item
+        return {
+          ...prevState,
+          groups: [...prevState.groups, { name: groupName, items: [{ id, data }] }]
+        };
       }
+
+      const item = group.items?.find((x) => x.id === id);
+      if (item) {
+        // Update existing item
+        return {
+          ...prevState,
+          groups: prevState.groups.map((gr) =>
+            gr.name === groupName
+              ? { ...gr, items: gr.items.map((it) => it.id === id ? { id, data } : it) }
+              : gr
+          ),
+        };
+      }
+
+      // Add new item to existing group
+      return {
+        ...prevState,
+        groups: prevState.groups.map((gr) =>
+          gr.name === groupName
+            ? { ...gr, items: [...gr.items, { id, data }] }
+            : gr
+        ),
+      };
     });
   }, []);
 
