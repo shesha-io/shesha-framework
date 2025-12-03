@@ -1,5 +1,6 @@
 import { IEntityReferenceDto, IErrorInfo, ILoginForm } from '@/interfaces';
 import { GetCurrentLoginInfoOutput, UserLoginInfoDto } from '@/apis/session';
+import { IHttpHeaders } from "@/interfaces/accessToken";
 
 export type AuthenticationStatus = 'waiting' | 'inprogress' | 'ready' | 'failed';
 export interface AuthenticationState {
@@ -35,6 +36,8 @@ export interface IAuthenticator {
   loginUserAsync: (loginFormData: ILoginForm) => Promise<LoginUserResponse>;
   logoutUser: () => Promise<void>;
   checkAuthAsync: (notAuthorizedRedirectUrl: string) => Promise<void>;
+
+  refetchProfileAsync: (headersOverride?: IHttpHeaders) => Promise<void>;
 
   anyOfPermissionsGranted: (permissions: string[], permissionedEntities?: IEntityReferenceDto[]) => boolean;
 
