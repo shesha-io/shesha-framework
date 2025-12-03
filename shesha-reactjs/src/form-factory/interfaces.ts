@@ -47,7 +47,7 @@ import { TextComponentDefinition } from '@/designer-components/text/models';
 import { TextAreaComponentDefinition } from '@/designer-components/textArea/interfaces';
 import { TextFieldComponentDefinition } from '@/designer-components/textField/interfaces';
 import { TimeFieldComponentDefinition } from '@/designer-components/timeField/models';
-import { ComponentDefinition, IConfigurableFormComponent, IPropertySetting } from '@/interfaces';
+import { ComponentDefinition, IConfigurableFormComponent, IPropertyMetadata, IPropertySetting } from '@/interfaces';
 
 // Create a union of all your component definitions
 type AllComponentDefinitions =
@@ -139,7 +139,7 @@ export type FluentFormBuilder<
   TConfig extends Record<ComponentTypes, object>,
 > = {
   [K in keyof TConfig as `add${ToPascalCase<K>}`]: K extends string
-    ? (props: TConfig[K]) => FluentFormBuilder<TConfig>
+    ? (props: TConfig[K], metadata?: IPropertyMetadata) => FluentFormBuilder<TConfig>
     : never;
 } & {
   build(): string;

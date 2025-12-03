@@ -169,19 +169,14 @@ export class FormMetadataHelper {
     switch (property.dataType) {
       case DataTypes.string:
         if (property.dataFormat === 'multiline') {
-          builder.addTextArea({
-            ...commonProps,
-          });
-          break;
+          builder.addTextArea(commonProps, property);
         } else {
-          builder.addTextField({
-            ...commonProps,
-          });
+          builder.addTextField(commonProps, property);
         }
         break;
 
       case DataTypes.number:
-        builder.addNumberField(commonProps);
+        builder.addNumberField(commonProps, property);
         break;
 
       case DataTypes.entityReference:
@@ -194,7 +189,7 @@ export class FormMetadataHelper {
             ? { name: property.entityType, module: property.entityModule } as IEntityTypeIdentifier
             : null,
           dataSourceType: 'entitiesList',
-        });
+        }, property);
         break;
 
       case DataTypes.referenceListItem:
@@ -218,31 +213,30 @@ export class FormMetadataHelper {
             module: property.referenceListModule,
             name: property.referenceListName,
           },
-        });
+        }, property);
         break;
 
       case DataTypes.boolean:
-        builder.addCheckbox(commonProps);
+        builder.addCheckbox(commonProps, property);
         break;
 
       case DataTypes.date:
       case DataTypes.dateTime:
-        builder.addDateField(commonProps);
+        builder.addDateField(commonProps, property);
         break;
 
       case DataTypes.time:
-        builder.addTimePicker(commonProps);
+        builder.addTimePicker(commonProps, property);
         break;
 
       case DataTypes.file:
         builder.addFileUpload({
           ...commonProps,
-          font: {
-            size: 14,
-          },
+          font: { size: 14 },
           ownerId: '{data.id}',
           ownerType: this._modelType || '',
-        });
+          useSync: false,
+        }, property);
         break;
       default:
         break;
