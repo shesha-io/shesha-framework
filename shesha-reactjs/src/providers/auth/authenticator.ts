@@ -71,6 +71,16 @@ export class Authenticator implements IAuthenticator {
         this.#onSetRequestHeaders = args.onSetRequestHeaders;
         this.#onTokenExpired = args.onTokenExpired;
     }
+    refetchProfileAsync = async (headersOverride?: IHttpHeaders): Promise<void> => {
+        try {
+            // fetch user profile
+            const userProfile = await this.#fetchUserInfoHttp(headersOverride);
+            this.#loginInfo = userProfile;
+        } catch (error) {
+            this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, error);
+            throw error;
+        }
+    };
 
     applyRouter = (router: IRouter) => {
         this.#router = router;
@@ -153,8 +163,9 @@ export class Authenticator implements IAuthenticator {
         }
     };
 
-    #fetchUserInfoHttp = async (): Promise<GetCurrentLoginInfoOutput> => {
-        const headers = this.#getHttpHeaders();
+    #fetchUserInfoHttp = async (headersOverride?: IHttpHeaders): Promise<GetCurrentLoginInfoOutput> => {
+        const headers = { ...this.#getHttpHeaders(), ...headersOverride };
+
         const httpResponse = await this.#httpClient.get<void, HttpResponse<GetCurrentLoginInfoOutputAjaxResponse>>(URLS.GET_CURRENT_LOGIN_INFO, { headers: headers });
         const { data: response } = httpResponse;
         if (!response.success || !response.result)

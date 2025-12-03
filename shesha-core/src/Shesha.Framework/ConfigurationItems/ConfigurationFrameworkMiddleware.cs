@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Extensions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 using Shesha.ConfigurationItems.Models;
 using System;
 using System.Threading.Tasks;
