@@ -353,8 +353,11 @@ namespace Shesha.Metadata
         public async Task<Type?> GetContainerTypeOrNullAsync(string? moduleName, string container)
         {
             var allModels = await GetAllModelsAsync();
-            var models = allModels.Where(m => !m.IsExposed && (m.Name == container || m.Alias == container || m.FullClassName == container)).ToList();
-            if (!string.IsNullOrWhiteSpace(moduleName))
+            
+            // Get models by Name of FullClassName or Alias
+            var models = allModels.Where(m => m.Name == container || m.Alias == container || m.FullClassName == container).ToList();
+            // Filter by Module
+            if (models.Count > 1 && !string.IsNullOrWhiteSpace(moduleName))
             {
                 models = models.Where(m => m is EntityModelDto em
                         ? em.Module == moduleName || em.ModuleAccessor == moduleName
@@ -362,6 +365,9 @@ namespace Shesha.Metadata
                     )
                     .ToList();
             }
+            // Get base model if more than one
+            if (models.Count > 1)
+                models = models.Where(x => !x.IsExposed).ToList();
 
             if (models.Count() > 1)
                 throw new DuplicateModelsException(models);
