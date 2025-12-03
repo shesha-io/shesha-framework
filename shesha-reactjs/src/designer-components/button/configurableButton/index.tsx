@@ -7,11 +7,13 @@ import { useConfigurableActionDispatcher } from '@/providers/configurableActions
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { DataContextTopLevels, isNavigationActionConfiguration, useShaRouting, useTheme } from '@/index';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { IFullAuditedEntity } from '@/publicJsApis/entities';
 import { useStyles } from './style';
+
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
   form: FormInstance<any>;
-  dynamicItem?: any;
+  dynamicItem?: IFullAuditedEntity;
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {

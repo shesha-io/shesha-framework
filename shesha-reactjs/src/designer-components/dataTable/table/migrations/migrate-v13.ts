@@ -12,7 +12,7 @@ export const migrateV12toV13 = (props: ITableComponentProps, _context: SettingsM
     if (typeof useMultiselect === 'boolean') {
       // If useMultiselect was true, set selectionMode to 'multiple'
       // If useMultiselect was false, set selectionMode to 'none' (no checkboxes)
-      const newSelectionMode = useMultiselect ? 'multiple' : 'none';
+      const newSelectionMode = useMultiselect ? 'multiple' : 'single';
 
       // Remove the old useMultiselect property and set the new selectionMode
       const { useMultiselect: removed, ...propsWithoutUseMultiselect } = props;
@@ -28,6 +28,6 @@ export const migrateV12toV13 = (props: ITableComponentProps, _context: SettingsM
   // ensure selectionMode has a default value
   return {
     ...props,
-    selectionMode: props.selectionMode || 'none',
+    selectionMode: props.selectionMode || 'single',
   };
 };

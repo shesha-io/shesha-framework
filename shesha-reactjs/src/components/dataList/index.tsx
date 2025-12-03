@@ -602,7 +602,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     return (
       <div key={`row-${index}`}>
         <ConditionalWrap
-          condition={selectionMode !== 'none'}
+          condition={selectionMode === 'multiple'}
           wrap={(children) => (
             <Checkbox
               className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}
@@ -621,6 +621,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               { selected },
             )}
             onClick={() => {
+              // For single and multiple selection modes, trigger selection when clicking on row
+              if (selectionMode === 'single' || selectionMode === 'multiple') {
+                onSelectRowLocal(index, item);
+              }
               // Trigger onListItemClick event
               if (onListItemClick) {
                 onListItemClick(index, item);
