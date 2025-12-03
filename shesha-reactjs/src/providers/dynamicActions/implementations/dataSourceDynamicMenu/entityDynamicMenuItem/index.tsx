@@ -35,7 +35,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
 
   const fetchTemplateData = async () => {
     const response = await refetch(getTemplateState(evaluatedFilters ?? null));
-    const result = Array.isArray(response.result) ? response.result : response.result.items;
+    const result = Array.isArray(response.result) ? response.result : response.result?.items ?? [];
     setData(result);
   };
 
