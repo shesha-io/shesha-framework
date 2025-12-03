@@ -21,6 +21,7 @@ interface IWizardComponent {
   content: (description: string, index: number) => string;
   next: () => void;
   setStep: (stepIndex) => void;
+  setFieldValue: (name: string, value: unknown) => void;
   visibleSteps: IWizardStepProps[];
 }
 
@@ -333,12 +334,16 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   //#endregion
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
+    const setFieldValue = useCallback((name: string, value: any) => {
+    allData?.form?.formInstance?.setFieldValue?.(name, value);
+  }, [allData?.form?.formInstance]);
 
   getWizardContextData = () => ({
     api: { back, cancel, done, content, next, setStep },
     current,
     currentStep,
     visibleSteps,
+    setFieldValue
   });
 
   useDeepCompareEffect(() => {
@@ -346,8 +351,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   }, [current, visibleSteps]);
 
   useEffect(() => {
-    dataContext.updateApi({ back, cancel, done, content, next, setStep });
-  }, [back, cancel, done, content, next, setStep, dataContext]);
+    dataContext.updateApi({ back, cancel, done, content, next, setStep, setFieldValue });
+  }, [back, cancel, done, content, next, setStep, setFieldValue, dataContext]);
 
-  return { components, current, currentStep, visibleSteps, back, cancel, done, content, next, setStep };
+  return { components, current, currentStep, visibleSteps, back, cancel, done, content, next, setStep, setFieldValue };
 };
