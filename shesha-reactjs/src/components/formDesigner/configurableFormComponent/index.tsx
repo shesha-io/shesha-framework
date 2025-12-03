@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
-import { DataContextTopLevels, EditMode, IConfigurableFormComponent } from '@/providers';
+import { DataContextTopLevels, EditMode, IConfigurableFormComponent, useCanvas } from '@/providers';
 import {
   EditOutlined,
   EyeInvisibleOutlined,
@@ -45,6 +45,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { styles } = useStyles();
 
   const getToolboxComponent = useFormDesignerComponentGetter();
+  const { activeDevice } = useCanvas();
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
 
@@ -82,12 +83,46 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return result;
   }, [isSelected]);
 
+  // Apply dimensions to the outermost wrapper so width/height affect the actual component size
+  // Skip for intrinsic-size components (checkbox, switch, radio, fileUpload, etc.) - they maintain their natural size
+  const intrinsicSizeComponents = ['container'];
+  const shouldApplyDimensions = intrinsicSizeComponents.includes(componentModel.type);
+    const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
+    ? { ...componentModel, ...componentModel?.[activeDevice] }
+    : componentModel;
+    const { dimensions } = deviceModel?.container || deviceModel;
+
+  const componentStyle = useMemo(() => {
+    if (!shouldApplyDimensions) return { margin: '0px !important' };
+    // Only apply width dimensions to wrapper - height is applied directly to the input component
+    return {
+      boxSizing: 'border-box' as const,
+      width: dimensions?.width,
+      minWidth: dimensions?.minWidth,
+      maxWidth: dimensions?.maxWidth,
+      height: dimensions?.height,
+      minHeight: dimensions?.minHeight,
+      maxHeight: dimensions?.maxHeight,
+      margin: '0px !important'
+    };
+  }, [componentModel, shouldApplyDimensions]);
+
+  const renderComponentModel = useMemo(()=>{
+    return {
+      ...componentModel,
+      [activeDevice]: {
+        ...deviceModel,
+        dimensions: {...dimensions, width: '100%', height: '100%'},
+      }
+  }},[componentModel]);
+  console.log(componentModel.type, " :: ", componentModel);
   return (
     <div
       className={classNames(styles.shaComponent, {
         "selected": isSelected,
         'has-config-errors': invalidConfiguration,
       })}
+      style={componentStyle}
     >
       <span className={styles.shaComponentIndicator}>
         <Show when={hiddenFx || componentEditModeFx}>
@@ -115,10 +150,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       </span>
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
-      <div>
-        <DragWrapper componentId={componentModel.id} readOnly={readOnly}>
-          <div style={{ padding: '5px 3px' }}>
-            <FormComponent componentModel={componentModel} />
+      <div style={{ width: '100%', height: '100%', boxSizing: 'border-box' }}>
+        <DragWrapper componentId={componentModel.id} readOnly={readOnly} >
+          <div style={{ padding: '5px 3px', boxSizing: 'border-box', width: '100%', height: '100%' }}>
+            <FormComponent componentModel={renderComponentModel} />
           </div>
         </DragWrapper>
       </div>
