@@ -149,7 +149,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
         ))}
 
         <div className={styles.shaProfileDropdown}>
-          <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
+          <Dropdown menu={{ items: [...menuItems, ...accountMenuItems], className: styles.shaProfileMenu }} trigger={['click']}>
             <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
               {loginInfo?.fullName} <DownOutlined />
             </a>
