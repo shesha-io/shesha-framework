@@ -4,8 +4,10 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { useEffect, useMemo, useState } from 'react';
+import { useDataContext } from '@/providers/dataContextProvider/contexts';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormExpression } from '@/hooks';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useValidator } from '@/providers/validateProvider';
 
@@ -25,6 +27,7 @@ interface IWizardComponent {
 export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardComponent => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const allData = useAvailableConstantsData();
+  const dataContext = useDataContext();
   const toolbox = useFormDesignerComponents();
   const validator = useValidator(false);
 
@@ -98,16 +101,16 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       });
   }, [componentsNames]);
 
-  const wizardContextData = useMemo(() => ({
+  let getWizardContextData = () => ({
     current,
     currentStep,
     visibleSteps,
-  }), [current, currentStep, visibleSteps]);
+  });
 
-  const argumentsEvaluationContext = useMemo(() => {
+  const getArgumentsEvaluationContext = () => {
     const contexts = { ...allData.contexts };
     if (actionOwnerName) {
-      contexts[actionOwnerName] = wizardContextData;
+      contexts[actionOwnerName] = getWizardContextData();
     }
     return {
       ...allData,
@@ -115,7 +118,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       fieldsToValidate: componentsNames,
       validate: validator?.validate
     };
-  }, [allData, actionOwnerName, wizardContextData, componentsNames, validator?.validate]);
+  };
 
   useEffect(() => {
     setCurrent(getDefaultStepIndex(defaultActiveStep));
@@ -127,7 +130,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     if (!!actionConfiguration?.actionName) {
       executeAction({
         actionConfiguration: actionConfiguration,
-        argumentsEvaluationContext
+        argumentsEvaluationContext: getArgumentsEvaluationContext()
       });
     }
   }, [current]);
@@ -140,7 +143,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
   };
 
-  const successCallback = (type: 'back' | 'next' | 'reset') => {
+  const successCallback = useCallback((type: 'back' | 'next' | 'reset') => {
     setTimeout(() => {
       const step = getWizardStep(visibleSteps, current, type);
 
@@ -148,10 +151,10 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         setCurrent(step);
       }
     }, 100); // It is necessary to have time to complete a request
-  };
+  }, [visibleSteps, current]);
 
   /// NAVIGATION
-  const executeActionIfConfigured = (
+  const executeActionIfConfigured = useCallback((
     beforeAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
     afterAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
     success?: (actionResponse: any) => void,
@@ -174,7 +177,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
           if (!!afterAction?.actionName)
             executeAction({
               actionConfiguration: afterAction,
-              argumentsEvaluationContext
+              argumentsEvaluationContext: getArgumentsEvaluationContext()
             });
         }
       );
@@ -187,12 +190,12 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
     executeAction({
       actionConfiguration: beforeAction,
-      argumentsEvaluationContext,
+      argumentsEvaluationContext: getArgumentsEvaluationContext(),
       success: successFunc,
     });
-  };
+  }, [formMode, currentStep, executeAction]);
 
-  const next = async () => {
+  const next = useCallback(async () => {
     try {
       if (current < tabs.length - 1) {
         executeActionIfConfigured(
@@ -204,24 +207,24 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     } catch (errInfo) {
       console.error("Couldn't Proceed", errInfo);
     }
-  };
+  }, [current, tabs.length, executeActionIfConfigured, successCallback]);
 
-  const back = () => {
+  const back = useCallback(() => {
     if (current > 0)
       executeActionIfConfigured(
         (tab) => tab.beforeBackActionConfiguration,
         (tab) => tab.afterBackActionConfiguration,
         () => successCallback('back'),
       );
-  };
+  }, [current, executeActionIfConfigured, successCallback]);
 
-  const cancel = () =>
+  const cancel = useCallback(() =>
     executeActionIfConfigured(
       (tab) => tab.beforeCancelActionConfiguration,
       (tab) => tab.afterCancelActionConfiguration
-    );
+    ), [executeActionIfConfigured]);
 
-  const done = async () => {
+  const done = useCallback(async () => {
     try {
       executeActionIfConfigured(
         (tab) => tab.beforeDoneActionConfiguration,
@@ -230,13 +233,13 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     } catch (errInfo) {
       console.error("Couldn't Proceed", errInfo);
     }
-  };
+  }, [executeActionIfConfigured]);
 
-  const setStep = (stepIndex) => {
+  const setStep = useCallback((stepIndex) => {
     if (stepIndex < 0 || stepIndex >= visibleSteps.length)
       throw `Step with index ${stepIndex} is not available`;
     setCurrent(stepIndex);
-  };
+  }, [visibleSteps.length]);
 
   // #region configurable actions
   const actionDependencies = [actionOwnerName, actionsOwnerId, current];
@@ -330,6 +333,21 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   //#endregion
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
+
+  getWizardContextData = () => ({
+    api: { back, cancel, done, content, next, setStep },
+    current,
+    currentStep,
+    visibleSteps,
+  });
+
+  useDeepCompareEffect(() => {
+    dataContext.setData({ current, visibleSteps });
+  }, [current, visibleSteps]);
+
+  useEffect(() => {
+    dataContext.updateApi({ back, cancel, done, content, next, setStep });
+  }, [back, cancel, done, content, next, setStep, dataContext]);
 
   return { components, current, currentStep, visibleSteps, back, cancel, done, content, next, setStep };
 };
