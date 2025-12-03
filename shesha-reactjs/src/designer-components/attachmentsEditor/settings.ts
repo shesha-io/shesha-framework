@@ -1042,6 +1042,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       content: {
                         id: downloadedStylesPnlId,
                         components: [...fbf()
+                          .addSettingsInput({
+                            inputType: "switch",
+                            id: nanoid(),
+                            label: 'Style Downloaded File',
+                            propertyName: 'styleDownloadedFiles'
+                          })
                           .addCollapsiblePanel({
                             id: nanoid(),
                             propertyName: 'pnlDownloadedFileFontStyles',
@@ -1050,22 +1056,15 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             parentId: downloadedStylesPnlId,
                             ghost: true,
                             collapsible: 'header',
+                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                             content: {
                               id: pnlDownloadedFileFontStylesId,
                               components: [...fbf()
-                                .addSettingsInput({
-                                  inputType: "switch",
-                                  id: nanoid(),
-                                  label: 'Style Downloaded File',
-                                  propertyName: 'styleDownloadedFiles'
-
-                                })
                                 .addSettingsInputRow({
                                   id: nanoid(),
                                   parentId: pnlDownloadedFileFontStylesId,
                                   inline: true,
                                   propertyName: 'downloadedFileStyles.font',
-                                  hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
                                       type: 'dropdown',
@@ -1108,15 +1107,21 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       hideLabel: true,
                                       width: 60,
                                       dropdownOptions: textAlignOptions,
-                                    },
+                                    }
                                   ],
                                 })
-                                .addSettingsInput({
-                                  inputType: 'iconPicker',
+                                .addSettingsInputRow({
                                   id: nanoid(),
-                                  propertyName: 'downloadedIcon',
-                                  label: 'Icon',
-                                  hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                                  parentId: pnlDownloadedFileFontStylesId,
+                                  hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'iconPicker',
+                                      id: nanoid(),
+                                      label: 'Icon',
+                                      propertyName: 'downloadedIcon'
+                                    }
+                                  ]
                                 })
                                 .toJson()
                               ]
@@ -1130,7 +1135,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             ghost: true,
                             parentId: downloadedStylesPnlId,
                             collapsible: 'header',
-                            hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                             content: {
                               id: 'pnlDownloadedFileCustomStylePanel',
                               components: [...fbf()
