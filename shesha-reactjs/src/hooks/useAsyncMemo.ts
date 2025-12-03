@@ -12,9 +12,9 @@ export function useAsyncMemo<T>(factory: () => Promise<T> | undefined | null, de
         /*nop*/
       };
 
-    promise.then((val) => {
+    promise.then((newVal) => {
       if (!cancel) {
-        setVal(val);
+        setVal(newVal);
       }
     });
 
@@ -37,9 +37,9 @@ export function useAsyncDeepCompareMemo<T>(factory: () => Promise<T> | undefined
         /*nop*/
       };
 
-    promise.then((val) => {
+    promise.then((newVal) => {
       if (!cancel) {
-        setVal(val);
+        setVal(newVal);
       }
     });
 
