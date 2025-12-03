@@ -334,8 +334,9 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   //#endregion
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
-    const setFieldValue = useCallback((name: string, value: any) => {
-    allData?.form?.formInstance?.setFieldValue?.(name, value);
+
+  const setFieldValue = useCallback((name: string, value: unknown) => {
+    allData?.form?.formInstance?.setFieldValue?.(name, value as any);
   }, [allData?.form?.formInstance]);
 
   getWizardContextData = () => ({
