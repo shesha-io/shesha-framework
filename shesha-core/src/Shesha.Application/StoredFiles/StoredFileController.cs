@@ -8,6 +8,7 @@ using Abp.Runtime.Session;
 using Abp.Runtime.Validation;
 using Abp.UI;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.Domain;
@@ -40,6 +41,7 @@ namespace Shesha.StoredFiles
         private readonly IRepository<StoredFile, Guid> _fileRepository;
         private readonly IRepository<StoredFileVersion, Guid> _fileVersionRepository;
         private readonly IRepository<StoredFileVersionDownload, Guid> _fileVersionDownloadRepository;
+        private readonly IRepository<StoredFileReplacement, Guid> _fileReplacementRepository;
         private readonly IDynamicRepository _dynamicRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<Person, Guid> _personRepository;
@@ -56,8 +58,10 @@ namespace Shesha.StoredFiles
             IDynamicRepository dynamicRepository,
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<Person, Guid> personRepository,
-            TypeFinder typeFinder
-, IAbpSession abpSession, IRepository<StoredFileVersionDownload, Guid> fileVersionDownloadRepository)
+            TypeFinder typeFinder,
+            IAbpSession abpSession,
+            IRepository<StoredFileVersionDownload, Guid> fileVersionDownloadRepository,
+            IRepository<StoredFileReplacement, Guid> fileReplacementRepository)
         {
             _fileService = fileService;
             _fileRepository = fileRepository;
@@ -68,6 +72,7 @@ namespace Shesha.StoredFiles
             _typeFinder = typeFinder;
             _abpSession = abpSession;
             _fileVersionDownloadRepository = fileVersionDownloadRepository;
+            _fileReplacementRepository = fileReplacementRepository;
         }
 
         [HttpGet, Route("Download")]
@@ -377,12 +382,13 @@ namespace Shesha.StoredFiles
             fileDto.Id = fileVersion.File.Id;
             fileDto.FileCategory = fileVersion.File.Category;
             fileDto.Name = fileVersion.FileName;
-            fileDto.Url = Url.Action("Download", new { fileVersion.File.Id });
+            fileDto.Url = Url?.Action("Download", new { fileVersion.File.Id });
             fileDto.Size = fileVersion.FileSize;
             fileDto.Type = !string.IsNullOrWhiteSpace(fileVersion.FileName)
                 ? Path.GetExtension(fileVersion.FileName)
                 : null;
             fileDto.Temporary = fileVersion.File.Temporary;
+            fileDto.IsReplaced = fileVersion.File.IsReplaced;
         }
 
         /// <summary>
@@ -536,6 +542,9 @@ namespace Shesha.StoredFiles
             var fileVersions = string.IsNullOrWhiteSpace(input.FilesCategory)
                 ? await _fileService.GetLastVersionsOfAttachmentsAsync(id, type)
                 : await _fileService.GetLastVersionsOfAttachmentsAsync(id, type, input.FilesCategory.ToCamelCase());
+
+            // Filter out replaced files - they should only show in history
+            fileVersions = fileVersions.Where(v => !v.File.IsReplaced).ToList();
 
             var currentUserId = _abpSession.UserId;
 
@@ -782,6 +791,126 @@ namespace Shesha.StoredFiles
                 .ToListAsync();
 
             return documentUploads.Select(v => ObjectMapper.Map<StoredFileVersionInfoDto>(v)).ToList();
+        }
+
+        /// <summary>
+        /// Replace an existing file with a new file and track the replacement
+        /// </summary>
+        [HttpPost, Route("ReplaceFile")]
+        [Consumes("multipart/form-data")]
+        public async Task<StoredFileDto> ReplaceFileAsync([FromForm] Guid fileId, [FromForm] IFormFile file)
+        {
+            if (file == null)
+                throw new AbpValidationException("File must not be null");
+
+            if (string.IsNullOrWhiteSpace(file.FileName))
+                throw new AbpValidationException("File name must not be null or empty");
+
+            // Get the old file
+            var oldFile = await _fileRepository.GetAsync(fileId);
+            if (oldFile == null)
+                throw new UserFriendlyException("File not found");
+
+            var fileName = file.FileName.CleanupFileName();
+
+            // Create the new file
+            StoredFileVersion newFileVersion;
+            await using (var fileStream = file.OpenReadStream())
+            {
+                newFileVersion = await _fileService.CreateFileAsync(fileStream, fileName, newFile =>
+                {
+                    // Copy properties from old file
+                    newFile.Owner = oldFile.Owner;
+                    newFile.Category = oldFile.Category;
+                    newFile.Folder = oldFile.Folder;
+                    newFile.Temporary = oldFile.Temporary;
+                    newFile.IsVersionControlled = oldFile.IsVersionControlled;
+                });
+            }
+
+            if (newFileVersion?.File == null)
+                throw new UserFriendlyException("Failed to create new file");
+
+            // Mark the old file as replaced
+            oldFile.IsReplaced = true;
+            await _fileRepository.UpdateAsync(oldFile);
+
+            // Create the replacement record
+            var replacement = new StoredFileReplacement
+            {
+                NewFileId = newFileVersion.File.Id,
+                ReplacedFileId = oldFile.Id,
+                ReplacementDate = DateTime.UtcNow,
+            };
+            await _fileReplacementRepository.InsertAsync(replacement);
+
+            await _unitOfWorkManager.Current.SaveChangesAsync();
+
+            var uploadedFile = new StoredFileDto();
+            MapStoredFile(newFileVersion, uploadedFile);
+            return uploadedFile;
+        }
+
+        /// <summary>
+        /// Get replacement history for a file (including the entire replacement chain)
+        /// </summary>
+        [HttpGet, Route("StoredFile/{fileId}/ReplacementHistory")]
+        public async Task<List<StoredFileReplacementDto>> GetReplacementHistoryAsync(Guid fileId)
+        {
+            var result = new List<StoredFileReplacementDto>();
+            var currentFileId = fileId;
+            var processedFileIds = new HashSet<Guid>(); // Prevent infinite loops
+
+            // Follow the replacement chain backwards
+            while (currentFileId != Guid.Empty && !processedFileIds.Contains(currentFileId))
+            {
+                processedFileIds.Add(currentFileId);
+
+                // Find the replacement record where this file is the NEW file
+                var replacement = await _fileReplacementRepository.GetAll()
+                    .Where(r => r.NewFileId == currentFileId)
+                    .OrderByDescending(r => r.ReplacementDate)
+                    .FirstOrDefaultAsync();
+
+                if (replacement == null)
+                    break; // No more replacements in the chain
+
+                try
+                {
+                    var replacedFile = await _fileRepository.GetAsync(replacement.ReplacedFileId);
+                    var replacedFileVersion = replacedFile?.LastVersion();
+
+                    if (replacedFileVersion != null)
+                    {
+                        var dto = new StoredFileReplacementDto
+                        {
+                            Id = replacement.Id,
+                            NewFileId = replacement.NewFileId,
+                            ReplacedFileId = replacement.ReplacedFileId,
+                            ReplacedFileName = replacedFileVersion.FileName ?? string.Empty,
+                            ReplacedFileSize = replacedFileVersion.FileSize,
+                            ReplacedFileType = replacedFileVersion.FileType ?? string.Empty,
+                            ReplacedFileUrl = "",
+                            ReplacementDate = replacement.ReplacementDate,
+                        };
+                        result.Add(dto);
+
+                        // Move to the next file in the chain (the replaced file)
+                        currentFileId = replacement.ReplacedFileId;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                catch
+                {
+                    // Skip this replacement if the file no longer exists or cannot be accessed
+                    break;
+                }
+            }
+
+            return result;
         }
 
         #endregion

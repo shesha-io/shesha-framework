@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Shesha.StoredFiles.Dto
 {
@@ -13,5 +14,11 @@ namespace Shesha.StoredFiles.Dto
         public string? Type { get; set; }
         public bool Temporary { get; set; }
         public bool UserHasDownloaded {  get; set; }
+        public bool IsReplaced { get; set; }
+
+        /// <summary>
+        /// List of files that this file has replaced (history of replacements)
+        /// </summary>
+        public List<StoredFileReplacementDto>? ReplacementHistory { get; set; }
     }
 }

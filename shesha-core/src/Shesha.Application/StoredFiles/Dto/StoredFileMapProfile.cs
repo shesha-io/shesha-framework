@@ -26,6 +26,8 @@ namespace Shesha.StoredFilters.Dtos
                 .ForMember(u => u.DateUploaded, options => options.MapFrom(e => e.CreationTime))
                 .ForMember(u => u.UploadedBy, options => options.MapFrom(e => GetCreatorUserFullName(e)))
                 .ForMember(u => u.Url, options => options.MapFrom(e => e.GetFileVersionUrl()));
+
+            CreateMap<StoredFileReplacement, StoredFileReplacementDto>();
         }
 
         private static string? GetCreatorUserFullName(ICreationAudited entity)

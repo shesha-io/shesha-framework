@@ -7,7 +7,9 @@ using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
@@ -102,6 +104,24 @@ namespace Shesha.Domain
         /// Tenant Id
         /// </summary>
         public virtual int? TenantId { get; set; }
+
+        /// <summary>
+        /// Indicates whether this file has been replaced by a newer version.
+        /// When true, the file should not be displayed in normal views but remains available for history/audit purposes.
+        /// </summary>
+        public virtual bool IsReplaced { get; set; } = false;
+
+        /// <summary>
+        /// Navigation property for files that this file has replaced.
+        /// Represents the relationship where this is the new file.
+        /// </summary>
+        public virtual ICollection<StoredFileReplacement> ReplacedFiles { get; set; }
+
+        /// <summary>
+        /// Navigation property for the replacement record if this file has been replaced.
+        /// Represents the relationship where this is the old file.
+        /// </summary>
+        public virtual ICollection<StoredFileReplacement> ReplacedBy { get; set; }
 
         #region Delayed Binding Feature
 
