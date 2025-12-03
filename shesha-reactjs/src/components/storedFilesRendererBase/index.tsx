@@ -373,7 +373,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             refetchFileList();
           }
         })
-        .catch((error: any) => {
+        .catch((error) => {
           message.error(`Failed to replace file: ${error?.message || 'Unknown error'}`);
           setFileToReplace(null);
         })

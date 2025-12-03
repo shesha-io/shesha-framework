@@ -163,7 +163,9 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
   };
 
   const handleReplacementDownloadClick = (replacement: StoredFileReplacementDto) => {
+    if(replacement.replacedFileId) {
       versionDownloadFile({fileId: replacement.replacedFileId, versionNo: null, fileName: replacement.replacedFileName });
+    }
   };
 
   const isLoading = loadingVersions || loadingReplacements;

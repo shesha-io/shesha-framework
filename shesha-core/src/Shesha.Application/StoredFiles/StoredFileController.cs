@@ -890,7 +890,6 @@ namespace Shesha.StoredFiles
                             ReplacedFileName = replacedFileVersion.FileName ?? string.Empty,
                             ReplacedFileSize = replacedFileVersion.FileSize,
                             ReplacedFileType = replacedFileVersion.FileType ?? string.Empty,
-                            ReplacedFileUrl = "",
                             ReplacementDate = replacement.ReplacementDate,
                         };
                         result.Add(dto);

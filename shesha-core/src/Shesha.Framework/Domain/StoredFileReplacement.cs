@@ -21,6 +21,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Navigation property to the new file
         /// </summary>
+        [ForeignKey(nameof(NewFileId))]
         public virtual StoredFile NewFile { get; set; }
 
         /// <summary>
@@ -32,6 +33,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Navigation property to the replaced (old) file
         /// </summary>
+        [ForeignKey(nameof(ReplacedFileId))]
         public virtual StoredFile ReplacedFile { get; set; }
 
         /// <summary>

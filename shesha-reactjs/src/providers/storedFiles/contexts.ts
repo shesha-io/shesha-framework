@@ -62,7 +62,7 @@ export interface IStoredFilesActionsContext
   deleteFile: (fileIdToDelete: string) => void;
   downloadZipFile: (payload?: IDownloadZipPayload) => void;
   downloadFile: (payload: IDownloadFilePayload) => void;
-  refetchFileList: () => Promise<any>;
+  refetchFileList: () => Promise<unknown>;
 }
 
 export const STORED_FILES_CONTEXT_INITIAL_STATE: IStoredFilesStateContext = {
