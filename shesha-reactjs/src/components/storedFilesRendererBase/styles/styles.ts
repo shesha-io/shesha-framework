@@ -103,7 +103,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   `);
 
   const downloadedIcon = cx("downloaded-icon", css`
-    position: absolute;
+    position: ${layout ? 'absolute' : 'relative'};
     top: 4px;
     right: 4px;
     background: ${downloadedFileStyles?.color ?? token.colorSuccess};
@@ -217,7 +217,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .ant-upload-list-text {
-     >.downloaded-icon {
+      > .downloaded-icon {
       position: relative;
       top: unset;
       right: unset;
@@ -336,8 +336,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-container {
       display: inline-block !important;
-      max-width: var(--thumbnail-width) !important;
-      height: var(--thumbnail-height) !important;
       border-radius: ${borderRadius ?? '8px'} !important;
       &.ant-upload-animate-inline-appear,
       &.ant-upload-animate-inline-appear-active,
@@ -374,8 +372,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-container {
       display: inline-block !important;
-      width: var(--thumbnail-width) !important;
-      height: var(--thumbnail-height) !important;
       border-radius: ${borderRadius ?? '8px'} !important;
       &.ant-upload-animate-inline-appear,
       &.ant-upload-animate-inline-appear-active,
@@ -398,10 +394,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       align-items: stretch !important;
       align-content: flex-start !important;
       padding: 2px;
-      height: ${containerHeight} !important;
       width: var(--container-width) !important;
       max-height: calc(var(--container-max-height) - 40px) !important;
       max-width: var(--container-max-width) !important;
+      height: calc(${containerHeight} - 32px) !important;
       min-height: var(--container-min-height) !important;
       min-width: var(--container-min-width) !important;
       overflow-y: auto !important;
@@ -415,8 +411,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-container {
       display: inline-block !important;
-      width: var(--thumbnail-width) !important;
-      height: var(--thumbnail-height) !important;
       border-radius: ${borderRadius ?? '8px'} !important;
       &.ant-upload-animate-inline-appear,
       &.ant-upload-animate-inline-appear-active,

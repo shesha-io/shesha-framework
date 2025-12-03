@@ -1046,6 +1046,12 @@ export const getSettings = () => {
                       content: {
                         id: downloadedStylesPnlId,
                         components: [...new DesignerToolbarSettings()
+                          .addSettingsInput({
+                            inputType: "switch",
+                            id: nanoid(),
+                            label: 'Style Downloaded File',
+                            propertyName: 'styleDownloadedFiles'
+                          })
                           .addCollapsiblePanel({
                             id: nanoid(),
                             propertyName: 'pnlDownloadedFileFontStyles',
@@ -1054,22 +1060,15 @@ export const getSettings = () => {
                             parentId: downloadedStylesPnlId,
                             ghost: true,
                             collapsible: 'header',
+                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                             content: {
                               id: pnlDownloadedFileFontStylesId,
                               components: [...new DesignerToolbarSettings()
-                                .addSettingsInput({
-                                  inputType: "switch",
-                                  id: nanoid(),
-                                  label: 'Style Downloaded File',
-                                  propertyName: 'styleDownloadedFiles'
-
-                                })
                                 .addSettingsInputRow({
                                   id: nanoid(),
                                   parentId: pnlDownloadedFileFontStylesId,
                                   inline: true,
                                   propertyName: 'downloadedFileStyles.font',
-                                  hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
                                       type: 'dropdown',
@@ -1112,15 +1111,21 @@ export const getSettings = () => {
                                       hideLabel: true,
                                       width: 60,
                                       dropdownOptions: textAlignOptions,
-                                    },
+                                    }
                                   ],
                                 })
-                                .addSettingsInput({
-                                  inputType: 'iconPicker',
+                                .addSettingsInputRow({
                                   id: nanoid(),
-                                  propertyName: 'downloadedIcon',
-                                  label: 'Icon',
-                                  hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                                  parentId: pnlDownloadedFileFontStylesId,
+                                  hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'iconPicker',
+                                      id: nanoid(),
+                                      label: 'Icon',
+                                      propertyName: 'downloadedIcon'
+                                    }
+                                  ]
                                 })
                                 .toJson()
                               ]
@@ -1134,7 +1139,7 @@ export const getSettings = () => {
                             ghost: true,
                             parentId: downloadedStylesPnlId,
                             collapsible: 'header',
-                            hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                             content: {
                               id: 'pnlDownloadedFileCustomStylePanel',
                               components: [...new DesignerToolbarSettings()

@@ -243,8 +243,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
                 downloadedFileStyles={model.styleDownloadedFiles ? downloadedFileFullStyle : {}}
-                styleDownloadedFiles={model.styleDownloadedFiles}
-                downloadedIcon={model.downloadedIcon}
+                downloadedIcon={model.styleDownloadedFiles ? model.downloadedIcon : undefined }
               />
             </StoredFilesProvider>
           );
