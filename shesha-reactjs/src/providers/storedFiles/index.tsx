@@ -359,7 +359,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
             uploadFile,
             deleteFile,
             downloadZipFile,
-            downloadFile,          /* NEW_ACTION_GOES_HERE */
+            downloadFile,
+            refetchFileList: fetchFileListHttp,
+            /* NEW_ACTION_GOES_HERE */
           }}
         >
           {children}

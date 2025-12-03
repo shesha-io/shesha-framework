@@ -60,6 +60,20 @@ export interface StoredFileVersionInfoDto {
   url?: string | null;
 }
 
+/**
+ * File replacement information
+ */
+export interface StoredFileReplacementDto {
+  id?: string;
+  newFileId?: string;
+  replacedFileId?: string;
+  replacedFileName?: string | null;
+  replacedFileSize?: number;
+  replacedFileType?: string | null;
+  replacedFileUrl?: string | null;
+  replacementDate?: string;
+}
+
 export interface StoredFileDto {
   error?: string | null;
   id?: string | null;
@@ -69,6 +83,8 @@ export interface StoredFileDto {
   size?: number;
   type?: string | null;
   temporary?: boolean;
+  isReplaced?: boolean;
+  replacementHistory?: StoredFileReplacementDto[] | null;
 }
 
 export interface StoredFileGetQueryParams {
@@ -173,3 +189,52 @@ export interface DeleteFileByIdInput {
 }
 export const useDeleteFileById = () =>
   useMutateForEndpoint<DeleteFileByIdInput>({ url: (data) => `/api/StoredFile?id=${data.id}`, httpVerb: 'DELETE' });
+
+/**
+ * Replace file input
+ */
+export interface ReplaceFileInput {
+  fileId: string;
+  file: File;
+}
+
+/**
+ * Get replacement history query params
+ */
+export interface StoredFileGetReplacementHistoryQueryParams {
+  'api-version'?: string;
+}
+
+/**
+ * Get replacement history path params
+ */
+export interface StoredFileGetReplacementHistoryPathParams {
+  fileId: string;
+}
+
+export type StoredFileReplacementDtoListAjaxResponse = IAjaxResponse<StoredFileReplacementDto[] | null>;
+
+export type UseStoredFileGetReplacementHistoryProps = Omit<
+  UseGetProps<
+    StoredFileReplacementDtoListAjaxResponse,
+    StoredFileGetReplacementHistoryQueryParams,
+    StoredFileGetReplacementHistoryPathParams
+  >,
+  'path'
+> &
+  StoredFileGetReplacementHistoryPathParams;
+
+/**
+ * Get replacement history for a file
+ */
+export const useStoredFileGetReplacementHistory = ({ fileId, ...props }: UseStoredFileGetReplacementHistoryProps) =>
+  useGet<
+    StoredFileReplacementDtoListAjaxResponse,
+    IAjaxResponseBase,
+    StoredFileGetReplacementHistoryQueryParams,
+    StoredFileGetReplacementHistoryPathParams
+  >(
+    (paramsInPath: StoredFileGetReplacementHistoryPathParams) =>
+      `/api/StoredFile/StoredFile/${paramsInPath.fileId}/ReplacementHistory`,
+    { pathParams: { fileId }, ...props }
+  );

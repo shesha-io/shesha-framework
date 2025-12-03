@@ -7,6 +7,7 @@ import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { addPx } from '@/utils/style';
 import { CheckCircleOutlined, DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
+import { useMutate } from '@/hooks';
 import {
   Alert,
   App,
@@ -61,6 +62,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadZipFile?: () => void;
   downloadZip?: boolean;
   downloadFile: (payload: IDownloadFilePayload) => void;
+  refetchFileList?: () => Promise<any>;
   validFileTypes?: IUploaderFileTypes[];
   maxFileLength?: number;
   isDragger?: boolean;
@@ -94,6 +96,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   uploadFile,
   downloadZipFile,
   downloadFile,
+  refetchFileList,
   ownerId,
   ownerType,
   fetchFilesError,
@@ -125,11 +128,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   ...rest
 }) => {
   const { message, notification } = App.useApp();
-  const { httpHeaders } = useSheshaApplication();
+  const { httpHeaders, backendUrl } = useSheshaApplication();
+  const { mutate: replaceFileMutate } = useMutate();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<{ url: string; uid: string; name: string } | null>(null);
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
-  const [fileToReplace, setFileToReplace] = useState<string | null>(null);
+  const [fileToReplace, setFileToReplace] = useState<IStoredFile | null>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const fileContextCache = useRef<Map<string, Promise<{ file: UploadFile; fileId: string; fileName: string; fileType: string }>>>(new Map());
   // Track blob URLs and their revoke functions to prevent memory leaks
@@ -267,7 +271,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             revokeBlobUrl(imageUrl);
           }
         } catch (error) {
-          console.error('Error fetching image for file:', file.name, error);
+          console.error('Error fetching image:', error);
+          // Error fetching image - silently handle
         }
       }
     };
@@ -339,32 +344,44 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   }
 
   const handleReplaceClick = (file: UploadFile) => {
-    setFileToReplace(file.uid);
+    // Store the full file object, not just the uid
+    const storedFile = file as IStoredFile;
+    setFileToReplace(storedFile);
     hiddenUploadInputRef.current?.click();
   };
 
-  const handleReplaceFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleReplaceFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files && files.length > 0 && fileToReplace) {
+    if (files && files.length > 0 && fileToReplace && fileToReplace.id) {
       const newFile = files[0];
+      // Create FormData for multipart/form-data request
+      const formData = new FormData();
+      formData.append('fileId', fileToReplace.id);
+      formData.append('file', newFile);
 
-      try {
-        await Promise.resolve(deleteFile(fileToReplace));
+      // Use the replacement API endpoint instead of delete + upload
+      replaceFileMutate(
+        { url: `${backendUrl}/api/StoredFile/ReplaceFile`, httpVerb: 'POST' },
+        formData
+      )
+        .then(() => {
+          message.success(`${newFile.name} replaced successfully`);
+          setFileToReplace(null);
 
-        uploadFile({
-          file: newFile,
-          ownerId,
-          ownerType,
+          // Refresh the file list to show the new file and hide the replaced one
+          if (refetchFileList) {
+            refetchFileList();
+          }
+        })
+        .catch((error: any) => {
+          message.error(`Failed to replace file: ${error?.message || 'Unknown error'}`);
+          setFileToReplace(null);
+        })
+        .finally(() => {
+          if (hiddenUploadInputRef.current) {
+            hiddenUploadInputRef.current.value = '';
+          }
         });
-      } catch (error) {
-        console.error('Error replacing file:', error);
-        message.error('Failed to replace file. Please try again.');
-      } finally {
-        setFileToReplace(null);
-        if (hiddenUploadInputRef.current) {
-          hiddenUploadInputRef.current.value = '';
-        }
-      }
     }
   };
 
@@ -450,6 +467,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           {allowViewHistory && fileId && isValidGuid(fileId) && (
             <FileVersionsButton
               fileId={fileId}
+              versionDownloadFile={downloadFile}
               onDownload={(versionNo, fileName) => {
                 downloadFile({ fileId, versionNo, fileName });
               }}

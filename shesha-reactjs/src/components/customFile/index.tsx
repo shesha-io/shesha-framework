@@ -48,6 +48,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
     uploadFile,
     downloadZipFile,
     downloadFile,
+    refetchFileList,
     isInProgress: { downloadZip },
     succeeded: { downloadZip: downloadZipSuccess },
   } = useStoredFilesStore();
@@ -72,6 +73,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         downloadZipFile={downloadZipFile}
         downloadZip={props.downloadZip}
         downloadFile={downloadFile}
+        refetchFileList={refetchFileList}
         isDownloadingFileListZip={downloadZip}
         isDownloadZipSucceeded={downloadZipSuccess}
         allowedFileTypes={props?.allowedFileTypes}
