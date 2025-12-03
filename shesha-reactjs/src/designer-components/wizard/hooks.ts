@@ -4,8 +4,10 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
+import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import { useEffect, useMemo, useState } from 'react';
 import { useFormExpression } from '@/hooks';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useValidator } from '@/providers/validateProvider';
 
@@ -25,6 +27,7 @@ interface IWizardComponent {
 export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardComponent => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const allData = useAvailableConstantsData();
+  const dataContext = useDataContext();
   const toolbox = useFormDesignerComponents();
   const validator = useValidator(false);
 
@@ -98,16 +101,16 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       });
   }, [componentsNames]);
 
-  const wizardContextData = useMemo(() => ({
+  let getWizardContextData = () => ({
     current,
     currentStep,
     visibleSteps,
-  }), [current, currentStep, visibleSteps]);
+  });
 
-  const argumentsEvaluationContext = useMemo(() => {
+  const getArgumentsEvaluationContext = () => {
     const contexts = { ...allData.contexts };
     if (actionOwnerName) {
-      contexts[actionOwnerName] = wizardContextData;
+      contexts[actionOwnerName] = getWizardContextData();
     }
     return {
       ...allData,
@@ -115,7 +118,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       fieldsToValidate: componentsNames,
       validate: validator?.validate
     };
-  }, [allData, actionOwnerName, wizardContextData, componentsNames, validator?.validate]);
+  };
 
   useEffect(() => {
     setCurrent(getDefaultStepIndex(defaultActiveStep));
@@ -127,7 +130,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     if (!!actionConfiguration?.actionName) {
       executeAction({
         actionConfiguration: actionConfiguration,
-        argumentsEvaluationContext
+        argumentsEvaluationContext: getArgumentsEvaluationContext()
       });
     }
   }, [current]);
@@ -174,7 +177,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
           if (!!afterAction?.actionName)
             executeAction({
               actionConfiguration: afterAction,
-              argumentsEvaluationContext
+              argumentsEvaluationContext: getArgumentsEvaluationContext()
             });
         }
       );
@@ -187,7 +190,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
     executeAction({
       actionConfiguration: beforeAction,
-      argumentsEvaluationContext,
+      argumentsEvaluationContext: getArgumentsEvaluationContext(),
       success: successFunc,
     });
   };
@@ -330,6 +333,19 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   //#endregion
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
+
+  getWizardContextData = () => ({
+    api: { back, cancel, done, content, next, setStep },
+    current,
+    currentStep,
+    visibleSteps,
+  });
+
+  useDeepCompareEffect(() => {
+    dataContext.setData({ current, visibleSteps });
+  }, [current, visibleSteps]);
+
+  dataContext.updateApi({ back, cancel, done, content, next, setStep }); // update context api to use relevant State
 
   return { components, current, currentStep, visibleSteps, back, cancel, done, content, next, setStep };
 };
