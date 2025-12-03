@@ -2,11 +2,10 @@ import React from 'react';
 import { ITableViewSelectorComponentProps, TableViewSelectorComponentDefinition } from './models';
 import { migrateFilterMustacheExpressions } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { SelectOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { SelectOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { TableViewSelector } from './tableViewSelector';
 import { Popover } from 'antd';
 import { ConfigurableFormItem, useDataTableStore, validateConfigurableComponentSettings } from '@/index';
-import { useTheme } from '@/providers/theme';
 import { getSettings } from './settingsForm';
 import { useStyles } from '../tableContext/styles';
 
@@ -17,7 +16,6 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   icon: <SelectOutlined />,
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
-    const { theme } = useTheme();
     const { styles } = useStyles();
 
     return (
@@ -64,7 +62,7 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
                     </p>
                   )}
                 >
-                  <InfoCircleOutlined style={{ color: theme.application?.warningColor, cursor: 'help' }} />
+                  <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
                 </Popover>
               </div>
             </>

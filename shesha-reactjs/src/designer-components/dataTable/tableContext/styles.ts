@@ -12,6 +12,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         margin: 4px 0;
         transition: all 0.2s ease;
         padding-top: 8px;
+        overflow: hidden;
 
         &:hover {
             background-color: ${token.colorPrimaryBg}30;
@@ -67,6 +68,10 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         background-color: ${token.colorPrimaryBg}10;
         margin: 4px 0;
         transition: all 0.2s ease;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        box-sizing: border-box;
 
         &:hover {
             background-color: ${token.colorPrimaryBg}15;
@@ -104,6 +109,8 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         box-sizing: border-box; /* Include padding and border in width calculation */
         transition: all 0.2s ease;
         width: 100%;
+        max-width: 100%;
+        overflow: hidden;
 
         &:hover {
             border-color: ${token.colorPrimary}50;
@@ -192,6 +199,72 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
     `);
 
+  const emptyStateContainer = cx("sha-empty-state-container", css`
+        position: relative;
+        min-height: 120px;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        box-sizing: border-box;
+    `);
+
+  const emptyStateOverlay = cx("sha-empty-state-overlay", css`
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        border: 2px dashed #d9d9d9;
+        border-radius: 8px;
+        background-color: #fafafa;
+        min-height: 120px;
+        width: 100%;
+        max-width: 100%;
+        gap: 12px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+        pointer-events: none;
+        box-sizing: border-box;
+        overflow: hidden;
+    `);
+
+  const emptyStateIcon = cx("sha-empty-state-icon", css`
+        font-size: 48px;
+        flex-shrink: 0;
+    `);
+
+  const emptyStateContent = cx("sha-empty-state-content", css`
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+        max-width: 100%;
+    `);
+
+  const emptyStateTitle = cx("sha-empty-state-title", css`
+        font-size: 14px;
+        font-weight: 500;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    `);
+
+  const emptyStateSubtitle = cx("sha-empty-state-subtitle", css`
+        color: #bfbfbf;
+        font-size: 12px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    `);
+
+  const emptyStateComponentsContainer = cx("sha-empty-state-components-container", css`
+        min-height: 140px;
+        position: relative;
+        z-index: 2;
+    `);
+
   return {
     dataContextDesignerEmpty,
     dataContextRuntimeEmpty,
@@ -206,5 +279,12 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     quickSearchContainer,
     tablePagerContainer,
     tablePagerMockup,
+    emptyStateContainer,
+    emptyStateOverlay,
+    emptyStateIcon,
+    emptyStateContent,
+    emptyStateTitle,
+    emptyStateSubtitle,
+    emptyStateComponentsContainer,
   };
 });
