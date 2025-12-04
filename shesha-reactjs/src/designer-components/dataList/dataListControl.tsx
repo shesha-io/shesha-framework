@@ -3,29 +3,21 @@ import { Alert } from 'antd';
 import { DataList } from '@/components/dataList';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import classNames from 'classnames';
-import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
-import { useConfigurableAction, useConfigurableActionDispatcher, useHttpClient } from '@/providers';
+import { useConfigurableAction, useConfigurableActionDispatcher, useForm } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 import { useStyles } from '@/components/dataList/styles/styles';
-import { useAvailableConstantsData } from '@/providers/form/utils';
+import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
-import { IFormApi } from '@/providers/form/formApi';
 
 export const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
 };
 
-export type OnSaveHandler = (data: object, formData: object, contexts: object, globalState: object) => Promise<object>;
-export type OnSaveSuccessHandler = (
-  data: object,
-  form: IFormApi,
-  contexts: object,
-  globalState: object,
-  setGlobalState: Function
-) => void;
+export type OnSaveHandler = (data: object) => Promise<object>;
+export type OnSaveSuccessHandler = (data: object) => void;
 
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
@@ -61,9 +53,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   } = dataSource;
   const { styles } = useStyles();
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
-  const httpClient = useHttpClient();
-  const allData = useAvailableConstantsData();
-  const isDesignMode = allData.form?.formMode === 'designer';
+  const appContext = useAvailableConstantsData();
+  const { formMode } = useForm();
+  const isDesignMode = formMode === 'designer';
   const { executeAction } = useConfigurableActionDispatcher();
 
   const repository = getRepository();
@@ -99,64 +91,50 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       : tableData;
   }, [isDesignMode, tableData, orientation]);
 
-  // http, moment, setFormData
-     const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
-        if (!onRowDeleteSuccessAction)
-          return () => {
-            /*nop*/
-          };
-        return (data, formApi, globalState, setGlobalState) => {
-          const evaluationContext = {
-            data,
-            formApi,
-            globalState,
-            setGlobalState,
-            http: httpClient,
-            moment,
-          };
-          try {
-            executeAction({
-              actionConfiguration: onRowDeleteSuccessAction,
-              argumentsEvaluationContext: evaluationContext,
-            });
-          } catch (error) {
-            console.error('Error executing row delete success action:', error);
-          }
-        };
-      }, [onRowDeleteSuccessAction, httpClient]);
+  const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
+    if (!onRowDeleteSuccessAction)
+      return () => {
+        /* nop*/
+      };
+    return (data) => {
+      const evaluationContext = { ...appContext, data };
+      try {
+        executeAction({
+          actionConfiguration: onRowDeleteSuccessAction,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing item delete success action:', error);
+      }
+    };
+  }, [onRowDeleteSuccessAction, appContext.contexts.lastUpdate, executeAction]);
 
 
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onListItemSave) return (data) => Promise.resolve(data);
 
-    const AsyncFunction = Object.getPrototypeOf(async function () { /* noop */ }).constructor;
-    const executer = new AsyncFunction('data, form, contexts, globalState, http, moment', onListItemSave);
-    return (data, form, contexts, globalState) => {
-      return executer(data, form, contexts, globalState, httpClient, moment);
+    return (data) => {
+      return executeScript(onListItemSave, { ...appContext, data });
     };
-  }, [onListItemSave, httpClient]);
+  }, [onListItemSave, appContext.contexts.lastUpdate]);
 
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
     if (!onListItemSaveSuccessAction)
       return () => {
-        //nop
+        // nop
       };
 
-    return (data, form, contexts, globalState, setGlobalState) => {
-      const evaluationContext = {
-        data,
-        form,
-        contexts,
-        globalState,
-        setGlobalState,
-        http: allData.http,
-        moment,
-      };
+    return (data) => {
+      const evaluationContext = { ...appContext, data };
       // execute the action
-      executeAction({
-        actionConfiguration: onListItemSaveSuccessAction,
-        argumentsEvaluationContext: evaluationContext,
-      });
+      try {
+        executeAction({
+          actionConfiguration: onListItemSaveSuccessAction,
+          argumentsEvaluationContext: evaluationContext,
+        });
+      } catch (error) {
+        console.error('Error executing item save success action:', error);
+      }
     };
   }, [onListItemSaveSuccessAction]);
 
@@ -164,15 +142,16 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     const repository = getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, allData.form, allData.contexts ?? {}, allData.globalState).then((preparedData) => {
+    return performOnRowSave(rowData).then((preparedData: object | undefined) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
           : undefined;
 
-      return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
-        setRowData(rowIndex, preparedData/*, response*/);
-        performOnRowSaveSuccess(preparedData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
+      // use preparedData ?? rowData to handle the case when onRowSave returns undefined
+      return repository.performUpdate(rowIndex, preparedData ?? rowData, options).then((response) => {
+        setRowData(rowIndex, preparedData ?? rowData);
+        performOnRowSaveSuccess(preparedData ?? rowData);
         return response;
       });
     });
@@ -182,15 +161,16 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     const repository = getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, allData.data ?? {}, allData.contexts ?? {}, allData.globalState).then((preparedData) => {
+    return performOnRowSave(rowData).then((preparedData: object | undefined) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customCreateUrl } as ICreateOptions)
           : undefined;
 
-      return repository.performCreate(0, preparedData, options).then(() => {
+      // use preparedData ?? rowData to handle the case when onRowSave returns undefined
+      return repository.performCreate(0, preparedData ?? rowData, options).then(() => {
         dataSource.refreshTable();
-        performOnRowSaveSuccess(preparedData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
+        performOnRowSaveSuccess(preparedData ?? rowData);
       });
     });
   };
@@ -206,7 +186,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
     return repository.performDelete(rowIndex, rowData, options).then(() => {
       if (props.onRowDeleteSuccessAction) {
-        performOnRowDeleteSuccessAction(rowData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
+        performOnRowDeleteSuccessAction(rowData);
       }
       dataSource.refreshTable();
     });
@@ -244,7 +224,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       model={{ ...props, hideLabel: true }}
       className={classNames(
         styles.shaDatalistComponent,
-        { horizontal: props?.orientation === 'horizontal' && allData.form?.formMode !== 'designer' } //
+        { horizontal: props?.orientation === 'horizontal' && formMode !== 'designer' }
       )}
       wrapperCol={{ md: 24 }}
     >

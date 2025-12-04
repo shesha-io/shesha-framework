@@ -1,5 +1,6 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
-import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Alert, Button, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
@@ -589,6 +590,16 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             Select All
           </Checkbox>
           <Divider />
+        </Show>
+        <Show when={canAddInline}>
+          <Button
+            type="default"
+            icon={<PlusOutlined />}
+            onClick={onCreateClick}
+            style={{ marginLeft: '8px' }}
+          >
+            Add New Item...
+          </Button>
         </Show>
       </div>
       <FormInfo visible={formInfoBlockVisible} formProps={{ ...(persistedFormProps as IPersistedFormProps) }}>
