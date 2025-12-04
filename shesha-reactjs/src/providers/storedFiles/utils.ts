@@ -24,3 +24,17 @@ export const removeFile = (fileList = [], fileIdToDelete) => {
     ...file,
     userHasDownloaded: true,
   }));
+
+  /**
+   * Normalizes file extension to lowercase to avoid case sensitivity issues on Linux
+   * @param file - The file to normalize
+   * @returns A new File object with normalized extension
+   */
+  export const normalizeFileName = (file: File): File => {
+    const lastDotIndex = file.name.lastIndexOf('.');
+    const fileName = lastDotIndex === -1
+      ? file.name
+      : file.name.substring(0, lastDotIndex) + file.name.substring(lastDotIndex).toLowerCase();
+
+    return new File([file], fileName, { type: file.type });
+  };

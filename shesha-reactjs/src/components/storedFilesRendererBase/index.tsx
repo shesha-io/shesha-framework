@@ -5,6 +5,7 @@ import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
 import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IReplaceFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import { normalizeFileName } from '@/providers/storedFiles/utils';
 import { addPx } from '@/utils/style';
 import { DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import {
@@ -28,7 +29,7 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { FormIdentifier } from '@/providers/form/models';
 import { DataContextProvider } from '@/providers/dataContextProvider';
-import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile, replaceFile } from './utils';
+import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile } from './utils';
 import classNames from 'classnames';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 
@@ -133,7 +134,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   ...rest
 }) => {
   const { message, notification } = App.useApp();
-  const { httpHeaders, backendUrl } = useSheshaApplication();
+  const { httpHeaders } = useSheshaApplication();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<{ url: string; uid: string; name: string } | null>(null);
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
@@ -149,11 +150,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     if (file && fileToReplace) {
       try {
         // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
-        const lastDotIndex = file.name.lastIndexOf('.');
-        const fileName = lastDotIndex === -1 ? file.name : file.name.substring(0, lastDotIndex) + file.name.substring(lastDotIndex).toLowerCase();
-        const normalizedFile = new File([file], fileName, { type: file.type });
+        const normalizedFile = normalizeFileName(file);
 
-        // Use the replaceFile action from the provider if available, otherwise use the utility
+        // Use the replaceFile action from the provider
         if (replaceFileProp) {
           // This uses the StoredFilesProvider's replaceFile action which manages state properly
           replaceFileProp({
@@ -162,15 +161,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             ownerId,
             ownerType,
           });
-        } else {
-          // Fallback to utility function if provider action not available
-          const response = await replaceFile(normalizedFile, fileToReplace.id, backendUrl, httpHeaders);
-
-          if (response?.success) {
-            message.success(`File "${fileName}" replaced successfully with new version`);
-          } else {
-            message.error('Failed to replace file');
-          }
         }
       } catch (error) {
         console.error('Error replacing file:', error);
