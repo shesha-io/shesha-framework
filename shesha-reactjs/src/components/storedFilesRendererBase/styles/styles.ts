@@ -40,13 +40,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     flex: 1;
     cursor: pointer;
     &:hover {
-      background-color: #282828 !important;
-      opacity: 1 !important;
+      background-color: ${token.colorBgSpotlight} !important;      opacity: 1 !important;
       overflow: visible;
       width: max-content;
       border-radius: 4px;
       padding: 0 8px;
-      z-index: 999 !important;
+      z-index: 10 !important;
       white-space: nowrap;
     }
   `);
@@ -56,8 +55,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     display: flex;
     cursor: pointer;
     &:hover {
-      background-color: #f2f2f2 !important;
-      border-radius: 4px;
+      background-color: ${token.colorBgTextHover} !important;
+      border-radius: ${borderRadius ?? '4px'} !important;
     }
     > .item-file-name {
       &:hover {

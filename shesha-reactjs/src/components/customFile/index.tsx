@@ -48,6 +48,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
     //downloadFile,
     deleteFile,
     uploadFile,
+    replaceFile,
     downloadZipFile,
     downloadFile,
     isInProgress: { downloadZip },
@@ -71,6 +72,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         customActions={props.customActions}
         allowReplace={props.allowReplace}
         uploadFile={props.uploadFile ?? uploadFile}
+        replaceFile={replaceFile}
         downloadZipFile={downloadZipFile}
         downloadZip={props.downloadZip}
         downloadFile={downloadFile}
@@ -86,6 +88,8 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         extraFormId={props.extraFormId}
         extraFormType={props.extraFormType}
         downloadedFileStyles={props?.downloadedFileStyles}
+        styleDownloadedFiles={props?.styleDownloadedFiles}
+        downloadedIcon={props?.downloadedIcon || 'CheckCircleOutlined'}
       />
     </div>
   );

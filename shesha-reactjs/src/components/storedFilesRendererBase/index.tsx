@@ -4,7 +4,7 @@ import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
 import { IFormComponentStyles } from '@/providers/form/models';
-import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import { IDownloadFilePayload, IReplaceFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { addPx } from '@/utils/style';
 import { DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import {
@@ -28,7 +28,7 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { FormIdentifier } from '@/providers/form/models';
 import { DataContextProvider } from '@/providers/dataContextProvider';
-import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile } from './utils';
+import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile, replaceFile } from './utils';
 import classNames from 'classnames';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 
@@ -60,6 +60,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadZipFileError?: boolean;
   deleteFile: (fileIdToDelete: string) => void | Promise<void>;
   uploadFile: (payload: IUploadFilePayload) => void;
+  replaceFile?: (payload: IReplaceFilePayload) => void;
   downloadZipFile?: () => void;
   downloadZip?: boolean;
   downloadFile: (payload: IDownloadFilePayload) => void;
@@ -96,6 +97,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   isDownloadZipSucceeded,
   deleteFile,
   uploadFile,
+  replaceFile: replaceFileProp,
   downloadZipFile,
   downloadFile,
   ownerId,
@@ -131,15 +133,64 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   ...rest
 }) => {
   const { message, notification } = App.useApp();
-  const { httpHeaders } = useSheshaApplication();
+  const { httpHeaders, backendUrl } = useSheshaApplication();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<{ url: string; uid: string; name: string } | null>(null);
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
-  const [fileToReplace, setFileToReplace] = useState<string | null>(null);
+  const [fileToReplace, setFileToReplace] = useState<{ uid: string; id: string } | null>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const fileContextCache = useRef<Map<string, Promise<{ file: UploadFile; fileId: string; fileName: string; fileType: string }>>>(new Map());
   // Track blob URLs and their revoke functions to prevent memory leaks
   const model = rest;
+
+  // Handler for replacing a file
+  const handleReplaceFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && fileToReplace) {
+      try {
+        // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
+        const lastDotIndex = file.name.lastIndexOf('.');
+        const fileName = lastDotIndex === -1 ? file.name : file.name.substring(0, lastDotIndex) + file.name.substring(lastDotIndex).toLowerCase();
+        const normalizedFile = new File([file], fileName, { type: file.type });
+
+        // Use the replaceFile action from the provider if available, otherwise use the utility
+        if (replaceFileProp) {
+          // This uses the StoredFilesProvider's replaceFile action which manages state properly
+          replaceFileProp({
+            file: normalizedFile,
+            fileId: fileToReplace.id,
+            ownerId,
+            ownerType,
+          });
+        } else {
+          // Fallback to utility function if provider action not available
+          const response = await replaceFile(normalizedFile, fileToReplace.id, backendUrl, httpHeaders);
+
+          if (response?.success) {
+            message.success(`File "${fileName}" replaced successfully with new version`);
+          } else {
+            message.error('Failed to replace file');
+          }
+        }
+      } catch (error) {
+        console.error('Error replacing file:', error);
+        message.error('Failed to replace file. Please try again.');
+      } finally {
+        setFileToReplace(null);
+      }
+    }
+    // Reset the input value so the same file can be selected again
+    e.target.value = '';
+  };
+
+  // Handler to trigger file replacement
+  const onReplaceClick = (file: UploadFile) => {
+    const fileId = (file as IStoredFile).id || file.uid;
+    setFileToReplace({ uid: file.uid, id: fileId });
+    if (hiddenUploadInputRef.current) {
+      hiddenUploadInputRef.current.click();
+    }
+  };
   const hasFiles = !!fileList.length;
 
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
@@ -204,19 +255,31 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
 
   useEffect(() => {
-    const fetchImages = async () => {
-      const newImageUrls = { ...imageUrls };
-      for (const file of fileList) {
-        if (isImageType(file.type) && !newImageUrls[file.uid]) {
-          const imageUrl = await fetchStoredFile(file.url, httpHeaders);
-          newImageUrls[file.uid] = imageUrl;
-        }
-      }
-      setImageUrls(newImageUrls);
-    };
-
-    fetchImages();
-  }, [fileList]);
+       let isCancelled = false;
+       const blobUrls: string[] = [];
+       
+        const fetchImages = async () => {
+         const newImageUrls: { [key: string]: string } = {};
+          for (const file of fileList) {
+           if (isImageType(file.type)) {
+              const imageUrl = await fetchStoredFile(file.url, httpHeaders);
+             if (isCancelled) return;
+             blobUrls.push(imageUrl);
+              newImageUrls[file.uid] = imageUrl;
+            }
+          }
+         if (!isCancelled) {
+           setImageUrls(prev => ({ ...prev, ...newImageUrls }));
+         }
+        };
+    
+        fetchImages();
+       
+       return () => {
+         isCancelled = true;
+         blobUrls.forEach(url => URL.revokeObjectURL(url));
+       };
+      }, [fileList, httpHeaders]);
 
 
   const handlePreview = async (file: UploadFile) => {
@@ -263,36 +326,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
-
-  const handleReplaceClick = (file: UploadFile) => {
-    setFileToReplace(file.uid);
-    hiddenUploadInputRef.current?.click();
-  };
-
-  const handleReplaceFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0 && fileToReplace) {
-      const newFile = files[0];
-
-      try {
-        await Promise.resolve(deleteFile(fileToReplace));
-
-        uploadFile({
-          file: newFile,
-          ownerId,
-          ownerType,
-        });
-      } catch (error) {
-        console.error('Error replacing file:', error);
-        message.error('Failed to replace file. Please try again.');
-      } finally {
-        setFileToReplace(null);
-        if (hiddenUploadInputRef.current) {
-          hiddenUploadInputRef.current.value = '';
-        }
-      }
-    }
-  };
 
   const props: DraggerProps = {
     name: '',
@@ -352,7 +385,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                handleReplaceClick(file);
+                onReplaceClick(file);
               }}
             />
           )}
@@ -404,7 +437,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   id={`file_actions_${fileId}`}
                   items={customActions}
                   size="small"
-                  readOnly={disabled}
                   spaceSize="small"
                   isInline={true}
                 />

@@ -85,6 +85,58 @@ export function storedFilesReducer(
         }),
       };
     }
+    case StoredFilesActionEnums.ReplaceFileRequest: {
+      const { fileList } = state;
+      const { fileId } = payload;
+
+      return {
+        ...state,
+        fileList: fileList.map((file) => {
+          if (file.id === fileId || file.uid === fileId) {
+            return {
+              ...file,
+              status: 'uploading' as const,
+            };
+          }
+          return file;
+        }),
+      };
+    }
+    case StoredFilesActionEnums.ReplaceFileSuccess: {
+      const { fileList } = state;
+      const { newFile } = payload;
+
+      return {
+        ...state,
+        fileList: fileList.map((file) => {
+          if (file.id === newFile.id || file.uid === newFile.id) {
+            return {
+              ...newFile,
+              uid: newFile.id,
+              status: 'done' as const,
+            };
+          }
+          return file;
+        }),
+      };
+    }
+    case StoredFilesActionEnums.ReplaceFileError: {
+      const { fileList } = state;
+      const { fileId } = payload;
+
+      return {
+        ...state,
+        fileList: fileList.map((file) => {
+          if (file.id === fileId || file.uid === fileId) {
+            return {
+              ...file,
+              status: 'error' as const,
+            };
+          }
+          return file;
+        }),
+      };
+    }
     case StoredFilesActionEnums.DeleteFileError: {
       if (state.fileList?.find(x => x.uid === payload.fileId || x.id === payload.fileId)?.status === 'error')
         return {
