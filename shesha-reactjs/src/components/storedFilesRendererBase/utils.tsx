@@ -7,7 +7,6 @@ import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/s
 import { IStoredFile } from '@/providers/storedFiles/contexts';
 import { FormIdentifier } from '@/providers/form/models';
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
-import axios from 'axios';
 
 export interface IFileVersionsButtonProps {
   fileId: string;
@@ -103,36 +102,6 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
       <Button size="small" icon={<HistoryOutlined />} title="View history" />
     </Popover>
   );
-};
-
-export const replaceFile = async (
-  file: File,
-  fileId: string,
-  backendUrl: string,
-  httpHeaders: Record<string, string> = {}
-): Promise<any> => {
-  const formData = new FormData();
-
-  formData.append('file', file);
-  formData.append('id', fileId);
-
-  try {
-    const response = await axios.post(
-      `${backendUrl}/api/StoredFile/UploadNewVersion`,
-      formData,
-      {
-        headers: {
-          ...httpHeaders,
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    console.error('Error replacing file:', error);
-    throw error;
-  }
 };
 
 export const ExtraContent: FC<IExtraContentProps> = ({ file, formId }) => {

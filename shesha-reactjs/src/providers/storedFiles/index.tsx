@@ -46,8 +46,7 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
-import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
-import { addFile, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
+import { addFile, normalizeFileName, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
@@ -76,6 +75,7 @@ const fileReducer = (data: IStoredFile): IStoredFile => {
 const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map((file) => fileReducer(file));
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
+const replaceFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/UploadNewVersion', httpVerb: 'POST' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
 
 const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
@@ -125,7 +125,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     lazy: true,
   });
 
-  const { mutate: uploadFileHttp } = useMutate<FormData, IAjaxResponse<IStoredFile>>();
+  const { mutate: uploadFileHttp } = useMutate();
+  const { mutate: replaceFileHttp } = useMutate();
 
   // Initialize fileList from value prop when component mounts or value changes
   useEffect(() => {
@@ -291,9 +292,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     const { file, fileId } = payload;
 
     // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
-    const lastDotIndex = file.name.lastIndexOf('.');
-    const fileName = lastDotIndex === -1 ? file.name : file.name.substring(0, lastDotIndex) + file.name.substring(lastDotIndex).toLowerCase();
-    const normalizedFile = new File([file], fileName, { type: file.type });
+    const normalizedFile = normalizeFileName(file);
 
     const formData = new FormData();
     formData.append('file', normalizedFile);
@@ -301,20 +300,11 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
     dispatch(replaceFileRequestAction(fileId));
 
-    axios({
-      url: `${baseUrl ?? backendUrl}/api/StoredFile/UploadNewVersion`,
-      method: 'POST',
-      data: formData,
-      headers: {
-        ...headers,
-        'Content-Type': 'multipart/form-data',
-      },
-    })
+    replaceFileHttp(replaceFileEndpoint, formData)
       .then((response) => {
-        const responseFile = response.data.result as IStoredFile;
+        const responseFile = response.result as IStoredFile;
         responseFile.uid = responseFile.id;
         dispatch(replaceFileSuccessAction({ ...responseFile }));
-
 
         // Update the fileList by replacing the old file with the new one
         const currentList = fileListRef.current ?? [];
@@ -322,7 +312,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           f.id === fileId || f.uid === fileId ? { ...responseFile, uid: responseFile.id } : f
         );
         onChange?.(updatedList);
-        message.success(`File "${fileName}" replaced successfully`);
+        message.success(`File "${normalizedFile.name}" replaced successfully`);
       })
       .catch((e) => {
         message.error(`File replacement failed. ${e.message || 'Please try again.'}`);
