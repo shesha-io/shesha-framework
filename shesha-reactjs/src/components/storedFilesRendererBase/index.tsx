@@ -247,7 +247,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   useEffect(() => {
        let isCancelled = false;
        const blobUrls: string[] = [];
-       
+
         const fetchImages = async () => {
          const newImageUrls: { [key: string]: string } = {};
           for (const file of fileList) {
@@ -259,12 +259,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             }
           }
          if (!isCancelled) {
-           setImageUrls(prev => ({ ...prev, ...newImageUrls }));
+           const oldUrls = Object.values(imageUrlsRef.current);
+           const newUrls = Object.values(newImageUrls);
+           oldUrls.forEach(url => {
+             if (!newUrls.includes(url)) {
+               URL.revokeObjectURL(url);
+             }
+           });
+
+           setImageUrls(newImageUrls);
          }
         };
-    
+
         fetchImages();
-       
+
        return () => {
          isCancelled = true;
          blobUrls.forEach(url => URL.revokeObjectURL(url));
@@ -427,6 +435,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   id={`file_actions_${fileId}`}
                   items={customActions}
                   size="small"
+                  readOnly={false}
                   spaceSize="small"
                   isInline={true}
                 />
@@ -560,9 +569,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           </>
         )
         : (props.disabled && fileList.length === 0
-          ? <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : styles.fileName}>
-            {renderUploadContent()}
-          </div>
+          ? null
           : props.disabled
             ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
             : isDragger ?

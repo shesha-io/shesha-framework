@@ -69,7 +69,20 @@ const fileReducer = (data: IStoredFile): IStoredFile => {
   return { ...data, uid: data.id };
 };
 
-const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map((file) => fileReducer(file));
+const filesReducer = (data: IStoredFile[]): IStoredFile[] => {
+  if (!data) return data;
+
+  // Map files and deduplicate by ID, keeping the last occurrence (most recent version)
+  const fileMap = new Map<string, IStoredFile>();
+  data.forEach((file) => {
+    const processedFile = fileReducer(file);
+    if (processedFile.id) {
+      fileMap.set(processedFile.id, processedFile);
+    }
+  });
+
+  return Array.from(fileMap.values());
+};
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
 const replaceFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/UploadNewVersion', httpVerb: 'POST' };
@@ -132,24 +145,14 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     }
   }, [value]);
 
+  // Trigger fetch when owner params change
   useEffect(() => {
     if ((ownerId || '') !== '' && (ownerType || '') !== '') {
-      fetchFileListHttp()
-        .then((resp) => {
-          if (isAjaxSuccessResponse(resp)) {
-            const fileList = filesReducer((resp?.result ?? []) as IStoredFile[]);
-            dispatch(fetchFileListSuccessAction(fileList));
-            onChange?.(fileList);
-          } else {
-            dispatch(fetchFileListErrorAction());
-          }
-        })
-        .catch(() => {
-          dispatch(fetchFileListErrorAction());
-        });
+      fetchFileListHttp();
     }
   }, [ownerId, ownerType, ownerName, filesCategory, propertyName]);
 
+  // Handle fetch response
   useEffect(() => {
     if (!isFetchingFileList) {
       if (isAjaxSuccessResponse(fileListResponse)) {
@@ -157,6 +160,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         const fileList = filesReducer(result as IStoredFile[]);
 
         dispatch(fetchFileListSuccessAction(fileList));
+        onChange?.(fileList);
       } else {
         dispatch(fetchFileListErrorAction());
       }
@@ -295,7 +299,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then((response) => {
         const responseFile = response.result as IStoredFile;
         responseFile.uid = responseFile.id;
-        dispatch(replaceFileSuccessAction({ ...responseFile }));
+        dispatch(replaceFileSuccessAction({ originalFileId: fileId, newFile: { ...responseFile } }));
 
         // Update the fileList by replacing the old file with the new one
         const currentList = fileListRef.current ?? [];

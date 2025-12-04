@@ -69,8 +69,10 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
 
   if (fileId == null) return null;
 
-  const handleVisibleChange = () => {
-    if (!serverData) fetchHistory();
+  const handleVisibleChange = (visible: boolean) => {
+    if (visible) {
+      fetchHistory();
+    }
   };
 
   const uploads = serverData?.result;
