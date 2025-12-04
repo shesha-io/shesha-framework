@@ -8,6 +8,11 @@ export interface IUpdateItemSettingsPayload {
   settings: IModelItem;
 }
 
+export interface IPropertyErrors {
+  propertyName: string;
+  errors: string[];
+}
+
 export interface IModelConfiguratorStateContext {
   id?: string;
   initialConfiguration?: ModelConfigurationDto;
@@ -17,7 +22,8 @@ export interface IModelConfiguratorStateContext {
   isModified: boolean;
   isLoading: boolean;
   isSaving: boolean;
-  errors?: string[];
+  errors?: (IPropertyErrors | string)[];
+  showErrors?: boolean;
 }
 
 export interface IModelConfiguratorActionsContext {
@@ -31,6 +37,7 @@ export interface IModelConfiguratorActionsContext {
   submit: () => void;
   getModelSettings: () => ModelConfigurationDto;
   setModified: (isModified?: boolean) => void;
+  validateModel: (model: ModelConfigurationDto) => IPropertyErrors[];
 
   /* NEW_ACTION_ACTION_DECLARATIOS_GOES_HERE */
 }

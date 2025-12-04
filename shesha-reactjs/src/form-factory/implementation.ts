@@ -177,12 +177,15 @@ export class FormBuilderImplementation implements FormBuilder {
     const componentDefinition = this.getComponentDefinition(type);
 
     let formComponent: IConfigurableFormComponent = {
+      ...restProps, // use restProps for correct migrations (migrations can initialise some properties depends on other properties)
       id: id ?? nanoid(),
       type,
       version: typeof (version) === 'number'
         ? version
         : undefined,
-      ...restProps, // use restProps for correct migrations (migrations can initialise some properties depends on other properties)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      hidden: hidden as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+      // TODO: review types and remove `any`
     };
     if (componentDefinition) {
       if (componentDefinition.initModel) formComponent = componentDefinition.initModel(formComponent);
