@@ -85,8 +85,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
   // Apply dimensions to the outermost wrapper so width/height affect the actual component size
   // Skip for intrinsic-size components (checkbox, switch, radio, fileUpload, etc.) - they maintain their natural size
-  const intrinsicSizeComponents = ['container'];
-  const shouldApplyDimensions = intrinsicSizeComponents.includes(componentModel.type);
+  const shouldApplyDimensions = componentModel.type === 'container';
     const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
     ? { ...componentModel, ...componentModel?.[activeDevice] }
     : componentModel;
@@ -115,7 +114,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
         dimensions: {...dimensions, width: '100%', height: '100%'},
       }
   }},[componentModel]);
-  console.log(componentModel.type, " :: ", componentModel);
+  
   return (
     <div
       className={classNames(styles.shaComponent, {
