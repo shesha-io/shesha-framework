@@ -89,7 +89,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         extraFormType={props.extraFormType}
         downloadedFileStyles={props?.downloadedFileStyles}
         styleDownloadedFiles={props?.styleDownloadedFiles}
-        downloadedIcon={props?.downloadedIcon || 'CheckCircleOutlined'}
+        downloadedIcon={props?.downloadedIcon}
       />
     </div>
   );

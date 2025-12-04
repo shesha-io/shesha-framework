@@ -315,11 +315,12 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         responseFile.uid = responseFile.id;
         dispatch(replaceFileSuccessAction({ ...responseFile }));
 
-        // Update the fileList by replacing the old file with the new one
-        const updatedList = state.fileList?.map((f) =>
-          f.id === fileId || f.uid === fileId ? { ...responseFile, uid: responseFile.id } : f
-        ) ?? [];
 
+        // Update the fileList by replacing the old file with the new one
+        const currentList = fileListRef.current ?? [];
+        const updatedList = currentList.map((f) =>
+          f.id === fileId || f.uid === fileId ? { ...responseFile, uid: responseFile.id } : f
+        );
         onChange?.(updatedList);
         message.success(`File "${fileName}" replaced successfully`);
       })
@@ -398,7 +399,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   return (
     <ConditionalWrap
       condition={Boolean(name)}
-      wrap={(children) => (
+      wrap={children => (
         <DataContextBinder
           id={`ctx_fl_${name}`}
           name={name}

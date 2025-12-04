@@ -1042,11 +1042,23 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       content: {
                         id: downloadedStylesPnlId,
                         components: [...fbf()
-                          .addSettingsInput({
-                            inputType: "switch",
+                          .addSettingsInputRow({
                             id: nanoid(),
-                            label: 'Style Downloaded File',
-                            propertyName: 'styleDownloadedFiles'
+                            parentId: downloadedStylesPnlId,
+                            inputs: [{
+                              type: "switch",
+                              id: nanoid(),
+                              label: 'Style Downloaded File',
+                              propertyName: 'styleDownloadedFiles'
+                            },
+                            {
+                              id: nanoid(),
+                              type: 'iconPicker',
+                              label: 'Icon',
+                              propertyName: 'downloadedIcon',
+                              hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                            }
+                            ]
                           })
                           .addCollapsiblePanel({
                             id: nanoid(),
@@ -1109,19 +1121,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       dropdownOptions: textAlignOptions,
                                     }
                                   ],
-                                })
-                                .addSettingsInputRow({
-                                  id: nanoid(),
-                                  parentId: pnlDownloadedFileFontStylesId,
-                                  hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
-                                  inputs: [
-                                    {
-                                      type: 'iconPicker',
-                                      id: nanoid(),
-                                      label: 'Icon',
-                                      propertyName: 'downloadedIcon'
-                                    }
-                                  ]
                                 })
                                 .toJson()
                               ]
