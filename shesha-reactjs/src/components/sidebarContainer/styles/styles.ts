@@ -182,19 +182,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           overflow: auto;
           transform-origin: top left;
         }
+      }
 
-        .${canvasPopupContainer} {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-          transform-origin: top left;
+      .${canvasPopupContainer} {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        transform-origin: top left;
 
-          > * {
-            pointer-events: auto;
-          }
+        > * {
+          pointer-events: auto;
         }
       }
     `);
