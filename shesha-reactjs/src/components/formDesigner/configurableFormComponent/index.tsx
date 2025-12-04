@@ -136,10 +136,9 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return {
       ...componentModel,
       [activeDevice]: {
-        ...componentModel,
         ...deviceOverrides,
         dimensions: { ...dimensions, width: '100%', height: '100%' },
-      }
+      },
     };
   }, [componentModel, activeDevice, dimensions]);
 
