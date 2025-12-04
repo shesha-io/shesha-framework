@@ -85,7 +85,7 @@ export function storedFilesReducer(
       };
     }
     case StoredFilesActionEnums.ReplaceFileRequest: {
-      const { fileList } = state;
+      const fileList = state.fileList ?? [];
       const { fileId } = payload;
 
       return {
@@ -102,11 +102,12 @@ export function storedFilesReducer(
       };
     }
     case StoredFilesActionEnums.ReplaceFileSuccess: {
-      const { fileList } = state;
+      const fileList = state.fileList ?? [];
       const { originalFileId, newFile } = payload;
 
       return {
         ...state,
+        originalFileId,
         fileList: fileList.map((file) => {
           if (file.id === originalFileId || file.uid === originalFileId) {
             return {
@@ -120,7 +121,7 @@ export function storedFilesReducer(
       };
     }
     case StoredFilesActionEnums.ReplaceFileError: {
-      const { fileList } = state;
+      const fileList = state.fileList ?? [];
       const { fileId } = payload;
 
       return {

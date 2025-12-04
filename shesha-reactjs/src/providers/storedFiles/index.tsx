@@ -52,6 +52,7 @@ import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty, isEntityTypeIdentifier } from '../metadataDispatcher/entities/utils';
+import { isValidGuid } from '@/components/formDesigner/components/utils';
 
 export interface IStoredFilesProviderProps {
   name?: string;
@@ -294,6 +295,18 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   //#region replace file
   const replaceFile = (payload: IReplaceFilePayload) => {
     const { file, fileId } = payload;
+
+    // Validate that fileId is a persisted stored-file identifier
+    if (!fileId || !isValidGuid(fileId)) {
+      const errorMsg = 'Cannot replace file: file must be persisted before replacement. Please wait for upload to complete.';
+      message.error(errorMsg);
+      console.warn('replaceFile: Invalid or missing fileId', { fileId, file: file.name });
+      // Dispatch error action to update UI state if needed
+      if (fileId) {
+        dispatch(replaceFileErrorAction(fileId));
+      }
+      return;
+    }
 
     // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
     const normalizedFile = normalizeFileName(file);

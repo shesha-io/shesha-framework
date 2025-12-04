@@ -61,8 +61,8 @@ export interface IStoredFilesStateContext
   fileList?: IStoredFile[];
   newFile?: IStoredFile;
   fileId?: string;
-  originalFileId?: string;
   url?: string;
+  originalFileId?: IStoredFile['id'];
 }
 
 export interface IStoredFilesActionsContext

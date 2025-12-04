@@ -377,10 +377,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     itemRender: (originNode, file) => {
       const isDownloaded = (file as IStoredFile).userHasDownloaded === true;
       const fileId = (file as IStoredFile).id || file.uid;
+      const persistedFileId = (file as IStoredFile).id; // Only persisted files have .id
 
       const actions = (
         <Space size={5}>
-          {allowReplace && !disabled && (
+          {allowReplace && !disabled && persistedFileId && isValidGuid(persistedFileId) && (
             <Button
               size="small"
               icon={<SyncOutlined />}
