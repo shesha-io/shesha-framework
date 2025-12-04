@@ -42,6 +42,10 @@ const paddedBoxStyle: React.CSSProperties = {
   height: '100%'
 };
 
+const isValidDeviceKey = (device: unknown): device is 'desktop' | 'tablet' | 'mobile' => {
+  return typeof device === 'string' && ['desktop', 'tablet', 'mobile'].includes(device);
+};
+
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
   componentRef: MutableRefObject<any>;
@@ -103,10 +107,6 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
   // Apply dimensions to the outermost wrapper so width/height affect the actual component size
   const shouldApplyDimensions = componentModel.type === 'container';
-
-  const isValidDeviceKey = (device: unknown): device is 'desktop' | 'tablet' | 'mobile' => {
-    return typeof device === 'string' && ['desktop', 'tablet', 'mobile'].includes(device);
-  };
 
   const deviceModel = isValidDeviceKey(activeDevice)
     ? { ...componentModel, ...componentModel[activeDevice] }
