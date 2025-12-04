@@ -92,7 +92,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { dimensions } = deviceModel?.container || deviceModel;
 
   const componentStyle = useMemo(() => {
-    if (!shouldApplyDimensions) return { margin: '0px !important' };
+    if (!shouldApplyDimensions) return { margin: '0px' };
     // Only apply width dimensions to wrapper - height is applied directly to the input component
     return {
       boxSizing: 'border-box' as const,
@@ -102,9 +102,9 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       height: dimensions?.height,
       minHeight: dimensions?.minHeight,
       maxHeight: dimensions?.maxHeight,
-      margin: '0px !important'
+      margin: '0px'
     };
-  }, [componentModel, shouldApplyDimensions]);
+  }, [dimensions, shouldApplyDimensions]);
 
   const renderComponentModel = useMemo(() => {
     if (!activeDevice) {
@@ -113,11 +113,12 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return {
       ...componentModel,
       [activeDevice]: {
-        ...deviceModel,
+        ...componentModel,
+        ...componentModel?.[activeDevice],
         dimensions: { ...dimensions, width: '100%', height: '100%' },
       }
     };
-  }, [componentModel, activeDevice, deviceModel, dimensions]);
+  }, [componentModel, activeDevice, dimensions]);
 
   return (
     <div
