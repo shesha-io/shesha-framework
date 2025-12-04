@@ -340,6 +340,8 @@ export class ConfigurationLoader implements IConfigurationLoader {
               return cachedConfiguration;
             } else
               throw new Error('Unknown cache error', { cause: e });
+          case 400:
+            throw new ConfigurationLoadingError(getConfigurationNotFoundMessage(type, id), e.status, { cause: e });
           case 404:
             throw new ConfigurationLoadingError(getConfigurationNotFoundMessage(type, id), e.status, { cause: e });
           case 401:
