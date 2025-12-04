@@ -19,6 +19,11 @@ export interface IExtraContentProps {
 }
 
 
+/**
+ * Creates a placeholder file object for stub/preview rendering in design mode.
+ *
+ * @returns A mock IStoredFile with example properties
+ */
 export const createPlaceholderFile = (): IStoredFile => ({
   uid: 'placeholder-file-1',
   name: 'example-file.pdf',
@@ -32,8 +37,13 @@ export const createPlaceholderFile = (): IStoredFile => ({
   userHasDownloaded: false,
 });
 
-
-
+/**
+ * Determines the appropriate Ant Design Upload list type based on configuration.
+ *
+ * @param type - The configured list type from component props
+ * @param isDragger - Whether the component is in dragger mode
+ * @returns The Upload component list type to use
+ */
 export const getListTypeAndLayout = (
   type: listType | undefined, isDragger: boolean
 ): 'text' | 'picture' | 'picture-card' => {
@@ -41,6 +51,18 @@ export const getListTypeAndLayout = (
 };
 
 
+/**
+ * Fetches a stored file and returns a blob URL for display/preview.
+ *
+ * **Important**: The returned URL is created via `URL.createObjectURL()`. Callers are
+ * responsible for calling `URL.revokeObjectURL()` on the returned string when the URL
+ * is no longer needed to prevent memory leaks.
+ *
+ * @param url - The file URL to fetch
+ * @param httpHeaders - Optional HTTP headers to include in the request
+ * @returns A Promise resolving to a blob URL (string) that can be used in img src, etc.
+ * @throws {Error} If the fetch fails (non-ok response status)
+ */
 export const fetchStoredFile = async (
   url: string,
   httpHeaders: Record<string, string> = {}
