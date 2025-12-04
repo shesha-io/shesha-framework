@@ -2,7 +2,7 @@ import { FolderAddOutlined } from '@ant-design/icons';
 import { App } from 'antd';
 import moment from 'moment';
 import React from 'react';
-import { CustomFile } from '@/components';
+import { CustomFile, IconType } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
 import { IStyleType, useDataContextManagerActions, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
@@ -149,6 +149,8 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   container?: IStyleType;
   primaryColor?: string;
   downloadedFileStyles?: IStyleType;
+  styleDownloadedFiles?: boolean;
+  downloadedIcon?: IconType;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -240,7 +242,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 {...model}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={ownerId}
-                downloadedFileStyles={downloadedFileFullStyle}
+                downloadedFileStyles={model.styleDownloadedFiles ? downloadedFileFullStyle : {}}
+                downloadedIcon={model.styleDownloadedFiles ? model.downloadedIcon : undefined }
               />
             </StoredFilesProvider>
           );

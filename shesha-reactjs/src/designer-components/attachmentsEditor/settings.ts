@@ -210,7 +210,7 @@ export const getSettings = () => {
                               id: nanoid(),
                               propertyName: 'customActions',
                               parentId: 'customActionsPanel',
-                              label: 'Actions Configuration',
+                              label: 'Custom Actions',
                               type: 'buttonGroupConfigurator',
                               description: 'Configure custom actions that appear when hovering over files. Each action should have: id, name, label, icon (optional), tooltip (optional), hidden (optional), and actionConfiguration.',
                               jsSetting: false,
@@ -1046,6 +1046,24 @@ export const getSettings = () => {
                       content: {
                         id: downloadedStylesPnlId,
                         components: [...new DesignerToolbarSettings()
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            parentId: downloadedStylesPnlId,
+                            inputs: [{
+                              type: "switch",
+                              id: nanoid(),
+                              label: 'Style Downloaded File',
+                              propertyName: 'styleDownloadedFiles'
+                            },
+                            {
+                              id: nanoid(),
+                              type: 'iconPicker',
+                              label: 'Icon',
+                              propertyName: 'downloadedIcon',
+                              hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                            }
+                            ]
+                          })
                           .addCollapsiblePanel({
                             id: nanoid(),
                             propertyName: 'pnlDownloadedFileFontStyles',
@@ -1054,6 +1072,7 @@ export const getSettings = () => {
                             parentId: downloadedStylesPnlId,
                             ghost: true,
                             collapsible: 'header',
+                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                             content: {
                               id: pnlDownloadedFileFontStylesId,
                               components: [...new DesignerToolbarSettings()
@@ -1104,7 +1123,7 @@ export const getSettings = () => {
                                       hideLabel: true,
                                       width: 60,
                                       dropdownOptions: textAlignOptions,
-                                    },
+                                    }
                                   ],
                                 })
                                 .toJson()
@@ -1119,6 +1138,7 @@ export const getSettings = () => {
                             ghost: true,
                             parentId: downloadedStylesPnlId,
                             collapsible: 'header',
+                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                             content: {
                               id: 'pnlDownloadedFileCustomStylePanel',
                               components: [...new DesignerToolbarSettings()

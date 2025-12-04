@@ -26,33 +26,47 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   ].join(' ');
 
   const fileName = cx("item-file-name", css`
-      color: ${color ?? token.colorPrimary} !important;
-      font-size: ${downloadedFileStyles?.fontSize ?? '14px'} !important;
-      font-weight: ${downloadedFileStyles?.fontWeight ?? '400'} !important;
-      font-family: ${downloadedFileStyles?.fontFamily ?? 'Segoe UI'} !important;
-      text-align: ${downloadedFileStyles?.textAlign ?? 'left'} !important;
-      margin: 2px 0px;
-      position: relative;
+    color: ${color ?? token.colorPrimary} !important;
+    font-size: ${fontSize ?? '14px'} !important;
+    font-weight: ${fontWeight ?? '400'} !important;
+    font-family: ${fontFamily ?? 'Segoe UI'} !important;
+    text-align: ${textAlign ?? 'left'} !important;
+    margin: 2px 0px;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    cursor: pointer;
+    &:hover {
+      background-color: ${token.colorBgSpotlight} !important;      opacity: 1 !important;
+      overflow: visible;
+      width: max-content;
+      border-radius: 4px;
+      padding: 0 8px;
+      z-index: 10 !important;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    }
+  `);
+
+  const fileNameWrapper = cx("file-name-wrapper", css`
+    display: flex;
+    cursor: pointer;
+    &:hover {
+      background-color: ${token.colorBgTextHover} !important;
+      border-radius: ${borderRadius ?? '4px'} !important;
+    }
+    > .item-file-name {
       &:hover {
-        background-color: #282828 !important;
-        opacity: 1 !important;
-        overflow: visible;
-        width: max-content;
-        border-radius: 4px;
-        padding: 0 8px;
-        z-index: 999 !important;
-        position: relative;
-        left: 0;
-        white-space: nowrap;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        background-color: transparent !important;
+        padding: 0;
       }
-    `);
+    }
+  `);
 
   const downloadedFile = cx("downloaded-file", css`
     position: relative;
+    display: flex;
 
     .ant-upload-list-item-container {
       opacity: 0.8;
@@ -66,29 +80,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .item-file-name {
-      color: ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
-      font-size: ${downloadedFileStyles?.fontSize ?? '14px'} !important;
-      font-weight: ${downloadedFileStyles?.fontWeight ?? '400'} !important;
-      font-family: ${downloadedFileStyles?.fontFamily ?? 'Segoe UI'} !important;
-      text-align: ${downloadedFileStyles?.textAlign ?? 'left'} !important;
-      margin: 2px 0px;
-      position: relative;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      &:hover {
-        background-color: #282828 !important;
-        opacity: 1 !important;
-        overflow: visible;
-        width: max-content;
-        border-radius: 4px;
-        padding: 0 8px;
-        z-index: 999 !important;
-        position: relative;
-        left: 0;
-        white-space: nowrap;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+      color: ${downloadedFileStyles?.color ?? color} !important;
+      font-size: ${downloadedFileStyles?.fontSize ?? fontSize} !important;
+      font-weight: ${downloadedFileStyles?.fontWeight ?? fontWeight} !important;
+      font-family: ${downloadedFileStyles?.fontFamily ?? fontFamily} !important;
+      text-align: ${downloadedFileStyles?.textAlign ?? textAlign} !important;
     }
 
     .ant-upload-list-item-action {
@@ -104,7 +100,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   `);
 
   const downloadedIcon = cx("downloaded-icon", css`
-    position: absolute;
+    position: ${layout ? 'absolute' : 'relative'};
     top: 4px;
     right: 4px;
     background: ${downloadedFileStyles?.color ?? token.colorSuccess};
@@ -215,6 +211,14 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       width: calc(var(--container-width) - 32px) !important;
       max-width: calc(var(--container-max-width) - 32px) !important;
       min-width: calc(var(--container-min-width) - 32px) !important;
+    }
+
+    .ant-upload-list-text {
+      > .downloaded-icon {
+      position: relative;
+      top: unset;
+      right: unset;
+     }
     }
 
     .ant-upload-drag:hover:not(.ant-upload-disabled) {
@@ -329,8 +333,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-container {
       display: inline-block !important;
-      max-width: var(--thumbnail-width) !important;
-      height: var(--thumbnail-height) !important;
       border-radius: ${borderRadius ?? '8px'} !important;
       &.ant-upload-animate-inline-appear,
       &.ant-upload-animate-inline-appear-active,
@@ -367,8 +369,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-container {
       display: inline-block !important;
-      width: var(--thumbnail-width) !important;
-      height: var(--thumbnail-height) !important;
       border-radius: ${borderRadius ?? '8px'} !important;
       &.ant-upload-animate-inline-appear,
       &.ant-upload-animate-inline-appear-active,
@@ -391,10 +391,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       align-items: stretch !important;
       align-content: flex-start !important;
       padding: 2px;
-      height: ${containerHeight} !important;
       width: var(--container-width) !important;
       max-height: calc(var(--container-max-height) - 40px) !important;
       max-width: var(--container-max-width) !important;
+      height: calc(${containerHeight} - 32px) !important;
       min-height: var(--container-min-height) !important;
       min-width: var(--container-min-width) !important;
       overflow-y: auto !important;
@@ -408,8 +408,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-container {
       display: inline-block !important;
-      width: var(--thumbnail-width) !important;
-      height: var(--thumbnail-height) !important;
       border-radius: ${borderRadius ?? '8px'} !important;
       &.ant-upload-animate-inline-appear,
       &.ant-upload-animate-inline-appear-active,
@@ -442,5 +440,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     antUploadDragIcon,
     thumbnailReadOnly,
     fileName,
+    fileNameWrapper,
   };
 });

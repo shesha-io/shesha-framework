@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC, } from 'react';
 import { IUploadFilePayload } from '@/providers/storedFiles/contexts';
-import { StoredFilesRendererBase } from '@/components/';
+import { IconType, StoredFilesRendererBase } from '@/components/';
 import { IInputStyles, IStyleType, useSheshaApplication, useStoredFilesStore } from '@/providers';
 import { IAttachmentContent, layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { FormIdentifier } from '@/providers/form/models';
@@ -38,6 +38,8 @@ export interface ICustomFileProps extends IInputStyles {
   primaryColor?: string;
   enableStyleOnReadonly?: boolean;
   downloadedFileStyles?: CSSProperties;
+  styleDownloadedFiles?: boolean;
+  downloadedIcon?: IconType;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {
@@ -46,6 +48,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
     //downloadFile,
     deleteFile,
     uploadFile,
+    replaceFile,
     downloadZipFile,
     downloadFile,
     isInProgress: { downloadZip },
@@ -69,6 +72,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         customActions={props.customActions}
         allowReplace={props.allowReplace}
         uploadFile={props.uploadFile ?? uploadFile}
+        replaceFile={replaceFile}
         downloadZipFile={downloadZipFile}
         downloadZip={props.downloadZip}
         downloadFile={downloadFile}
@@ -84,6 +88,8 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         extraFormId={props.extraFormId}
         extraFormType={props.extraFormType}
         downloadedFileStyles={props?.downloadedFileStyles}
+        styleDownloadedFiles={props?.styleDownloadedFiles}
+        downloadedIcon={props?.downloadedIcon}
       />
     </div>
   );

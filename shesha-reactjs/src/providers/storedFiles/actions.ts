@@ -8,6 +8,9 @@ export enum StoredFilesActionEnums {
   UploadFileRequest = 'UPLOAD_FILE_REQUEST',
   UploadFileSuccess = 'UPLOAD_FILE_SUCCESS',
   UploadFileError = 'UPLOAD_FILE_ERROR',
+  ReplaceFileRequest = 'REPLACE_FILE_REQUEST',
+  ReplaceFileSuccess = 'REPLACE_FILE_SUCCESS',
+  ReplaceFileError = 'REPLACE_FILE_ERROR',
   DeleteFileRequest = 'DELETE_FILE_REQUEST',
   DeleteFileSuccess = 'DELETE_FILE_SUCCESS',
   DeleteFileError = 'DELETE_FILE_ERROR',
@@ -50,6 +53,19 @@ export const uploadFileSuccessAction = createAction<IStoredFilesStateContext, IS
 export const uploadFileErrorAction = createAction<IStoredFilesStateContext, IStoredFile>(
   StoredFilesActionEnums.UploadFileError,
   (newFile) => ({ newFile })
+);
+
+export const replaceFileRequestAction = createAction<IStoredFilesStateContext, string>(
+  StoredFilesActionEnums.ReplaceFileRequest,
+  (fileId) => ({ fileId })
+);
+export const replaceFileSuccessAction = createAction<IStoredFilesStateContext, { originalFileId: string; newFile: IStoredFile }>(
+  StoredFilesActionEnums.ReplaceFileSuccess,
+  (payload: { originalFileId: string; newFile: IStoredFile }) => payload
+);
+export const replaceFileErrorAction = createAction<IStoredFilesStateContext, string>(
+  StoredFilesActionEnums.ReplaceFileError,
+  (fileId) => ({ fileId })
 );
 
 export const deleteFileRequestAction = createAction<IStoredFilesStateContext, string>(

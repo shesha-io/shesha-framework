@@ -6,7 +6,7 @@ import { ConfigurableForm, DateDisplay } from '@/components';
 import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
 import { IStoredFile } from '@/providers/storedFiles/contexts';
 import { FormIdentifier } from '@/providers/form/models';
-import {  listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 
 export interface IFileVersionsButtonProps {
   fileId: string;
@@ -19,6 +19,11 @@ export interface IExtraContentProps {
 }
 
 
+/**
+ * Creates a placeholder file object for stub/preview rendering in design mode.
+ *
+ * @returns A mock IStoredFile with example properties
+ */
 export const createPlaceholderFile = (): IStoredFile => ({
   uid: 'placeholder-file-1',
   name: 'example-file.pdf',
@@ -32,38 +37,46 @@ export const createPlaceholderFile = (): IStoredFile => ({
   userHasDownloaded: false,
 });
 
-
-
+/**
+ * Determines the appropriate Ant Design Upload list type based on configuration.
+ *
+ * @param type - The configured list type from component props
+ * @param isDragger - Whether the component is in dragger mode
+ * @returns The Upload component list type to use
+ */
 export const getListTypeAndLayout = (
-  type: listType | undefined,  isDragger: boolean
+  type: listType | undefined, isDragger: boolean
 ): 'text' | 'picture' | 'picture-card' => {
   return type === 'text' || !type || isDragger ? 'text' : 'picture-card';
 };
 
 
-export interface IFetchedFileResult {
-  /** The blob URL for the fetched file. Must be revoked when no longer needed. */
-  url: string;
-  /** Cleanup function to revoke the blob URL and free memory */
-  revoke: () => void;
-}
+/**
+ * Fetches a stored file and returns a blob URL for display/preview.
+ *
+ * **Important**: The returned URL is created via `URL.createObjectURL()`. Callers are
+ * responsible for calling `URL.revokeObjectURL()` on the returned string when the URL
+ * is no longer needed to prevent memory leaks.
+ *
+ * @param url - The file URL to fetch
+ * @param httpHeaders - Optional HTTP headers to include in the request
+ * @returns A Promise resolving to a blob URL (string) that can be used in img src, etc.
+ * @throws {Error} If the fetch fails (non-ok response status)
+ */
+export const fetchStoredFile = async (
+  url: string,
+  httpHeaders: Record<string, string> = {}
+): Promise<string> => {
+  const response = await fetch(url, {
+    headers: { ...httpHeaders, "Content-Type": "application/octet-stream" },
+  });
 
-export const createFetchStoredFile = (httpHeaders: Record<string, string>) => {
-  return async (url: string): Promise<IFetchedFileResult> => {
-    const response = await fetch(`${url}&skipMarkDownload=true`, {
-      headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
-    }
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
+  }
 
-    return {
-      url: blobUrl,
-      revoke: () => URL.revokeObjectURL(blobUrl),
-    };
-  };
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
 };
 
 export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDownload }) => {
@@ -78,8 +91,10 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
 
   if (fileId == null) return null;
 
-  const handleVisibleChange = () => {
-    if (!serverData) fetchHistory();
+  const handleVisibleChange = (visible: boolean) => {
+    if (visible) {
+      fetchHistory();
+    }
   };
 
   const uploads = serverData?.result;
@@ -112,8 +127,6 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
     </Popover>
   );
 };
-
-
 
 export const ExtraContent: FC<IExtraContentProps> = ({ file, formId }) => {
   if (!formId) {

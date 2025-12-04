@@ -4,9 +4,10 @@ import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
 import { IFormComponentStyles } from '@/providers/form/models';
-import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import { IDownloadFilePayload, IReplaceFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import { normalizeFileName } from '@/providers/storedFiles/utils';
 import { addPx } from '@/utils/style';
-import { CheckCircleOutlined, DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
+import { DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
   App,
@@ -28,7 +29,9 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { FormIdentifier } from '@/providers/form/models';
 import { DataContextProvider } from '@/providers/dataContextProvider';
-import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, createFetchStoredFile } from './utils';
+import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile } from './utils';
+import classNames from 'classnames';
+import ShaIcon, { IconType } from '@/components/shaIcon';
 
 interface IUploaderFileTypes {
   name: string;
@@ -58,6 +61,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadZipFileError?: boolean;
   deleteFile: (fileIdToDelete: string) => void | Promise<void>;
   uploadFile: (payload: IUploadFilePayload) => void;
+  replaceFile?: (payload: IReplaceFilePayload) => void;
   downloadZipFile?: () => void;
   downloadZip?: boolean;
   downloadFile: (payload: IDownloadFilePayload) => void;
@@ -83,6 +87,8 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   enableStyleOnReadonly?: boolean;
   thumbnail?: IStyleType;
   downloadedFileStyles?: CSSProperties;
+  styleDownloadedFiles?: boolean;
+  downloadedIcon?: IconType;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -92,6 +98,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   isDownloadZipSucceeded,
   deleteFile,
   uploadFile,
+  replaceFile: replaceFileProp,
   downloadZipFile,
   downloadFile,
   ownerId,
@@ -122,6 +129,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   gap,
   enableStyleOnReadonly = true,
   downloadedFileStyles,
+  styleDownloadedFiles = true,
+  downloadedIcon = 'CheckCircleOutlined',
   ...rest
 }) => {
   const { message, notification } = App.useApp();
@@ -129,12 +138,49 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<{ url: string; uid: string; name: string } | null>(null);
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
-  const [fileToReplace, setFileToReplace] = useState<string | null>(null);
+  const [fileToReplace, setFileToReplace] = useState<{ uid: string; id: string } | null>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const fileContextCache = useRef<Map<string, Promise<{ file: UploadFile; fileId: string; fileName: string; fileType: string }>>>(new Map());
   // Track blob URLs and their revoke functions to prevent memory leaks
-  const blobUrlsRef = useRef<Map<string, () => void>>(new Map());
   const model = rest;
+
+  // Handler for replacing a file
+  const handleReplaceFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && fileToReplace) {
+      try {
+        // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
+        const normalizedFile = normalizeFileName(file);
+
+        // Use the replaceFile action from the provider
+        if (replaceFileProp) {
+          // This uses the StoredFilesProvider's replaceFile action which manages state properly
+          replaceFileProp({
+            file: normalizedFile,
+            fileId: fileToReplace.id,
+            ownerId,
+            ownerType,
+          });
+        }
+      } catch (error) {
+        console.error('Error replacing file:', error);
+        message.error('Failed to replace file. Please try again.');
+      } finally {
+        setFileToReplace(null);
+      }
+    }
+    // Reset the input value so the same file can be selected again
+    e.target.value = '';
+  };
+
+  // Handler to trigger file replacement
+  const onReplaceClick = (file: UploadFile) => {
+    const fileId = (file as IStoredFile).id || file.uid;
+    setFileToReplace({ uid: file.uid, id: fileId });
+    if (hiddenUploadInputRef.current) {
+      hiddenUploadInputRef.current.click();
+    }
+  };
   const hasFiles = !!fileList.length;
 
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
@@ -163,37 +209,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const { width, minWidth, maxWidth } = model?.allStyles?.dimensionsStyles ?? {};
   const listTypeAndLayout = getListTypeAndLayout(listType, isDragger);
-
-  // Helper to check if a URL is a blob URL
-  const isBlobUrl = useCallback((url: string): boolean => {
-    return url?.startsWith('blob:') ?? false;
-  }, []);
-
-  // Helper to revoke a blob URL and remove from tracking
-  const revokeBlobUrl = useCallback((url: string) => {
-    if (isBlobUrl(url)) {
-      const revokeFunc = blobUrlsRef.current.get(url);
-      if (revokeFunc) {
-        revokeFunc();
-        blobUrlsRef.current.delete(url);
-      } else {
-        // Fallback for URLs not tracked (shouldn't happen in normal flow)
-        URL.revokeObjectURL(url);
-      }
-    }
-  }, [isBlobUrl]);
-
-  // Memoize the fetch function to prevent recreating on every render
-  const fetchStoredFile = useCallback(
-    async (url: string): Promise<string> => {
-      const fetchFn = createFetchStoredFile(httpHeaders);
-      const result = await fetchFn(url);
-      // Track blob URL and its revoke function for cleanup
-      blobUrlsRef.current.set(result.url, result.revoke);
-      return result.url;
-    },
-    [httpHeaders]
-  );
 
   const openFilesZipNotification = () =>
     notification.success({
@@ -228,69 +243,50 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     imageUrlsRef.current = imageUrls;
   }, [imageUrls]);
 
+
   useEffect(() => {
-    let isMounted = true;
+       let isCancelled = false;
+       const blobUrls: string[] = [];
 
-    const fetchImages = async () => {
-      const currentFileUids = new Set(fileList.map(f => f.uid));
-
-      // First pass: clean up removed files and keep existing URLs
-      setImageUrls(prevUrls => {
-        const newImageUrls: { [key: string]: string } = {};
-
-        // Revoke blob URLs for files that are no longer in the list
-        Object.entries(prevUrls).forEach(([uid, url]) => {
-          if (!currentFileUids.has(uid)) {
-            revokeBlobUrl(url);
-          } else {
-            // Keep existing URL
-            newImageUrls[uid] = url;
+        const fetchImages = async () => {
+         const newImageUrls: { [key: string]: string } = {};
+          for (const file of fileList) {
+           if (isImageType(file.type)) {
+             try {
+               const imageUrl = await fetchStoredFile(file.url, httpHeaders);
+               if (isCancelled) {
+                 URL.revokeObjectURL(imageUrl);
+                 return;
+               }
+               // Only track successful fetches
+               blobUrls.push(imageUrl);
+               newImageUrls[file.uid] = imageUrl;
+             } catch (error) {
+               console.error(`Failed to fetch image for file ${file.name} (${file.uid}):`, error);
+               // Don't add to newImageUrls or blobUrls - this file will not have a thumbnail
+             }
+            }
           }
-        });
+         if (!isCancelled) {
+           const oldUrls = Object.values(imageUrlsRef.current);
+           const newUrls = Object.values(newImageUrls);
+           oldUrls.forEach(url => {
+             if (!newUrls.includes(url)) {
+               URL.revokeObjectURL(url);
+             }
+           });
 
-        return newImageUrls;
-      });
+           setImageUrls(newImageUrls);
+         }
+        };
 
-      // Second pass: fetch new images for files without cached URLs
-      const currentUrls = imageUrlsRef.current;
-      const filesToFetch = fileList.filter(
-        file => isImageType(file.type) && !currentUrls[file.uid]
-      );
+        fetchImages();
 
-      for (const file of filesToFetch) {
-        try {
-          const imageUrl = await fetchStoredFile(file.url);
-          if (isMounted) {
-            setImageUrls(prev => ({ ...prev, [file.uid]: imageUrl }));
-          } else {
-            // Component unmounted, revoke the URL we just created
-            revokeBlobUrl(imageUrl);
-          }
-        } catch (error) {
-          console.error('Error fetching image for file:', file.name, error);
-        }
-      }
-    };
-
-    if (fileList.length > 0) {
-      fetchImages();
-    } else {
-      // No files - revoke all existing blob URLs
-      setImageUrls(prevUrls => {
-        Object.values(prevUrls).forEach(revokeBlobUrl);
-        return {};
-      });
-    }
-
-    // Cleanup on unmount
-    return () => {
-      isMounted = false;
-      blobUrlsRef.current.forEach((revokeFunc) => {
-        revokeFunc();
-      });
-      blobUrlsRef.current.clear();
-    };
-  }, [fileList, fetchStoredFile, revokeBlobUrl]);
+       return () => {
+         isCancelled = true;
+         blobUrls.forEach(url => URL.revokeObjectURL(url));
+       };
+      }, [fileList, httpHeaders]);
 
 
   const handlePreview = async (file: UploadFile) => {
@@ -313,60 +309,30 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return getFileIcon(type);
   };
 
-    // Helper function to get or create cached file context data
-    const getFileContextData = useCallback((file: UploadFile, fileId: string) => {
-      const cacheKey = `${fileId}_${file.name}_${file.type}`;
-  
-      if (!fileContextCache.current.has(cacheKey)) {
-        fileContextCache.current.set(
-          cacheKey,
-          Promise.resolve({
-            file: file,
-            fileId: fileId,
-            fileName: file.name,
-            fileType: file.type,
-          })
-        );
-      }
-  
-      return fileContextCache.current.get(cacheKey)!;
-    }, []);
+  // Helper function to get or create cached file context data
+  const getFileContextData = useCallback((file: UploadFile, fileId: string) => {
+    const cacheKey = `${fileId}_${file.name}_${file.type}`;
 
-    const placeholderFile = useMemo(() => createPlaceholderFile(), []);
+    if (!fileContextCache.current.has(cacheKey)) {
+      fileContextCache.current.set(
+        cacheKey,
+        Promise.resolve({
+          file: file,
+          fileId: fileId,
+          fileName: file.name,
+          fileType: file.type,
+        })
+      );
+    }
+
+    return fileContextCache.current.get(cacheKey)!;
+  }, []);
+
+  const placeholderFile = useMemo(() => createPlaceholderFile(), []);
 
   if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
-
-  const handleReplaceClick = (file: UploadFile) => {
-    setFileToReplace(file.uid);
-    hiddenUploadInputRef.current?.click();
-  };
-
-  const handleReplaceFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0 && fileToReplace) {
-      const newFile = files[0];
-
-      try {
-        await Promise.resolve(deleteFile(fileToReplace));
-
-        uploadFile({
-          file: newFile,
-          ownerId,
-          ownerType,
-        });
-      } catch (error) {
-        console.error('Error replacing file:', error);
-        message.error('Failed to replace file. Please try again.');
-      } finally {
-        setFileToReplace(null);
-        if (hiddenUploadInputRef.current) {
-          hiddenUploadInputRef.current.value = '';
-        }
-      }
-    }
-  };
 
   const props: DraggerProps = {
     name: '',
@@ -415,10 +381,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     itemRender: (originNode, file) => {
       const isDownloaded = (file as IStoredFile).userHasDownloaded === true;
       const fileId = (file as IStoredFile).id || file.uid;
+      const persistedFileId = (file as IStoredFile).id; // Only persisted files have .id
 
       const actions = (
         <Space size={5}>
-          {allowReplace && !disabled && (
+          {allowReplace && !disabled && persistedFileId && isValidGuid(persistedFileId) && (
             <Button
               size="small"
               icon={<SyncOutlined />}
@@ -426,7 +393,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                handleReplaceClick(file);
+                onReplaceClick(file);
               }}
             />
           )}
@@ -465,48 +432,93 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             }}
           />
           {/* Custom Actions Button Group */}
-          {customActions && customActions.length > 0 && !disabled && (
-            <DataContextProvider
-              id={`file_ctx_${fileId}`}
-              name="fileContext"
-              description="File context for custom actions"
-              type="control"
-              initialData={getFileContextData(file, fileId)}
-            >
-              <ButtonGroup
-                id={`file_actions_${fileId}`}
-                items={customActions}
-                size="small"
-                readOnly={disabled}
-                spaceSize="small"
-                isInline={true}
-              />
-            </DataContextProvider>
+          {customActions && customActions.length > 0 && (
+            <div onClick={(e) => e.stopPropagation()}>
+              <DataContextProvider
+                id={`file_ctx_${fileId}`}
+                name="fileContext"
+                description="File context for custom actions"
+                type="control"
+                initialData={getFileContextData(file, fileId)}
+              >
+                <ButtonGroup
+                  id={`file_actions_${fileId}`}
+                  items={customActions}
+                  size="small"
+                  readOnly={false}
+                  spaceSize="small"
+                  isInline={true}
+                />
+              </DataContextProvider>
+            </div>
           )}
         </Space>
       );
 
       const handleItemClick = (e: React.MouseEvent) => {
+        // Don't trigger preview if clicking on buttons, links, or action elements
+        const target = e.target as HTMLElement;
+        const isActionElement = target.closest('button') ||
+          target.closest('.ant-btn') ||
+          target.closest('.ant-popover') ||
+          target.closest('[role="button"]');
+
+        if (isActionElement) {
+          return;
+        }
+
         // If it's an image, trigger preview instead of download
         if (isImageType(file.type)) {
           e.preventDefault();
           e.stopPropagation();
           handlePreview(file);
+        } else {
+          downloadFile({ fileId: file.uid, fileName: file.name });
+        };
+      };
+
+      // For text listType, we need to wrap only the file name in Popover
+      // For thumbnail and other types, wrap the entire content
+      const renderContent = () => {
+        if (listType === 'text') {
+          return (
+            <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
+              <div className={styles.fileName}>
+                <Popover content={actions} trigger="hover" placement="top" style={{ padding: '0px' }}>
+                  {iconRender(file)}{file.name}
+                </Popover>
+              </div>
+              {isDownloaded && styleDownloadedFiles && (
+                <div className={styles.downloadedIcon}>
+                  <ShaIcon iconName={downloadedIcon} />
+                </div>
+              )}
+            </div>
+          );
         }
+
+        // For thumbnail and other types, wrap entire content
+        const content = (
+          <div className={isDownloaded && styleDownloadedFiles ? styles.downloadedFile : ''} onClick={handleItemClick}>
+            {originNode}
+            {isDownloaded && styleDownloadedFiles && (
+              <div className={styles.downloadedIcon}>
+                <ShaIcon iconName={downloadedIcon} />
+              </div>
+            )}
+          </div>
+        );
+
+        return (
+          <Popover content={actions} trigger="hover" placement="top" style={{ padding: '0px' }}>
+            {content}
+          </Popover>
+        );
       };
 
       return (
         <div>
-          <div className={isDownloaded ? styles.downloadedFile : ''} onClick={handleItemClick}>
-            <Popover content={actions} trigger="hover" placement="top" style={{ padding: '0px' }}>
-              {originNode}
-            </Popover>
-            {isDownloaded && (
-              <div className={styles.downloadedIcon}>
-                <CheckCircleOutlined />
-              </div>
-            )}
-          </div>
+          {renderContent()}
           {listType === 'thumbnail' && <div className={isDownloaded ? styles.downloadedFile : ''} >
             <div className={styles.fileName}>{file.name}</div>
           </div>}
@@ -526,7 +538,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
     }
   };
-  
+
   const renderUploadContent = () => {
     return (
       !disabled &&
@@ -567,9 +579,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           </>
         )
         : (props.disabled && fileList.length === 0
-          ? <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
-            {renderUploadContent()}
-          </div>
+          ? null
           : props.disabled
             ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
             : isDragger ?
