@@ -84,16 +84,20 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   }, [isSelected]);
 
   // Apply dimensions to the outermost wrapper so width/height affect the actual component size
-  // Skip for intrinsic-size components (checkbox, switch, radio, fileUpload, etc.) - they maintain their natural size
   const shouldApplyDimensions = componentModel.type === 'container';
-  const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[activeDevice] }
+
+  const isValidDeviceKey = (device: unknown): device is 'desktop' | 'tablet' | 'mobile' => {
+    return typeof device === 'string' && ['desktop', 'tablet', 'mobile'].includes(device);
+  };
+
+  const deviceModel = isValidDeviceKey(activeDevice)
+    ? { ...componentModel, ...componentModel[activeDevice] }
     : componentModel;
-  const { dimensions } = deviceModel?.container || deviceModel;
+
+  const dimensions = deviceModel?.container?.dimensions ?? deviceModel?.dimensions ?? {};
 
   const componentStyle = useMemo(() => {
     if (!shouldApplyDimensions) return { margin: '0px' };
-    // Only apply width dimensions to wrapper - height is applied directly to the input component
     return {
       boxSizing: 'border-box' as const,
       width: dimensions?.width,
@@ -107,14 +111,15 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   }, [dimensions, shouldApplyDimensions]);
 
   const renderComponentModel = useMemo(() => {
-    if (!activeDevice) {
+    if (!isValidDeviceKey(activeDevice)) {
       return componentModel;
     }
+    const deviceOverrides = componentModel[activeDevice] ?? {};
     return {
       ...componentModel,
       [activeDevice]: {
         ...componentModel,
-        ...componentModel?.[activeDevice],
+        ...deviceOverrides,
         dimensions: { ...dimensions, width: '100%', height: '100%' },
       }
     };
