@@ -86,10 +86,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // Apply dimensions to the outermost wrapper so width/height affect the actual component size
   // Skip for intrinsic-size components (checkbox, switch, radio, fileUpload, etc.) - they maintain their natural size
   const shouldApplyDimensions = componentModel.type === 'container';
-    const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
+  const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
     ? { ...componentModel, ...componentModel?.[activeDevice] }
     : componentModel;
-    const { dimensions } = deviceModel?.container || deviceModel;
+  const { dimensions } = deviceModel?.container || deviceModel;
 
   const componentStyle = useMemo(() => {
     if (!shouldApplyDimensions) return { margin: '0px !important' };
@@ -106,15 +106,19 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     };
   }, [componentModel, shouldApplyDimensions]);
 
-  const renderComponentModel = useMemo(()=>{
+  const renderComponentModel = useMemo(() => {
+    if (!activeDevice) {
+      return componentModel;
+    }
     return {
       ...componentModel,
       [activeDevice]: {
         ...deviceModel,
-        dimensions: {...dimensions, width: '100%', height: '100%'},
+        dimensions: { ...dimensions, width: '100%', height: '100%' },
       }
-  }},[componentModel]);
-  
+    };
+  }, [componentModel, activeDevice, deviceModel, dimensions]);
+
   return (
     <div
       className={classNames(styles.shaComponent, {
