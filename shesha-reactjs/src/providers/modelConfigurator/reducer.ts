@@ -1,7 +1,7 @@
 import { handleActions } from 'redux-actions';
 import { EntityInitFlags, ModelConfigurationDto } from '@/apis/modelConfigurations';
 import { ModelActionEnums } from './actions';
-import { IModelConfiguratorStateContext, MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE } from './contexts';
+import { IModelConfiguratorStateContext, IPropertyErrors, MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE } from './contexts';
 import { IErrorInfo } from '@/interfaces';
 
 const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto => {
@@ -10,6 +10,18 @@ const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto =
     properties: data.properties
       .filter((p) => !p.isFrameworkRelated), // remove framework fields
   };
+};
+
+const extractInitErrors = (payload: ModelConfigurationDto, preparedData: ModelConfigurationDto): (IPropertyErrors | string)[] => {
+  if (payload.initStatus & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed)) { // eslint-disable-line no-bitwise
+    return [
+      payload.initMessage,
+      ...(preparedData.properties
+        .filter((p) => p.initStatus & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed)) // eslint-disable-line no-bitwise
+        ?.map((p) => ({ propertyName: p.name, errors: [p.initMessage] } as IPropertyErrors)) ?? []),
+    ] as (IPropertyErrors | string)[];
+  }
+  return [];
 };
 
 const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
@@ -23,6 +35,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         isCreateNew: true,
         modelConfiguration: prepareLoadedData(action.payload),
         initialConfiguration: prepareLoadedData(action.payload),
+        showErrors: false,
         id: '',
       };
     },
@@ -64,16 +77,16 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         modelConfiguration: preparedData,
         initialConfiguration: preparedData,
         isLoading: false,
+        showErrors: false,
+        errors: [],
       };
 
-      if (payload.initStatus & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed)) { // eslint-disable-line no-bitwise
-        newState.errors = [
-          payload.initMessage,
-          ...(preparedData.properties
-            .filter((p) => p.initStatus & (EntityInitFlags.DbActionFailed | EntityInitFlags.InitializationFailed)) // eslint-disable-line no-bitwise
-            ?.map((p) => `${p.name}: ${p.initMessage}`) ?? []),
-        ];
+      const initErrors = extractInitErrors(payload, preparedData);
+      if (initErrors.length > 0) {
+        newState.errors = initErrors;
+        newState.showErrors = true;
       }
+
 
       return newState;
     },
@@ -86,6 +99,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         ...state,
         isLoading: false,
         errors: [action.payload?.message, ...(action.payload?.validationErrors?.map((e) => e.message) ?? [])],
+        showErrors: true,
       };
     },
 
@@ -103,14 +117,25 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
     ) => {
       const { payload } = action;
 
-      return {
+      const preparedData = prepareLoadedData(payload);
+      const newState = {
         ...state,
         isCreateNew: false,
         isModified: false,
         isSaving: false,
         id: payload.id,
-        modelConfiguration: prepareLoadedData(payload),
+        modelConfiguration: preparedData,
+        showErrors: false,
+        errors: [],
       };
+
+      const initErrors = extractInitErrors(payload, preparedData);
+      if (initErrors.length > 0) {
+        newState.errors = initErrors;
+        newState.showErrors = true;
+      }
+
+      return newState;
     },
 
     [ModelActionEnums.SaveError]: (
@@ -121,6 +146,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         ...state,
         isSaving: false,
         errors: [action.payload?.message, ...(action.payload?.validationErrors?.map((e) => e.message) ?? [])],
+        showErrors: true,
       };
     },
 
@@ -146,11 +172,22 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
 
     [ModelActionEnums.SetErrors]: (
       state: IModelConfiguratorStateContext,
-      action: ReduxActions.Action<string[]>,
+      action: ReduxActions.Action<(IPropertyErrors | string)[]>,
     ) => {
       return {
         ...state,
         errors: action.payload,
+        showErrors: action.payload.length ? state.showErrors : false,
+      };
+    },
+
+    [ModelActionEnums.SetShowErrors]: (
+      state: IModelConfiguratorStateContext,
+      action: ReduxActions.Action<boolean>,
+    ) => {
+      return {
+        ...state,
+        showErrors: action.payload,
       };
     },
 

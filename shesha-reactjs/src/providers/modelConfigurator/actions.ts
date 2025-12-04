@@ -1,6 +1,7 @@
 import { createAction } from 'redux-actions';
 import { ModelConfigurationDto } from '@/apis/modelConfigurations';
 import { IErrorInfo } from '@/interfaces/errorInfo';
+import { IPropertyErrors } from './contexts';
 
 export enum ModelActionEnums {
   CreateNew = 'CREATE_NEW',
@@ -22,6 +23,7 @@ export enum ModelActionEnums {
   DeleteError = 'DELETE_ERROR',
 
   SetErrors = 'SET_ERRORS',
+  SetShowErrors = 'SET_SHOW_ERRORS',
 
   SetModelSettings = 'SET_MODEL_SETTINGS',
 
@@ -55,6 +57,7 @@ export const deleteSuccessAction = createAction(ModelActionEnums.DeleteSuccess);
 export const deleteErrorAction = createAction<IErrorInfo, IErrorInfo>(ModelActionEnums.DeleteError, (p) => p);
 
 export const setModifiedAction = createAction<boolean>(ModelActionEnums.SetModified);
-export const setErrorsAction = createAction<string[]>(ModelActionEnums.SetErrors);
+export const setErrorsAction = createAction<(IPropertyErrors | string)[]>(ModelActionEnums.SetErrors);
+export const setShowErrorsAction = createAction<boolean>(ModelActionEnums.SetShowErrors);
 
 /* NEW_ACTION_GOES_HERE */

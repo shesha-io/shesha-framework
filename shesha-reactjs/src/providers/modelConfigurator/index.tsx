@@ -22,10 +22,12 @@ import {
   saveSuccessAction,
   setErrorsAction,
   setModifiedAction,
+  setShowErrorsAction,
 } from './actions';
 import {
   IModelConfiguratorActionsContext,
   IModelConfiguratorStateContext,
+  IPropertyErrors,
   MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
   ModelConfiguratorActionsContext,
   ModelConfiguratorStateContext,
@@ -99,11 +101,13 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
       : { ...values, className: values.name, namespace: values.module };
   };
 
-  const validateModel = (model: ModelConfigurationDto): string[] => {
-    let errors: string[] = [];
+  const validateModel = (model: ModelConfigurationDto): IPropertyErrors[] => {
+    let errors: IPropertyErrors[] = [];
     model.properties?.forEach((prop) => {
       errors = errors.concat(propertyModelValidator(prop));
     });
+
+    dispatch(setErrorsAction(errors));
 
     return errors;
   };
@@ -112,7 +116,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     new Promise<ModelConfigurationDto>((resolve, reject) => {
       const errors = validateModel(values);
       if (errors.length > 0) {
-        dispatch(setErrorsAction(errors));
+        dispatch(setShowErrorsAction(true));
         reject();
         return;
       }
@@ -192,6 +196,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
           delete: deleteFunc,
           createNew,
           setModified,
+          validateModel,
           /* NEW_ACTION_GOES_HERE */
         }}
       >
