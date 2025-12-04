@@ -5,7 +5,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const LEFT_SIDEBAR_WIDTH = "550px";
   const { SIDEBAR_BTN_HEIGHT, TOOLBAR_HEIGHT, HEADER_HEIGHT } = LAYOUT_CONSTANTS;
 
-
   const sidebarContainerHeader = "sidebar-container-header";
   const sidebarContainerBody = "sidebar-container-body";
   const sidebarContainerMainArea = "sidebar-container-main-area";
@@ -20,6 +19,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const sidebarContainerRight = "sidebar-container-right";
   const canvasWrapper = "canvas-wrapper";
   const designerCanvas = "designer-canvas";
+  const canvasPopupContainer = "canvas-popup-container";
 
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
@@ -182,6 +182,20 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           overflow: auto;
           transform-origin: top left;
         }
+
+        .${canvasPopupContainer} {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          transform-origin: top left;
+
+          > * {
+            pointer-events: auto;
+          }
+        }
       }
     `);
 
@@ -201,5 +215,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     sidebarContainerRight,
     designerCanvas,
     canvasWrapper,
+    canvasPopupContainer,
   };
 });
