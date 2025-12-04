@@ -59,9 +59,9 @@ export const replaceFileRequestAction = createAction<IStoredFilesStateContext, s
   StoredFilesActionEnums.ReplaceFileRequest,
   (fileId) => ({ fileId })
 );
-export const replaceFileSuccessAction = createAction<IStoredFilesStateContext, IStoredFile>(
+export const replaceFileSuccessAction = createAction<IStoredFilesStateContext, { originalFileId: string; newFile: IStoredFile }>(
   StoredFilesActionEnums.ReplaceFileSuccess,
-  (newFile) => ({ newFile })
+  (payload: { originalFileId: string; newFile: IStoredFile }) => payload
 );
 export const replaceFileErrorAction = createAction<IStoredFilesStateContext, string>(
   StoredFilesActionEnums.ReplaceFileError,

@@ -103,12 +103,12 @@ export function storedFilesReducer(
     }
     case StoredFilesActionEnums.ReplaceFileSuccess: {
       const { fileList } = state;
-      const { newFile } = payload;
+      const { originalFileId, newFile } = payload;
 
       return {
         ...state,
         fileList: fileList.map((file) => {
-          if (file.id === newFile.id || file.uid === newFile.id) {
+          if (file.id === originalFileId || file.uid === originalFileId) {
             return {
               ...newFile,
               uid: newFile.id,
