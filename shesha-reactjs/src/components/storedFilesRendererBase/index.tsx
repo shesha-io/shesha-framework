@@ -252,10 +252,19 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
          const newImageUrls: { [key: string]: string } = {};
           for (const file of fileList) {
            if (isImageType(file.type)) {
-              const imageUrl = await fetchStoredFile(file.url, httpHeaders);
-             if (isCancelled) return;
-             blobUrls.push(imageUrl);
-              newImageUrls[file.uid] = imageUrl;
+             try {
+               const imageUrl = await fetchStoredFile(file.url, httpHeaders);
+               if (isCancelled) {
+                 URL.revokeObjectURL(imageUrl);
+                 return;
+               }
+               // Only track successful fetches
+               blobUrls.push(imageUrl);
+               newImageUrls[file.uid] = imageUrl;
+             } catch (error) {
+               console.error(`Failed to fetch image for file ${file.name} (${file.uid}):`, error);
+               // Don't add to newImageUrls or blobUrls - this file will not have a thumbnail
+             }
             }
           }
          if (!isCancelled) {
