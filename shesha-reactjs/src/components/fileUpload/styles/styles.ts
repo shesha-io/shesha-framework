@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }) => {
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }: any) => {
   const {
     background = 'transparent',
     backgroundImage,
@@ -207,6 +207,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           }
         }
       }
+
+      ${listType !== 'thumbnail' ? `
+        .ant-upload-select {
+          border: none !important;
+        }
+      ` : ''}
 
       .ant-btn {
         color: ${color || token.colorPrimary} !important;
