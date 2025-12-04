@@ -69,12 +69,12 @@ export const getTableDefaults = (): {
   return {
     // Row styling defaults
     rowHeight: '40px',
-    rowPadding: '8px 12px',
-    rowBorder: '1px solid #f0f0f0',
+    rowPadding: '1px 1px',
+    rowBorder: 'none',
 
     // Header styling defaults
     headerFontSize: '14px',
-    headerFontWeight: '600',
+    headerFontWeight: '400',
   };
 };
 
