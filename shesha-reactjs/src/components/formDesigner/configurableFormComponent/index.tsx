@@ -25,6 +25,21 @@ import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedCompon
 import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { addPx } from '@/utils/style';
+
+// Module-level style constants to prevent recreation on every render
+const fullSizeBoxStyle: React.CSSProperties = {
+  width: '100%',
+  height: '100%',
+  boxSizing: 'border-box'
+};
+
+const paddedBoxStyle: React.CSSProperties = {
+  padding: '5px 3px',
+  boxSizing: 'border-box',
+  width: '100%',
+  height: '100%'
+};
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
@@ -100,12 +115,12 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     if (!shouldApplyDimensions) return { margin: '0px' };
     return {
       boxSizing: 'border-box' as const,
-      width: dimensions?.width,
-      minWidth: dimensions?.minWidth,
-      maxWidth: dimensions?.maxWidth,
-      height: dimensions?.height,
-      minHeight: dimensions?.minHeight,
-      maxHeight: dimensions?.maxHeight,
+      width: addPx(dimensions?.width),
+      minWidth: addPx(dimensions?.minWidth),
+      maxWidth: addPx(dimensions?.maxWidth),
+      height: addPx(dimensions?.height),
+      minHeight: addPx(dimensions?.minHeight),
+      maxHeight: addPx(dimensions?.maxHeight),
       margin: '0px'
     };
   }, [dimensions, shouldApplyDimensions]);
@@ -159,9 +174,9 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       </span>
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
-      <div style={{ width: '100%', height: '100%', boxSizing: 'border-box' }}>
+      <div style={fullSizeBoxStyle}>
         <DragWrapper componentId={componentModel.id} readOnly={readOnly} >
-          <div style={{ padding: '5px 3px', boxSizing: 'border-box', width: '100%', height: '100%' }}>
+          <div style={paddedBoxStyle}>
             <FormComponent componentModel={renderComponentModel} />
           </div>
         </DragWrapper>
