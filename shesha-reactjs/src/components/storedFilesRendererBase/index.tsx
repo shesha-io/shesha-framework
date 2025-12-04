@@ -464,8 +464,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           e.stopPropagation();
           handlePreview(file);
         } else {
-          downloadFile({ fileId: file.uid, fileName: file.name })
-        }
+          downloadFile({ fileId: file.uid, fileName: file.name });
+        };
       };
 
       // For text listType, we need to wrap only the file name in Popover

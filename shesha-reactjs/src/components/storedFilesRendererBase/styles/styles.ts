@@ -25,7 +25,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     borderTopLeftRadius ?? allRadius ?? '8px',
   ].join(' ');
 
-  // Thumbnail file name - shows #282828 background on overflow
   const fileName = cx("item-file-name", css`
     color: ${color ?? token.colorPrimary} !important;
     font-size: ${fontSize ?? '14px'} !important;
@@ -50,7 +49,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
   `);
 
-  // Text listType wrapper - shows #f2f2f2 background on hover
   const fileNameWrapper = cx("file-name-wrapper", css`
     display: flex;
     cursor: pointer;
@@ -64,7 +62,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         padding: 0;
       }
     }
-  `)
+  `);
 
   const downloadedFile = cx("downloaded-file", css`
     position: relative;
