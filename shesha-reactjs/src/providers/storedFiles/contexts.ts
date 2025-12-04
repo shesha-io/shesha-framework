@@ -6,18 +6,21 @@ import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/m
 export type IFlagProgressFlags =
   'downloadFile' |
   'uploadFile' |
+  'replaceFile' |
   'deleteFile' |
   'fetchFileList' |
   'downloadZip'; /* NEW_IN_PROGRESS_FLAG_GOES_HERE */
 export type IFlagSucceededFlags =
   'downloadFile' |
   'uploadFile' |
+  'replaceFile' |
   'deleteFile' |
   'fetchFileList' |
   'downloadZip'; /* NEW_SUCCEEDED_FLAG_GOES_HERE */
 export type IFlagErrorFlags =
   'downloadFile' |
   'uploadFile' |
+  'replaceFile' |
   'deleteFile' |
   'fetchFileList' |
   'downloadZip'; /* NEW_ERROR_FLAG_GOES_HERE */
@@ -49,6 +52,10 @@ export interface IDownloadFilePayload {
   fileName: string;
 }
 
+export interface IReplaceFilePayload extends IRequestFilePayload {
+  fileId: string;
+}
+
 export interface IStoredFilesStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   fileList?: IStoredFile[];
@@ -60,6 +67,7 @@ export interface IStoredFilesStateContext
 export interface IStoredFilesActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   uploadFile: (payload: IUploadFilePayload) => void;
+  replaceFile: (payload: IReplaceFilePayload) => void;
   deleteFile: (fileIdToDelete: string) => void;
   downloadZipFile: (payload?: IDownloadZipPayload) => void;
   downloadFile: (payload: IDownloadFilePayload) => void;

@@ -23,6 +23,9 @@ import {
   initializeFileListAction,
   onFileAddedAction,
   onFileDeletedAction,
+  replaceFileErrorAction,
+  replaceFileRequestAction,
+  replaceFileSuccessAction,
   updateAllFilesDownloadedByCurrentUser,
   updateIsDownloadedByCurrentUser,
   uploadFileErrorAction,
@@ -32,6 +35,7 @@ import {
 import {
   IDownloadFilePayload,
   IDownloadZipPayload,
+  IReplaceFilePayload,
   IStoredFile,
   IStoredFilesActionsContext,
   IStoredFilesStateContext,
@@ -282,7 +286,52 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   //#endregion
 
-  const downloadZipFile = (payload: IDownloadZipPayload = null): void => {
+  //#region replace file
+  const replaceFile = (payload: IReplaceFilePayload) => {
+    const { file, fileId } = payload;
+
+    // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
+    const lastDotIndex = file.name.lastIndexOf('.');
+    const fileName = lastDotIndex === -1 ? file.name : file.name.substring(0, lastDotIndex) + file.name.substring(lastDotIndex).toLowerCase();
+    const normalizedFile = new File([file], fileName, { type: file.type });
+
+    const formData = new FormData();
+    formData.append('file', normalizedFile);
+    formData.append('id', fileId);
+
+    dispatch(replaceFileRequestAction(fileId));
+
+    axios({
+      url: `${baseUrl ?? backendUrl}/api/StoredFile/UploadNewVersion`,
+      method: 'POST',
+      data: formData,
+      headers: {
+        ...headers,
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+      .then((response) => {
+        const responseFile = response.data.result as IStoredFile;
+        responseFile.uid = responseFile.id;
+        dispatch(replaceFileSuccessAction({ ...responseFile }));
+
+        // Update the fileList by replacing the old file with the new one
+        const updatedList = state.fileList?.map((f) =>
+          f.id === fileId || f.uid === fileId ? { ...responseFile, uid: responseFile.id } : f
+        ) ?? [];
+
+        onChange?.(updatedList);
+        message.success(`File "${fileName}" replaced successfully`);
+      })
+      .catch((e) => {
+        message.error(`File replacement failed. ${e.message || 'Please try again.'}`);
+        console.error(e);
+        dispatch(replaceFileErrorAction(fileId));
+      });
+  };
+  //#endregion
+
+  const downloadZipFile = (payload: IDownloadZipPayload = null) => {
     dispatch(downloadZipRequestAction());
     const query = !!payload
       ? payload
@@ -367,6 +416,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           value={{
             ...getFlagSetters(dispatch),
             uploadFile,
+            replaceFile,
             deleteFile,
             downloadZipFile,
             downloadFile, /* NEW_ACTION_GOES_HERE */
