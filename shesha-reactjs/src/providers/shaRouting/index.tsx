@@ -46,10 +46,11 @@ export interface IScriptActionArguments {
 interface ShaRoutingProviderProps {
   router: IRouter;
   getFormUrlFunc?: (formId: FormIdentifier, isLoggedIn: boolean) => string;
+  urlOverrideFunc?: (url: string) => string;
   getIsLoggedIn: () => boolean;
 }
 
-const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ children, router, getFormUrlFunc, getIsLoggedIn }) => {
+const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ children, router, getFormUrlFunc, getIsLoggedIn, urlOverrideFunc }) => {
   const goingToRoute = (route: string) => {
     router?.push(route);
   };
@@ -68,6 +69,12 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
       : '';
   };
 
+  const prepareUrl = (url: string): string => {
+    return urlOverrideFunc
+      ? urlOverrideFunc(url)
+      : url;
+  };
+
   const navigateToRawUrl = (url: string): Promise<boolean> => {
     if (router) {
       router.push(url);
@@ -81,17 +88,21 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
       return Promise.reject("Both router and windows are not defined");
   };
 
-  const prepareUrl = (url: string, queryParameters?: IKeyValue[]) => {
+  const buildFinalUrl = (url: string, queryParameters?: IKeyValue[]) => {
     const queryParams = mapKeyValueToDictionary(queryParameters);
-    return buildUrl(url, queryParams);
+
+    const fullUrl = buildUrl(url, queryParams);
+    return urlOverrideFunc
+      ? urlOverrideFunc(fullUrl)
+      : fullUrl;
   };
 
   const getUrlFromNavigationRequest = (request: INavigateActoinArguments): string => {
     switch (request?.navigationType) {
-      case 'url': return prepareUrl(request.url, request.queryParameters);
+      case 'url': return buildFinalUrl(request.url, request.queryParameters);
       case 'form': {
         const formUrl = getFormUrl(request.formId);
-        return prepareUrl(formUrl, request.queryParameters);
+        return buildFinalUrl(formUrl, request.queryParameters);
       };
       default: return undefined;
     }
@@ -124,6 +135,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
         value={{
           goingToRoute,
           getFormUrl,
+          prepareUrl,
           getUrlFromNavigationRequest,
         }}
       >
