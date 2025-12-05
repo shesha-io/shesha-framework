@@ -29,19 +29,23 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
       
 
       .ant-input-number {
+        height: 100%;
         align-items: center;
-        
+        ${hasSuffix && 'display: grid;'}
+        ${hasSuffix && 'grid-template-columns: minmax(0, 1fr) auto auto;'}
+
         &:hover {
-          padding-right: 28px !important;
+          ${!hasSuffix && 'padding-right: 28px !important;'}
           transition: padding-right 0.2s ease;
         }
       }
-
       .ant-input-number-handler-wrap {
-        ${(hasSuffix || padding?.paddingRight) && 'border-inline-end: var(--ant-line-width) var(--ant-line-type) var(--ant-input-number-handle-border-color);'}
+        ${hasSuffix && 'border-inline-end: 1px solid #d9d9d9 !important;'}
         border-start-end-radius: 0px !important;
         border-end-end-radius: 0px !important;
-        ${hasSuffix && 'margin-right: 4px !important;'}
+        ${hasSuffix && 'grid-column: 2;'}
+        ${hasSuffix && 'grid-row: 1;'}
+        ${hasSuffix && 'position: static;'}
 
         .ant-input-number-handler-up {
           border-start-end-radius: 0px !important;
@@ -56,9 +60,9 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         ${!hasSuffix && 'display: none;'}
         margin-inline-end: unset !important;
         margin-inline-start: 0px !important;
-        margin-right: 8px !important;
+        margin-right: 4px !important;
         position: relative;
-        padding: 4px 0px;
+        padding: 4px;
 
         .anticon {
           margin-left: 4px !important;
