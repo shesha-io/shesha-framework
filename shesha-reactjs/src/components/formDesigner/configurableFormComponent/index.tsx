@@ -129,6 +129,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   }, [dimensions, shouldApplyDimensions]);
 
   const renderComponentModel = useMemo(() => {
+    if(!shouldApplyDimensions) return componentModel;
     if (!isValidDeviceKey(activeDevice)) {
       return componentModel;
     }
