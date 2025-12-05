@@ -324,7 +324,7 @@ export const convertRowBorderStyleToBorder = (rowBorderStyle?: {
   if (borderType === 'all' && border.all) {
     const { width, style, color } = border.all;
     if (!width || !style || !color) return undefined;
-    return `${width} ${style} ${color}`;
+    return `${addPxUnit(width)} ${style} ${color}`;
   }
 
   // For custom borders, we can only return one border string
@@ -333,7 +333,7 @@ export const convertRowBorderStyleToBorder = (rowBorderStyle?: {
   if (firstBorder) {
     const { width, style, color } = firstBorder;
     if (!width || !style || !color) return undefined;
-    return `${width} ${style} ${color}`;
+    return `${addPxUnit(width)} ${style} ${color}`;
   }
 
   return undefined;
