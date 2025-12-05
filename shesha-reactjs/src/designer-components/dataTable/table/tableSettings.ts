@@ -555,29 +555,94 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   content: {
                     id: nanoid(),
                     components: [...fbf()
-                      .addSettingsInput({
+                      .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'rowHeight',
-                        label: 'Row Height',
-                        inputType: 'textField',
-                        tooltip: 'Height for table rows (e.g., 40px, 3rem)',
-                        jsSetting: false,
+                        propertyName: 'pnlRowDimensions',
+                        label: 'Row Dimensions',
+                        labelAlign: 'right',
+                        ghost: true,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...fbf()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              inline: true,
+                              inputs: [
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Height",
+                                  width: 85,
+                                  propertyName: "rowDimensions.height",
+                                  icon: "heightIcon",
+                                  tooltip: "Row height. You can use any unit (%, px, em, etc). px by default if without unit",
+                                },
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Min Height",
+                                  width: 85,
+                                  hideLabel: true,
+                                  propertyName: "rowDimensions.minHeight",
+                                  icon: "minHeightIcon",
+                                },
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Max Height",
+                                  width: 85,
+                                  hideLabel: true,
+                                  propertyName: "rowDimensions.maxHeight",
+                                  icon: "maxHeightIcon",
+                                },
+                              ],
+                            })
+                            .toJson(),
+                          ],
+                        },
                       })
-                      .addSettingsInput({
+                      .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'rowPadding',
-                        label: 'Cell Padding',
-                        inputType: 'textField',
-                        tooltip: 'Padding for table cells (e.g., 8px, 0.5rem 1rem)',
-                        jsSetting: false,
+                        propertyName: 'rowStylingBox',
+                        label: 'Row Padding',
+                        labelAlign: 'right',
+                        ghost: true,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...fbf()
+                            .addStyleBox({
+                              id: nanoid(),
+                              label: 'Cell Padding',
+                              hideLabel: true,
+                              propertyName: 'rowStylingBox',
+                            })
+                            .toJson(),
+                          ],
+                        },
                       })
-                      .addSettingsInput({
+                      .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'rowBorder',
+                        propertyName: 'pnlRowBorderStyle',
                         label: 'Row Border',
-                        inputType: 'textField',
-                        tooltip: 'Border style for table rows (e.g., 1px solid #ccc)',
-                        jsSetting: false,
+                        labelAlign: 'right',
+                        ghost: true,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...fbf()
+                            .addContainer({
+                              id: nanoid(),
+                              components: getBorderInputs(fbf, 'rowBorder'),
+                            })
+                            .addContainer({
+                              id: nanoid(),
+                              components: getCornerInputs(fbf, 'rowBorderCorner'),
+                            })
+                            .toJson(),
+                          ],
+                        },
                       })
                       .toJson(),
                     ],
