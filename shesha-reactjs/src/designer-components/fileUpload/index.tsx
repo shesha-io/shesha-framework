@@ -33,7 +33,9 @@ const FileUploadComponent: FileUploadComponentDefinition = {
 
     const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) || model.listType === 'text' ? {
       ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
+      border: 'none',
+      borderWidth: '0',
+      borderStyle: 'none',
     } : model.allStyles.fullStyle;
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
