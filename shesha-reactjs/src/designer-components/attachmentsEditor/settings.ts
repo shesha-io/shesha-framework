@@ -211,6 +211,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               parentId: 'customActionsPanel',
                               label: 'Custom Actions',
                               type: 'buttonGroupConfigurator',
+                              buttonText: 'Customize Actions',
                               description: 'Configure custom actions that appear when hovering over files. Each action should have: id, name, label, icon (optional), tooltip (optional), hidden (optional), and actionConfiguration.',
                               jsSetting: false,
                             },
