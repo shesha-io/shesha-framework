@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Session
 {
+#nullable enable
     /// <summary>
     /// Defines some session information that can be useful for Shesha applications.
     /// </summary>
@@ -20,5 +21,12 @@ namespace Shesha.Session
         /// </summary>
         /// <returns></returns>
         Task<Person> GetCurrentPersonAsync();
+
+        /// <summary>
+        /// Get current person or null
+        /// </summary>
+        /// <returns></returns>
+        Task<Person?> GetCurrentPersonOrNullAsync();
     }
+#nullable restore
 }

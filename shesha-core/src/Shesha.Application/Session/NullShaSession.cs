@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Session
 {
+#nullable enable
     /// <summary>
     /// Implements null object pattern for <see cref="IShaSession"/>.
     /// </summary>
@@ -40,14 +41,15 @@ namespace Shesha.Session
 
         }
 
-        public Task<Person> GetPersonAsync()
-        {
-            return Task.FromResult<Person>(null);
-        }
-
         public Task<Person> GetCurrentPersonAsync()
         {
             throw new NotImplementedException();
         }
+
+        public Task<Person?> GetCurrentPersonOrNullAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
+#nullable restore
 }
