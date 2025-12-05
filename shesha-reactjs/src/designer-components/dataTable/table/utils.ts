@@ -296,7 +296,16 @@ export const convertRowStylingBoxToPadding = (rowStylingBox?: {
  * @param rowBorderStyle - Border style configuration
  * @returns Border string for backward compatibility
  */
-export const convertRowBorderStyleToBorder = (rowBorderStyle?: any): string | undefined => {
+export const convertRowBorderStyleToBorder = (rowBorderStyle?: {
+  borderType?: string;
+  border?: {
+    all?: { width?: string | number; style?: string; color?: string };
+    top?: { width?: string | number; style?: string; color?: string };
+    right?: { width?: string | number; style?: string; color?: string };
+    bottom?: { width?: string | number; style?: string; color?: string };
+    left?: { width?: string | number; style?: string; color?: string };
+  };
+}): string | undefined => {
   if (!rowBorderStyle?.border) return undefined;
 
   const { borderType, border } = rowBorderStyle;

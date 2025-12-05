@@ -71,23 +71,29 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const effectiveRowHeight = useMemo(() => {
     // Prefer new rowDimensions over old rowHeight
     const converted = convertRowDimensionsToHeight(props?.rowDimensions);
-    console.log('Row Height - rowDimensions:', props?.rowDimensions, 'converted:', converted, 'fallback:', props?.rowHeight);
+    if (isDesignMode) {
+      console.warn('Row Height - rowDimensions:', props?.rowDimensions, 'converted:', converted, 'fallback:', props?.rowHeight);
+    }
     return converted || props?.rowHeight;
-  }, [props?.rowDimensions, props?.rowHeight]);
+  }, [props?.rowDimensions, props?.rowHeight, isDesignMode]);
 
   const effectiveRowPadding = useMemo(() => {
     // Prefer new rowStylingBox over old rowPadding
     const converted = convertRowStylingBoxToPadding(props?.rowStylingBox);
-    console.log('Row Padding - rowStylingBox:', props?.rowStylingBox, 'converted:', converted, 'fallback:', props?.rowPadding);
+    if (isDesignMode) {
+      console.warn('Row Padding - rowStylingBox:', props?.rowStylingBox, 'converted:', converted, 'fallback:', props?.rowPadding);
+    }
     return converted || props?.rowPadding;
-  }, [props?.rowStylingBox, props?.rowPadding]);
+  }, [props?.rowStylingBox, props?.rowPadding, isDesignMode]);
 
   const effectiveRowBorder = useMemo(() => {
     // Prefer new rowBorderStyle over old rowBorder
     const converted = convertRowBorderStyleToBorder(props?.rowBorderStyle);
-    console.log('Row Border - rowBorderStyle:', props?.rowBorderStyle, 'converted:', converted, 'fallback:', props?.rowBorder);
+    if (isDesignMode) {
+      console.warn('Row Border - rowBorderStyle:', props?.rowBorderStyle, 'converted:', converted, 'fallback:', props?.rowBorder);
+    }
     return converted || props?.rowBorder;
-  }, [props?.rowBorderStyle, props?.rowBorder]);
+  }, [props?.rowBorderStyle, props?.rowBorder, isDesignMode]);
 
   const { styles } = useStyles({
     fontFamily: props?.font?.type,
