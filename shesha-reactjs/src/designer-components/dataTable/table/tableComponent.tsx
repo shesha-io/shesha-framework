@@ -141,7 +141,10 @@ const TableComponent: TableComponentDefinition = {
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [
+      // Old properties (deprecated but kept for backward compatibility)
       'rowHeight', 'rowPadding', 'rowBorder',
+      // New structured properties
+      'rowDimensions', 'rowStylingBox', 'rowBorderStyle',
       'headerFontSize', 'headerFontWeight',
       'tableSettings', // For nested structure
     ];

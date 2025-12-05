@@ -5,7 +5,7 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
-import { filterVisibility, calculateDefaultColumns } from './utils';
+import { filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowStylingBoxToPadding, convertRowBorderStyleToBorder } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
@@ -67,6 +67,28 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     return props?.shadow ? shadowStyles?.boxShadow : props?.boxShadow;
   }, [props?.shadow, shadowStyles?.boxShadow, props?.boxShadow]);
 
+  // Convert new property structures to old format for backward compatibility
+  const effectiveRowHeight = useMemo(() => {
+    // Prefer new rowDimensions over old rowHeight
+    const converted = convertRowDimensionsToHeight(props?.rowDimensions);
+    console.log('Row Height - rowDimensions:', props?.rowDimensions, 'converted:', converted, 'fallback:', props?.rowHeight);
+    return converted || props?.rowHeight;
+  }, [props?.rowDimensions, props?.rowHeight]);
+
+  const effectiveRowPadding = useMemo(() => {
+    // Prefer new rowStylingBox over old rowPadding
+    const converted = convertRowStylingBoxToPadding(props?.rowStylingBox);
+    console.log('Row Padding - rowStylingBox:', props?.rowStylingBox, 'converted:', converted, 'fallback:', props?.rowPadding);
+    return converted || props?.rowPadding;
+  }, [props?.rowStylingBox, props?.rowPadding]);
+
+  const effectiveRowBorder = useMemo(() => {
+    // Prefer new rowBorderStyle over old rowBorder
+    const converted = convertRowBorderStyleToBorder(props?.rowBorderStyle);
+    console.log('Row Border - rowBorderStyle:', props?.rowBorderStyle, 'converted:', converted, 'fallback:', props?.rowBorder);
+    return converted || props?.rowBorder;
+  }, [props?.rowBorderStyle, props?.rowBorder]);
+
   const { styles } = useStyles({
     fontFamily: props?.font?.type,
     fontWeight: props?.font?.weight,
@@ -88,9 +110,9 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     headerFontWeight: props?.headerFontWeight,
     headerBackgroundColor: props?.headerBackgroundColor,
     headerTextColor: props?.headerTextColor,
-    rowHeight: props?.rowHeight,
-    rowPadding: props?.rowPadding,
-    rowBorder: props?.rowBorder,
+    rowHeight: effectiveRowHeight,
+    rowPadding: effectiveRowPadding,
+    rowBorder: effectiveRowBorder,
     boxShadow: finalBoxShadow,
     sortableIndicatorColor: props?.sortableIndicatorColor,
   });
@@ -359,9 +381,9 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             headerFontWeight={props.headerFontWeight}
             headerBackgroundColor={props.headerBackgroundColor}
             headerTextColor={props.headerTextColor}
-            rowHeight={props.rowHeight}
-            rowPadding={props.rowPadding}
-            rowBorder={props.rowBorder}
+            rowHeight={effectiveRowHeight}
+            rowPadding={effectiveRowPadding}
+            rowBorder={effectiveRowBorder}
             boxShadow={finalBoxShadow}
             sortableIndicatorColor={props.sortableIndicatorColor}
           />

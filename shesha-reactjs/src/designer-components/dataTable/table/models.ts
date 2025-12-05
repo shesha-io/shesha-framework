@@ -45,8 +45,39 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
+
+  // Row dimensions
+  rowDimensions?: {
+    height?: string;
+    minHeight?: string;
+    maxHeight?: string;
+  };
+
+  // Row padding using styling box
+  rowStylingBox?: {
+    margin?: {
+      top?: string;
+      right?: string;
+      bottom?: string;
+      left?: string;
+    };
+    padding?: {
+      top?: string;
+      right?: string;
+      bottom?: string;
+      left?: string;
+    };
+  };
+
+  // Row border using standard border controls
+  rowBorderStyle?: IBorderValue;
+
+  // Deprecated properties - kept for backward compatibility
+  /** @deprecated Use rowDimensions.height instead */
   rowHeight?: string;
+  /** @deprecated Use rowStylingBox.padding instead */
   rowPadding?: string;
+  /** @deprecated Use rowBorderStyle instead */
   rowBorder?: string;
 
   // Overall table styling
