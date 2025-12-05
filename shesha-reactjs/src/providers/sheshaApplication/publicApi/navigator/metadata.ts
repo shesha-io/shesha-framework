@@ -21,6 +21,10 @@ const getNavigatorApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefi
         "     * Get form url",
         "     */",
         "    getFormUrl: (formId: FormIdentifier) => string;",
+        "    /**",
+        "     * Prepare url (apply conventions)",
+        "     */",
+        "    prepareUrl: (url: string) => string;",
         "}",
     ].join("\n");
     
