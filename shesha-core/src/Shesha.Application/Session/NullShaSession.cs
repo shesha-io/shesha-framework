@@ -40,12 +40,12 @@ namespace Shesha.Session
 
         }
 
-        public Task<Person> GetPersonAsync()
+        public Task<Person> GetCurrentPersonAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<Person> GetCurrentPersonAsync()
+        public Task<Person?> GetCurrentPersonOrNullAsync()
         {
             throw new NotImplementedException();
         }

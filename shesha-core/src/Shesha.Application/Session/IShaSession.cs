@@ -20,5 +20,11 @@ namespace Shesha.Session
         /// </summary>
         /// <returns></returns>
         Task<Person> GetCurrentPersonAsync();
+
+        /// <summary>
+        /// Get current person or null
+        /// </summary>
+        /// <returns></returns>
+        Task<Person?> GetCurrentPersonOrNullAsync();
     }
 }

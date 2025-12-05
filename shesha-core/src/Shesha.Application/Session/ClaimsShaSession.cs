@@ -1,4 +1,5 @@
-﻿using Abp.Configuration.Startup;
+﻿using Abp;
+using Abp.Configuration.Startup;
 using Abp.Domain.Repositories;
 using Abp.MultiTenancy;
 using Abp.Runtime;
@@ -39,9 +40,20 @@ namespace Shesha.Session
             }
         }
 
-        public Task<Person> GetCurrentPersonAsync()
+        public async Task<Person> GetCurrentPersonAsync()
         {
-            return PersonRepository.GetAll().FirstOrDefaultAsync(p => p.User != null && p.User.Id == this.GetUserId());
+            var person = await GetCurrentPersonOrNullAsync();
+            if (person == null)
+                throw new AbpException("Session.UserId is null! Probably, user is not logged in.");
+
+            return person;
+        }
+
+        public async Task<Person?> GetCurrentPersonOrNullAsync()
+        {
+            return UserId != null
+                ? await PersonRepository.GetAll().FirstOrDefaultAsync(p => p.User != null && p.User.Id == UserId.Value)
+                : null;
         }
     }
 }
