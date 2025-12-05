@@ -242,7 +242,8 @@ export interface IReactTableProps extends ITableRowDragProps {
   rowSelectedBackgroundColor?: string;
   rowHeight?: string;
   rowPadding?: string;
-  rowBorder?: string;
+  rowBorder?: string; // Deprecated: use rowBorderStyle for full border control
+  rowBorderStyle?: IBorderValue; // Full border configuration with per-side control
 
   // Overall table styling
   borderRadius?: string;
