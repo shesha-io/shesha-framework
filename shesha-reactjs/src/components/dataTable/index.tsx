@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
-import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
+import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import { ValidationErrors } from '..';
@@ -408,7 +408,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return result;
   }, [props.onNewRowInitialize, appContext.contexts.lastUpdate]);
 
-  const evaluateYesNoInheritJs = (
+  const evaluateYesNoInheritJs = useCallback((
     value: YesNoInheritJs,
     jsExpression: string,
   ): boolean => {
@@ -418,7 +418,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       case 'no':
         return false;
       case 'inherit':
-        return appContext.form.formMode === 'edit';
+        return appContext.form?.formMode === 'edit';
       case 'js': {
         return (
           jsExpression &&
@@ -426,7 +426,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         );
       }
     }
-  };
+  }, [appContext]);
 
   const crudOptions = useMemo(() => {
     const result = {
@@ -447,7 +447,18 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       ...result,
       enabled: result.canAdd || result.canDelete || result.canEdit,
     };
-  }, [props.canDeleteInline, inlineEditMode, props.canEditInline, props.canAddInline, appContext.contexts.lastUpdate]);
+  }, [
+    evaluateYesNoInheritJs,
+    props.canDeleteInline,
+    props.canDeleteInlineExpression,
+    props.canEditInline,
+    props.canEditInlineExpression,
+    props.canAddInline,
+    props.canAddInlineExpression,
+    inlineEditMode,
+    onNewRowInitialize,
+    appContext.form?.formMode,
+  ]);
 
   const preparedColumns = useMemo<Column<any>[]>(() => {
     const localPreparedColumns = columns
