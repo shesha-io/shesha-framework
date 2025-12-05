@@ -302,7 +302,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       if (listType === 'thumbnail' && !isDragger) {
         return <Space size="small" direction='vertical'>
           <Image src={imageUrls[uid]} alt={file.name} preview={false} />
-          <p className='ant-upload-list-item-name'>{file.name} - {file.size}</p>
+          <p className='ant-upload-list-item-name'>{file.name}</p>
         </Space>;
       }
     }

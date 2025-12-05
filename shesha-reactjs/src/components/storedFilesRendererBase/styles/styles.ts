@@ -26,6 +26,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   ].join(' ');
 
   const fileName = cx("item-file-name", css`
+    display: ${ model.hideFileName ? 'none' : 'flex' };
     color: ${color ?? token.colorPrimary} !important;
     font-size: ${fontSize ?? '14px'} !important;
     font-weight: ${fontWeight ?? '400'} !important;
@@ -50,7 +51,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   `);
 
   const fileNameWrapper = cx("file-name-wrapper", css`
-    display: flex;
+    display: ${ model.hideFileName ? 'none' : 'flex' };
     cursor: pointer;
     &:hover {
       background-color: ${token.colorBgTextHover} !important;
@@ -80,6 +81,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .item-file-name {
+      display: ${ model.hideFileName ? 'none' : 'flex' };
       color: ${downloadedFileStyles?.color ?? color} !important;
       font-size: ${downloadedFileStyles?.fontSize ?? fontSize} !important;
       font-weight: ${downloadedFileStyles?.fontWeight ?? fontWeight} !important;
@@ -206,7 +208,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list {
       height: calc(${containerHeight} - 32px) !important;
-      max-height: calc(var(--container-max-height) - calc(${isDragger ? '0px' : fontSize} * 4) - 40px) !important;
+      max-height: calc(var(--container-max-height) - calc(${isDragger ? '0px' : fontSize} * 1.2) - 40px) !important;
       min-height: calc(var(--container-min-height) - 32px) !important;
       width: calc(var(--container-width) - 32px) !important;
       max-width: calc(var(--container-max-width) - 32px) !important;
