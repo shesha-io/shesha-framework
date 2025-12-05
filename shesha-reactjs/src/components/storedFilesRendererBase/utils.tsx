@@ -67,7 +67,7 @@ export const fetchStoredFile = async (
   url: string,
   httpHeaders: Record<string, string> = {}
 ): Promise<string> => {
-  const response = await fetch(url, {
+  const response = await fetch(`${url}&skipMarkDownload=true`, {
     headers: { ...httpHeaders, "Content-Type": "application/octet-stream" },
   });
 
