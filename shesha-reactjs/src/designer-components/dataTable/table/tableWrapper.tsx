@@ -390,6 +390,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             rowHeight={effectiveRowHeight}
             rowPadding={effectiveRowPadding}
             rowBorder={effectiveRowBorder}
+            rowBorderStyle={props.rowBorderStyle}
             boxShadow={finalBoxShadow}
             sortableIndicatorColor={props.sortableIndicatorColor}
           />

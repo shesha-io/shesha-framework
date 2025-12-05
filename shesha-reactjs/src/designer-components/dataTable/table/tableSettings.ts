@@ -634,7 +634,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           components: [...fbf()
                             .addContainer({
                               id: nanoid(),
-                              components: getBorderInputs(fbf, 'rowBorder'),
+                              components: getBorderInputs(fbf, 'rowBorderStyle'),
                             })
                             .addContainer({
                               id: nanoid(),
