@@ -9,8 +9,10 @@ import {
   ROOT_COMPONENT_KEY,
   useConfigurableActionDispatcher,
   useDataTableStore,
+  useHttpClient,
   useMetadata,
   useShaFormInstance,
+  useSheshaApplication,
 } from '@/providers';
 import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
 import { removeUndefinedProperties } from '@/utils/array';
@@ -39,6 +41,7 @@ import {
 } from '@/providers/datatableColumnsConfigurator/models';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { executeScript, executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
+import moment from 'moment';
 import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
@@ -186,12 +189,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     onAfterRowReorder,
   } = store;
 
+  const { backendUrl } = useSheshaApplication();
+  const httpClient = useHttpClient();
   const { executeAction } = useConfigurableActionDispatcher();
 
   const handleRowSelect = useMemo(() => {
     if (!onRowSelect?.actionName) return undefined;
 
-    return (row: unknown, rowIndex: number) => {
+    return (row: any, rowIndex: number) => {
       const evaluationContext = { ...appContext, data: row, rowIndex };
 
       try {
@@ -203,15 +208,15 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row select action:', error);
       }
     };
-  }, [onRowSelect, appContext, executeAction]);
+  }, [onRowSelect, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
 
-  const onSelectRowLocal = (index: number, row: unknown): void => {
+  const onSelectRowLocal = (index: number, row: any): void => {
     if (onSelectRow) {
       onSelectRow(index, row);
     }
 
     if (setSelectedRow) {
-      const rowId = (row as { id: string })?.id;
+      const rowId = row?.id;
       const currentId = store.selectedRow?.id;
       if (rowId !== currentId) {
         setSelectedRow(index, row);
@@ -279,10 +284,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const metadata = useMetadata(false)?.metadata;
 
+
   const handleRowClick = useMemo(() => {
     if (!onRowClick?.actionName) return undefined;
 
-    return (rowIndex: number, row: unknown) => {
+    return (rowIndex: number, row: any) => {
       const evaluationContext = { ...appContext, data: row, rowIndex };
 
       try {
@@ -294,7 +300,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row click action:', error);
       }
     };
-  }, [onRowClick, appContext, executeAction]);
+  }, [onRowClick, appContext.contexts.lastUpdate, httpClient]);
 
   const handleRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick?.actionName) return undefined;
@@ -311,7 +317,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row double-click action:', error);
       }
     };
-  }, [onRowDoubleClick, appContext, executeAction]);
+  }, [onRowDoubleClick, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
 
   const handleRowHover = useMemo(() => {
     if (!onRowHover?.actionName) return undefined;
@@ -328,7 +334,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row hover action:', error);
       }
     };
-  }, [onRowHover, appContext, executeAction]);
+  }, [onRowHover, appContext.contexts.lastUpdate, httpClient]);
 
 
   const handleSelectionChange = useMemo(() => {
@@ -346,7 +352,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing selection change action:', error);
       }
     };
-  }, [onSelectionChange, appContext, executeAction]);
+  }, [onSelectionChange, appContext.contexts.lastUpdate, httpClient]);
 
   const combinedDblClickHandler = useMemo(() => {
     return (rowData: any, rowIndex: number) => {
@@ -519,7 +525,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         argumentsEvaluationContext: evaluationContext,
       });
     };
-  }, [onRowSaveSuccess, appContext, executeAction]);
+  }, [onRowSaveSuccess, appContext.contexts.lastUpdate, backendUrl, executeAction]);
 
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onRowSave) return (data) => Promise.resolve(data);
@@ -527,7 +533,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return (data) => {
       return executeScript(onRowSave, { ...appContext, data });
     };
-  }, [onRowSave, appContext]);
+  }, [onRowSave, appContext.contexts.lastUpdate]);
 
   const updater = useMemo(() => (rowIndex: number, rowData: any): Promise<any> => {
     const repository = store.getRepository();
@@ -546,7 +552,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         return response;
       });
     });
-  }, [store, onRowSave, appContext]);
+  }, [store, onRowSave, appContext.contexts.lastUpdate]);
 
   const creater = useMemo(() => (rowData: any): Promise<any> => {
     const repository = store.getRepository();
@@ -564,7 +570,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         performOnRowSaveSuccess(preparedData ?? rowData);
       });
     });
-  }, [store, performOnRowSave, customCreateUrl, performOnRowSaveSuccess]);
+  }, [store, onRowSave, appContext.contexts.lastUpdate]);
 
   const performOnRowDeleteSuccessAction = useMemo<OnSaveSuccessHandler>(() => {
     if (!onRowDeleteSuccessAction)
@@ -582,7 +588,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         console.error('Error executing row delete success action:', error);
       }
     };
-    }, [onRowDeleteSuccessAction, appContext, executeAction]);
+  }, [onRowDeleteSuccessAction, httpClient]);
 
 
   const deleter = (rowIndex: number, rowData: any): Promise<any> => {
