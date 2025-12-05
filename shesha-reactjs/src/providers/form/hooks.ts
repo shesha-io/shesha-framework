@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { FormIdentifier, useSheshaApplication } from '..';
+import { FormIdentifier, useShaRouting, useSheshaApplication } from '..';
 import { IToolboxComponent, IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
 import { getToolboxComponents } from './defaults/toolboxComponents';
 import { useLocalStorage } from '@/hooks';
@@ -64,5 +64,7 @@ const getDesignerUrl = (designerUrl: string, fId: FormIdentifier) => {
 
 export const useFormDesignerUrl = (formId: FormIdentifier) => {
   const app = useSheshaApplication();
-  return getDesignerUrl(app.routes.formsDesigner, formId);
+  const router = useShaRouting();
+  const url = getDesignerUrl(app.routes.formsDesigner, formId);
+  return router.prepareUrl(url);
 };

@@ -61,6 +61,7 @@ export interface IShaApplicationProviderProps {
   routes?: ISheshaRoutes;
   homePageUrl?: string;
   getFormUrlFunc?: (formId: FormIdentifier) => string;
+  urlOverrideFunc?: (url: string) => string;
 
   noAuth?: boolean;
   unauthorizedRedirectUrl?: string;
@@ -89,6 +90,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
               getFormUrlFunc={getFormUrlFunc}
               router={router}
               getIsLoggedIn={() => authRef?.current?.getIsLoggedIn()}
+              urlOverrideFunc={props.urlOverrideFunc}
             >
               <DynamicActionsDispatcherProvider>
                 <EntityActions>

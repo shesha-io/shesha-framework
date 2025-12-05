@@ -9,6 +9,7 @@ export interface IShaRoutingStateContext {
 export interface IShaRoutingActionsContext {
   goingToRoute: (route: string) => void;
   getFormUrl: (formId: FormIdentifier) => string;
+  prepareUrl: (url: string) => string;
   getUrlFromNavigationRequest: (request: INavigateActoinArguments) => string;
 }
 
