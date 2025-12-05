@@ -1,6 +1,17 @@
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }: any) => {
+interface UseStylesProps {
+  style?: CSSProperties;
+  model: {
+    layout: boolean;
+    isDragger: boolean;
+    hideFileName: boolean;
+    listType: 'text' | 'thumbnail';
+  };
+}
+
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }: UseStylesProps) => {
   const {
     background = 'transparent',
     backgroundImage,
