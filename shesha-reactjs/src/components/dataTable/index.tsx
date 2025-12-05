@@ -196,7 +196,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const handleRowSelect = useMemo(() => {
     if (!onRowSelect?.actionName) return undefined;
 
-    return (row: any, rowIndex: number) => {
+    return (row: unknown, rowIndex: number) => {
       const evaluationContext = { ...appContext, data: row, rowIndex };
 
       try {
@@ -284,11 +284,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const metadata = useMetadata(false)?.metadata;
 
-
   const handleRowClick = useMemo(() => {
     if (!onRowClick?.actionName) return undefined;
 
-    return (rowIndex: number, row: any) => {
+    return (rowIndex: number, row: unknown) => {
       const evaluationContext = { ...appContext, data: row, rowIndex };
 
       try {
@@ -305,7 +304,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const handleRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick?.actionName) return undefined;
 
-    return (row: any, rowIndex: number) => {
+    return (row: unknown, rowIndex: number) => {
       const evaluationContext = { ...appContext, data: row, rowIndex };
 
       try {
@@ -322,7 +321,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const handleRowHover = useMemo(() => {
     if (!onRowHover?.actionName) return undefined;
 
-    return (rowIndex: number, row: any) => {
+    return (rowIndex: number, row: unknown) => {
       const evaluationContext = { ...appContext, data: row, rowIndex };
 
       try {
@@ -355,7 +354,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [onSelectionChange, appContext.contexts.lastUpdate, httpClient]);
 
   const combinedDblClickHandler = useMemo(() => {
-    return (rowData: any, rowIndex: number) => {
+    return (rowData: unknown, rowIndex: number) => {
       if (dblClickHandler) {
         if (typeof dblClickHandler === 'function') {
           dblClickHandler(rowData, rowIndex);
@@ -676,7 +675,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   type Row = any;
   type RowOrGroup = Row | RowsGroup;
   interface RowsGroup {
-    value: any;
+    value: unknown;
     index: number;
     $childs: RowOrGroup[];
   }
@@ -698,7 +697,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       propertyPath: g.propertyName.split('.'),
     }));
 
-    const getValue = (container: object, path: string[]): any => {
+    const getValue = (container: object, path: string[]): unknown => {
       return path.reduce((prev, part) => (prev ? prev[part] : undefined), container);
     };
 
@@ -725,7 +724,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return result;
   };
 
-  const renderGroupTitle = (value: any, propertyName: string): ReactElement => {
+  const renderGroupTitle = (value: unknown, propertyName: string): ReactElement => {
     if (!Boolean(value) && value !== false) return <Typography.Text type="secondary">(empty)</Typography.Text>;
     const column = groupingColumns.find((c) => isDataColumn(c) && c.propertyName === propertyName);
     const propertyMeta = isDataColumn(column) ? column.metadata : null;
