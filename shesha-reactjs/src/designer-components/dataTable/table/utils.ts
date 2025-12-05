@@ -234,9 +234,19 @@ const addPxUnit = (value?: string | number): string => {
 };
 
 /**
- * Converts row dimensions object to a single height string
- * @param rowDimensions - Row dimensions configuration
- * @returns Height string for backward compatibility
+ * Converts row dimensions object to a single height string for backward compatibility.
+ *
+ * IMPORTANT LIMITATION: This function only converts the `height` property and intentionally
+ * discards `minHeight` and `maxHeight` values. This is a backward-compatibility limitation
+ * for the legacy `rowHeight` property path, which only supports a single height value.
+ *
+ * If you need to preserve min/max height behavior, access the `rowDimensions` property
+ * directly instead of using this conversion helper. The full `rowDimensions` object should
+ * be used by components that support advanced height constraints.
+ *
+ * @param rowDimensions - Row dimensions configuration containing height, minHeight, and maxHeight
+ * @returns Height string with units (px added if needed), or undefined if no height is set.
+ *          Note: minHeight and maxHeight are NOT included in the returned value.
  */
 export const convertRowDimensionsToHeight = (rowDimensions?: {
   height?: string;
