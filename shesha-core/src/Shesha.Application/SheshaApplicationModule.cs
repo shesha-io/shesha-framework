@@ -122,14 +122,6 @@ namespace Shesha
         {
             IocManager.RegisterSettingAccessor<IUserManagementSettings>(s =>
             {
-                //s.UserManagementSettings.WithDefaultValue(new UserManagementSettings
-                //{
-                //    AdditionalRegistrationInfo = false,
-                //    AdditionalRegistrationInfoForm = null,
-                //    AllowSelfRegistration = true,
-                //    CreationMode = RefListCreationMode.Always,
-                //});
-
                 s.DefaultAuthentication.WithDefaultValue(new DefaultAuthenticationSettings
                 {
                     // Account Creation

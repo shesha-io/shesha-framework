@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Shesha.Domain;
 using Shesha.EntityReferences;
 
 namespace Shesha.Configuration.Security.Frontend
@@ -12,9 +13,9 @@ namespace Shesha.Configuration.Security.Frontend
         /// </summary>
         public bool AdditionalRegistrationInfo { get; set; }
         /// <summary>
-        /// Form Module Name
+        /// Additional Registration Info Form (stores only the form ID reference)
         /// </summary>
-        public string? AdditionalRegistrationInfoForm { get; set; }
+        public GenericEntityReference? AdditionalRegistrationInfoForm { get; set; }
 
         /// <summary>
         /// Allow self-registration

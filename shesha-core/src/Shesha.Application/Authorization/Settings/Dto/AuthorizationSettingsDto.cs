@@ -1,4 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using Shesha.Configuration.Security.Frontend;
+using Shesha.EntityReferences;
 
 namespace Shesha.Authorization.Settings.Dto
 {
@@ -11,7 +16,7 @@ namespace Shesha.Authorization.Settings.Dto
         /// Lockout enabled (default value for new users)
         /// </summary>
         public bool IsLockoutEnabled { get; set; }
-        
+
         /// <summary>
         /// Lockout time in seconds
         /// </summary>

@@ -1,10 +1,8 @@
-﻿using Abp.Application.Services;
-using Shesha.Authorization.Settings.Dto;
-using Shesha.Configuration;
-using Shesha.Configuration.Security;
-using Shesha.Configuration.Security.Frontend;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Abp.Application.Services;
+using Shesha.Authorization.Settings.Dto;
+using Shesha.Configuration.Security.Frontend;
 
 namespace Shesha.Authorization.Settings
 {

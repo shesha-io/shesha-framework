@@ -10,7 +10,6 @@ using Shesha.Authorization.Users;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration;
 using Shesha.Configuration.Runtime;
-using Shesha.Configuration.Security;
 using Shesha.Configuration.Security.Frontend;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -41,7 +40,8 @@ namespace Shesha.UserManagements
         private readonly IDynamicDtoMappingHelper _dynamicDtoMappingHelper;
         private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
-
+        private readonly IRepository<ShaRoleAppointedPerson, Guid> _roleAppointedPersonRepository;
+        private readonly IRepository<ConfigurationItem, Guid> _configurationItemRepository;
 
         public UserManagementAppService(
             IRepository<Person, Guid> personRepository,
@@ -54,7 +54,9 @@ namespace Shesha.UserManagements
             IDynamicRepository dynamicRepository,
             IDynamicDtoMappingHelper dynamicDtoMappingHelper,
             IEntityTypeConfigurationStore entityTypeConfigurationStore,
-            IRepository<EntityConfig, Guid> entityConfigurationRepository)
+            IRepository<EntityConfig, Guid> entityConfigurationRepository,
+            IRepository<ShaRoleAppointedPerson, Guid> roleAppointedPersonRepository,
+            IRepository<ConfigurationItem, Guid> configurationItemRepository)
         {
             _userManager = userManager;
             _personRepository = personRepository;
@@ -67,6 +69,9 @@ namespace Shesha.UserManagements
             _dynamicDtoMappingHelper = dynamicDtoMappingHelper;
             _entityConfigurationStore = entityTypeConfigurationStore;
             _entityConfigRepository = entityConfigurationRepository;
+            _roleAppointedPersonRepository = roleAppointedPersonRepository;
+            _configurationItemRepository = configurationItemRepository;
+
         }
 
         public async Task<PersonAccountDto> CreateAsync(CreatePersonAccountDto input)
@@ -191,7 +196,7 @@ namespace Shesha.UserManagements
             // Map dynamic person entity to PersonAccountDto
             var entityToDtoMapper = await _dynamicDtoMappingHelper.GetEntityToDtoMapperAsync(personEntityType, typeof(PersonAccountDto));
             var response = entityToDtoMapper.Map(personEntity, new PersonAccountDto());
-            response.GoToUrlAfterRegistration = applicationRedirects.SuccessLoginRedirectPath;
+            response.GoToUrlAfterRegistration = applicationRedirects.BaseUrl + applicationRedirects.SuccessLoginRedirectPath;
             response.UserId = user.Id;
 
             await CurrentUnitOfWork.SaveChangesAsync();
@@ -219,7 +224,6 @@ namespace Shesha.UserManagements
 
             return userRegistration.GoToUrlAfterRegistration;
         }
-
 
         /// <summary>
         /// Checks is specified mobile number already used by another person
@@ -449,21 +453,32 @@ namespace Shesha.UserManagements
 
         private async Task SaveUserRegistrationAuditAsync(UserManagementSettings? registrationSettings, FrontendApplicationRedirectsSettings applicationRedirects, User user)
         {
-            var combinedAdditionalInfoFormPath = !string.IsNullOrWhiteSpace(registrationSettings!.AdditionalRegistrationInfoForm)
-                ? registrationSettings.AdditionalRegistrationInfoForm
-                : null;
+            var additionalRegistrationFormRef = registrationSettings!.AdditionalRegistrationInfoForm;
+
+            // Resolve the form identifier from the entity reference (ID only)
+            FormIdentifier? formIdentifier = null;
+            if (additionalRegistrationFormRef != null && !string.IsNullOrWhiteSpace(additionalRegistrationFormRef.Id) && Guid.TryParse(additionalRegistrationFormRef.Id, out var formId))
+            {
+                // Parse the ID and get the form configuration to extract module and name
+                //if (Guid.TryParse(additionalRegistrationFormRef.Id, out var formId))
+                //{
+                    var formConfig = await _configurationItemRepository.FirstOrDefaultAsync(config => config.Id == formId && config.ItemType == "form");
+                    if (formConfig != null)
+                    {
+                        // Create the FormIdentifier using the module name and form name from the configuration
+                        var moduleName = formConfig.Module?.Name;
+                        formIdentifier = FormIdentifier.New(moduleName, formConfig.Name);
+                    }
+                //}
+            }
 
             var userRegistration = new ShaUserRegistration
             {
                 UserId = user.Id,
                 UserNameOrEmailAddress = user.UserName,
                 GoToUrlAfterRegistration = applicationRedirects.SuccessLoginRedirectPath,
-                AdditionalRegistrationInfoForm = combinedAdditionalInfoFormPath != null
-                    ? new FormIdentifier(
-                    combinedAdditionalInfoFormPath.Split('/')[0],
-                    combinedAdditionalInfoFormPath.Split('/')[1])
-                    : null,
-                IsComplete = registrationSettings.AdditionalRegistrationInfo ? false : true
+                AdditionalRegistrationInfoForm = formIdentifier,
+                IsComplete = !registrationSettings.AdditionalRegistrationInfo
             };
 
             await _userRegistration.InsertAsync(userRegistration);
@@ -485,15 +500,23 @@ namespace Shesha.UserManagements
                         if (roleId == null || roleId == Guid.Empty)
                             continue;
 
-                        var roleDto = new CreateShaRoleAppointedPersonDto
+                        // Check if the person already has this role assigned
+                        var existingAppointment = await _roleAppointedPersonRepository.GetAll()
+                            .FirstOrDefaultAsync(a => a.Role!.Id == roleId.Value && a.Person!.Id == personId.Value);
+
+                        // Only create the role appointment if it doesn't already exist
+                        if (existingAppointment == null)
                         {
-                            RoleId = roleId.Value,
-                            Person = new EntityReferenceDto<Guid?>
+                            var roleDto = new CreateShaRoleAppointedPersonDto
                             {
-                                Id = personId.Value
-                            }
-                        };
-                        await _roleAppointedPersonService.CreateAsync(roleDto);
+                                RoleId = roleId.Value,
+                                Person = new EntityReferenceDto<Guid?>
+                                {
+                                    Id = personId.Value
+                                }
+                            };
+                            await _roleAppointedPersonService.CreateAsync(roleDto);
+                        }
                     }
                 }
             }

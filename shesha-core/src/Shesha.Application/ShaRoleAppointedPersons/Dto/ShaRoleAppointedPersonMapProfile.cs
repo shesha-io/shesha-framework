@@ -18,11 +18,15 @@ namespace Shesha.ShaRoleAppointedPersons.Dto
                 .ForMember(u => u.RoleId, options => options.MapFrom(e => e.Role != null ? e.Role.Id : (Guid?)null));
             CreateMap<ShaRoleAppointedPerson, ShaRoleAppointedPersonDto>()
                 .ForMember(
-                    dest => dest.Person, opt => opt.MapFrom(src => src.Person == null ? null : new EntityReferenceDto<Guid>(src.Person)
-                    {
-                        Id = src.Person.Id
-                    }
-                ));
+                    dest => dest.Person,
+                    opt => opt.MapFrom(src => src.Person == null
+                        ? null
+                        : new EntityReferenceDto<Guid?>
+                        {
+                            Id = src.Person.Id
+                        }
+                    )
+                );
         }
     }
 }

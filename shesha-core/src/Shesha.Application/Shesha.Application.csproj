@@ -99,6 +99,13 @@
         <None Remove="ConfigMigrations\package20251027_1622.shaconfig" />
         <None Remove="ConfigMigrations\package20251028_1950.shaconfig" />
         <None Remove="ConfigMigrations\package20251030_1025.shaconfig" />
+        <None Remove="ConfigMigrations\package20251208_1012.shaconfig" />
+        <None Remove="ConfigMigrations\package20251208_1013.shaconfig" />
+        <None Remove="ConfigMigrations\package20251208_1014.shaconfig" />
+        <None Remove="ConfigMigrations\package20251208_1015.shaconfig" />
+        <None Remove="ConfigMigrations\package20251208_1016.shaconfig" />
+        <None Remove="ConfigMigrations\package20251208_1017.shaconfig" />
+        <None Remove="ConfigMigrations\package20251208_1018.shaconfig" />
         <None Remove="Excel\template.xlsx" />
         <None Remove="ConfigMigrations\package20230324_1835.shaconfig" />
         <None Remove="ConfigMigrations\package20230411_1238.shaconfig" />
@@ -150,10 +157,19 @@
         <EmbeddedResource Include="ConfigMigrations\package20250805_0851.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20251027_1622.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20251030_1025.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20251208_1012.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20251208_1013.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20251208_1014.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20251208_1015.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20251208_1016.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20251208_1017.shaconfig" />
         <EmbeddedResource Include="Excel\template.xlsx" />
         <EmbeddedResource Include="ConfigMigrations\package20230324_1835.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20230411_1238.shaconfig" />
         <EmbeddedResource Include="ConfigMigrations\package20250805_1824.shaconfig" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="ConfigMigrations\package20251208_1018.shaconfig" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="AsyncFixer" Version="1.6.0">
