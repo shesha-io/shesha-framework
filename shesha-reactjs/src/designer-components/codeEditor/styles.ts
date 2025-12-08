@@ -2,7 +2,7 @@ import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }) => {
   const codeEditorModalBody = cx("sha-code-editor-modal-body", css`
-        overflow: auto;
+        overflow: hidden;
         max-height: 70vh;
     `);
   const codeEditorModal = cx("sha-code-editor-modal", css`
