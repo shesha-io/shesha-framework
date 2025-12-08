@@ -90,6 +90,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   rowHeight?: string;
   rowPadding?: string;
   rowBorder?: string;
+  rowBorderStyle?: IBorderValue;
 
   // Overall table styling
   boxShadow?: string;
@@ -149,6 +150,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowHeight,
   rowPadding,
   rowBorder,
+  rowBorderStyle,
   boxShadow,
   sortableIndicatorColor,
   ...props
@@ -943,6 +945,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowHeight,
     rowPadding,
     rowBorder,
+    rowBorderStyle,
     boxShadow,
     sortableIndicatorColor,
 

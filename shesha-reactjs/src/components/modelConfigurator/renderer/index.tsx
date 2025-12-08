@@ -11,19 +11,36 @@ import { ViewsEditorComponent } from '../viewsEditor';
 import { useStyles } from '../styles/styles';
 import { filter, isEqual, keys, union } from 'lodash';
 import { isDefined } from '@/utils/nullables';
+import { IPropertyErrors } from '@/providers/modelConfigurator/contexts';
 
 const markup = modelSettingsMarkup as FormMarkup;
 
 export const ModelConfiguratorRenderer: FC = () => {
   const { styles } = useStyles({ height: 180 });
   const { message } = App.useApp();
-  const { errors, modelConfiguration, initialConfiguration, form, saveForm, setModified } = useModelConfigurator();
+  const { showErrors, errors, modelConfiguration, initialConfiguration, form, saveForm, setModified, validateModel } = useModelConfigurator();
 
   const errorsText = useMemo((): React.ReactNode => {
     return (
       <>
         <div>Please check the following errors:</div>
-        {errors?.map((e, index) => <div key={index}>• {e}</div>)}
+        <ul>
+          {errors?.map((e: IPropertyErrors | string, i1) => {
+            if (typeof e === 'string') return <li key={i1}>{e}</li>;
+            return (
+              <>
+                <li key={i1}>{e.propertyName}</li>
+                {
+                  e.errors && e.errors.length > 0 && (
+                    <ul>
+                      {e.errors.map((error, i2) => <li key={i2}>{error}</li>)}
+                    </ul>
+                  )
+                }
+              </>
+            );
+          })}
+        </ul>
       </>
     );
   }, [errors]);
@@ -62,12 +79,13 @@ export const ModelConfiguratorRenderer: FC = () => {
     // Modified if there are changed keys
     const modified = keys.length > 0;
     setModified(modified);
+    validateModel(values);
   };
 
   return (
     <div className={styles.shaModelConfigurator}>
       <CustomErrorBoundary>
-        {errors?.length > 0 && <Alert type="error" message={errorsText} showIcon />}
+        {showErrors && errors?.length > 0 && <Alert type="error" message={errorsText} showIcon />}
         <ConfigurableForm
           className={styles.shaModelConfiguratorForm}
           layout="horizontal"
