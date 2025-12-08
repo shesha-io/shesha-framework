@@ -123,7 +123,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       const getUrl = getEntityUrl ?? formMarkup?.formSettings?.getUrl;
 
       // If no GET URL is available, show form without data
-      if (!getUrl && !getEntityUrl) {
+      if (!getUrl) {
         setLoadingState('success');
         return;
       }
@@ -209,7 +209,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       );
     }
 
-    const ifLoadingStateSuccess = (): ReactNode => {
+    const renderLoadedContent = (): ReactNode => {
       if (loadingState === 'success') {
         return <span className={styles.innerEntityReferenceSpanBoxStyle}>{formTitle || displayName || emptyText}</span>;
       }
@@ -225,7 +225,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
           <>
             {loadingBox(styles)}
           </>
-        ) : ifLoadingStateSuccess()}
+        ) : renderLoadedContent()}
       </Button>
     );
   };
