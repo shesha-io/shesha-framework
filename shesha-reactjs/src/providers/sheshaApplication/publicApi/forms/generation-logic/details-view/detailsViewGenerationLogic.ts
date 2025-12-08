@@ -187,6 +187,31 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
   }
 
   /**
+   * Generates edit/create component configuration for a datatable column based on property metadata.
+   *
+   * @param property The property metadata to generate component configuration for.
+   * @param metadataHelper The metadata helper instance.
+   * @returns An object containing the component type and settings for inline editing.
+   */
+  private getColumnEditorConfig(property: PropertyMetadataDto, metadataHelper: FormMetadataHelper): { type: string; settings?: any } {
+    const tempBuilder = this.getFormBuilder();
+    metadataHelper.getConfigFields(property, tempBuilder, false);
+    const componentConfigs = tempBuilder.toJson();
+
+    if (componentConfigs.length === 0) {
+      return { type: 'textField' };
+    }
+
+    const component = componentConfigs[0];
+    const { id, propertyName, componentName, ...settings } = component;
+
+    return {
+      type: component.type,
+      settings: Object.keys(settings).length > 0 ? settings : undefined,
+    };
+  }
+
+  /**
    * Adds child tables to the markup if configured.
    * Creates tabs for each child entity and injects datatable components for their properties.
    *
@@ -255,23 +280,26 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             components: childTableAccessoriesBuilder.toJson(),
           });
 
-          // Sort the properties: required fields first, then by dataType priority
-          const sortedProperties = [...nonFrameworkProperties].sort((a, b) => {
-            // Sort by required status (required first)
-            if (a.required !== b.required) {
-              return a.required ? -1 : 1;
-            }
+          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === entity.typeAccessor)?.path;
 
-            // Sort by dataType priority only
-            const priorityA = getDataTypePriority(a.dataType, a.dataFormat);
-            const priorityB = getDataTypePriority(b.dataType, b.dataFormat);
+          const sortedProperties = [...nonFrameworkProperties]
+            .filter((prop) => prop.path !== filterProperty)
+            .sort((a, b) => {
+              // Sort by required status (required first)
+              if (a.required !== b.required) {
+                return a.required ? -1 : 1;
+              }
 
-            return priorityA - priorityB;
-          });
+              // Sort by dataType priority only
+              const priorityA = getDataTypePriority(a.dataType, a.dataFormat);
+              const priorityB = getDataTypePriority(b.dataType, b.dataFormat);
+
+              return priorityA - priorityB;
+            });
 
           const columns = sortedProperties.map<IConfigurableColumnsProps>((prop, idx) => {
-            // Get column width based on data type
             const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
+            const editorConfig = this.getColumnEditorConfig(prop, metadataHelper);
 
             return {
               id: nanoid(),
@@ -286,11 +314,10 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               maxWidth: width.max,
               allowSorting: true,
               displayComponent: { type: standardCellComponentTypes.defaultDisplay },
-              editComponent: { type: standardCellComponentTypes.notEditable },
-              createComponent: { type: standardCellComponentTypes.notEditable },
+              editComponent: editorConfig,
+              createComponent: editorConfig,
             };
           });
-          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === entity.typeAccessor)?.path;
           const dataTableName = `childTable${index + 1}`;
 
           const datatableBuilder = this.getFormBuilder();
@@ -301,6 +328,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             canAddInline: 'yes',
             canEditInline: 'yes',
             canDeleteInline: 'yes',
+            onNewRowInitialize: `return {${toCamelCase(filterProperty || 'parentId')}: form.data.id}`,
             items: [
               {
                 id: nanoid(),
