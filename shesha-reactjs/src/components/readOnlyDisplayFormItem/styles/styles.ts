@@ -3,7 +3,7 @@ import { CSSProperties } from 'react';
 
 interface UseStylesParams {
   textAlign?: CSSProperties['textAlign'];
-};
+}
 
 export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: UseStylesParams) => {
   const { textAlign } = params;
