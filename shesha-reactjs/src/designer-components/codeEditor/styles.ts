@@ -7,9 +7,17 @@ export const useStyles = createStyles(({ css, cx }) => {
     `);
   const codeEditorModal = cx("sha-code-editor-modal", css`
         max-height: 80vh;
+
+        > .ant-modal-footer {
+          position: relative;
+          background-color: inherit !important;
+          z-index: 10;
+        }
     `);
   const codeEditorContainer = cx("sha-code-editor-container", css`
         height: 65vh;
+        display: flex;
+        flex-direction: column;
     `);
 
   const button = cx("sha-code-btn",
