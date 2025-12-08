@@ -51,8 +51,8 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
     );
   },
   /** validationErrors should not have any settings and should be never in hidden mode and depends on permission */
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
-  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  settingsFormMarkup: getSettings,
   migrator: (m) =>
     m.add<IValidationErrorsComponentProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };

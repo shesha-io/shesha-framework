@@ -1,14 +1,14 @@
 import { Slider } from 'antd';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IToolboxComponent } from '@/interfaces';
 import { useFormData } from '@/providers';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SlidersFilled } from '@ant-design/icons';
-import { ISliderComponentProps } from './interfaces';
+import { SliderComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
+import { useStyles } from './styles';
 
-const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
+const SliderComponent: SliderComponentDefinition = {
   type: 'slider',
   name: 'Slider',
   icon: <SlidersFilled />,
@@ -17,24 +17,27 @@ const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
   canBeJsSetting: true,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
+    const { styles } = useStyles();
     const min = model?.min ? parseInt(model.min, 10) : undefined;
     const max = model?.max ? parseInt(model.max, 10) : undefined;
 
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => (
-          <Slider
-            className="sha-slider"
-            min={min}
-            max={max}
-            onChange={onChange}
-            value={value}
-            style={{ ...(!model.enableStyleOnReadonly && model.readOnly
-              ? {} : getStyle(model?.style, formData)), ...(model.readOnly
-              ? { pointerEvents: 'none' } : {}) }}
-          />
-        )}
-      </ConfigurableFormItem>
+      <div className={styles.sliderWrapper}>
+        <ConfigurableFormItem model={model}>
+          {(value, onChange) => (
+            <Slider
+              className="sha-slider"
+              min={min}
+              max={max}
+              onChange={onChange}
+              value={value}
+              style={{ ...(!model.enableStyleOnReadonly && model.readOnly
+                ? {} : getStyle(model?.style, formData)), ...(model.readOnly
+                ? { pointerEvents: 'none' } : {}) }}
+            />
+          )}
+        </ConfigurableFormItem>
+      </div>
     );
   },
   initModel: (model) => {
@@ -43,8 +46,8 @@ const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
       label: 'Slider',
     };
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
-export default SwitchComponent;
+export default SliderComponent;

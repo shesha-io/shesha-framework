@@ -1,4 +1,4 @@
-import { EntityReference, IEntityReferenceProps } from '@/components/entityReference';
+import { EntityReference, EntityReferenceValue, IEntityReferenceProps } from '@/components/entityReference';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { ShaIconTypes } from '@/components/iconPicker';
 import {
@@ -18,6 +18,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -25,6 +26,62 @@ export interface IEntityReferenceControlProps extends Omit<IEntityReferenceProps
   /** @deprecated Use iconName instead */
   icon?: string;
 }
+
+// Helper function to normalize entity reference values to extract ID
+const normalizeEntityReferenceValue = (
+  value: EntityReferenceValue | string,
+): string | null => {
+  if (!value) return value as null;
+  if (typeof value === 'string' || typeof value === 'number') return value;
+  // If it's an object, extract and return the id; otherwise undefined
+  if (typeof value === 'object' && value !== null && 'id' in value) {
+    return value.id ?? undefined;
+  }
+  return undefined;
+};
+
+// Component wrapper that normalizes the value for display and form storage
+const EntityReferenceWrapper: React.FC<{
+  model: IEntityReferenceControlProps;
+  value: EntityReferenceValue;
+  onChange?: (value: string | number | null | undefined) => void;
+  style?: React.CSSProperties;
+}> = ({ model, value, onChange, style }) => {
+  // Normalize value for display: if it's an object, extract the id
+  const normalizedValue = React.useMemo(() => normalizeEntityReferenceValue(value), [value]);
+
+  // Normalize the form value if it's an object (ensure form stores just the ID)
+  // This effect runs when value changes from non-object to object, or when object structure changes
+  const previousValueRef = React.useRef<EntityReferenceValue>(value);
+
+  React.useEffect(() => {
+    // Normalize the form value if it's an object: extract and store just the ID
+    if (onChange && value && typeof value === 'object' && value !== null && 'id' in value) {
+      const idValue = value.id;
+      const previousValue = previousValueRef.current;
+
+      // Only normalize if:
+      // 1. The ID exists and is valid
+      // 2. The current value is an object (not already normalized to a string/primitive)
+      // 3. The value has changed from the previous one
+      if (idValue !== undefined && idValue !== null) {
+        const previousId = typeof previousValue === 'object' && previousValue !== null
+          ? previousValue.id
+          : previousValue;
+
+        // Normalize if the ID is different from previous, or if previous wasn't an object
+        if (idValue !== previousId) {
+          onChange(idValue);
+        }
+      }
+    }
+
+    // Update the ref to track the current value
+    previousValueRef.current = value;
+  }, [value, onChange]);
+
+  return <EntityReference {...model} value={normalizedValue} style={style} />;
+};
 
 const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> = {
   type: 'entityReference',
@@ -39,14 +96,21 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value) => {
-          return <EntityReference {...model} value={value} style={{ ...allStyles.fullStyle }} />;
+        {(value, onChange) => {
+          return (
+            <EntityReferenceWrapper
+              model={model}
+              value={value}
+              onChange={onChange}
+              style={{ ...allStyles.fullStyle }}
+            />
+          );
         }}
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<IEntityReferenceControlProps>(0, (prev) => {
@@ -106,7 +170,8 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
           if (/^\d+(px|%)$/.test(prev.quickviewWidth)) return prev.quickviewWidth; // already valid
           return prev.quickviewWidth; // keep keywords like 'auto', 'fit-content', etc.
         })(),
-      })),
+      }))
+      .add<IEntityReferenceControlProps>(11, (prev) => ({ ...prev, buttons: migrateButtonGroupDynamicItems(prev.buttons) })),
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {
       ...model,

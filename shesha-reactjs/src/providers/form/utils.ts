@@ -9,6 +9,7 @@ import {
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
+  SettingsFormMarkupFactory,
   SettingsMigrationContext,
 } from '@/interfaces';
 import { IPropertyMetadata, NestedProperties, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
@@ -55,6 +56,8 @@ import {
   FormMode,
   HttpClientApi,
   IApplicationApi,
+  isConfigurableFormComponent,
+  isRawComponentsContainer,
   STYLE_BOX_CSS_POPERTIES,
   StyleBoxValue,
   useDataTableState,
@@ -504,9 +507,11 @@ export const getClosestComponent = (componentId: string, context: SettingsMigrat
   let component = context.flatStructure.allComponents[componentId];
   do {
     component = component?.parentId ? context.flatStructure.allComponents[component.parentId] : null;
-  } while (component && component.type !== componentType);
+  } while (component && (isRawComponentsContainer(component) || component.type !== componentType));
 
-  return component?.type === componentType ? component : null;
+  return isConfigurableFormComponent(component) && component.type === componentType
+    ? component
+    : null;
 };
 
 export const getClosestTableId = (context: SettingsMigrationContext): string | null => {
@@ -529,7 +534,7 @@ export const componentsFlatStructureToTree = (
     if (!componentIds) return;
 
     const ownerComponent = flat.allComponents[ownerId];
-    const ownerDefinition = ownerComponent && ownerComponent.type
+    const ownerDefinition = isConfigurableFormComponent(ownerComponent) && ownerComponent.type
       ? toolboxComponents[ownerComponent.type]
       : undefined;
     const staticContainerIds = [];
@@ -554,6 +559,8 @@ export const componentsFlatStructureToTree = (
     componentIds.forEach((id) => {
       // extract current component and add to hierarchy
       const component = { ...flat.allComponents[id] };
+      if (!isConfigurableFormComponent(component))
+        return;
       if (!staticContainerIds.includes(id))
         container.push(component);
 
@@ -1029,7 +1036,11 @@ export const getFormValidationRules = (markup: FormMarkup): Rules => {
   return rules;
 };
 
-export const validateConfigurableComponentSettings = (markup: FormMarkup, values: ValidateSource): Promise<void> => {
+export const validateConfigurableComponentSettings = (markup: FormMarkup | SettingsFormMarkupFactory, values: ValidateSource): Promise<void> => {
+  // TODO: restore validation
+  if (typeof (markup) === 'function')
+    return Promise.resolve();
+
   const rules = getFormValidationRules(markup);
   const validator = new Schema(rules);
 
@@ -1430,10 +1441,10 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
 
   if (typeof predicate !== 'function') throw new Error('getComponentNames: predicate must be defined');
 
-  Object.keys(components)?.forEach((key) => {
+  Object.keys(components).forEach((key) => {
     let component = components[key];
 
-    if (predicate(component)) {
+    if (isConfigurableFormComponent(component) && predicate(component)) {
       componentNames.push(component.propertyName);
     }
   });

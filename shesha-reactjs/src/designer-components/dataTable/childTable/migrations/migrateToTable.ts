@@ -4,7 +4,7 @@ import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
 import { nanoid } from '@/utils/uuid';
 import { IChildTableComponentProps } from '../index';
 import { migrateFunctionToProp } from '@/designer-components/_common-migrations/migrateSettings';
-import { IFlatComponentsStructure } from '@/interfaces';
+import { IFlatComponentsStructure, isConfigurableFormComponent } from '@/interfaces';
 
 export interface IPanelContent {
   id: string;
@@ -28,7 +28,7 @@ export interface IPanelComponentProps extends IConfigurableFormComponent {
 
 const getClosestComponent = (flatStructure: IFlatComponentsStructure, id: string, predicate: (component: IConfigurableFormComponent) => boolean): IConfigurableFormComponent => {
   const current = flatStructure.allComponents[id];
-  if (!current)
+  if (!current || !isConfigurableFormComponent(current))
     return null;
 
   if (predicate(current))

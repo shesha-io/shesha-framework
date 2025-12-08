@@ -191,7 +191,7 @@ namespace Shesha.DynamicEntities.Binder
                         if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
                             continue;
 
-                        var propType = _metadataProvider.GetDataType(property);
+                        var propType = _metadataProvider.GetDataType(property, entityType);
 
                         var dbValue = property.GetValue(entity);
                         var isReadOnly = property.GetCustomAttribute<ReadonlyPropertyAttribute>() != null

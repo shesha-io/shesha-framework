@@ -1,5 +1,7 @@
 import { IconType } from '@/components';
-import { IConfigurableFormComponent, IInputStyles, IStyleType } from '@/providers/form/models'; ;
+import { ComponentDefinition } from '@/interfaces';
+import { IConfigurableFormComponent, IInputStyles, IStyleType } from '@/providers/form/models';
+;
 
 export interface INumberFieldComponentProps extends IConfigurableFormComponent, IInputStyles, IStyleType {
   hideBorder?: boolean;
@@ -14,3 +16,10 @@ export interface INumberFieldComponentProps extends IConfigurableFormComponent, 
   suffixIcon?: IconType;
   prefixIcon?: IconType;
 }
+interface INumberFieldComponentCalulatedValues {
+  defaultValue?: string;
+  eventHandlers?: any;
+}
+
+export type NumberFieldComponentDefinition = ComponentDefinition<"numberField", INumberFieldComponentProps, INumberFieldComponentCalulatedValues>;
+

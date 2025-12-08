@@ -8,7 +8,7 @@ import { ConfigurationDto } from "@/providers/configurationItemsLoader/models";
 export interface IEntityTypeIdentifierQueryParams {
   name?: string | undefined;
   module?: string | undefined;
-  fullClassName?: string | undefined;
+  entityType?: string | undefined;
 }
 
 export interface IMemberType {
@@ -221,6 +221,7 @@ export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
   prefix?: string;
   isVisible?: boolean;
   itemsType?: IPropertyMetadata | undefined;
+  isItemsType?: boolean;
 
   columnName?: string | null;
   createdInDb?: boolean;

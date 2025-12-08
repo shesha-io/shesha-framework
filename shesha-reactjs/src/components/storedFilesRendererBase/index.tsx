@@ -7,7 +7,7 @@ import { IFormComponentStyles } from '@/providers/form/models';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { addPx } from '@/utils/style';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
-import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Alert,
   App,
@@ -19,7 +19,7 @@ import {
 } from 'antd';
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import React, { FC, useEffect, useState } from 'react';
+import React, { CSSProperties, FC, useEffect, useState } from 'react';
 import { isValidGuid } from '../formDesigner/components/utils';
 import { useStyles } from './styles/styles';
 interface IUploaderFileTypes {
@@ -55,6 +55,8 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   maxHeight?: string;
   layout: layoutType;
   listType: listType;
+  onChange?: (fileList: IStoredFile[]) => void;
+  onDownload?: (fileList: IStoredFile[]) => void;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;
@@ -64,6 +66,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   allStyles?: IFormComponentStyles;
   enableStyleOnReadonly?: boolean;
   thumbnail?: IStyleType;
+  downloadedFileStyles?: CSSProperties;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -92,6 +95,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   listType,
   gap,
   enableStyleOnReadonly = true,
+  downloadedFileStyles,
   ...rest
 }) => {
   const { message, notification, modal } = App.useApp();
@@ -106,6 +110,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
 
   const { styles } = useStyles({
+    downloadedFileStyles: downloadedFileStyles,
     containerStyles: {
       ...(containerDimensionsStyles ?? {}),
       width: layout === 'vertical' ? undefined : addPx(containerDimensionsStyles?.width),
@@ -122,6 +127,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       hideFileName: rest.hideFileName && listType === 'thumbnail',
       isDragger,
       isStub,
+      downloadZip,
     },
   });
 
@@ -182,7 +188,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     }
 
-    return getFileIcon(type);
+    return getFileIcon(type, model?.allStyles?.fontStyles?.fontSize);
   };
 
 
@@ -270,6 +276,19 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       showDownloadIcon: true,
     },
     iconRender,
+    itemRender: (originNode, file: IStoredFile) => {
+      const isDownloaded = file.userHasDownloaded === true;
+      return (
+        <div className={isDownloaded ? styles.downloadedFile : ''}>
+          {originNode}
+          {isDownloaded && (
+            <div className={styles.downloadedIcon}>
+              <CheckCircleOutlined />
+            </div>
+          )}
+        </div>
+      );
+    },
   };
 
 
@@ -284,71 +303,69 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   return (
-    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
-      : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
-        : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
-    >
-      {isStub
-        ? (isDragger
-          ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
-          : (
-            <div
-              className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
-            >
-              {renderUploadContent()}
-              {listType !== 'text' && !rest.hideFileName && (
-                <span className="ant-upload-list-item-name ant-upload-list-item-name-stub">
-                  file name
-                </span>
-              )}
-            </div>
-          ))
-        : (props.disabled && fileList.length === 0
-          ? (
-            <div className={listType === 'thumbnail' ? styles.thumbnailReadOnly : ''}>
-              {renderUploadContent()}
-            </div>
-          )
-          : props.disabled
-            ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
-            : isDragger
-              ? (
-                <Dragger {...props}>
-                  <DraggerStub styles={styles} />
-                </Dragger>
-              )
-              : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
-      {previewImage && (
-        <Image
-          wrapperStyle={{ display: 'none' }}
-          preview={{
-            visible: previewOpen,
-            onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage(null),
-            toolbarRender: (original) => {
-              return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })} />{original}</div>;
-            },
-          }}
-          src={previewImage.url}
-        />
-      )}
+    <div className={styles.storedFilesRendererWrapper}>
+      <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
+        : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
+          : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
+      >
+        {isStub
+          ? (isDragger
+            ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
+            : (
+              <div
+                className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
+              >
+                {renderUploadContent()}
+                {listType !== 'text' && !rest.hideFileName && (
+                  <span className="ant-upload-list-item-name ant-upload-list-item-name-stub">
+                    file name
+                  </span>
+                )}
+              </div>
+            ))
+          : (props.disabled && fileList.length === 0
+            ? null
+            : props.disabled
+              ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
+              : isDragger
+                ? (
+                  <Dragger {...props}>
+                    <DraggerStub styles={styles} />
+                  </Dragger>
+                )
+                : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
+        {previewImage && (
+          <Image
+            wrapperStyle={{ display: 'none' }}
+            preview={{
+              visible: previewOpen,
+              onVisibleChange: (visible) => setPreviewOpen(visible),
+              afterOpenChange: (visible) => !visible && setPreviewImage(null),
+              toolbarRender: (original) => {
+                return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })} />{original}</div>;
+              },
+            }}
+            src={previewImage.url}
+          />
+        )}
 
-      {fetchFilesError && (
-        <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
-      )}
+        {fetchFilesError && (
+          <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
+        )}
 
-      {downloadZipFileError && (
-        <Alert message="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
-      )}
+        {downloadZipFileError && (
+          <Alert message="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
+        )}
 
-      {downloadZip && hasFiles && !!downloadZipFile && (
-        <div className={styles.storedFilesRendererBtnContainer}>
-          <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
-            {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
-          </Button>
-        </div>
-      )}
+        {downloadZip && hasFiles && !!downloadZipFile && (
+          <div className={styles.storedFilesRendererBtnContainer}>
+            <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
+              {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
+            </Button>
+          </div>
+        )}
 
+      </div>
     </div>
   );
 };

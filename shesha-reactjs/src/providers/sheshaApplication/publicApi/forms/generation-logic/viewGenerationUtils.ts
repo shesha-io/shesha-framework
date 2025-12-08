@@ -11,7 +11,8 @@ import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y,
   COLUMN_WIDTH_STRING, COLUMN_WIDTH_STRING_MULTILINE, COLUMN_WIDTH_TIME, ROW_COUNT } from "../constants";
 import { FormMetadataHelper } from "./formMetadataHelper";
 import pluralize from 'pluralize';
-import { DesignerToolbarSettings, EditMode, IConfigurableFormComponent, isConfigurableFormComponent } from "@/interfaces";
+import { EditMode, IConfigurableFormComponent, isConfigurableFormComponent } from "@/interfaces";
+import { FormBuilderFactory } from "@/form-factory/interfaces";
 
 export function findContainersWithPlaceholderRecursive(
   token: unknown,
@@ -165,10 +166,11 @@ export function addDetailsPanel(
   metadata: PropertyMetadataDto[],
   markup: unknown,
   metadataHelper: FormMetadataHelper,
+  formBuilderFactory: FormBuilderFactory,
 ): void {
   const placeholderName = "//*DETAILSPANEL*//";
 
-  const builder = new DesignerToolbarSettings({});
+  const builder = formBuilderFactory();
 
   const detailsPanelContainer = findContainersWithPlaceholder(markup, placeholderName);
 
@@ -194,7 +196,7 @@ export function addDetailsPanel(
   const column2: IConfigurableFormComponent[] = [];
   if (sortedMetadata.length > ROW_COUNT) {
     sortedMetadata.forEach((prop, index) => {
-      const columnBuilder = new DesignerToolbarSettings({});
+      const columnBuilder = formBuilderFactory();
       metadataHelper.getConfigFields(prop, columnBuilder);
 
       if (index % 2 === 0) {

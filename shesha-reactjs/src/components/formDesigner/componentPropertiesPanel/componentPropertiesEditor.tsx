@@ -1,11 +1,13 @@
 import React, { FC, MutableRefObject } from 'react';
-import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponentBase } from '@/interfaces';
+import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponentBase, SettingsFormMarkupFactory } from '@/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
 import { FormMarkup } from '@/providers/form/models';
 import GenericSettingsForm from '../genericSettingsForm';
 import { IConfigurableFormComponent } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { wrapDisplayName } from '@/utils/react';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
 
 export interface IComponentPropertiesEditorProps {
   toolboxComponent: IToolboxComponentBase;
@@ -19,10 +21,11 @@ export interface IComponentPropertiesEditorProps {
   isInModal?: boolean;
 }
 
-const getDefaultFactory = (markup: FormMarkup, isInModal?: boolean): ISettingsFormFactory => {
+const getDefaultFactory = (fbf: FormBuilderFactory, markup: FormMarkup | SettingsFormMarkupFactory, isInModal?: boolean): ISettingsFormFactory => {
   const evaluatedMarkup = typeof markup === 'function'
-    ? markup({})
+    ? markup({ fbf })
     : markup;
+
   return wrapDisplayName(({ readOnly, model, onSave, onCancel, onValuesChange, toolboxComponent, formRef, propertyFilter, layoutSettings }) => {
     return (
       <GenericSettingsForm
@@ -46,12 +49,13 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
   const { componentModel, readOnly, toolboxComponent, isInModal } = props;
 
   const { getCachedComponentEditor } = useFormDesigner();
+  const fbf = useFormBuilderFactory();
 
   const SettingsForm = getCachedComponentEditor(componentModel.type, () => {
     return toolboxComponent.settingsFormFactory
       ? toolboxComponent.settingsFormFactory
       : toolboxComponent.settingsFormMarkup
-        ? getDefaultFactory(toolboxComponent.settingsFormMarkup, isInModal)
+        ? getDefaultFactory(fbf, toolboxComponent.settingsFormMarkup, isInModal)
         : null;
   });
 

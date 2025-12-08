@@ -23,6 +23,7 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent, IStyleType {
   placeholder?: string;
@@ -210,9 +211,10 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       // Default to Person for backward compatibility with legacy forms
       // should explicitly set entityType for other entity types
       entityType: context.isNew && !prev.entityType ? 'Shesha.Core.Person' : prev.entityType,
-    })),
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+    }))
+    .add<IEntityPickerComponentProps>(12, (prev) => ({ ...prev, buttons: migrateButtonGroupDynamicItems(prev.buttons) })),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 
   linkToModelMetadata: (model, propMetadata): IEntityPickerComponentProps => {
     return {

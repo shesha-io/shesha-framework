@@ -1,7 +1,5 @@
-import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
-import { IEntityReferenceControlProps } from './entityReference';
 import {
   backgroundTypeOptions,
   positionOptions,
@@ -10,8 +8,9 @@ import {
 } from '../_settings/utils/background/utils';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -22,7 +21,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
   const hiddenId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -37,7 +36,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: propertyNameId,
                   propertyName: 'propertyName',
@@ -95,7 +94,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
             title: 'Data',
             id: dataTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'entityTypeAutocomplete',
@@ -309,7 +308,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                   content: {
                     id: nanoid(),
                     components: [
-                      ...new DesignerToolbarSettings()
+                      ...fbf()
                         .addSettingsInputRow({
                           id: nanoid(),
                           parentId: dataTabId,
@@ -382,7 +381,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                         })
                         .addSettingsInputRow({
                           id: nanoid(),
-                          parentId: appearanceTabId,
+                          parentId: dataTabId,
                           readOnly: {
                             _code: 'return getSettingValue(data?.readOnly);',
                             _mode: 'code',
@@ -458,7 +457,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                           content: {
                             id: nanoid(),
                             components: [
-                              ...new DesignerToolbarSettings()
+                              ...fbf()
                                 .addConfigurableActionConfigurator({
                                   id: nanoid(),
                                   propertyName: 'onSuccess',
@@ -480,7 +479,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                               label: 'Handle Fail',
                               parentId: dataTabId,
                               type: 'switch',
-                              jsSetting: false,
+                              jsSetting: true,
                             },
                           ],
                         })
@@ -500,7 +499,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                           content: {
                             id: nanoid(),
                             components: [
-                              ...new DesignerToolbarSettings()
+                              ...fbf()
                                 .addConfigurableActionConfigurator({
                                   id: nanoid(),
                                   propertyName: 'onFail',
@@ -531,7 +530,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                   content: {
                     id: nanoid(),
                     components: [
-                      ...new DesignerToolbarSettings()
+                      ...fbf()
                         .addSettingsInput({
                           id: nanoid(),
                           propertyName: 'quickviewWidth',
@@ -555,7 +554,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -568,9 +567,9 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: 'fontStyleCollapsiblePanel',
                         propertyName: 'pnlFontStyle',
@@ -582,7 +581,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                         content: {
                           id: 'fontStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: 'try26voxhs-HxJ5k5ngYE',
                                 parentId: 'fontStylePnl',
@@ -648,7 +647,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                         content: {
                           id: 'dimensionsStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: 'dimensionsStyleRowWidth',
                                 parentId: 'dimensionsStylePnl',
@@ -732,17 +731,17 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                         content: {
                           id: 'borderStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
 
                               .addContainer({
                                 id: 'borderStyleRow',
                                 parentId: 'borderStylePnl',
-                                components: getBorderInputs() as any,
+                                components: getBorderInputs(fbf),
                               })
                               .addContainer({
                                 id: 'borderRadiusStyleRow',
                                 parentId: 'borderStylePnl',
-                                components: getCornerInputs() as any,
+                                components: getCornerInputs(fbf),
                               })
                               .toJson(),
                           ],
@@ -759,7 +758,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                         content: {
                           id: 'backgroundStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: 'backgroundStyleRow-selectType',
                                 parentId: 'backgroundStylePnl',
@@ -941,7 +940,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                         content: {
                           id: 'shadowStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: 'shadowStyleRow',
                                 parentId: 'shadowStylePnl',
@@ -1010,7 +1009,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addStyleBox({
                                 id: nanoid(),
                                 label: 'Margin Padding',
@@ -1032,7 +1031,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: 'pnlLayout',
@@ -1075,7 +1074,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 readOnly: {
                                   _code: 'return  getSettingValue(data?.readOnly);',
@@ -1105,7 +1104,7 @@ export const getSettings = (data: IEntityReferenceControlProps): FormMarkupWithS
             title: 'Security',
             id: securityId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),

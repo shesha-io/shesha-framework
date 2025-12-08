@@ -59,10 +59,17 @@ namespace Shesha.Metadata
             return (fullClassName, moduleName, className);
         }
 
+        private async Task<List<EntityModelDto>> GetAllModelsAsync()
+        {
+            return (await _entityModelProvider.GetModelsAsync())
+                .Where(x => !x.IsExposed && !x.FullClassName.StartsWith("Abp.")) // Remove ABP entities from Autocomplete
+                .ToList();
+        }
+
         [HttpGet]
         public async Task<List<MetadataAutocompleteDto>> AutocompleteAsync(string? type, string? term, string? selectedValue, string? baseModel)
         {
-            var allModels = await _entityModelProvider.GetModelsAsync();
+            var allModels = await GetAllModelsAsync();
             var isPreselection = selectedValue.IsNullOrWhiteSpace();
 
             var (selectedFullClassName, selectedModule, selectedClass) = ParseInputData(selectedValue);
@@ -210,16 +217,16 @@ namespace Shesha.Metadata
 
         /// inheritedDoc
         [HttpGet]
-        public async Task<MetadataDto> GetAsync(EntityTypeIdInput entityType)
+        public async Task<MetadataDto> GetAsync(EntityTypeIdInput entityTypeId)
         {
-            if (entityType == null)
-                throw new AbpValidationException($"'{nameof(entityType)}' is mandatory");
+            if (entityTypeId == null)
+                throw new AbpValidationException($"'{nameof(entityTypeId)}' is mandatory");
 
-            var containerName = entityType.Name.GetDefaultIfEmpty(entityType.FullClassName);
+            var containerName = entityTypeId.Name.GetDefaultIfEmpty(entityTypeId.EntityType);
             if (string.IsNullOrWhiteSpace(containerName))
-                throw new AbpValidationException($"Either '{nameof(entityType.Name)}' or '{nameof(entityType.FullClassName)}' must be provided");
+                throw new AbpValidationException($"Either '{nameof(entityTypeId.Name)}' or '{nameof(entityTypeId.EntityType)}' must be provided");
             
-            var containerType = await _metadataProvider.GetContainerTypeAsync(entityType.Module, containerName);
+            var containerType = await _metadataProvider.GetContainerTypeAsync(entityTypeId.Module, containerName);
             return await _metadataProvider.GetAsync(containerType);
         }
 
@@ -238,7 +245,7 @@ namespace Shesha.Metadata
 
         #region for backward compatibility
 
-        private List<AutocompleteItemDto> FilterModels(List<ModelDto> models, string? term, string? selectedValue)
+        private List<AutocompleteItemDto> FilterModels(List<EntityModelDto> models, string? term, string? selectedValue)
         {
             var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
             var entities = isPreselection
@@ -270,7 +277,7 @@ namespace Shesha.Metadata
         [HttpGet]
         public async Task<List<AutocompleteItemDto>> TypeAutocompleteAsync(string? term, string? selectedValue)
         {
-            var models = await _metadataProvider.GetAllModelsAsync();
+            var models = await GetAllModelsAsync();
             return FilterModels(models, term, selectedValue);
         }
 
@@ -278,12 +285,12 @@ namespace Shesha.Metadata
         [HttpGet]
         public async Task<List<AutocompleteItemDto>> EntityTypeAutocompleteAsync(string? term, string? selectedValue, string? baseClass)
         {
-            var models = await _entityModelProvider.GetModelsAsync();
+            var models = await GetAllModelsAsync();
             var baseEntity = baseClass.IsNullOrEmpty() ? null : models.FirstOrDefault(x => x.Type?.FullName == baseClass || x.Alias == baseClass || x.Accessor == baseClass);
             var list = models
                 .Where(x => x.Type.IsEntityType())
                 .WhereIf(baseEntity != null, x => x.Type != null && x.Type.IsAssignableTo(baseEntity?.Type))
-                .ToList<ModelDto>();
+                .ToList();
             return FilterModels(list, term, selectedValue);
         }
 
@@ -291,12 +298,12 @@ namespace Shesha.Metadata
         [HttpGet]
         public async Task<List<AutocompleteItemDto>> JsonEntityTypeAutocompleteAsync(string? term, string? selectedValue, string? baseClass)
         {
-            var models = await _entityModelProvider.GetModelsAsync();
+            var models = await GetAllModelsAsync();
             var baseEntity = baseClass.IsNullOrEmpty() ? null : models.FirstOrDefault(x => x.Type?.FullName == baseClass || x.Alias == baseClass || x.Accessor == baseClass);
             var list = models
                 .Where(x => x.Type.IsJsonEntityType())
                 .WhereIf(baseEntity != null, x => x.Type != null && x.Type.IsAssignableTo(baseEntity?.Type))
-                .ToList<ModelDto>();
+                .ToList();
             return FilterModels(list, term, selectedValue);
         }
 

@@ -242,7 +242,8 @@ export interface IReactTableProps extends ITableRowDragProps {
   rowSelectedBackgroundColor?: string;
   rowHeight?: string;
   rowPadding?: string;
-  rowBorder?: string;
+  rowBorder?: string; // Deprecated: use rowBorderStyle for full border control
+  rowBorderStyle?: IBorderValue; // Full border configuration with per-side control
 
   // Overall table styling
   borderRadius?: string;
@@ -250,6 +251,7 @@ export interface IReactTableProps extends ITableRowDragProps {
   backgroundColor?: string;
   boxShadow?: string;
   sortableIndicatorColor?: string;
+  striped?: boolean;
 
   canDeleteInline?: boolean;
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;

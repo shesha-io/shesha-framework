@@ -1,23 +1,12 @@
-import React from 'react';
-
-import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces";
+import { evaluateString, useShaFormInstance } from '@/index';
+import { IConfigurableFormComponent } from "@/interfaces";
+import { isDefined } from '@/utils/nullables';
 import { SettingOutlined } from "@ant-design/icons";
+import React from 'react';
+import { useStyles } from '../inputComponent/styles';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { getWidth } from '../settingsInput/utils';
-import { evaluateString, useShaFormInstance } from '@/index';
-import { useStyles } from '../inputComponent/styles';
-import { ISettingsInputProps } from '../settingsInput/interfaces';
-import { isDefined } from '@/utils/nullables';
-
-export interface IInputRowProps {
-  inputs?: Array<ISettingsInputProps>;
-  readOnly?: boolean;
-  inline?: boolean;
-  children?: React.ReactNode;
-  hidden?: boolean;
-}
-export interface ISettingsInputRowProps extends IConfigurableFormComponent, IInputRowProps {
-}
+import { IInputRowProps, ISettingsInputRowProps, SettingsInputRowDefinition } from './interfaces';
 
 export const isSettingsInputRow = (component: IConfigurableFormComponent): component is ISettingsInputRowProps => isDefined(component) && component.type === 'settingsInputRow';
 
@@ -50,7 +39,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
   );
 };
 
-const SettingsInputRow: IToolboxComponent<ISettingsInputRowProps & IConfigurableFormComponent> = {
+const SettingsInputRow: SettingsInputRowDefinition = {
   type: 'settingsInputRow',
   isInput: true,
   isOutput: true,

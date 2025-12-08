@@ -1,21 +1,21 @@
-import { FormMarkupWithSettings } from '@/interfaces';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 
-export const getSettings = (): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const containerId = nanoid();
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSettingsInputRow({
         id: nanoid(),
         inputs: [
           {
             id: nanoid(),
             type: 'entityTypeAutocomplete',
-            propertyName: 'entityTypeShortAlias',
+            propertyName: 'entityType',
             label: 'Entity Type',
             labelAlign: 'right',
             hidden: false,
+            entityAutocompleteType: 'Entity',
             validate: {},
           },
           {
@@ -33,11 +33,11 @@ export const getSettings = (): FormMarkupWithSettings => {
       .addContainer({
         id: containerId,
         hidden: {
-          _code: 'return !getSettingValue(data?.entityTypeShortAlias);',
+          _code: 'return !getSettingValue(data?.entityType);',
           _mode: 'code',
           _value: false,
         } as any,
-        components: [...new DesignerToolbarSettings()
+        components: [...fbf()
           .addSettingsInputRow({
             id: nanoid(),
             parentId: containerId,
@@ -51,7 +51,7 @@ export const getSettings = (): FormMarkupWithSettings => {
               validate: {},
               settingsValidationErrors: [],
               modelType: {
-                _code: 'return getSettingValue(data?.entityTypeShortAlias);',
+                _code: 'return getSettingValue(data?.entityType);',
                 _mode: 'code',
                 _value: false,
               } as any,
@@ -74,24 +74,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                   required: true,
                 },
                 modelType: {
-                  _code: 'return getSettingValue(data?.entityTypeShortAlias);',
-                  _mode: 'code',
-                  _value: false,
-                } as any,
-                autoFillProps: false,
-              },
-              {
-                id: nanoid(),
-                type: 'propertyAutocomplete',
-                propertyName: 'tooltipProperty',
-                label: 'Tooltip Property',
-                labelAlign: 'right',
-                isDynamic: false,
-                placeholder: '',
-                description: 'Name of the property that should be used for the tooltip of the button.',
-                validate: {},
-                modelType: {
-                  _code: 'return getSettingValue(data?.entityTypeShortAlias);',
+                  _code: 'return getSettingValue(data?.entityType);',
                   _mode: 'code',
                   _value: false,
                 } as any,
@@ -106,16 +89,27 @@ export const getSettings = (): FormMarkupWithSettings => {
         inputs: [
           {
             id: nanoid(),
-            type: 'configurableActionConfigurator',
-            propertyName: 'actionConfiguration',
-            label: 'Action Configuration',
-            hidden: false,
-            hideLabel: true,
+            type: 'propertyAutocomplete',
+            propertyName: 'tooltipProperty',
+            label: 'Tooltip Property',
+            labelAlign: 'right',
+            isDynamic: false,
+            placeholder: '',
+            description: 'Name of the property that should be used for the tooltip of the button.',
             validate: {},
-            jsSetting: false,
-            settingsValidationErrors: [],
+            modelType: {
+              _code: 'return getSettingValue(data?.entityType);',
+              _mode: 'code',
+              _value: false,
+            } as any,
+            autoFillProps: false,
           },
         ],
+      })
+      .addConfigurableActionConfigurator({
+        id: nanoid(),
+        propertyName: 'actionConfiguration',
+        label: 'Action Configuration',
       })
       .toJson(),
     formSettings: {

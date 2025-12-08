@@ -4,7 +4,6 @@ import { ButtonGroupItemProps, IButtonGroupItem } from '@/providers/buttonGroupC
 import {
   DynamicActionsProvider,
   DynamicItemsEvaluationHook,
-  FormMarkup,
   useDataContextManagerActionsOrUndefined,
   useFormData,
   useGlobalState,
@@ -17,8 +16,9 @@ import { getSettings } from './entitySettings';
 import { IAjaxResponse } from '@/interfaces';
 import { extractAjaxResponse } from '@/interfaces/ajaxResponse';
 import { ButtonType } from 'antd/lib/button';
-
-const settingsMarkup = getSettings() as FormMarkup;
+import { useFormViaFactory } from '@/form-factory/hooks';
+import { convertDotNotationPropertiesToGraphQL } from '@/index';
+import { unsafeGetValueByPropertyName } from '@/utils/object';
 
 type ArrayOrObjectWithItems<T> = T[] | {
   items: T[];
@@ -26,21 +26,25 @@ type ArrayOrObjectWithItems<T> = T[] | {
 type FetchResponse = ArrayOrObjectWithItems<IButtonGroupItem>;
 
 const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter, buttonType: buttonTypeSetting } = settings ?? {};
+  const { actionConfiguration, tooltipProperty, labelProperty, entityType, filter, buttonType: buttonTypeSetting } = settings ?? {};
   const { refetch } = useGet<IAjaxResponse<FetchResponse>>({ path: '', lazy: true });
   const { getEntityTemplateState } = useEntityTemplates(settings);
   const { data: FormData } = useFormData();
   const { globalState } = useGlobalState();
   const [data, setData] = useState<IButtonGroupItem[] | undefined>(undefined);
   const pageContext = useDataContextManagerActionsOrUndefined()?.getPageContext();
-  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityTypeShortAlias);
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
   const evaluatedFilters = useFormEvaluatedFilter({
     filter,
     metadataAccessor: propertyMetadataAccessor,
   });
 
   const fetchTemplateData = async (): Promise<void> => {
-    const response = await refetch(getEntityTemplateState(evaluatedFilters));
+    const props = [];
+    if (labelProperty) props.push(labelProperty);
+    if (tooltipProperty) props.push(tooltipProperty);
+
+    const response = await refetch(getEntityTemplateState(evaluatedFilters, convertDotNotationPropertiesToGraphQL(props)));
     const responseData = extractAjaxResponse(response);
 
     const result = Array.isArray(responseData) ? responseData : responseData.items;
@@ -60,27 +64,46 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   const operations = useMemo<ButtonGroupItemProps[]>(() => {
     if (!data) return [];
 
-    const result = data.map<ButtonGroupItemProps>((p) => ({
-      id: p.id,
-      name: p.name,
-      label: p[`${labelProperty}`] || 'Not Configured Properly',
-      tooltip: p[`${tooltipProperty}`],
-      itemType: 'item',
-      itemSubType: 'button',
-      sortOrder: 0,
-      dynamicItem: p,
-      permissions: p.permissions ?? item.permissions ?? [],
-      buttonType: p.buttonType ?? item.buttonType ?? (buttonTypeSetting as ButtonType),
-      size: item.size,
-      background: p.background ?? item.background,
-      border: p.border ?? item.border,
-      shadow: p.shadow ?? item.shadow,
-      font: p.font ?? item.font,
-      stylingBox: p.stylingBox ?? item.stylingBox,
-      style: p.style ?? item.style,
-      dimensions: p.dimensions ?? item.dimensions,
-      actionConfiguration: actionConfiguration,
-    }));
+    const result = data.map<ButtonGroupItemProps>((p) => {
+      const labelValue = unsafeGetValueByPropertyName(p, labelProperty) as any;
+      const tooltipValue = unsafeGetValueByPropertyName(p, tooltipProperty) as any;
+
+      const label = labelValue !== undefined
+        ? typeof labelValue === 'object'
+          ? !labelValue
+            ? 'empty'
+            : labelValue._displayName ?? labelValue.name ?? labelValue.fullName ?? labelValue.label ?? 'Not Configured Properly'
+          : labelValue?.toString()
+        : 'Not Configured Properly';
+
+      const tooltip = tooltipValue !== undefined
+        ? typeof tooltipValue === 'object'
+          ? tooltipValue?._displayName ?? tooltipValue?.name ?? tooltipValue?.fullName ?? tooltipValue?.label
+          : tooltipValue?.toString()
+        : undefined;
+
+      return {
+        id: p.id,
+        name: p.name,
+        label,
+        tooltip,
+        itemType: 'item',
+        itemSubType: 'button',
+        sortOrder: 0,
+        dynamicItem: p,
+        permissions: p.permissions ?? item.permissions ?? [],
+        buttonType: p.buttonType ?? item.buttonType ?? (buttonTypeSetting as ButtonType),
+        size: item.size,
+        background: p.background ?? item.background,
+        border: p.border ?? item.border,
+        shadow: p.shadow ?? item.shadow,
+        font: p.font ?? item.font,
+        stylingBox: p.stylingBox ?? item.stylingBox,
+        style: p.style ?? item.style,
+        dimensions: p.dimensions ?? item.dimensions,
+        actionConfiguration: actionConfiguration,
+      };
+    });
 
     return result;
   }, [settings, item, data]);
@@ -88,6 +111,8 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
 };
 
 export const EntityActions: FC<PropsWithChildren> = ({ children }) => {
+  const settingsMarkup = useFormViaFactory(getSettings);
+
   return (
     <DynamicActionsProvider
       id="Entity"

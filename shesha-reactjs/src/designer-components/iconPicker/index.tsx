@@ -2,19 +2,17 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import React from 'react';
 import { HeartOutlined } from '@ant-design/icons';
 import { IconPickerWrapper } from './iconPickerWrapper';
-import { IIconPickerComponentProps } from './interfaces';
-import { IToolboxComponent } from '@/interfaces';
+import { IconPickerComponentDefinition, IIconPickerComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
-
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 
-const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
+const IconPickerComponent: IconPickerComponentDefinition = {
   type: 'iconPicker',
   name: 'Icon',
   icon: <HeartOutlined />,
@@ -38,8 +36,8 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<IIconPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

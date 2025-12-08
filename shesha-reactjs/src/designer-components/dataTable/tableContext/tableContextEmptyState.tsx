@@ -22,7 +22,7 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
   const { theme } = useTheme();
 
   return (
-    <div style={{ position: 'relative', minHeight: '120px', ...style }} className={className}>
+    <div style={{ position: 'relative', minHeight: '120px', ...style, width: '100%' }} className={className}>
       {/* Visual overlay showing the empty state message */}
       <div
         style={{
@@ -30,11 +30,12 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '40px 20px',
+          padding: '10px',
           border: '2px dashed #d9d9d9',
           borderRadius: '8px',
           backgroundColor: '#fafafa',
           minHeight: '120px',
+          width: '100%',
           gap: '12px',
           position: 'absolute',
           top: 0,
@@ -74,7 +75,7 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
       <ComponentsContainer
         containerId={containerId}
         itemsLimit={-1}
-        style={{ minHeight: '120px', position: 'relative', zIndex: 2 }}
+        style={{ minHeight: '140px', position: 'relative', zIndex: 2 }}
       />
     </div>
   );

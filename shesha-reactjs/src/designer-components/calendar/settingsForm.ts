@@ -1,12 +1,9 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/es/form/Form';
 import { getSettings as getCalendarLayersSettings } from './calendarLayersSettings';
-import { ICalendarProps } from './interfaces';
-import { FormMarkupWithSettings } from '@/index';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-
-export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -16,7 +13,7 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
   const securityTabId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -31,7 +28,7 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'name',
@@ -111,7 +108,7 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
             title: 'Data',
             id: dataTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   inputType: 'layerSelectorSettingsModal',
                   id: nanoid(),
@@ -119,7 +116,7 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
                   propertyName: 'items',
                   label: 'Layer Selector Settings Modal',
                   hideLabel: true,
-                  settings: getCalendarLayersSettings(),
+                  settings: getCalendarLayersSettings({ fbf }),
                 })
                 .addSettingsInput({
                   inputType: 'textField',
@@ -137,26 +134,18 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
             title: 'Events',
             id: eventsTabId,
             components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  inputType: 'configurableActionConfigurator',
+              ...fbf()
+                .addConfigurableActionConfigurator({
                   id: nanoid(),
                   parentId: eventsTabId,
                   propertyName: 'onSlotClick',
                   label: 'On Slot Click',
-                  editorConfig: null,
-                  level: 1,
-                  hideLabel: true,
                 })
-                .addSettingsInput({
-                  inputType: 'configurableActionConfigurator',
+                .addConfigurableActionConfigurator({
                   id: nanoid(),
                   parentId: eventsTabId,
                   propertyName: 'onViewChange',
                   label: 'On View Change',
-                  editorConfig: null,
-                  level: 1,
-                  hideLabel: true,
                 })
                 .toJson(),
             ],
@@ -166,7 +155,7 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -179,9 +168,9 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
                     _mode: "code",
                     _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: "",
-                  },
+                  } as any,
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         inputType: 'colorPicker',
                         id: nanoid(),
@@ -267,7 +256,7 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addStyleBox({
                                 id: nanoid(),
                                 label: 'Margin Padding',
@@ -289,7 +278,7 @@ export const getSettings = (data: ICalendarProps): FormMarkupWithSettings => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',

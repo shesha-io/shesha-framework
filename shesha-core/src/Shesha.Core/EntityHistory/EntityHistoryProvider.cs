@@ -36,9 +36,7 @@ namespace Shesha.EntityHistory
         private readonly IRepository<EntityHistoryItem, long> _entityHistoryItemRepository;
 
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly IEnumerable<IModelProvider> _modelProviders;
-
-        private List<ModelDto> _models;
+        private readonly IMetadataProvider _metadataProvider;
 
         public EntityHistoryProvider(
             IDynamicRepository dynamicRepository,
@@ -48,9 +46,8 @@ namespace Shesha.EntityHistory
             IRepository<EntityChange, long> entityChangeRepository,
             IRepository<EntityPropertyChange, long> entityPropertyChangeRepository,
             IRepository<EntityHistoryItem, long> entityHistoryItemRepository,
-            IRepository<Setting, long> settingRepository,
             IUnitOfWorkManager unitOfWorkManager,
-            IEnumerable<IModelProvider> modelProviders
+            IMetadataProvider metadataProvider
         )
         {
             _dynamicRepository = dynamicRepository;
@@ -61,40 +58,16 @@ namespace Shesha.EntityHistory
             _entityChangeRepository = entityChangeRepository;
             _entityHistoryItemRepository = entityHistoryItemRepository;
             _unitOfWorkManager = unitOfWorkManager;
-            _modelProviders = modelProviders;
+            _metadataProvider = metadataProvider;
         }
 
-        private async Task<List<ModelDto>> GetAllModelsAsync()
-        {
-            if (_models != null)
-                return _models;
 
-            var models = new List<ModelDto>();
-            foreach (var provider in _modelProviders)
-            {
-                models.AddRange(await provider.GetModelsAsync());
-            }
-
-            return _models = models.Where(x => !x.Suppress).ToList();
-        }
-
-        private async Task<Type?> GetContainerTypeAsync(string container)
-        {
-            var allModels = await GetAllModelsAsync();
-            var models = allModels.Where(m => m.Alias == container || m.FullClassName == container).ToList();
-
-            if (models.Count() > 1)
-                throw new DuplicateModelsException(models);
-
-            return models.FirstOrDefault()?.Type;
-        }
-
-        public async Task<List<EntityHistoryItemDto>> GetAuditTrailAsync(string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
+        public async Task<List<EntityHistoryItemDto>> GetAuditTrailAsync(string entityId, string? moduleName, string entityType, bool includeEventsOnChildEntities)
         {
             // disable SoftDeleteFilter to allow get deleted entities
             using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete)) 
             {
-                var itemType = await GetContainerTypeAsync(entityTypeFullName);
+                var itemType = await _metadataProvider.GetContainerTypeAsync(moduleName, entityType);
 
                 var history = new List<EntityHistoryItemDto>();
 
@@ -192,7 +165,7 @@ namespace Shesha.EntityHistory
                 var changeSet = await _entityChangeSetRepository.GetAsync(entityChange.EntityChangeSetId);
                 var username = GetPersonByUserId(changeSet?.UserId);
 
-                entityType ??= await GetContainerTypeAsync(entityChange.EntityTypeFullName);
+                entityType ??= await _metadataProvider.GetContainerTypeAsync(null, entityChange.EntityTypeFullName); // get only by FullClassName because we use C# class and not a entity config
 
                 var changeEvents = await _eventRepository.GetAllListAsync(x => x.EntityPropertyChange == null && x.EntityChange == entityChange);
                 foreach (var entityHistoryEvent in changeEvents)
@@ -368,7 +341,7 @@ namespace Shesha.EntityHistory
                 {
                     var ownFields = manyToManyType.GetProperties().Where(x => x.PropertyType.IsAssignableFrom(itemType)).ToList();
                     if (ownFields.Count() > 1)
-                        throw new Exception($"Found more then 1 field with parent type {itemType.FullName}");
+                        throw new Exception($"Found more than 1 field with parent type {itemType.FullName}");
                     ownField = ownFields.FirstOrDefault();
                     if (ownField == null)
                         throw new Exception($"Filed with parent type {itemType.FullName} not found in many-to-many type {manyToManyType.FullName}");
@@ -500,7 +473,7 @@ namespace Shesha.EntityHistory
                 {
                     var ownFields = manyToOneType.GetProperties().Where(x => x.PropertyType.IsAssignableFrom(itemType)).ToList();
                     if (ownFields.Count() > 1)
-                        throw new Exception($"Found more then 1 field with parent type {itemType.FullName}");
+                        throw new Exception($"Found more than 1 field with parent type {itemType.FullName}");
                     ownField = ownFields.FirstOrDefault();
                     if (ownField == null)
                         throw new Exception($"Filed with parent type {itemType.FullName} not found in many-to-many type {manyToOneType.FullName}");

@@ -118,9 +118,15 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         onValuesChange={onValuesChange}
         initialValues={formValues}
       >
-        <FormItem name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description} hideLabel={props.hideLabel}>
-          <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
-        </FormItem>
+        {props.level === 0 ? (
+          <Form.Item name={ACTION_FULL_NAME_FIELD}>
+            <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
+          </Form.Item>
+        ) : (
+          <FormItem name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description} hideLabel={props.hideLabel}>
+            <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
+          </FormItem>
+        )}
         {selectedAction && selectedAction.hasArguments && (
           <SourceFilesFolderProvider folder={`action-${props.level}`}>
             <Form.Item name={FORM_ARGUMENTS_FIELD} label={null}>

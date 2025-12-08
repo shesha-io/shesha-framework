@@ -19,7 +19,7 @@ const getActionOwner = (value: string, context: SettingsMigrationContext): strin
     if (allComponents.hasOwnProperty(id)) {
       const component = allComponents[id];
       const uniqueStateId = component['uniqueStateId'];
-      if (uniqueStateId === value) {
+      if (uniqueStateId === value && "type" in component) {
         if (actionOwnerTypes.includes(component.type)) {
           return component.id;
         }

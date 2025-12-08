@@ -12,6 +12,8 @@ import { IObjectMetadata } from '@/interfaces';
 import { getActualActionArguments } from '@/providers/configurableActionsDispatcher';
 import { useStyles } from '../_settings/styles/styles';
 import { wrapDisplayName } from '@/utils/react';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
 
 export interface IActionArgumentsEditorProps {
   action: IConfigurableActionDescriptor;
@@ -23,6 +25,7 @@ export interface IActionArgumentsEditorProps {
 }
 
 const getDefaultFactory = (
+  fbf: FormBuilderFactory,
   action: IConfigurableActionDescriptor,
   readOnly: boolean,
 ): IConfigurableActionArgumentsFormFactory => {
@@ -35,7 +38,7 @@ const getDefaultFactory = (
       ? `${action.ownerUid}-${action.name}-args`
       : undefined;
 
-    const formMarkup = markupFactory({ exposedVariables, availableConstants });
+    const formMarkup = markupFactory({ fbf, exposedVariables, availableConstants });
     return (
       <GenericArgumentsEditor
         model={model}
@@ -59,12 +62,13 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
   availableConstants,
 }) => {
   const { styles } = useStyles();
+  const fbf = useFormBuilderFactory();
 
   const argumentsEditor = useMemo(() => {
     const settingsFormFactory = action.argumentsFormFactory
       ? action.argumentsFormFactory
       : action.argumentsFormMarkup
-        ? getDefaultFactory(action, readOnly)
+        ? getDefaultFactory(fbf, action, readOnly)
         : null;
 
     const onCancel = (): void => {

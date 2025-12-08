@@ -7,7 +7,7 @@ import React, {
 import { FormIdentifier } from '@/interfaces';
 import { IConfigurableActionConfiguration, useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { IKeyValue } from '@/interfaces/keyValue';
-import { navigateArgumentsForm } from './actions/navigate-arguments';
+import { getNavigateArgumentsForm } from './actions/navigate-arguments';
 import { IShaRouter, ShaRouterContext } from './contexts';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { ShaRouter } from './router';
@@ -67,7 +67,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
           ? shaRouter.goingToRoute(url)
           : Promise.reject('Common:Navigate: url is empty');
       },
-      argumentsFormMarkup: navigateArgumentsForm,
+      argumentsFormMarkup: getNavigateArgumentsForm,
     },
   );
 

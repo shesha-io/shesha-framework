@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { CSSProperties, FC } from 'react';
 import { IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
 import { IInputStyles, IStyleType, useSheshaApplication, useStoredFilesStore } from '@/providers';
@@ -28,6 +28,7 @@ export interface ICustomFileProps extends IInputStyles {
   container?: IStyleType;
   primaryColor?: string;
   enableStyleOnReadonly?: boolean;
+  downloadedFileStyles?: CSSProperties;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {
@@ -45,28 +46,27 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
 
   return (
-    <div className="stored-files-renderer-wrapper">
-      <StoredFilesRendererBase
-        {...props}
-        isStub={props.isStub}
-        disabled={props.disabled || !props.allowAdd}
-        isDragger={props?.isDragger}
-        fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
-        allowUpload={false}
-        allowDelete={props.allowDelete}
-        deleteFile={deleteFile}
-        uploadFile={props.uploadFile ?? uploadFile}
-        downloadZipFile={downloadZipFile}
-        downloadZip={props.downloadZip}
-        downloadFile={downloadFile}
-        isDownloadingFileListZip={downloadZip}
-        isDownloadZipSucceeded={downloadZipSuccess}
-        allowedFileTypes={props?.allowedFileTypes}
-        maxHeight={props?.maxHeight}
-        layout={props?.filesLayout}
-        listType={props?.listType}
-      />
-    </div>
+    <StoredFilesRendererBase
+      {...props}
+      isStub={props.isStub}
+      disabled={props.disabled || !props.allowAdd}
+      isDragger={props?.isDragger}
+      fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
+      allowUpload={false}
+      allowDelete={props.allowDelete}
+      deleteFile={deleteFile}
+      uploadFile={props.uploadFile ?? uploadFile}
+      downloadZipFile={downloadZipFile}
+      downloadZip={props.downloadZip}
+      downloadFile={downloadFile}
+      isDownloadingFileListZip={downloadZip}
+      isDownloadZipSucceeded={downloadZipSuccess}
+      allowedFileTypes={props?.allowedFileTypes}
+      maxHeight={props?.maxHeight}
+      layout={props?.filesLayout}
+      listType={props?.listType}
+      downloadedFileStyles={props?.downloadedFileStyles}
+    />
   );
 };
 

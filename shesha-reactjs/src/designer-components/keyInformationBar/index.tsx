@@ -1,20 +1,18 @@
-import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
-import { BorderLeftOutlined } from '@ant-design/icons';
-import { nanoid } from '@/utils/uuid';
+import KeyInformationBar from '@/components/keyInformationBar';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import ParentProvider from '@/providers/parentProvider/index';
-import { IKeyInformationBarProps } from './interfaces';
-import KeyInformationBar from '@/components/keyInformationBar';
-import { removeComponents } from '../_common-migrations/removeComponents';
-import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import ParentProvider from '@/providers/parentProvider/index';
+import { nanoid } from '@/utils/uuid';
+import { BorderLeftOutlined } from '@ant-design/icons';
+import React from 'react';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { removeComponents } from '../_common-migrations/removeComponents';
+import { KeyInformationBarComponentDefinition, IKeyInformationBarProps } from './interfaces';
+import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 
-
-const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
+const KeyInformationBarComponent: KeyInformationBarComponentDefinition = {
   type: 'KeyInformationBar',
   isInput: false,
   name: 'Key Information Bar',
@@ -69,9 +67,9 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
 
     return tabsModel;
   },
-  settingsFormMarkup: () => getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   customContainerNames: ['columns'],
 };
 
-export default ColumnsComponent;
+export default KeyInformationBarComponent;

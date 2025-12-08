@@ -1,5 +1,6 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
-import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties, ReactElement, useMemo } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
@@ -26,6 +27,7 @@ import AttributeDecorator from '../attributeDecorator';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
+import { ConfigurationLoadingError } from '@/providers/configurationItemsLoader/errors';
 
 interface EntityForm {
   entityType: string | IEntityTypeIdentifier;
@@ -86,7 +88,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   onSelectionChange,
   ...props
 }) => {
-  const { styles } = useStyles();
+  const { styles, theme } = useStyles();
 
   let skipCache = false;
 
@@ -240,10 +242,31 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const fcContainerStyles = useFormComponentStyles({ ...props.container ?? {} });
 
   const isReady = (forms: EntityForm[]): void => {
-    if (!(!forms || forms.length === 0 || forms.find((x) => !x.formConfiguration))) {
+    // Check if all forms have finished loading (either successfully or with an error)
+    // A form is considered "loaded" when formConfiguration is not undefined
+    // (it can be null if there was an error, or a valid object if successful)
+    const allFormsProcessed = forms.every((x) => x.formConfiguration !== undefined);
+
+    if (allFormsProcessed) {
       updateRows();
       updateContent();
     }
+  };
+
+  const isValidFormId = (formId: FormIdentifier): boolean => {
+    if (!formId) return false;
+
+    // If it's a string, it should not be empty
+    if (typeof formId === 'string') {
+      return formId.trim().length > 0;
+    }
+
+    // If it's an object (FormFullName), it should have both name and module
+    if (typeof formId === 'object') {
+      return !!(formId.name && formId.module);
+    }
+
+    return false;
   };
 
   const getEntityForm = (entityType: string | IEntityTypeIdentifier, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
@@ -252,21 +275,36 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       entityForm = {
         entityType: typeof entityType === 'string' ? entityType : { ...entityType },
         formId: fId,
-        formConfiguration: null,
+        formConfiguration: undefined, // undefined means "not yet loaded", null means "failed to load"
         formType: fType,
       };
       entityForms.current.push(entityForm);
       if (!entityFormInfo?.current)
         entityFormInfo.current = entityForm;
     } else
-      return !!entityForm.formConfiguration;
+      return entityForm.formConfiguration !== undefined; // Return true if already processed (either loaded or failed)
 
-    if (!!entityForm.formId) {
+    if (!!entityForm.formId && isValidFormId(entityForm.formId)) {
       getFormAsync({ formId: entityForm.formId, skipCache })
         .then((response) => {
           entityForm.formConfiguration = response;
           isReady(entityForms.current);
+        })
+        .catch((error) => {
+          if (error instanceof ConfigurationLoadingError) {
+            console.error('Configuration loading error:', error.message, error.details);
+          } else {
+            console.error('Failed to load form configuration:', error);
+          }
+          // Set formConfiguration to null so it shows the "Form Not Found" placeholder
+          entityForm.formConfiguration = null;
+          isReady(entityForms.current);
         });
+    } else if (!!entityForm.formId && !isValidFormId(entityForm.formId)) {
+      // FormId exists but is invalid - don't attempt to fetch
+      console.warn('Invalid formId provided to DataList:', entityForm.formId);
+      entityForm.formConfiguration = null;
+      isReady(entityForms.current);
     } else {
       const entityTypeKey = getEntityTypeName(entityForm.entityType) ?? '';
       const cacheKey = `${entityTypeKey}_${fType ?? ''}`;
@@ -278,8 +316,27 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             entityForm.formId = e;
             entityForm.formConfiguration = response;
             isReady(entityForms.current);
+          })
+          .catch((error) => {
+            if (error instanceof ConfigurationLoadingError) {
+              console.error('Configuration loading error:', error.message, error.details);
+            } else {
+              console.error('Failed to load form configuration:', error);
+            }
+            // Set formConfiguration to null so it shows the "Form Not Found" placeholder
+            entityForm.formConfiguration = null;
+            isReady(entityForms.current);
           }),
-      );
+      ).catch((error) => {
+        if (error instanceof ConfigurationLoadingError) {
+          console.error('Configuration loading error (form ID):', error.message, error.details);
+        } else {
+          console.error('Failed to get form ID:', error);
+        }
+        // Set formConfiguration to null so it shows the "Form Not Found" placeholder
+        entityForm.formConfiguration = null;
+        isReady(entityForms.current);
+      });
 
       loadedFormId.current[`${entityForm.entityType}_${fType}`] = f;
     };
@@ -339,8 +396,53 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     let entityForm = entityForms.current.find((x) => isEntityTypeIdEqual(x.entityType, formEntityType) && x.formType === fType);
 
-    if (!entityForm?.formConfiguration?.markup)
-      return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
+    if (!entityForm?.formConfiguration?.markup) {
+      const isDesignMode = allData.form?.formMode === 'designer';
+
+      // In runtime mode, don't render anything if form is not configured
+      if (!isDesignMode) {
+        return null;
+      }
+
+      // In designer mode, show the configuration warning
+      return (
+        <div
+          style={{
+            padding: '16px 20px',
+            border: `2px dashed ${theme.colorWarning}`,
+            borderRadius: '8px',
+            backgroundColor: theme.colorWarningBg,
+            minHeight: '100px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+          }}
+        >
+          <div style={{ fontSize: '24px', color: theme.colorWarning, flexShrink: 0 }}>
+            ⚠️
+          </div>
+          <div style={{ flex: 1, textAlign: 'left' }}>
+            <div
+              style={{
+                fontWeight: 600,
+                fontSize: '14px',
+                marginBottom: '4px',
+              }}
+            >
+              Configuration Required
+            </div>
+            <div
+              style={{
+                fontSize: '13px',
+                lineHeight: '1.5',
+              }}
+            >
+              Please configure a valid Form ID in the DataList settings to display list items
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     const dblClick = (): boolean => {
       if (props.dblClickActionConfiguration) {
@@ -500,7 +602,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     return (
       <div key={`row-${index}`}>
         <ConditionalWrap
-          condition={selectionMode !== 'none'}
+          condition={selectionMode === 'multiple'}
           wrap={(children) => (
             <Checkbox
               className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}
@@ -519,6 +621,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               { selected },
             )}
             onClick={() => {
+              // For single and multiple selection modes, trigger selection when clicking on row
+              if (selectionMode === 'single' || selectionMode === 'multiple') {
+                onSelectRowLocal(index, item);
+              }
               // Trigger onListItemClick event
               if (onListItemClick) {
                 onListItemClick(index, item);
@@ -650,6 +756,16 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             Select All
           </Checkbox>
           <Divider />
+        </Show>
+        <Show when={canAddInline}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={onCreateClick}
+            style={{ marginLeft: '2px' }}
+          >
+            Add New Item
+          </Button>
         </Show>
       </div>
       <FormInfo visible={formInfoBlockVisible} formProps={{ ...(persistedFormProps as IPersistedFormProps) }}>

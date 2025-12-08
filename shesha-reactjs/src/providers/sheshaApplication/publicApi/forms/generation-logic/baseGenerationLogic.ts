@@ -7,6 +7,7 @@ import { PropertyMetadataDto } from "@/apis/metadata";
 import { IEntityMetadata } from "@/interfaces";
 import { IEntityTypeIdentifier } from "../../entities/models";
 import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
+import { FormBuilder, FormBuilderFactory } from "@/form-factory/interfaces";
 
 /**
  * Abstract base class for generation logic implementations
@@ -18,6 +19,12 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
    * Should match the `generationLogicTypeName` property in the template.
    */
   abstract readonly typeName: string;
+
+  protected fbf: FormBuilderFactory;
+
+  constructor(fbf: FormBuilderFactory) {
+    this.fbf = fbf;
+  }
 
   /**
    * Process the template markup with replacements and specialized logic
@@ -87,4 +94,8 @@ export abstract class BaseGenerationLogic implements GenerationLogic {
     metadataHelper: FormMetadataHelper,
     replacements?: object
   ): Promise<void>;
+
+  protected getFormBuilder(): FormBuilder {
+    return this.fbf();
+  }
 }

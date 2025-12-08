@@ -145,7 +145,19 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
         debouncedFetchItems();
       }
     }
-  }, [value, listFetcher.data?.result]);
+  }, [value]);
+
+  useEffect(() => {
+    // If value exists and has changed
+    if (Boolean(value) && value !== selectedItem.value) {
+      // try to find in the fetched items
+      const foundItem = fetchedItems?.find((item) => isEntityByEntityId(item, value));
+      if (foundItem) {
+        // set the selected item
+        setSelectedItem({ value: value, key: getDisplayText(foundItem), item: foundItem });
+      }
+    }
+  }, [listFetcher.data?.result]);
 
   const onSearch = (term): void => {
     debouncedFetchItems(term);

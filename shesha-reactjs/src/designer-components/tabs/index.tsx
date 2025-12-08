@@ -4,8 +4,7 @@ import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
-import { ITabsComponentProps } from './models';
-import { IToolboxComponent } from '@/interfaces';
+import { ITabsComponentProps, TabsComponentDefinition } from './models';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { nanoid } from '@/utils/uuid';
 import { Tabs, TabsProps } from 'antd';
@@ -22,7 +21,7 @@ import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
 type TabItem = TabsProps['items'][number];
 
-const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
+const TabsComponent: TabsComponentDefinition = {
   type: 'tabs',
   isInput: false,
   name: 'Tabs',
@@ -157,7 +156,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         mobile: { ...newModel.mobile, card: { ...initialCardStyle } },
       };
     }),
-  settingsFormMarkup: () => getSettings(),
+  settingsFormMarkup: getSettings,
   customContainerNames: ['tabs'],
   getContainers: (model) => {
     return model.tabs.map<IFormComponentContainer>((t) => ({ id: t.id }));

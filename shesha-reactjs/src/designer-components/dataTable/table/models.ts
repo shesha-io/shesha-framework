@@ -4,6 +4,8 @@ import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigura
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ICommonContainerProps } from '../../container/interfaces';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 
 export type RowDroppedMode = 'executeScript' | 'showDialog';
 
@@ -43,8 +45,39 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   rowAlternateBackgroundColor?: string;
   rowHoverBackgroundColor?: string;
   rowSelectedBackgroundColor?: string;
+
+  // Row dimensions
+  rowDimensions?: {
+    height?: string;
+    minHeight?: string;
+    maxHeight?: string;
+  };
+
+  // Row padding using styling box
+  rowStylingBox?: {
+    margin?: {
+      top?: string;
+      right?: string;
+      bottom?: string;
+      left?: string;
+    };
+    padding?: {
+      top?: string;
+      right?: string;
+      bottom?: string;
+      left?: string;
+    };
+  };
+
+  // Row border using standard border controls
+  rowBorderStyle?: IBorderValue;
+
+  // Deprecated properties - kept for backward compatibility
+  /** @deprecated Use rowDimensions.height instead */
   rowHeight?: string;
+  /** @deprecated Use rowStylingBox.padding instead */
   rowPadding?: string;
+  /** @deprecated Use rowBorderStyle instead */
   rowBorder?: string;
 
   // Overall table styling
@@ -52,9 +85,21 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   border?: IBorderValue;
   backgroundColor?: string;
   boxShadow?: string;
+  shadow?: IShadowValue;
   sortableIndicatorColor?: string;
   enableStyleOnReadonly?: boolean;
+
+  // Table settings nested structure for form binding
+  tableSettings?: {
+    rowHeight?: string;
+    rowPadding?: string;
+    rowBorder?: string;
+    headerFontSize?: string;
+    headerFontWeight?: string;
+  };
 }
 
 /** Table component props */
 export interface ITableComponentProps extends ITableComponentBaseProps, IConfigurableFormComponent {}
+
+export type TableComponentDefinition = ComponentDefinition<"datatable", ITableComponentProps>;

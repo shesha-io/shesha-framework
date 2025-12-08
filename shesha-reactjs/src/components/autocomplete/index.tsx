@@ -18,6 +18,11 @@ import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAuto
 import { useStyles } from './style';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
+const getNormalizedValues = (value: unknown): unknown[] => {
+  const values = Array.isArray(value) ? value : [value];
+  return values.filter((v) => v != null);
+};
+
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
   const { allowClear = true, style = {} } = props;
 
@@ -33,22 +38,22 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const keyPropName = props.keyPropName || (props.dataSourceType === 'entitiesList' ? 'id' : 'value');
   const displayPropName = props.displayPropName || (props.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
   // ---
-  const keyValueFunc: KayValueFunc = props.keyValueFunc ??
-    ((value: any) => getValueByPropertyName(value, keyPropName) ?? value);
-  const filterKeysFunc: FilterSelectedFunc = props.filterKeysFunc ??
-    ((value: any) => ({ in: [{ var: `${keyPropName}` }, Array.isArray(value) ? value.map((x) => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]] }));
-  const filterNotKeysFunc: FilterSelectedFunc = (value: any) => {
+  const keyValueFunc: KayValueFunc = useMemo(() => props.keyValueFunc ??
+    ((value: unknown) => String(getValueByPropertyName(value as Record<string, unknown>, keyPropName) ?? value)), [props.keyValueFunc, keyPropName]);
+  const filterKeysFunc: FilterSelectedFunc = useMemo(() => props.filterKeysFunc ??
+    ((value: unknown) => ({ in: [{ var: `${keyPropName}` }, Array.isArray(value) ? value.map((x) => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]] })), [props.filterKeysFunc, keyPropName, keyValueFunc, allData]);
+  const filterNotKeysFunc: FilterSelectedFunc = useMemo(() => (value: unknown) => {
     const filter = filterKeysFunc(value);
     return filter ? { "!": filter } : null;
-  };
-  const displayValueFunc: DisplayValueFunc = props.displayValueFunc ??
-    ((value: any) => (Boolean(value) ? getValueByPropertyName(value, displayPropName) ?? value?.toString() : ''));
-  const outcomeValueFunc: OutcomeValueFunc = props.outcomeValueFunc ??
+  }, [filterKeysFunc]);
+  const displayValueFunc: DisplayValueFunc = useMemo(() => props.displayValueFunc ??
+    ((value: unknown) => (Boolean(value) ? String(getValueByPropertyName(value as Record<string, unknown>, displayPropName) ?? value?.toString()) : '')), [props.displayValueFunc, displayPropName]);
+  const outcomeValueFunc: OutcomeValueFunc = useMemo(() => props.outcomeValueFunc ??
     // --- For backward compatibility
     (props.dataSourceType === 'entitiesList' && !props.keyPropName
-      ? (value: any) => ({ id: value.id, _displayName: getValueByPropertyName(value, displayPropName), _className: value._className })
+      ? (value: unknown) => ({ id: (value as Record<string, unknown>).id, _displayName: getValueByPropertyName(value as Record<string, unknown>, displayPropName), _className: (value as Record<string, unknown>)._className })
       // ---
-      : (value: any) => getValueByPropertyName(value, keyPropName) ?? value);
+      : (value: unknown) => getValueByPropertyName(value as Record<string, unknown>, keyPropName) ?? value), [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName]);
 
   // register columns
   useDeepCompareEffect(() => source?.registerConfigurableColumns(props.uid, getColumns(props.fields)), [props.fields]);
@@ -57,7 +62,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const [open, setOpen] = useState<boolean>(false);
   const [loadingValues, setLoadingValues] = useState<boolean>(false);
   const [loadingIndicator, setLoadingIndicator] = useState<boolean>(false);
-  const selected = useRef<Array<any>>([]);
+  const selected = useRef<Array<unknown>>([]);
   const lastSearchText = useRef<string>('');
   const [autocompleteText, setAutocompleteText] = useState(null);
 
@@ -75,8 +80,31 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     setLoadingValues(false);
   }, [source.error]);
 
-  // update local store of values details
+  // Complete loading when data source finishes loading (success or failure)
   useEffect(() => {
+    if (loadingValues && source?.tableData !== undefined) {
+      setLoadingValues(false);
+      setLoadingIndicator(false);
+
+      // Use loaded data or fallback to original values
+      if (source.tableData.length > 0) {
+        const foundValues = keys.map((x) => source.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x))
+          .filter((v) => v != null);
+        if (foundValues.length > 0) {
+          selected.current = foundValues;
+        } else {
+          // Use original values as fallback
+          selected.current = getNormalizedValues(props.value);
+        }
+      } else {
+        // Use original values as fallback
+        selected.current = getNormalizedValues(props.value);
+      }
+    }
+  }, [loadingValues, source?.tableData, keys, props.value, keyValueFunc, outcomeValueFunc, allData]);
+
+  // update local store of values details
+  useDeepCompareEffect(() => {
     if ((props.dataSourceType === 'entitiesList' && !isEntityTypeIdEmpty(props.entityType)) ||
       (props.dataSourceType === 'url' && props.dataSourceUrl)
     ) {
@@ -84,29 +112,59 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
         const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
 
+
+        // Check if we have a valid data source for loading
+        if (!source) {
+          // No data source available - use existing values if they have display info
+          setLoadingValues(false);
+          setLoadingIndicator(false);
+          if (props.value && hasDisplayName) {
+            selected.current = getNormalizedValues(props.value);
+          }
+          return;
+        }
+
         props.disableRefresh(false);
         const allExist = keys.every((x) => selected.current?.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
+
+        // Attempt to load if we don't have all the values resolved from the data source
         if (!loadingValues && !allExist) {
           setLoadingValues(true);
           const selectedFilter = filterKeysFunc(props.value);
-          source?.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
+
+          // Check if the source is ready for filtering
+          if (source.setPredefinedFilters) {
+            try {
+              source.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
+            } catch (error) {
+              console.error('Failed to set predefined filters:', error);
+              setLoadingValues(false);
+              setLoadingIndicator(false);
+              // Fallback to using existing values
+              if (props.value) {
+                selected.current = getNormalizedValues(props.value);
+              }
+            }
+          } else {
+            // Data source not ready - reset loading and use existing values
+            setLoadingValues(false);
+            setLoadingIndicator(false);
+            if (props.value) {
+              selected.current = getNormalizedValues(props.value);
+            }
+          }
         }
         if (props.dataSourceType === 'entitiesList' && hasDisplayName && !loadingValues && !selected.current?.length) {
           setLoadingIndicator(false);
-          const values = Array.isArray(props.value) ? props.value : [props.value];
+          const values = getNormalizedValues(props.value);
           selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
-        }
-        if (loadingValues) {
-          setLoadingIndicator(false);
-          setLoadingValues(false);
-          selected.current = keys.map((x) => source?.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
         }
       } else {
         setLoadingIndicator(false);
         setLoadingValues(false);
       }
     }
-  }, [props.value, source?.tableData, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
+  }, [props.value, source?.tableData, source?.isInProgress?.fetchTableData, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
 
   useEffect(() => {
     if (open) {
@@ -144,7 +202,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     selectRef.current.blur();
   };
 
-  const handleChange = (_value, option: any): void => {
+  const handleChange = (_value: unknown, option: unknown): void => {
     selected.current = Boolean(option)
       ? Array.isArray(option)
         ? (option as ISelectOption[]).map((o) => o.data)
@@ -171,7 +229,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       props.onChange(selectedValue);
   };
 
-  const renderOption = (row, index): JSX.Element => {
+  const renderOption = (row: unknown, index: React.Key): JSX.Element => {
     const value = outcomeValueFunc(row, allData);
     const key = keyValueFunc(value, allData);
     const label = displayValueFunc(row, allData);
@@ -182,7 +240,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   };
 
-  const renderGroupTitle = (value: any, propertyName: string): JSX.Element => {
+  const renderGroupTitle = (value: unknown, propertyName: string): JSX.Element => {
     if (value === null || value === undefined)
       return <Typography.Text type="secondary">(empty)</Typography.Text>;
     const column = source?.groupingColumns.find((c) => isDataColumn(c) && c.propertyName === propertyName);
@@ -238,7 +296,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     return selected.current.length === 1 ? displayValueFunc(selected.current[0], allData) : null;
   }, [selected.current]);
 
-  const shouldShowLoading = keys.length > 0 && (loadingIndicator || (!props.readOnly && loadingValues));
+  // Show loading when actively fetching data
+  const shouldShowLoading = (loadingIndicator || (!props.readOnly && loadingValues));
 
   if (shouldShowLoading) {
     return (
@@ -254,13 +313,13 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       return null;
     const readonlyValue = props.mode === 'multiple'
       ? selected.current?.map((x) => ({
-        label: loadingValues ? x?._displayName : displayValueFunc(x, allData),
+        label: loadingValues ? (x as Record<string, unknown>)?._displayName : displayValueFunc(x, allData),
         value: keyValueFunc(outcomeValueFunc(x, allData), allData),
       }))
       : {
         id: keyValueFunc(outcomeValueFunc(selected.current[0], allData), allData),
-        _displayName: loadingValues ? selected.current[0]?._displayName : displayValueFunc(selected.current[0], allData),
-        _className: selected.current[0]?._className,
+        _displayName: loadingValues ? (selected.current[0] as Record<string, unknown>)?._displayName : displayValueFunc(selected.current[0], allData),
+        _className: (selected.current[0] as Record<string, unknown>)?._className,
       };
 
     return (

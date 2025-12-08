@@ -1,6 +1,6 @@
 import { GroupOutlined } from '@ant-design/icons';
 import React from 'react';
-import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
+import { ICommonContainerProps, IContainerComponentProps } from '@/interfaces';
 import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -14,8 +14,9 @@ import { defaultStyles } from './data';
 import { removeUndefinedProps } from '@/utils/object';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles';
+import { ContainerComponentDefinition } from './interfaces';
 
-const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
+const ContainerComponent: ContainerComponentDefinition = {
   type: 'container',
   isInput: false,
   name: 'Container',
@@ -71,8 +72,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           }}
           style={{
             ...getStyle(model?.style, formData),
-            width: '100%',
-            height: '100%',
           }}
           noDefaultStyling={model.noDefaultStyling}
           className={cx(model.className, styles.container)}
@@ -82,8 +81,8 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       </ParentProvider>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<IContainerComponentProps>(0, (prev) => ({

@@ -1,9 +1,9 @@
 import { PropertyMetadataDto } from "@/apis/metadata";
-import { DesignerToolbarSettings, EditMode, IEntityMetadata } from "@/interfaces";
+import { EditMode, IEntityMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { FormMetadataHelper } from "../formMetadataHelper";
-import { IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
+import { IConfigurableColumnsProps, standardCellComponentTypes } from "@/providers/datatableColumnsConfigurator/models";
 import { findContainersWithPlaceholder, castToExtensionType, humanizeModelType, addDetailsPanel, getDataTypePriority, getColumnWidthByDataType } from "../viewGenerationUtils";
 import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson";
 import { ROW_COUNT } from "../../constants";
@@ -42,7 +42,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
       });
 
       // Add details panel - using shared function with filtered properties
-      addDetailsPanel(propertiesForDetailsPanel, markup, metadataHelper);
+      addDetailsPanel(propertiesForDetailsPanel, markup, metadataHelper, () => this.getFormBuilder());
 
       // Add child tables if configured
       if (extensionJson.addChildTables) {
@@ -113,7 +113,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
         console.warn(`No key information properties found for the key information bar. Requested properties: ${extensionJson.keyInformationBarProperties?.join(', ')}`);
         return usedKeyInfoPropertyPaths;
       } else {
-        const keyInfoBarBuilder = new DesignerToolbarSettings({});
+        const keyInfoBarBuilder = this.getFormBuilder();
 
         keyInfoBarBuilder.addKeyInformationBar({
           id: nanoid(),
@@ -124,8 +124,16 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           hidden: false,
           componentName: "keyInformationBar",
           columns: keyInfoProperties.map((prop, index) => {
-            const keyInfoBuilder = new DesignerToolbarSettings({});
+            const keyInfoBuilder = this.getFormBuilder();
             const count = index + 1;
+            const customDefaults = {
+              font: {
+                weight: '700',
+                size: 14,
+                color: '#000',
+                type: 'Segoe UI',
+              },
+            };
 
             keyInfoBuilder.addText({
               id: nanoid(),
@@ -139,10 +147,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               contentDisplay: 'content',
               textType: "span",
               color: 'default',
-              desktop: {
-                weight: 500,
-              },
-              strong: true,
+              desktop: { ...customDefaults },
+              tablet: { ...customDefaults },
+              mobile: { ...customDefaults },
             });
 
             metadataHelper.getConfigFields(prop, keyInfoBuilder, true);
@@ -175,7 +182,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
    * @param metadataHelper The metadata helper instance.
    */
   private async addChildTablesAsync(markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): Promise<void> {
-    const builder = new DesignerToolbarSettings({});
+    const builder = this.getFormBuilder();
 
     const childTableContainer = findContainersWithPlaceholder(markup, "//*CHILDTABLES*//");
 
@@ -192,7 +199,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
     if (entities.length > 0) {
       builder.addTabs({
         id: nanoid(),
-        tabType: "line",
+        tabType: "card",
         propertyName: "childTables",
         label: "Child Tables",
         editMode: 'inherited' as EditMode,
@@ -202,15 +209,15 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
         tabs: await Promise.all(entities.map(async (childTable, index) => {
           const nonFrameworkProperties = await metadataHelper.extractNonFrameworkProperties(childTable);
 
-          const childTableAccessoriesBuilder = new DesignerToolbarSettings({});
-          childTableAccessoriesBuilder.addQuickSearch({
+          const childTableAccessoriesBuilder = this.getFormBuilder();
+          childTableAccessoriesBuilder.addDatatableQuickSearch({
             id: nanoid(),
             componentName: 'childTableQuickSearch',
             propertyName: "childTableQuickSearch",
             version: 1,
           });
 
-          childTableAccessoriesBuilder.addTablePager({
+          childTableAccessoriesBuilder.addDatatablePager({
             id: nanoid(),
             propertyName: "childTablePager",
             componentName: 'childTablePager',
@@ -218,9 +225,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             version: 1,
           });
 
-          const childTableBuilder = new DesignerToolbarSettings({});
+          const childTableContainerBuilder = this.getFormBuilder();
 
-          childTableBuilder.addContainer({
+          childTableContainerBuilder.addContainer({
             id: nanoid(),
             propertyName: "childTableContainer",
             editMode: 'editable' as EditMode,
@@ -228,6 +235,10 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'right',
+            isDynamic: false,
+            desktop: {
+              stylingBox: '{"marginBottom":"14","marginRight":"14"}',
+            },
             components: childTableAccessoriesBuilder.toJson(),
           });
 
@@ -245,7 +256,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             return priorityA - priorityB;
           });
 
-          const columns: IConfigurableColumnsProps[] = sortedProperties.map((prop, idx) => {
+          const columns = sortedProperties.map<IConfigurableColumnsProps>((prop, idx) => {
             // Get column width based on data type
             const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
 
@@ -261,12 +272,19 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               minWidth: width.min,
               maxWidth: width.max,
               allowSorting: true,
+              displayComponent: { type: standardCellComponentTypes.defaultDisplay },
+              editComponent: { type: standardCellComponentTypes.notEditable },
+              createComponent: { type: standardCellComponentTypes.notEditable },
             };
           });
+          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
+          const dataTableName = `childTable${index + 1}`;
 
-          childTableBuilder.addDatatable({
+          const datatableBuilder = this.getFormBuilder();
+          datatableBuilder.addDatatable({
             id: nanoid(),
-            propertyName: "childTable",
+            propertyName: dataTableName,
+            componentName: dataTableName,
             canAddInline: 'yes',
             canEditInline: 'yes',
             canDeleteInline: 'yes',
@@ -283,9 +301,12 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             ],
           });
 
-          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
+          const contextComponents = [
+            ...childTableContainerBuilder.toJson(),
+            ...datatableBuilder.toJson(),
+          ];
 
-          const childTableContextBuilder = new DesignerToolbarSettings({});
+          const childTableContextBuilder = this.getFormBuilder();
           childTableContextBuilder.addDatatableContext({
             id: nanoid(),
             propertyName: "childTableContext",
@@ -319,7 +340,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               ],
             },
             entityType: extensionJson.childTablesList[index] || '',
-            components: childTableBuilder.toJson(),
+            components: contextComponents,
           });
 
           return {

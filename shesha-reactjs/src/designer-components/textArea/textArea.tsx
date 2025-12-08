@@ -1,4 +1,3 @@
-import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
@@ -6,10 +5,10 @@ import { TextAreaProps } from 'antd/lib/input';
 import React, { CSSProperties, ReactElement } from 'react';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { ITextAreaComponentProps } from './interfaces';
+import { ITextAreaComponentProps, TextAreaComponentDefinition } from './interfaces';
 import { ConfigurableFormItem } from '@/components';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import {
   migratePropertyName,
   migrateCustomFunctions,
@@ -37,12 +36,7 @@ const JsonTextArea: React.FC<IJsonTextAreaProps> = (props) => {
   );
 };
 
-interface ITextFieldComponentCalulatedValues {
-  defaultValue?: string;
-  eventHandlers?: IEventHandlers;
-}
-
-const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldComponentCalulatedValues> = {
+const TextAreaComponent: TextAreaComponentDefinition = {
   type: 'textArea',
   name: 'Text Area',
   isInput: true,
@@ -205,8 +199,8 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps, ITextFieldCo
       ...model,
     };
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default TextAreaComponent;

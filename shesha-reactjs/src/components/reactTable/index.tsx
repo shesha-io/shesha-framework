@@ -104,8 +104,10 @@ export const ReactTable: FC<IReactTableProps> = ({
   rowHeight,
   rowPadding,
   rowBorder,
+  rowBorderStyle,
   boxShadow,
   sortableIndicatorColor,
+  striped = true,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -131,8 +133,10 @@ export const ReactTable: FC<IReactTableProps> = ({
     rowHeight,
     rowPadding,
     rowBorder,
+    rowBorderStyle,
     boxShadow,
     sortableIndicatorColor,
+    striped,
   });
 
   const { setDragState } = useDataTableStore();
@@ -282,6 +286,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     rows,
     columns: tableColumns,
     toggleAllRowsSelected,
+    toggleRowSelected,
   } = useTable(
     {
       columns: preparedColumns,
@@ -420,8 +425,19 @@ export const ReactTable: FC<IReactTableProps> = ({
   const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
 
   const handleSelectRow = (row: Row<object>): void => {
-    if (!omitClick && !(canEditInline || canDeleteInline) && onSelectRow) {
-      onSelectRow(row?.index, row?.original);
+    if (!omitClick && !(canEditInline || canDeleteInline)) {
+      // For both single and multiple selection modes, update the row selection state
+      if (selectionMode === 'single' || selectionMode === 'multiple') {
+        if (selectionMode === 'single') {
+          // For single selection, first clear all selections then select this row
+          toggleAllRowsSelected(false);
+        }
+        toggleRowSelected(row.id);
+      }
+      // Call the onSelectRow callback
+      if (onSelectRow) {
+        onSelectRow(row?.index, row?.original);
+      }
     }
   };
 
@@ -611,6 +627,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         inlineSaveMode={inlineSaveMode}
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
+        striped={striped}
         onMouseOver={(activeCell, isContentOverflowing) => {
           setActiveCell(activeCell);
           setIsCellContentOverflowing(isContentOverflowing && activeCell?.current?.innerText);

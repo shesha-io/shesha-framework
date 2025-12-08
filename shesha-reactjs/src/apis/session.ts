@@ -7,6 +7,11 @@ export interface GrantedPermissionDto {
   permissionedEntity?: IEntityReferenceDto[] | null;
 }
 
+export interface InitializationErrorsInfoDto {
+  lastInitialization?: string;
+  errors?: string[] | null;
+}
+
 export interface UserLoginInfoDto {
   id?: number;
   accountFound?: boolean;
@@ -41,6 +46,7 @@ export interface GetCurrentLoginInfoOutput {
   application?: ApplicationInfoDto;
   user?: UserLoginInfoDto;
   tenant?: TenantLoginInfoDto;
+  initializationErrors?: InitializationErrorsInfoDto;
 }
 
 export type GetCurrentLoginInfoOutputAjaxResponse = IAjaxResponse<GetCurrentLoginInfoOutput>;

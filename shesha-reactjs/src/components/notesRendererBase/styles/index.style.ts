@@ -46,7 +46,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
   const commentList = cx(css`
     max-height: 480px;
-    overflow-y: scroll;
+    overflow-y: auto;
   `);
 
   const commentItemBody = css`

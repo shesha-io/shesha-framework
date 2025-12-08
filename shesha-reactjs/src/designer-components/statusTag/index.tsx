@@ -1,7 +1,6 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
-import { Alert } from 'antd';
 import React from 'react';
-import { useGlobalState, useFormData, useForm } from '@/providers';
+import { useGlobalState, useFormData } from '@/providers';
 import { evaluateString, validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
 import { getStyle } from '@/providers/form/utils';
@@ -26,11 +25,9 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
   Factory: ({ model }) => {
     const { globalState } = useGlobalState();
     const { data } = useFormData();
-    const { formMode } = useForm();
 
     const { override, value, color, valueSource } = model;
 
-    const allEmpty = [override, value, color].filter(Boolean)?.length === 0;
 
     // TODO: AS - review code from Luke and remove
     /** Used to inject table row in the status tag if rendered on databale. Uses data if not applicable **/
@@ -41,12 +38,6 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
         ? expression?.includes('{{') ? evaluateString(expression, data) : expression
         : '';
     };
-
-    if (allEmpty && valueSource === 'manual') {
-      return formMode === 'designer'
-        ? <Alert type="warning" message="Status tag not configured properly" />
-        : null;
-    }
 
     const evaluatedOverrideByExpression = getValueByExpression(override);
     const localValueByExpression = getValueByExpression(value?.toString());
@@ -80,14 +71,14 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
           <StatusTag
             {...props}
             style={getStyle(model?.style, data, globalState)}
-            value={model?.valueSource !== 'form' ? props.value : value}
+            value={valueSource === 'form' ? value : props.value}
           />
         )}
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IStatusTagProps>(0, (prev) => ({
       ...prev,

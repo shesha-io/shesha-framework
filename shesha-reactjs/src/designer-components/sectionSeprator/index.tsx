@@ -1,6 +1,5 @@
 import SectionSeparator from '@/components/sectionSeparator';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { IToolboxComponent } from '@/interfaces';
 import { StyleBoxValue, useFormData } from '@/providers';
 import { getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { LineOutlined } from '@ant-design/icons';
@@ -8,13 +7,13 @@ import React, { useMemo } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getFontStyle } from '../_settings/utils/font/utils';
-import { ISectionSeparatorComponentProps } from './interfaces';
+import { ISectionSeparatorComponentProps, SectionSeparatorComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { jsonSafeParse } from '@/utils/object';
 
-const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
+const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
   type: 'sectionSeparator',
   isInput: false,
   name: 'Section Separator',
@@ -61,8 +60,8 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       />
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => {
     return {
       ...model,

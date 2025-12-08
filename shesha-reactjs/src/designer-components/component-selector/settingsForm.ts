@@ -1,9 +1,8 @@
 import { nanoid } from '@/utils/uuid';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { FormRawMarkup } from '@/index';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: object): FormRawMarkup =>
-  new DesignerToolbarSettings(data)
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+  return fbf()
     .addPropertyAutocomplete({
       id: nanoid(),
       propertyName: 'propertyName',
@@ -111,3 +110,4 @@ export const getSettings = (data: object): FormRawMarkup =>
       validate: {},
     })
     .toJson();
+};

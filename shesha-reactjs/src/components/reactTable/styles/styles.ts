@@ -52,8 +52,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowHeight,
   rowPadding,
   rowBorder,
+  rowBorderStyle,
   boxShadow,
   sortableIndicatorColor,
+  striped: _striped,
 }: {
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
@@ -68,8 +70,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowHeight?: string;
   rowPadding?: string;
   rowBorder?: string;
+  rowBorderStyle?: IBorderValue;
   boxShadow?: string;
   sortableIndicatorColor?: string;
+  striped?: boolean;
 }) => {
   const {
     shaTable,
@@ -185,6 +189,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${tbody} {
           overflow-x: hidden;
+          ${backgroundColor ? `background-color: ${backgroundColor};` : ''}
 
           > .${shaSortable}:not(.${shaDragging}) {
             .${tr}.${trBody}:hover {
@@ -236,7 +241,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${tr} {
           ${rowHeight ? `height: ${rowHeight};` : 'height: 100%;'}
-          ${rowBorder ? `border: ${rowBorder};` : ''}
+          ${(() => {
+            // Prefer rowBorderStyle over rowBorder for full border control
+            if (rowBorderStyle) {
+              const borderStyles = getBorderStyle(rowBorderStyle, {});
+              return Object.entries(borderStyles)
+                .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`)
+                .join(' ');
+            }
+            // Fallback to simple border string
+            return rowBorder ? `border: ${rowBorder};` : '';
+          })()}
 
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
@@ -424,7 +439,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             display: inline-block;
             position: relative;
             z-index: -100;
-            background-color: ${backgroundColor} !important;
           }
 
           &.${boxShadowLeft} {
@@ -485,7 +499,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             display: inline-block;
             position: relative;
             z-index: 0;
-            background-color: ${backgroundColor} !important;
           }
           &.${boxShadowLeft} {
             box-shadow: 5px 0 3px -2px #ccc;

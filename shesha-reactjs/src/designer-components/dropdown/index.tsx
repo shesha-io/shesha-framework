@@ -6,8 +6,7 @@ import { DownSquareOutlined } from '@ant-design/icons';
 import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IDropdownComponentProps } from './model';
-import { IToolboxComponent } from '@/interfaces';
+import { DropdownComponentDefinition, IDropdownComponentProps } from './model';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { Dropdown } from '@/components/dropdown/dropdown';
@@ -15,15 +14,9 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles, defaultTagStyles } from './utils';
-import { CustomLabeledValue } from '@/components/refListDropDown/models';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
-interface ITextFieldComponentCalulatedValues {
-  eventHandlers?: { onChange: (value: CustomLabeledValue<any>, option: any) => any };
-  defaultValue?: any;
-}
-
-const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldComponentCalulatedValues> = {
+const DropdownComponent: DropdownComponentDefinition = {
   type: 'dropdown',
   isInput: true,
   isOutput: true,
@@ -77,8 +70,8 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IDropdownComponentProps>(0, (prev) => ({
       ...prev,

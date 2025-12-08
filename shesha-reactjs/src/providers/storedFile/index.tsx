@@ -248,7 +248,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
       formData.append('ownerType.name', ownerType.name);
       formData.append('ownerType.module', ownerType.module);
     } else {
-      formData.append('ownerType.fullClassName', ownerType);
+      formData.append('ownerType.entityType', ownerType);
     }
     if (fileCategory)
       appendIfDefined('filesCategory', fileCategory);

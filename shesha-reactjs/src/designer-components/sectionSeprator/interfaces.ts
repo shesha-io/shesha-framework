@@ -1,5 +1,6 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IFontValue } from '../_settings/utils/font/interfaces';
+import { ComponentDefinition } from '@/interfaces';
 
 export interface ISectionSeparatorComponentProps extends IConfigurableFormComponent {
   containerStyle?: string;
@@ -12,3 +13,5 @@ export interface ISectionSeparatorComponentProps extends IConfigurableFormCompon
   lineWidth?: string;
   lineHeight?: string;
 }
+
+export type SectionSeparatorComponentDefinition = ComponentDefinition<"sectionSeparator", ISectionSeparatorComponentProps>;

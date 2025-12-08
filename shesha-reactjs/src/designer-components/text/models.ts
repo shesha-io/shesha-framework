@@ -1,7 +1,8 @@
 
+import { ComponentDefinition } from '@/interfaces';
+import { IConfigurableFormComponent } from '@/providers';
 import { BaseType, EllipsisConfig } from 'antd/lib/typography/Base';
 import { CSSProperties } from 'react';
-import { IConfigurableFormComponent } from '@/providers';
 import { IShadowValue } from '../_settings/utils/shadow/interfaces';
 
 type LevelType = 1 | 2 | 3 | 4 | 5;
@@ -91,3 +92,5 @@ export interface ITextTypographyProps extends IConfigurableFormComponent {
   styles?: CSSProperties;
   shadow?: IShadowValue;
 }
+
+export type TextComponentDefinition = ComponentDefinition<"text", ITextTypographyProps>;

@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.Runtime.Session;
 using Hangfire.Dashboard;
+using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.Authorization.Users;
 using Shesha.Services;

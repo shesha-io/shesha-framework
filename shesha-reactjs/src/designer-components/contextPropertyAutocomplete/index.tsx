@@ -5,8 +5,7 @@ import { DataContextSelector } from '@/designer-components/dataContextSelector';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IConfigurableFormComponent, MetadataProvider } from '@/providers';
-import { IToolboxComponent } from '@/interfaces';
+import { MetadataProvider } from '@/providers';
 import { MetadataType } from '@/providers/metadata/contexts';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { useFormDesignerSettings } from '@/providers/formDesigner';
@@ -15,16 +14,9 @@ import { getValueFromPropertySettings } from '../_settings/utils';
 import { useStyles } from '../_settings/styles/styles';
 import { ConfigurableFormItem } from '@/components';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { ContextPropertyAutocompleteComponentDefinition, IContextPropertyAutocompleteComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
-
-export interface IContextPropertyAutocompleteComponentProps extends IConfigurableFormComponent {
-  dropdownStyle?: string;
-  mode?: 'single' | 'multiple';
-  modelType?: string | IEntityTypeIdentifier;
-  autoFillProps?: boolean;
-  styledLabel?: boolean;
-}
 
 
 export interface IContextPropertyAutocompleteProps extends Omit<IContextPropertyAutocompleteComponentProps, 'style' | 'dropdownStyle' | 'type'> {
@@ -173,19 +165,9 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
   );
 };
 
-interface IContextPropertyAutocompleteCalculatedModel {
-  componentName: string;
-  propertyName: string;
-  contextName: string;
-  style: CSSProperties;
-  dropdownStyle: CSSProperties;
-  modelType: string | IEntityTypeIdentifier;
-  setFieldsValue: (values: any) => void;
-}
-
 const emptyObj = {};
 
-const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAutocompleteComponentProps, IContextPropertyAutocompleteCalculatedModel> = {
+const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponentDefinition = {
   type: 'contextPropertyAutocomplete',
   name: 'Context Property Autocomplete',
   icon: <FileSearchOutlined />,

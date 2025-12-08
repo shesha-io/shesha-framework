@@ -254,7 +254,7 @@ export const defaultConfigFiller: {
   simpleOrPivot: 'simple',
   dataMode: 'entityType',
   entityType: 'Shesha.Domain.FormConfiguration',
-  axisProperty: 'versionStatus',
+  axisProperty: 'creationTime',
   valueProperty: 'id',
   aggregationMethod: 'count',
 };

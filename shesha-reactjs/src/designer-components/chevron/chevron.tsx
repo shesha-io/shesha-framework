@@ -30,7 +30,7 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (props) => getSettings(props),
+  settingsFormMarkup: getSettings,
   migrator: (m) => m
     .add<IChevronProps>(1, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };

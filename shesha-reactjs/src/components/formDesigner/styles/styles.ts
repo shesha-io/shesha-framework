@@ -1,5 +1,6 @@
 import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
 import { createStyles, sheshaStyles } from '@/styles';
+import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
 const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",
@@ -52,6 +53,8 @@ export const useStyles = (): typeof useStylesResponse => {
 };
 
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
+  const { SIDEBAR_BTN_HEIGHT, TOOLBAR_HEIGHT, HEADER_HEIGHT } = LAYOUT_CONSTANTS;
+
   const {
     shaHelpIcon,
     shaDragging,
@@ -90,7 +93,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     formName,
     formTitle,
     formNameParent,
-    // mainArea,
   } = useStyles().styles;
 
   const quickEditModal = cx("sha-designer-modal", css`
@@ -176,6 +178,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             overflow-y: auto; 
             overflow-x: hidden; 
             margin-bottom: 1rem;
+            ${sheshaStyles.thinScrollbars}
         }
         .${shaDesignerToolbar} {
             background: white;
@@ -254,7 +257,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         .${shaDesignerToolbox} {
-            height: 85vh;
             margin-bottom: 3rem;
             .${shaDatasourceTree} {
                 .${prefixCls}-tree-switcher-noop {
@@ -374,10 +376,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
             }
         }
-        
+
         .${designerWorkArea}{
             background-color: white;
-            height: 100%;
+            height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
             .${shaComponentsContainer} {
                 border-radius: 2px;
 
@@ -387,56 +389,34 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     color: darkgray;
                     padding: 10px;
                     height: 55px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
 
                 .${shaComponent} {
                     min-height: 30px;
                 }
-
-                /* Improve dropzone visibility during drag operations */
-                &.sha-components-container-inner {
-                    min-height: 20px;
-                    transition: background-color 0.2s ease, border 0.2s ease;
-
-                    &:empty {
-                        min-height: 40px;
-                        border: 2px dashed transparent;
-                        border-radius: 4px;
-                    }
-                }
-            }
-
-            /* Enhanced visual feedback when dragging */
-            &.${shaDragging} {
-                .${shaComponentsContainer} {
-                    &.sha-components-container-inner:empty {
-                        border-color: ${token.colorPrimary}40;
-                        background-color: ${token.colorPrimaryBg}20;
-                    }
-
-                    &.sha-components-container-inner:hover {
-                        border-color: ${token.colorPrimary};
-                        background-color: ${token.colorPrimaryBg}40;
-                    }
-                }
             }
 
             > div {
              height: 100%;
-             .sha-drop-hint {
-                display: none;
-             }
                 > div:not(.sha-drop-hint) {
                     min-height: 100vh;
                     height: 100%;
                 }
-                    
+
                 > .sha-components-container-inner:not(:has(.sha-component)) {
                     background: url("${getFormDesignerBackgroundSvg()}");
                     background-size: 25vw;
                     background-repeat: no-repeat;
                     background-position: 50% 50%;
                 }
+            }
+
+            /* Hide drop hint in main canvas when background SVG is showing */
+            > div > .${shaDropHint} {
+                display: none;
             }
         }
 

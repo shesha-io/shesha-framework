@@ -55,7 +55,6 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,
       ...styleProperties,
-      'mode',
       'dataSourceType',
       'dataSourceUrl',
       'entityType',

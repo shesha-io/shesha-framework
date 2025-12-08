@@ -1,8 +1,7 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IEventHandlers, getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SwitcherOutlined } from '@ant-design/icons';
@@ -10,14 +9,10 @@ import { Switch } from 'antd';
 import { SwitchChangeEventHandler, SwitchSize } from 'antd/lib/switch';
 import React, { useMemo } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { ISwitchComponentProps } from './interfaces';
+import { ISwitchComponentProps, SwitchComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 
-interface ISwitchComponentCalulatedValues {
-  eventHandlers: IEventHandlers;
-}
-
-const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponentCalulatedValues> = {
+const SwitchComponent: SwitchComponentDefinition = {
   type: 'switch',
   name: 'Switch',
   icon: <SwitcherOutlined />,
@@ -62,8 +57,8 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps, ISwitchComponent
       label: 'Switch',
     };
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<ISwitchComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISwitchComponentProps>(1, (prev) => migrateVisibility(prev))

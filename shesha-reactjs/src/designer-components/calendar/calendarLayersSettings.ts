@@ -1,9 +1,8 @@
-
-import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/es/form/Form';
 
-export const getSettings = (): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -11,7 +10,7 @@ export const getSettings = (): FormMarkupWithSettings => {
   const eventsTabId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -26,7 +25,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
@@ -85,7 +84,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             title: 'Data',
             id: dataTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'dataSource',
@@ -179,7 +178,11 @@ export const getSettings = (): FormMarkupWithSettings => {
                       mode: 'single',
                       description: 'Property that will be used to show when the event starts',
                       validate: { required: true },
-                      modelType: '{{data.entityType}}',
+                      modelType: {
+                        _code: 'return data?.entityType;',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                       autoFillProps: false,
                       jsSetting: false,
                     },
@@ -191,7 +194,11 @@ export const getSettings = (): FormMarkupWithSettings => {
                       mode: 'single',
                       description: 'Property that will be used to show when the event ends',
                       validate: { required: true },
-                      modelType: '{{data.entityType}}',
+                      modelType: {
+                        _code: 'return data?.entityType;',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                       autoFillProps: false,
                       jsSetting: false,
                     },
@@ -217,7 +224,11 @@ export const getSettings = (): FormMarkupWithSettings => {
                       mode: 'multiple',
                       description: 'List of all the properties you want to fetch',
                       validate: { required: true },
-                      modelType: '{{data.entityType}}',
+                      modelType: {
+                        _code: 'return data?.entityType;',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                       autoFillProps: false,
                       hidden: {
                         _code: 'return getSettingValue(data?.overfetch) !== true',
@@ -235,30 +246,22 @@ export const getSettings = (): FormMarkupWithSettings => {
             title: 'Events',
             id: eventsTabId,
             components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInputRow({
+              ...fbf()
+                .addConfigurableActionConfigurator({
                   id: nanoid(),
-                  parentId: nanoid(),
-                  inputs: [
-                    {
-                      type: 'configurableActionConfigurator',
-                      id: nanoid(),
-                      propertyName: 'onSelect',
-                      label: 'On Select',
-                      description: 'Action to be executed when the event is selected',
-                      jsSetting: false,
-                      hideLabel: true,
-                    },
-                    {
-                      type: 'configurableActionConfigurator',
-                      id: nanoid(),
-                      propertyName: 'onDblClick',
-                      label: 'On Double Click',
-                      description: 'Action to be executed when the event is double clicked',
-                      jsSetting: false,
-                      hideLabel: true,
-                    },
-                  ],
+                  parentId: eventsTabId,
+                  propertyName: 'onSelect',
+                  label: 'On Select',
+                  description: 'Action to be executed when the event is selected',
+                  jsSetting: false,
+                })
+                .addConfigurableActionConfigurator({
+                  id: nanoid(),
+                  parentId: eventsTabId,
+                  propertyName: 'onDblClick',
+                  label: 'On Double Click',
+                  description: 'Action to be executed when the event is double clicked',
+                  jsSetting: false,
                 })
                 .toJson(),
             ],
@@ -268,7 +271,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: nanoid(),

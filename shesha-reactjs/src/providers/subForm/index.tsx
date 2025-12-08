@@ -22,7 +22,7 @@ import { ISubFormProviderProps } from './interfaces';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { ISubFormActionsContext, ISubFormStateContext, SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
 import { subFormReducer } from './reducer';
-import { IConfigurableFormComponent, MetadataProvider, useDataContextManagerActionsOrUndefined, useSheshaApplication } from '@/providers';
+import { IConfigurableFormComponent, isConfigurableFormComponent, MetadataProvider, useDataContextManagerActionsOrUndefined, useSheshaApplication } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useDebouncedCallback } from 'use-debounce';
@@ -418,8 +418,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     const childIds = state.componentRelations[componentId];
 
     if (!childIds) return [];
-    const components = childIds.map((childId) => {
-      return state.allComponents[childId];
+    const components: IConfigurableFormComponent[] = [];
+    childIds.forEach((childId) => {
+      if (isConfigurableFormComponent(state.allComponents[childId]))
+        components.push(state.allComponents[childId]);
     });
     return components;
   };

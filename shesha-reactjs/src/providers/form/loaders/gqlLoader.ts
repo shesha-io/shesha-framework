@@ -8,7 +8,7 @@ import { gqlFieldsToString } from "../api";
 import { constructUrl } from "@/utils/fetchers";
 import { useState } from "react";
 import { useFormDesignerComponents } from '@/providers/form/hooks';
-import { IFormSettings, useMetadataDispatcher } from "@/providers";
+import { IFormSettings, isConfigurableFormComponent, useMetadataDispatcher } from "@/providers";
 import { EntityAjaxResponse } from "@/generic-pages/dynamic/interfaces";
 import { isDefined } from "@/utils/nullables";
 
@@ -126,7 +126,7 @@ export class GqlLoader implements IFormDataLoader {
     const { allComponents: components } = formFlatStructure;
     let fieldNames = [];
     for (const key in components) {
-      if (components.hasOwnProperty(key)) {
+      if (components.hasOwnProperty(key) && isConfigurableFormComponent(components[key])) {
         var model = components[key];
         var component = toolboxComponents[model.type];
 
@@ -149,7 +149,7 @@ export class GqlLoader implements IFormDataLoader {
     fieldNames = fieldNames.concat(gqlSettings?.fieldsToFetch ?? []);
 
     for (const id in components) {
-      if (components.hasOwnProperty(id)) {
+      if (components.hasOwnProperty(id) && isConfigurableFormComponent(components[id])) {
         const item = components[id];
         fieldNames = fieldNames.concat(this.#getFieldsFromCustomEvents(item.customEnabled));
         fieldNames = fieldNames.concat(this.#getFieldsFromCustomEvents(item.customVisibility));
@@ -173,6 +173,10 @@ export class GqlLoader implements IFormDataLoader {
     if (!formSettings.modelType) return Promise.resolve([]);
 
     const metadata = await getMetadata({ dataType: DataTypes.entityReference, modelType: formSettings.modelType });
+
+    if (!metadata) {
+      return Promise.resolve([]);
+    }
 
     let fields: IFieldData[] = [];
 
