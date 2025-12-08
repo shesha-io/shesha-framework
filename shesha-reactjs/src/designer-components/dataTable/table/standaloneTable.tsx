@@ -1,11 +1,10 @@
 import React, { FC } from 'react';
 import { ITableComponentProps } from './models';
-import { SearchOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { SearchOutlined, EditOutlined, DeleteOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { Popover } from 'antd';
 import { useForm } from '@/providers';
-import { useTheme } from '@/providers/theme';
 import { useDataTableStore } from '@/providers/dataTable';
-import { useDatatableHintPopoverStyles } from './hintPopoverStyles';
+import { useStyles } from '../tableContext/styles';
 
 // Ignore any configured items to ensure clean state when dragged outside
 const columns = [
@@ -21,14 +20,11 @@ const dummyRows = [
 
 export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
   const { formMode } = useForm();
-  const { theme } = useTheme();
+  const { styles } = useStyles();
   const store = useDataTableStore(false);
   const isDesignMode = formMode === 'designer';
   const hasNoColumns = !_props.items || _props.items.length === 0;
   const isInsideDataContext = !!store;
-
-  // Inject CSS for hint popover arrow styling
-  useDatatableHintPopoverStyles();
 
   const tableStyle: React.CSSProperties = {
     width: '100%',
@@ -78,8 +74,8 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
         <Popover
           placement="left"
           title="Hint:"
-          classNames={{ root: "sha-datatable-hint-popover" }}
-          styles={{ body: { backgroundColor: '#D9DCDC' } }}
+          classNames={{ body: styles.datatableHintPopover }}
+          rootClassName={styles.datatableHintPopover}
           content={isInsideDataContext ? (
             <p>
               This Data Table has no columns configured.<br />
@@ -118,12 +114,12 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
             </p>
           )}
         >
-          <InfoCircleOutlined
+          <InfoCircleFilled
             style={{
               position: 'absolute',
               top: '4px',
               right: '4px',
-              color: theme?.application?.warningColor || '#faad14',
+              color: '#faad14',
               fontSize: '20px',
               zIndex: 9999,
               cursor: 'help',
