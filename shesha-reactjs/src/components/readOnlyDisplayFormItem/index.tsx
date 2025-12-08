@@ -101,7 +101,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
           return dropdownDisplayMode === 'raw'
             ? <InputField style={style} value={values?.join(', ')} />
             : (
-              <div style={{ ...style, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, justifyContent: style?.textAlign }}>
+              <div className={styles.wrapper} style={{  ...style }}>
                 {value?.map(({ label, color, icon, value, description }) => {
                   return (
                     <ReflistTag
