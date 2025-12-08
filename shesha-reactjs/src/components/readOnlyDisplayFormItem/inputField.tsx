@@ -8,12 +8,12 @@ interface IInputFieldProps {
 }
 
 function InputField({ value, style, children }: IInputFieldProps): JSX.Element {
-  const { styles } = useStyles();
+  const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
 
-  const { fontSize, fontWeight, color, fontFamily, textAlign, height } = style || {};
+  const { fontSize, fontWeight, color, fontFamily, height } = style || {};
 
   return value || children ? (
-    <div style={{ padding: '4px', ...style, height: height, display: 'flex', alignItems: 'center', justifyContent: textAlign }}>
+    <div style={{ ...style }} className={styles.wrapper}>
       <div className={styles.inputField} style={{ fontSize, fontWeight, color, fontFamily, whiteSpace: height === 'auto' ? 'pre-wrap' : 'nowrap', flex: 'none' }}>{value || children}</div>
     </div>
   ) : null;
