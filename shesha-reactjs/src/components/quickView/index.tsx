@@ -85,9 +85,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
   // Sync formTitle with displayName prop
   useEffect(() => {
-    if (displayName) {
-      setFormTitle(displayName);
-    }
+    setFormTitle(displayName);
   }, [displayName]);
 
   useEffect(() => {
