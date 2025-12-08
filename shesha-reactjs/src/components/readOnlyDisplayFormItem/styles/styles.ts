@@ -1,7 +1,13 @@
 import { createStyles, sheshaStyles, getTextHoverEffects } from '@/styles';
+import { CSSProperties } from 'react';
 
+interface UseStylesParams {
+  textAlign?: CSSProperties['textAlign'];
+};
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }, { textAlign }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: UseStylesParams) => {
+  const { textAlign } = params;
+
   const readOnlyModeToggler = "read-only-mode-toggler";
   const readOnlyDisplayFormItem = cx("read-only-display-form-item", css`
         width: 100%;
