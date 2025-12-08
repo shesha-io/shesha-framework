@@ -303,7 +303,18 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
 
   if (formConfig === null) {
     return (
-      <Popover content="Quickview not configured properly" title="Quickview not configured properly"></Popover>
+      <Popover content="Quickview not configured properly" title="Quickview not configured properly">
+        <Button
+          type="link"
+          className={styles.innerEntityReferenceButtonBoxStyle}
+          style={props.style}
+          aria-label="Quickview configuration error"
+        >
+          <span className={styles.innerEntityReferenceSpanBoxStyle}>
+            {props.displayName || 'Configuration Error'}
+          </span>
+        </Button>
+      </Popover>
     );
   }
 
