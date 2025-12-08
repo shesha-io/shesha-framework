@@ -83,6 +83,13 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const { notification } = App.useApp();
   const { styles } = useStyles();
 
+  // Sync formTitle with displayName prop
+  useEffect(() => {
+    if (displayName) {
+      setFormTitle(displayName);
+    }
+  }, [displayName]);
+
   useEffect(() => {
     // Skip markup fetch when using formArguments - the ConfigurableForm will handle loading via formId
     if (formArguments) {
@@ -116,6 +123,13 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     } else if (!formArguments && !formData && entityId && formMarkup) {
       // Fallback to manual data fetching for backward compatibility
       const getUrl = getEntityUrl ?? formMarkup?.formSettings?.getUrl;
+
+      // If no GET URL is available, show form without data
+      if (!getUrl && !getEntityUrl) {
+        setLoadingState('success');
+        return;
+      }
+
       const fetcher = getUrl
         ? get(getUrl, { id: entityId }, { base: backendUrl, headers: httpHeaders })
         : entitiesGet({ id: entityId, ...getEntityTypeIdentifierQueryParams(entityType) }, { base: backendUrl, headers: httpHeaders });
@@ -130,13 +144,16 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
           notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> });
         });
       setLoadingState('loading');
+    } else if (!formArguments && formMarkup && !entityId) {
+      // Form is loaded but no entityId - show form without data
+      setLoadingState('success');
     }
   }, [entityId, getEntityUrl, formMarkup, formArguments, backendUrl, httpHeaders, entityType, displayProperty, notification, formIdentifier]);
 
   const formContent = useMemo(() => {
     // When using formArguments, require formIdentifier (data will be loaded by form's data loader)
-    // When not using formArguments, require both formMarkup and formData (backward compatibility)
-    const canRenderForm = formArguments ? formIdentifier : (formMarkup && formData);
+    // When not using formArguments, require formMarkup (formData is optional for empty forms)
+    const canRenderForm = formArguments ? formIdentifier : formMarkup;
 
     return canRenderForm ? (
       <div className={styles.formLabel}>
@@ -194,11 +211,15 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       );
     }
 
-    const ifLoadingStateSuccess = (): ReactNode => loadingState === 'success' ? (
-      <span className={styles.innerEntityReferenceSpanBoxStyle}>{formTitle || emptyText}</span>
-    ) : (
-      <span className={styles.innerEntityReferenceSpanBoxStyle}>Quickview not configured properly</span>
-    );
+    const ifLoadingStateSuccess = (): ReactNode => {
+      if (loadingState === 'success') {
+        return <span className={styles.innerEntityReferenceSpanBoxStyle}>{formTitle || displayName || emptyText}</span>;
+      }
+      if (loadingState === 'error') {
+        return <span className={styles.innerEntityReferenceSpanBoxStyle}>Quickview not configured properly</span>;
+      }
+      return null;
+    };
 
     return (
       <Button type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={style}>

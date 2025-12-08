@@ -69,6 +69,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
                 <GenericQuickView
                   entityId={entityId}
                   entityType={className}
+                  formIdentifier={quickviewFormPath}
                   displayName={displayName}
                   displayProperty={quickviewDisplayPropertyName}
                   width={quickviewWidth}
