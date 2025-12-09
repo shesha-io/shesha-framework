@@ -161,7 +161,10 @@ export class FormMetadataHelper {
       label: property.label,
       editMode: isReadOnly ? 'readOnly' as EditMode : 'inherited' as EditMode,
       hideLabel: isReadOnly,
-      hidden: false,
+      hidden: !property.isVisible,
+      validate: {
+        required: property.required,
+      },
       hideBorder: isReadOnly,
       componentName: toCamelCase(property.path || ""),
     };
