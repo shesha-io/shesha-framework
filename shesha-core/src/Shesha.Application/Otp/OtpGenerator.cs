@@ -19,8 +19,9 @@ namespace Shesha.Otp
             var random = new Random();
             var password = new StringBuilder();
 
-            var alphabet = _userManagementSettings.DefaultAuthentication.GetValue().Alphabet;
-            var passwordLength = _userManagementSettings.DefaultAuthentication.GetValue().PasswordLength;
+            var authSettings = _userManagementSettings.DefaultAuthentication.GetValue();
+            var alphabet = authSettings.Alphabet;
+            var passwordLength = authSettings.PasswordLength;
 
             for (int i = 0; i < passwordLength; i++)
             {

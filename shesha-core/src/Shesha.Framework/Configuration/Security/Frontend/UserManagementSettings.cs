@@ -33,7 +33,7 @@ namespace Shesha.Configuration.Security.Frontend
         /// Default role assigned to newly registered users
         /// </summary>
         [Display(Name = "Default role")]
-        public List<Guid?> DefaultRoles { get; set; }
+        public List<Guid?> DefaultRoles { get; set; } = new();
 
         /// <summary>
         /// Creation mode (Always, Must already exist, Create new but link if exist)
@@ -44,6 +44,6 @@ namespace Shesha.Configuration.Security.Frontend
         /// <summary>
         /// The type of Person entity that will be created upon creation of the account
         /// </summary>
-        public GenericEntityReference PersonEntityType { get; set; }
+        public GenericEntityReference? PersonEntityType { get; set; }
     }
 }
