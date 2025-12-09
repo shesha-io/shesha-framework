@@ -211,7 +211,7 @@ namespace Shesha.Metadata
             var (module, name) = ParseContainer(container);
             var containerType = await _metadataProvider.GetContainerTypeAsync(module, name);
             var properties = await _metadataProvider.GetPropertiesAsync(containerType);
-            var nonFrameworkRelatedProperties = properties.Where(x => x.IsFrameworkRelated == false).ToList();
+            var nonFrameworkRelatedProperties = properties.Where(x => x.IsFrameworkRelated == false && x.IsVisible).ToList();
             return FilterProperties(nonFrameworkRelatedProperties, term, selectedValue);
         }
 
