@@ -49,7 +49,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { formData } = useShaFormInstance();
-    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
+    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize, buttonText, buttonTextReadOnly, title,
 
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true, settings, templateSettings } = props;
@@ -181,7 +181,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'filtersList':
             return <FiltersList readOnly={readOnly}  {...props} />;
         case 'buttonGroupConfigurator':
-            return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
+            return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} buttonText={buttonText} buttonTextReadOnly={buttonTextReadOnly} title={title} />;
         case 'editModeSelector':
             return <EditModeSelector readOnly={readOnly} value={value} onChange={onChange} size={size} />;
         case 'dynamicItemsConfigurator':
