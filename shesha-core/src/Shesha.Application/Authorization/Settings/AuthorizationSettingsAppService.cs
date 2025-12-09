@@ -19,6 +19,10 @@ namespace Shesha.Authorization.Settings
         public async Task UpdateSettingsAsync(AuthorizationSettingsDto dto)
         {
             var existingSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+            if (existingSettings == null)
+            {
+                existingSettings = new DefaultAuthenticationSettings();
+            }
 
             // Default Authentication
             await _userManagementSettings.DefaultAuthentication.SetValueAsync(new DefaultAuthenticationSettings
