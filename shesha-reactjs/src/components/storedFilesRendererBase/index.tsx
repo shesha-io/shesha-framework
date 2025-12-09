@@ -130,7 +130,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   gap,
   enableStyleOnReadonly = true,
   downloadedFileStyles,
-  styleDownloadedFiles = true,
+  styleDownloadedFiles = false,
   downloadedIcon = 'CheckCircleOutlined',
   ...rest
 }) => {
