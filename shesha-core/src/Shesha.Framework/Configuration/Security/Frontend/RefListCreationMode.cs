@@ -29,7 +29,7 @@ namespace Shesha.Configuration.Security.Frontend
         MustAlreadyExist = 1,
 
         /// <summary>
-        /// Will first search of an existing Person entity with the specified username.
+        /// Will first search for an existing Person entity with the specified username.
         /// If one is found, the user account will be linked to it, otherwise a new one will be created.
         /// </summary>
         [Description("Create new but link if already exist")]

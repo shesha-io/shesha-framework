@@ -9,7 +9,7 @@ namespace Shesha.Configuration.Security.Frontend
     public class UserManagementSettings
     {
         /// <summary>
-        /// 
+        /// Indicates whether additional registration information is required during user registration.
         /// </summary>
         public bool AdditionalRegistrationInfo { get; set; }
         /// <summary>
@@ -30,7 +30,7 @@ namespace Shesha.Configuration.Security.Frontend
         public string? AllowedEmailDomains { get; set; } = string.Empty;
 
         /// <summary>
-        /// Dedault role assigned to newly registered users
+        /// Default role assigned to newly registered users
         /// </summary>
         [Display(Name = "Default role")]
         public List<Guid?> DefaultRoles { get; set; }
