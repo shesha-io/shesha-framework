@@ -1,9 +1,10 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
-import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Alert, Button, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
+import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance, useTheme } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
@@ -101,6 +102,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const rows = useRef<React.JSX.Element[]>(null);
 
   const shaForm = useShaFormInstance();
+
+  const { theme } = useTheme();
 
   useDeepCompareEffect(() => {
     entityForms.current = [];
@@ -589,6 +592,17 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             Select All
           </Checkbox>
           <Divider />
+        </Show>
+        <Show when={canAddInline}>
+          <Button
+            type="text"
+            icon={<PlusCircleOutlined />}
+            onClick={onCreateClick}
+            // style color use primary color from theme
+            style={{ color: theme.application.primaryColor }}
+          >
+            Add New Item...
+          </Button>
         </Show>
       </div>
       <FormInfo visible={formInfoBlockVisible} formProps={{ ...(persistedFormProps as IPersistedFormProps) }}>
