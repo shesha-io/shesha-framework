@@ -77,6 +77,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
       ...model,
       buttonType: 'link',
       label: '',
+      editMode: "editable"
     };
   },
   settingsFormMarkup: getSettings,
