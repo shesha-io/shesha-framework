@@ -9,7 +9,7 @@ namespace Shesha.Configuration.Security.Frontend
     public class UserManagementSettings
     {
         /// <summary>
-        /// 
+        /// Indicates whether additional registration information is required during user registration.
         /// </summary>
         public bool AdditionalRegistrationInfo { get; set; }
         /// <summary>
