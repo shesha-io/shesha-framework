@@ -12,6 +12,8 @@ export interface IToolbarSettingsModal {
   onChange?: (newValue: ButtonGroupItemProps[]) => void;
   title?: ReactNode | string;
   size?: SizeType;
+  buttonText?: string;
+  buttonTextReadOnly?: string;
 }
 
 interface IButtonGroupConfiguratorProps extends IToolbarSettingsModal {
@@ -24,6 +26,8 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
   readOnly,
   size,
   title = 'Buttons Configuration',
+  buttonText = 'Customize Button Group',
+  buttonTextReadOnly = 'View Button Group',
 }) => {
   const isSmall = useMedia('(max-width: 480px)');
   const [showModal, setShowModal] = useState(false);
@@ -46,7 +50,7 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
 
   return (
     <Fragment>
-      <Button size={size} onClick={openModal}>{readOnly ? 'View Button Group' : 'Customize Button Group'}</Button>
+      <Button size={size} onClick={openModal}>{readOnly ? buttonTextReadOnly : buttonText }</Button>
 
       <Modal
         width={isSmall ? '90%' : '60%'}
