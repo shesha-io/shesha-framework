@@ -30,10 +30,9 @@ import { useStyles } from './styles';
 import { useMetadata } from '@/providers/metadata';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { Popover } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { useTheme } from '@/providers/theme';
+import { InfoCircleFilled } from '@ant-design/icons';
 import { StandaloneTable } from './standaloneTable';
-import { useDatatableHintPopoverStyles } from './hintPopoverStyles';
+import { useStyles as useTableContextStyles } from '../tableContext/styles';
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const { id, items, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
@@ -47,7 +46,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);
   const componentIdRef = useRef(id);
-  const { theme } = useTheme();
+  const { styles: tableContextStyles } = useTableContextStyles();
 
   // Reset auto-config flag when component ID changes (new DataTable instance)
   useEffect(() => {
@@ -56,9 +55,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
       hasAutoConfiguredRef.current = false;
     }
   }, [id]);
-
-  // Inject CSS for hint popover arrow styling
-  useDatatableHintPopoverStyles();
 
   // Process shadow settings using getShadowStyle utility
   const shadowStyles = useMemo(() => getShadowStyle(props?.shadow), [props?.shadow]);
@@ -290,8 +286,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
           <Popover
             placement="left"
             title="Hint:"
-            classNames={{ root: "sha-datatable-hint-popover" }}
-            styles={{ body: { backgroundColor: '#D9DCDC' } }}
+            rootClassName={tableContextStyles.datatableHintPopover}
             content={hasNoRepository ? (
               <p>
                 This Data Table is not inside a Data Context.<br />
@@ -316,7 +311,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
               </p>
             )}
           >
-            <InfoCircleOutlined
+            <InfoCircleFilled
               role="button"
               tabIndex={0}
               aria-label="Data table configuration help"
@@ -324,7 +319,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 position: 'absolute',
                 top: '4px',
                 right: '4px',
-                color: theme?.application?.warningColor || '#faad14',
+                color: '#faad14',
                 fontSize: '20px',
                 zIndex: 9999,
                 cursor: 'help',
