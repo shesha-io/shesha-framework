@@ -65,11 +65,13 @@ namespace Shesha.Authorization.Settings
             });
 
             // General Frontend Security Settings
-            await _userManagementSettings.GeneralFrontendSecuritySettings.SetValueAsync(new GeneralFrontendSecuritySettings
-            {
-                AutoLogoffAfterInactivity = dto.AutoLogoffAfterInactivity,
-                AutoLogoffTimeout = dto.AutoLogoffTimeout
-            });
+            var generalSettings = await _userManagementSettings.GeneralFrontendSecuritySettings.GetValueAsync()
+                                ?? new GeneralFrontendSecuritySettings();
+
+            generalSettings.AutoLogoffAfterInactivity = dto.AutoLogoffAfterInactivity;
+            generalSettings.AutoLogoffTimeout = dto.AutoLogoffTimeout;
+
+            await _userManagementSettings.GeneralFrontendSecuritySettings.SetValueAsync(generalSettings);
         }
 
         public async Task<AuthorizationSettingsDto> GetSettingsAsync()
