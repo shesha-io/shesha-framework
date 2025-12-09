@@ -7,6 +7,7 @@ import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/s
 import { IStoredFile } from '@/providers/storedFiles/contexts';
 import { FormIdentifier } from '@/providers/form/models';
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { buildUrl } from '@/utils/url';
 
 export interface IFileVersionsButtonProps {
   fileId: string;
@@ -67,7 +68,8 @@ export const fetchStoredFile = async (
   url: string,
   httpHeaders: Record<string, string> = {}
 ): Promise<string> => {
-  const response = await fetch(url, {
+  const fetchUrl = buildUrl(url, { skipMarkDownload: 'true' });
+  const response = await fetch(fetchUrl, {
     headers: { ...httpHeaders, "Content-Type": "application/octet-stream" },
   });
 
@@ -97,7 +99,7 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
     }
   };
 
-  const uploads = serverData?.result;
+  const uploads = serverData?.success ? serverData.result : [];
 
   const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto) => {
     onDownload(fileVersion.versionNo, fileVersion.fileName);

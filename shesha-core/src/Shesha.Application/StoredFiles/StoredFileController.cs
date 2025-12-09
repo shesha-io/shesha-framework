@@ -542,16 +542,16 @@ namespace Shesha.StoredFiles
             if (currentUserId == null)
                 return fileVersions.Select(GetFileDto).WhereNotNull().ToList();
 
-            var fileIds = fileVersions.Select(v => v.File.Id).ToList();
-            var downloadedFileIds = await _fileVersionDownloadRepository.GetAll()
-                .Where(x => x.CreatorUserId == currentUserId && fileIds.Contains(x.FileVersion.File.Id))
-                .Select(x => x.FileVersion.File.Id)
+            var versionIds = fileVersions.Select(v => v.Id).ToList();
+            var downloadedVersionIds = await _fileVersionDownloadRepository.GetAll()
+                .Where(x => x.CreatorUserId == currentUserId && versionIds.Contains(x.FileVersion.Id))
+                .Select(x => x.FileVersion.Id)
                 .ToListAsync();
 
             return fileVersions.Select(v =>
             {
                 var dto = GetFileDto(v);
-                dto!.UserHasDownloaded = downloadedFileIds.Contains(v.File.Id);
+                dto!.UserHasDownloaded = downloadedVersionIds.Contains(v.Id);
                 return dto;
             }).ToList();
         }
@@ -706,7 +706,7 @@ namespace Shesha.StoredFiles
             {
                 dto!.UserHasDownloaded = await _fileVersionDownloadRepository.GetAll()
                     .AnyAsync(x => x.CreatorUserId == currentUserId.Value &&
-                                   x.FileVersion.File.Id == storedFile.Id);
+                                   x.FileVersion.Id == fileVersion.Id);
             }
 
             return dto;
