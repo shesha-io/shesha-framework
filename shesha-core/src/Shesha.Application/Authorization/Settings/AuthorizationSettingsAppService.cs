@@ -18,28 +18,26 @@ namespace Shesha.Authorization.Settings
 
         public async Task UpdateSettingsAsync(AuthorizationSettingsDto dto)
         {
+            var existingSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
+
             // Default Authentication
             await _userManagementSettings.DefaultAuthentication.SetValueAsync(new DefaultAuthenticationSettings
             {
-                // Lockout
-                UserLockOutEnabled = dto.IsLockoutEnabled,
-                DefaultAccountLockoutSeconds = dto.DefaultAccountLockoutSeconds,
-                MaxFailedAccessAttemptsBeforeLockout = dto.MaxFailedAccessAttemptsBeforeLockout,
-
-                // Password complexity
-                RequireDigit = dto.RequireDigit,
-                RequireLowercase = dto.RequireLowercase,
-                RequiredLength = dto.RequiredLength,
-                RequireNonAlphanumeric = dto.RequireNonAlphanumeric,
-                RequireUppercase = dto.RequireUppercase,
-
-                // Password reset
-                UseResetPasswordViaEmailLink = dto.ResetPasswordWithEmailLinkIsSupported,
-                ResetPasswordEmailLinkLifetime = dto.ResetPasswordWithEmailLinkExpiryDelay,
-                UseResetPasswordViaSmsOtp = dto.ResetPasswordWithSmsOtpIsSupported,
-                ResetPasswordSmsOtpLifetime = dto.ResetPasswordWithSmsOtpExpiryDelay,
-                UseResetPasswordViaSecurityQuestions = dto.ResetPasswordWithSecurityQuestionsIsSupported,
-                ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed
+                // Preserve existing OTP and registration settings
+                RequireOtpVerification = existingSettings.RequireOtpVerification,
+                AllowLocalUsernamePasswordAuth = existingSettings.AllowLocalUsernamePasswordAuth,
+                UseDefaultRegistrationForm = existingSettings.UseDefaultRegistrationForm,
+                UserEmailAsUsername = existingSettings.UserEmailAsUsername,
+                CustomRegistrationForm = existingSettings.CustomRegistrationForm,
+                SupportedVerificationMethods = existingSettings.SupportedVerificationMethods,
+                PasswordLength = existingSettings.PasswordLength,
+                Alphabet = existingSettings.Alphabet,
+                DefaultLifetime = existingSettings.DefaultLifetime,
+                IgnoreOtpValidation = existingSettings.IgnoreOtpValidation,
+                DefaultSubjectTemplate = existingSettings.DefaultSubjectTemplate,
+                DefaultBodyTemplate = existingSettings.DefaultBodyTemplate,
+                DefaultEmailSubjectTemplate = existingSettings.DefaultEmailSubjectTemplate,
+                DefaultEmailBodyTemplate = existingSettings.DefaultEmailBodyTemplate
             });
 
             await _userManagementSettings.GeneralFrontendSecuritySettings.SetValueAsync(new GeneralFrontendSecuritySettings
