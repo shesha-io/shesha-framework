@@ -193,7 +193,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
    * @param metadataHelper The metadata helper instance.
    * @returns An object containing the component type and settings for inline editing.
    */
-  private getColumnEditorConfig(property: PropertyMetadataDto, metadataHelper: FormMetadataHelper): { type: string; settings?: any } {
+  private getColumnEditorConfig(property: PropertyMetadataDto, metadataHelper: FormMetadataHelper): { type: string; settings?: Record<string, unknown> } {
     const tempBuilder = this.getFormBuilder();
     metadataHelper.getConfigFields(property, tempBuilder, false);
     const componentConfigs = tempBuilder.toJson();
@@ -205,9 +205,11 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
     const component = componentConfigs[0];
     const { id, propertyName, componentName, ...settings } = component;
 
+    const typedSettings: Record<string, unknown> = settings;
+
     return {
       type: component.type,
-      settings: Object.keys(settings).length > 0 ? settings : undefined,
+      settings: Object.keys(typedSettings).length > 0 ? typedSettings : undefined,
     };
   }
 
