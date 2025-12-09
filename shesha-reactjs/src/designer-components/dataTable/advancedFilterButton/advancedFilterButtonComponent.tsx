@@ -77,7 +77,6 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
       ...model,
       buttonType: 'link',
       label: '',
-      editMode: "editable",
     };
   },
   settingsFormMarkup: getSettings,
@@ -85,7 +84,8 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
   migrator: (m) =>
     m
       .add<IButtonComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))
-      .add<IButtonComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
+      .add<IButtonComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))
+      .add<IButtonComponentProps>(5, (prev) => ({ ...prev, editMode: "editable"})),
 };
 
 export default AdvancedFilterButtonComponent;
