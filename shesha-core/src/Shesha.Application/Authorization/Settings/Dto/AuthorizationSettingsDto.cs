@@ -1,9 +1,4 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using Shesha.Configuration.Security.Frontend;
-using Shesha.EntityReferences;
-
-namespace Shesha.Authorization.Settings.Dto
 
 namespace Shesha.Authorization.Settings.Dto
 {
