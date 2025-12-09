@@ -37,9 +37,30 @@ namespace Shesha.Authorization.Settings
                 DefaultSubjectTemplate = existingSettings.DefaultSubjectTemplate,
                 DefaultBodyTemplate = existingSettings.DefaultBodyTemplate,
                 DefaultEmailSubjectTemplate = existingSettings.DefaultEmailSubjectTemplate,
-                DefaultEmailBodyTemplate = existingSettings.DefaultEmailBodyTemplate
+                DefaultEmailBodyTemplate = existingSettings.DefaultEmailBodyTemplate,
+
+                // Lockout settings from DTO
+                UserLockOutEnabled = dto.IsLockoutEnabled,
+                DefaultAccountLockoutSeconds = dto.DefaultAccountLockoutSeconds,
+                MaxFailedAccessAttemptsBeforeLockout = dto.MaxFailedAccessAttemptsBeforeLockout,
+
+                // Password complexity from DTO
+                RequireDigit = dto.RequireDigit,
+                RequireLowercase = dto.RequireLowercase,
+                RequireNonAlphanumeric = dto.RequireNonAlphanumeric,
+                RequireUppercase = dto.RequireUppercase,
+                RequiredLength = dto.RequiredLength,
+
+                // Password reset settings from DTO
+                UseResetPasswordViaEmailLink = dto.ResetPasswordWithEmailLinkIsSupported,
+                ResetPasswordEmailLinkLifetime = dto.ResetPasswordWithEmailLinkExpiryDelay,
+                UseResetPasswordViaSmsOtp = dto.ResetPasswordWithSmsOtpIsSupported,
+                ResetPasswordSmsOtpLifetime = dto.ResetPasswordWithSmsOtpExpiryDelay,
+                UseResetPasswordViaSecurityQuestions = dto.ResetPasswordWithSecurityQuestionsIsSupported,
+                ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed
             });
 
+            // General Frontend Security Settings
             await _userManagementSettings.GeneralFrontendSecuritySettings.SetValueAsync(new GeneralFrontendSecuritySettings
             {
                 AutoLogoffAfterInactivity = dto.AutoLogoffAfterInactivity,
