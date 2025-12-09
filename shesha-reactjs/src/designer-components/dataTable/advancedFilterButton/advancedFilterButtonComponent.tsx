@@ -87,7 +87,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
       .add<IButtonComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))
       .add<IButtonComponentProps>(5, (prev, context) => ({
         ...prev,
-        editMode: prev.editMode ?? (context.isNew ? 'editable' : undefined),
+        editMode: (context.isNew ? 'editable' : prev.editMode),
       })),
 };
 
