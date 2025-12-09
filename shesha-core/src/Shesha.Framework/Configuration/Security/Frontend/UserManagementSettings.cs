@@ -30,7 +30,7 @@ namespace Shesha.Configuration.Security.Frontend
         public string? AllowedEmailDomains { get; set; } = string.Empty;
 
         /// <summary>
-        /// Dedault role assigned to newly registered users
+        /// Default role assigned to newly registered users
         /// </summary>
         [Display(Name = "Default role")]
         public List<Guid?> DefaultRoles { get; set; }
