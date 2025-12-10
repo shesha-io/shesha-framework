@@ -362,7 +362,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
       return result;
     })
-    .add<IAttachmentsEditorProps>(14, (prev, context) => ({ ...prev, downloadZip: context.isNew ? false : prev.downloadZip})),
+    .add<IAttachmentsEditorProps>(14, (prev, context) => ({ ...prev, downloadZip: context.isNew ? false : prev.downloadZip })),
 };
 
 export default AttachmentsEditor;
