@@ -58,9 +58,11 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   gap?: number;
 }
 
+const EMPTY_ARRAY = [];
+
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   multiple = true,
-  fileList = [],
+  fileList = EMPTY_ARRAY,
   isDownloadingFileListZip,
   isDownloadZipSucceeded,
   deleteFile,
@@ -72,12 +74,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   fetchFilesError,
   downloadZipFileError,
   uploadBtnProps,
-  validFileTypes = [],
+  validFileTypes = EMPTY_ARRAY,
   maxFileLength = 0,
   isDragger = false,
   disabled,
   isStub = false,
-  allowedFileTypes = [],
+  allowedFileTypes = EMPTY_ARRAY,
   maxHeight,
   downloadZip,
   allowDelete,
