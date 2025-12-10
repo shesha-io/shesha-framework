@@ -381,9 +381,14 @@ namespace Shesha.DynamicEntities.Binder
                                                 }
                                                 else
                                                 {
-                                                    var newObject = JsonConvert.DeserializeObject(jproperty.Value.ToString(), property.PropertyType);
-                                                    if (await ValidateAsync(entity, jFullName, newObject, context))
-                                                        property.SetValue(entity, newObject);
+                                                    // Deserialize as List of objects to validate each items in the array (without deserialization transformation)
+                                                    var newListValidation = JsonConvert.DeserializeObject(jproperty.Value.ToString(), typeof(List<object>));
+                                                    if (await ValidateAsync(entity, jFullName, newListValidation, context))
+                                                    {
+                                                        // Deserialize as List of specific type to set the property value
+                                                        var newList = JsonConvert.DeserializeObject(jproperty.Value.ToString(), property.PropertyType);
+                                                        property.SetValue(entity, newList);
+                                                    }
                                                 }
                                             }
                                             break;
