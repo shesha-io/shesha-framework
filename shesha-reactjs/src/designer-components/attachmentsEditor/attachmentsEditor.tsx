@@ -361,7 +361,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       removeLegacyProperties(result);
 
       return result;
-    }),
+    })
+    .add<IAttachmentsEditorProps>(14, (prev, context) => ({ ...prev, downloadZip: context.isNew ? false : prev.downloadZip})),
 };
 
 export default AttachmentsEditor;
