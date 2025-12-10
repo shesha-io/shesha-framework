@@ -41,6 +41,7 @@ const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): st
             ? "'" + item.value.replaceAll("{", "' + ").replaceAll("}", " + '") + "'" // replace Mustache syntax if needed
             : item.value
         : item.value;
+      if (value === undefined || value === null || value === "") return; // skip empty values
       setValueByPropertyName(initialData, item.key, value);
     });
     const initialObjString = JSON.stringify(initialData, null, 4)
