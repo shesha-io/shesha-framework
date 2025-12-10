@@ -5,6 +5,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.EntityHistory;
 using Abp.Events.Bus.Entities;
+using NetTopologySuite.Index.HPRtree;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -167,6 +168,26 @@ namespace Shesha.EntityHistory
             return list;
         }
 
+        private string GetActorDisplayName(Person? person, Int64? userId)
+        {
+            return person?.FullName ?? $"UserId: {userId}";
+        }
+
+        private string? GetActorDisplayName(long? userId)
+        {
+            if (userId == null) 
+                return null;
+
+            var person = GetPersonByUserId(userId);
+            return GetActorDisplayName(person, userId);
+        }
+
+        private string GetActorDisplayName(IList<Person> list, long? userId)
+        {
+            var person = GetPersonByUserIdInternal(list, userId);
+            return GetActorDisplayName(person, userId);
+        }
+
         private async Task<(List<EntityHistoryItemDto>, DateTime)> GetEntityAuditAsync(Type? entityType, string? entityId, string childName = "", string[]? fields = null)
         {
 
@@ -190,7 +211,8 @@ namespace Shesha.EntityHistory
             foreach (var entityChange in changes)
             {
                 var changeSet = await _entityChangeSetRepository.GetAsync(entityChange.EntityChangeSetId);
-                var username = GetPersonByUserId(changeSet?.UserId);
+                var actorFullName = GetActorDisplayName(changeSet?.UserId);
+                var impersonatorFullName = GetActorDisplayName(changeSet?.ImpersonatorUserId);
 
                 entityType ??= await GetContainerTypeAsync(entityChange.EntityTypeFullName);
 
@@ -209,7 +231,8 @@ namespace Shesha.EntityHistory
                         EventType = entityHistoryEvent.EventType,
                         EventText = (entityHistoryEvent.EventName ?? $"{childName} Event").Trim(),
                         ExtendedDescription = entityHistoryEvent.Description,
-                        UserFullName = username?.FullName ?? $"UserId: {changeSet?.UserId}"
+                        UserFullName = actorFullName,
+                        ImpersonatorUserFullName = impersonatorFullName
                     });
                 }
 
@@ -237,7 +260,8 @@ namespace Shesha.EntityHistory
                             EventType = propAsEvent.EventType,
                             EventText = (propAsEvent.EventName ?? $"{childName} Update").Trim(),
                             ExtendedDescription = propAsEvent.Description,
-                            UserFullName = username?.FullName ?? $"UserId: {changeSet?.UserId}"
+                            UserFullName = actorFullName,
+                            ImpersonatorUserFullName = impersonatorFullName
                         });
 
                         // To the next property
@@ -312,7 +336,8 @@ namespace Shesha.EntityHistory
                         EventType = "",
                         EventText = ($"{childName} {itemEventText}").Trim(),
                         ExtendedDescription = entityChange.ChangeType == EntityChangeType.Created ? "" : description,
-                        UserFullName = username?.FullName ?? $"UserId: {changeSet?.UserId}"
+                        UserFullName = actorFullName,
+                        ImpersonatorUserFullName = impersonatorFullName
                     });
                 }
             }
@@ -327,7 +352,6 @@ namespace Shesha.EntityHistory
                         if (entityType != null && Parser.CanParseId(entityId, entityType) &&
                             await _dynamicRepository.GetAsync(entityType, entityId) is ICreationAudited obj)
                         {
-                            var createdBy = GetPersonByUserId(obj.CreatorUserId);
                             list.Add(new EntityHistoryItemDto()
                             {
                                 HistoryItemType = (int?)EntityHistoryItemType.Created,
@@ -335,7 +359,7 @@ namespace Shesha.EntityHistory
                                 EntityTypeFullName = entityType?.FullName,
                                 EntityId = entityId,
                                 EventText = string.IsNullOrEmpty(childName) ? "Created" : "Added",
-                                UserFullName = createdBy?.FullName ?? $"UserId: {obj.CreatorUserId}"
+                                UserFullName = GetActorDisplayName(obj.CreatorUserId)
                             });
                         }
                     }
@@ -425,7 +449,6 @@ namespace Shesha.EntityHistory
 
                 foreach (var childItem in childItems)
                 {
-                    var createdBy = GetPersonByUserIdInternal(persons, childItem.RelatedObject.CreatorUserId);
                     list.Add(new EntityHistoryItemDto()
                     {
                         HistoryItemType = (int?)EntityHistoryItemType.Added,
@@ -434,12 +457,11 @@ namespace Shesha.EntityHistory
                         EntityId = childItem.Id,
                         EventText = $"`{displayName}` added",
                         ExtendedDescription = childItem.Name,
-                        UserFullName = createdBy?.FullName ?? $"UserId: {childItem.RelatedObject.CreatorUserId}"
+                        UserFullName = GetActorDisplayName(persons, childItem.RelatedObject.CreatorUserId)
                     });
 
                     if (childItem.RelatedObject.IsDeleted)
                     {
-                        var deletedBy = GetPersonByUserIdInternal(persons, childItem.RelatedObject.DeleterUserId);
                         list.Add(new EntityHistoryItemDto()
                         {
                             HistoryItemType = (int?)EntityHistoryItemType.Removed,
@@ -448,14 +470,13 @@ namespace Shesha.EntityHistory
                             EntityId = childItem.Id,
                             EventText = $"`{displayName}` removed",
                             ExtendedDescription = childItem.Name,
-                            UserFullName = deletedBy?.FullName ?? $"UserId: {childItem.RelatedObject.DeleterUserId}"
+                            UserFullName = GetActorDisplayName(persons, childItem.RelatedObject.DeleterUserId)
                         });
                     }
                     else
                     {
                         if (childItem.InnerObject?.IsDeleted ?? false)
                         {
-                            var deletedBy = GetPersonByUserIdInternal(persons, childItem.InnerObject.DeleterUserId);
                             list.Add(new EntityHistoryItemDto()
                             {
                                 HistoryItemType = (int?)EntityHistoryItemType.Removed,
@@ -464,7 +485,7 @@ namespace Shesha.EntityHistory
                                 EntityId = childItem.Id,
                                 EventText = $"`{displayName}` removed",
                                 ExtendedDescription = $"`{childItem.Name}` was deleted",
-                                UserFullName = deletedBy?.FullName ?? $"UserId: {childItem.InnerObject.DeleterUserId}"
+                                UserFullName = GetActorDisplayName(persons, childItem.InnerObject.DeleterUserId)
                             });
                         }
                     }
@@ -611,7 +632,6 @@ namespace Shesha.EntityHistory
                             .FirstOrDefault()?.HistoryItemType != (int?)EntityHistoryItemType.Added
                     )
                     {
-                        var createdBy = GetPersonByUserIdInternal(persons, childItem.RelatedObject.CreatorUserId);
                         list.Add(new EntityHistoryItemDto()
                         {
                             HistoryItemType = (int?)EntityHistoryItemType.Added,
@@ -620,7 +640,7 @@ namespace Shesha.EntityHistory
                             EntityId = childItem.Id,
                             EventText = $"`{displayName}` added",
                             ExtendedDescription = childItem.Name,
-                            UserFullName = createdBy?.FullName ?? $"UserId: {childItem.RelatedObject.CreatorUserId}"
+                            UserFullName = GetActorDisplayName(persons, childItem.RelatedObject.CreatorUserId)
                         });
                     }
 
@@ -634,7 +654,6 @@ namespace Shesha.EntityHistory
                                 .FirstOrDefault()?.HistoryItemType != (int?)EntityHistoryItemType.Removed
                         )
                         {
-                            var deletedBy = GetPersonByUserIdInternal(persons, childItem.RelatedObject.DeleterUserId);
                             list.Add(new EntityHistoryItemDto()
                             {
                                 HistoryItemType = (int?)EntityHistoryItemType.Removed,
@@ -643,7 +662,7 @@ namespace Shesha.EntityHistory
                                 EntityId = childItem.Id,
                                 EventText = $"`{displayName}` removed",
                                 ExtendedDescription = $"`{childItem.Name}` was deleted",
-                                UserFullName = deletedBy?.FullName ?? $"UserId: {childItem.RelatedObject.DeleterUserId}"
+                                UserFullName = GetActorDisplayName(persons, childItem.RelatedObject.DeleterUserId)
                             });
                         }
                     }
@@ -747,7 +766,7 @@ namespace Shesha.EntityHistory
 
                 foreach (var childItem in childItems)
                 {
-                    var createdBy = GetPersonByUserIdInternal(persons, childItem.RelatedObject.CreatorUserId);
+                    
                     history.Add(new EntityHistoryItemDto()
                     {
                         HistoryItemType = (int?)EntityHistoryItemType.Added,
@@ -756,12 +775,11 @@ namespace Shesha.EntityHistory
                         EntityId = childItem.Id,
                         EventText = $"`{displayName}` added",
                         ExtendedDescription = childItem.Name,
-                        UserFullName = createdBy?.FullName ?? $"UserId: {childItem.RelatedObject.CreatorUserId}"
+                        UserFullName = GetActorDisplayName(persons, childItem.RelatedObject.CreatorUserId)
                     });
 
                     if (childItem.RelatedObject.IsDeleted)
                     {
-                        var deletedBy = GetPersonByUserIdInternal(persons, childItem.RelatedObject.DeleterUserId);
                         history.Add(new EntityHistoryItemDto()
                         {
                             HistoryItemType = (int?)EntityHistoryItemType.Deleted,
@@ -770,7 +788,7 @@ namespace Shesha.EntityHistory
                             EntityId = childItem.Id,
                             EventText = $"`{displayName}` deleted",
                             ExtendedDescription = childItem.Name,
-                            UserFullName = deletedBy?.FullName ?? $"UserId: {childItem.RelatedObject.DeleterUserId}"
+                            UserFullName = GetActorDisplayName(persons, childItem.RelatedObject.DeleterUserId)
                         });
                     }
                 }

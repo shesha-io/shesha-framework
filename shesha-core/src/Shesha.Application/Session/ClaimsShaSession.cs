@@ -53,7 +53,7 @@ namespace Shesha.Session
         public async Task<Person?> GetCurrentPersonOrNullAsync()
         {
             return UserId != null
-                ? await PersonRepository.GetAll().FirstOrDefaultAsync(p => p.User.Id == UserId.Value)
+                ? await PersonRepository.GetAll().FirstOrDefaultAsync(p => p.User != null && p.User.Id == UserId.Value)
                 : null;
         }
     }
