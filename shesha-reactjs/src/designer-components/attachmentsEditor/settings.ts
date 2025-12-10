@@ -201,7 +201,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   content: {
                     id: nanoid(),
                     components: [
-                      ...new DesignerToolbarSettings()
+                      ...fbf()
                         .addSettingsInputRow({
                           id: "customActionsPanel",
                           inputs: [
@@ -232,7 +232,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           parentId: 'customActionsPanel',
                           label: "Form Selection Mode",
                           tooltip: "Choose how to select the form for custom content",
-                          defaultValue: 'name',
                           dropdownOptions: [
                             { label: "Name", value: "name" },
                             { label: "Dynamic", value: "dynamic" }
