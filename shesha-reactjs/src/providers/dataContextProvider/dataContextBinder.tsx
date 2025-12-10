@@ -14,7 +14,6 @@ import {
   DataContextProviderActionsContext,
   DataContextProviderStateContext,
   DataContextType,
-  IDataContextFull,
   IDataContextProviderActionsContext,
   IDataContextProviderActionsContextOverride,
   IDataContextProviderStateContext,
@@ -129,11 +128,9 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   };
 
   const getFull: ContextGetFull = () => {
-    const data: IDataContextFull = getData();
-    const api = getApi();
-    if (api) 
-      data.api = api;
-    return data;
+    // Don't add api to data object - it triggers Proxy setters causing infinite loops
+    // The api is available separately via getApi() for consumers that need it
+    return getData();
   };
 
   const actionContext: IDataContextProviderActionsContext ={
