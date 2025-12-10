@@ -50,7 +50,7 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
 
   return (
     <Fragment>
-      <Button size={size} onClick={openModal}>{readOnly ? buttonTextReadOnly : buttonText }</Button>
+      <Button size={size} onClick={openModal}>{readOnly ? buttonTextReadOnly : buttonText}</Button>
 
       <Modal
         width={isSmall ? '90%' : '60%'}

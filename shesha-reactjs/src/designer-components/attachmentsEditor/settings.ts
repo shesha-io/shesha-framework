@@ -225,8 +225,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               type: 'switch',
                               description: 'Enable to show custom content below each file.',
                               jsSetting: false,
-                            }
-                          ]
+                            },
+                          ],
                         })
                         .addSettingsInput({
                           id: nanoid(),
@@ -237,7 +237,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           tooltip: "Choose how to select the form for custom content",
                           dropdownOptions: [
                             { label: "Name", value: "name" },
-                            { label: "Dynamic", value: "dynamic" }
+                            { label: "Dynamic", value: "dynamic" },
                           ],
                           hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false } as any,
                         })
@@ -251,7 +251,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               propertyName: "extraFormType",
                               label: "Form Type",
                               jsSetting: true,
-                            }
+                            },
                           ],
                           hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
                         })
@@ -264,8 +264,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               type: "formAutocomplete",
                               propertyName: "extraFormId",
                               label: "Form",
-                              jsSetting: true
-                            }
+                              jsSetting: true,
+                            },
                           ],
                           hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) === "dynamic";', _mode: 'code', _value: false } as any,
                         })
@@ -1026,12 +1026,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                   parentId: 'containerCustomStylePanel',
                                 })
-                                .toJson()
-                              ]
-                            }
+                                .toJson(),
+                              ],
+                            },
                           })
-                          .toJson()]
-                      }
+                          .toJson()],
+                      },
                     })
                     .addCollapsiblePanel({
                       id: nanoid(),
@@ -1052,7 +1052,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               type: "switch",
                               id: nanoid(),
                               label: 'Style Downloaded File',
-                              propertyName: 'styleDownloadedFiles'
+                              propertyName: 'styleDownloadedFiles',
                             },
                             {
                               id: nanoid(),
@@ -1060,8 +1060,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               label: 'Icon',
                               propertyName: 'downloadedIcon',
                               hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
-                            }
-                            ]
+                            },
+                            ],
                           })
                           .addCollapsiblePanel({
                             id: nanoid(),
@@ -1122,12 +1122,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       hideLabel: true,
                                       width: 60,
                                       dropdownOptions: textAlignOptions,
-                                    }
+                                    },
                                   ],
                                 })
-                                .toJson()
-                              ]
-                            }
+                                .toJson(),
+                              ],
+                            },
                           })
                           .addCollapsiblePanel({
                             id: nanoid(),
@@ -1148,18 +1148,18 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   hideLabel: false,
                                   label: 'Style',
                                   description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                  parentId: 'pnlDownloadedFileCustomStylePanel'
+                                  parentId: 'pnlDownloadedFileCustomStylePanel',
                                 })
-                                .toJson()
-                              ]
-                            }
+                                .toJson(),
+                              ],
+                            },
                           })
-                          .toJson()
-                        ]
-                      }
+                          .toJson(),
+                        ],
+                      },
                     })
-                    .toJson()]
-              }).toJson()]
+                    .toJson()],
+              }).toJson()],
           },
           {
             key: 'security',

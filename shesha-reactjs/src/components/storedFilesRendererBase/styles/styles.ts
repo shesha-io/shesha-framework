@@ -26,7 +26,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   ].join(' ');
 
   const fileName = cx("item-file-name", css`
-    display: ${ model.hideFileName ? 'none' : 'flex' };
+    display: ${model.hideFileName ? 'none' : 'flex'};
     color: ${color ?? token.colorPrimary} !important;
     font-size: ${fontSize ?? '14px'} !important;
     font-weight: ${fontWeight ?? '400'} !important;
@@ -51,7 +51,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   `);
 
   const fileNameWrapper = cx("file-name-wrapper", css`
-    display: ${ model.hideFileName ? 'none' : 'flex' };
+    display: ${model.hideFileName ? 'none' : 'flex'};
     cursor: pointer;
     &:hover {
       background-color: ${token.colorBgTextHover} !important;
@@ -81,7 +81,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .item-file-name {
-      display: ${ model.hideFileName ? 'none' : 'flex' };
+      display: ${model.hideFileName ? 'none' : 'flex'};
       color: ${downloadedFileStyles?.color ?? color} !important;
       font-size: ${downloadedFileStyles?.fontSize ?? fontSize} !important;
       font-weight: ${downloadedFileStyles?.fontWeight ?? fontWeight} !important;

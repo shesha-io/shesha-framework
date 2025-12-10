@@ -1,6 +1,6 @@
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import { DataTypes, extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces';
+import { DataTypes, IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
@@ -50,14 +50,13 @@ import { addFile, normalizeFileName, removeFile, updateAllFilesDownloaded, updat
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
-import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty, isEntityTypeIdentifier } from '../metadataDispatcher/entities/utils';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 
+import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 export interface IStoredFilesProviderProps {
   name?: string;
   ownerId: string;
-  ownerType: string | IEntityTypeIdentifier;
+  ownerType: string;
   ownerName?: string;
   filesCategory?: string;
   propertyName?: string;
@@ -65,8 +64,8 @@ export interface IStoredFilesProviderProps {
 
   // used for requered field validation
   value?: IStoredFile[];
-  onChange?: (fileList: IStoredFile[], isUserAction?: boolean) => void;
-  onDownload?: (fileList: IStoredFile[], isUserAction?: boolean) => void;
+  onChange?: (fileList: IStoredFile[]) => void;
+  onDownload?: (fileList: IStoredFile[]) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
@@ -131,7 +130,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     path: filesListEndpoint.url,
     queryParams: {
       ownerId,
-      ownerType: getEntityTypeIdentifierQueryParams(ownerType),
+      ownerType,
       ownerName,
       filesCategory,
       propertyName,
@@ -178,14 +177,14 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
       dispatch(onFileAddedAction(patient));
       const next = [...(fileListRef.current ?? []).filter((f) => f.id !== patient?.id), fileReducer(patient)];
-      onChange?.(next, false); // Not a user action - external SignalR event
+      onChange?.(next);
     });
 
     connection?.on('OnFileDeleted', (eventData: IStoredFile | string) => {
       const patient = typeof eventData === 'object' ? eventData : (JSON.parse(eventData) as IStoredFile);
 
       dispatch(onFileDeletedAction(patient?.id));
-      onChange?.(fileListRef.current?.filter((file) => file.id !== patient?.id) || [], false); // Not a user action - external SignalR event
+      onChange?.(fileListRef.current?.filter((file) => file.id !== patient?.id) || []);
     });
     return () => {
       connection?.off('OnFileAdded');
@@ -200,13 +199,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     const { file } = payload;
 
     formData.append('ownerId', payload.ownerId || ownerId);
-    const entityType = payload.ownerType || ownerType;
-    if (isEntityTypeIdentifier(entityType)) {
-      formData.append('ownerType.name', entityType.name);
-      formData.append('ownerType.module', entityType.module);
-    } else {
-      formData.append('ownerType.entityType', entityType);
-    }
+    formData.append('ownerType', payload.ownerType || ownerType);
     formData.append('ownerName', payload.ownerName || ownerName);
     formData.append('file', file);
     if (filesCategory)
@@ -229,15 +222,15 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       return;
     }
 
+    // Dispatch and notify optimistically with the uploading item
     dispatch(uploadFileRequestAction(newFile));
 
     uploadFileHttp(uploadFileEndpoint, formData)
       .then((response) => {
-        const responseFile = extractAjaxResponse(response);
+        const responseFile = response.result as IStoredFile;
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
-        const updatedFileList = addFile(responseFile, fileListRef.current);
-        onChange?.(updatedFileList, true); // User action - file upload
+        onChange?.(addFile(responseFile, fileListRef.current));
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
@@ -280,7 +273,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .then(() => {
         deleteFileSuccess(resolvedId);
         const updateList = removeFile(list, resolvedId);
-        onChange?.(updateList, true); // User action - file delete
+        onChange?.(updateList);
         if (typeof removeDelayedUpdate === 'function') {
           removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, resolvedId);
         }
@@ -293,7 +286,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   //#endregion
 
   //#region replace file
-  const replaceFile = (payload: IReplaceFilePayload) => {
+  const replaceFile = (payload: IReplaceFilePayload): void => {
     const { file, fileId } = payload;
 
     // Validate that fileId is a persisted stored-file identifier
@@ -326,7 +319,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         // Update the fileList by replacing the old file with the new one
         const currentList = fileListRef.current ?? [];
         const updatedList = currentList.map((f) =>
-          f.id === fileId || f.uid === fileId ? { ...responseFile, uid: responseFile.id } : f
+          f.id === fileId || f.uid === fileId ? { ...responseFile, uid: responseFile.id } : f,
         );
         onChange?.(updatedList);
         message.success(`File "${normalizedFile.name}" replaced successfully`);
@@ -339,14 +332,14 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   };
   //#endregion
 
-  const downloadZipFile = (payload: IDownloadZipPayload = null) => {
+  const downloadZipFile = (payload: IDownloadZipPayload = null): void => {
     dispatch(downloadZipRequestAction());
     const query = !!payload
       ? payload
       : !!ownerId
         ? {
           ownerId: ownerId,
-          ownerType: getEntityTypeIdentifierQueryParams(ownerType),
+          ownerType: ownerType,
           filesCategory: filesCategory,
           ownerName: ownerName,
         }
@@ -354,7 +347,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           filesId: fileListRef.current?.map((x) => x.id).filter((x) => !!x),
         };
     axios({
-      url: `${baseUrl ?? backendUrl}/api/StoredFile/DownloadZip?${qs.stringify(query, { allowDots: true })}`,
+      url: `${baseUrl ?? backendUrl}/api/StoredFile/DownloadZip?${qs.stringify(query)}`,
       method: 'GET',
       responseType: 'blob',
       headers,
@@ -364,7 +357,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         FileSaver.saveAs(new Blob([response.data]), `Files.zip`);
         dispatch(updateAllFilesDownloadedByCurrentUser());
         const updatedList = updateAllFilesDownloaded(fileListRef.current ?? []);
-        onDownload?.(updatedList, true); // User action - zip download
+        onDownload?.(updatedList);
       })
       .catch(() => {
         dispatch(downloadZipErrorAction());
@@ -385,7 +378,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         FileSaver.saveAs(new Blob([response.data]), payload.fileName);
         dispatch(updateIsDownloadedByCurrentUser(payload.fileId));
         const nextList = updateDownloadedAFile(fileListRef.current ?? [], payload.fileId);
-        onDownload?.(nextList, true); // User action - file download
+        onDownload?.(nextList);
       })
       .catch((e) => {
         console.error(e);
@@ -406,7 +399,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   return (
     <ConditionalWrap
       condition={Boolean(name)}
-      wrap={children => (
+      wrap={(children) => (
         <DataContextBinder
           id={`ctx_fl_${name}`}
           name={name}
@@ -437,7 +430,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   );
 };
 
-function useStoredFilesState(): IStoredFilesStateContext | undefined {
+function useStoredFilesState(): IStoredFilesStateContext {
   const context = useContext(StoredFilesStateContext);
 
   if (context === undefined) {
@@ -447,7 +440,7 @@ function useStoredFilesState(): IStoredFilesStateContext | undefined {
   return context;
 }
 
-function useStoredFilesActions(): IStoredFilesActionsContext | undefined {
+function useStoredFilesActions(): IStoredFilesActionsContext {
   const context = useContext(StoredFilesActionsContext);
 
   if (context === undefined) {
@@ -469,4 +462,3 @@ export default StoredFilesProvider;
 const useStoredFiles = useStoredFilesStore;
 
 export { StoredFilesProvider, useStoredFiles, useStoredFilesActions, useStoredFilesState, useStoredFilesStore };
-export type { IStoredFile };
