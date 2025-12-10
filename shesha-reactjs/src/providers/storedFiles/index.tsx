@@ -318,7 +318,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
     replaceFileHttp(replaceFileEndpoint, formData)
       .then((response) => {
-        const responseFile = response.result as IStoredFile;
+        const responseFile = extractAjaxResponse(response);
         responseFile.uid = responseFile.id;
         dispatch(replaceFileSuccessAction({ originalFileId: fileId, newFile: { ...responseFile } }));
 
@@ -327,7 +327,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         const updatedList = currentList.map((f) =>
           f.id === fileId || f.uid === fileId ? { ...responseFile, uid: responseFile.id } : f,
         );
-        onChange?.(updatedList);
+        onChange?.(updatedList, true); // User action - file replace
         message.success(`File "${normalizedFile.name}" replaced successfully`);
       })
       .catch((e) => {
