@@ -107,6 +107,17 @@ export class Authenticator implements IAuthenticator {
     this.#onTokenExpired = args.onTokenExpired;
   }
 
+  refetchProfileAsync = async (headersOverride?: IHttpHeaders): Promise<void> => {
+    try {
+      // fetch user profile
+      const userProfile = await this.#fetchUserInfoHttp(headersOverride);
+      this.#loginInfo = userProfile;
+    } catch (error) {
+      this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, error);
+      throw error;
+    }
+  };
+
   #redirect = (url: string): void => {
     this.#router.push(url);
   };
@@ -191,12 +202,10 @@ export class Authenticator implements IAuthenticator {
     }
   };
 
-  #fetchUserInfoHttp = async (): Promise<GetCurrentLoginInfoOutput> => {
-    const headers = this.#getHttpHeaders();
-    const httpResponse = await this.#httpClient.get<void, HttpResponse<GetCurrentLoginInfoOutputAjaxResponse>>(
-      URLS.GET_CURRENT_LOGIN_INFO,
-      { headers: headers },
-    );
+  #fetchUserInfoHttp = async (headersOverride?: IHttpHeaders): Promise<GetCurrentLoginInfoOutput> => {
+    const headers = { ...this.#getHttpHeaders(), ...headersOverride };
+
+    const httpResponse = await this.#httpClient.get<void, HttpResponse<GetCurrentLoginInfoOutputAjaxResponse>>(URLS.GET_CURRENT_LOGIN_INFO, { headers: headers });
     const response = extractAjaxResponse(httpResponse.data, 'Failed to get user profile');
 
     this.#onSetRequestHeaders?.(headers);
