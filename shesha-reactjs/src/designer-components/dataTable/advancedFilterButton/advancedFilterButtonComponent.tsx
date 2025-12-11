@@ -10,7 +10,6 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { useDataTableStore } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
-import { ErrorIconPopover } from '@/components';
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'datatable.filter',
@@ -34,7 +33,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
     if (model.hidden) return null;
 
     if (!store) {
-      const mockContent = (
+      return (
         <div className={styles.hintContainer}>
           <div className={styles.disabledComponentWrapper}>
             <div className={styles.filterButtonMockup}>
@@ -43,17 +42,6 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
             </div>
           </div>
         </div>
-      );
-
-      return (
-        <ErrorIconPopover
-          mode="message"
-          message="The Table Filter component must be placed inside of a Data Table Context component to be fully functional."
-          type="info"
-          position="top-right"
-        >
-          {mockContent}
-        </ErrorIconPopover>
       );
     }
 

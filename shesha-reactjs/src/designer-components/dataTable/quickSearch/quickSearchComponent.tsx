@@ -1,5 +1,5 @@
 import React, { CSSProperties, useMemo } from 'react';
-import { GlobalTableFilter, ErrorIconPopover } from '@/components';
+import { GlobalTableFilter } from '@/components';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SearchOutlined } from '@ant-design/icons';
@@ -56,16 +56,7 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
       );
 
     // Wrap with ErrorIconPopover if not inside DataTableContext
-    return !store ? (
-      <ErrorIconPopover
-        mode="message"
-        message="The Quick Search component must be placed inside of a Data Context component to be fully functional."
-        type="info"
-        position="top-right"
-      >
-        {content}
-      </ErrorIconPopover>
-    ) : content;
+    return content;
   },
   initModel: (model: IQuickSearchComponentProps) => {
     return {

@@ -7,7 +7,6 @@ import { TableViewSelector } from './tableViewSelector';
 import { ConfigurableFormItem, useDataTableStore, validateConfigurableComponentSettings } from '@/index';
 import { getSettings } from './settingsForm';
 import { useStyles } from '../tableContext/styles';
-import { ErrorIconPopover } from '@/components';
 
 const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   type: 'tableViewSelector',
@@ -28,21 +27,9 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
         </div>
       );
 
-    // Wrap with ErrorIconPopover if not inside DataTableContext
-    const wrappedContent = !store ? (
-      <ErrorIconPopover
-        mode="message"
-        message="The Table View Selector component must be placed inside of a Data Context component to be fully functional."
-        type="info"
-        position="top-right"
-      >
-        {content}
-      </ErrorIconPopover>
-    ) : content;
-
     return (
       <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
-        {wrappedContent}
+        {content}
       </ConfigurableFormItem>
     );
   },
