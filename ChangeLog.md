@@ -1,4 +1,4 @@
 # Release Notes
 
-💪 Enhancements
-- added GetCurrentPersonAsync()/GetCurrentPersonOrNullAsync() to IShaSession
+🐞 Bug Fixes
+- Fix FileList
