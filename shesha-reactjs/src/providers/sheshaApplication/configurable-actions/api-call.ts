@@ -98,7 +98,7 @@ export const useApiCallAction = (): void => {
     isPermament: true,
     owner: 'Common',
     ownerUid: SheshaActionOwners.Common,
-    name: 'API Call',
+    name: 'Call API',
     sortOrder: 5,
     hasArguments: true,
     argumentsFormMarkup: getApiCallArgumentsForm,
