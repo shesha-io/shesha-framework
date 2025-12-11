@@ -1,7 +1,7 @@
 import Icon, { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import React from 'react';
 
- 
+/* eslint-disable max-len */
 const ClassOutlinedSvg = () => (
   <svg 
     width="1.2em"
@@ -45,7 +45,7 @@ const ClassOutlinedSvg = () => (
     />
   </svg>
 );
- 
+/* eslint-enable max-len */
 
 export const ClassOutlined = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={ClassOutlinedSvg} {...props} />

@@ -1,7 +1,7 @@
 import Icon, { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import React from 'react';
 
- 
+/* eslint-disable max-len */
 const InterfaceOutlinedSvg = () => (
   <svg width="1em" height="1em" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
     <path
@@ -11,7 +11,7 @@ const InterfaceOutlinedSvg = () => (
     />
   </svg>
 );
- 
+/* eslint-enable max-len */
 
 export const InterfaceOutlined = (props: Partial<CustomIconComponentProps>) => (
   <Icon component={InterfaceOutlinedSvg} {...props} />
