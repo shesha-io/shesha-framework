@@ -471,7 +471,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               justify-content: center;
               position: absolute;
               right: 6px;
-              top: 30px;
+              top: 28px;
               z-index: 1000;
               width: 24px;
               height: 24px;
