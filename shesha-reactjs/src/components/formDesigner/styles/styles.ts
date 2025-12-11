@@ -399,7 +399,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
 
                 .${shaComponent} {
-                    min-height: 52px;
+                    min-height: 48px;
                 }
             }
 
@@ -428,7 +428,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             border: 1px dashed ${token.colorPrimary};
             border-radius: 2px;
             opacity: 0.7;    
-            min-height: 52px;
+            min-height: 48px;
         }
         .${shaToolboxPanelComponents}{
             margin: -1rem -0.8rem;
@@ -477,7 +477,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             &[data-sha-c-type="datatable.quickSearch"],
             &[data-sha-c-type="datatable.pager"] {
               .sha-error-icon-container {
-                min-height: 52px;
+                min-height: 48px;
               }
             }
 

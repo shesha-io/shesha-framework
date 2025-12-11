@@ -179,15 +179,19 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   const quickSearchContainer = cx("sha-quick-search-container", css`
         display: flex;
         align-items: center;
-        gap: 8px;
-        min-height: 52px;
+        min-height: 48px;
+        margin: 0;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
     `);
 
   const tablePagerContainer = cx("sha-table-pager-container", css`
         display: flex;
         align-items: center;
-        gap: 8px;
-        min-height: 52px;
+        min-height: 48px;
+        margin: 0;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
     `);
 
   const tablePagerMockup = cx("sha-table-pager-mockup", css`
