@@ -266,16 +266,17 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         right: 0;
         bottom: 0;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
         justify-content: center;
         pointer-events: none;
         z-index: 1;
+        gap: 12px;
     `);
 
   const emptyStateIcon = cx("sha-empty-state-icon", css`
-        font-size: 32px;
-        margin-bottom: 8px;
+        font-size: 48px;
+        margin-bottom: 0;
     `);
 
   const emptyStateContent = cx("sha-empty-state-content", css`
