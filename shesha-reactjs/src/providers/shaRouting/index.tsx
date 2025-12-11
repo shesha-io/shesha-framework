@@ -57,6 +57,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
       name: NAVIGATE_ACTION_NAME,
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
+      sortOrder: 2,
       hasArguments: true,
       executer: (request) => {
         if (request.navigationType !== 'form' && request.navigationType !== 'url')
@@ -68,6 +69,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
           : Promise.reject('Common:Navigate: url is empty');
       },
       argumentsFormMarkup: getNavigateArgumentsForm,
+      migrator: (m) => m.add<INavigateActoinArguments>(0, (prev: INavigateActoinArguments) => ({ ...prev, navigationType: 'form' })),
     },
   );
 

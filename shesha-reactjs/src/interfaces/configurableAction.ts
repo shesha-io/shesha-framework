@@ -104,6 +104,10 @@ export interface IConfigurableActionDescriptor<TArguments extends object = objec
    */
   description?: string;
   /**
+   * Sort order for displaying actions in the list. Lower numbers appear first.
+   */
+  sortOrder?: number;
+  /**
    * If true, indicaes that the action has configurable arguments
    */
   hasArguments: boolean;

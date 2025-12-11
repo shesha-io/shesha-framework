@@ -13,6 +13,7 @@ export const useExecuteSignIn = (): void => {
       name: 'Sign In',
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
+      sortOrder: 8,
       hasArguments: false,
       executer: (_, actionContext) => {
         if (!auth)

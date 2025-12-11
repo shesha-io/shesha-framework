@@ -99,6 +99,7 @@ export const useApiCallAction = (): void => {
     owner: 'Common',
     ownerUid: SheshaActionOwners.Common,
     name: 'API Call',
+    sortOrder: 5,
     hasArguments: true,
     argumentsFormMarkup: getApiCallArgumentsForm,
     executer: (actionArgs, _context) => {

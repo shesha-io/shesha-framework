@@ -114,6 +114,7 @@ export const useExecuteScriptAction = (): void => {
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
       name: 'Execute Script',
+      sortOrder: 1,
       hasArguments: true,
       argumentsFormMarkup: (formArgs) => executeScriptArgumentsForm(formArgs),
       executer: (actionArgs, context) => {
