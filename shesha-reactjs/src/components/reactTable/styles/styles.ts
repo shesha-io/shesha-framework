@@ -62,7 +62,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   cellBackgroundColor,
   cellBorderColor,
   cellBorders,
-  cellPadding,
   headerBorder,
   cellBorder,
   headerShadow,

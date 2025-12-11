@@ -622,32 +622,32 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           ],
                         },
                       })
-                    .addCollapsiblePanel({
-                      id: nanoid(),
-                      propertyName: 'pnlBorderStyle',
-                      label: 'Border',
-                      labelAlign: 'right',
-                      ghost: true,
-                      hidden: { _code: 'return ["text", "link", "ghost", "dashed"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
-                      parentId: styleRouterId,
-                      collapsible: 'header',
-                      content: {
+                      .addCollapsiblePanel({
                         id: nanoid(),
-                        components: [...fbf()
-                          .addContainer({
-                            id: nanoid(),
-                            parentId: styleRouterId,
-                            components: getBorderInputs(fbf),
-                          })
-                          .addContainer({
-                            id: nanoid(),
-                            parentId: styleRouterId,
-                            components: getCornerInputs(fbf),
-                          })
-                          .toJson(),
-                        ],
-                      },
-                    })
+                        propertyName: 'pnlBorderStyle',
+                        label: 'Border',
+                        labelAlign: 'right',
+                        ghost: true,
+                        hidden: { _code: 'return ["text", "link", "ghost", "dashed"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...fbf()
+                            .addContainer({
+                              id: nanoid(),
+                              parentId: styleRouterId,
+                              components: getBorderInputs(fbf),
+                            })
+                            .addContainer({
+                              id: nanoid(),
+                              parentId: styleRouterId,
+                              components: getCornerInputs(fbf),
+                            })
+                            .toJson(),
+                          ],
+                        },
+                      })
                       .toJson(),
                     ],
                   },
@@ -817,17 +817,17 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           ],
                         },
                       })
-                            .addContainer({
-                              id: nanoid(),
-                              parentId: styleRouterId,
-                              components: getBorderInputs(fbf),
-                            })
-                            .addContainer({
-                              id: nanoid(),
-                              parentId: styleRouterId,
-                              components: getCornerInputs(fbf),
-                            })
-                         
+                      .addContainer({
+                        id: nanoid(),
+                        parentId: styleRouterId,
+                        components: getBorderInputs(fbf),
+                      })
+                      .addContainer({
+                        id: nanoid(),
+                        parentId: styleRouterId,
+                        components: getCornerInputs(fbf),
+                      })
+
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlBackgroundStyle',

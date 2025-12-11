@@ -188,8 +188,8 @@ export const ReactTable: FC<IReactTableProps> = ({
   const dispatchRowEvent = (
     actionConfig: IConfigurableActionConfiguration | undefined,
     rowData: any,
-    rowIndex: number
-  ) => {
+    rowIndex: number,
+  ): void => {
     if (!actionConfig) return;
     executeAction({
       actionConfiguration: actionConfig,
@@ -520,7 +520,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   const performOnRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick)
       return () => {
-        /* nop*/
+        /* noop */
       };
 
     return (data) => {

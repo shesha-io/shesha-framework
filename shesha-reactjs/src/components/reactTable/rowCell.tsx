@@ -111,7 +111,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
     }
   }, [checkOverflow, showExpandedView]);
 
-  const paddedStyle = {...style}
+  const paddedStyle = { ...style };
 
   return (
     <div
