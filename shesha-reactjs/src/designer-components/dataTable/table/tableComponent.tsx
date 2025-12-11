@@ -20,10 +20,28 @@ import { StandaloneTable } from './standaloneTable';
 import { useDataTableStore } from '@/providers/dataTable';
 import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './utils';
 
+// Runtime context store for validation - allows validateModel to check if table is inside DataContext
+export const tableContextValidation = new Map<string, boolean>();
 
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStore(false);
+  const isInsideDataContext = !!store;
+
+  // Store context state SYNCHRONOUSLY during render so validateModel can access it
+  // This must happen before DragWrapper's useMemo runs validateModel
+  if (model.id) {
+    tableContextValidation.set(model.id, isInsideDataContext);
+  }
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      if (model.id) {
+        tableContextValidation.delete(model.id);
+      }
+    };
+  }, [model.id]);
 
   if (model.hidden) return null;
 
@@ -60,6 +78,19 @@ const TableComponent: TableComponentDefinition = {
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  validateModel: (model, addModelError) => {
+    // PRIORITY 1: Check if table is inside DataContext (critical error)
+    const isInsideDataContext = tableContextValidation.get(model.id);
+    if (isInsideDataContext === false) {
+      addModelError('context', 'Place this Data Table inside a Data Context component to connect it to data');
+    }
+
+    // PRIORITY 2: Validate that table has columns configured
+    const hasColumns = model.items && Array.isArray(model.items) && model.items.length > 0;
+    if (!hasColumns) {
+      addModelError('items', 'Configure at least one column in the settings panel');
+    }
+  },
   migrator: (m) =>
     m
       .add<ITableComponentProps>(0, (prev) => {

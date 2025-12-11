@@ -1,10 +1,6 @@
 import React, { FC } from 'react';
 import { ITableComponentProps } from './models';
-import { SearchOutlined, EditOutlined, DeleteOutlined, InfoCircleFilled } from '@ant-design/icons';
-import { Popover } from 'antd';
-import { useForm } from '@/providers';
-import { useDataTableStore } from '@/providers/dataTable';
-import { useStyles } from '../tableContext/styles';
+import { SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 // Ignore any configured items to ensure clean state when dragged outside
 const columns = [
@@ -18,96 +14,7 @@ const dummyRows = [
   { col1: 'Record 2', col2: 'Placeholder Info' },
 ];
 
-// Constants for repeated content
-const DOCUMENTATION_LINK = 'https://docs.shesha.io/docs/category/tables-and-lists';
-
-const DocumentationLink: FC = () => (
-  <>
-    <a href={DOCUMENTATION_LINK} target="_blank" rel="noopener noreferrer">
-      See component documentation
-    </a>
-    <br />for setup and usage.
-  </>
-);
-
-const getDataContextMessage = (isDesignMode: boolean): JSX.Element => (
-  <>
-    {isDesignMode ? (
-      <>
-        Drag it into a Data Context component to<br />
-        connect it to data.
-      </>
-    ) : (
-      <>
-        Place it inside a Data Context component to<br />
-        connect it to data.
-      </>
-    )}
-  </>
-);
-
-const getPopoverContent = (
-  isInsideDataContext: boolean,
-  hasNoColumns: boolean,
-  isDesignMode: boolean,
-): JSX.Element => {
-  if (isInsideDataContext) {
-    return (
-      <p>
-        This Data Table has no columns configured.<br />
-        {isDesignMode && (
-          <>
-            Click the Settings icon in the Properties Panel<br />
-            to configure columns.
-            <br /><br />
-          </>
-        )}
-        <DocumentationLink />
-      </p>
-    );
-  }
-
-  if (hasNoColumns) {
-    return (
-      <p>
-        This Data Table is not inside a Data Context<br />
-        and has no columns configured.<br />
-        <br />
-        {isDesignMode ? (
-          <>
-            Drag it into a Data Context component to<br />
-            connect it to data, then configure columns<br />
-            in the Properties Panel.
-          </>
-        ) : (
-          <>
-            Place it inside a Data Context component to<br />
-            connect it to data and configure columns.
-          </>
-        )}
-        <br /><br />
-        <DocumentationLink />
-      </p>
-    );
-  }
-
-  return (
-    <p>
-      This Data Table is not inside a Data Context.<br />
-      {getDataContextMessage(isDesignMode)}
-      <br /><br />
-      <DocumentationLink />
-    </p>
-  );
-};
-
 export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
-  const { formMode } = useForm();
-  const { styles } = useStyles();
-  const store = useDataTableStore(false);
-  const isDesignMode = formMode === 'designer';
-  const hasNoColumns = !_props.items || _props.items.length === 0;
-  const isInsideDataContext = !!store;
 
   const tableStyle: React.CSSProperties = {
     width: '100%',
@@ -154,33 +61,6 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
         position: 'relative',
       }}
     >
-      {/* Show info icon in top-right corner in designer mode */}
-      {isDesignMode && (
-        <Popover
-          placement="left"
-          title="Hint:"
-          classNames={{ body: styles.datatableHintPopover }}
-          rootClassName={styles.datatableHintPopover}
-          content={getPopoverContent(isInsideDataContext, hasNoColumns, isDesignMode)}
-        >
-          <InfoCircleFilled
-            style={{
-              position: 'absolute',
-              top: '4px',
-              right: '4px',
-              color: '#faad14',
-              fontSize: '20px',
-              zIndex: 9999,
-              cursor: 'help',
-              backgroundColor: '#fff',
-              borderRadius: '50%',
-              padding: '4px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            }}
-          />
-        </Popover>
-      )}
-
       <table style={tableStyle}>
         <thead>
           <tr>
