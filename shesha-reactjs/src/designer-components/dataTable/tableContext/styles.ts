@@ -180,12 +180,14 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         display: flex;
         align-items: center;
         gap: 8px;
+        min-height: 52px;
     `);
 
   const tablePagerContainer = cx("sha-table-pager-container", css`
         display: flex;
         align-items: center;
         gap: 8px;
+        min-height: 52px;
     `);
 
   const tablePagerMockup = cx("sha-table-pager-mockup", css`

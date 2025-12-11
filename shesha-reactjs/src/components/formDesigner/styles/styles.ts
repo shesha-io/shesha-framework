@@ -467,6 +467,20 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               }
             }
 
+            // DataContext and DataTable components need more height in error state
+            &[data-sha-c-type="dataContext"],
+            &[data-sha-c-type="datatable"],
+            &[data-sha-c-type="dataList"],
+            &[data-sha-c-type="tableViewSelector"],
+            &[data-sha-c-type="childTable"],
+            &[data-sha-c-type="datatable.filter"],
+            &[data-sha-c-type="datatable.quickSearch"],
+            &[data-sha-c-type="datatable.pager"] {
+              .sha-error-icon-container {
+                min-height: 52px;
+              }
+            }
+
             // Error icon positioning: snap to corner when not hovering
             .sha-error-icon-top-right {
               top: 4px !important;
