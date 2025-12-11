@@ -10,6 +10,7 @@ export interface IComponentErrorProps {
   type?: ISheshaErrorTypes;
   message?: string;
 }
+
 const ComponentError: FC<IComponentErrorProps> = ({
   errors,
   resetErrorBoundary,

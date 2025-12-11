@@ -161,43 +161,7 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
           title="Hint:"
           classNames={{ body: styles.datatableHintPopover }}
           rootClassName={styles.datatableHintPopover}
-          content={isInsideDataContext ? (
-            <p>
-              This Data Table has no columns configured.<br />
-              Click the Settings icon in the Properties Panel<br />
-              to configure columns.
-              <br /><br />
-              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-                See component documentation
-              </a>
-              <br />for setup and usage.
-            </p>
-          ) : hasNoColumns ? (
-            <p>
-              This Data Table is not inside a Data Context<br />
-              and has no columns configured.<br />
-              <br />
-              Drag it into a Data Context component to<br />
-              connect it to data, then configure columns<br />
-              in the Properties Panel.
-              <br /><br />
-              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-                See component documentation
-              </a>
-              <br />for setup and usage.
-            </p>
-          ) : (
-            <p>
-              This Data Table is not inside a Data Context.<br />
-              Drag it into a Data Context component to<br />
-              connect it to data.
-              <br /><br />
-              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-                See component documentation
-              </a>
-              <br />for setup and usage.
-            </p>
-          )}
+          content={getPopoverContent(isInsideDataContext, hasNoColumns, isDesignMode)}
         >
           <InfoCircleFilled
             style={{

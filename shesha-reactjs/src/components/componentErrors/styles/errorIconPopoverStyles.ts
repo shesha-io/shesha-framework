@@ -11,13 +11,11 @@ export const useStyles = createStyles(({ css, cx, token }, { isDesignerMode = fa
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
     cursor: pointer;
     border-radius: 50%;
-    background-color: ${token.colorBgContainer};
+    background-color: transparent;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    z-index: ${isDesignerMode ? '100' : '10'};
     transition: all 0.2s ease;
 
     &:hover {
@@ -27,8 +25,8 @@ export const useStyles = createStyles(({ css, cx, token }, { isDesignerMode = fa
   `);
 
   const iconTopRight = cx("sha-error-icon-top-right", css`
-    top: ${isDesignerMode ? '42px' : '4px'};
-    right: 2px;
+    top: ${isDesignerMode ? '24px' : '4px'};
+    right: 4px;
 
     &:hover {
       transform: scale(1.1);
