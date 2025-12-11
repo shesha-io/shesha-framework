@@ -47,7 +47,7 @@ const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): st
       .replaceAll("\"#", "").replaceAll("#\"", "").replaceAll("#\\\"", "\"")
       .replaceAll("\"'' + ", "").replaceAll(" + ''\"", "")
       .replaceAll("\"'", "'").replaceAll("'\"", "'")
-      .replace("\"__shaFormData\": 0", "...form.data"); // add loaded form data
+      .replace("\"__shaFormData\": 0", "...Object.fromEntries(Object.entries(form.data || {}).filter(([_, v]) => v !== undefined && (typeof v !== 'string' || v !== '')))"); // add loaded form data, filtering empty strings and undefined
 
     let result = '\r\n// Migrated from Initial Values and components defaults\r\n';
     result += `const initialData = ${initialObjString};\r\n`.split("\\r\\n").join("\r\n");
