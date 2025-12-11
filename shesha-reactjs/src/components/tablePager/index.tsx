@@ -8,8 +8,7 @@ import { IFontValue } from '@/designer-components/_settings/utils/font/interface
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
-import { InfoCircleFilled } from '@ant-design/icons';
-import { Popover, Pagination } from 'antd';
+import { Pagination } from 'antd';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 
 export interface ITablePagerProps {
@@ -27,7 +26,7 @@ type EmptyPagerProps = {
   style: CSSProperties;
 };
 
-const EmptyPager: FC<EmptyPagerProps> = ({ message, style }) => {
+const EmptyPager: FC<EmptyPagerProps> = ({ style }) => {
   const { styles } = useStyles();
   return (
     <div className={styles.tablePagerContainer} style={style}>
@@ -46,23 +45,6 @@ const EmptyPager: FC<EmptyPagerProps> = ({ message, style }) => {
           showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
         />
       </div>
-      <Popover
-        placement="right"
-        title="Hint:"
-        rootClassName={styles.tablePagerHintPopover}
-        classNames={{
-          body: styles.tablePagerHintPopover,
-        }}
-        content={(
-          <p>{message}
-            <br />
-            <br />
-            <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
-          </p>
-        )}
-      >
-        <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
-      </Popover>
     </div>
   );
 };
