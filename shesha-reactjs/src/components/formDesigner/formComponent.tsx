@@ -31,7 +31,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   const { styles } = useStyles();
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
-  const { isComponentFiltered } = useForm();
+  const { isComponentFiltered, formMode } = useForm();
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
@@ -104,8 +104,9 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   }, [toolboxComponent, actualModel]);
 
   // Wrap component with error icon if there are validation errors
+  // In designer mode, DragWrapper handles error display, so only wrap in runtime mode
   const wrappedControl = validationResult?.hasErrors ? (
-    <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={shaForm.formMode === 'designer'}>
+    <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={formMode === 'designer'}>
       {control}
     </ErrorIconPopover>
   ) : control;
@@ -120,16 +121,20 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
       errors: [{ error: `Component '${actualModel.type}' not found` }],
     };
     // Component not found - return early with just error message
+    const unregisteredMessage = <div className={styles.unregisteredComponentMessage}>Component &apos;{actualModel.type}&apos; not registered</div>;
+
     return (
       <div className={styles.unregisteredComponentContainer}>
-        <ErrorIconPopover
-          mode="validation"
-          validationResult={componentNotFoundError}
-          type="error"
-          isDesignerMode={shaForm.formMode === 'designer'}
-        >
-          <div className={styles.unregisteredComponentMessage}>Component &apos;{actualModel.type}&apos; not registered</div>
-        </ErrorIconPopover>
+        {shaForm.formMode !== 'designer' ? (
+          <ErrorIconPopover
+            mode="validation"
+            validationResult={componentNotFoundError}
+            type="error"
+            isDesignerMode={false}
+          >
+            {unregisteredMessage}
+          </ErrorIconPopover>
+        ) : unregisteredMessage}
       </div>
     );
   }

@@ -1,12 +1,11 @@
 import React, { CSSProperties, useMemo } from 'react';
-import { GlobalTableFilter } from '@/components';
+import { GlobalTableFilter, ErrorIconPopover } from '@/components';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { SearchOutlined, InfoCircleFilled } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './tabbedSettingsForm';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import { Popover } from 'antd';
 import Search from 'antd/lib/input/Search';
 import { useDataTableStore } from '@/index';
 import { useStyles } from '../tableContext/styles';
@@ -35,43 +34,38 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
       ...(store ? {} : { width: additionalStyles.width ?? '360px' }),
     });
 
-    return hidden
-      ? null
-      : store
-        ? (
-          <GlobalTableFilter
-            block={block}
-            style={finalStyle}
-            searchProps={{
-              size,
-            }}
+    if (hidden) return null;
+
+    const content = store
+      ? (
+        <GlobalTableFilter
+          block={block}
+          style={finalStyle}
+          searchProps={{
+            size,
+          }}
+        />
+      )
+      : (
+        <div className={styles.quickSearchContainer} style={finalStyle}>
+          <Search
+            size={size}
+            disabled
           />
-        )
-        : (
-          <div className={styles.quickSearchContainer} style={finalStyle}>
-            <Search
-              size={size}
-              disabled
-            />
-            <Popover
-              placement="right"
-              title="Hint:"
-              rootClassName={styles.quickSearchHintPopover}
-              classNames={{
-                body: styles.quickSearchHintPopover,
-              }}
-              content={(
-                <p>The Quick Search component must be<br /> placed inside of a Data Context<br /> component to be fully functional.
-                  <br />
-                  <br />
-                  <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
-                </p>
-              )}
-            >
-              <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
-            </Popover>
-          </div>
-        );
+        </div>
+      );
+
+    // Wrap with ErrorIconPopover if not inside DataTableContext
+    return !store ? (
+      <ErrorIconPopover
+        mode="message"
+        message="The Quick Search component must be placed inside of a Data Context component to be fully functional."
+        type="info"
+        position="top-right"
+      >
+        {content}
+      </ErrorIconPopover>
+    ) : content;
   },
   initModel: (model: IQuickSearchComponentProps) => {
     return {

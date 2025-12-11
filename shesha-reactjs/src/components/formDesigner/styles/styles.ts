@@ -459,20 +459,30 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             &.${hasConfigErrors} {
               border: ${token.colorErrorBg} 1px solid;
               border-radius: 4px;
-        
+
               .${shaComponentIndicator} {
                 display: none;
               }
-        
-              .${shaComponentValidationIcon} {
-                display: inline-flex;
-                align-items: center;
-                color: ${token.colorErrorBg};
-                font-size: 12px !important;
-                left: 15px;
-                height: 100%;
-                position: absolute;
-                z-index: 1000;
+            }
+
+            .${shaComponentValidationIcon} {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              position: absolute;
+              right: 6px;
+              top: 30px;
+              z-index: 1000;
+              width: 24px;
+              height: 24px;
+              background-color: ${token.colorBgContainer};
+              border-radius: 50%;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              transition: all 0.2s ease;
+
+              &:hover {
+                transform: scale(1.1);
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
               }
             }
         

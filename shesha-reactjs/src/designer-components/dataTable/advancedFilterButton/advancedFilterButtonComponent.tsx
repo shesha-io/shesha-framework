@@ -3,14 +3,14 @@ import { migratePrevStyles } from '@/designer-components/_common-migrations/migr
 import { IButtonComponentProps } from '@/designer-components/button/interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { FilterOutlined, InfoCircleFilled } from '@ant-design/icons';
-import { Popover } from 'antd';
+import { FilterOutlined } from '@ant-design/icons';
 import React from 'react';
 import { AdvancedFilterButton } from './advancedFilterButton';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { useDataTableStore } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
+import { ErrorIconPopover } from '@/components';
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'datatable.filter',
@@ -31,8 +31,10 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
       ...model.allStyles.jsStyle,
     };
 
+    if (model.hidden) return null;
+
     if (!store) {
-      return (
+      const mockContent = (
         <div className={styles.hintContainer}>
           <div className={styles.disabledComponentWrapper}>
             <div className={styles.filterButtonMockup}>
@@ -40,37 +42,22 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
               Table Filter
             </div>
           </div>
-          <Popover
-            placement="right"
-            title="Hint:"
-            rootClassName={styles.tablePagerHintPopover}
-            classNames={{
-              body: styles.tablePagerHintPopover,
-            }}
-            content={(
-              <p>The Table Filter component must be<br />
-                placed inside of a Data Table Context<br />
-                component to be fully functional.
-                <br />
-                <br />
-                <a
-                  href="https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/table-filter"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  See component documentation
-                </a><br />
-                for setup and usage.
-              </p>
-            )}
-          >
-            <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
-          </Popover>
         </div>
+      );
+
+      return (
+        <ErrorIconPopover
+          mode="message"
+          message="The Table Filter component must be placed inside of a Data Table Context component to be fully functional."
+          type="info"
+          position="top-right"
+        >
+          {mockContent}
+        </ErrorIconPopover>
       );
     }
 
-    return model.hidden ? null : <AdvancedFilterButton {...model} styles={finalStyle} />;
+    return <AdvancedFilterButton {...model} styles={finalStyle} />;
   },
   initModel: (model) => {
     return {
