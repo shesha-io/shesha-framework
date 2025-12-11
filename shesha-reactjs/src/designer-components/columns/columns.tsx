@@ -152,6 +152,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
                   offset={col.offset}
                   pull={col.pull}
                   push={col.push}
+                  style={{width: '100%'}}
                 >
                   <ComponentsContainer
                     containerId={col.id}
