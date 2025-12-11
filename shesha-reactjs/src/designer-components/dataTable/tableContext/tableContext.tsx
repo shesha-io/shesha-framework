@@ -76,11 +76,18 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
       ? (hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty)
       : (hasChildComponents ? styles.dataContextRuntime : styles.dataContextRuntimeEmpty);
 
+    // If there are validation errors, don't render children - just show the empty state or wrapper
+    const hasValidationErrors = internalValidation?.hasErrors;
+
     // Render wrapper div with computed styleClass; inner children differ based on empty state
     return (
       <div className={styleClass}>
-        {(isDesignerMode && !hasChildComponents) ? (
-          <TableContextEmptyState containerId={id} componentId={id} />
+        {hasValidationErrors || (isDesignerMode && !hasChildComponents) ? (
+          <TableContextEmptyState
+            containerId={id}
+            componentId={id}
+            readOnly={hasValidationErrors}
+          />
         ) : (
           <DataTableProvider
             userConfigId={props.id}

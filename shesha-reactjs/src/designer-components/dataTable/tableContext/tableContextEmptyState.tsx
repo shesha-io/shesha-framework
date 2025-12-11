@@ -10,6 +10,7 @@ export interface ITableContextEmptyStateProps {
   componentId: string;
   className?: string;
   style?: React.CSSProperties;
+  readOnly?: boolean;
 }
 
 export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
@@ -17,6 +18,7 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
   componentId,
   className,
   style,
+  readOnly,
 }) => {
   const selectedComponentId = useFormDesignerSelectedComponentId();
   const isSelected = selectedComponentId === componentId;
@@ -40,19 +42,22 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
             Data Context Component
           </div>
           <div className={styles.emptyStateSubtitle}>
-            Drag & Drop a Form Component
+            {readOnly ? 'Fix configuration errors to add components' : 'Drag & Drop a Form Component'}
           </div>
         </div>
       </div>
 
       {/* ComponentsContainer that handles the actual dropping */}
-      <ComponentsContainer
-        containerId={containerId}
-        itemsLimit={-1}
-        className={styles.emptyStateComponentsContainer}
-        emptyInsertThreshold={20}
-        showHintWhenEmpty={false}
-      />
+      {readOnly ? null : (
+        <ComponentsContainer
+          containerId={containerId}
+          itemsLimit={-1}
+          className={styles.emptyStateComponentsContainer}
+          emptyInsertThreshold={20}
+          showHintWhenEmpty={false}
+          readOnly={readOnly}
+        />
+      )}
     </div>
   );
 };
