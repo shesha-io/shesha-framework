@@ -6,16 +6,21 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        min-height: 60px;
+        min-height: 120px;
         border-radius: 8px;
-        background-color: ${token.colorPrimaryBg}20;
+        border: 2px dashed ${token.colorPrimary}40;
+        background-color: ${token.colorPrimaryBg}10;
         margin: 4px 0;
         transition: all 0.2s ease;
-        padding-top: 8px;
+        padding: 16px;
         overflow: hidden;
+        position: relative;
+        width: 100%;
+        box-sizing: border-box;
 
         &:hover {
-            background-color: ${token.colorPrimaryBg}30;
+            background-color: ${token.colorPrimaryBg}20;
+            border-color: ${token.colorPrimary}60;
         }
 
         .data-context-label {
@@ -108,9 +113,11 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         padding: 8px;
         box-sizing: border-box; /* Include padding and border in width calculation */
         transition: all 0.2s ease;
-        width: 100%;
+        width: 100% !important;
         max-width: 100%;
         overflow: hidden;
+        margin: 0;
+        flex: 1;
 
         &:hover {
             border-color: ${token.colorPrimary}50;
@@ -243,6 +250,58 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
     `);
 
+  const emptyStateContainer = cx("sha-empty-state-container", css`
+        position: relative;
+        width: 100%;
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `);
+
+  const emptyStateOverlay = cx("sha-empty-state-overlay", css`
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 1;
+    `);
+
+  const emptyStateIcon = cx("sha-empty-state-icon", css`
+        font-size: 32px;
+        margin-bottom: 8px;
+    `);
+
+  const emptyStateContent = cx("sha-empty-state-content", css`
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    `);
+
+  const emptyStateTitle = cx("sha-empty-state-title", css`
+        font-size: 14px;
+        font-weight: 600;
+    `);
+
+  const emptyStateSubtitle = cx("sha-empty-state-subtitle", css`
+        font-size: 12px;
+        color: ${token.colorTextSecondary};
+    `);
+
+  const emptyStateComponentsContainer = cx("sha-empty-state-components-container", css`
+        position: relative;
+        width: 100%;
+        min-height: 120px;
+        z-index: 2;
+    `);
+
   return {
     dataContextDesignerEmpty,
     dataContextRuntimeEmpty,
@@ -261,5 +320,12 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     filterButtonMockup,
     viewSelectorMockup,
     datatableHintPopover,
+    emptyStateContainer,
+    emptyStateOverlay,
+    emptyStateIcon,
+    emptyStateContent,
+    emptyStateTitle,
+    emptyStateSubtitle,
+    emptyStateComponentsContainer,
   };
 });
