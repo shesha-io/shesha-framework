@@ -55,7 +55,6 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
         </div>
       );
 
-    // Wrap with ErrorIconPopover if not inside DataTableContext
     return content;
   },
   initModel: (model: IQuickSearchComponentProps) => {

@@ -22,7 +22,6 @@ export interface ITablePagerProps {
 }
 
 type EmptyPagerProps = {
-  message: ReactElement;
   style: CSSProperties;
 };
 
@@ -58,7 +57,7 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
 
   // Fallback UI when not in a Data Context
   if (!dataTableContext) {
-    return (<EmptyPager message={<>The Table Pager component must be<br />placed inside of a Data Context<br />component to be fully functional.</>} style={style} />);
+    return (<EmptyPager style={style} />);
   }
 
   const {
@@ -73,7 +72,7 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
 
   // Fallback UI when in Data Context but no configured DataTable/DataList
   if (totalRows === undefined || totalRows === null) {
-    return (<EmptyPager message={<>The Table Pager is within a Data Context<br />but no sibling Data Table or Data List<br />component has been configured with<br />columns or items.</>} style={style} />);
+    return (<EmptyPager style={style} />);
   }
 
   return dataFetchingMode === 'paging' ? (

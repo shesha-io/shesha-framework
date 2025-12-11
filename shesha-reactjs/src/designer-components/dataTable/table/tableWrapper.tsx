@@ -249,7 +249,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const hasNoColumns = !items || items.length === 0;
 
   // Check if DataContext has configuration errors (not just info messages)
-  const hasContextConfigErrors = contextValidation?.hasErrors && contextValidation?.validationType === 'warning';
+  const hasContextConfigErrorsOrWarnings = contextValidation?.hasErrors && (contextValidation?.validationType === 'warning' || contextValidation?.validationType === 'error');
 
   const toggleFieldPropertiesSidebar = (): void => {
     if (!isSelectingColumns && !isFiltering) setIsInProgressFlag({ isFiltering: true });
@@ -261,7 +261,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   // 2. Parent DataContext has configuration errors
   const shouldShowStandalone = hasNoColumns && hasAutoConfiguredRef.current;
 
-  if (isDesignMode && (shouldShowStandalone || hasContextConfigErrors)) {
+  if (isDesignMode && (shouldShowStandalone || hasContextConfigErrorsOrWarnings)) {
     return <StandaloneTable {...props} />;
   }
 
