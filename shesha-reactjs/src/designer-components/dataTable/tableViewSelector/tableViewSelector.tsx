@@ -1,8 +1,6 @@
 import _ from 'lodash';
 import React, { FC, useEffect } from 'react';
 import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
-import { InfoCircleFilled } from '@ant-design/icons';
-import { Popover } from 'antd';
 import { evaluateDynamicFilters } from '@/utils/datatable';
 import { ITableViewSelectorComponentProps } from './models';
 import {

@@ -15,7 +15,6 @@ const dummyRows = [
 ];
 
 export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
-
   const tableStyle: React.CSSProperties = {
     width: '100%',
     borderCollapse: 'collapse',

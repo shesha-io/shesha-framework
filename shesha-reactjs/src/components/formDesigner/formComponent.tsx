@@ -108,7 +108,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
 
     if (needsDataContextButMissing) {
       // clear all other errors and return early
-      errors.push({ propertyName: 'No ancestor Data Context component is set', error: 'Place this component inside a Data Context component to connect it to data' });
+      errors.push({ propertyName: 'No ancestor Data Context component is set', error: '\nPlace this component inside a Data Context component to connect it to data' });
 
       return {
         hasErrors: true,

@@ -29,10 +29,7 @@ import { FilterList } from '../filterList/filterList';
 import { useStyles } from './styles';
 import { useMetadata } from '@/providers/metadata';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
-import { Popover } from 'antd';
-import { InfoCircleFilled } from '@ant-design/icons';
 import { StandaloneTable } from './standaloneTable';
-import { useStyles as useTableContextStyles } from '../tableContext/styles';
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const { id, items, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
@@ -46,7 +43,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);
   const componentIdRef = useRef(id);
-  const { styles: tableContextStyles } = useTableContextStyles();
 
   // Reset auto-config flag when component ID changes (new DataTable instance)
   useEffect(() => {
@@ -254,7 +250,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   };
 
   const hasNoColumns = !items || items.length === 0;
-  const hasNoRepository = !repository;
 
   // Check if DataContext has configuration errors (not just info messages)
   const hasContextConfigErrors = contextValidation?.hasErrors && contextValidation?.validationType === 'warning';
@@ -288,58 +283,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
       {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
 
       <div className="sha-datatable-wrapper">
-        {/* Show info icon in top-right corner in designer mode for configuration issues */}
-        {isDesignMode && (hasNoRepository || hasNoColumns) && (
-          <Popover
-            placement="left"
-            title="Hint:"
-            rootClassName={tableContextStyles.datatableHintPopover}
-            content={hasNoRepository ? (
-              <p>
-                This Data Table is not inside a Data Context.<br />
-                Drag it into a Data Context component to<br />
-                connect it to data.
-                <br /><br />
-                <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-                  See component documentation
-                </a>
-                <br />for setup and usage.
-              </p>
-            ) : (
-              <p>
-                This Data Table has no columns configured.<br />
-                Click the Settings icon in the Properties Panel<br />
-                to configure columns.
-                <br /><br />
-                <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
-                  See component documentation
-                </a>
-                <br />for setup and usage.
-              </p>
-            )}
-          >
-            <InfoCircleFilled
-              role="button"
-              tabIndex={0}
-              aria-label="Data table configuration help"
-              className="sha-datatable-hint-icon"
-              style={{
-                position: 'absolute',
-                top: '4px',
-                right: '4px',
-                color: '#faad14',
-                fontSize: '20px',
-                zIndex: 9999,
-                cursor: 'help',
-                backgroundColor: '#fff',
-                borderRadius: '50%',
-                padding: '4px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              }}
-            />
-          </Popover>
-        )}
-
         <div className={styles.dataTable} style={finalStyle}>
           <DataTable
             onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
