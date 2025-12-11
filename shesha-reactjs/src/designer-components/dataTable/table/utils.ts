@@ -69,7 +69,7 @@ export const getTableDefaults = (): {
   return {
     // Row styling defaults
     rowHeight: '40px',
-    rowPadding: '1px 1px',
+    rowPadding: '8px 12px',
     rowBorder: 'none',
 
     // Header styling defaults
@@ -260,26 +260,45 @@ export const convertRowDimensionsToHeight = (rowDimensions?: {
 
 /**
  * Converts styling box padding to a single padding string
- * @param rowStylingBox - Styling box configuration
+ * @param rowStylingBox - Styling box configuration (can be object or JSON string)
  * @returns Padding string for backward compatibility
  */
-export const convertRowStylingBoxToPadding = (rowStylingBox?: {
-  margin?: {
-    top?: string;
-    right?: string;
-    bottom?: string;
-    left?: string;
-  };
-  padding?: {
-    top?: string;
-    right?: string;
-    bottom?: string;
-    left?: string;
-  };
-}): string | undefined => {
-  if (!rowStylingBox?.padding) return undefined;
+export const convertRowStylingBoxToPadding = (rowStylingBox?: any): string | undefined => {
+  if (!rowStylingBox) return undefined;
 
-  const { top, right, bottom, left } = rowStylingBox.padding;
+  // Parse JSON string if needed
+  let stylingBox = rowStylingBox;
+  if (typeof rowStylingBox === 'string') {
+    try {
+      stylingBox = JSON.parse(rowStylingBox);
+    } catch (e) {
+      console.warn('Failed to parse rowStylingBox JSON:', e);
+      return undefined;
+    }
+  }
+
+  let top: string | undefined;
+  let right: string | undefined;
+  let bottom: string | undefined;
+  let left: string | undefined;
+
+  // Handle nested structure: { padding: { top, right, bottom, left } }
+  if (stylingBox?.padding) {
+    top = stylingBox.padding.top;
+    right = stylingBox.padding.right;
+    bottom = stylingBox.padding.bottom;
+    left = stylingBox.padding.left;
+  }
+  // Handle flat structure: { paddingTop, paddingRight, paddingBottom, paddingLeft }
+  else if (stylingBox?.paddingTop || stylingBox?.paddingRight ||
+           stylingBox?.paddingBottom || stylingBox?.paddingLeft) {
+    top = stylingBox.paddingTop;
+    right = stylingBox.paddingRight;
+    bottom = stylingBox.paddingBottom;
+    left = stylingBox.paddingLeft;
+  } else {
+    return undefined;
+  }
 
   // Add px units to values if needed
   const topPx = addPxUnit(top);

@@ -124,8 +124,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
       setFieldValue={setFieldValue}
       getFieldValue={getFieldValue}
       setData={setData}
-      getData={getData}
-    >
+      getData={getData}>
       {children}
     </DataContextBinder>
   );

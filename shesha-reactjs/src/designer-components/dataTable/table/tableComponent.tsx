@@ -8,6 +8,8 @@ import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateV12toV13 } from './migrations/migrate-v13';
 import { migrateV15toV16 } from './migrations/migrate-v16';
+import { migrateV17toV18 } from './migrations/migrate-v18';
+import { migrateV18toV19 } from './migrations/migrate-v19';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
 import { TableOutlined } from '@ant-design/icons';
@@ -24,6 +26,8 @@ import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './uti
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStore(false);
+
+  console.log("TABLE MODEL",model)
 
   if (model.hidden) return null;
 
@@ -137,7 +141,9 @@ const TableComponent: TableComponentDefinition = {
         rowBorder: prev.rowBorder ?? '1px solid #f0f0f0',
         headerFontSize: prev.headerFontSize ?? '14px',
         headerFontWeight: prev.headerFontWeight ?? '600',
-      })),
+      }))
+      .add<ITableComponentProps>(18, migrateV17toV18)
+      .add<ITableComponentProps>(19, migrateV18toV19),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [

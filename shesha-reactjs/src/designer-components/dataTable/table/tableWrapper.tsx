@@ -79,8 +79,23 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     if (isDesignMode) {
       console.warn('Row Padding - rowStylingBox:', props?.rowStylingBox, 'converted:', converted, 'fallback:', props?.rowPadding);
     }
-    return converted || props?.rowPadding;
+    // If we have rowStylingBox, use the converted value even if it's undefined (means invalid/empty config)
+    // Only fall back to rowPadding if rowStylingBox doesn't exist at all
+    return props?.rowStylingBox ? converted : props?.rowPadding;
   }, [props?.rowStylingBox, props?.rowPadding, isDesignMode]);
+
+  // Debug: Log all incoming props related to styling
+  useEffect(() => {
+    if (isDesignMode) {
+      console.log('🔍 TableWrapper Props:', {
+        rowPadding: props?.rowPadding,
+        rowStylingBox: props?.rowStylingBox,
+        rowHeight: props?.rowHeight,
+        rowDimensions: props?.rowDimensions,
+        effectiveRowPadding,
+      });
+    }
+  }, [props, effectiveRowPadding, isDesignMode]);
 
   const effectiveRowBorder = useMemo(() => {
     // Prefer new rowBorderStyle over old rowBorder
@@ -388,6 +403,16 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             rowBorderStyle={props.rowBorderStyle}
             boxShadow={finalBoxShadow}
             sortableIndicatorColor={props.sortableIndicatorColor}
+            cellTextColor={props.cellTextColor}
+            cellBackgroundColor={props.cellBackgroundColor}
+            cellBorderColor={props.cellBorderColor}
+            cellBorders={props.cellBorders}
+            cellPadding={props.cellPadding}
+            headerBorder={props.headerBorder}
+            cellBorder={props.cellBorder}
+            headerShadow={props.headerShadow}
+            rowShadow={props.rowShadow}
+            rowDividers={props.rowDividers}
           />
         </div>
       </div>

@@ -111,12 +111,14 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
     }
   }, [checkOverflow, showExpandedView]);
 
+  const paddedStyle = {...style}
+
   return (
     <div
       key={key}
       ref={cellParentRef}
       {...restProps}
-      style={style ?? cellStyle ? { ...anchoredCellStyle, ...style, ...cellStyle, height: cellHeight, cursor: 'auto', textOverflow: 'ellipsis', whiteSpace: 'nowrap', alignItems: 'flex-start' } : undefined}
+      style={paddedStyle ?? cellStyle ? { ...anchoredCellStyle, ...style, ...cellStyle, height: cellHeight || '100%', cursor: 'auto', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', padding: 15 } : undefined}
       className={classNames(styles.td, {
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,

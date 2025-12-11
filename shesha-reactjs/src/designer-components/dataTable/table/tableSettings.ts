@@ -604,8 +604,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'rowStylingBox',
-                        label: 'Row Padding',
+                        propertyName: 'rowStylingBoxPanel',
+                        label: 'Cell Padding (Visual Editor)',
                         labelAlign: 'right',
                         ghost: true,
                         collapsible: 'header',
@@ -622,28 +622,32 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           ],
                         },
                       })
-                      .addCollapsiblePanel({
+                    .addCollapsiblePanel({
+                      id: nanoid(),
+                      propertyName: 'pnlBorderStyle',
+                      label: 'Border',
+                      labelAlign: 'right',
+                      ghost: true,
+                      hidden: { _code: 'return ["text", "link", "ghost", "dashed"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                      parentId: styleRouterId,
+                      collapsible: 'header',
+                      content: {
                         id: nanoid(),
-                        propertyName: 'pnlRowBorderStyle',
-                        label: 'Row Border',
-                        labelAlign: 'right',
-                        ghost: true,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [...fbf()
-                            .addContainer({
-                              id: nanoid(),
-                              components: getBorderInputs(fbf, 'rowBorderStyle'),
-                            })
-                            .addContainer({
-                              id: nanoid(),
-                              components: getCornerInputs(fbf, 'rowBorderCorner'),
-                            })
-                            .toJson(),
-                          ],
-                        },
-                      })
+                        components: [...fbf()
+                          .addContainer({
+                            id: nanoid(),
+                            parentId: styleRouterId,
+                            components: getBorderInputs(fbf),
+                          })
+                          .addContainer({
+                            id: nanoid(),
+                            parentId: styleRouterId,
+                            components: getCornerInputs(fbf),
+                          })
+                          .toJson(),
+                        ],
+                      },
+                    })
                       .toJson(),
                     ],
                   },
@@ -813,17 +817,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           ],
                         },
                       })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'pnlBorderStyle',
-                        label: 'Border',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [...fbf()
                             .addContainer({
                               id: nanoid(),
                               parentId: styleRouterId,
@@ -834,10 +827,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               parentId: styleRouterId,
                               components: getCornerInputs(fbf),
                             })
-                            .toJson(),
-                          ],
-                        },
-                      })
+                         
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlBackgroundStyle',
@@ -1209,6 +1199,121 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             .toJson(),
                           ],
                         },
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'cellStyling',
+                        label: 'Cell Styling',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...fbf()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'cellTextColor',
+                                  label: 'Cell Text Color',
+                                  type: 'colorPicker',
+                                  tooltip: 'Text color for table cells',
+                                  jsSetting: true,
+                                },
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'cellBackgroundColor',
+                                  label: 'Cell Background',
+                                  type: 'colorPicker',
+                                  tooltip: 'Background color for table cells',
+                                  jsSetting: true,
+                                },
+                              ],
+                            })
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'cellBorderColor',
+                                  label: 'Cell Border Color',
+                                  type: 'colorPicker',
+                                  tooltip: 'Border color for table cells',
+                                  jsSetting: true,
+                                },
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'cellBorders',
+                                  label: 'Show Cell Borders',
+                                  type: 'switch',
+                                  tooltip: 'Show borders around cells',
+                                  jsSetting: true,
+                                },
+                              ],
+                            })
+                            .addSettingsInput({
+                              id: nanoid(),
+                              propertyName: 'rowDividers',
+                              label: 'Row Dividers',
+                              inputType: 'switch',
+                              tooltip: 'Show horizontal dividing lines between rows',
+                              jsSetting: true,
+                            })
+                            .toJson(),
+                          ],
+                        },
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'footerStyling',
+                        label: 'Footer Styling',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...fbf()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'footerBackgroundColor',
+                                  label: 'Footer Background',
+                                  type: 'colorPicker',
+                                  tooltip: 'Background color for table footer',
+                                  jsSetting: true,
+                                },
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'footerTextColor',
+                                  label: 'Footer Text Color',
+                                  type: 'colorPicker',
+                                  tooltip: 'Text color for table footer',
+                                  jsSetting: true,
+                                },
+                              ],
+                            })
+                            .toJson(),
+                          ],
+                        },
+                      })
+                      .addSettingsInput({
+                        id: nanoid(),
+                        propertyName: 'responsiveMode',
+                        label: 'Responsive Mode',
+                        inputType: 'dropdown',
+                        tooltip: 'How the table behaves on small screens',
+                        parentId: styleRouterId,
+                        jsSetting: true,
+                        dropdownOptions: [
+                          { value: 'scroll', label: 'Scroll (horizontal)' },
+                          { value: 'stack', label: 'Stack (vertical cards)' },
+                          { value: 'collapse', label: 'Collapse (hide columns)' },
+                        ],
                       })
                       .toJson(),
                   ],

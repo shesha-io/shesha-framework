@@ -951,6 +951,21 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     onRowClick: handleRowClick,
     onRowHover: handleRowHover,
+    onRowClickAction: onRowClick,
+    onRowHoverAction: onRowHover,
+    onRowSelectAction: onRowSelect,
+    onSelectionChangeAction: onSelectionChange,
+
+    cellTextColor: props.cellTextColor,
+    cellBackgroundColor: props.cellBackgroundColor,
+    cellBorderColor: props.cellBorderColor,
+    cellBorders: props.cellBorders,
+    cellPadding: props.cellPadding,
+    headerBorder: props.headerBorder,
+    cellBorder: props.cellBorder,
+    headerShadow: props.headerShadow,
+    rowShadow: props.rowShadow,
+    rowDividers: props.rowDividers,
   };
 
   return (
