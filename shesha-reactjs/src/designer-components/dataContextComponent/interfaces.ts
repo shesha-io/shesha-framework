@@ -3,8 +3,8 @@ import { IConfigurableActionConfiguration } from '@/providers';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 
 export interface IDataContextComponentProps extends IConfigurableFormComponent {
-  items: IPropertyMetadata[];
-  initialDataCode: string;
+  items?: IPropertyMetadata[];
+  initialDataCode?: string | null;
   onChangeAction?: IConfigurableActionConfiguration;
 }
 
