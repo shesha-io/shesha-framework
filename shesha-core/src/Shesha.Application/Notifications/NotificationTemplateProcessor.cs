@@ -94,11 +94,11 @@ namespace Shesha.Notifications
                 _appKey = appKey;
             }
 
-            public string? PublicUrl
+            public FrontendApplicationRedirectsSettings? PublicUrl
             {
                 get 
                 {
-                    var value = _frontendSettings.PublicUrl.GetValueOrNull(new Settings.SettingManagementContext { AppKey = _appKey });
+                    var value = _frontendSettings.FrontendApplicationRedirectsSettings.GetValueOrNull(new Settings.SettingManagementContext { AppKey = _appKey });
                     return value;
                 }
             }

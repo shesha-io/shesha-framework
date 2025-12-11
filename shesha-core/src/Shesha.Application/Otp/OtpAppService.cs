@@ -1,21 +1,22 @@
-﻿using Abp.Dependency;
+﻿using System.Threading.Tasks;
+using Abp.Dependency;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Configuration.Security.Frontend;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
-using System.Threading.Tasks;
 
 namespace Shesha.Otp
 {
     public class OtpAppService : SheshaAppServiceBase, IOtpAppService, ITransientDependency
     {
-        private readonly IOtpSettings _otpSettings;
+        private readonly IUserManagementSettings _userManagementSettings;
         private readonly IOtpManager _otpManager;
         
 
-        public OtpAppService(IOtpManager otpManager, IOtpSettings otpSettings)
+        public OtpAppService(IOtpManager otpManager, IUserManagementSettings userManagementSettings)
         {
             _otpManager = otpManager;
-            _otpSettings = otpSettings;
+            _userManagementSettings = userManagementSettings;
         }
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace Shesha.Otp
         [HttpPost]
         public async Task<bool> UpdateSettingsAsync(OtpSettingsDto input)
         {
-            await _otpSettings.OneTimePins.SetValueAsync(new OtpSettings
+            await _userManagementSettings.DefaultAuthentication.SetValueAsync(new DefaultAuthenticationSettings
             {
                 PasswordLength = input.PasswordLength,
                 Alphabet = input.Alphabet,
@@ -64,7 +65,7 @@ namespace Shesha.Otp
         [HttpGet]
         public async Task<OtpSettingsDto> GetSettingsAsync()
         {
-            var emailSettings = await _otpSettings.OneTimePins.GetValueAsync();
+            var emailSettings = await _userManagementSettings.DefaultAuthentication.GetValueAsync();
 
             var settings = new OtpSettingsDto
             {
