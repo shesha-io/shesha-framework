@@ -42,7 +42,7 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
             Data Context Component
           </div>
           <div className={styles.emptyStateSubtitle}>
-            {readOnly ? 'Fix configuration errors to add or view child components' : 'Drag & Drop a Form Component'}
+            {readOnly ? <span>Fix configuration to be able to <b>Add</b> or <b>View</b> child components</span> : 'Drag & Drop a Form Component'}
           </div>
         </div>
       </div>
