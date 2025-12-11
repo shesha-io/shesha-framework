@@ -104,6 +104,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   rowHeight,
   rowPadding,
   rowBorder,
+  rowBorderStyle,
   boxShadow,
   sortableIndicatorColor,
   striped = true,
@@ -132,6 +133,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     rowHeight,
     rowPadding,
     rowBorder,
+    rowBorderStyle,
     boxShadow,
     sortableIndicatorColor,
     striped,
@@ -284,6 +286,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     rows,
     columns: tableColumns,
     toggleAllRowsSelected,
+    toggleRowSelected,
   } = useTable(
     {
       columns: preparedColumns,
@@ -422,8 +425,19 @@ export const ReactTable: FC<IReactTableProps> = ({
   const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
 
   const handleSelectRow = (row: Row<object>): void => {
-    if (!omitClick && !(canEditInline || canDeleteInline) && onSelectRow) {
-      onSelectRow(row?.index, row?.original);
+    if (!omitClick && !(canEditInline || canDeleteInline)) {
+      // For both single and multiple selection modes, update the row selection state
+      if (selectionMode === 'single' || selectionMode === 'multiple') {
+        if (selectionMode === 'single') {
+          // For single selection, first clear all selections then select this row
+          toggleAllRowsSelected(false);
+        }
+        toggleRowSelected(row.id);
+      }
+      // Call the onSelectRow callback
+      if (onSelectRow) {
+        onSelectRow(row?.index, row?.original);
+      }
     }
   };
 

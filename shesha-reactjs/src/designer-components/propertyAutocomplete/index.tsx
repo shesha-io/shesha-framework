@@ -44,6 +44,7 @@ export const PropertyAutocompleteComponent: PropertyAutocompleteComponentDefinit
                 autoFillProps={model.autoFillProps ?? true}
                 value={value}
                 onChange={onChange}
+                propertyModelType={model.propertyModelType}
               />
             );
           }}

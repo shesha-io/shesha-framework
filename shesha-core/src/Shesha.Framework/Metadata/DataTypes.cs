@@ -1,4 +1,6 @@
-﻿namespace Shesha.Metadata
+﻿using System;
+
+namespace Shesha.Metadata
 {
     /// <summary>
     /// Data types
@@ -77,6 +79,7 @@
     public static class NumberFormats
     {
         public const string Float = "float";
+        [Obsolete("Use NumberFormats.Float instead")]
         public const string Double = "double";
         public const string Int32 = "int32";
         public const string Int64 = "int64";
@@ -87,5 +90,11 @@
     {
         public const string Object = "object";
         public const string Interface = "interface";
+    }
+
+    public static class EntityFormats
+    {
+        public const string Entity = "entity";
+        public const string GenericEntity = "generic-entity";
     }
 }

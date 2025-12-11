@@ -13,7 +13,9 @@ using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Enums;
 using Shesha.Extensions;
 using Shesha.Metadata;
 using Shesha.Metadata.Dtos;
@@ -365,6 +367,7 @@ namespace Shesha.DynamicEntities
                     ParentProperty = parentProperty,
                     InheritedFrom = property,
                     CreatedInDb = true,
+                    InitStatus = EntityInitFlags.None,
                 };
 
                 CopyPropertyData(property, prop);
@@ -423,9 +426,9 @@ namespace Shesha.DynamicEntities
                         SortOrder = sortOrder++,
                         ParentProperty = null,
                         InheritedFrom = property,
-                        CreatedInDb = true,
+                        CreatedInDb = property.CreatedInDb,
                         ColumnName = property.ColumnName,
-
+                        InitStatus = EntityInitFlags.None,
                     };
 
                     CopyPropertyData(property, prop);
@@ -677,6 +680,9 @@ namespace Shesha.DynamicEntities
                 // To allow change validation message even it is hardcoded
                 dst.ValidationMessage = dst.ValidationMessage.GetDefaultIfEmpty(src.ValidationMessage);
             }
+
+            dst.ListConfiguration = dst.ListConfiguration ?? new EntityPropertyListConfiguration();
+            dst.ListConfiguration.ForeignProperty = src.ListConfiguration?.ForeignProperty;
 
             dst.Name = src.Path;
             dst.DataType = src.DataType;

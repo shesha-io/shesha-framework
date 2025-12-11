@@ -142,32 +142,32 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   const quickSearchHintPopover = cx("sha-quick-search-hint-popover", css`
         background-color:rgb(214, 214, 214) !important;
         border-radius: 8px !important;
+
+        &.ant-popover .ant-popover-arrow::before,
+        &.ant-popover .ant-popover-arrow::after {
+          background-color: rgb(214, 214, 214) !important;
+        }
     `);
 
   const tableViewSelectorHintPopover = cx("sha-table-view-selector-hint-popover", css`
         background-color:rgb(214, 214, 214) !important;
         border-radius: 8px !important;
+
+        &.ant-popover .ant-popover-arrow::before,
+        &.ant-popover .ant-popover-arrow::after {
+          background-color: rgb(214, 214, 214) !important;
+        }
     `);
 
   const tablePagerHintPopover = cx("sha-table-pager-hint-popover", css`
         background-color:rgb(214, 214, 214) !important;
         border-radius: 8px !important;
-    `);
 
-  const quickSearchPopoverArrowStyles = `
-    .ant-popover.sha-quick-search-hint-popover .ant-popover-arrow::before,
-    .ant-popover.sha-quick-search-hint-popover .ant-popover-arrow::after {
-      background-color: rgb(214, 214, 214) !important;
-    }
-    .ant-popover.sha-table-view-selector-hint-popover .ant-popover-arrow::before,
-    .ant-popover.sha-table-view-selector-hint-popover .ant-popover-arrow::after {
-      background-color: rgb(214, 214, 214) !important;
-    }
-    .ant-popover.sha-table-pager-hint-popover .ant-popover-arrow::before,
-    .ant-popover.sha-table-pager-hint-popover .ant-popover-arrow::after {
-      background-color: rgb(214, 214, 214) !important;
-    }
-  `;
+        &.ant-popover .ant-popover-arrow::before,
+        &.ant-popover .ant-popover-arrow::after {
+          background-color: rgb(214, 214, 214) !important;
+        }
+    `);
 
   const quickSearchContainer = cx("sha-quick-search-container", css`
         display: flex;
@@ -199,70 +199,48 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
     `);
 
-  const emptyStateContainer = cx("sha-empty-state-container", css`
-        position: relative;
-        min-height: 120px;
-        width: 100%;
-        max-width: 100%;
-        overflow: hidden;
-        box-sizing: border-box;
-    `);
-
-  const emptyStateOverlay = cx("sha-empty-state-overlay", css`
+  const hintContainer = cx("sha-hint-container", css`
         display: flex;
-        flex-direction: row;
         align-items: center;
-        justify-content: center;
-        padding: 10px;
-        border: 2px dashed #d9d9d9;
-        border-radius: 8px;
+        gap: 8px;
+    `);
+
+  const disabledComponentWrapper = cx("sha-disabled-component-wrapper", css`
+        opacity: 0.5;
+    `);
+
+  const filterButtonMockup = cx("sha-filter-button-mockup", css`
+        padding: 8px;
+        border: 1px dashed #d9d9d9;
+        border-radius: 4px;
+        min-height: 32px;
+        color: #8c8c8c;
         background-color: #fafafa;
-        min-height: 120px;
-        width: 100%;
-        max-width: 100%;
-        gap: 12px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 1;
-        pointer-events: none;
-        box-sizing: border-box;
-        overflow: hidden;
-    `);
-
-  const emptyStateIcon = cx("sha-empty-state-icon", css`
-        font-size: 48px;
-        flex-shrink: 0;
-    `);
-
-  const emptyStateContent = cx("sha-empty-state-content", css`
         display: flex;
-        flex-direction: column;
-        gap: 4px;
-        min-width: 0;
-        max-width: 100%;
+        align-items: center;
+        white-space: nowrap;
     `);
 
-  const emptyStateTitle = cx("sha-empty-state-title", css`
+  const viewSelectorMockup = cx("sha-view-selector-mockup", css`
+        display: flex;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid #d9d9d9;
+        border-radius: 6px;
+        background-color: #fafafa;
+        color: #8c8c8c;
         font-size: 14px;
-        font-weight: 500;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
+        font-weight: 600;
     `);
 
-  const emptyStateSubtitle = cx("sha-empty-state-subtitle", css`
-        color: #bfbfbf;
-        font-size: 12px;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-    `);
+  const datatableHintPopover = cx("sha-datatable-hint-popover", css`
+        background-color: #D9DCDC !important;
+        border-radius: 8px !important;
 
-  const emptyStateComponentsContainer = cx("sha-empty-state-components-container", css`
-        min-height: 140px;
-        position: relative;
-        z-index: 2;
+        &.ant-popover .ant-popover-arrow::before,
+        &.ant-popover .ant-popover-arrow::after {
+          background-color: #D9DCDC !important;
+        }
     `);
 
   return {
@@ -275,16 +253,13 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     quickSearchHintPopover,
     tableViewSelectorHintPopover,
     tablePagerHintPopover,
-    quickSearchPopoverArrowStyles,
     quickSearchContainer,
     tablePagerContainer,
     tablePagerMockup,
-    emptyStateContainer,
-    emptyStateOverlay,
-    emptyStateIcon,
-    emptyStateContent,
-    emptyStateTitle,
-    emptyStateSubtitle,
-    emptyStateComponentsContainer,
+    hintContainer,
+    disabledComponentWrapper,
+    filterButtonMockup,
+    viewSelectorMockup,
+    datatableHintPopover,
   };
 });

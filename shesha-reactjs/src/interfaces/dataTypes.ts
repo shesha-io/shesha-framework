@@ -13,6 +13,11 @@ export const ArrayFormats = {
   multivalueReferenceList: 'multivalue-reference-list',
 };
 
+export const EntityFormats = {
+  entity: 'entity',
+  genericEntity: 'generic-entity',
+};
+
 export const ObjectFormats = {
   object: 'object',
   interface: 'interface',
@@ -135,5 +140,5 @@ export const DataTypes = {
         }
     }
     return [];
-  }`,
+  };`,
 };

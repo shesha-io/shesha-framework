@@ -23,6 +23,7 @@ const getListType = (itemsType: IModelItem): string => {
           case NumberFormats.float: return 'float';
           case NumberFormats.double: return 'double';
           case NumberFormats.decimal: return 'decimal';
+          default: return 'undefined';
         }
       case DataTypes.dateTime: return 'date time';
       case DataTypes.date: return 'date';

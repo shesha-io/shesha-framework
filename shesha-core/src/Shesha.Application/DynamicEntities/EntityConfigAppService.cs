@@ -52,10 +52,10 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     }
 
     [AllowAnonymous]
-    public async Task<FormIdentifier?> GetEntityConfigFormAsync(EntityTypeIdInput entityType, string typeName)
+    public async Task<FormIdentifier?> GetEntityConfigFormAsync(EntityTypeIdInput entityTypeId, string typeName)
     {
         // ToDo: AS - merge EntityTypeIdInput with EntityTypeIdentifier
-        var entityConfig = await _modelConfigManager.GetByEntityTypeIdAsync(new EntityTypeIdentifier(entityType.Module, entityType.Name ?? "", entityType.FullClassName));
+        var entityConfig = await _modelConfigManager.GetByEntityTypeIdAsync(new EntityTypeIdentifier(entityTypeId.Module, entityTypeId.Name ?? "", entityTypeId.EntityType));
 
         if (entityConfig == null)
             return null;
@@ -66,7 +66,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
         var configFormId = model.ViewConfigurations.FirstOrDefault(x => x.Type == typeName || x.Type.Replace(" ", "").ToLower() == typeName)?.FormId;
 
-        return configFormId ?? new FormIdentifier(entityConfig.Module?.Name, $"{entityType.Name}-{typeName}");
+        return configFormId ?? new FormIdentifier(entityConfig.Module?.Name, $"{entityTypeId.Name}-{typeName}");
     }
 
     // Used to avoid performance issues

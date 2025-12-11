@@ -46,7 +46,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
 
       // Add child tables if configured
       if (extensionJson.addChildTables) {
-        await this.addChildTablesAsync(markup, extensionJson, metadataHelper);
+        await this.addChildTablesAsync(entity, markup, extensionJson, metadataHelper);
       }
     } catch (error) {
       console.error("Error adding components to details view markup:", error);
@@ -55,17 +55,27 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
   }
 
   /**
-   * Adds components to the markup based on the extension configuration.
-   * This method adds header, details panel, and child tables to the markup object
-   * according to the provided extension configuration and entity metadata.
+   * Attempts to find a suitable display name property from the entity metadata.
+   * Checks for common property names like 'fullName' and 'name'.
    *
-   * @param markup The JSON markup object to modify.
-   * @param extensionJson The extension configuration for the details view.
-   * @param entity The entity metadata for the main entity.
-   * @param nonFrameworkProperties The filtered list of non-framework properties for the entity.
-   * @param metadataHelper The form builder or metadata helper instance.
-   * @returns The updated markup object with added components.
+   * @param metadata The properties metadata.
+   * @returns The path to a display name property, or null if not found.
    */
+  private findDisplayNameProperty(metadata: PropertyMetadataDto[]): string | null {
+    // Common property names that typically serve as display names, in order of preference
+    const commonDisplayNames = ['fullName', 'name'];
+
+    for (const displayName of commonDisplayNames) {
+      const property = metadata.find((prop) =>
+        prop.path?.toLowerCase() === displayName.toLowerCase(),
+      );
+      if (property) {
+        return property.path;
+      }
+    }
+
+    return null;
+  }
 
   /**
    * Adds header components to the markup.
@@ -79,7 +89,11 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
    * @returns Array of property paths used in key information bar, empty array if none used
    */
   private addHeader(entity: IEntityMetadata, metadata: PropertyMetadataDto[], markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): string[] {
-    const title = `${entity.typeAccessor} Details`;
+    // Try to find a display name property, falling back to static entity type name
+    const displayNameProperty = this.findDisplayNameProperty(metadata);
+    const title = displayNameProperty
+      ? `{{${toCamelCase(displayNameProperty)}}}`
+      : `${entity.typeAccessor} Details`;
 
     const titleContainer = findContainersWithPlaceholder(markup, "//*TITLE*//");
 
@@ -121,7 +135,6 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           label: "Key Information Bar",
           editMode: 'readOnly' as EditMode,
           hideLabel: true,
-          hidden: false,
           componentName: "keyInformationBar",
           columns: keyInfoProperties.map((prop, index) => {
             const keyInfoBuilder = this.getFormBuilder();
@@ -174,6 +187,33 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
   }
 
   /**
+   * Generates edit/create component configuration for a datatable column based on property metadata.
+   *
+   * @param property The property metadata to generate component configuration for.
+   * @param metadataHelper The metadata helper instance.
+   * @returns An object containing the component type and settings for inline editing.
+   */
+  private getColumnEditorConfig(property: PropertyMetadataDto, metadataHelper: FormMetadataHelper): { type: string; settings?: Record<string, unknown> } {
+    const tempBuilder = this.getFormBuilder();
+    metadataHelper.getConfigFields(property, tempBuilder, false);
+    const componentConfigs = tempBuilder.toJson();
+
+    if (componentConfigs.length === 0) {
+      return { type: 'textField' };
+    }
+
+    const component = componentConfigs[0];
+    const { id, propertyName, componentName, ...settings } = component;
+
+    const typedSettings: Record<string, unknown> = settings;
+
+    return {
+      type: component.type,
+      settings: Object.keys(typedSettings).length > 0 ? typedSettings : undefined,
+    };
+  }
+
+  /**
    * Adds child tables to the markup if configured.
    * Creates tabs for each child entity and injects datatable components for their properties.
    *
@@ -181,7 +221,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
    * @param extensionJson The extension configuration.
    * @param metadataHelper The metadata helper instance.
    */
-  private async addChildTablesAsync(markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): Promise<void> {
+  private async addChildTablesAsync(entity: IEntityMetadata, markup: any, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): Promise<void> {
     const builder = this.getFormBuilder();
 
     const childTableContainer = findContainersWithPlaceholder(markup, "//*CHILDTABLES*//");
@@ -242,23 +282,26 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             components: childTableAccessoriesBuilder.toJson(),
           });
 
-          // Sort the properties: required fields first, then by dataType priority
-          const sortedProperties = [...nonFrameworkProperties].sort((a, b) => {
-            // Sort by required status (required first)
-            if (a.required !== b.required) {
-              return a.required ? -1 : 1;
-            }
+          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === entity.typeAccessor)?.path;
 
-            // Sort by dataType priority only
-            const priorityA = getDataTypePriority(a.dataType, a.dataFormat);
-            const priorityB = getDataTypePriority(b.dataType, b.dataFormat);
+          const sortedProperties = [...nonFrameworkProperties]
+            .filter((prop) => prop.path !== filterProperty)
+            .sort((a, b) => {
+              // Sort by required status (required first)
+              if (a.required !== b.required) {
+                return a.required ? -1 : 1;
+              }
 
-            return priorityA - priorityB;
-          });
+              // Sort by dataType priority only
+              const priorityA = getDataTypePriority(a.dataType, a.dataFormat);
+              const priorityB = getDataTypePriority(b.dataType, b.dataFormat);
+
+              return priorityA - priorityB;
+            });
 
           const columns = sortedProperties.map<IConfigurableColumnsProps>((prop, idx) => {
-            // Get column width based on data type
             const width = getColumnWidthByDataType(prop.dataType, prop.dataFormat);
+            const editorConfig = this.getColumnEditorConfig(prop, metadataHelper);
 
             return {
               id: nanoid(),
@@ -273,11 +316,10 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               maxWidth: width.max,
               allowSorting: true,
               displayComponent: { type: standardCellComponentTypes.defaultDisplay },
-              editComponent: { type: standardCellComponentTypes.notEditable },
-              createComponent: { type: standardCellComponentTypes.notEditable },
+              editComponent: editorConfig,
+              createComponent: editorConfig,
             };
           });
-          const filterProperty = (childTable.properties as PropertyMetadataDto[]).find((p) => p.entityType === extensionJson.modelType)?.path;
           const dataTableName = `childTable${index + 1}`;
 
           const datatableBuilder = this.getFormBuilder();
@@ -288,6 +330,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             canAddInline: 'yes',
             canEditInline: 'yes',
             canDeleteInline: 'yes',
+            onNewRowInitialize: `return {${toCamelCase(filterProperty || 'parentId')}: form.data.id}`,
             items: [
               {
                 id: nanoid(),

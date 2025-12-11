@@ -85,7 +85,7 @@ const getListFetcherQueryParams = (entityType: string, term: string, maxResultCo
   return {
     skipCount: 0,
     maxResultCount: maxResultCount ?? 10,
-    fullClassName: entityType,
+    entityType: entityType,
     properties: ITEM_CONFIG_PROPERTIES,
     quickSearch: null,
     filter: getFilter(term, staticFilter),
@@ -112,7 +112,7 @@ export const getSelectedValueQueryParams = (entityType: string, value?: Configur
     ? {
       skipCount: 0,
       maxResultCount: 1000,
-      fullClassName: entityType,
+      entityType: entityType,
       properties: ITEM_CONFIG_PROPERTIES,
       filter: JSON.stringify(expression),
     }

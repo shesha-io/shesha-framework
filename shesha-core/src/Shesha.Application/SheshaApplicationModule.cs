@@ -8,6 +8,7 @@ using Abp.Net.Mail;
 using Abp.Net.Mail.Smtp;
 using Abp.Reflection;
 using Abp.Reflection.Extensions;
+using Abp.Runtime.Session;
 using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems;
@@ -15,6 +16,7 @@ using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.Email;
+using Shesha.Extensions;
 using Shesha.GraphQL;
 using Shesha.Modules;
 using Shesha.Notifications;
@@ -24,6 +26,7 @@ using Shesha.Notifications.Distribution.NotificationTypes;
 using Shesha.Notifications.SMS;
 using Shesha.Otp.Configuration;
 using Shesha.Reflection;
+using Shesha.Session;
 using Shesha.Settings.Ioc;
 using Shesha.Sms;
 using Shesha.Sms.Configuration;
@@ -49,6 +52,10 @@ namespace Shesha
 
         public override void PreInitialize()
         {
+            // Register extended session and replace IAbpSession
+            Configuration.ReplaceService(typeof(IAbpSession),
+                () => IocManager.Register<IAbpSession, IShaSession, ClaimsShaSession>(DependencyLifeStyle.Singleton));
+
             // disable API audit by default
             Configuration.Auditing.IsEnabled = false;
 

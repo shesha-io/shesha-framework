@@ -5,7 +5,7 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
-import { filterVisibility, calculateDefaultColumns } from './utils';
+import { filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowStylingBoxToPadding, convertRowBorderStyleToBorder } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
@@ -32,7 +32,7 @@ import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { Popover } from 'antd';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { StandaloneTable } from './standaloneTable';
-import { useDatatableHintPopoverStyles } from './hintPopoverStyles';
+import { useStyles as useTableContextStyles } from '../tableContext/styles';
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const { id, items, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
@@ -46,6 +46,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);
   const componentIdRef = useRef(id);
+  const { styles: tableContextStyles } = useTableContextStyles();
 
   // Reset auto-config flag when component ID changes (new DataTable instance)
   useEffect(() => {
@@ -55,15 +56,40 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     }
   }, [id]);
 
-  // Inject CSS for hint popover arrow styling
-  useDatatableHintPopoverStyles();
-
   // Process shadow settings using getShadowStyle utility
   const shadowStyles = useMemo(() => getShadowStyle(props?.shadow), [props?.shadow]);
   const finalBoxShadow = useMemo(() => {
     // If there's a shadow object, use the processed styles, otherwise use the boxShadow string
     return props?.shadow ? shadowStyles?.boxShadow : props?.boxShadow;
   }, [props?.shadow, shadowStyles?.boxShadow, props?.boxShadow]);
+
+  // Convert new property structures to old format for backward compatibility
+  const effectiveRowHeight = useMemo(() => {
+    // Prefer new rowDimensions over old rowHeight
+    const converted = convertRowDimensionsToHeight(props?.rowDimensions);
+    if (isDesignMode) {
+      console.warn('Row Height - rowDimensions:', props?.rowDimensions, 'converted:', converted, 'fallback:', props?.rowHeight);
+    }
+    return converted || props?.rowHeight;
+  }, [props?.rowDimensions, props?.rowHeight, isDesignMode]);
+
+  const effectiveRowPadding = useMemo(() => {
+    // Prefer new rowStylingBox over old rowPadding
+    const converted = convertRowStylingBoxToPadding(props?.rowStylingBox);
+    if (isDesignMode) {
+      console.warn('Row Padding - rowStylingBox:', props?.rowStylingBox, 'converted:', converted, 'fallback:', props?.rowPadding);
+    }
+    return converted || props?.rowPadding;
+  }, [props?.rowStylingBox, props?.rowPadding, isDesignMode]);
+
+  const effectiveRowBorder = useMemo(() => {
+    // Prefer new rowBorderStyle over old rowBorder
+    const converted = convertRowBorderStyleToBorder(props?.rowBorderStyle);
+    if (isDesignMode) {
+      console.warn('Row Border - rowBorderStyle:', props?.rowBorderStyle, 'converted:', converted, 'fallback:', props?.rowBorder);
+    }
+    return converted || props?.rowBorder;
+  }, [props?.rowBorderStyle, props?.rowBorder, isDesignMode]);
 
   const { styles } = useStyles({
     fontFamily: props?.font?.type,
@@ -86,9 +112,9 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     headerFontWeight: props?.headerFontWeight,
     headerBackgroundColor: props?.headerBackgroundColor,
     headerTextColor: props?.headerTextColor,
-    rowHeight: props?.rowHeight,
-    rowPadding: props?.rowPadding,
-    rowBorder: props?.rowBorder,
+    rowHeight: effectiveRowHeight,
+    rowPadding: effectiveRowPadding,
+    rowBorder: effectiveRowBorder,
     boxShadow: finalBoxShadow,
     sortableIndicatorColor: props?.sortableIndicatorColor,
   });
@@ -267,8 +293,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
           <Popover
             placement="left"
             title="Hint:"
-            classNames={{ root: "sha-datatable-hint-popover" }}
-            styles={{ body: { backgroundColor: '#D9DCDC' } }}
+            rootClassName={tableContextStyles.datatableHintPopover}
             content={hasNoRepository ? (
               <p>
                 This Data Table is not inside a Data Context.<br />
@@ -300,11 +325,11 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
               className="sha-datatable-hint-icon"
               style={{
                 position: 'absolute',
-                top: '44px',
-                right: '0px',
+                top: '4px',
+                right: '4px',
                 color: '#faad14',
-                fontSize: '16px',
-                zIndex: 1000,
+                fontSize: '20px',
+                zIndex: 9999,
                 cursor: 'help',
                 backgroundColor: '#fff',
                 borderRadius: '50%',
@@ -358,15 +383,17 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             rowHoverBackgroundColor={props.rowHoverBackgroundColor}
             rowSelectedBackgroundColor={props.rowSelectedBackgroundColor}
             border={props.border}
+            striped={props.striped}
             hoverHighlight={props.hoverHighlight}
             backgroundColor={props.background?.color}
             headerFontSize={props.headerFontSize}
             headerFontWeight={props.headerFontWeight}
             headerBackgroundColor={props.headerBackgroundColor}
             headerTextColor={props.headerTextColor}
-            rowHeight={props.rowHeight}
-            rowPadding={props.rowPadding}
-            rowBorder={props.rowBorder}
+            rowHeight={effectiveRowHeight}
+            rowPadding={effectiveRowPadding}
+            rowBorder={effectiveRowBorder}
+            rowBorderStyle={props.rowBorderStyle}
             boxShadow={finalBoxShadow}
             sortableIndicatorColor={props.sortableIndicatorColor}
           />

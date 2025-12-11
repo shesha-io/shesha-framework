@@ -16,6 +16,7 @@ import {
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
+import { useStyles } from '../tableContext/styles';
 
 type ITableViewSelectorProps = ITableViewSelectorComponentProps;
 
@@ -35,6 +36,8 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     modelType,
   } = useDataTableStore();
 
+  const { styles } = useStyles();
+
   // ToDo: AS - need to optimize
   useShaFormDataUpdate();
 
@@ -50,22 +53,6 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     selectedStoredFilterIds && selectedStoredFilterIds.length > 0 ? selectedStoredFilterIds[0] : null;
 
   const dataFetchDep = useDataFetchDependency(id);
-
-  // Inject CSS for hint popover arrow styling
-  useEffect(() => {
-    const styleId = 'sha-table-view-selector-hint-popover-styles';
-    if (!document.getElementById(styleId)) {
-      const style = document.createElement('style');
-      style.id = styleId;
-      style.innerHTML = `
-        .sha-table-view-selector-hint-popover .ant-popover-arrow:before,
-        .sha-table-view-selector-hint-popover .ant-popover-arrow:after {
-          background: #D9DCDC !important;
-        }
-      `;
-      document.head.appendChild(style);
-    }
-  }, []);
 
   //#region Filters
   const debounceEvaluateDynamicFiltersHelper = (): void => {
@@ -111,31 +98,17 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     if (isDesignerMode) {
       // WYSIWYG fallback when no filters are configured
       return (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-        }}
-        >
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '4px 8px',
-            border: '1px solid #d9d9d9',
-            borderRadius: '6px',
-            backgroundColor: '#fafafa',
-            color: '#8c8c8c',
-            fontSize: '14px',
-            fontWeight: 600,
-          }}
-          >
+        <div className={styles.hintContainer}>
+          <div className={styles.viewSelectorMockup}>
             View: Default
           </div>
           <Popover
             placement="right"
             title="Hint:"
-            classNames={{ root: "sha-table-view-selector-hint-popover" }}
-            styles={{ body: { backgroundColor: '#D9DCDC' } }}
+            rootClassName={styles.tableViewSelectorHintPopover}
+            classNames={{
+              body: styles.tableViewSelectorHintPopover,
+            }}
             content={(
               <p>The Table View Selector needs at least<br />one filter configured to be functional.<br />Add filters in the component settings.
                 <br />

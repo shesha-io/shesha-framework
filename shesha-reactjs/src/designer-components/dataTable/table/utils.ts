@@ -59,6 +59,40 @@ export const defaultStyles = (): IStyleType => {
   };
 };
 
+export const getTableDefaults = (): {
+  rowHeight: string;
+  rowPadding: string;
+  rowBorder: string;
+  headerFontSize: string;
+  headerFontWeight: string;
+} => {
+  return {
+    // Row styling defaults
+    rowHeight: '40px',
+    rowPadding: '1px 1px',
+    rowBorder: 'none',
+
+    // Header styling defaults
+    headerFontSize: '14px',
+    headerFontWeight: '400',
+  };
+};
+
+export const getTableSettingsDefaults = (): {
+  tableSettings: {
+    rowHeight: string;
+    rowPadding: string;
+    rowBorder: string;
+    headerFontSize: string;
+    headerFontWeight: string;
+  };
+} => {
+  const flatDefaults = getTableDefaults();
+  return {
+    tableSettings: flatDefaults,
+  };
+};
+
 // Auditing columns to exclude from default column generation
 export const AUDITING_COLUMNS = Object.freeze([
   'id',
@@ -184,4 +218,123 @@ export const calculateDefaultColumns = async (metadata: IModelMetadata): Promise
   const columnItems: IDataColumnsProps[] = tableColumns.map(propertyToDataColumn);
 
   return columnItems;
+};
+
+/**
+ * Adds 'px' unit to a value if it's a number without a unit
+ */
+const addPxUnit = (value?: string | number): string => {
+  if (!value && value !== 0) return '0px';
+  const strValue = String(value);
+  // If it's just a number (with optional decimal), add 'px'
+  if (/^-?\d+\.?\d*$/.test(strValue)) {
+    return `${strValue}px`;
+  }
+  return strValue;
+};
+
+/**
+ * Converts row dimensions object to a single height string for backward compatibility.
+ *
+ * IMPORTANT LIMITATION: This function only converts the `height` property and intentionally
+ * discards `minHeight` and `maxHeight` values. This is a backward-compatibility limitation
+ * for the legacy `rowHeight` property path, which only supports a single height value.
+ *
+ * If you need to preserve min/max height behavior, access the `rowDimensions` property
+ * directly instead of using this conversion helper. The full `rowDimensions` object should
+ * be used by components that support advanced height constraints.
+ *
+ * @param rowDimensions - Row dimensions configuration containing height, minHeight, and maxHeight
+ * @returns Height string with units (px added if needed), or undefined if no height is set.
+ *          Note: minHeight and maxHeight are NOT included in the returned value.
+ */
+export const convertRowDimensionsToHeight = (rowDimensions?: {
+  height?: string;
+  minHeight?: string;
+  maxHeight?: string;
+}): string | undefined => {
+  if (!rowDimensions?.height) return undefined;
+  // Add px unit if it's just a number
+  return addPxUnit(rowDimensions.height);
+};
+
+/**
+ * Converts styling box padding to a single padding string
+ * @param rowStylingBox - Styling box configuration
+ * @returns Padding string for backward compatibility
+ */
+export const convertRowStylingBoxToPadding = (rowStylingBox?: {
+  margin?: {
+    top?: string;
+    right?: string;
+    bottom?: string;
+    left?: string;
+  };
+  padding?: {
+    top?: string;
+    right?: string;
+    bottom?: string;
+    left?: string;
+  };
+}): string | undefined => {
+  if (!rowStylingBox?.padding) return undefined;
+
+  const { top, right, bottom, left } = rowStylingBox.padding;
+
+  // Add px units to values if needed
+  const topPx = addPxUnit(top);
+  const rightPx = addPxUnit(right);
+  const bottomPx = addPxUnit(bottom);
+  const leftPx = addPxUnit(left);
+
+  // If all values are the same, return single value
+  if (topPx === rightPx && rightPx === bottomPx && bottomPx === leftPx) {
+    return topPx;
+  }
+
+  // If top/bottom and left/right pairs are the same
+  if (topPx === bottomPx && leftPx === rightPx) {
+    return `${topPx} ${leftPx}`;
+  }
+
+  // Return all four values
+  return `${topPx} ${rightPx} ${bottomPx} ${leftPx}`;
+};
+
+/**
+ * Converts border value object to a single border string
+ * @param rowBorderStyle - Border style configuration
+ * @returns Border string for backward compatibility
+ */
+export const convertRowBorderStyleToBorder = (rowBorderStyle?: {
+  borderType?: string;
+  border?: {
+    all?: { width?: string | number; style?: string; color?: string };
+    top?: { width?: string | number; style?: string; color?: string };
+    right?: { width?: string | number; style?: string; color?: string };
+    bottom?: { width?: string | number; style?: string; color?: string };
+    left?: { width?: string | number; style?: string; color?: string };
+  };
+}): string | undefined => {
+  if (!rowBorderStyle?.border) return undefined;
+
+  const { borderType, border } = rowBorderStyle;
+
+  // If borderType is 'all', use the all configuration
+  if (borderType === 'all' && border.all) {
+    const { width, style, color } = border.all;
+    if (!width || !style || !color) return undefined;
+    return `${addPxUnit(width)} ${style} ${color}`;
+  }
+
+  // For custom borders, we can only return one border string
+  // Let's use the top border or the first available border
+  const firstBorder = border.top || border.right || border.bottom || border.left;
+  if (firstBorder) {
+    const { width, style, color } = firstBorder;
+    if (!width || !style || !color) return undefined;
+    return `${addPxUnit(width)} ${style} ${color}`;
+  }
+
+  return undefined;
 };

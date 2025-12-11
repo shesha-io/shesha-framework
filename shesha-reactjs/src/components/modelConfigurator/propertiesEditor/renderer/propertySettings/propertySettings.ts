@@ -3,8 +3,15 @@ import { nanoid } from '@/utils/uuid';
 import { SimplePropertySettings } from './simplePropertySettings';
 import { DataTypes, FormMarkupWithSettings, IToolboxComponents } from '@/interfaces';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
+import { ModelConfigurationDto } from '@/apis/modelConfigurations';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { EntityFormats } from '@/interfaces/dataTypes';
 
-export const getSettings = (fbf: FormBuilderFactory, components: IToolboxComponents): FormMarkupWithSettings => {
+export const getSettings = (
+  fbf: FormBuilderFactory,
+  components: IToolboxComponents,
+  modelConfiguration: ModelConfigurationDto,
+): FormMarkupWithSettings => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -29,7 +36,7 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
     if (component.indexOf('.') > -1 || component.indexOf('-') > -1) continue;
     editorsCode += `'${component}': '${components[component]?.name}',\n`;
   }
-  editorsCode += '}\n';
+  editorsCode += '};\n';
   editorsCode += DataTypes.allowedCompoenentsCode;
   editorsCode += '\n';
   editorsCode += 'const editors = allowedComponents(data.dataType, data.dataFormat) ?? [];\n';
@@ -41,10 +48,10 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
     if (component.indexOf('.') > -1 || component.indexOf('-') > -1) continue;
     editorsHiddenCode += `'${component}': '${components[component]?.name}',\n`;
   }
-  editorsHiddenCode += '}\n';
+  editorsHiddenCode += '};\n';
   editorsHiddenCode += DataTypes.allowedCompoenentsCode;
   editorsHiddenCode += '\n';
-  editorsHiddenCode += 'const editors = (allowedComponents(data.dataType, data.dataFormat) ?? ).filter((e) => components[e]);\n';
+  editorsHiddenCode += 'const editors = (allowedComponents(data.dataType, data.dataFormat) ?? []).filter((e) => components[e]);\n';
   editorsHiddenCode += 'return !editors?.length;\n';
 
   return {
@@ -87,9 +94,24 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
 
                 .addContainer({ id: entityFormatId, parentId: dataTabId, hidden: { _code: 'return data?.dataType !== \'entity\';', _mode: 'code', _value: false },
                   components: [...fbf()
+                    .addSettingsInput({ parentId: entityFormatId, inputType: 'switch', context: 'formContext', propertyName: 'genericEntityReference',
+                      label: 'Generic Entity Reference',
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !(data.createdInDb && !data.inheritedFromId) && data.source != 1;' } as any,
+                      onChangeSetting: (value, _data, setFormData) => {
+                        setFormData({
+                          values: {
+                            dataFormat: value ? EntityFormats.genericEntity : EntityFormats.entity,
+                            entityType: undefined,
+                          },
+                          mergeValues: true,
+                        });
+                      },
+                    })
                     .addSettingsInput({ parentId: entityFormatId, inputType: 'entityTypeAutocomplete', propertyName: 'entityType',
                       label: 'Entity Type', entityAutocompleteType: 'Entity',
                       editMode: { _value: 'inherited', _mode: 'code', _code: 'return !(data.createdInDb && !data.inheritedFromId) && data.source != 1;' } as any,
+                      hidden: { _code: 'return data.dataFormat === \'generic-entity\';', _mode: 'code', _value: false },
+                      validate: { required: true },
                     })
                     .addSettingsInput({ parentId: entityFormatId, inputType: 'queryBuilder', propertyName: 'formatting.filter', label: 'Filter',
                       modelType: { _value: '', _mode: 'code', _code: 'return data.entityType;' } as any,
@@ -108,12 +130,13 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
                         { label: 'Nested object', value: 'object' },
                         { label: 'Part of entity', value: 'interface' },
                       ],
+                      validate: { required: true },
                     })
-                    .addSettingsInputRow({ parentId: objectRefFormatId, inputs: [
-                      { type: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Part Of Entity Type', entityAutocompleteType: 'JsonEntity' },
-                    ],
-                    hidden: { _code: 'return data?.dataFormat !== \'interface\';', _mode: 'code', _value: false },
-                    editMode: { _value: 'inherited', _mode: 'code', _code: 'return !(data.createdInDb && !data.inheritedFromId) && data.source != 1;' } as any,
+                    .addSettingsInput({ parentId: objectRefFormatId,
+                      inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Part Of Entity Type', entityAutocompleteType: 'JsonEntity',
+                      hidden: { _code: 'return data?.dataFormat !== \'interface\';', _mode: 'code', _value: false },
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !(data.createdInDb && !data.inheritedFromId) && data.source != 1;' } as any,
+                      validate: { required: true },
                     })
                     .toJson(),
                   ],
@@ -123,7 +146,7 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
 
                 .addContainer({ id: advancedFormatId, parentId: dataTabId, hidden: { _code: 'return data?.dataType !== \'advanced\';', _mode: 'code', _value: false },
                   components: [...fbf()
-                    .addSettingsInput({ parentId: advancedFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'Advanced format',
+                    .addSettingsInput({ parentId: advancedFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'Advanced Format',
                       dropdownOptions: [
                         { label: 'List of files', value: 'attachmentsEditor' },
                         { label: 'Notes', value: 'notes' },
@@ -132,6 +155,7 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
                         const newData = { formatting: { defaultEditor: null } };
                         setFormData({ values: newData, mergeValues: true });
                       },
+                      validate: { required: true },
                     })
                     .toJson(),
                   ],
@@ -145,55 +169,57 @@ export const getSettings = (fbf: FormBuilderFactory, components: IToolboxCompone
                       editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
                       dropdownOptions: [
                         { label: 'Simple Values', value: 'simple' },
-                        { label: 'Referencing Entities', value: 'entity' },
-                        { label: 'Entities', value: 'many-entity' },
+                        { label: 'Referencing Entities (many to one)', value: 'entity' },
+                        { label: 'Entities (many to many)', value: 'many-entity' },
                         { label: 'Child Objects', value: 'object' },
                         // ToDo: AS - restore after full implementation
                         // { label: 'Child Entities', value: 'child-entity' },
                         { label: 'Multi Value Reference List Item', value: 'multivalue-reference-list' },
                       ],
+                      validate: { required: true },
                     })
 
                   // Referencing entities and Entities (many-entity )
-
-                    .addSettingsInputRow({ parentId: listFormatId, inputs: [
-                      { type: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type', entityAutocompleteType: 'Entity' },
-                    ],
-                    hidden: { _code: 'const d = data?.dataFormat; return d !== \'many-entity\' && d !== \'entity\';', _mode: 'code', _value: false },
-                    editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                    .addSettingsInput({ parentId: listFormatId,
+                      inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type', entityAutocompleteType: 'Entity',
+                      hidden: { _code: 'const d = data?.dataFormat; return d !== \'many-entity\' && d !== \'entity\';', _mode: 'code', _value: false },
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                      validate: { required: true },
                     })
-                    .addSettingsInputRow({ parentId: listFormatId, inputs: [
-                      { type: 'propertyAutocomplete', propertyName: 'listConfiguration.foreignProperty', label: 'Referencing property',
-                        modelType: { _code: 'return data?.entityType;', _mode: 'code', _value: false } as any },
-                    ],
-                    hidden: { _code: 'return data?.dataFormat !== \'entity\';', _mode: 'code', _value: false },
+                    .addSettingsInput({ parentId: listFormatId, inputType: 'propertyAutocomplete', propertyName: 'listConfiguration.foreignProperty', label: 'Referencing Property',
+                      modelType: { _code: 'return data?.entityType;', _mode: 'code', _value: false } as any,
+                      propertyModelType: { module: modelConfiguration.module, name: modelConfiguration.name } as IEntityTypeIdentifier,
+                      hidden: { _code: 'return data?.dataFormat !== \'entity\';', _mode: 'code', _value: false },
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                      tooltip: `Allow to select only the properties with the type of edited entity ${modelConfiguration.name ? '(' + modelConfiguration.name + ')' : ''}.`,
+                      validate: { required: true },
                     })
 
                   // Child objects
 
-                    .addSettingsInputRow({ parentId: listFormatId, inputs: [
-                      { type: 'dropdown', propertyName: 'itemsType.dataFormat', label: 'Object Format',
-                        editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
-                        dropdownOptions: [
-                          { label: 'Nested object', value: 'object' },
-                          { label: 'Part of entity', value: 'interface' },
-                        ],
-                      }],
-                    hidden: { _code: 'return data?.dataFormat !== \'object\';', _mode: 'code', _value: false },
+                    .addSettingsInput({ parentId: listFormatId,
+                      inputType: 'dropdown', propertyName: 'itemsType.dataFormat', label: 'Object Format',
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                      dropdownOptions: [
+                        { label: 'Nested object', value: 'object' },
+                        { label: 'Part of entity', value: 'interface' },
+                      ],
+                      hidden: { _code: 'return data?.dataFormat !== \'object\';', _mode: 'code', _value: false },
+                      validate: { required: true },
                     })
-                    .addSettingsInputRow({ parentId: listFormatId, inputs: [
-                      { type: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Part Of Entity Type', entityAutocompleteType: 'JsonEntity' },
-                    ],
-                    hidden: { _code: 'return data?.dataFormat !== \'object\' || data?.itemsType?.dataFormat !== \'interface\';', _mode: 'code', _value: false },
-                    editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                    .addSettingsInput({ parentId: listFormatId,
+                      inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Part Of Entity Type', entityAutocompleteType: 'JsonEntity',
+                      hidden: { _code: 'return data?.dataFormat !== \'object\' || data?.itemsType?.dataFormat !== \'interface\';', _mode: 'code', _value: false },
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                      validate: { required: true },
                     })
 
                   // Reference list format
 
-                    .addSettingsInputRow({ parentId: listFormatId, inputs: [
-                      { type: 'referenceListAutocomplete', propertyName: `itemsType.referenceListId`, label: 'Reference List' },
-                    ],
-                    hidden: { _code: 'return data?.dataFormat !== \'multivalue-reference-list\';', _mode: 'code', _value: false },
+                    .addSettingsInput({ parentId: listFormatId,
+                      inputType: 'referenceListAutocomplete', propertyName: `itemsType.referenceListId`, label: 'Reference List',
+                      hidden: { _code: 'return data?.dataFormat !== \'multivalue-reference-list\';', _mode: 'code', _value: false },
+                      validate: { required: true },
                     })
 
                   // simple

@@ -90,6 +90,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   rowHeight?: string;
   rowPadding?: string;
   rowBorder?: string;
+  rowBorderStyle?: IBorderValue;
 
   // Overall table styling
   boxShadow?: string;
@@ -149,6 +150,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowHeight,
   rowPadding,
   rowBorder,
+  rowBorderStyle,
   boxShadow,
   sortableIndicatorColor,
   ...props
@@ -878,7 +880,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     data: tableData,
     // Disable sorting if we're in create mode so that the new row is always the first
     defaultSorting: defaultSorting,
-    useMultiSelect: selectionMode === 'multiple' || selectionMode === 'single' || (selectionMode === undefined && useMultiSelect),
+    useMultiSelect: selectionMode === 'multiple' || (selectionMode === undefined && useMultiSelect),
     selectionMode,
     freezeHeaders,
     onSelectRow: selectionMode === 'none' ? undefined : onSelectRowLocal,
@@ -943,6 +945,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowHeight,
     rowPadding,
     rowBorder,
+    rowBorderStyle,
     boxShadow,
     sortableIndicatorColor,
 

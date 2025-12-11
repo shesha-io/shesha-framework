@@ -20,10 +20,18 @@ namespace Shesha.EntityHistory
         [Display(Name = "User")]
         public string? UserFullName { get; set; }
 
+        [Display(Name = "Impersonator user")]
+        public string? ImpersonatorUserFullName { get; set; }
+
         [Display(Name = "Type of event")]
         public string? EventText { get; set; }
 
         [Display(Name = "Description")]
         public string? ExtendedDescription { get; set; }
+
+        public EntityHistoryItemDto()
+        {
+            
+        }
     }
 }

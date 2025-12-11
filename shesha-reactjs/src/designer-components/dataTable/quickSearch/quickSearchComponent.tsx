@@ -48,34 +48,29 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
           />
         )
         : (
-          <>
-            <style>
-              {styles.quickSearchPopoverArrowStyles}
-            </style>
-            <div className={styles.quickSearchContainer} style={finalStyle}>
-              <Search
-                size={size}
-                disabled
-              />
-              <Popover
-                placement="right"
-                title="Hint:"
-                rootClassName={styles.quickSearchHintPopover}
-                classNames={{
-                  body: styles.quickSearchHintPopover,
-                }}
-                content={(
-                  <p>The Quick Search component must be<br /> placed inside of a Data Context<br /> component to be fully functional.
-                    <br />
-                    <br />
-                    <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
-                  </p>
-                )}
-              >
-                <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
-              </Popover>
-            </div>
-          </>
+          <div className={styles.quickSearchContainer} style={finalStyle}>
+            <Search
+              size={size}
+              disabled
+            />
+            <Popover
+              placement="right"
+              title="Hint:"
+              rootClassName={styles.quickSearchHintPopover}
+              classNames={{
+                body: styles.quickSearchHintPopover,
+              }}
+              content={(
+                <p>The Quick Search component must be<br /> placed inside of a Data Context<br /> component to be fully functional.
+                  <br />
+                  <br />
+                  <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
+                </p>
+              )}
+            >
+              <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
+            </Popover>
+          </div>
         );
   },
   initModel: (model: IQuickSearchComponentProps) => {

@@ -6,6 +6,7 @@ import { getStyle, validateConfigurableComponentSettings } from '@/providers/for
 import { SlidersFilled } from '@ant-design/icons';
 import { SliderComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
+import { useStyles } from './styles';
 
 const SliderComponent: SliderComponentDefinition = {
   type: 'slider',
@@ -16,24 +17,27 @@ const SliderComponent: SliderComponentDefinition = {
   canBeJsSetting: true,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
+    const { styles } = useStyles();
     const min = model?.min ? parseInt(model.min, 10) : undefined;
     const max = model?.max ? parseInt(model.max, 10) : undefined;
 
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => (
-          <Slider
-            className="sha-slider"
-            min={min}
-            max={max}
-            onChange={onChange}
-            value={value}
-            style={{ ...(!model.enableStyleOnReadonly && model.readOnly
-              ? {} : getStyle(model?.style, formData)), ...(model.readOnly
-              ? { pointerEvents: 'none' } : {}) }}
-          />
-        )}
-      </ConfigurableFormItem>
+      <div className={styles.sliderWrapper}>
+        <ConfigurableFormItem model={model}>
+          {(value, onChange) => (
+            <Slider
+              className="sha-slider"
+              min={min}
+              max={max}
+              onChange={onChange}
+              value={value}
+              style={{ ...(!model.enableStyleOnReadonly && model.readOnly
+                ? {} : getStyle(model?.style, formData)), ...(model.readOnly
+                ? { pointerEvents: 'none' } : {}) }}
+            />
+          )}
+        </ConfigurableFormItem>
+      </div>
     );
   },
   initModel: (model) => {

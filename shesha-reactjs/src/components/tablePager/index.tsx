@@ -26,53 +26,44 @@ type EmptyPagerProps = {
   message: ReactElement;
   style: CSSProperties;
 };
+
 const EmptyPager: FC<EmptyPagerProps> = ({ message, style }) => {
   const { styles } = useStyles();
   return (
-    <>
-      <style>
-        {styles.quickSearchPopoverArrowStyles}
-      </style>
-      <div className={styles.tablePagerContainer} style={style}>
-        <div style={{ opacity: 0.5 }}>
-          <Pagination
-            size="small"
-            disabled
-            current={1}
-            onChange={() => {
-              // noop
-            }}
-            total={100}
-            pageSize={10}
-            showSizeChanger
-            showQuickJumper={false}
-            showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
-          />
-        </div>
-        <Popover
-          placement="right"
-          title="Hint:"
-          rootClassName={styles.tablePagerHintPopover}
-          classNames={{
-            body: styles.tablePagerHintPopover,
+    <div className={styles.tablePagerContainer} style={style}>
+      <div className={styles.disabledComponentWrapper}>
+        <Pagination
+          size="small"
+          disabled
+          current={1}
+          onChange={() => {
+            // noop
           }}
-          content={(
-            <p>{message}
-              <br />
-              <br />
-              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
-            </p>
-          )}
-        >
-          <InfoCircleFilled
-            role="img"
-            tabIndex={0}
-            aria-label="Table pager configuration help"
-            style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }}
-          />
-        </Popover>
+          total={100}
+          pageSize={10}
+          showSizeChanger
+          showQuickJumper={false}
+          showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
+        />
       </div>
-    </>
+      <Popover
+        placement="right"
+        title="Hint:"
+        rootClassName={styles.tablePagerHintPopover}
+        classNames={{
+          body: styles.tablePagerHintPopover,
+        }}
+        content={(
+          <p>{message}
+            <br />
+            <br />
+            <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
+          </p>
+        )}
+      >
+        <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
+      </Popover>
+    </div>
   );
 };
 

@@ -16,6 +16,7 @@ import { defaultContainerStyles, defaultStyles } from './utils';
 import { ConfigurableFormItem } from '@/components';
 import { useStyles } from './styles/styles';
 import { nanoid } from '@/utils/uuid';
+import { migrateButtonGroupDynamicItems } from '@/designer-components/_common-migrations/migrateButtonGroupDynamicItems';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
@@ -184,7 +185,8 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
         };
       }
       return prev;
-    }),
+    })
+    .add<IButtonGroupComponentProps>(15, (prev) => ({ ...prev, items: migrateButtonGroupDynamicItems(prev.items) })),
   settingsFormMarkup: getSettings,
 };
 

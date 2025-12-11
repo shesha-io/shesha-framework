@@ -4,7 +4,7 @@ import { SearchOutlined, EditOutlined, DeleteOutlined, InfoCircleFilled } from '
 import { Popover } from 'antd';
 import { useForm } from '@/providers';
 import { useDataTableStore } from '@/providers/dataTable';
-import { useDatatableHintPopoverStyles } from './hintPopoverStyles';
+import { useStyles } from '../tableContext/styles';
 
 // Ignore any configured items to ensure clean state when dragged outside
 const columns = [
@@ -103,13 +103,11 @@ const getPopoverContent = (
 
 export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
   const { formMode } = useForm();
+  const { styles } = useStyles();
   const store = useDataTableStore(false);
   const isDesignMode = formMode === 'designer';
   const hasNoColumns = !_props.items || _props.items.length === 0;
   const isInsideDataContext = !!store;
-
-  // Inject CSS for hint popover arrow styling
-  useDatatableHintPopoverStyles();
 
   const tableStyle: React.CSSProperties = {
     width: '100%',
@@ -156,32 +154,68 @@ export const StandaloneTable: FC<ITableComponentProps> = (_props) => {
         position: 'relative',
       }}
     >
-      {/* Show info icon in top-right corner */}
-      <Popover
-        placement="left"
-        title="Hint:"
-        classNames={{ root: "sha-datatable-hint-popover" }}
-        styles={{ body: { backgroundColor: '#D9DCDC' } }}
-        content={getPopoverContent(isInsideDataContext, hasNoColumns, isDesignMode)}
-      >
-        <InfoCircleFilled
-          aria-label="Data table configuration help"
-          className="sha-standalone-table-hint-icon"
-          style={{
-            position: 'absolute',
-            top: '44px',
-            right: '0px',
-            color: '#faad14',
-            fontSize: '16px',
-            zIndex: 1000,
-            cursor: 'help',
-            backgroundColor: '#fff',
-            borderRadius: '50%',
-            padding: '4px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-          }}
-        />
-      </Popover>
+      {/* Show info icon in top-right corner in designer mode */}
+      {isDesignMode && (
+        <Popover
+          placement="left"
+          title="Hint:"
+          classNames={{ body: styles.datatableHintPopover }}
+          rootClassName={styles.datatableHintPopover}
+          content={isInsideDataContext ? (
+            <p>
+              This Data Table has no columns configured.<br />
+              Click the Settings icon in the Properties Panel<br />
+              to configure columns.
+              <br /><br />
+              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+                See component documentation
+              </a>
+              <br />for setup and usage.
+            </p>
+          ) : hasNoColumns ? (
+            <p>
+              This Data Table is not inside a Data Context<br />
+              and has no columns configured.<br />
+              <br />
+              Drag it into a Data Context component to<br />
+              connect it to data, then configure columns<br />
+              in the Properties Panel.
+              <br /><br />
+              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+                See component documentation
+              </a>
+              <br />for setup and usage.
+            </p>
+          ) : (
+            <p>
+              This Data Table is not inside a Data Context.<br />
+              Drag it into a Data Context component to<br />
+              connect it to data.
+              <br /><br />
+              <a href="https://docs.shesha.io/docs/category/tables-and-lists" target="_blank" rel="noopener noreferrer">
+                See component documentation
+              </a>
+              <br />for setup and usage.
+            </p>
+          )}
+        >
+          <InfoCircleFilled
+            style={{
+              position: 'absolute',
+              top: '4px',
+              right: '4px',
+              color: '#faad14',
+              fontSize: '20px',
+              zIndex: 9999,
+              cursor: 'help',
+              backgroundColor: '#fff',
+              borderRadius: '50%',
+              padding: '4px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            }}
+          />
+        </Popover>
+      )}
 
       <table style={tableStyle}>
         <thead>
