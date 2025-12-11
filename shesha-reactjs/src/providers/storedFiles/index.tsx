@@ -23,6 +23,9 @@ import {
   initializeFileListAction,
   onFileAddedAction,
   onFileDeletedAction,
+  replaceFileErrorAction,
+  replaceFileRequestAction,
+  replaceFileSuccessAction,
   updateAllFilesDownloadedByCurrentUser,
   updateIsDownloadedByCurrentUser,
   uploadFileErrorAction,
@@ -32,6 +35,7 @@ import {
 import {
   IDownloadFilePayload,
   IDownloadZipPayload,
+  IReplaceFilePayload,
   IStoredFile,
   IUploadFilePayload,
   STORED_FILES_CONTEXT_INITIAL_STATE,
@@ -40,10 +44,11 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
-import { addFile, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
+import { addFile, normalizeFileName, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import { isValidGuid } from '@/components/formDesigner/components/utils';
 
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 export interface IStoredFilesProviderProps {
@@ -65,9 +70,23 @@ const fileReducer = (data: IStoredFile): IStoredFile => {
   return { ...data, uid: data.id };
 };
 
-const filesReducer = (data: IStoredFile[]): IStoredFile[] => data?.map((file) => fileReducer(file));
+const filesReducer = (data: IStoredFile[]): IStoredFile[] => {
+  if (!data) return data;
+
+  // Map files and deduplicate by ID, keeping the last occurrence (most recent version)
+  const fileMap = new Map<string, IStoredFile>();
+  data.forEach((file) => {
+    const processedFile = fileReducer(file);
+    if (processedFile.id) {
+      fileMap.set(processedFile.id, processedFile);
+    }
+  });
+
+  return Array.from(fileMap.values());
+};
 
 const uploadFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/Upload', httpVerb: 'POST' };
+const replaceFileEndpoint: IApiEndpoint = { url: '/api/StoredFile/UploadNewVersion', httpVerb: 'POST' };
 const filesListEndpoint: IApiEndpoint = { url: '/api/StoredFile/FilesList', httpVerb: 'GET' };
 
 const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
@@ -118,6 +137,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   });
 
   const { mutate: uploadFileHttp } = useMutate();
+  const { mutate: replaceFileHttp } = useMutate();
 
   // Initialize fileList from value prop when component mounts or value changes
   useEffect(() => {
@@ -126,24 +146,14 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     }
   }, [value]);
 
+  // Trigger fetch when owner params change
   useEffect(() => {
     if ((ownerId || '') !== '' && (ownerType || '') !== '') {
-      fetchFileListHttp()
-        .then((resp) => {
-          if (isAjaxSuccessResponse(resp)) {
-            const fileList = filesReducer((resp?.result ?? []) as IStoredFile[]);
-            dispatch(fetchFileListSuccessAction(fileList));
-            onChange?.(fileList);
-          } else {
-            dispatch(fetchFileListErrorAction());
-          }
-        })
-        .catch(() => {
-          dispatch(fetchFileListErrorAction());
-        });
+      fetchFileListHttp();
     }
   }, [ownerId, ownerType, ownerName, filesCategory, propertyName]);
 
+  // Handle fetch response
   useEffect(() => {
     if (!isFetchingFileList) {
       if (isAjaxSuccessResponse(fileListResponse)) {
@@ -151,6 +161,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         const fileList = filesReducer(result as IStoredFile[]);
 
         dispatch(fetchFileListSuccessAction(fileList));
+        onChange?.(fileList);
       } else {
         dispatch(fetchFileListErrorAction());
       }
@@ -272,6 +283,53 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   //#endregion
 
+  //#region replace file
+  const replaceFile = (payload: IReplaceFilePayload) => {
+    const { file, fileId } = payload;
+
+    // Validate that fileId is a persisted stored-file identifier
+    if (!fileId || !isValidGuid(fileId)) {
+      const errorMsg = 'Cannot replace file: file must be persisted before replacement. Please wait for upload to complete.';
+      message.error(errorMsg);
+      console.warn('replaceFile: Invalid or missing fileId', { fileId, file: file.name });
+      // Dispatch error action to update UI state if needed
+      if (fileId) {
+        dispatch(replaceFileErrorAction(fileId));
+      }
+      return;
+    }
+
+    // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
+    const normalizedFile = normalizeFileName(file);
+
+    const formData = new FormData();
+    formData.append('file', normalizedFile);
+    formData.append('id', fileId);
+
+    dispatch(replaceFileRequestAction(fileId));
+
+    replaceFileHttp(replaceFileEndpoint, formData)
+      .then((response) => {
+        const responseFile = response.result as IStoredFile;
+        responseFile.uid = responseFile.id;
+        dispatch(replaceFileSuccessAction({ originalFileId: fileId, newFile: { ...responseFile } }));
+
+        // Update the fileList by replacing the old file with the new one
+        const currentList = fileListRef.current ?? [];
+        const updatedList = currentList.map((f) =>
+          f.id === fileId || f.uid === fileId ? { ...responseFile, uid: responseFile.id } : f
+        );
+        onChange?.(updatedList);
+        message.success(`File "${normalizedFile.name}" replaced successfully`);
+      })
+      .catch((e) => {
+        message.error(`File replacement failed. ${e.message || 'Please try again.'}`);
+        console.error(e);
+        dispatch(replaceFileErrorAction(fileId));
+      });
+  };
+  //#endregion
+
   const downloadZipFile = (payload: IDownloadZipPayload = null) => {
     dispatch(downloadZipRequestAction());
     const query = !!payload
@@ -337,8 +395,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   }), []);
 
   return (
-    <ConditionalWrap 
-      condition={Boolean(name)} 
+    <ConditionalWrap
+      condition={Boolean(name)}
       wrap={children => (
         <DataContextBinder
           id={`ctx_fl_${name}`}
@@ -357,6 +415,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           value={{
             ...getFlagSetters(dispatch),
             uploadFile,
+            replaceFile,
             deleteFile,
             downloadZipFile,
             downloadFile,          /* NEW_ACTION_GOES_HERE */

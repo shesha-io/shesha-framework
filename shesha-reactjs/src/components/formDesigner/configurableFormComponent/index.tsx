@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
-import { EditMode, IConfigurableFormComponent } from '@/providers';
+import { EditMode, IConfigurableFormComponent, useCanvas } from '@/providers';
 import {
   EditOutlined,
   EyeInvisibleOutlined,
@@ -26,6 +26,25 @@ import { useFormDesignerState } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { addPx } from '@/utils/style';
+
+// Module-level style constants to prevent recreation on every render
+const fullSizeBoxStyle: React.CSSProperties = {
+  width: '100%',
+  height: '100%',
+  boxSizing: 'border-box'
+};
+
+const paddedBoxStyle: React.CSSProperties = {
+  padding: '5px 3px',
+  boxSizing: 'border-box',
+  width: '100%',
+  height: '100%'
+};
+
+const isValidDeviceKey = (device: unknown): device is 'desktop' | 'tablet' | 'mobile' => {
+  return typeof device === 'string' && ['desktop', 'tablet', 'mobile'].includes(device);
+};
 
 export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
@@ -36,7 +55,7 @@ export interface IConfigurableFormComponentDesignerProps {
   hidden?: boolean;
   componentEditMode?: EditMode;
 }
-const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerProps> = ({ 
+const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesignerProps> = ({
   componentModel,
   componentRef,
   selectedComponentId,
@@ -48,6 +67,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   const { styles } = useStyles();
 
   const getToolboxComponent = useFormDesignerComponentGetter();
+  const { activeDevice } = useCanvas();
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
 
@@ -85,12 +105,50 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     return result;
   }, [isSelected]);
 
+  // Apply dimensions to the outermost wrapper so width/height affect the actual component size
+  const shouldApplyDimensions = componentModel.type === 'container';
+
+  const deviceModel = isValidDeviceKey(activeDevice)
+    ? { ...componentModel, ...componentModel[activeDevice] }
+    : componentModel;
+
+  const dimensions = deviceModel?.container?.dimensions ?? deviceModel?.dimensions ?? {};
+
+  const componentStyle = useMemo(() => {
+    if (!shouldApplyDimensions) return { margin: '0px' };
+    return {
+      boxSizing: 'border-box' as const,
+      width: addPx(dimensions?.width),
+      minWidth: addPx(dimensions?.minWidth),
+      maxWidth: addPx(dimensions?.maxWidth),
+      height: addPx(dimensions?.height),
+      minHeight: addPx(dimensions?.minHeight),
+      maxHeight: addPx(dimensions?.maxHeight),
+      margin: '0px'
+    };
+  }, [dimensions, shouldApplyDimensions]);
+
+  const renderComponentModel = useMemo(() => {
+    if (!isValidDeviceKey(activeDevice)) {
+      return componentModel;
+    }
+    const deviceOverrides = componentModel[activeDevice] ?? {};
+    return {
+      ...componentModel,
+      [activeDevice]: {
+        ...deviceOverrides,
+        dimensions: { ...dimensions, width: '100%', height: '100%' },
+      },
+    };
+  }, [componentModel, activeDevice, dimensions]);
+
   return (
     <div
       className={classNames(styles.shaComponent, {
         selected: isSelected,
         'has-config-errors': invalidConfiguration,
       })}
+      style={componentStyle}
     >
       <span className={styles.shaComponentIndicator}>
         <Show when={hiddenFx || componentEditModeFx}>
@@ -118,10 +176,10 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       </span>
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
-      <div>
+      <div style={fullSizeBoxStyle}>
         <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly} >
-          <div style={{ padding: '5px 3px' }}>
-            <FormComponent componentModel={componentModel} componentRef={componentRef} />
+          <div style={paddedBoxStyle}>
+            <FormComponent componentModel={renderComponentModel} componentRef={componentRef} />
           </div>
         </DragWrapper>
       </div>
@@ -139,7 +197,7 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   const hidden = getActualPropertyValue(props.componentModel, allData, 'hidden')?.hidden;
   const componentEditMode = getActualPropertyValue(props.componentModel, allData, 'editMode')?.editMode as EditMode;
 
-  return <ConfigurableFormComponentDesignerMemo {...props} {...{selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode}}/>;
+  return <ConfigurableFormComponentDesignerMemo {...props} {...{ selectedComponentId, readOnly, settingsPanelRef, hidden, componentEditMode }} />;
 };
 
 export interface IConfigurableFormComponentProps {
@@ -147,7 +205,7 @@ export interface IConfigurableFormComponentProps {
   model?: IConfigurableFormComponent;
 }
 
-export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({id, model}) => {
+export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id, model }) => {
   const isDrawing = useIsDrawingForm();
 
   const componentRef = useRef(null);
@@ -159,6 +217,6 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     : ConfigurableFormComponentDesigner;
 
   return (
-    <ComponentRenderer componentModel={componentModel} componentRef={componentRef}  />
+    <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
   );
 };

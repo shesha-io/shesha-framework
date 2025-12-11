@@ -148,12 +148,129 @@ export const getSettings = () => {
                     },
                   ],
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  propertyName: 'downloadZip',
-                  label: 'Download Zip',
-                  inputType: 'switch',
-                  jsSetting: true,
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'allowReplace',
+                      label: 'Allow Replace',
+                      type: 'switch',
+                      jsSetting: true,
+                      hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+                    },
+                    {
+                      id: nanoid(),
+                      propertyName: 'allowRename',
+                      label: 'Allow Rename',
+                      type: 'switch',
+                      hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+                      jsSetting: true,
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'allowViewHistory',
+                      label: 'Allow View History',
+                      type: 'switch',
+                      jsSetting: true,
+                    },
+                    {
+                      id: nanoid(),
+                      propertyName: 'downloadZip',
+                      label: 'Download Zip',
+                      type: 'switch',
+                      jsSetting: true,
+                    },
+                  ],
+                })
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  propertyName: 'customActionsPanel',
+                  parentId: commonTabId,
+                  label: 'Custom',
+                  labelAlign: 'left',
+                  expandIconPosition: 'start',
+                  ghost: true,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [
+                      ...new DesignerToolbarSettings()
+                        .addSettingsInputRow({
+                          id: "customActionsPanel",
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'customActions',
+                              parentId: 'customActionsPanel',
+                              label: 'Custom Actions',
+                              type: 'buttonGroupConfigurator',
+                              description: 'Configure custom actions that appear when hovering over files. Each action should have: id, name, label, icon (optional), tooltip (optional), hidden (optional), and actionConfiguration.',
+                              jsSetting: false,
+                            },
+                            {
+                              id: nanoid(),
+                              propertyName: 'customContent',
+                              parentId: 'customActionsPanel',
+                              label: 'Show Custom Content',
+                              type: 'switch',
+                              description: 'Enable to show custom content below each file.',
+                              jsSetting: false,
+                            }
+                          ]
+                        })
+                        .addSettingsInput({
+                          id: nanoid(),
+                          inputType: "dropdown",
+                          propertyName: "extraFormSelectionMode",
+                          parentId: 'customActionsPanel',
+                          label: "Form Selection Mode",
+                          tooltip: "Choose how to select the form for custom content",
+                          defaultValue: 'name',
+                          dropdownOptions: [
+                            { label: "Name", value: "name" },
+                            { label: "Dynamic", value: "dynamic" }
+                          ],
+                          hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false } as any,
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: 'customActionsPanel',
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: "formTypeAutocomplete",
+                              propertyName: "extraFormType",
+                              label: "Form Type",
+                              jsSetting: true,
+                            }
+                          ],
+                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: 'customActionsPanel',
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: "formAutocomplete",
+                              propertyName: "extraFormId",
+                              label: "Form",
+                              jsSetting: true
+                            }
+                          ],
+                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) === "dynamic";', _mode: 'code', _value: false } as any,
+                        })
+                        .toJson(),
+                    ],
+                  },
                 })
                 .toJson(),
             ],
@@ -929,6 +1046,24 @@ export const getSettings = () => {
                       content: {
                         id: downloadedStylesPnlId,
                         components: [...new DesignerToolbarSettings()
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            parentId: downloadedStylesPnlId,
+                            inputs: [{
+                              type: "switch",
+                              id: nanoid(),
+                              label: 'Style Downloaded File',
+                              propertyName: 'styleDownloadedFiles'
+                            },
+                            {
+                              id: nanoid(),
+                              type: 'iconPicker',
+                              label: 'Icon',
+                              propertyName: 'downloadedIcon',
+                              hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                            }
+                            ]
+                          })
                           .addCollapsiblePanel({
                             id: nanoid(),
                             propertyName: 'pnlDownloadedFileFontStyles',
@@ -937,6 +1072,7 @@ export const getSettings = () => {
                             parentId: downloadedStylesPnlId,
                             ghost: true,
                             collapsible: 'header',
+                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                             content: {
                               id: pnlDownloadedFileFontStylesId,
                               components: [...new DesignerToolbarSettings()
@@ -987,7 +1123,7 @@ export const getSettings = () => {
                                       hideLabel: true,
                                       width: 60,
                                       dropdownOptions: textAlignOptions,
-                                    },
+                                    }
                                   ],
                                 })
                                 .toJson()
@@ -1002,6 +1138,7 @@ export const getSettings = () => {
                             ghost: true,
                             parentId: downloadedStylesPnlId,
                             collapsible: 'header',
+                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                             content: {
                               id: 'pnlDownloadedFileCustomStylePanel',
                               components: [...new DesignerToolbarSettings()
