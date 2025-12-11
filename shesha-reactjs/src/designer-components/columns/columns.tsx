@@ -21,6 +21,7 @@ import { IColumnProps, IColumnsComponentProps, IColumnsInputProps } from './inte
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { nanoid } from '@/utils/uuid';
+import { useStyles } from './styles';
 
 // Validation function to ensure columns don't exceed 24-column limit
 const validateColumns = (columns: IColumnProps[]) => {
@@ -81,6 +82,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
+    const {styles} = useStyles();
 
     useEffect(() => {
       const fetchStyles = async () => {
@@ -141,7 +143,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     const validatedColumns = validateColumns(columns);
 
     return (
-      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...containerPadding, ...boxSizing, ...finalStyle }}>
+      <div className={styles.columns} style={{ ...getLayoutStyle(model, { data, globalState }), ...containerPadding, ...boxSizing, ...finalStyle }}>
         <Row gutter={[gutterX || 0, gutterY || 0]}>
           <ParentProvider model={model}>
             {validatedColumns &&
@@ -152,7 +154,6 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
                   offset={col.offset}
                   pull={col.pull}
                   push={col.push}
-                  style={{width: '100%'}}
                 >
                   <ComponentsContainer
                     containerId={col.id}
