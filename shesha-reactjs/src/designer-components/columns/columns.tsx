@@ -82,7 +82,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-    const {styles} = useStyles();
+    const { styles } = useStyles();
 
     useEffect(() => {
       const fetchStyles = async () => {
