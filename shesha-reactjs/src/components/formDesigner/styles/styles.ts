@@ -399,7 +399,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
 
                 .${shaComponent} {
-                    min-height: 30px;
+                    min-height: 52px;
                 }
             }
 
@@ -427,7 +427,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         .${shaComponentGhost} {
             border: 1px dashed ${token.colorPrimary};
             border-radius: 2px;
-            opacity: 0.7;        
+            opacity: 0.7;    
+            min-height: 52px;
         }
         .${shaToolboxPanelComponents}{
             margin: -1rem -0.8rem;
@@ -445,17 +446,18 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${shaComponent} {
             position: relative;
+            min-height: 50px; // Ensure enough space for delete button and error icon
 
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;
             }
-        
+
             &.selected {
               border: ${token.colorPrimary} 1px solid;
               border-radius: 4px;
               background-color: ${token.colorPrimaryBg}80;
             }
-        
+
             &.${hasConfigErrors} {
               border: ${token.colorErrorBg} 1px solid;
               border-radius: 4px;
@@ -463,6 +465,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               .${shaComponentIndicator} {
                 display: none;
               }
+            }
+
+            // Error icon positioning: snap to corner when not hovering
+            .sha-error-icon-top-right {
+              top: 4px !important;
+              transition: top 0.2s ease;
+            }
+
+            // When hovering the component, move error icon down to make room for delete button
+            &:hover .sha-error-icon-top-right {
+              top: 28px !important;
             }
 
             .${shaComponentValidationIcon} {

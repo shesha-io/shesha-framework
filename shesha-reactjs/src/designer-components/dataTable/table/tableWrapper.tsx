@@ -166,7 +166,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   }, [props.enableStyleOnReadonly, props.readOnly, props.allStyles, props.border]);
 
   const {
-    getRepository,
     isInProgress: { isFiltering, isSelectingColumns },
     setIsInProgressFlag,
     registerConfigurableColumns,
@@ -183,8 +182,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const { totalRows } = useDataTable();
 
   requireColumns(); // our component requires columns loading. it's safe to call on each render
-
-  const repository = getRepository();
 
   useDeepCompareEffect(() => {
     // register columns
