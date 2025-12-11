@@ -81,7 +81,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   // All components that require being inside a data context must report upwards
   const shouldValidateDataContext = useMemo(() => {
     return [
-      'dataTable',
+      'datatable',
       'dataList',
       'tableViewSelector',
       'childTable',
@@ -141,9 +141,9 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   }, [toolboxComponent, actualModel, needsDataContextButMissing]);
 
   // Wrap component with error icon if there are validation errors
-  // In designer mode, DragWrapper handles error display, so only wrap in runtime mode
-  const wrappedControl = validationResult?.hasErrors ? (
-    <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={formMode === 'designer'}>
+  // Show error icons only in designer mode
+  const wrappedControl = validationResult?.hasErrors && formMode === 'designer' ? (
+    <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={true}>
       {control}
     </ErrorIconPopover>
   ) : control;
