@@ -52,6 +52,11 @@ export const GlobalTableStyles = createGlobalStyle`
       }
     }
   }
+
+  .sha-datatable-wrapper {
+    position: relative;
+  }
+
   .sha-react-table {
     .td {
       .${(p) => p.theme.prefixCls}-form-item {

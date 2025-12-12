@@ -3,19 +3,13 @@ import { CodeOutlined } from '@ant-design/icons';
 import { ComponentsContainer } from '@/components';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { DataContextSettingsForm } from './settings';
-import { IConfigurableActionConfiguration, IConfigurableFormComponent } from '@/providers';
-import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';
+import { IModelMetadata } from '@/interfaces/metadata';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
 import { DEFAULT_CONTEXT_METADATA } from '@/providers/dataContextManager/models';
 import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-
-export interface IDataContextComponentProps extends IConfigurableFormComponent {
-  items: IPropertyMetadata[];
-  initialDataCode: string;
-  onChangeAction?: IConfigurableActionConfiguration;
-}
+import { IDataContextComponentProps } from './interfaces';
 
 const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
   type: 'dataContext',

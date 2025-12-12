@@ -350,7 +350,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
           ];
 
           const childTableContextBuilder = this.getFormBuilder();
-          childTableContextBuilder.addDatatableContext({
+          childTableContextBuilder.addDataContext({
             id: nanoid(),
             propertyName: "childTableContext",
             editMode: 'inherited' as EditMode,
