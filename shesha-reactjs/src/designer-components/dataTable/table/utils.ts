@@ -237,7 +237,18 @@ export const convertRowDimensionsToHeight = (rowDimensions?: {
   return addPxUnit(rowDimensions.height);
 };
 
-export const convertRowStylingBoxToPadding = (rowStylingBox): string | undefined => {
+export const convertRowStylingBoxToPadding = (rowStylingBox?: string | {
+  padding?: {
+    top?: string | number;
+    right?: string | number;
+    bottom?: string | number;
+    left?: string | number;
+  };
+  paddingTop?: string | number;
+  paddingRight?: string | number;
+  paddingBottom?: string | number;
+  paddingLeft?: string | number;
+}): string | undefined => {
   if (!rowStylingBox) return undefined;
 
   // Parse JSON string if needed
