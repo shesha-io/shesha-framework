@@ -1,7 +1,13 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles, getTextHoverEffects } from '@/styles';
+import { createStyles, sheshaStyles, getTextHoverEffects } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
+interface UseStylesParams {
+  textAlign?: CSSProperties['textAlign'];
+}
+
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: UseStylesParams) => {
+  const { textAlign } = params;
+
   const readOnlyModeToggler = "read-only-mode-toggler";
   const readOnlyDisplayFormItem = cx("read-only-display-form-item", css`
         width: 100%;
@@ -57,9 +63,20 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
     // white-space: nowrap;
   `;
 
+  const wrapper = css`
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+    box-sizing: border-box;
+    justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'};
+  `;
+
   return {
     readOnlyDisplayFormItem,
     readOnlyModeToggler,
     inputField,
+    wrapper,
   };
 });

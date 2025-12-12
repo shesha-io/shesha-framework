@@ -100,22 +100,26 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
 
           return dropdownDisplayMode === 'raw'
             ? <InputField style={style} value={values?.join(', ')} />
-            : <div style={{ padding: '0px 4px', ...style, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, justifyContent: style?.textAlign }}>
-              {value?.map(({ label, color, icon, value, description }) => {
-                return <ReflistTag
-                  key={value}
-                  value={value}
-                  color={color}
-                  icon={icon}
-                  description={description}
-                  showIcon={showIcon}
-                  tagStyle={tagStyle}
-                  solidColor={solidColor}
-                  showItemName={showItemName}
-                  label={label}
-                />;
-              })}
-            </div>;
+            : (
+              <div className={styles.wrapper} style={{ ...style }}>
+                {value?.map(({ label, color, icon, value, description }) => {
+                  return (
+                    <ReflistTag
+                      key={value}
+                      value={value}
+                      color={color}
+                      icon={icon}
+                      description={description}
+                      showIcon={showIcon}
+                      tagStyle={tagStyle}
+                      solidColor={solidColor}
+                      showItemName={showItemName}
+                      label={label}
+                    />
+                  );
+                })}
+              </div>
+            );
         }
 
         throw new Error(
