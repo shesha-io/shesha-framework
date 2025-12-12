@@ -237,7 +237,7 @@ export const convertRowDimensionsToHeight = (rowDimensions?: {
   return addPxUnit(rowDimensions.height);
 };
 
-export const convertRowStylingBoxToPadding = (rowStylingBox?: string | {
+type RowStylingBoxType = {
   padding?: {
     top?: string | number;
     right?: string | number;
@@ -248,11 +248,12 @@ export const convertRowStylingBoxToPadding = (rowStylingBox?: string | {
   paddingRight?: string | number;
   paddingBottom?: string | number;
   paddingLeft?: string | number;
-}): string | undefined => {
+};
+
+export const convertRowStylingBoxToPadding = (rowStylingBox?: string | RowStylingBoxType): string | undefined => {
   if (!rowStylingBox) return undefined;
 
-  // Parse JSON string if needed
-  let stylingBox = rowStylingBox;
+  let stylingBox: RowStylingBoxType;
   if (typeof rowStylingBox === 'string') {
     try {
       stylingBox = JSON.parse(rowStylingBox);
@@ -260,12 +261,14 @@ export const convertRowStylingBoxToPadding = (rowStylingBox?: string | {
       console.warn('Failed to parse rowStylingBox JSON:', e);
       return undefined;
     }
+  } else {
+    stylingBox = rowStylingBox;
   }
 
-  let top: string | undefined;
-  let right: string | undefined;
-  let bottom: string | undefined;
-  let left: string | undefined;
+  let top: string | number | undefined;
+  let right: string | number | undefined;
+  let bottom: string | number | undefined;
+  let left: string | number | undefined;
 
   if (stylingBox?.padding) {
     top = stylingBox.padding.top;
