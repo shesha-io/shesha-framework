@@ -5,6 +5,7 @@ import React, { ReactNode, CSSProperties } from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { TableSelectionMode } from '../dataTable/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/index';
 
 export interface IColumnWidth {
   id: React.Key;
