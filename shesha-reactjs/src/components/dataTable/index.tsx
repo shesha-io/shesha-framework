@@ -45,6 +45,7 @@ import moment from 'moment';
 import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { isEqual } from 'lodash';
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
@@ -91,6 +92,20 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   rowPadding?: string;
   rowBorder?: string;
   rowBorderStyle?: IBorderValue;
+
+  // Cell styling
+  cellTextColor?: string;
+  cellBackgroundColor?: string;
+  cellBorderColor?: string;
+  cellBorders?: boolean;
+  cellPadding?: string;
+  cellBorder?: IBorderValue;
+
+  // Border and shadow styling
+  headerBorder?: IBorderValue;
+  headerShadow?: IShadowValue;
+  rowShadow?: IShadowValue;
+  rowDividers?: boolean;
 
   // Overall table styling
   boxShadow?: string;
@@ -949,8 +964,21 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     boxShadow,
     sortableIndicatorColor,
 
-    onRowClick: handleRowClick,
-    onRowHover: handleRowHover,
+    onRowClickAction: onRowClick,
+    onRowHoverAction: onRowHover,
+    onRowSelectAction: onRowSelect,
+    onSelectionChangeAction: onSelectionChange,
+
+    cellTextColor: props.cellTextColor,
+    cellBackgroundColor: props.cellBackgroundColor,
+    cellBorderColor: props.cellBorderColor,
+    cellBorders: props.cellBorders,
+    cellPadding: props.cellPadding,
+    headerBorder: props.headerBorder,
+    cellBorder: props.cellBorder,
+    headerShadow: props.headerShadow,
+    rowShadow: props.rowShadow,
+    rowDividers: props.rowDividers,
   };
 
   return (

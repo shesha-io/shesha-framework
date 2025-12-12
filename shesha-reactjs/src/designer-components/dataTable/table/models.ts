@@ -89,6 +89,29 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   sortableIndicatorColor?: string;
   enableStyleOnReadonly?: boolean;
 
+  // Cell-specific styling
+  cellTextColor?: string;
+  cellBackgroundColor?: string;
+  cellBorderColor?: string;
+  /** @deprecated Use rowStylingBox instead. This property is migrated to rowStylingBox in migration v19 */
+  cellPadding?: string;
+  cellBorder?: IBorderValue;
+
+  // Footer styling
+  footerBackgroundColor?: string;
+  footerTextColor?: string;
+  footerBorder?: IBorderValue;
+
+  // Additional borders and shadows
+  headerBorder?: IBorderValue;
+  headerShadow?: IShadowValue;
+  rowShadow?: IShadowValue;
+
+  // Layout features
+  cellBorders?: boolean; // Show/hide cell borders
+  rowDividers?: boolean; // Horizontal dividers between rows
+  responsiveMode?: 'scroll' | 'stack' | 'collapse';
+
   // Table settings nested structure for form binding
   tableSettings?: {
     rowHeight?: string;
