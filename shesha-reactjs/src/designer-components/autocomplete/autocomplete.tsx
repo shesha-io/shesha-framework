@@ -24,6 +24,8 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { useMetadataDispatcher } from '@/providers';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { isEntityReferenceId } from '@/utils/entity';
+import { isDefined } from '@/utils/nullables';
 
 const AutocompleteComponent: AutocompleteComponentDefinition = {
   type: 'autocomplete',
@@ -47,36 +49,41 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     const keyPropName = model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
     const displayPropName = model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
 
-    const keyValueFunc: KayValueFunc = useCallback((value: any, args: any) => {
+    const keyValueFunc: KayValueFunc = useCallback((value: unknown, args: object) => {
+      if (!isDefined(value)) return value;
       if (model.valueFormat === 'custom' && model.keyValueFunc)
         return executeExpression<string>(model.keyValueFunc, { ...args, value }, null, null);
-      if (model.valueFormat === 'entityReference')
+      if (model.valueFormat === 'entityReference' && isEntityReferenceId(value))
         return value?.id;
-      return typeof (value) === 'object' ? getValueByPropertyName(value, keyPropName) : value;
+      return typeof (value) === 'object' ? getValueByPropertyName(value as Record<string, unknown>, keyPropName) : value;
     }, [model.valueFormat, model.keyValueFunc, keyPropName]);
 
-    const outcomeValueFunc: OutcomeValueFunc = useCallback((item: any, args: any) => {
+    const outcomeValueFunc: OutcomeValueFunc = useCallback((item: unknown, args: object) => {
+      if (!isDefined(item)) return item;
       if (model.valueFormat === 'entityReference')
-        return Boolean(item)
+        return isEntityReferenceId(item)
           ? {
             id: item.id,
-            _displayName: item._displayName || getValueByPropertyName(item, displayPropName),
+            _displayName: getValueByPropertyName(item as Record<string, unknown>, displayPropName) || item._displayName,
             _className: (item._className || entityMetadata?.fullClassName) ?? undefined,
           }
-          : null;
+          : typeof (item) !== 'object'
+            ? { id: item, _displayName: item?.toString(), _className: undefined }
+            : item;
       if (model.valueFormat === 'custom' && model.outcomeValueFunc)
         return executeExpression(model.outcomeValueFunc, { ...args, item: item }, null, null);
-      return typeof (item) === 'object' ? getValueByPropertyName(item, keyPropName) : item;
+      return typeof (item) === 'object' ? getValueByPropertyName(item as Record<string, unknown>, keyPropName) : item;
     }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, entityMetadata]);
 
-    const displayValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
+    const displayValueFunc: OutcomeValueFunc = useCallback((value: unknown, args: object) => {
+      if (!isDefined(value)) return value;
       if (model.displayValueFunc)
         return executeExpression(model.displayValueFunc, { ...args, item: value }, null, null);
-      return (typeof (value) === 'object' ? getValueByPropertyName(value, displayPropName) : value) || '';
+      return (typeof (value) === 'object' ? getValueByPropertyName(value as Record<string, unknown>, displayPropName) : value) || '';
     }, [model.displayValueFunc, displayPropName]);
 
-    const filterKeysFunc: FilterSelectedFunc = useCallback((value: any | any[]) => {
-      const localValue = value?.length === 1 ? value[0] : value;
+    const filterKeysFunc: FilterSelectedFunc = useCallback((value: unknown) => {
+      const localValue = Array.isArray(value) && value?.length === 1 ? value[0] : value;
       return Array.isArray(localValue)
         ? { or: localValue.map((x) => executeExpression(model.filterKeysFunc, { value: x }, null, null)) }
         : executeExpression(model.filterKeysFunc, { value: localValue }, null, null);

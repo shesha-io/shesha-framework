@@ -54,8 +54,8 @@ const SliderComponent: SliderComponentDefinition = {
     m.add<ISliderComponentPropsV0>(0, (prev) => ({ ...prev }))
       .add<ISliderComponentProps>(1, (prev) => ({
         ...prev,
-        min: prev?.min ? parseInt(prev.min, 10) : undefined,
-        max: prev?.max ? parseInt(prev.max, 10) : undefined,
+        min: prev?.min && prev.min !== '' ? parseInt(prev.min, 10) : undefined,
+        max: prev?.max && prev.max !== '' ? parseInt(prev.max, 10) : undefined,
       })),
 };
 
