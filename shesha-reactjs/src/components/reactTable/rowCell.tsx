@@ -111,14 +111,27 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
     }
   }, [checkOverflow, showExpandedView]);
 
-  const paddedStyle = { ...style };
+  const hasStyles = (style && Object.keys(style).length > 0) || (cellStyle && Object.keys(cellStyle).length > 0);
+  const mergedStyle = hasStyles
+    ? {
+        ...anchoredCellStyle,
+        ...style,
+        ...cellStyle,
+        height: cellHeight || '100%',
+        cursor: 'auto',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        display: 'flex',
+        alignItems: 'center'
+      }
+    : undefined;
 
   return (
     <div
       key={key}
       ref={cellParentRef}
       {...restProps}
-      style={paddedStyle ?? cellStyle ? { ...anchoredCellStyle, ...style, ...cellStyle, height: cellHeight || '100%', cursor: 'auto', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', padding: 15 } : undefined}
+      style={mergedStyle}
       className={classNames(styles.td, {
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,
