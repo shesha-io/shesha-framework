@@ -114,16 +114,16 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
   const hasStyles = (style && Object.keys(style).length > 0) || (cellStyle && Object.keys(cellStyle).length > 0);
   const mergedStyle = hasStyles
     ? {
-        ...anchoredCellStyle,
-        ...style,
-        ...cellStyle,
-        height: cellHeight || '100%',
-        cursor: 'auto',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        display: 'flex',
-        alignItems: 'center'
-      }
+      ...anchoredCellStyle,
+      ...style,
+      ...cellStyle,
+      height: cellHeight || '100%',
+      cursor: 'auto',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      display: 'flex',
+      alignItems: 'center',
+    }
     : undefined;
 
   return (

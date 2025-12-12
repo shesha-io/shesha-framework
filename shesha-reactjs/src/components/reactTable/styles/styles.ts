@@ -308,14 +308,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             vertical-align: middle;
             ${cellTextColor ? `color: ${cellTextColor};` : ''}
             ${cellBackgroundColor ? `background-color: ${cellBackgroundColor};` : ''}
-            ${effectivePadding ? `padding: ${effectivePadding} !important;` : ''}
             ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
             ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
           }
 
           .${th} {
             vertical-align: middle;
-            ${effectivePadding ? `padding: ${effectivePadding} !important;` : ''}
           }
 
           .${shaCrudCell} {
@@ -469,7 +467,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           margin-right: 5px;
         }
         .${th} {
-          ${effectivePadding ? `padding: ${effectivePadding};` : ''}
           ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : ''}
           ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
           ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
@@ -508,11 +505,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
 
+        /* Single source of truth for cell padding - applies to both headers and data cells */
         .${th}, .${td} {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           margin: 0;
+          /* Use effectivePadding from props (rowStylingBox or cellPadding) or default to 0.5rem */
           ${effectivePadding ? `padding: ${effectivePadding};` : 'padding: 0.5rem;'}
           border-right: 1px solid rgba(0, 0, 0, 0.05);
 
