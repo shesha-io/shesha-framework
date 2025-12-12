@@ -5,7 +5,7 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
-import { filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowStylingBoxToPadding, convertRowBorderStyleToBorder } from './utils';
+import { filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
@@ -74,28 +74,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   }, [props?.rowDimensions, props?.rowHeight, isDesignMode]);
 
   const effectiveRowPadding = useMemo(() => {
-    // Prefer new rowStylingBox over old rowPadding
-    const converted = convertRowStylingBoxToPadding(props?.rowStylingBox);
-    if (isDesignMode) {
-      console.warn('Row Padding - rowStylingBox:', props?.rowStylingBox, 'converted:', converted, 'fallback:', props?.rowPadding);
-    }
-    // If we have rowStylingBox, use the converted value even if it's undefined (means invalid/empty config)
-    // Only fall back to rowPadding if rowStylingBox doesn't exist at all
     return props?.rowStylingBox ? converted : props?.rowPadding;
   }, [props?.rowStylingBox, props?.rowPadding, isDesignMode]);
-
-  // Debug: Log all incoming props related to styling
-  useEffect(() => {
-    if (isDesignMode) {
-      console.log('🔍 TableWrapper Props:', {
-        rowPadding: props?.rowPadding,
-        rowStylingBox: props?.rowStylingBox,
-        rowHeight: props?.rowHeight,
-        rowDimensions: props?.rowDimensions,
-        effectiveRowPadding,
-      });
-    }
-  }, [props, effectiveRowPadding, isDesignMode]);
 
   const effectiveRowBorder = useMemo(() => {
     // Prefer new rowBorderStyle over old rowBorder

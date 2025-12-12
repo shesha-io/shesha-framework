@@ -27,8 +27,6 @@ import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './uti
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStore(false);
 
-  console.log("TABLE MODEL",model)
-
   if (model.hidden) return null;
 
   // Show TableWrapper when inside DataContext (even with no columns, to allow auto-configuration)
