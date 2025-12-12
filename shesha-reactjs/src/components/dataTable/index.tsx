@@ -964,8 +964,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     boxShadow,
     sortableIndicatorColor,
 
-    onRowClick: handleRowClick,
-    onRowHover: handleRowHover,
     onRowClickAction: onRowClick,
     onRowHoverAction: onRowHover,
     onRowSelectAction: onRowSelect,
