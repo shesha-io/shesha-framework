@@ -237,7 +237,7 @@ export const convertRowDimensionsToHeight = (rowDimensions?: {
   return addPxUnit(rowDimensions.height);
 };
 
-type RowStylingBoxType = {
+export type RowStylingBoxType = {
   padding?: {
     top?: string | number;
     right?: string | number;
