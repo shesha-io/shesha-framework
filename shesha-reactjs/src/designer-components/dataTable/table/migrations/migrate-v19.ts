@@ -46,13 +46,14 @@ export const migrateV18toV19 = (props: ITableComponentProps, _context: SettingsM
     return props;
   }
 
-  // Create the rowStylingBox structure using flat format (matches StyleBox component output)
-  // StyleBox saves as: { paddingTop, paddingRight, paddingBottom, paddingLeft }
+  // Create the rowStylingBox structure with nested padding object
   const rowStylingBox = {
-    paddingTop: top.toString(),
-    paddingRight: right.toString(),
-    paddingBottom: bottom.toString(),
-    paddingLeft: left.toString(),
+    padding: {
+      top: top.toString(),
+      right: right.toString(),
+      bottom: bottom.toString(),
+      left: left.toString(),
+    },
   };
 
   // Return props with rowStylingBox set and cellPadding removed
