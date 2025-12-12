@@ -82,12 +82,12 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   // Complete loading when data source finishes loading (success or failure)
   useEffect(() => {
-    if (loadingValues && source?.tableData !== undefined) {
+    if (loadingValues && !source?.isFetchingTableData) {
       setLoadingValues(false);
       setLoadingIndicator(false);
 
       // Use loaded data or fallback to original values
-      if (source.tableData.length > 0) {
+      if (source?.tableData?.length > 0) {
         const foundValues = keys.map((x) => source.tableData.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x))
           .filter((v) => v != null);
         if (foundValues.length > 0) {
@@ -101,7 +101,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         selected.current = getNormalizedValues(props.value);
       }
     }
-  }, [loadingValues, source?.tableData, keys, props.value, keyValueFunc, outcomeValueFunc, allData]);
+  }, [source?.isFetchingTableData, keys, props.value]); // , source?.tableData, keyValueFunc, outcomeValueFunc, allData]);
 
   // update local store of values details
   useDeepCompareEffect(() => {
@@ -111,7 +111,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       if (keys.length) {
         const displayNameValue = (Array.isArray(props.value) ? props.value[0] : props.value)['_displayName'];
         const hasDisplayName = displayNameValue !== undefined && displayNameValue !== null;
-
 
         // Check if we have a valid data source for loading
         if (!source) {
@@ -164,7 +163,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         setLoadingValues(false);
       }
     }
-  }, [props.value, source?.tableData, source?.isInProgress?.fetchTableData, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
+  }, [props.value, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
 
   useEffect(() => {
     if (open) {

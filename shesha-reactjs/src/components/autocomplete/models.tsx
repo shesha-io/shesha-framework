@@ -27,11 +27,11 @@ export function getColumns(fields: string[]): IDataColumnsProps[] {
 
 export type AutocompleteDataSourceType = 'entitiesList' | 'url';
 
-export type QueryParamFunc = (searchText: string, selected: any[]) => object;
-export type FilterSelectedFunc = (value: any) => object;
-export type KayValueFunc = (value: any, args: any) => string;
-export type DisplayValueFunc = (value: any, args: any) => string;
-export type OutcomeValueFunc = (value: any, args: any) => string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;
+export type QueryParamFunc = (searchText: string, selected: unknown[]) => object;
+export type FilterSelectedFunc = (unknown) => object;
+export type KayValueFunc = (value: unknown, args: object) => unknown;
+export type DisplayValueFunc = (value: unknown, args: object) => string;
+export type OutcomeValueFunc = (value: unknown, args: object) => string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;
 
 export interface ISelectOption<TValue = any> {
   // TODO: make generic
