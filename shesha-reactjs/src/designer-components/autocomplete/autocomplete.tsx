@@ -72,7 +72,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     const displayValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
       if (model.displayValueFunc)
         return executeExpression(model.displayValueFunc, { ...args, item: value }, null, null);
-      return getValueByPropertyName(value, displayPropName) || '';
+      return (typeof (value) === 'object' ? getValueByPropertyName(value, displayPropName) : value) || '';
     }, [model.displayValueFunc, displayPropName]);
 
     const filterKeysFunc: FilterSelectedFunc = useCallback((value: any | any[]) => {
