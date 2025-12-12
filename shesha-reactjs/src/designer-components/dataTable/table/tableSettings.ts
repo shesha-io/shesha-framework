@@ -1301,20 +1301,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           ],
                         },
                       })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        propertyName: 'responsiveMode',
-                        label: 'Responsive Mode',
-                        inputType: 'dropdown',
-                        tooltip: 'How the table behaves on small screens',
-                        parentId: styleRouterId,
-                        jsSetting: true,
-                        dropdownOptions: [
-                          { value: 'scroll', label: 'Scroll (horizontal)' },
-                          { value: 'stack', label: 'Stack (vertical cards)' },
-                          { value: 'collapse', label: 'Collapse (hide columns)' },
-                        ],
-                      })
                       .toJson(),
                   ],
                 })
