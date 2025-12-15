@@ -53,21 +53,43 @@ export const getListTypeAndLayout = (
 
 
 /**
- * Fetches a stored file and returns a blob URL for display/preview.
+ * Result object returned by fetchStoredFile containing the object URL and cleanup function.
+ */
+export interface IFetchStoredFileResult {
+  /** The blob URL that can be used in img src, etc. */
+  url: string;
+  /** Cleanup function that revokes the object URL to prevent memory leaks. Must be called when the URL is no longer needed. */
+  revoke: () => void;
+}
+
+/**
+ * Fetches a stored file and returns a blob URL for display/preview along with a cleanup function.
  *
- * **Important**: The returned URL is created via `URL.createObjectURL()`. Callers are
- * responsible for calling `URL.revokeObjectURL()` on the returned string when the URL
- * is no longer needed to prevent memory leaks.
+ * **Important**: The returned object contains a `revoke()` function that MUST be called when
+ * the URL is no longer needed to prevent memory leaks. The revoke function is safe to call
+ * multiple times.
  *
  * @param url - The file URL to fetch
  * @param httpHeaders - Optional HTTP headers to include in the request
- * @returns A Promise resolving to a blob URL (string) that can be used in img src, etc.
+ * @returns A Promise resolving to an object containing the blob URL and revoke function
  * @throws {Error} If the fetch fails (non-ok response status)
+ *
+ * @example
+ * ```typescript
+ * const { url, revoke } = await fetchStoredFile('/api/files/123');
+ * try {
+ *   // Use the URL...
+ *   imgElement.src = url;
+ * } finally {
+ *   // Always clean up
+ *   revoke();
+ * }
+ * ```
  */
 export const fetchStoredFile = async (
   url: string,
   httpHeaders: Record<string, string> = {},
-): Promise<string> => {
+): Promise<IFetchStoredFileResult> => {
   const fetchUrl = buildUrl(url, { skipMarkDownload: 'true' });
   const response = await fetch(fetchUrl, {
     headers: { ...httpHeaders },
@@ -78,10 +100,22 @@ export const fetchStoredFile = async (
   }
 
   const blob = await response.blob();
-  return URL.createObjectURL(blob);
+  const objectUrl = URL.createObjectURL(blob);
+
+  let revoked = false;
+  const revoke = () => {
+    if (!revoked) {
+      URL.revokeObjectURL(objectUrl);
+      revoked = true;
+    }
+  };
+
+  return { url: objectUrl, revoke };
 };
 
 export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDownload }) => {
+  if (fileId == null) return null;
+  
   const {
     loading,
     refetch: fetchHistory,
@@ -91,7 +125,6 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
     lazy: true,
   });
 
-  if (fileId == null) return null;
 
   const handleVisibleChange = (visible: boolean): void => {
     if (visible) {

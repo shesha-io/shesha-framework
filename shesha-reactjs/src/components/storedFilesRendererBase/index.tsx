@@ -245,24 +245,25 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   useEffect(() => {
     let isCancelled = false;
-    const blobUrls: string[] = [];
+    const revokeCallbacks: Array<() => void> = [];
 
     const fetchImages = async (): Promise<void> => {
       const newImageUrls: { [key: string]: string } = {};
       for (const file of fileList) {
         if (isImageType(file.type)) {
           try {
-            const imageUrl = await fetchStoredFile(file.url, httpHeaders);
+            const { url: imageUrl, revoke } = await fetchStoredFile(file.url, httpHeaders);
             if (isCancelled) {
-              URL.revokeObjectURL(imageUrl);
+              // Cleanup if cancelled after fetch completes
+              revoke();
               return;
             }
-            // Only track successful fetches
-            blobUrls.push(imageUrl);
+            // Track revoke callback for cleanup
+            revokeCallbacks.push(revoke);
             newImageUrls[file.uid] = imageUrl;
           } catch (error) {
             console.error(`Failed to fetch image for file ${file.name} (${file.uid}):`, error);
-            // Don't add to newImageUrls or blobUrls - this file will not have a thumbnail
+            // Don't add to newImageUrls or revokeCallbacks - this file will not have a thumbnail
           }
         }
       }
@@ -283,7 +284,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
     return () => {
       isCancelled = true;
-      blobUrls.forEach((url) => URL.revokeObjectURL(url));
+      // Call all revoke functions to clean up blob URLs
+      revokeCallbacks.forEach((revoke) => revoke());
     };
   }, [fileList, httpHeaders]);
 
