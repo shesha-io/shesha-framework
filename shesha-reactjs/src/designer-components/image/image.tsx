@@ -96,7 +96,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   };
 
   return (
-    <>
+    <div style={{ position: 'relative', float: 'left' }}>
       {content && (
         <Image
           src={content}
@@ -122,6 +122,6 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
           </div>
         </>
       )}
-    </>
+    </div>
   );
 };
