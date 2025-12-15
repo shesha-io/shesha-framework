@@ -92,6 +92,7 @@ export const isCustomDropdownProps = (value: ISettingsInputBase): value is ICust
 export interface IRadioSettingsInputProps extends ISettingsInputBase {
   type: 'radio';
   buttonGroupOptions?: IRadioOption[];
+  allowDeselect?: boolean;
 }
 export const isRadioProps = (value: ISettingsInputBase): value is IRadioSettingsInputProps => value.type === 'radio';
 

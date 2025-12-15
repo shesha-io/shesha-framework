@@ -251,6 +251,7 @@ export const getColumnSettings = (fbf: FormBuilderFactory, data?: object): FormM
                       propertyName: "anchored",
                       label: "Anchored",
                       jsSetting: true,
+                      allowDeselect: true,
                       buttonGroupOptions: [
                         {
                           title: "Left",
