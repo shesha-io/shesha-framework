@@ -628,7 +628,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         label: 'Border',
                         labelAlign: 'right',
                         ghost: true,
-                        hidden: { _code: 'return ["text", "link", "ghost", "dashed"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                        hidden: false,
                         parentId: styleRouterId,
                         collapsible: 'header',
                         content: {
@@ -636,12 +636,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           components: [...fbf()
                             .addContainer({
                               id: nanoid(),
-                              parentId: styleRouterId,
                               components: getBorderInputs(fbf),
                             })
                             .addContainer({
                               id: nanoid(),
-                              parentId: styleRouterId,
                               components: getCornerInputs(fbf),
                             })
                             .toJson(),
