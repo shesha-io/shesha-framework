@@ -817,17 +817,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           ],
                         },
                       })
-                      .addContainer({
-                        id: nanoid(),
-                        parentId: styleRouterId,
-                        components: getBorderInputs(fbf),
-                      })
-                      .addContainer({
-                        id: nanoid(),
-                        parentId: styleRouterId,
-                        components: getCornerInputs(fbf),
-                      })
-
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlBackgroundStyle',
