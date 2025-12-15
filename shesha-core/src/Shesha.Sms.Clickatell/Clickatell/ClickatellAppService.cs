@@ -41,11 +41,5 @@ namespace Shesha.Sms.Clickatell
         {
             return await _gateway.GetTypedSettingsAsync();
         }
-
-        public async Task TestSmsAsync(string mobileNumber, string body)
-        {
-            var gateway = StaticContext.IocManager.Resolve<ISmsGateway>();
-            await gateway.SendSmsAsync(mobileNumber, body);
-        }
     }
 }
