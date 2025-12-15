@@ -11,8 +11,8 @@ export const useExecuteSignIn = (): void => {
   useConfigurableAction(
     {
       name: 'Sign In',
-      owner: 'Other',
-      ownerUid: SheshaActionOwners.Other,
+      owner: 'Common',
+      ownerUid: SheshaActionOwners.Common,
       sortOrder: 8,
       hasArguments: false,
       executer: (_, actionContext) => {
