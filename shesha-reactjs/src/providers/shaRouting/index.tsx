@@ -43,14 +43,15 @@ export interface IScriptActionArguments {
 interface ShaRoutingProviderProps {
   router: IRouter;
   getFormUrlFunc?: (formId: FormIdentifier, isLoggedIn: boolean) => string;
+  urlOverrideFunc?: (url: string) => string;
   getIsLoggedIn: () => boolean;
 }
 
-const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ children, router, getFormUrlFunc, getIsLoggedIn }) => {
+const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ children, router, getFormUrlFunc, getIsLoggedIn, urlOverrideFunc }) => {
   const [shaRouter] = useState<ShaRouter>(() => {
-    return new ShaRouter({ router, getFormUrlFunc, getIsLoggedIn });
+    return new ShaRouter({ router, getFormUrlFunc, getIsLoggedIn, urlOverrideFunc });
   });
-  shaRouter.updateRouter({ router, getFormUrlFunc, getIsLoggedIn });
+  shaRouter.updateRouter({ router, getFormUrlFunc, getIsLoggedIn, urlOverrideFunc });
 
   useConfigurableAction<INavigateActoinArguments>(
     {
