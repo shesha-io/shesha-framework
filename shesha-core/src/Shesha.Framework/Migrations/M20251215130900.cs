@@ -381,7 +381,7 @@ namespace Shesha.Migrations
                 -- ============================================================================
                 -- Step 4: Combine all into DefaultAuthenticationSettings
                 -- ============================================================================
-            
+            IF v_old_otp_value IS NOT NULL OR v_old_user_mgmt_value IS NOT NULL OR v_old_security_value IS NOT NULL THEN
                 v_new_default_auth_value := jsonb_build_object(
                     -- From old user management
                     'requireOtpVerification', COALESCE((v_old_user_mgmt_value->>'requireEmailVerification')::BOOLEAN, FALSE),
@@ -448,7 +448,7 @@ namespace Shesha.Migrations
             
                     END IF;
                 END IF;
-            
+            END IF;
             END $$;
 
         ");
