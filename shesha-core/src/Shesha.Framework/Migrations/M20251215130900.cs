@@ -26,11 +26,7 @@ namespace Shesha.Migrations
                       INNER JOIN [frwk].[configuration_items] ci ON sc.Id = ci.Id
                   WHERE
                       ci.item_type = 'setting-configuration'
-                      AND (
-                          ci.Name LIKE '%UserManagement%'
-                          OR sv.Value LIKE '%supportedRegistrationMethods%'
-                          OR sv.Value LIKE '%additionalRegistrationInfo%'
-                      )
+                      AND ci.Name = 'Shesha.UserManagement'
                       AND sv.Value IS NOT NULL
                       AND ISJSON(sv.Value) = 1;  -- Ensure it's valid JSON
                   
@@ -147,95 +143,96 @@ namespace Shesha.Migrations
                       AND ISJSON(sv.Value) = 1;
                   
                   IF @OldOtpValue IS NOT NULL AND ISJSON(@OldOtpValue) = 1
-                  
-                  -- Now combine OTP and any other auth settings into DefaultAuthenticationSettings
-                  DECLARE @NewDefaultAuthValue NVARCHAR(MAX);
-                  
-                  -- Extract OTP values
-                  DECLARE @PasswordLength INT = CASE WHEN @OldOtpValue IS NOT NULL THEN CAST(JSON_VALUE(@OldOtpValue, '$.passwordLength') AS INT) ELSE NULL END;
-                  DECLARE @Alphabet NVARCHAR(100) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.alphabet') ELSE NULL END;
-                  DECLARE @DefaultLifetime INT = CASE WHEN @OldOtpValue IS NOT NULL THEN CAST(JSON_VALUE(@OldOtpValue, '$.defaultLifetime') AS INT) ELSE NULL END;
-                  DECLARE @IgnoreOtpValidation BIT = CASE WHEN @OldOtpValue IS NOT NULL THEN CAST(JSON_VALUE(@OldOtpValue, '$.ignoreOtpValidation') AS BIT) ELSE NULL END;
-                  DECLARE @DefaultSubjectTemplate NVARCHAR(500) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultSubjectTemplate') ELSE NULL END;
-                  DECLARE @DefaultBodyTemplate NVARCHAR(MAX) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultBodyTemplate') ELSE NULL END;
-                  DECLARE @DefaultEmailSubjectTemplate NVARCHAR(500) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultEmailSubjectTemplate') ELSE NULL END;
-                  DECLARE @DefaultEmailBodyTemplate NVARCHAR(MAX) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultEmailBodyTemplate') ELSE NULL END;
-                  
-                  -- Extract User Management values that go into DefaultAuth
-                  DECLARE @RequireEmailVerification BIT = CASE WHEN @OldUserManagementValue IS NOT NULL THEN CAST(JSON_VALUE(@OldUserManagementValue, '$.requireEmailVerification') AS BIT) ELSE NULL END;
-                  DECLARE @UserEmailAsUsername BIT = CASE WHEN @OldUserManagementValue IS NOT NULL THEN CAST(JSON_VALUE(@OldUserManagementValue, '$.userEmailAsUsername') AS BIT) ELSE NULL END;
-                  DECLARE @SupportedRegistrationMethods INT = CASE WHEN @OldUserManagementValue IS NOT NULL THEN CAST(JSON_VALUE(@OldUserManagementValue, '$.supportedRegistrationMethods') AS INT) ELSE NULL END;
-                  
-                  SET @NewDefaultAuthValue = (
-                      SELECT
-                          -- From old user management
-                          ISNULL(@RequireEmailVerification, 0) AS requireOtpVerification,
-                          CAST(1 AS BIT) AS allowLocalUsernamePasswordAuth,
-                          CAST(1 AS BIT) AS useDefaultRegistrationForm,
-                          ISNULL(@UserEmailAsUsername, 1) AS userEmailAsUsername,
-                          @SupportedRegistrationMethods AS supportedVerificationMethods,
-                  
-                          -- From old security settings
-                          ISNULL(@UseResetPasswordViaEmailLink, 1) AS useResetPasswordViaEmailLink,
-                          ISNULL(@ResetPasswordEmailLinkLifetime, 360) AS resetPasswordEmailLinkLifetime,
-                          ISNULL(@UseResetPasswordViaSmsOtp, 1) AS useResetPasswordViaSmsOtp,
-                          ISNULL(@ResetPasswordSmsOtpLifetime, 180) AS resetPasswordSmsOtpLifetime,
-                          ISNULL(@UseResetPasswordViaSecurityQuestions, 0) AS useResetPasswordViaSecurityQuestions,
-                          ISNULL(@ResetPasswordViaSecurityQuestionsNumQuestionsAllowed, 0) AS resetPasswordViaSecurityQuestionsNumQuestionsAllowed,
-                  
-                          -- From old OTP settings
-                          ISNULL(@PasswordLength, 6) AS passwordLength,
-                          ISNULL(@Alphabet, '0123456789') AS alphabet,
-                          ISNULL(@DefaultLifetime, 360) AS defaultLifetime,
-                          ISNULL(@IgnoreOtpValidation, 0) AS ignoreOtpValidation,
-                          ISNULL(@DefaultSubjectTemplate, 'One-Time-Pin') AS defaultSubjectTemplate,
-                          ISNULL(@DefaultBodyTemplate, 'Your One-Time-Pin is {{password}}') AS defaultBodyTemplate,
-                          ISNULL(@DefaultEmailSubjectTemplate, 'One-Time-Pin') AS defaultEmailSubjectTemplate,
-                          ISNULL(@DefaultEmailBodyTemplate, '') AS defaultEmailBodyTemplate,
-                  
-                          -- Password Complexity (defaults - not in old structure)
-                          CAST(0 AS BIT) AS requireDigit,
-                          CAST(0 AS BIT) AS requireLowercase,
-                          CAST(0 AS BIT) AS requireNonAlphanumeric,
-                          CAST(0 AS BIT) AS requireUppercase,
-                          6 AS requiredLength,
-                  
-                          -- User Lockout (defaults - not in old structure)
-                          CAST(0 AS BIT) AS userLockOutEnabled,
-                          5 AS maxFailedAccessAttemptsBeforeLockout,
-                          300 AS defaultAccountLockoutSeconds
-                      FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
-                  );
-                  
-                  -- Find or create DefaultAuthenticationSettings
-                  DECLARE @DefaultAuthSettingsId UNIQUEIDENTIFIER;
-                  DECLARE @DefaultAuthSettingsConfigId UNIQUEIDENTIFIER;
-                  
-                  SELECT @DefaultAuthSettingsConfigId = ci.Id
-                  FROM [frwk].[configuration_items] ci
-                  WHERE ci.item_type = 'setting-configuration'
-                    AND ci.Name = 'Shesha.DefaultAuthentication';
-                  
-                  IF @DefaultAuthSettingsConfigId IS NOT NULL
                   BEGIN
-                      SELECT @DefaultAuthSettingsId = Id
-                      FROM [frwk].[setting_values]
-                      WHERE setting_configuration_id = @DefaultAuthSettingsConfigId;
-                  
-                      IF @DefaultAuthSettingsId IS NOT NULL
-                      BEGIN
-                          -- Update existing
-                          UPDATE [frwk].[setting_values]
-                          SET Value = @NewDefaultAuthValue,
-                              last_modification_time = GETUTCDATE()
-                          WHERE Id = @DefaultAuthSettingsId;
-                      END
-                      ELSE
-                      BEGIN
-                          -- Insert new
-                          INSERT INTO [frwk].[setting_values] (Id, setting_configuration_id, Value, creation_time)
-                          VALUES (NEWID(), @DefaultAuthSettingsConfigId, @NewDefaultAuthValue, GETUTCDATE());
-                      END
+                    -- Now combine OTP and any other auth settings into DefaultAuthenticationSettings
+                    DECLARE @NewDefaultAuthValue NVARCHAR(MAX);
+                    
+                    -- Extract OTP values
+                    DECLARE @PasswordLength INT = CASE WHEN @OldOtpValue IS NOT NULL THEN CAST(JSON_VALUE(@OldOtpValue, '$.passwordLength') AS INT) ELSE NULL END;
+                    DECLARE @Alphabet NVARCHAR(100) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.alphabet') ELSE NULL END;
+                    DECLARE @DefaultLifetime INT = CASE WHEN @OldOtpValue IS NOT NULL THEN CAST(JSON_VALUE(@OldOtpValue, '$.defaultLifetime') AS INT) ELSE NULL END;
+                    DECLARE @IgnoreOtpValidation BIT = CASE WHEN @OldOtpValue IS NOT NULL THEN CAST(JSON_VALUE(@OldOtpValue, '$.ignoreOtpValidation') AS BIT) ELSE NULL END;
+                    DECLARE @DefaultSubjectTemplate NVARCHAR(500) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultSubjectTemplate') ELSE NULL END;
+                    DECLARE @DefaultBodyTemplate NVARCHAR(MAX) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultBodyTemplate') ELSE NULL END;
+                    DECLARE @DefaultEmailSubjectTemplate NVARCHAR(500) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultEmailSubjectTemplate') ELSE NULL END;
+                    DECLARE @DefaultEmailBodyTemplate NVARCHAR(MAX) = CASE WHEN @OldOtpValue IS NOT NULL THEN JSON_VALUE(@OldOtpValue, '$.defaultEmailBodyTemplate') ELSE NULL END;
+                    
+                    -- Extract User Management values that go into DefaultAuth
+                    DECLARE @RequireEmailVerification BIT = CASE WHEN @OldUserManagementValue IS NOT NULL THEN CAST(JSON_VALUE(@OldUserManagementValue, '$.requireEmailVerification') AS BIT) ELSE NULL END;
+                    DECLARE @UserEmailAsUsername BIT = CASE WHEN @OldUserManagementValue IS NOT NULL THEN CAST(JSON_VALUE(@OldUserManagementValue, '$.userEmailAsUsername') AS BIT) ELSE NULL END;
+                    DECLARE @SupportedRegistrationMethods INT = CASE WHEN @OldUserManagementValue IS NOT NULL THEN CAST(JSON_VALUE(@OldUserManagementValue, '$.supportedRegistrationMethods') AS INT) ELSE NULL END;
+                    
+                    SET @NewDefaultAuthValue = (
+                        SELECT
+                            -- From old user management
+                            ISNULL(@RequireEmailVerification, 0) AS requireOtpVerification,
+                            CAST(1 AS BIT) AS allowLocalUsernamePasswordAuth,
+                            CAST(1 AS BIT) AS useDefaultRegistrationForm,
+                            ISNULL(@UserEmailAsUsername, 1) AS userEmailAsUsername,
+                            @SupportedRegistrationMethods AS supportedVerificationMethods,
+                    
+                            -- From old security settings
+                            ISNULL(@UseResetPasswordViaEmailLink, 1) AS useResetPasswordViaEmailLink,
+                            ISNULL(@ResetPasswordEmailLinkLifetime, 360) AS resetPasswordEmailLinkLifetime,
+                            ISNULL(@UseResetPasswordViaSmsOtp, 1) AS useResetPasswordViaSmsOtp,
+                            ISNULL(@ResetPasswordSmsOtpLifetime, 180) AS resetPasswordSmsOtpLifetime,
+                            ISNULL(@UseResetPasswordViaSecurityQuestions, 0) AS useResetPasswordViaSecurityQuestions,
+                            ISNULL(@ResetPasswordViaSecurityQuestionsNumQuestionsAllowed, 0) AS resetPasswordViaSecurityQuestionsNumQuestionsAllowed,
+                    
+                            -- From old OTP settings
+                            ISNULL(@PasswordLength, 6) AS passwordLength,
+                            ISNULL(@Alphabet, '0123456789') AS alphabet,
+                            ISNULL(@DefaultLifetime, 360) AS defaultLifetime,
+                            ISNULL(@IgnoreOtpValidation, 0) AS ignoreOtpValidation,
+                            ISNULL(@DefaultSubjectTemplate, 'One-Time-Pin') AS defaultSubjectTemplate,
+                            ISNULL(@DefaultBodyTemplate, 'Your One-Time-Pin is {{password}}') AS defaultBodyTemplate,
+                            ISNULL(@DefaultEmailSubjectTemplate, 'One-Time-Pin') AS defaultEmailSubjectTemplate,
+                            ISNULL(@DefaultEmailBodyTemplate, '') AS defaultEmailBodyTemplate,
+                    
+                            -- Password Complexity (defaults - not in old structure)
+                            CAST(0 AS BIT) AS requireDigit,
+                            CAST(0 AS BIT) AS requireLowercase,
+                            CAST(0 AS BIT) AS requireNonAlphanumeric,
+                            CAST(0 AS BIT) AS requireUppercase,
+                            6 AS requiredLength,
+                    
+                            -- User Lockout (defaults - not in old structure)
+                            CAST(0 AS BIT) AS userLockOutEnabled,
+                            5 AS maxFailedAccessAttemptsBeforeLockout,
+                            300 AS defaultAccountLockoutSeconds
+                        FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+                    );
+                    
+                    -- Find or create DefaultAuthenticationSettings
+                    DECLARE @DefaultAuthSettingsId UNIQUEIDENTIFIER;
+                    DECLARE @DefaultAuthSettingsConfigId UNIQUEIDENTIFIER;
+                    
+                    SELECT @DefaultAuthSettingsConfigId = ci.Id
+                    FROM [frwk].[configuration_items] ci
+                    WHERE ci.item_type = 'setting-configuration'
+                      AND ci.Name = 'Shesha.DefaultAuthentication';
+                    
+                    IF @DefaultAuthSettingsConfigId IS NOT NULL
+                    BEGIN
+                        SELECT @DefaultAuthSettingsId = Id
+                        FROM [frwk].[setting_values]
+                        WHERE setting_configuration_id = @DefaultAuthSettingsConfigId;
+                    
+                        IF @DefaultAuthSettingsId IS NOT NULL
+                        BEGIN
+                            -- Update existing
+                            UPDATE [frwk].[setting_values]
+                            SET Value = @NewDefaultAuthValue,
+                                last_modification_time = GETUTCDATE()
+                            WHERE Id = @DefaultAuthSettingsId;
+                        END
+                        ELSE
+                        BEGIN
+                            -- Insert new
+                            INSERT INTO [frwk].[setting_values] (Id, setting_configuration_id, Value, creation_time)
+                            VALUES (NEWID(), @DefaultAuthSettingsConfigId, @NewDefaultAuthValue, GETUTCDATE());
+                        END
+                    END
                   END
                 ");
             

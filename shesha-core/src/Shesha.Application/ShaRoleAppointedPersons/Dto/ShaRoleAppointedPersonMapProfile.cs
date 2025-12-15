@@ -18,7 +18,9 @@ namespace Shesha.ShaRoleAppointedPersons.Dto
                         e.Person.GetType().FullName ?? string.Empty
                         )
                     : null
-                ));
+                ))
+            .ForMember(u => u.RoleId, options => options.MapFrom(e => e.Role != null 
+                ? e.Role.Id : (Guid?)null));
         }
     }
 }
