@@ -605,7 +605,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'rowStylingBoxPanel',
-                        label: 'Cell Padding (Visual Editor)',
+                        label: 'Cell Padding',
                         labelAlign: 'right',
                         ghost: true,
                         collapsible: 'header',
@@ -617,30 +617,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               label: 'Cell Padding',
                               hideLabel: true,
                               propertyName: 'rowStylingBox',
-                            })
-                            .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'pnlBorderStyle',
-                        label: 'Border',
-                        labelAlign: 'right',
-                        ghost: true,
-                        hidden: false,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [...fbf()
-                            .addContainer({
-                              id: nanoid(),
-                              components: getBorderInputs(fbf),
-                            })
-                            .addContainer({
-                              id: nanoid(),
-                              components: getCornerInputs(fbf),
                             })
                             .toJson(),
                           ],
