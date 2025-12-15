@@ -81,11 +81,7 @@ namespace Shesha.Migrations
                       INNER JOIN [frwk].[configuration_items] ci ON sc.Id = ci.Id
                   WHERE
                       ci.item_type = 'setting-configuration'
-                      AND (
-                          ci.Name LIKE '%Security%'
-                          OR sv.Value LIKE '%autoLogoffTimeout%'
-                          OR sv.Value LIKE '%useResetPasswordViaEmailLink%'
-                      )
+                      ci.Name = 'Shesha.Security'
                       AND sv.Value IS NOT NULL
                       AND ISJSON(sv.Value) = 1;
                   
