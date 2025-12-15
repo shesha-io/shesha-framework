@@ -27,64 +27,31 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   const { message } = App.useApp();
 
   const [fileUrl, setFileUrl] = useState<string>();
-  const [revokeUrl, setRevokeUrl] = useState<(() => void) | null>(null);
 
   const isStoredFile = imageSource === 'storedFile';
   const isRawUrl = imageSource === 'url' && Boolean(value);
   const isBase64 = imageSource === 'base64' && Boolean(value);
 
   const fetchStoredFile = (url: string): void => {
-    let objectUrl: string | null = null;
-
     fetch(`${backendUrl}${url}`,
       { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
       .then((response) => {
         return response.blob();
       })
       .then((blob) => {
-        objectUrl = URL.createObjectURL(blob);
-
-        // Revoke the previous URL before setting a new one
-        if (revokeUrl) {
-          revokeUrl();
-        }
-
-        setFileUrl(objectUrl);
-        // Store revoke function for cleanup
-        setRevokeUrl(() => () => URL.revokeObjectURL(objectUrl));
-      })
-      .catch((error) => {
-        console.error('Failed to fetch stored file:', error);
-        // Clean up object URL if it was created before error occurred
-        if (objectUrl) {
-          URL.revokeObjectURL(objectUrl);
-        }
+        setFileUrl(URL.createObjectURL(blob));
       });
   };
 
   useEffect(() => {
     if (isStoredFile) {
-      if (fileInfo?.url) {
+      if (fileInfo?.url)
         fetchStoredFile(fileInfo?.url);
-      } else if (!fileInfo) {
-        // Clean up the object URL when file is removed
-        if (revokeUrl) {
-          revokeUrl();
-          setRevokeUrl(null);
-        }
-        setFileUrl(null);
-      }
+      else
+        if (!fileInfo)
+          setFileUrl(null);
     }
   }, [isStoredFile, fileInfo]);
-
-  // Cleanup effect: revoke object URL when component unmounts
-  useEffect(() => {
-    return () => {
-      if (revokeUrl) {
-        revokeUrl();
-      }
-    };
-  }, [revokeUrl]);
 
   const content = useMemo(() => {
     return isRawUrl
@@ -129,7 +96,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   };
 
   return (
-    <div style={{ position: 'relative', float: 'left' }}>
+    <>
       {content && (
         <Image
           src={content}
@@ -155,6 +122,6 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 };
