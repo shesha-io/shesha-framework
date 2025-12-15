@@ -77,7 +77,6 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
       settingConfigurations.forEach(s => {
         //const moduleName = s.configuration.module?.name ?? 'no module';
         const category = s.category ?? '';
-        console.log(s.isUserSpecific);
         if (s.isClientSpecific && selectedApplication) {
           addSetting(category, s, selectedApplication);
         };
