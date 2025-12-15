@@ -16,4 +16,5 @@ export enum SheshaActionOwners {
   ConfigurationFramework = 'shesha.configurationFramework',
   Common = 'shesha.common',
   Form = 'shesha.form',
+  Other = 'shesha.other',
 }
