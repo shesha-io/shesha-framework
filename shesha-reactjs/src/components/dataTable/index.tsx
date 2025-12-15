@@ -302,7 +302,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const metadata = useMetadata(false)?.metadata;
 
 
-  const handleRowClick = useMemo(() => {
+  const _handleRowClick = useMemo(() => {
     if (!onRowClick?.actionName) return undefined;
 
     return (rowIndex: number, row: any) => {
@@ -336,7 +336,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [onRowDoubleClick, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
 
-  const handleRowHover = useMemo(() => {
+  const _handleRowHover = useMemo(() => {
     if (!onRowHover?.actionName) return undefined;
 
     return (rowIndex: number, row: any) => {
