@@ -301,24 +301,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const metadata = useMetadata(false)?.metadata;
 
-
-  const _handleRowClick = useMemo(() => {
-    if (!onRowClick?.actionName) return undefined;
-
-    return (rowIndex: number, row: any) => {
-      const evaluationContext = { ...appContext, data: row, rowIndex };
-
-      try {
-        executeAction({
-          actionConfiguration: onRowClick,
-          argumentsEvaluationContext: evaluationContext,
-        });
-      } catch (error) {
-        console.error('Error executing row click action:', error);
-      }
-    };
-  }, [onRowClick, appContext.contexts.lastUpdate, httpClient]);
-
   const handleRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick?.actionName) return undefined;
 
@@ -335,24 +317,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       }
     };
   }, [onRowDoubleClick, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
-
-  const _handleRowHover = useMemo(() => {
-    if (!onRowHover?.actionName) return undefined;
-
-    return (rowIndex: number, row: any) => {
-      const evaluationContext = { ...appContext, data: row, rowIndex };
-
-      try {
-        executeAction({
-          actionConfiguration: onRowHover,
-          argumentsEvaluationContext: evaluationContext,
-        });
-      } catch (error) {
-        console.error('Error executing row hover action:', error);
-      }
-    };
-  }, [onRowHover, appContext.contexts.lastUpdate, httpClient]);
-
 
   const handleSelectionChange = useMemo(() => {
     if (!onSelectionChange?.actionName) return undefined;
