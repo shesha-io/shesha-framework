@@ -275,11 +275,7 @@ namespace Shesha.Migrations
                     INNER JOIN frwk.configuration_items ci ON sc.id = ci.id
                 WHERE
                     ci.item_type = 'setting-configuration'
-                    AND (
-                        ci.""name"" LIKE '%UserManagement%'
-                        OR sv.""value""::TEXT LIKE '%supportedRegistrationMethods%'
-                        OR sv.""value""::TEXT LIKE '%additionalRegistrationInfo%'
-                    )
+                    AND ci.""name"" = 'Shesha.UserManagement'
                     AND sv.""value"" IS NOT NULL
                 LIMIT 1;
             
