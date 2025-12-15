@@ -314,7 +314,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   // Helper function to get or create cached file context data
-  const getFileContextData = useCallback((file: UploadFile, fileId: string) => {
+  const getFileContextData = useCallback((file: UploadFile, fileId: string): Promise<{ file: UploadFile; fileId: string; fileName: string; fileType: string }> => {
     const cacheKey = `${fileId}_${file.name}_${file.type}`;
 
     if (!fileContextCache.current.has(cacheKey)) {
@@ -546,7 +546,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       showRemoveIcon: false,
       showPreviewIcon: false,
       showDownloadIcon: false,
-
     },
   };
 
