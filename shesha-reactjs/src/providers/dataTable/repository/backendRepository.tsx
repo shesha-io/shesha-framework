@@ -259,10 +259,6 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
             .filter(c => c.isVisible)
             .map<IExcelColumn>(c => ({ propertyName: c.propertyName, label: c.caption }));
 
-        if (excelColumns.findIndex(c => c.propertyName === 'id') === -1) {
-            excelColumns = [{ propertyName: 'id', label: 'Id' }, ...excelColumns];
-        }
-
         const getDataPayload = convertPayload(payload);
 
         const excelPayload: IExportExcelPayload = {
