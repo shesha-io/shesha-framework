@@ -24,6 +24,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const pnlFontStyleId = nanoid();
   const downloadedStylesPnlId = nanoid();
   const pnlDownloadedFileFontStylesId = nanoid();
+  const customActionsPnId = nanoid();
 
   return {
     components: fbf()
@@ -199,7 +200,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   ghost: true,
                   collapsible: 'header',
                   content: {
-                    id: nanoid(),
+                    id: customActionsPnId,
                     components: [
                       ...fbf()
                         .addSettingsInputRow({
@@ -208,7 +209,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             {
                               id: nanoid(),
                               propertyName: 'customActions',
-                              parentId: 'customActionsPanel',
+                              parentId: customActionsPnId,
                               label: 'Custom Actions',
                               type: 'buttonGroupConfigurator',
                               buttonText: 'Customize Actions',
@@ -220,7 +221,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             {
                               id: nanoid(),
                               propertyName: 'customContent',
-                              parentId: 'customActionsPanel',
+                              parentId: customActionsPnId,
                               label: 'Show Custom Content',
                               type: 'switch',
                               description: 'Enable to show custom content below each file.',
@@ -232,7 +233,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           id: nanoid(),
                           inputType: "dropdown",
                           propertyName: "extraFormSelectionMode",
-                          parentId: 'customActionsPanel',
+                          parentId: customActionsPnId,
                           label: "Form Selection Mode",
                           tooltip: "Choose how to select the form for custom content",
                           dropdownOptions: [
@@ -243,7 +244,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         })
                         .addSettingsInputRow({
                           id: nanoid(),
-                          parentId: 'customActionsPanel',
+                          parentId: customActionsPnId,
                           inputs: [
                             {
                               id: nanoid(),
@@ -257,7 +258,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         })
                         .addSettingsInputRow({
                           id: nanoid(),
-                          parentId: 'customActionsPanel',
+                          parentId: customActionsPnId,
                           inputs: [
                             {
                               id: nanoid(),

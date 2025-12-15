@@ -40,12 +40,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     flex: 1;
     cursor: pointer;
     &:hover {
-      background-color: ${token.colorBgSpotlight} !important;      opacity: 1 !important;
+      background-color: ${token.colorBgSpotlight} !important;
+      opacity: 1 !important;
       overflow: visible;
       width: max-content;
       border-radius: 4px;
       padding: 0 8px;
-      z-index: 10 !important;
+      z-index: 999 !important;
       white-space: nowrap;
     }
   `);

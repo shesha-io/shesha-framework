@@ -1,5 +1,5 @@
 import { DraggerStub } from '@/components/fileUpload/stubs';
-import { IAttachmentContent, layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { IInputStyles, IStyleType, useSheshaApplication, ValidationErrors } from '@/index';
@@ -47,8 +47,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   allowViewHistory?: boolean;
   customActions?: ButtonGroupItemProps[];
   hasExtraContent?: boolean;
-  extraContent?: IAttachmentContent;
-  isDynamic?: boolean;
   extraFormSelectionMode?: 'name' | 'dynamic';
   extraFormId?: FormIdentifier;
   extraFormType?: string;
@@ -120,8 +118,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   allowViewHistory = true,
   customActions = [],
   hasExtraContent,
-  extraContent,
-  isDynamic,
   extraFormSelectionMode,
   extraFormId,
   extraFormType,
@@ -163,9 +159,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             ownerType,
           });
         }
-      } catch (error) {
-        console.error('Error replacing file:', error);
-        message.error('Failed to replace file. Please try again.');
+      } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : 'Please try again.';
+        message.error(`File replacement failed. ${errorMessage}`);
+        console.error(e);
       } finally {
         setFileToReplace(null);
       }

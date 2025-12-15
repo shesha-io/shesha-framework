@@ -70,7 +70,7 @@ export const fetchStoredFile = async (
 ): Promise<string> => {
   const fetchUrl = buildUrl(url, { skipMarkDownload: 'true' });
   const response = await fetch(fetchUrl, {
-    headers: { ...httpHeaders, "Content-Type": "application/octet-stream" },
+    headers: { ...httpHeaders },
   });
 
   if (!response.ok) {
@@ -110,8 +110,8 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
       <ul>
         {uploads &&
           uploads.map((item, i) => (
-            <li key={item.versionNo ?? i}>
-              <strong>Version {i + 1}</strong> Uploaded{' '}
+            <li key={item.versionNo ?? `version-${i}`}>
+              <strong>Version {item.versionNo}</strong> Uploaded{' '}
               {item.dateUploaded && <DateDisplay>{item.dateUploaded}</DateDisplay>} by {item.uploadedBy}
               <br />
               <Button type="link" onClick={() => handleVersionDownloadClick(item)}>

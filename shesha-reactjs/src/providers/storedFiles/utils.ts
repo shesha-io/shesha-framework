@@ -38,5 +38,5 @@ export const normalizeFileName = (file: File): File => {
     ? file.name
     : file.name.substring(0, lastDotIndex) + file.name.substring(lastDotIndex).toLowerCase();
 
-  return new File([file], fileName, { type: file.type });
+  return new File([file], fileName, { type: file.type, lastModified: file.lastModified });
 };

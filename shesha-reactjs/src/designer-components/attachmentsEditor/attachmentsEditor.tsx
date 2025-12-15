@@ -127,10 +127,6 @@ const removeLegacyProperties = (result: Record<string, unknown>): void => {
   });
 };
 
-export interface IAttachmentContent {
-  id: string;
-  components?: IConfigurableFormComponent[];
-}
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
   ownerId: string;
   ownerType: string | IEntityTypeIdentifier;
