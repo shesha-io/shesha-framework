@@ -103,7 +103,7 @@ export const fetchStoredFile = async (
   const objectUrl = URL.createObjectURL(blob);
 
   let revoked = false;
-  const revoke = () => {
+  const revoke = (): void => {
     if (!revoked) {
       URL.revokeObjectURL(objectUrl);
       revoked = true;
@@ -114,8 +114,6 @@ export const fetchStoredFile = async (
 };
 
 export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDownload }) => {
-  if (fileId == null) return null;
-  
   const {
     loading,
     refetch: fetchHistory,
@@ -125,6 +123,7 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
     lazy: true,
   });
 
+  if (fileId == null) return null;
 
   const handleVisibleChange = (visible: boolean): void => {
     if (visible) {

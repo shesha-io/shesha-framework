@@ -152,7 +152,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   }, [value]);
 
   useEffect(() => {
-    if (ownerId && ownerType ) {
+    if (ownerId && ownerType) {
       fetchFileListHttp();
     }
   }, [ownerId, ownerType, ownerName, filesCategory, propertyName]);
