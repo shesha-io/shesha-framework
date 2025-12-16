@@ -217,6 +217,9 @@ export interface ModelPropertyDto {
   itemsType?: ModelPropertyDto | null;
 
   isItemsType?: boolean;
+
+  /** Used only for Model Configurator */
+  genericEntityReference?: boolean;
 }
 
 /**

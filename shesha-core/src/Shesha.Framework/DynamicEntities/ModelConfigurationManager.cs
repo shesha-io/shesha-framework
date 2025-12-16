@@ -194,7 +194,12 @@ namespace Shesha.DynamicEntities
             // todo: add validation
 
             var inheritedFrom = input.InheritedFromId != null
-                ? await Repository.GetAsync(input.InheritedFromId.Value)
+                ? await Repository.GetAll().FirstOrDefaultAsync(x => 
+                    x.Name == input.InheritedFromId.Name 
+                    && (x.Module != null && x.Module.Name == input.InheritedFromId.Module
+                        || x.Module == null && (input.InheritedFromId.Module == null || input.InheritedFromId.Module == "")
+                    )
+                )
                 : !input.InheritedFromClassName.IsNullOrEmpty() && !input.InheritedFromNamespace.IsNullOrEmpty()
                     ? await Repository.GetAll().FirstOrDefaultAsync(x => x.ClassName == input.InheritedFromClassName && x.Namespace == input.InheritedFromNamespace)
                     : null;
