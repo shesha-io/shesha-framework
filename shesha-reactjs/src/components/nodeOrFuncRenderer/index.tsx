@@ -1,9 +1,19 @@
+import { isDefined } from '@/utils/nullables';
 import React, { FC, Fragment, PropsWithChildren, ReactNode } from 'react';
 
 export type ReactNodeOrFunc = ReactNode | (() => ReactNode);
 
 export const NodeOrFuncRenderer: FC<PropsWithChildren<any>> = ({ children }) => {
-  return <Fragment>{typeof children === 'function' ? children() : children}</Fragment>;
+  const value = typeof children === 'function' ? children() : children;
+  return (
+    <Fragment>
+      {isDefined(value) && typeof value === 'object'
+        ? React.isValidElement(value) || (Array.isArray(value) && !value.find((item) => !React.isValidElement(item)))
+          ? value
+          : '[object]'
+        : value}
+    </Fragment>
+  );
 };
 
 export default NodeOrFuncRenderer;
