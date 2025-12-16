@@ -5,15 +5,14 @@ export type ReactNodeOrFunc = ReactNode | (() => ReactNode);
 
 export const NodeOrFuncRenderer: FC<PropsWithChildren<any>> = ({ children }) => {
   const value = typeof children === 'function' ? children() : children;
-  return (
-    <Fragment>
-      {isDefined(value) && typeof value === 'object'
-        ? React.isValidElement(value) || (Array.isArray(value) && value.every((item) => React.isValidElement(item)))
-          ? value
-          : '[object]'
-        : value}
-    </Fragment>
-  );
+  if (!isDefined(value)) return value;
+  const isRactArray = Array.isArray(value) && value.every((item) => React.isValidElement(item) || !isDefined(item));
+  const element = typeof value === 'object'
+    ? React.isValidElement(value) || isRactArray
+      ? value
+      : '[object]'
+    : value;
+  return <Fragment>{element}</Fragment>;
 };
 
 export default NodeOrFuncRenderer;
