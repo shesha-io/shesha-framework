@@ -94,14 +94,7 @@ export const getNumericValue = (localValue: number | string): number => {
 };
 
 export function toCamelCase(str: string): string {
-  return str
-    .replace(/\s(.)/g, function ($1) {
-      return $1.toUpperCase();
-    })
-    .replace(/\s/g, '')
-    .replace(/^(.)/, function ($1) {
-      return $1.toLowerCase();
-    });
+  return camelcase(str);
 }
 
 export function getNumberFormat(str: string, format: string): string {
@@ -140,11 +133,6 @@ export const capitalizeFirstLetter = (str: string): string => {
   if (isNullOrWhiteSpace(str))
     return str;
   return `${str.charAt(0).toUpperCase()}${str.substring(1)}`;
-};
-
-
-export const verifiedCamelCase = (value: string): string => {
-  return camelcase(value);
 };
 
 /**
