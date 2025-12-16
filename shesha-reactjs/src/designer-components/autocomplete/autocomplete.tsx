@@ -1,7 +1,7 @@
 import { FileSearchOutlined } from '@ant-design/icons';
 import React, { useCallback } from 'react';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
-import { DataTypes } from '@/interfaces/dataTypes';
+import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import {
   executeExpression,
@@ -16,7 +16,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ConfigurableFormItem } from '@/components';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import { getValueByPropertyName } from '@/utils/object';
-import { FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
+import { DisplayValueFunc, FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
 import { Autocomplete } from '@/components/autocomplete';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
@@ -34,7 +34,9 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
   canBeJsSetting: true,
   name: 'Autocomplete',
   icon: <FileSearchOutlined />,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
+  dataTypeSupported: ({ dataType, dataFormat }) =>
+    dataType === DataTypes.entityReference ||
+    (dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(dataFormat)),
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
     const { getMetadata } = useMetadataDispatcher();
@@ -75,7 +77,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
       return typeof (item) === 'object' ? getValueByPropertyName(item as Record<string, unknown>, keyPropName) : item;
     }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, entityMetadata]);
 
-    const displayValueFunc: OutcomeValueFunc = useCallback((value: unknown, args: object) => {
+    const displayValueFunc: DisplayValueFunc = useCallback((value: unknown, args: object) => {
       if (!isDefined(value)) return value;
       if (model.displayValueFunc)
         return executeExpression(model.displayValueFunc, { ...args, item: value }, null, null);
@@ -191,7 +193,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
       entityType: isEntityReferencePropertyMetadata(propMetadata)
         ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
         : isEntityReferenceArrayPropertyMetadata(propMetadata)
-          ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
+          ? { name: propMetadata.itemsType?.entityType, module: propMetadata.itemsType?.entityModule ?? null }
           : undefined,
       valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
         ? 'entityReference'
