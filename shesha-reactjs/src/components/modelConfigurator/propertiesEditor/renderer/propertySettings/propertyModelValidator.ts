@@ -44,7 +44,7 @@ const propertyModelValidator = (model: ModelPropertyDto, parentModels?: ModelPro
         propsErrors = propsErrors.concat(propertyModelValidator(model.itemsType, (parentModels ?? [])));
     }
     if (model.dataFormat === ArrayFormats.entityReference) {
-      if (!model.entityType) errors.push('Entity Type is required.');
+      if (!model.genericEntityReference && !model.entityType) errors.push('Entity Type is required.');
       if (!model.listConfiguration?.foreignProperty) errors.push('Referencing Property is required.');
     }
     if (model.dataFormat === ArrayFormats.manyToManyEntities) {
