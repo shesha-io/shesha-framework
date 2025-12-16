@@ -1,4 +1,4 @@
 # Release Notes
 
 🐞 Bug Fixes
-- Fix FileList
+- Fixed re-renders
