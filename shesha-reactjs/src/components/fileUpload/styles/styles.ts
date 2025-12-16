@@ -1,6 +1,25 @@
 import { createStyles } from '@/styles';
+import { CSSObject } from '@emotion/serialize';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }: any) => {
+interface StyleProps extends CSSObject {
+  jsStyle?: CSSObject;
+}
+
+interface ModelProps {
+  layout?: boolean;
+  isDragger?: boolean;
+  hideFileName?: boolean;
+  listType?: 'text' | 'picture' | 'picture-card' | 'thumbnail';
+}
+
+interface UseStylesParams {
+  style?: StyleProps;
+  model: ModelProps;
+}
+
+type TextAlignType = 'left' | 'right' | 'center' | 'justify';
+
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }: UseStylesParams) => {
   const {
     background = 'transparent',
     backgroundImage,
@@ -43,14 +62,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
   const { layout, isDragger, hideFileName, listType } = model;
 
-  const justifyContentMap = {
+  const justifyContentMap: Record<TextAlignType, string> = {
     left: 'flex-start',
     right: 'flex-end',
     center: 'center',
     justify: 'space-between',
   };
 
-  const justifyContentValue = justifyContentMap[textAlign] || textAlign;
+  const textAlignValue = (typeof textAlign === 'string' ? textAlign : 'left') as TextAlignType;
+  const justifyContentValue = justifyContentMap[textAlignValue] || textAlignValue;
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const antUploadText = `${prefixCls}-upload-text`;
