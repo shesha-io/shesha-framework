@@ -8,7 +8,7 @@ export const NodeOrFuncRenderer: FC<PropsWithChildren<any>> = ({ children }) => 
   return (
     <Fragment>
       {isDefined(value) && typeof value === 'object'
-        ? React.isValidElement(value) || (Array.isArray(value) && !value.find((item) => !React.isValidElement(item)))
+        ? React.isValidElement(value) || (Array.isArray(value) && value.every((item) => React.isValidElement(item)))
           ? value
           : '[object]'
         : value}

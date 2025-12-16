@@ -1,6 +1,5 @@
 ﻿using Abp.Localization;
 using HtmlAgilityPack;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -591,24 +590,24 @@ namespace Shesha.Utilities
                 return leadingUnderscores;
 
             // Convert to camelCase
-            var result = "";
+            var result = new StringBuilder();
 #if HAVE_CHAR_TO_STRING_WITH_CULTURE
-            result += words[0].ToLower(CultureInfo.InvariantCulture);
+            result.Append(words[0].ToLower(CultureInfo.InvariantCulture));
 #else
-            result += words[0].ToLowerInvariant();
+            result.Append(words[0].ToLowerInvariant());
 #endif
 
             for (int i = 1; i < words.Length; i++)
             {
                 var word = words[i];
 #if HAVE_CHAR_TO_STRING_WITH_CULTURE
-                result += char.ToUpper(word[0], CultureInfo.InvariantCulture) + word.Substring(1).ToLower(CultureInfo.InvariantCulture);
+                result.Append(char.ToUpper(word[0], CultureInfo.InvariantCulture)).Append(word.Substring(1).ToLower(CultureInfo.InvariantCulture));
 #else
-                result += char.ToUpperInvariant(word[0]) + word.Substring(1).ToLowerInvariant();
+                result.Append(char.ToUpperInvariant(word[0])).Append(word.Substring(1).ToLowerInvariant());
 #endif
             }
 
-            return leadingUnderscores + result;
+            return leadingUnderscores + result.ToString();
         }
 
         public static string? ToCamelCaseOrNull(this string? s) 
