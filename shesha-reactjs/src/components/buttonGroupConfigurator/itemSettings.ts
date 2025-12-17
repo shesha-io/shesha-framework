@@ -179,7 +179,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                       id: nanoid(),
                       propertyName: 'actionConfiguration',
                       label: 'Action Configuration',
-                      hideLabel: true,
+                      hideLabel: false,
                       validate: {},
                       settingsValidationErrors: [],
                     }).toJson(),
