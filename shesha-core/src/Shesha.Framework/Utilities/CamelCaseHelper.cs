@@ -23,7 +23,7 @@ namespace Shesha.Utilities
 
         public static string Convert(string input) 
         {
-            return Convert(input, new ConvertOptions { PascalCase = false, PreserveConsecutiveUppercase = false });
+            return Convert(input, new ConvertOptions { PascalCase = false, PreserveConsecutiveUppercase = false, KeepLeadingSeparators = false });
         }
 
         public static string Convert(string input, ConvertOptions options)
@@ -48,8 +48,8 @@ namespace Shesha.Utilities
             if (hasUpperCase)
                 input = PreserveCamelCase(input, options.PreserveConsecutiveUppercase);
 
-            
-            input = LEADING_SEPARATORS.Replace(input, "");
+            if (!options.KeepLeadingSeparators)
+                input = LEADING_SEPARATORS.Replace(input, "");
 	        input = options.PreserveConsecutiveUppercase 
                 ? PreserveConsecutiveUppercase(input) 
                 : input.ToLower();
@@ -128,6 +128,10 @@ namespace Shesha.Utilities
 
         public class ConvertOptions 
         {
+            /// <summary>
+            /// NOTE! The camelCase and PascalCase standards remove the leading separators. Use this option with caution.
+            /// </summary>
+            public bool KeepLeadingSeparators { get; set; }
             public bool PascalCase { get; set; }
             public bool PreserveConsecutiveUppercase { get; set; }
         }

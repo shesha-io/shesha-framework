@@ -567,47 +567,8 @@ namespace Shesha.Utilities
         /// </summary>
         public static string ToCamelCase(this string input)
         {
-            if (string.IsNullOrWhiteSpace(input))
-                return input;
-
-            // Save the initial underscores
-            string leadingUnderscores = new string(input.TakeWhile(c => c == '_').ToArray());
-            string remaining = input.Substring(leadingUnderscores.Length);
-
-            if (string.IsNullOrWhiteSpace(remaining))
-                return leadingUnderscores;
-
-            var words = Regex.Split(remaining,
-                @"(
-                    [\s\-_.]+ |                   # separators
-                    (?<=[a-z\d])(?=[A-Z]) |       # lowercase letter/number -> uppercase
-                    (?<=[A-Z])(?=[A-Z][a-z])      # abbreviation -> lowercase
-                )", RegexOptions.IgnorePatternWhitespace)
-                .Where(w => !string.IsNullOrWhiteSpace(w))
-                .ToArray();
-
-            if (!words.Any())
-                return leadingUnderscores;
-
-            // Convert to camelCase
-            var result = new StringBuilder();
-#if HAVE_CHAR_TO_STRING_WITH_CULTURE
-            result.Append(words[0].ToLower(CultureInfo.InvariantCulture));
-#else
-            result.Append(words[0].ToLowerInvariant());
-#endif
-
-            for (int i = 1; i < words.Length; i++)
-            {
-                var word = words[i];
-#if HAVE_CHAR_TO_STRING_WITH_CULTURE
-                result.Append(char.ToUpper(word[0], CultureInfo.InvariantCulture)).Append(word.Substring(1).ToLower(CultureInfo.InvariantCulture));
-#else
-                result.Append(char.ToUpperInvariant(word[0])).Append(word.Substring(1).ToLowerInvariant());
-#endif
-            }
-
-            return leadingUnderscores + result.ToString();
+            // The camelCase and PascalCase standards remove the leading separators. But we need it for using special fields like `_className` and `_displayName`
+            return CamelCaseHelper.Convert(input, new CamelCaseHelper.ConvertOptions() { KeepLeadingSeparators = true });
         }
 
         public static string? ToCamelCaseOrNull(this string? s) 
