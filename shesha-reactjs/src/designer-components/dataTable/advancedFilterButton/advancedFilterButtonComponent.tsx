@@ -12,7 +12,11 @@ import { defaultStyles } from './utils';
 import { useDataTableStore } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 
-const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = {
+interface IAdvancedFilterButtonComponentProps extends Omit<IButtonComponentProps, 'buttonType'> {
+  buttonType: 'primary' | 'default' | 'dashed' | 'text' | 'ghost' | 'link';
+}
+
+const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
   type: 'datatable.filter',
   isInput: false,
   name: 'Table Filter',
@@ -70,7 +74,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
       );
     }
 
-    return model.hidden ? null : <AdvancedFilterButton {...model} styles={finalStyle} />;
+    return model.hidden ? null : <AdvancedFilterButton {...model as IButtonComponentProps} styles={finalStyle} />;
   },
   initModel: (model) => {
     return {
@@ -83,9 +87,9 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
-      .add<IButtonComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))
-      .add<IButtonComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))
-      .add<IButtonComponentProps>(5, (prev, context) => ({
+      .add<IAdvancedFilterButtonComponentProps>(3, (prev) => migrateReadOnly(prev as unknown as IAdvancedFilterButtonComponentProps, 'inherited'))
+      .add<IAdvancedFilterButtonComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))
+      .add<IAdvancedFilterButtonComponentProps>(5, (prev, context) => ({
         ...prev,
         editMode: (context.isNew ? 'editable' : prev.editMode),
       })),
