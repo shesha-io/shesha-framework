@@ -11,6 +11,7 @@ using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
+using Shesha.DynamicEntities.Enums;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
@@ -75,6 +76,7 @@ namespace Shesha.Metadata
 
             var dto = new MetadataDto
             {
+                InitStatus = entityConfig?.InitStatus,
                 EntityConfigType = entityConfig?.EntityConfigType ?? Domain.Enums.EntityConfigTypes.Class,
                 IsExposed = entityConfig?.IsExposed ?? false,
                 DataType = isEntity
@@ -292,30 +294,34 @@ namespace Shesha.Metadata
             if (modelConfig != null)
             {
                 var idx = 0;
-                // Use Hardcoded properties because all dynamic properties should be created as properties of class
-                var props = hardCodedProps?.Select(p =>
+                var props = modelConfig.Properties.Select(dbProp =>
                     {
-                        var dbProp = modelConfig.Properties.FirstOrDefault(pp => pp.Name == p.Path);
+                        var hProp = hardCodedProps?.FirstOrDefault(p => dbProp.Name == p.Path);
 
-                        // If there is no Property Configuration then skip the property in metadata
-                        if (dbProp == null)
+                        // If the propeerty need to be initialized or initialized failed then skip the property in metadata 
+                        if (dbProp.InitStatus == null
+                            || dbProp.InitStatus.Value.HasFlag(EntityInitFlags.InitializationRequired)
+                            || dbProp.InitStatus.Value.HasFlag(EntityInitFlags.InitializationFailed)
+                        )
                             return null;
-                        
+
                         idx = dbProp.SortOrder != null ? dbProp.SortOrder.Value : idx + 1;
 
                         var prop = _mapper.Map<PropertyMetadataDto>(dbProp);
                         prop.ContainerType = containerType.FullName ?? "";
-                        prop.EnumType = p?.EnumType;
-                        prop.IsNullable = p?.IsNullable ?? false;
+                        prop.EnumType = hProp?.EnumType;
+                        prop.IsNullable = hProp?.IsNullable ?? false;
                         prop.OrderIndex = idx;
-                        prop.GroupName = p?.GroupName;
+                        prop.GroupName = hProp?.GroupName;
 
                         prop.IsVisible = !(dbProp.Suppress ?? false);
 
                         return prop;
                     })
+                    .Where(p => p != null)
                     .OrderBy(p => p?.OrderIndex)
                     .ToList();
+
                 result = props?.Select(RemoveSuppressed).WhereNotNull().ToList() ?? new List<PropertyMetadataDto>();
             }
             else
