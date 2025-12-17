@@ -514,7 +514,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'headerStyling',
-                  label: 'Header Styling',
+                  label: 'Header Styles',
                   labelAlign: 'right',
                   ghost: true,
                   parentId: appearanceTabId,
@@ -526,7 +526,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'headerFontSize',
-                        label: 'Header Font Size',
+                        label: 'Font Size',
                         inputType: 'textField',
                         tooltip: 'Font size for table headers (e.g., 14px, 1.2em)',
                         jsSetting: false,
@@ -534,11 +534,32 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'headerFontWeight',
-                        label: 'Header Font Weight',
+                        label: 'Font Weight',
                         inputType: 'dropdown',
                         dropdownOptions: fontWeightsOptions,
                         tooltip: 'Font weight for table headers',
                         jsSetting: false,
+                      })
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: 'headerBackgroundColor',
+                            label: 'Background Color',
+                            type: 'colorPicker',
+                            tooltip: 'Background color for table headers',
+                            jsSetting: true,
+                          },
+                          {
+                            id: nanoid(),
+                            propertyName: 'headerTextColor',
+                            label: 'Font Color',
+                            type: 'colorPicker',
+                            tooltip: 'Text color for table headers',
+                            jsSetting: true,
+                          },
+                        ],
                       })
                       .toJson(),
                     ],
@@ -547,7 +568,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'tableBodyStyling',
-                  label: 'Table Body Styling',
+                  label: 'Table Body Styles',
                   labelAlign: 'right',
                   ghost: true,
                   parentId: appearanceTabId,
@@ -1103,24 +1124,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       })
                       .addSettingsInput({
                         id: nanoid(),
-                        propertyName: 'headerBackgroundColor',
-                        label: 'Header Background Color',
-                        inputType: 'colorPicker',
-                        tooltip: 'Background color for table headers',
-                        parentId: styleRouterId,
-                        jsSetting: true,
-                      })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        propertyName: 'headerTextColor',
-                        label: 'Header Text Color',
-                        inputType: 'colorPicker',
-                        tooltip: 'Text color for table headers',
-                        parentId: styleRouterId,
-                        jsSetting: true,
-                      })
-                      .addSettingsInput({
-                        id: nanoid(),
                         propertyName: 'sortableIndicatorColor',
                         label: 'Sort Indicator Color',
                         inputType: 'colorPicker',
@@ -1139,29 +1142,44 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         content: {
                           id: nanoid(),
                           components: [...fbf()
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                               id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'style',
-                              hideLabel: false,
-                              label: 'Style',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  type: 'codeEditor',
+                                  propertyName: 'style',
+                                  label: 'Style',
+                                  tooltip: 'Custom CSS styles for the table component',
+                                  description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                },
+                              ],
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                               id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'tableStyle',
-                              hideLabel: false,
-                              label: 'Table Style',
-                              description: 'The style that will be applied to the table',
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  type: 'codeEditor',
+                                  propertyName: 'tableStyle',
+                                  label: 'Table Style',
+                                  tooltip: 'Custom CSS styles for the table element',
+                                  description: 'The style that will be applied to the table',
+                                },
+                              ],
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                               id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'containerStyle',
-                              hideLabel: false,
-                              label: 'Container Style',
-                              description: 'The style that will be applied to the table container/wrapper',
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  type: 'codeEditor',
+                                  propertyName: 'containerStyle',
+                                  label: 'Container Style',
+                                  tooltip: 'Custom CSS styles for the table container/wrapper',
+                                  description: 'The style that will be applied to the table container/wrapper',
+                                },
+                              ],
                             })
                             .toJson(),
                           ],

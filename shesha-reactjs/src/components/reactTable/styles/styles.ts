@@ -484,7 +484,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             border-bottom: 3px solid ${sortableIndicatorColor || token.colorPrimary};
           }
           &.${fixedColumn} {
-            display: inline-block;
             position: sticky;
             z-index: 999;
             opacity: 1;
@@ -543,7 +542,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             z-index: 10;
           }
           &.${fixedColumn} {
-            display: inline-block;
             position: sticky;
             z-index: 10;
             opacity: 1;
