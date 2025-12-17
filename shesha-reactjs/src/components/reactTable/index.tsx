@@ -105,6 +105,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
+  textAlign,
   rowHeight,
   rowPadding,
   rowBorder,
@@ -144,6 +145,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     headerFontWeight,
     headerBackgroundColor,
     headerTextColor,
+    textAlign,
     rowHeight,
     rowPadding,
     rowBorder,
@@ -494,7 +496,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
 
-  const handleSelectRow = (row: Row<object>): void => {
+  const handleSelectRow = (rowIndex: number) => (row: Row<object>): void => {
     if (!omitClick && !(canEditInline || canDeleteInline)) {
       // For both single and multiple selection modes, update the row selection state
       if (selectionMode === 'single' || selectionMode === 'multiple') {
@@ -506,7 +508,7 @@ export const ReactTable: FC<IReactTableProps> = ({
       }
       // Call the onSelectRow callback
       if (onSelectRow) {
-        onSelectRow(row?.index, row?.original);
+        onSelectRow(rowIndex, row?.original);
       }
     }
   };
@@ -678,7 +680,7 @@ export const ReactTable: FC<IReactTableProps> = ({
       <Row
         key={id ?? rowIndex}
         prepareRow={prepareRow}
-        onClick={handleSelectRow}
+        onClick={handleSelectRow(rowIndex)}
         onDoubleClick={() => handleDoubleClickRow(row, rowIndex)}
         onRowClick={() => {
           // Legacy handler

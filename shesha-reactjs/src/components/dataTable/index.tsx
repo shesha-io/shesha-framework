@@ -86,6 +86,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   headerFontWeight?: string;
   headerBackgroundColor?: string;
   headerTextColor?: string;
+  textAlign?: string;
 
   // Table body styling
   rowHeight?: string;
@@ -162,6 +163,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
+  textAlign,
   rowHeight,
   rowPadding,
   rowBorder,
@@ -921,6 +923,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     headerFontWeight,
     headerBackgroundColor,
     headerTextColor,
+    textAlign,
     rowHeight,
     rowPadding,
     rowBorder,

@@ -278,6 +278,7 @@ export interface IReactTableProps extends ITableRowDragProps {
   headerFontWeight?: string;
   headerBackgroundColor?: string;
   headerTextColor?: string;
+  textAlign?: string;
 
   // Table body styling
   rowBackgroundColor?: string;
