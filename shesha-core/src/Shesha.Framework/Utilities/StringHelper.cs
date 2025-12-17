@@ -565,36 +565,49 @@ namespace Shesha.Utilities
         /// <summary>
         /// Converts string to camel case (taken from the Newtonsoft.Json.Utilities.StringUtils)
         /// </summary>
-        public static string ToCamelCase(this string s)
+        public static string ToCamelCase(this string input)
         {
-            if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
-                return s;
+            if (string.IsNullOrWhiteSpace(input))
+                return input;
 
-            char[] chars = s.ToCharArray();
+            // Save the initial underscores
+            string leadingUnderscores = new string(input.TakeWhile(c => c == '_').ToArray());
+            string remaining = input.Substring(leadingUnderscores.Length);
 
-            for (int i = 0; i < chars.Length; i++)
-            {
-                if (i == 1 && !char.IsUpper(chars[i]))
-                {
-                    break;
-                }
+            if (string.IsNullOrWhiteSpace(remaining))
+                return leadingUnderscores;
 
-                bool hasNext = (i + 1 < chars.Length);
-                if (i > 0 && hasNext && !char.IsUpper(chars[i + 1]))
-                {
-                    break;
-                }
+            var words = Regex.Split(remaining,
+                @"(
+                    [\s\-_.]+ |                   # separators
+                    (?<=[a-z\d])(?=[A-Z]) |       # lowercase letter/number -> uppercase
+                    (?<=[A-Z])(?=[A-Z][a-z])      # abbreviation -> lowercase
+                )", RegexOptions.IgnorePatternWhitespace)
+                .Where(w => !string.IsNullOrWhiteSpace(w))
+                .ToArray();
 
-                char c;
+            if (!words.Any())
+                return leadingUnderscores;
+
+            // Convert to camelCase
+            var result = new StringBuilder();
 #if HAVE_CHAR_TO_STRING_WITH_CULTURE
-                c = char.ToLower(chars[i], CultureInfo.InvariantCulture);
+            result.Append(words[0].ToLower(CultureInfo.InvariantCulture));
 #else
-                c = char.ToLowerInvariant(chars[i]);
+            result.Append(words[0].ToLowerInvariant());
 #endif
-                chars[i] = c;
+
+            for (int i = 1; i < words.Length; i++)
+            {
+                var word = words[i];
+#if HAVE_CHAR_TO_STRING_WITH_CULTURE
+                result.Append(char.ToUpper(word[0], CultureInfo.InvariantCulture)).Append(word.Substring(1).ToLower(CultureInfo.InvariantCulture));
+#else
+                result.Append(char.ToUpperInvariant(word[0])).Append(word.Substring(1).ToLowerInvariant());
+#endif
             }
 
-            return new string(chars);
+            return leadingUnderscores + result.ToString();
         }
 
         public static string? ToCamelCaseOrNull(this string? s) 

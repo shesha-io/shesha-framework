@@ -23,7 +23,7 @@ import {
   isPropertiesLoader,
 } from "@/interfaces/metadata";
 import camelcase from "camelcase";
-import { isEmptyString, verifiedCamelCase } from "../string";
+import { isEmptyString, toCamelCase } from "../string";
 import { StringBuilder } from "./stringBuilder";
 import { TypesImporter } from "./typesImporter";
 import { MetadataFetcher } from "./metadataBuilder";
@@ -152,7 +152,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     sb.incIndent();
     await this.#iterateProperties(metadata.properties, async (prop) => {
       try {
-        const propertyName = verifiedCamelCase(prop.path);
+        const propertyName = toCamelCase(prop.path);
         const dataType = await this.#getTypescriptType(prop, {
           onUseComplexType: (typeInfo) => {
             typesImporter.import({ typeName: typeInfo.typeName, filePath: typeInfo.filePath });
@@ -224,7 +224,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     sb.append(`export type ${typeAccessor} = {`);
     sb.incIndent();
     for (const method of supportedMethods) {
-      const methodName = verifiedCamelCase(method.name);
+      const methodName = toCamelCase(method.name);
 
       const returnType = await this.#buildMethodReturnTypeAsync(method, typesImporter);
       const methodArgs = await this.#buildMethodArgumentsAsync(method, typesImporter);

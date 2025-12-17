@@ -5,7 +5,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import settingsFormJson from './settingsForm.json';
 import { EditableTagGroup } from '@/components';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { DataTypes } from '@/interfaces/dataTypes';
+import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { EditableTagGroupComponentDefinition, IEditableTagGroupComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -19,7 +19,7 @@ const EditableTagGroupComponent: EditableTagGroupComponentDefinition = {
   icon: <HomeOutlined />,
   isInput: true,
   isOutput: true,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.array && dataFormat === ArrayFormats.simple,
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>

@@ -1,5 +1,5 @@
 import { FormFullName } from "@/providers";
-import { DataTypes, ObjectFormats } from "./dataTypes";
+import { ArrayFormats, DataTypes, ObjectFormats } from "./dataTypes";
 import { IDictionary } from "./shesha";
 import { DataTypeInfo } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { isDefined } from "@/utils/nullables";
@@ -139,7 +139,7 @@ export const isEntityReferencePropertyMetadata = (propMeta: IMemberMetadata): pr
 };
 
 export const isEntityReferenceArrayPropertyMetadata = (propMeta: IMemberMetadata): propMeta is IEntityReferenceArrayPropertyMetadata => {
-  return propMeta && propMeta.dataType === DataTypes.array && propMeta.dataFormat === DataTypes.entityReference;
+  return propMeta && propMeta.dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(propMeta.dataFormat);
 };
 
 export const isObjectReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IObjectReferencePropertyMetadata => {
