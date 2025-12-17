@@ -20,17 +20,10 @@ namespace Shesha.Configuration
         ISettingAccessor<MainMenuSettings> MainMenu { get; }
 
         /// <summary>
-        /// Default URL  
+        /// Frontend Application Redirects
         /// </summary>
-        [Display(Name = "Default URL", Description = "This is the url the user should be redirected to if the user is not authenticated and does not specify a specific page", GroupName = "Frontend")]
-        [Setting(SheshaSettingNames.DefaultUrl, isClientSpecific: true)]
-        ISettingAccessor<string> DefaultUrl { get; }
-
-        /// <summary>
-        /// Public URL  
-        /// </summary>
-        [Display(Name = "Public URL", Description = "Is used in the notifications (especially emails) to open site links", GroupName = "Frontend")]
-        [Setting(SheshaSettingNames.PublicUrl, isClientSpecific: true)]
-        ISettingAccessor<string> PublicUrl { get; }
+        [Display(Name = "Application Redirects", Description = "This is the Application Redirects section", GroupName = "General")]
+        [Setting(SheshaSettingNames.ApplicationRedirects, isClientSpecific: true, editorFormName: "application-redirects")]
+        ISettingAccessor<FrontendApplicationRedirectsSettings> FrontendApplicationRedirectsSettings { get; }
     }
 }
