@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.FileSystemGlobbing.Internal;
-using NetTopologySuite.Densify;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Shesha.Utilities
@@ -47,9 +45,12 @@ namespace Shesha.Utilities
 
             if (hasUpperCase)
                 input = PreserveCamelCase(input, options.PreserveConsecutiveUppercase);
+            
+            var leadingSeparators = options.KeepLeadingSeparators
+                ? LEADING_SEPARATORS.Match(input).Value
+                : "";
 
-            if (!options.KeepLeadingSeparators)
-                input = LEADING_SEPARATORS.Replace(input, "");
+            input = LEADING_SEPARATORS.Replace(input, "");
 	        input = options.PreserveConsecutiveUppercase 
                 ? PreserveConsecutiveUppercase(input) 
                 : input.ToLower();
@@ -58,7 +59,8 @@ namespace Shesha.Utilities
                 input = char.ToUpper(input[0]) + (input.Length > 1 ? input.Substring(1, input.Length - 1) : "");
             }
 
-	        return PostProcess(input);
+            var result = PostProcess(input);
+            return string.IsNullOrEmpty(result) ? string.Empty : leadingSeparators + result;
         }
 
         private static char? CharAt(string input, int position) 

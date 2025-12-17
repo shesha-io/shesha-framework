@@ -36,7 +36,7 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
 
   return fbf()
     .addSettingsInput({ parentId: dataTabId, inputType: 'dropdown', propertyName: `${propName}dataType`, label: 'Data Type', validate: { required: true },
-      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
       dropdownOptions: type === 'full' ? typesFullList : typesArrayList,
       allowClear: true, tooltip: 'Select the data type for this property.',
       onChangeSetting: (_value, _data, setFormData) => {
@@ -91,7 +91,7 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
       components: [...fbf()
         .addSettingsInput({ parentId: numberFormatId, inputType: 'dropdown', propertyName: `${propName}dataFormat`, label: 'Number Format',
           validate: { required: true },
-          editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+          editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
           dropdownOptions: [
             { label: 'Integer', value: 'int64' },
             { label: 'Float', value: 'float' },
@@ -100,7 +100,7 @@ export const SimplePropertySettings = (fbf: FormBuilderFactory, dataTabId: strin
         })
         .addSettingsInputRow({ parentId: numberFormatId, inputs: [
           { type: 'numberField', propertyName: `${propName}formatting.numDecimalPlaces`, label: 'Num decimal places',
-            editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+            editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
           },
           { type: 'switch', propertyName: `${propName}formatting.showAsPercentage`, label: 'Show as percentage' },
         ],
