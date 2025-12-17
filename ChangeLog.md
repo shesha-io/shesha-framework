@@ -1,4 +1,10 @@
 # Release Notes
 
 💪 Enhancements
-New templates for creating the forms
+- FileList changes
+
+🐞 Bug Fixes
+- Missing modal buttons
+- Role assignment
+- Container with container inside
+- Wizard
