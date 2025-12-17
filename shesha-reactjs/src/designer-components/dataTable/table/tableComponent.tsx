@@ -55,6 +55,11 @@ const TableComponent: TableComponentDefinition = {
       items: [],
       striped: true,
       hoverHighlight: true,
+      rowDimensions: {
+        height: '40px',
+        minHeight: 'auto',
+        maxHeight: 'auto',
+      },
       ...defaults,
       ...tableDefaults,
       ...tableSettingsDefaults,
@@ -143,7 +148,11 @@ const TableComponent: TableComponentDefinition = {
       }))
       .add<ITableComponentProps>(18, migrateV17toV18)
       .add<ITableComponentProps>(19, migrateV18toV19)
-      .add<ITableComponentProps>(20, (prev) => ({ ...prev, hoverHighlight: prev.hoverHighlight ?? true })),
+      .add<ITableComponentProps>(20, (prev) => ({ ...prev, hoverHighlight: prev.hoverHighlight ?? true }))
+      .add<ITableComponentProps>(21, (prev) => ({
+        ...prev,
+        rowDimensions: prev.rowDimensions ?? { height: '40px' },
+      })),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [
