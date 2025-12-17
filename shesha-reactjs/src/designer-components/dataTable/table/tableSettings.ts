@@ -478,6 +478,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   parentId: eventsTabId,
                   label: 'On Row Select',
                   description: 'Action to execute when a row is selected',
+                  hidden: { _code: 'return getSettingValue(data?.selectionMode) === "none";', _mode: 'code', _value: false } as any,
                 })
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
@@ -485,6 +486,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   parentId: eventsTabId,
                   label: 'On Selection Change',
                   description: 'Action to execute when the selection changes',
+                  hidden: { _code: 'return getSettingValue(data?.selectionMode) === "none";', _mode: 'code', _value: false } as any,
                 })
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
@@ -576,6 +578,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: "rowDimensions.height",
                                   icon: "heightIcon",
                                   tooltip: "Row height. You can use any unit (%, px, em, etc). px by default if without unit",
+                                  placeholder: "40px",
                                 },
                                 {
                                   type: 'textField',
@@ -585,6 +588,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   hideLabel: true,
                                   propertyName: "rowDimensions.minHeight",
                                   icon: "minHeightIcon",
+                                  tooltip: "Minimum row height. Rows will not be smaller than this value",
                                 },
                                 {
                                   type: 'textField',
@@ -594,6 +598,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   hideLabel: true,
                                   propertyName: "rowDimensions.maxHeight",
                                   icon: "maxHeightIcon",
+                                  tooltip: "Maximum row height. Rows will not be taller than this value",
                                 },
                               ],
                             })
@@ -1030,7 +1035,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   type: 'switch',
                                   tooltip: 'Enable alternating row colors',
                                   jsSetting: true,
-                                  value: 'checked',
                                 },
                                 {
                                   id: nanoid(),
@@ -1081,6 +1085,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   type: 'colorPicker',
                                   tooltip: 'Background color for selected rows',
                                   jsSetting: true,
+                                  hidden: { _code: 'return getSettingValue(data?.selectionMode) === "none";', _mode: 'code', _value: false } as any,
                                 },
                               ],
                             })

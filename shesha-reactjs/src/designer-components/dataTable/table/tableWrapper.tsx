@@ -374,6 +374,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             headerFontWeight={props.headerFontWeight}
             headerBackgroundColor={props.headerBackgroundColor}
             headerTextColor={props.headerTextColor}
+            textAlign={props.font?.align}
             rowHeight={effectiveRowHeight}
             rowPadding={effectiveRowPadding}
             rowBorder={effectiveRowBorder}

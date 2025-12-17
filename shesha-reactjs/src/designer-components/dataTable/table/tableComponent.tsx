@@ -54,6 +54,7 @@ const TableComponent: TableComponentDefinition = {
     return {
       items: [],
       striped: true,
+      hoverHighlight: true,
       ...defaults,
       ...tableDefaults,
       ...tableSettingsDefaults,
@@ -141,7 +142,8 @@ const TableComponent: TableComponentDefinition = {
         headerFontWeight: prev.headerFontWeight ?? '600',
       }))
       .add<ITableComponentProps>(18, migrateV17toV18)
-      .add<ITableComponentProps>(19, migrateV18toV19),
+      .add<ITableComponentProps>(19, migrateV18toV19)
+      .add<ITableComponentProps>(20, (prev) => ({ ...prev, hoverHighlight: prev.hoverHighlight ?? true })),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [

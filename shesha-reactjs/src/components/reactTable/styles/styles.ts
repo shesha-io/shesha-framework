@@ -51,6 +51,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
+  textAlign,
   rowHeight,
   rowPadding,
   rowBorder,
@@ -78,6 +79,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   headerFontWeight?: string;
   headerBackgroundColor?: string;
   headerTextColor?: string;
+  textAlign?: string;
   rowHeight?: string;
   rowPadding?: string;
   rowBorder?: string;
@@ -310,10 +312,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${cellBackgroundColor ? `background-color: ${cellBackgroundColor};` : ''}
             ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
             ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+            ${textAlign ? `text-align: ${textAlign};` : ''}
           }
 
           .${th} {
             vertical-align: middle;
+            ${textAlign ? `text-align: ${textAlign};` : ''}
           }
 
           .${shaCrudCell} {
