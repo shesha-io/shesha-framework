@@ -12,21 +12,32 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
     setIsInProgressFlag,
     tableFilter,
   } = useDataTableStore();
-
   const [icon, setIcon] = useState(null);
   const { styles } = useStyles(props.styles?.fontSize);
-
 
   const filterColumns = tableFilter?.map((filter) => filter.columnId);
   const hasFilters = filterColumns?.length > 0 || isFiltering;
 
-  const buttonStyle = {
+  // Build base button style without border/shadow to avoid conflicts
+  const baseButtonStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     ...{ color: props.buttonType !== 'primary' && !props.danger ? styles.primaryColor : '' },
     padding: '3px',
-    border: props.buttonType === 'link' ? 'none' : hasFilters ? `1px solid ${styles.primaryColor}` : 'none',
+  };
+
+  // Only add border for link type or when there are filters
+  // For other types (primary, default, dashed), let the configured styles handle borders/shadows
+  const borderStyle = props.buttonType === 'link'
+    ? { border: 'none' }
+    : hasFilters
+      ? { border: `1px solid ${styles.primaryColor}` }
+      : {};
+
+  const buttonStyle = {
+    ...baseButtonStyle,
+    ...borderStyle,
     ...props.styles,
   };
 

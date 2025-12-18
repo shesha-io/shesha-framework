@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -11,6 +12,8 @@ namespace Shesha.Metadata.Dtos
     /// </summary>
     public class MetadataDto
     {
+        public virtual EntityInitFlags? InitStatus { get; set; }
+
         public EntityConfigTypes EntityConfigType { get; set; }
         public bool IsExposed { get; set; }
 

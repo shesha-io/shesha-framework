@@ -194,7 +194,8 @@ namespace Shesha.Domain
         {
             // ToDo: AS V1 - use correct nameConventions
 
-            var suffix = propertyConfig.DataType == DataTypes.EntityReference || propertyConfig.DataType == DataTypes.File
+            var suffix = propertyConfig.DataType == DataTypes.EntityReference && propertyConfig.DataFormat != EntityFormats.GenericEntity
+                || propertyConfig.DataType == DataTypes.File
                 ? "Id"
                 : propertyConfig.DataType == DataTypes.ReferenceListItem 
                     || (propertyConfig.DataType == DataTypes.Array && propertyConfig.DataFormat == ArrayFormats.MultivalueReferenceList)

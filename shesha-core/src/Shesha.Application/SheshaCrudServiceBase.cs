@@ -293,12 +293,9 @@ namespace Shesha
                 return properties;
 
             var regex = new Regex(@"[\s,]+");
-            var props = string.Join(' ', regex.Split(properties).Select(p => StringHelper.ToCamelCase(p)));
-
-            var propList = props.Replace("{", " { ").Replace("}", " } ").Split(" ");
+            var propList = regex.Split(properties.Replace("{", " { ").Replace("}", " } ")).Select(p => StringHelper.ToCamelCase(p));
 
             var sb = new StringBuilder();
-
             await AppendPropertiesAsync(sb, typeof(TEntity).GetRequiredFullName(), propList.Where(x => !x.IsNullOrWhiteSpace()).ToList());
 
             return "id " + sb.ToString();

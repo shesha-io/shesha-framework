@@ -26,7 +26,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
       ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.borderStyles),
       ...model.allStyles.fontStyles,
       ...(['dashed', 'default'].includes(model.buttonType) && model.allStyles.backgroundStyles),
-      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.shadowStyles),
+      ...(['primary', 'default', 'dashed'].includes(model.buttonType) && model.allStyles.shadowStyles),
       ...model.allStyles.stylingBoxAsCSS,
       ...model.allStyles.jsStyle,
     };
