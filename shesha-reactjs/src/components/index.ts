@@ -25,6 +25,7 @@ export { NotificationAutocomplete } from './configurableItemAutocomplete/notific
 export { default as CustomFile } from './customFile';
 export { default as ErrorBoundary } from './errorBoundary/errorBoundary';
 export { default as CustomErrorBoundary } from './customErrorBoundary';
+export { default as ErrorIconPopover, type IErrorIconPopoverProps } from './componentErrors/errorIconPopover';
 export { default as CollapsiblePanel, type ICollapsiblePanelProps } from './panel';
 export { default as ColumnFilters } from './columnFilters';
 export { default as ColumnFiltersBase, type IColumnFiltersBaseProps } from './columnFiltersBase';
