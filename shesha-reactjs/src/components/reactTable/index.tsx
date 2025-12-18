@@ -106,6 +106,8 @@ export const ReactTable: FC<IReactTableProps> = ({
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
+  headerTextAlign,
+  bodyTextAlign,
   textAlign,
   rowHeight,
   rowPadding,
@@ -135,6 +137,11 @@ export const ReactTable: FC<IReactTableProps> = ({
   const [allowExpandedView, setAllowExpandedView] = useState<Boolean>(false);
   const [isCellContentOverflowing, setIsCellContentOverflowing] = useState<Boolean>(false);
   const { styles } = useStyles();
+
+  // Compute effective alignment values with backward compatibility
+  const effectiveHeaderTextAlign = headerTextAlign ?? textAlign;
+  const effectiveBodyTextAlign = bodyTextAlign ?? textAlign;
+
   const { styles: mainStyles } = useMainStyles({
     rowBackgroundColor,
     rowAlternateBackgroundColor,
@@ -147,7 +154,8 @@ export const ReactTable: FC<IReactTableProps> = ({
     headerFontWeight,
     headerBackgroundColor,
     headerTextColor,
-    textAlign,
+    headerTextAlign: effectiveHeaderTextAlign,
+    bodyTextAlign: effectiveBodyTextAlign,
     rowHeight,
     rowPadding,
     rowBorder,

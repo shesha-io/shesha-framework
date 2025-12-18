@@ -523,31 +523,54 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   content: {
                     id: nanoid(),
                     components: [...fbf()
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        propertyName: 'headerFontFamily',
-                        label: 'Font Family',
-                        inputType: 'dropdown',
-                        dropdownOptions: fontTypes,
-                        tooltip: 'Font family for table headers',
-                        jsSetting: false,
-                      })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        propertyName: 'headerFontSize',
-                        label: 'Font Size',
-                        inputType: 'textField',
-                        tooltip: 'Font size for table headers (e.g., 14px, 1.2em)',
-                        jsSetting: false,
-                      })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        propertyName: 'headerFontWeight',
-                        label: 'Font Weight',
-                        inputType: 'dropdown',
-                        dropdownOptions: fontWeightsOptions,
-                        tooltip: 'Font weight for table headers',
-                        jsSetting: false,
+                        inline: true,
+                        propertyName: 'headerFont',
+                        inputs: [
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Family',
+                            propertyName: 'headerFont.type',
+                            hideLabel: true,
+                            dropdownOptions: fontTypes,
+                          },
+                          {
+                            type: 'numberField',
+                            id: nanoid(),
+                            label: 'Size',
+                            propertyName: 'headerFont.size',
+                            hideLabel: true,
+                            width: 50,
+                          },
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Weight',
+                            propertyName: 'headerFont.weight',
+                            hideLabel: true,
+                            tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                            dropdownOptions: fontWeightsOptions,
+                            width: 100,
+                          },
+                          {
+                            type: 'colorPicker',
+                            id: nanoid(),
+                            label: 'Color',
+                            hideLabel: true,
+                            propertyName: 'headerFont.color',
+                          },
+                          {
+                            type: 'dropdown',
+                            id: nanoid(),
+                            label: 'Align',
+                            propertyName: 'headerFont.align',
+                            hideLabel: true,
+                            width: 60,
+                            dropdownOptions: textAlignOptions,
+                          },
+                        ],
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -558,14 +581,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             label: 'Background Color',
                             type: 'colorPicker',
                             tooltip: 'Background color for table headers',
-                            jsSetting: true,
-                          },
-                          {
-                            id: nanoid(),
-                            propertyName: 'headerTextColor',
-                            label: 'Font Color',
-                            type: 'colorPicker',
-                            tooltip: 'Text color for table headers',
                             jsSetting: true,
                           },
                         ],

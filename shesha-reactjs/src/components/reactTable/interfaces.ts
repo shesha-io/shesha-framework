@@ -274,11 +274,29 @@ export interface IReactTableProps extends ITableRowDragProps {
   showExpandedView?: boolean;
 
   // Header styling
-  headerFontFamily?: string;
-  headerFontSize?: string;
-  headerFontWeight?: string;
+  headerFont?: {
+    type?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+    align?: string;
+  };
   headerBackgroundColor?: string;
+
+  // Text alignment
+  headerTextAlign?: string;  // Alignment for header cells
+  bodyTextAlign?: string;     // Alignment for body cells
+
+  // Deprecated - kept for backward compatibility
+  /** @deprecated Use headerFont.type instead */
+  headerFontFamily?: string;
+  /** @deprecated Use headerFont.size instead */
+  headerFontSize?: string;
+  /** @deprecated Use headerFont.weight instead */
+  headerFontWeight?: string;
+  /** @deprecated Use headerFont.color instead */
   headerTextColor?: string;
+  /** @deprecated Use headerTextAlign for headers or bodyTextAlign for body */
   textAlign?: string;
 
   // Table body styling

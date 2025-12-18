@@ -82,11 +82,27 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   backgroundColor?: string;
 
   // Header styling
-  headerFontFamily?: string;
-  headerFontSize?: string;
-  headerFontWeight?: string;
+  headerFont?: {
+    type?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+    align?: string;
+  };
   headerBackgroundColor?: string;
+  headerTextAlign?: string;  // Alignment for header cells
+  bodyTextAlign?: string;     // Alignment for body cells
+
+  // Deprecated - kept for backward compatibility
+  /** @deprecated Use headerFont.type instead */
+  headerFontFamily?: string;
+  /** @deprecated Use headerFont.size instead */
+  headerFontSize?: string;
+  /** @deprecated Use headerFont.weight instead */
+  headerFontWeight?: string;
+  /** @deprecated Use headerFont.color instead */
   headerTextColor?: string;
+  /** @deprecated Use headerTextAlign for headers or bodyTextAlign for body */
   textAlign?: string;
 
   // Table body styling
@@ -160,11 +176,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   onRowSelect,
   onSelectionChange,
   backgroundColor,
+  headerFont,
   headerFontFamily,
   headerFontSize,
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
+  headerTextAlign,
+  bodyTextAlign,
   textAlign,
   rowHeight,
   rowPadding,
@@ -176,6 +195,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 }) => {
   const store = useDataTableStore();
   const appContext = useAvailableConstantsData();
+
+  // Compute effective header font values with backward compatibility
+  const effectiveHeaderFontFamily = headerFont?.type ?? headerFontFamily;
+  const effectiveHeaderFontSize = headerFont?.size ? `${headerFont.size}px` : headerFontSize;
+  const effectiveHeaderFontWeight = headerFont?.weight ?? headerFontWeight;
+  const effectiveHeaderTextColor = headerFont?.color ?? headerTextColor;
+  const effectiveHeaderTextAlign = headerFont?.align ?? headerTextAlign ?? textAlign;
+  const effectiveBodyTextAlign = bodyTextAlign ?? textAlign;  // Body uses bodyTextAlign or falls back to textAlign (deprecated)
 
   if (tableRef) tableRef.current = store;
 
@@ -921,12 +948,13 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     border,
     striped,
     backgroundColor,
-    headerFontFamily,
-    headerFontSize,
-    headerFontWeight,
+    headerFontFamily: effectiveHeaderFontFamily,
+    headerFontSize: effectiveHeaderFontSize,
+    headerFontWeight: effectiveHeaderFontWeight,
     headerBackgroundColor,
-    headerTextColor,
-    textAlign,
+    headerTextColor: effectiveHeaderTextColor,
+    headerTextAlign: effectiveHeaderTextAlign,
+    bodyTextAlign: effectiveBodyTextAlign,
     rowHeight,
     rowPadding,
     rowBorder,

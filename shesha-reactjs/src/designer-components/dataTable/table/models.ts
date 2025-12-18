@@ -35,10 +35,23 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   stickyHeader?: boolean;
 
   // Header styling
-  headerFontFamily?: string;
-  headerFontSize?: string;
-  headerFontWeight?: string;
+  headerFont?: {
+    type?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+    align?: string;
+  };
   headerBackgroundColor?: string;
+
+  // Deprecated header font properties - kept for backward compatibility
+  /** @deprecated Use headerFont.type instead */
+  headerFontFamily?: string;
+  /** @deprecated Use headerFont.size instead */
+  headerFontSize?: string;
+  /** @deprecated Use headerFont.weight instead */
+  headerFontWeight?: string;
+  /** @deprecated Use headerFont.color instead */
   headerTextColor?: string;
 
   // Table body styling

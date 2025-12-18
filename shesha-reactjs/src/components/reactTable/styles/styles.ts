@@ -52,7 +52,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
-  textAlign,
+  headerTextAlign,
+  bodyTextAlign,
   rowHeight,
   rowPadding,
   rowBorder,
@@ -81,7 +82,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   headerFontWeight?: string;
   headerBackgroundColor?: string;
   headerTextColor?: string;
-  textAlign?: string;
+  headerTextAlign?: string;
+  bodyTextAlign?: string;
   rowHeight?: string;
   rowPadding?: string;
   rowBorder?: string;
@@ -294,6 +296,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${Object.entries(headerBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${Object.entries(headerShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
 
+            /* Apply text alignment to header cells */
+            .${th} {
+              ${headerTextAlign ? `text-align: ${headerTextAlign} !important;` : ''}
+            }
+
             /* Apply header background to relative columns within headers */
             .${relativeColumn} {
               ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : `background-color: ${backgroundColor} !important;`}
@@ -304,6 +311,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
             ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : ''}
+
+            /* Apply text alignment to body cells */
+            .${td} {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
           }
 
           .${td} {
@@ -312,12 +324,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${cellBackgroundColor ? `background-color: ${cellBackgroundColor};` : ''}
             ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
             ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
-            ${textAlign ? `text-align: ${textAlign};` : ''}
+            ${bodyTextAlign ? `text-align: ${bodyTextAlign};` : ''}
           }
 
           .${th} {
             vertical-align: middle;
-            ${textAlign ? `text-align: ${textAlign};` : ''}
+            ${headerTextAlign ? `text-align: ${headerTextAlign};` : ''}
           }
 
           .${shaCrudCell} {

@@ -85,6 +85,31 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     return converted || props?.rowBorder;
   }, [props?.rowBorderStyle, props?.rowBorder, isDesignMode]);
 
+  // Compute effective header font values with backward compatibility
+  const effectiveHeaderFontFamily = useMemo(() => {
+    return props?.headerFont?.type ?? props?.headerFontFamily;
+  }, [props?.headerFont?.type, props?.headerFontFamily]);
+
+  const effectiveHeaderFontSize = useMemo(() => {
+    return props?.headerFont?.size ? `${props.headerFont.size}px` : props?.headerFontSize;
+  }, [props?.headerFont?.size, props?.headerFontSize]);
+
+  const effectiveHeaderFontWeight = useMemo(() => {
+    return props?.headerFont?.weight ?? props?.headerFontWeight;
+  }, [props?.headerFont?.weight, props?.headerFontWeight]);
+
+  const effectiveHeaderTextColor = useMemo(() => {
+    return props?.headerFont?.color ?? props?.headerTextColor;
+  }, [props?.headerFont?.color, props?.headerTextColor]);
+
+  const effectiveHeaderTextAlign = useMemo(() => {
+    return props?.headerFont?.align;
+  }, [props?.headerFont?.align]);
+
+  const effectiveBodyTextAlign = useMemo(() => {
+    return props?.font?.align;
+  }, [props?.font?.align]);
+
   const { styles } = useStyles({
     fontFamily: props?.font?.type,
     fontWeight: props?.font?.weight,
@@ -102,11 +127,11 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     rowSelectedBackgroundColor: props?.rowSelectedBackgroundColor,
     border: props?.border,
     backgroundColor: props?.background?.color,
-    headerFontFamily: props?.headerFontFamily,
-    headerFontSize: props?.headerFontSize,
-    headerFontWeight: props?.headerFontWeight,
+    headerFontFamily: effectiveHeaderFontFamily,
+    headerFontSize: effectiveHeaderFontSize,
+    headerFontWeight: effectiveHeaderFontWeight,
     headerBackgroundColor: props?.headerBackgroundColor,
-    headerTextColor: props?.headerTextColor,
+    headerTextColor: effectiveHeaderTextColor,
     rowHeight: effectiveRowHeight,
     rowPadding: effectiveRowPadding,
     rowBorder: effectiveRowBorder,
@@ -371,12 +396,14 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             striped={props.striped}
             hoverHighlight={props.hoverHighlight}
             backgroundColor={props.background?.color}
-            headerFontFamily={props.headerFontFamily}
-            headerFontSize={props.headerFontSize}
-            headerFontWeight={props.headerFontWeight}
+            headerFont={props.headerFont}
+            headerFontFamily={effectiveHeaderFontFamily}
+            headerFontSize={effectiveHeaderFontSize}
+            headerFontWeight={effectiveHeaderFontWeight}
             headerBackgroundColor={props.headerBackgroundColor}
-            headerTextColor={props.headerTextColor}
-            textAlign={props.font?.align}
+            headerTextColor={effectiveHeaderTextColor}
+            headerTextAlign={effectiveHeaderTextAlign}
+            bodyTextAlign={effectiveBodyTextAlign}
             rowHeight={effectiveRowHeight}
             rowPadding={effectiveRowPadding}
             rowBorder={effectiveRowBorder}
