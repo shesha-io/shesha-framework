@@ -109,7 +109,23 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
     ? { ...componentModel, ...componentModel[activeDevice] }
     : componentModel;
 
-  const dimensions = deviceModel?.container?.dimensions ?? deviceModel?.dimensions ?? {};
+  // Memoize dimensions to prevent unnecessary recalculations
+  const dimensions = useMemo(() => {
+    return deviceModel?.container?.dimensions ?? deviceModel?.dimensions ?? {};
+  }, [
+    deviceModel?.container?.dimensions?.width,
+    deviceModel?.container?.dimensions?.minWidth,
+    deviceModel?.container?.dimensions?.maxWidth,
+    deviceModel?.container?.dimensions?.height,
+    deviceModel?.container?.dimensions?.minHeight,
+    deviceModel?.container?.dimensions?.maxHeight,
+    deviceModel?.dimensions?.width,
+    deviceModel?.dimensions?.minWidth,
+    deviceModel?.dimensions?.maxWidth,
+    deviceModel?.dimensions?.height,
+    deviceModel?.dimensions?.minHeight,
+    deviceModel?.dimensions?.maxHeight,
+  ]);
 
   const componentStyle = useMemo(() => {
     if (!shouldApplyDimensions) return { margin: '0px' };
