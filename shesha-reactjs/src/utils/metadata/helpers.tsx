@@ -3,7 +3,7 @@ import ShaIcon, { IconType } from '@/components/shaIcon';
 import GenericOutlined from '@/icons/genericOutlined';
 import { JsonOutlined } from '@/icons/jsonOutlined';
 import { DataTypes, EntityFormats, ObjectFormats } from '@/interfaces/dataTypes';
-import { IModelMetadata, IPropertyMetadata, isEntityMetadata, isEntityReferencePropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
+import { IModelMetadata, IPropertyMetadata, isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { camelcaseDotNotation, getNumberFormat, toCamelCase } from '@/utils/string';
 
 import React, { ReactNode } from 'react';
@@ -44,7 +44,7 @@ export const getIconTypeByDataType = (dataType: string): IconType => {
 
 export const getIconByDataType = (dataType: string, dataFormat: string): React.ReactNode => {
   if (dataType === DataTypes.advanced) return <ProductOutlined />;
-  if (dataType === DataTypes.object) return <JsonOutlined />;
+  if (dataType === DataTypes.object && dataFormat === ObjectFormats.interface) return <JsonOutlined />;
   if (dataType === DataTypes.entityReference && dataFormat === EntityFormats.genericEntity) return <GenericOutlined />;
   var iconType = getIconTypeByDataType(dataType);
   if (iconType) return <ShaIcon iconName={iconType} />;
@@ -52,13 +52,7 @@ export const getIconByDataType = (dataType: string, dataFormat: string): React.R
 };
 
 export const getIconByPropertyMetadata = (metadata: IPropertyMetadata): ReactNode => {
-  if (isEntityReferencePropertyMetadata(metadata) && !metadata.entityType) return GenericOutlined(null);
-
-  if (metadata.dataType === DataTypes.object && metadata.dataFormat === ObjectFormats.interface) return JsonOutlined(null);
-
-  var iconType = getIconTypeByDataType(metadata.dataType);
-  if (iconType) return <ShaIcon iconName={iconType} />;
-  return null;
+  return getIconByDataType(metadata.dataType, metadata.dataFormat);
 };
 
 export const getFullPath = (property: IPropertyMetadata): string => {
