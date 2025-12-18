@@ -11,6 +11,7 @@ import { migratePrevStyles } from '@/designer-components/_common-migrations/migr
 import { initialValues } from './utils';
 import { useActualContextData } from '@/hooks';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getGhostStyleOverrides } from '@/utils/style';
 
 const { Text } = Typography;
 
@@ -77,7 +78,8 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
         <Flex>
           <Button
             title={tooltip}
-            type={buttonType}
+            type={buttonType === 'ghost' ? 'default' : buttonType}
+            ghost={buttonType === 'ghost'}
             disabled={readOnly}
             danger={danger}
             icon={icon ? <ShaIcon iconName={icon as IconType} /> : undefined}
@@ -85,7 +87,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
             className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
             size={size}
             block={block}
-            style={{ ...newStyles }}
+            style={{ ...newStyles, ...(buttonType === 'ghost' ? getGhostStyleOverrides() : {}) }}
           >
             {label}
           </Button>
