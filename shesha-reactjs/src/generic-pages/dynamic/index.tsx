@@ -26,7 +26,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
     <Fragment>
       <div id="modalContainerId" className={classNames('sha-dynamic-page')}>
         <ConfigurableForm
-          formName="Form"
+          formName="dynamic-page-form"
           mode={mode}
 
           className="sha-dynamic-page"
