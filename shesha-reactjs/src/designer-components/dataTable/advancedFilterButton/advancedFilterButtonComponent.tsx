@@ -1,6 +1,5 @@
 import { migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
-import { IButtonComponentProps } from '@/designer-components/button/interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FilterOutlined } from '@ant-design/icons';
@@ -10,10 +9,7 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { useDataTableStore } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
-
-interface IAdvancedFilterButtonComponentProps extends Omit<IButtonComponentProps, 'buttonType'> {
-  buttonType: 'primary' | 'default' | 'dashed' | 'text' | 'ghost' | 'link';
-}
+import { IAdvancedFilterButtonComponentProps } from './types';
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
   type: 'datatable.filter',

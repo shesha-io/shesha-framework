@@ -3,14 +3,10 @@ import { Badge, Button, Tooltip } from 'antd';
 import { FilterFilled, FilterOutlined } from '@ant-design/icons';
 import { useDataTableStore } from '@/providers';
 import { useStyles } from './style';
-import { IButtonComponentProps } from '@/designer-components/button/interfaces';
 import * as Icons from '@ant-design/icons';
 import { ButtonType } from 'antd/es/button/buttonHelpers';
 import { getGhostStyleOverrides } from '@/utils/style';
-
-export interface IAdvancedFilterButtonComponentProps extends Omit<IButtonComponentProps, 'buttonType'> {
-  buttonType: 'primary' | 'default' | 'dashed' | 'text' | 'ghost' | 'link';
-}
+import { IAdvancedFilterButtonComponentProps } from './types';
 
 export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (props) => {
   const {
