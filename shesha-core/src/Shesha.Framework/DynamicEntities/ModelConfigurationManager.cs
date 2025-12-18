@@ -1,4 +1,4 @@
-﻿using Abp.Collections.Extensions;
+﻿﻿using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
@@ -6,6 +6,7 @@ using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Abp.Runtime.Caching;
+using Abp.Runtime.Validation;
 using AutoMapper;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
@@ -28,6 +29,7 @@ using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -297,9 +299,63 @@ namespace Shesha.DynamicEntities
             return res;
         }
 
+        private void ValidateDuplicatedProperties(List<ModelPropertyDto> properties, List<ValidationResult> errors, List<string> duplicated, string path)
+        {
+            foreach (var prop in properties)
+            {
+                var fullPath = string.IsNullOrEmpty(path) ? prop.Name : $"{path}.{prop.Name}";
+                try
+                {
+                    CodeNamingHelper.ValidateCodeIdentifier(prop.Name);
+                }
+                catch (Exception e)
+                {
+                    errors.Add(new ValidationResult($"Wrong property name {fullPath}: {e.Message}"));
+                }
+
+                if (properties.Any(x => x != prop && x.Name == prop.Name && !duplicated.Contains(fullPath)))
+                {
+                    duplicated.Add(fullPath);
+                    errors.Add(new ValidationResult($"Duplicated property name '{fullPath}'"));                }
+                if (prop.Properties.Any())
+                    ValidateDuplicatedProperties(prop.Properties, errors, duplicated, fullPath);
+            }
+        }
+
+        private void Validate(ModelConfigurationDto input, bool isNew)
+        {
+            var errors = new List<ValidationResult>();
+
+            try
+            {
+                CodeNamingHelper.ValidateCodeIdentifier(input.Name);
+            }
+            catch (Exception e)
+            {
+                errors.Add(new ValidationResult($"Wrong Entity name '{input.Name}': {e.Message}"));
+            }
+
+            if (isNew && Repository.GetAll().Any(x => 
+                x.Name == input.Name
+                && (
+                    x.Module != null && x.Module.Name == input.Module 
+                    || x.Module == null && (input.Module == "" || input.Module == null))))
+            {
+                errors.Add(new ValidationResult($"The Entity with name {input.Name} is already exist in the Module '{input.Module}'"));
+            }
+
+            var duplicated = new List<string>();
+            ValidateDuplicatedProperties(input.Properties, errors, duplicated, "");
+
+            if (errors.Any())
+                throw new AbpValidationException("Check the validation errors", errors);
+        }
+
         [UnitOfWork]
         private async Task<ModelConfigurationDto> CreateOrUpdateAsync(EntityConfig entityConfig, ModelConfigurationDto input, bool isNew)
         {
+            Validate(input, isNew);
+
             // ToDo: AS - Think if we allow to change name because there can be created inherited classes
             //config.Name = config.CreatedInDb ? config.Name : dto.Name; // update only if the property is not created in DB yet
 

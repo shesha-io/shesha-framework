@@ -3,7 +3,20 @@ import { DataTypes } from '@/interfaces';
 import { ArrayFormats, EntityFormats, ObjectFormats } from '@/interfaces/dataTypes';
 import { IPropertyErrors } from '@/providers/modelConfigurator/contexts';
 
-const propertyModelValidator = (model: ModelPropertyDto, parentModels?: ModelPropertyDto[]): IPropertyErrors[] => {
+export const validateDuplicated = (properties: ModelPropertyDto[], path: string): IPropertyErrors[] => {
+  const duplicated: string[] = [];
+  const errors: IPropertyErrors[] = [];
+  properties.forEach((p) => {
+    const fullPath = path ? `${path}.${p.name}` : p.name;
+    if (p.name && properties.find((x) => x !== p && x.name === p.name && !duplicated.includes(fullPath))) {
+      duplicated.push(fullPath);
+      errors.push({ propertyName: fullPath, errors: [`Duplicated property name ${fullPath}`] });
+    }
+  });
+  return errors;
+};
+
+export const propertyModelValidator = (model: ModelPropertyDto, parentModels?: ModelPropertyDto[]): IPropertyErrors[] => {
   let propsErrors: IPropertyErrors[] = [];
   let errors: string[] = [];
 
@@ -28,6 +41,7 @@ const propertyModelValidator = (model: ModelPropertyDto, parentModels?: ModelPro
     }
     if (model.dataFormat === ObjectFormats.object) {
       if (model.properties?.length) {
+        propsErrors = propsErrors.concat(validateDuplicated(model.properties, path));
         model.properties.forEach((p) => propsErrors = propsErrors.concat(propertyModelValidator(p, [...(parentModels ?? []), model])));
       }
     }
@@ -60,7 +74,8 @@ const propertyModelValidator = (model: ModelPropertyDto, parentModels?: ModelPro
       }
       if (model.itemsType?.dataFormat === ObjectFormats.object) {
         if (model.itemsType?.properties?.length) {
-          model.itemsType?.properties.forEach((p) => propsErrors = propsErrors.concat(propertyModelValidator(p, [...(parentModels ?? []), model])));
+          propsErrors = propsErrors.concat(validateDuplicated(model.itemsType.properties, path));
+          model.itemsType.properties.forEach((p) => propsErrors = propsErrors.concat(propertyModelValidator(p, [...(parentModels ?? []), model])));
         }
       }
     }
@@ -71,5 +86,3 @@ const propertyModelValidator = (model: ModelPropertyDto, parentModels?: ModelPro
 
   return propsErrors;
 };
-
-export default propertyModelValidator;
