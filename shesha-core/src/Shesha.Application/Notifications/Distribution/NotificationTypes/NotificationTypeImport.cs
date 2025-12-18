@@ -32,7 +32,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             _manager = manager;           
         }
 
-        public string ItemType => NotificationTypeConfig.ItemTypeName;
+        public override string ItemType => NotificationTypeConfig.ItemTypeName;
 
         protected override async Task AfterImportAsync(NotificationTypeConfig item, DistributedNotificationType distributedItem, IConfigurationItemsImportContext context)
         {
