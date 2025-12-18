@@ -10,6 +10,7 @@ import { ConfigurableActionConfiguratorComponentDefinition } from '@/designer-co
 import { EntityTypeAutocompleteComponentDefinition } from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete/interfaces';
 import { ContainerComponentDefinition } from '@/designer-components/container/interfaces';
 import { ContextPropertyAutocompleteComponentDefinition } from '@/designer-components/contextPropertyAutocomplete/interfaces';
+import { DataContextComponentDefinition } from '@/designer-components/dataContextComponent/interfaces';
 import { PagerComponentDefinition } from '@/designer-components/dataTable/pager/interfaces';
 import { QuickSearchComponentDefinition } from '@/designer-components/dataTable/quickSearch/interfaces';
 import { ColumnsEditorComponentDefinition } from '@/designer-components/dataTable/table/columnsEditor/interfaces';
@@ -63,6 +64,7 @@ type AllComponentDefinitions =
   EntityTypeAutocompleteComponentDefinition |
   ContainerComponentDefinition |
   ContextPropertyAutocompleteComponentDefinition |
+  DataContextComponentDefinition |
   PagerComponentDefinition |
   QuickSearchComponentDefinition |
   TableComponentDefinition |

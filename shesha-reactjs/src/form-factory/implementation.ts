@@ -9,6 +9,7 @@ import { IColumnsComponentProps } from "@/designer-components/columns/interfaces
 import { IConfigurableActionConfiguratorComponentProps } from "@/designer-components/configurableActionsConfigurator/interfaces";
 import { IEntityTypeAutocompleteComponentProps } from "@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete/interfaces";
 import { IContextPropertyAutocompleteComponentProps } from "@/designer-components/contextPropertyAutocomplete/interfaces";
+import { IDataContextComponentProps } from "@/designer-components/dataContextComponent/interfaces";
 import { IPagerComponentProps } from "@/designer-components/dataTable/pager/interfaces";
 import { IQuickSearchComponentProps } from "@/designer-components/dataTable/quickSearch/interfaces";
 import { IColumnsEditorComponentProps } from "@/designer-components/dataTable/table/columnsEditor/interfaces";
@@ -133,6 +134,8 @@ export class FormBuilderImplementation implements FormBuilder {
 
   addContextPropertyAutocomplete = (props: FluentSettings<IContextPropertyAutocompleteComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'contextPropertyAutocomplete', meta);
 
+  addDataContext = (props: FluentSettings<IDataContextComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'dataContext', meta);
+
   addDatatablePager = (props: FluentSettings<IPagerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'datatable.pager', meta);
 
   addDatatableQuickSearch = (props: FluentSettings<IQuickSearchComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'datatable.quickSearch', meta);
@@ -141,7 +144,7 @@ export class FormBuilderImplementation implements FormBuilder {
 
   addColumnsEditorComponent = (props: FluentSettings<IColumnsEditorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'columnsEditorComponent', meta);
 
-  addDatatableContext = (props: FluentSettings<ITableContextComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'datatableContext', meta);
+  addDatatableContext = (props: FluentSettings<ITableContextComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'dataContext', meta);
 
   addTableViewSelector = (props: FluentSettings<ITableViewSelectorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'tableViewSelector', meta);
 

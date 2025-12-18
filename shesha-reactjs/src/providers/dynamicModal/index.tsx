@@ -37,6 +37,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
       name: 'Show Confirmation Dialog',
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
+      sortOrder: 7,
       hasArguments: true,
       executer: (actionArgs, _context) => {
         return new Promise((resolve, reject) => {
@@ -76,6 +77,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
       name: 'Show Dialog',
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
+      sortOrder: 3,
       hasArguments: true,
       executer: (actionArgs, context) => {
         const modalId = nanoid();
@@ -160,6 +162,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
       name: 'Close Dialog',
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
+      sortOrder: 4,
       hasArguments: true,
       executer: (actionArgs) => {
         return new Promise((resolve, reject) => {

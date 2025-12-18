@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { CSSProperties, FC, useEffect } from 'react';
 import { Pagination, Select } from 'antd';
 import { useMedia } from 'react-use';
 import { useStyles } from './style';
@@ -30,7 +30,7 @@ export interface ITablePagerBaseProps {
 
   /** A function to change  */
   changePageSize: (size: number) => void;
-  style?: any;
+  style?: CSSProperties;
 }
 
 export const TablePaging: FC<ITablePagerBaseProps> = ({
