@@ -105,7 +105,10 @@ const FileUploadComponent: FileUploadComponentDefinition = {
           owner: prev['owner'],
         } as IFileUploadProps;
       })
-      .add<IFileUploadProps>(1, (prev, context) => ({ ...prev, useSync: isEntityTypeIdEmpty(context.formSettings?.modelType) }))
+      .add<IFileUploadProps>(1, (prev, context) => ({
+        ...prev,
+        useSync: prev.useSync === undefined ? isEntityTypeIdEmpty(context.formSettings?.modelType) : prev.useSync,
+      }))
       .add<IFileUploadProps>(2, (prev) => {
         const pn = prev['name'] ?? prev.propertyName;
         const model = migratePropertyName(migrateCustomFunctions(prev));

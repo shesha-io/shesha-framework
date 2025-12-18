@@ -1,9 +1,9 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import modelSettingsMarkup from '../modelSettings.json';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { CustomErrorBoundary } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
-import { App } from 'antd';
+import { Alert, App } from 'antd';
 import { PermissionEditorComponent } from '../permissionEditor';
 import { PropertiesEditorComponent } from '../propertiesEditor';
 import { useModelConfigurator } from '@/providers';
@@ -11,13 +11,39 @@ import { ViewsEditorComponent } from '../viewsEditor';
 import { useStyles } from '../styles/styles';
 import { filter, isEqual, keys, union } from 'lodash';
 import { isDefined } from '@/utils/nullables';
+import { IPropertyErrors } from '@/providers/modelConfigurator/contexts';
 
 const markup = modelSettingsMarkup as FormMarkup;
 
 export const ModelConfiguratorRenderer: FC = () => {
   const { styles } = useStyles({ height: 180 });
   const { message } = App.useApp();
-  const { modelConfiguration, initialConfiguration, form, saveForm, setModified } = useModelConfigurator();
+  const { showErrors, errors, modelConfiguration, initialConfiguration, form, saveForm, setModified, validateModel } = useModelConfigurator();
+
+  const errorsText = useMemo((): React.ReactNode => {
+    return (
+      <>
+        <div>Please check the following errors:</div>
+        <ul>
+          {errors?.map((e: IPropertyErrors | string, i1) => {
+            if (typeof e === 'string') return <li key={i1}>{e}</li>;
+            return (
+              <>
+                <li key={i1}>{e.propertyName}</li>
+                {
+                  e.errors && e.errors.length > 0 && (
+                    <ul>
+                      {e.errors.map((error, i2) => <li key={i2}>{error}</li>)}
+                    </ul>
+                  )
+                }
+              </>
+            );
+          })}
+        </ul>
+      </>
+    );
+  }, [errors]);
 
   const onSettingsSave = (): void => {
     saveForm()
@@ -53,11 +79,13 @@ export const ModelConfiguratorRenderer: FC = () => {
     // Modified if there are changed keys
     const modified = keys.length > 0;
     setModified(modified);
+    validateModel(values);
   };
 
   return (
     <div className={styles.shaModelConfigurator}>
       <CustomErrorBoundary>
+        {showErrors && errors?.length > 0 && <Alert type="error" message={errorsText} showIcon />}
         <ConfigurableForm
           className={styles.shaModelConfiguratorForm}
           layout="horizontal"

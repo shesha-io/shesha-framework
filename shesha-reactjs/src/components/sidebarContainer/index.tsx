@@ -166,6 +166,16 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         </div>
         {renderSidebar('right')}
       </SizableColumns>
+      {/* Dedicated popup container for canvas components - applies zoom transformation */}
+      {isDesigner && canZoom && (
+        <div
+          id="canvas-popup-container"
+          className={styles.canvasPopupContainer}
+          style={{
+            zoom: `${zoom}%`,
+          }}
+        />
+      )}
     </div>
   );
 };

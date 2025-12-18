@@ -92,6 +92,21 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
             // override required mark position
             requiredMark: defaultRequiredMark,
           }}
+          getPopupContainer={(triggerNode) => {
+            // Check if trigger is inside the canvas designer
+            if (triggerNode) {
+              const isInCanvas = triggerNode.closest('.designer-canvas');
+              if (isInCanvas) {
+                // Use dedicated canvas popup container (inherits zoom)
+                const canvasPopupContainer = document.getElementById('canvas-popup-container');
+                if (canvasPopupContainer) {
+                  return canvasPopupContainer;
+                }
+              }
+            }
+            // Default: render to body (for toolbar, sidebars, etc.)
+            return document.body;
+          }}
         >
           <App>
             {children}

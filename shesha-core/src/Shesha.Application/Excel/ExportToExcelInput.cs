@@ -9,7 +9,7 @@ namespace Shesha.Excel
     /// </summary>
     public class ExportToExcelInput: PropsFilteredPagedAndSortedResultRequestDto
     {
-        public EntityTypeIdInput EntityType { get; set; }
+        public EntityTypeIdInput EntityTypeId { get; set; }
         public List<ExcelColumn> Columns { get; set; } = new List<ExcelColumn>();
     }
 

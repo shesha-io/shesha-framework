@@ -14,7 +14,7 @@ namespace Shesha.DynamicEntities.Dtos
     [Serializable]
     public class EntityTypeIdInput
     {
-        public string? FullClassName { get; set; }
+        public string? EntityType { get; set; }
 
         public string? Module { get; set; }
 
@@ -28,7 +28,7 @@ namespace Shesha.DynamicEntities.Dtos
         {
             Module = module;
             Name = name;
-            FullClassName = fullClassName;
+            EntityType = fullClassName;
         }
 
         public static EntityTypeIdInput New(string? module, string? name, string? fullClassName)
@@ -67,11 +67,11 @@ namespace Shesha.DynamicEntities.Dtos
 
         public override string ToString()
         {
-            return FullClassName.IsNullOrEmpty()
+            return EntityType.IsNullOrEmpty()
                 ? Module.IsNullOrEmpty()
                     ? Name ?? "empty"
                     : $"{Module}:{Name}"
-                : FullClassName ?? "empty";
+                : EntityType ?? "empty";
         }
     }
 
@@ -79,7 +79,7 @@ namespace Shesha.DynamicEntities.Dtos
     {
         public static bool IsEmpty(this EntityTypeIdInput? id)
         {
-            return id == null || id.FullClassName.IsNullOrEmpty() && id.Name.IsNullOrEmpty();
+            return id == null || id.EntityType.IsNullOrEmpty() && id.Name.IsNullOrEmpty();
         }
     }
 }

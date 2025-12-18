@@ -15,6 +15,8 @@ export const PropertyAutocompleteWrapper: FC<IPropertyAutocompleteSettingsInputP
       mode={mode}
       autoFillProps={autoFillProps ?? true}
       allowClear={allowClear ?? true}
+
+      propertyModelType={props.propertyModelType}
     />
   );
 };

@@ -211,22 +211,22 @@ namespace Shesha.Metadata
             var (module, name) = ParseContainer(container);
             var containerType = await _metadataProvider.GetContainerTypeAsync(module, name);
             var properties = await _metadataProvider.GetPropertiesAsync(containerType);
-            var nonFrameworkRelatedProperties = properties.Where(x => x.IsFrameworkRelated == false).ToList();
+            var nonFrameworkRelatedProperties = properties.Where(x => x.IsFrameworkRelated == false && x.IsVisible).ToList();
             return FilterProperties(nonFrameworkRelatedProperties, term, selectedValue);
         }
 
         /// inheritedDoc
         [HttpGet]
-        public async Task<MetadataDto> GetAsync(EntityTypeIdInput entityType)
+        public async Task<MetadataDto> GetAsync(EntityTypeIdInput entityTypeId)
         {
-            if (entityType == null)
-                throw new AbpValidationException($"'{nameof(entityType)}' is mandatory");
+            if (entityTypeId == null)
+                throw new AbpValidationException($"'{nameof(entityTypeId)}' is mandatory");
 
-            var containerName = entityType.Name.GetDefaultIfEmpty(entityType.FullClassName);
+            var containerName = entityTypeId.Name.GetDefaultIfEmpty(entityTypeId.EntityType);
             if (string.IsNullOrWhiteSpace(containerName))
-                throw new AbpValidationException($"Either '{nameof(entityType.Name)}' or '{nameof(entityType.FullClassName)}' must be provided");
+                throw new AbpValidationException($"Either '{nameof(entityTypeId.Name)}' or '{nameof(entityTypeId.EntityType)}' must be provided");
             
-            var containerType = await _metadataProvider.GetContainerTypeAsync(entityType.Module, containerName);
+            var containerType = await _metadataProvider.GetContainerTypeAsync(entityTypeId.Module, containerName);
             return await _metadataProvider.GetAsync(containerType);
         }
 

@@ -191,7 +191,7 @@ namespace Shesha.DynamicEntities.Binder
                         if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
                             continue;
 
-                        var propType = _metadataProvider.GetDataType(property);
+                        var propType = _metadataProvider.GetDataType(property, entityType);
 
                         var dbValue = property.GetValue(entity);
                         var isReadOnly = property.GetCustomAttribute<ReadonlyPropertyAttribute>() != null
@@ -226,7 +226,7 @@ namespace Shesha.DynamicEntities.Binder
                                                      //case DataTypes.Enum: // Enum binded as integer
                                     object? parsedValue = null;
                                     result = Parser.TryParseToValueType(jproperty.Value.ToString(), property.PropertyType, out parsedValue, isDateOnly: propType.DataType == DataTypes.Date);
-                                    if (result && dbValue?.ToString() != parsedValue?.ToString())
+                                    if (dbValue?.ToString() != parsedValue?.ToString() && result)
                                         if (await ValidateAsync(entity, jFullName, parsedValue, context))
                                             property.SetValue(entity, parsedValue);
                                     break;
@@ -244,7 +244,7 @@ namespace Shesha.DynamicEntities.Binder
                                         ? jproperty.Value["itemValue"]?.ToString()
                                         : jproperty.Value.ToString();
                                     result = Parser.TryParseToValueType(refListValue, property.PropertyType, out parsedRefListValue, isDateOnly: propType.DataType == DataTypes.Date);
-                                    if (result && dbValue?.ToString() != parsedRefListValue?.ToString())
+                                    if (dbValue?.ToString() != parsedRefListValue?.ToString() && result)
                                         if (await ValidateAsync(entity, jFullName, parsedRefListValue, context))
                                             property.SetValue(entity, parsedRefListValue);
                                     break;
@@ -381,8 +381,14 @@ namespace Shesha.DynamicEntities.Binder
                                                 }
                                                 else
                                                 {
-                                                    var newObject = JsonConvert.DeserializeObject(jproperty.Value.ToString(), property.PropertyType);
-                                                    property.SetValue(entity, newObject);
+                                                    // Deserialize as List of objects to validate each items in the array (without deserialization transformation)
+                                                    var newListValidation = JsonConvert.DeserializeObject(jproperty.Value.ToString(), typeof(List<object>));
+                                                    if (await ValidateAsync(entity, jFullName, newListValidation, context))
+                                                    {
+                                                        // Deserialize as List of specific type to set the property value
+                                                        var newList = JsonConvert.DeserializeObject(jproperty.Value.ToString(), property.PropertyType);
+                                                        property.SetValue(entity, newList);
+                                                    }
                                                 }
                                             }
                                             break;

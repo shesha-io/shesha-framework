@@ -45,6 +45,7 @@ import moment from 'moment';
 import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { isEqual } from 'lodash';
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
@@ -85,11 +86,27 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   headerFontWeight?: string;
   headerBackgroundColor?: string;
   headerTextColor?: string;
+  textAlign?: string;
 
   // Table body styling
   rowHeight?: string;
   rowPadding?: string;
   rowBorder?: string;
+  rowBorderStyle?: IBorderValue;
+
+  // Cell styling
+  cellTextColor?: string;
+  cellBackgroundColor?: string;
+  cellBorderColor?: string;
+  cellBorders?: boolean;
+  cellPadding?: string;
+  cellBorder?: IBorderValue;
+
+  // Border and shadow styling
+  headerBorder?: IBorderValue;
+  headerShadow?: IShadowValue;
+  rowShadow?: IShadowValue;
+  rowDividers?: boolean;
 
   // Overall table styling
   boxShadow?: string;
@@ -146,9 +163,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
+  textAlign,
   rowHeight,
   rowPadding,
   rowBorder,
+  rowBorderStyle,
   boxShadow,
   sortableIndicatorColor,
   ...props
@@ -284,24 +303,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const metadata = useMetadata(false)?.metadata;
 
-
-  const handleRowClick = useMemo(() => {
-    if (!onRowClick?.actionName) return undefined;
-
-    return (rowIndex: number, row: any) => {
-      const evaluationContext = { ...appContext, data: row, rowIndex };
-
-      try {
-        executeAction({
-          actionConfiguration: onRowClick,
-          argumentsEvaluationContext: evaluationContext,
-        });
-      } catch (error) {
-        console.error('Error executing row click action:', error);
-      }
-    };
-  }, [onRowClick, appContext.contexts.lastUpdate, httpClient]);
-
   const handleRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick?.actionName) return undefined;
 
@@ -318,24 +319,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       }
     };
   }, [onRowDoubleClick, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
-
-  const handleRowHover = useMemo(() => {
-    if (!onRowHover?.actionName) return undefined;
-
-    return (rowIndex: number, row: any) => {
-      const evaluationContext = { ...appContext, data: row, rowIndex };
-
-      try {
-        executeAction({
-          actionConfiguration: onRowHover,
-          argumentsEvaluationContext: evaluationContext,
-        });
-      } catch (error) {
-        console.error('Error executing row hover action:', error);
-      }
-    };
-  }, [onRowHover, appContext.contexts.lastUpdate, httpClient]);
-
 
   const handleSelectionChange = useMemo(() => {
     if (!onSelectionChange?.actionName) return undefined;
@@ -878,7 +861,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     data: tableData,
     // Disable sorting if we're in create mode so that the new row is always the first
     defaultSorting: defaultSorting,
-    useMultiSelect: selectionMode === 'multiple' || selectionMode === 'single' || (selectionMode === undefined && useMultiSelect),
+    useMultiSelect: selectionMode === 'multiple' || (selectionMode === undefined && useMultiSelect),
     selectionMode,
     freezeHeaders,
     onSelectRow: selectionMode === 'none' ? undefined : onSelectRowLocal,
@@ -940,14 +923,29 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     headerFontWeight,
     headerBackgroundColor,
     headerTextColor,
+    textAlign,
     rowHeight,
     rowPadding,
     rowBorder,
+    rowBorderStyle,
     boxShadow,
     sortableIndicatorColor,
 
-    onRowClick: handleRowClick,
-    onRowHover: handleRowHover,
+    onRowClickAction: onRowClick,
+    onRowHoverAction: onRowHover,
+    onRowSelectAction: onRowSelect,
+    onSelectionChangeAction: onSelectionChange,
+
+    cellTextColor: props.cellTextColor,
+    cellBackgroundColor: props.cellBackgroundColor,
+    cellBorderColor: props.cellBorderColor,
+    cellBorders: props.cellBorders,
+    cellPadding: props.cellPadding,
+    headerBorder: props.headerBorder,
+    cellBorder: props.cellBorder,
+    headerShadow: props.headerShadow,
+    rowShadow: props.rowShadow,
+    rowDividers: props.rowDividers,
   };
 
   return (

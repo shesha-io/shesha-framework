@@ -169,7 +169,7 @@ namespace Shesha.StoredFiles
             if (!input.OwnerType.IsEmpty() && !string.IsNullOrWhiteSpace(input.OwnerId))
             {
                 var entityConfig = await _modelConfigManager.GetByEntityTypeIdAsync(
-                    new EntityTypeIdentifier(input.OwnerType?.Module, input.OwnerType?.Name ?? "", input.OwnerType?.FullClassName)
+                    new EntityTypeIdentifier(input.OwnerType?.Module, input.OwnerType?.Name ?? "", input.OwnerType?.EntityType)
                 );
                 if (entityConfig == null)
                     throw new Exception($"Owner type not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
@@ -465,12 +465,12 @@ namespace Shesha.StoredFiles
 
         private async Task<string> GetFullClassNameFromEntityTypeIdAsync(EntityTypeIdInput? ownerType)
         {
-            return ((ownerType?.FullClassName).IsNullOrEmpty()
+            return ((ownerType?.EntityType).IsNullOrEmpty()
                 ? (await _modelConfigManager.GetByEntityTypeIdAsync(
-                    new EntityTypeIdentifier(ownerType?.Module, ownerType?.Name ?? "", ownerType?.FullClassName)))
+                    new EntityTypeIdentifier(ownerType?.Module, ownerType?.Name ?? "", ownerType?.EntityType)))
                     .NotNull($"Owner type not found '{ownerType}'")
                     .FullClassName
-                : ownerType?.FullClassName)
+                : ownerType?.EntityType)
                 .NotNull("FullClassName should not be empty");
         }
 
@@ -569,16 +569,16 @@ namespace Shesha.StoredFiles
             if (currentUserId == null)
                 return fileVersions.Select(GetFileDto).WhereNotNull().ToList();
 
-            var fileIds = fileVersions.Select(v => v.File.Id).ToList();
-            var downloadedFileIds = await _fileVersionDownloadRepository.GetAll()
-                .Where(x => x.CreatorUserId == currentUserId && fileIds.Contains(x.FileVersion.File.Id))
-                .Select(x => x.FileVersion.File.Id)
+            var versionIds = fileVersions.Select(v => v.Id).ToList();
+            var downloadedVersionIds = await _fileVersionDownloadRepository.GetAll()
+                .Where(x => x.CreatorUserId == currentUserId && versionIds.Contains(x.FileVersion.Id))
+                .Select(x => x.FileVersion.Id)
                 .ToListAsync();
 
             return fileVersions.Select(v =>
             {
                 var dto = GetFileDto(v);
-                dto!.UserHasDownloaded = downloadedFileIds.Contains(v.File.Id);
+                dto!.UserHasDownloaded = downloadedVersionIds.Contains(v.Id);
                 return dto;
             }).ToList();
         }
@@ -736,7 +736,7 @@ namespace Shesha.StoredFiles
             {
                 dto!.UserHasDownloaded = await _fileVersionDownloadRepository.GetAll()
                     .AnyAsync(x => x.CreatorUserId == currentUserId.Value &&
-                                   x.FileVersion.File.Id == storedFile.Id);
+                                   x.FileVersion.Id == fileVersion.Id);
             }
 
             return dto;

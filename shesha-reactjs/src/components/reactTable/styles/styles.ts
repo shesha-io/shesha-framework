@@ -1,6 +1,8 @@
 import { createStyles, SerializedStyles } from 'antd-style';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
+import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 
 const tableClassNames = {
   shaTable: 'sha-table',
@@ -49,12 +51,23 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
+  textAlign,
   rowHeight,
   rowPadding,
   rowBorder,
+  rowBorderStyle,
   boxShadow,
   sortableIndicatorColor,
   striped: _striped,
+  cellTextColor,
+  cellBackgroundColor,
+  cellBorderColor,
+  cellBorders,
+  headerBorder,
+  cellBorder,
+  headerShadow,
+  rowShadow,
+  rowDividers,
 }: {
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
@@ -66,12 +79,24 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   headerFontWeight?: string;
   headerBackgroundColor?: string;
   headerTextColor?: string;
+  textAlign?: string;
   rowHeight?: string;
   rowPadding?: string;
   rowBorder?: string;
+  rowBorderStyle?: IBorderValue;
   boxShadow?: string;
   sortableIndicatorColor?: string;
   striped?: boolean;
+  cellTextColor?: string;
+  cellBackgroundColor?: string;
+  cellBorderColor?: string;
+  cellBorders?: boolean;
+  cellPadding?: string;
+  headerBorder?: IBorderValue;
+  cellBorder?: IBorderValue;
+  headerShadow?: IShadowValue;
+  rowShadow?: IShadowValue;
+  rowDividers?: boolean;
 }) => {
   const {
     shaTable,
@@ -104,6 +129,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
   // Generate border styles from the border configuration
   const borderStyles = getBorderStyle(border || {}, {});
+  const headerBorderStyles = getBorderStyle(headerBorder || {}, {});
+  const cellBorderStyles = getBorderStyle(cellBorder || {}, {});
+  const headerShadowStyles = getShadowStyle(headerShadow);
+  const rowShadowStyles = getShadowStyle(rowShadow);
+
+  // rowPadding should already be a string (converted in tableWrapper.tsx via convertRowStylingBoxToPadding)
+  // cellPadding is deprecated and migrated to rowStylingBox in migration v19
+  const effectivePadding = rowPadding;
+
   const hasBorderRadius = border?.radius && (
     (border.radius.all && parseFloat(String(border.radius.all)) !== 0) ||
     (border.radius.topLeft && parseFloat(String(border.radius.topLeft)) !== 0) ||
@@ -176,9 +210,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }).join('\n')}
 
         /* When border-radius is present, ensure content respects the bounds */
-        ${hasBorderRadius ? `
-          overflow: hidden;
-        ` : ''}
+        /* Only apply to tables without fixed columns since overflow:hidden breaks position:sticky */
+        &:not(:has(.${fixedColumn})) {
+          ${hasBorderRadius ? `overflow: hidden;` : ''}
+        }
 
         .${thead} {
           /* These styles are required for a scrollable body to align with the header properly */
@@ -239,7 +274,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${tr} {
           ${rowHeight ? `height: ${rowHeight};` : 'height: 100%;'}
-          ${rowBorder ? `border: ${rowBorder};` : ''}
+          ${(() => {
+            // Prefer rowBorderStyle over rowBorder for full border control
+            if (rowBorderStyle) {
+              const borderStyles = getBorderStyle(rowBorderStyle, {});
+              return Object.entries(borderStyles)
+                .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`)
+                .join(' ');
+            }
+            // Fallback to simple border string
+            return rowBorder ? `border: ${rowBorder};` : '';
+          })()}
 
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
@@ -247,6 +292,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
             ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
             ${headerTextColor ? `color: ${headerTextColor};` : ''}
+            ${Object.entries(headerBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+            ${Object.entries(headerShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
 
             /* Apply header background to relative columns within headers */
             .${relativeColumn} {
@@ -256,7 +303,22 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
           &.${trBody} {
             ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
-            ${rowPadding ? `padding: ${rowPadding};` : ''}
+            ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : ''}
+          }
+
+          .${td} {
+            vertical-align: middle;
+            ${cellTextColor ? `color: ${cellTextColor};` : ''}
+            ${cellBackgroundColor ? `background-color: ${cellBackgroundColor};` : ''}
+            ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
+            ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+            ${textAlign ? `text-align: ${textAlign};` : ''}
+          }
+
+          .${th} {
+            vertical-align: middle;
+            ${textAlign ? `text-align: ${textAlign};` : ''}
           }
 
           .${shaCrudCell} {
@@ -274,9 +336,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               height: auto;
 
               .${iconPrefixCls} {
-                font-size: 14px;
-                width: 14px;
-                min-width: 14px;
+                font-size: 16px;
+                width: 16px;
+                min-width: 16px;
               }
             }
             .sha-action-button {
@@ -284,6 +346,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               width: auto;
               justify-content: center;
               align-items: center;
+
+              .${iconPrefixCls} {
+                font-size: 16px;
+                width: 16px;
+                min-width: 16px;
+              }
             }
           }
 
@@ -333,12 +401,18 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               .ant-form-item-control-input-content, a, button {
                   color: inherit;
               }
-            
+
               .sha-stored-files-renderer, .ant-upload-list {
                   color: white;
               }
 
             }
+          }
+
+          /* Ensure selected row styling always takes priority over striped rows */
+          &.${trOdd}.${trSelected} {
+            background: ${rowSelectedBackgroundColor || token.colorPrimary} !important;
+            color: white;
           }
 
           .${prefixCls}-form-item {
@@ -404,7 +478,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           margin-right: 5px;
         }
         .${th} {
-          ${rowPadding ? `padding: ${rowPadding};` : ''}
           ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : ''}
           ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
           ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
@@ -418,7 +491,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             border-bottom: 3px solid ${sortableIndicatorColor || token.colorPrimary};
           }
           &.${fixedColumn} {
-            display: inline-block;
             position: sticky;
             z-index: 999;
             opacity: 1;
@@ -443,12 +515,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
 
+        /* Single source of truth for cell padding - applies to both headers and data cells */
         .${th}, .${td} {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           margin: 0;
-          ${rowPadding ? `padding: ${rowPadding};` : 'padding: 0.5rem;'}
+          /* Use effectivePadding from props (rowStylingBox or cellPadding) or default to 0.5rem */
+          ${effectivePadding ? `padding: ${effectivePadding};` : 'padding: 0.5rem;'}
           border-right: 1px solid rgba(0, 0, 0, 0.05);
 
           /* In this example we use an absolutely position resizer, so this is required. */
@@ -475,7 +549,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             z-index: 10;
           }
           &.${fixedColumn} {
-            display: inline-block;
             position: sticky;
             z-index: 10;
             opacity: 1;

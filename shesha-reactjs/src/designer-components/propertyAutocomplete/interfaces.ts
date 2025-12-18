@@ -7,6 +7,7 @@ export interface IPropertyAutocompleteComponentProps extends IConfigurableFormCo
   mode?: 'single' | 'multiple';
   modelType?: string | IEntityTypeIdentifier;
   autoFillProps?: boolean;
+  propertyModelType?: string | IEntityTypeIdentifier;
 }
 
 export type PropertyAutocompleteComponentDefinition = ComponentDefinition<"propertyAutocomplete", IPropertyAutocompleteComponentProps>;

@@ -3,7 +3,7 @@ import React, { CSSProperties, useCallback, useMemo } from 'react';
 import { EntityPicker, ValidationErrors } from '@/components';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
-import { DataTypes } from '@/interfaces/dataTypes';
+import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { ButtonGroupItemProps, IStyleType, useMetadataDispatcher } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
@@ -23,6 +23,7 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent, IStyleType {
   placeholder?: string;
@@ -56,7 +57,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   isOutput: true,
   name: 'Entity Picker',
   icon: <EllipsisOutlined />,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
+  dataTypeSupported: ({ dataType, dataFormat }) =>
+    dataType === DataTypes.entityReference ||
+    (dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(dataFormat)),
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
     const { getMetadata } = useMetadataDispatcher();
@@ -210,24 +213,26 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       // Default to Person for backward compatibility with legacy forms
       // should explicitly set entityType for other entity types
       entityType: context.isNew && !prev.entityType ? 'Shesha.Core.Person' : prev.entityType,
-    })),
+    }))
+    .add<IEntityPickerComponentProps>(12, (prev) => ({ ...prev, buttons: migrateButtonGroupDynamicItems(prev.buttons) })),
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 
   linkToModelMetadata: (model, propMetadata): IEntityPickerComponentProps => {
     return {
       ...model,
-      editMode: 'inherited',
+      mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
       entityType: isEntityReferencePropertyMetadata(propMetadata)
         ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
         : isEntityReferenceArrayPropertyMetadata(propMetadata)
-          ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
+          ? { name: propMetadata.itemsType?.entityType, module: propMetadata.itemsType?.entityModule ?? null }
           : undefined,
+      valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
+        ? 'entityReference'
+        : 'simple',
       filters: isHasFilter(propMetadata.formatting)
         ? { ...propMetadata.formatting?.filter }
         : null,
-      mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
-      valueFormat: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'entityReference' : 'simple',
     };
   },
   getFieldsToFetch: (propertyName, rawModel) => {

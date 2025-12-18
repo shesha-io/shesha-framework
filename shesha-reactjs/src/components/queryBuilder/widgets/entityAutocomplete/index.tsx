@@ -16,12 +16,10 @@ const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
       setValue(v);
     };
 
-    // ToDo: AS - V1 review and replace with EntityTypeAutocomplete
-
     return (
       <Autocomplete
         dataSourceType="entitiesList"
-        entityType={customSettings.typeShortAlias}
+        entityType={customSettings.typeShortAlias ?? { module: customSettings.entityTypeModule ?? '', name: customSettings.entityTypeName ?? '' }}
         displayPropName="_displayName"
         keyPropName="id"
         mode="single"

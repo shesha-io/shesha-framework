@@ -4,7 +4,7 @@ import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { IEntityReferenceDto, IErrorInfo, ILoginForm, toErrorInfo } from '@/interfaces';
 import { HttpClientApi, HttpResponse } from '@/publicJsApis/httpClient';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
-import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, UserLoginInfoDto } from '@/apis/session';
+import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, InitializationErrorsInfoDto, UserLoginInfoDto } from '@/apis/session';
 import { getQueryParam, isSameUrls, removeURLParameter } from '@/utils/url';
 import { IRouter } from '../shaRouting';
 import React from 'react';
@@ -85,6 +85,10 @@ export class Authenticator implements IAuthenticator {
     return this.#loginInfo?.user;
   }
 
+  get errorsInfo(): InitializationErrorsInfoDto | undefined {
+    return this.#loginInfo?.initializationErrors;
+  }
+
   get isLoggedIn(): boolean {
     return this.state.status === 'ready' && isDefined(this.#loginInfo?.user);
   }
@@ -102,6 +106,17 @@ export class Authenticator implements IAuthenticator {
     this.#onSetRequestHeaders = args.onSetRequestHeaders;
     this.#onTokenExpired = args.onTokenExpired;
   }
+
+  refetchProfileAsync = async (headersOverride?: IHttpHeaders): Promise<void> => {
+    try {
+      // fetch user profile
+      const userProfile = await this.#fetchUserInfoHttp(headersOverride);
+      this.#loginInfo = userProfile;
+    } catch (error) {
+      this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, error);
+      throw error;
+    }
+  };
 
   #redirect = (url: string): void => {
     this.#router.push(url);
@@ -187,12 +202,10 @@ export class Authenticator implements IAuthenticator {
     }
   };
 
-  #fetchUserInfoHttp = async (): Promise<GetCurrentLoginInfoOutput> => {
-    const headers = this.#getHttpHeaders();
-    const httpResponse = await this.#httpClient.get<void, HttpResponse<GetCurrentLoginInfoOutputAjaxResponse>>(
-      URLS.GET_CURRENT_LOGIN_INFO,
-      { headers: headers },
-    );
+  #fetchUserInfoHttp = async (headersOverride?: IHttpHeaders): Promise<GetCurrentLoginInfoOutput> => {
+    const headers = { ...this.#getHttpHeaders(), ...headersOverride };
+
+    const httpResponse = await this.#httpClient.get<void, HttpResponse<GetCurrentLoginInfoOutputAjaxResponse>>(URLS.GET_CURRENT_LOGIN_INFO, { headers: headers });
     const response = extractAjaxResponse(httpResponse.data, 'Failed to get user profile');
 
     this.#onSetRequestHeaders?.(headers);

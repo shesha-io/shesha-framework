@@ -105,7 +105,11 @@ namespace Shesha.Configuration.Runtime
                     CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced,
 
                     ColumnName = src.ColumnName,
+                    
+                    InitStatus = src.InitStatus,
+                    InitMessage = src.InitMessage,
                     CreatedInDb = src.CreatedInDb,
+
                     Formatting = src.Formatting,
                     InheritedFrom = src.InheritedFrom,
                     ListConfiguration = src.ListConfiguration,

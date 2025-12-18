@@ -205,7 +205,7 @@ export const getEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifie
 export const getEntityTypeIdentifierQueryParams = (modelType: string | IEntityTypeIdentifier): IEntityTypeIdentifierQueryParams =>
   (isEntityTypeIdentifier(modelType)
     ? { name: modelType.name, module: modelType.module ?? undefined }
-    : { fullClassName: modelType }
+    : { entityType: modelType }
   );
 export const isEntityTypeIdEqual = (a: string | IEntityTypeIdentifier, b: string | IEntityTypeIdentifier): boolean =>
   (typeof a === 'string' && typeof b === 'string' && a === b) ||

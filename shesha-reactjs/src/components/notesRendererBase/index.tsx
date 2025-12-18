@@ -155,6 +155,10 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
             onCreateAction([mockNote]);
           }
         }
+
+        setNewComments('');
+        setCharCount(0);
+        setValidationError('');
       } catch (error) {
         // If posting fails, don't call onCreateAction
         console.error('Failed to save note:', error);
