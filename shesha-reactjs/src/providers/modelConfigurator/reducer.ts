@@ -132,6 +132,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         isModified: false,
         isSaving: false,
         id: payload.id,
+        initialConfiguration: preparedData,
         modelConfiguration: preparedData,
         showErrors: false,
         errors: [],
