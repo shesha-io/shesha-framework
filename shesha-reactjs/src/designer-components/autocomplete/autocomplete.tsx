@@ -1,7 +1,7 @@
 import { FileSearchOutlined } from '@ant-design/icons';
 import React, { useCallback } from 'react';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
-import { DataTypes } from '@/interfaces/dataTypes';
+import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import {
   executeExpression,
@@ -16,7 +16,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ConfigurableFormItem } from '@/components';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import { getValueByPropertyName } from '@/utils/object';
-import { FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
+import { DisplayValueFunc, FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
 import { Autocomplete } from '@/components/autocomplete';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
@@ -24,6 +24,8 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { useMetadataDispatcher } from '@/providers';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { isEntityReferenceId } from '@/utils/entity';
+import { isDefined } from '@/utils/nullables';
 
 const AutocompleteComponent: AutocompleteComponentDefinition = {
   type: 'autocomplete',
@@ -32,7 +34,9 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
   canBeJsSetting: true,
   name: 'Autocomplete',
   icon: <FileSearchOutlined />,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
+  dataTypeSupported: ({ dataType, dataFormat }) =>
+    dataType === DataTypes.entityReference ||
+    (dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(dataFormat)),
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
     const { getMetadata } = useMetadataDispatcher();
@@ -47,36 +51,41 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     const keyPropName = model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
     const displayPropName = model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
 
-    const keyValueFunc: KayValueFunc = useCallback((value: any, args: any) => {
+    const keyValueFunc: KayValueFunc = useCallback((value: unknown, args: object) => {
+      if (!isDefined(value)) return value;
       if (model.valueFormat === 'custom' && model.keyValueFunc)
         return executeExpression<string>(model.keyValueFunc, { ...args, value }, null, null);
-      if (model.valueFormat === 'entityReference')
+      if (model.valueFormat === 'entityReference' && isEntityReferenceId(value))
         return value?.id;
-      return typeof (value) === 'object' ? getValueByPropertyName(value, keyPropName) : value;
+      return typeof (value) === 'object' ? getValueByPropertyName(value as Record<string, unknown>, keyPropName) : value;
     }, [model.valueFormat, model.keyValueFunc, keyPropName]);
 
-    const outcomeValueFunc: OutcomeValueFunc = useCallback((item: any, args: any) => {
+    const outcomeValueFunc: OutcomeValueFunc = useCallback((item: unknown, args: object) => {
+      if (!isDefined(item)) return item;
       if (model.valueFormat === 'entityReference')
-        return Boolean(item)
+        return isEntityReferenceId(item)
           ? {
             id: item.id,
-            _displayName: item._displayName || getValueByPropertyName(item, displayPropName),
+            _displayName: getValueByPropertyName(item as Record<string, unknown>, displayPropName) || item._displayName,
             _className: (item._className || entityMetadata?.fullClassName) ?? undefined,
           }
-          : null;
+          : typeof (item) !== 'object'
+            ? { id: item, _displayName: item?.toString(), _className: undefined }
+            : item;
       if (model.valueFormat === 'custom' && model.outcomeValueFunc)
         return executeExpression(model.outcomeValueFunc, { ...args, item: item }, null, null);
-      return typeof (item) === 'object' ? getValueByPropertyName(item, keyPropName) : item;
+      return typeof (item) === 'object' ? getValueByPropertyName(item as Record<string, unknown>, keyPropName) : item;
     }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, entityMetadata]);
 
-    const displayValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
+    const displayValueFunc: DisplayValueFunc = useCallback((value: unknown, args: object) => {
+      if (!isDefined(value)) return value;
       if (model.displayValueFunc)
         return executeExpression(model.displayValueFunc, { ...args, item: value }, null, null);
-      return getValueByPropertyName(value, displayPropName) || '';
+      return (typeof (value) === 'object' ? getValueByPropertyName(value as Record<string, unknown>, displayPropName) : value) || '';
     }, [model.displayValueFunc, displayPropName]);
 
-    const filterKeysFunc: FilterSelectedFunc = useCallback((value: any | any[]) => {
-      const localValue = value?.length === 1 ? value[0] : value;
+    const filterKeysFunc: FilterSelectedFunc = useCallback((value: unknown) => {
+      const localValue = Array.isArray(value) && value?.length === 1 ? value[0] : value;
       return Array.isArray(localValue)
         ? { or: localValue.map((x) => executeExpression(model.filterKeysFunc, { value: x }, null, null)) }
         : executeExpression(model.filterKeysFunc, { value: localValue }, null, null);
@@ -184,7 +193,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
       entityType: isEntityReferencePropertyMetadata(propMetadata)
         ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
         : isEntityReferenceArrayPropertyMetadata(propMetadata)
-          ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
+          ? { name: propMetadata.itemsType?.entityType, module: propMetadata.itemsType?.entityModule ?? null }
           : undefined,
       valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
         ? 'entityReference'

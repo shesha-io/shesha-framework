@@ -83,6 +83,11 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const { notification } = App.useApp();
   const { styles } = useStyles();
 
+  // Sync formTitle with displayName prop
+  useEffect(() => {
+    setFormTitle(displayName);
+  }, [displayName]);
+
   useEffect(() => {
     // Skip markup fetch when using formArguments - the ConfigurableForm will handle loading via formId
     if (formArguments) {
@@ -101,7 +106,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
         });
       setLoadingState('loading');
     }
-  }, [formIdentifier, formArguments, fetchForm]);
+  }, [formIdentifier, formArguments]);
 
   // When using formArguments, the form's data loader will handle data fetching
   // Only use manual data fetching logic if formArguments is not provided (backward compatibility)
@@ -116,6 +121,13 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     } else if (!formArguments && !formData && entityId && formMarkup) {
       // Fallback to manual data fetching for backward compatibility
       const getUrl = getEntityUrl ?? formMarkup?.formSettings?.getUrl;
+
+      // If no GET URL is available, show form without data
+      if (!getUrl) {
+        setLoadingState('success');
+        return;
+      }
+
       const fetcher = getUrl
         ? get(getUrl, { id: entityId }, { base: backendUrl, headers: httpHeaders })
         : entitiesGet({ id: entityId, ...getEntityTypeIdentifierQueryParams(entityType) }, { base: backendUrl, headers: httpHeaders });
@@ -130,13 +142,16 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
           notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> });
         });
       setLoadingState('loading');
+    } else if (!formArguments && formMarkup && !entityId) {
+      // Form is loaded but no entityId - show form without data
+      setLoadingState('success');
     }
-  }, [entityId, getEntityUrl, formMarkup, formArguments, formData, backendUrl, httpHeaders, entityType, displayProperty, notification, formIdentifier]);
+  }, [entityId, getEntityUrl, formMarkup, formArguments, backendUrl, httpHeaders, entityType, displayProperty, notification, formIdentifier]);
 
   const formContent = useMemo(() => {
     // When using formArguments, require formIdentifier (data will be loaded by form's data loader)
-    // When not using formArguments, require both formMarkup and formData (backward compatibility)
-    const canRenderForm = formArguments ? formIdentifier : (formMarkup && formData);
+    // When not using formArguments, require formMarkup (formData is optional for empty forms)
+    const canRenderForm = formArguments ? formIdentifier : formMarkup;
 
     return canRenderForm ? (
       <div className={styles.formLabel}>
@@ -194,11 +209,15 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       );
     }
 
-    const ifLoadingStateSuccess = (): ReactNode => loadingState === 'success' ? (
-      <span className={styles.innerEntityReferenceSpanBoxStyle}>{formTitle || emptyText}</span>
-    ) : (
-      <span className={styles.innerEntityReferenceSpanBoxStyle}>Quickview not configured properly</span>
-    );
+    const renderLoadedContent = (): ReactNode => {
+      if (loadingState === 'success') {
+        return <span className={styles.innerEntityReferenceSpanBoxStyle}>{formTitle || displayName || emptyText}</span>;
+      }
+      if (loadingState === 'error') {
+        return <span className={styles.innerEntityReferenceSpanBoxStyle}>Quickview not configured properly</span>;
+      }
+      return null;
+    };
 
     return (
       <Button type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={style}>
@@ -206,7 +225,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
           <>
             {loadingBox(styles)}
           </>
-        ) : ifLoadingStateSuccess()}
+        ) : renderLoadedContent()}
       </Button>
     );
   };
@@ -257,7 +276,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
     // If formIdentifier is provided directly, use it
     if (props.formIdentifier) {
       setFormConfig(props.formIdentifier);
-    } else if (!isEntityTypeIdEmpty(props.entityType) && props.formType && formConfig === undefined) {
+    } else if (!isEntityTypeIdEmpty(props.entityType) && props.formType) {
       // Otherwise, fetch form ID dynamically using className and formType
       getEntityFormIdAsync(props.entityType, props.formType)
         .then((f) => {
@@ -267,17 +286,37 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
           setFormConfig(null);
         });
     }
-  }, [props.formIdentifier, props.entityType, props.formType, formConfig, getEntityFormIdAsync]);
+  }, [props.formIdentifier, props.entityType, props.formType, getEntityFormIdAsync]);
 
-  const buttonOrPopover = formConfig === undefined ? (
-    <Button type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
-      {loadingBox(styles)}
-    </Button>
-  ) : (
-    <Popover content="Quickview not configured properly" title="Quickview not configured properly"></Popover>
-  );
+  // Show loading while formConfig is being fetched (undefined)
+  // Show error message only when formConfig fetch explicitly failed (null)
+  // Don't render anything if we can render the actual QuickView
+  if (formConfig === undefined) {
+    return (
+      <Button type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+        {loadingBox(styles)}
+      </Button>
+    );
+  }
 
-  return formConfig ? <QuickView {...props} formIdentifier={formConfig} /> : buttonOrPopover;
+  if (formConfig === null) {
+    return (
+      <Popover content="Quickview not configured properly" title="Quickview not configured properly">
+        <Button
+          type="link"
+          className={styles.innerEntityReferenceButtonBoxStyle}
+          style={props.style}
+          aria-label="Quickview configuration error"
+        >
+          <span className={styles.innerEntityReferenceSpanBoxStyle}>
+            {props.displayName || 'Configuration Error'}
+          </span>
+        </Button>
+      </Popover>
+    );
+  }
+
+  return <QuickView {...props} formIdentifier={formConfig} />;
 };
 
 export default QuickView;

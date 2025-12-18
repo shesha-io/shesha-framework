@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace Shesha.DynamicEntities.Dtos
     {
         public EntityConfigTypes EntityConfigType { get; set; }
 
-        public Guid? InheritedFromId { get; set; }
+        public EntityTypeIdentifier? InheritedFromId { get; set; }
         public string? InheritedFromClassName { get; set; }
         public string? InheritedFromNamespace { get; set; }
 

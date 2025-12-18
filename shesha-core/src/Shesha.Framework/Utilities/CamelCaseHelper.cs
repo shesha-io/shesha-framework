@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.FileSystemGlobbing.Internal;
-using NetTopologySuite.Densify;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Shesha.Utilities
@@ -23,7 +21,7 @@ namespace Shesha.Utilities
 
         public static string Convert(string input) 
         {
-            return Convert(input, new ConvertOptions { PascalCase = false, PreserveConsecutiveUppercase = false });
+            return Convert(input, new ConvertOptions { PascalCase = false, PreserveConsecutiveUppercase = false, KeepLeadingSeparators = false });
         }
 
         public static string Convert(string input, ConvertOptions options)
@@ -47,8 +45,11 @@ namespace Shesha.Utilities
 
             if (hasUpperCase)
                 input = PreserveCamelCase(input, options.PreserveConsecutiveUppercase);
-
             
+            var leadingSeparators = options.KeepLeadingSeparators
+                ? LEADING_SEPARATORS.Match(input).Value
+                : "";
+
             input = LEADING_SEPARATORS.Replace(input, "");
 	        input = options.PreserveConsecutiveUppercase 
                 ? PreserveConsecutiveUppercase(input) 
@@ -58,7 +59,8 @@ namespace Shesha.Utilities
                 input = char.ToUpper(input[0]) + (input.Length > 1 ? input.Substring(1, input.Length - 1) : "");
             }
 
-	        return PostProcess(input);
+            var result = PostProcess(input);
+            return string.IsNullOrEmpty(result) ? string.Empty : leadingSeparators + result;
         }
 
         private static char? CharAt(string input, int position) 
@@ -128,6 +130,10 @@ namespace Shesha.Utilities
 
         public class ConvertOptions 
         {
+            /// <summary>
+            /// NOTE! The camelCase and PascalCase standards remove the leading separators. Use this option with caution.
+            /// </summary>
+            public bool KeepLeadingSeparators { get; set; }
             public bool PascalCase { get; set; }
             public bool PreserveConsecutiveUppercase { get; set; }
         }

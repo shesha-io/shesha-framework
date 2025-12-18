@@ -5,6 +5,7 @@ import React, { ReactNode, CSSProperties } from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { TableSelectionMode } from '../dataTable/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/index';
 
 export interface IColumnWidth {
   id: React.Key;
@@ -189,6 +190,49 @@ export interface IReactTableProps extends ITableRowDragProps {
   onMultiRowSelect?: (rows: Array<Row> | Row) => void;
 
   /**
+   * Configurable action for row click event
+   */
+  onRowClickAction?: IConfigurableActionConfiguration;
+
+  /**
+   * Configurable action for row hover event
+   */
+  onRowHoverAction?: IConfigurableActionConfiguration;
+
+  /**
+   * Configurable action for row select event (fires only when row is selected, not deselected)
+   */
+  onRowSelectAction?: IConfigurableActionConfiguration;
+
+  /**
+   * Configurable action for selection change event (fires on both select and deselect)
+   */
+  onSelectionChangeAction?: IConfigurableActionConfiguration;
+
+  // Cell-specific styling
+  cellTextColor?: string;
+  cellBackgroundColor?: string;
+  cellBorderColor?: string;
+  /** @deprecated Use rowStylingBox instead. This property is migrated to rowStylingBox in migration v19 */
+  cellPadding?: string;
+  cellBorder?: IBorderValue;
+
+  // Footer styling
+  footerBackgroundColor?: string;
+  footerTextColor?: string;
+  footerBorder?: IBorderValue;
+
+  // Additional borders and shadows
+  headerBorder?: IBorderValue;
+  headerShadow?: IShadowValue;
+  rowShadow?: IShadowValue;
+
+  // Layout features
+  cellBorders?: boolean;
+  rowDividers?: boolean;
+  responsiveMode?: 'scroll' | 'stack' | 'collapse';
+
+  /**
    * Selected row index
    */
   selectedRowIndex?: number;
@@ -234,6 +278,7 @@ export interface IReactTableProps extends ITableRowDragProps {
   headerFontWeight?: string;
   headerBackgroundColor?: string;
   headerTextColor?: string;
+  textAlign?: string;
 
   // Table body styling
   rowBackgroundColor?: string;

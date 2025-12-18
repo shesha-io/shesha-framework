@@ -376,7 +376,7 @@ namespace Shesha.Metadata
                 return new DataTypeInfo(DataTypes.File);
 
             if (propType.IsEntityType() || propType.IsEntityReferenceType())
-                return new DataTypeInfo(DataTypes.EntityReference);
+                return new DataTypeInfo(DataTypes.EntityReference, propType.IsEntityReferenceType() ? EntityFormats.GenericEntity : null);
 
             // note: numeric datatypes mapping is based on the OpenApi 3
             if (propType == typeof(int) || propType == typeof(byte) || propType == typeof(short))

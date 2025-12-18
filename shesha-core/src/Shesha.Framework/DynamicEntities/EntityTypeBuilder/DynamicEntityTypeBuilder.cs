@@ -350,6 +350,14 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                 );
                 foreach (var property in propertiesToAdd)
                 {
+                    if (property.DataType == DataTypes.Advanced)
+                    {
+                        property.InitStatus &= ~Enums.EntityInitFlags.InitializationRequired;
+                        property.InitStatus &= ~Enums.EntityInitFlags.InitializationFailed;
+                        property.InitMessage = "";
+                        await _propertyConfigRepo.UpdateAsync(property);
+                        continue;
+                    }
                     var propType = GetPropertyType(property, context);
                     if (propType != null)
                     {

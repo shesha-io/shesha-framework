@@ -2,13 +2,21 @@ import { handleActions } from 'redux-actions';
 import { EntityInitFlags, ModelConfigurationDto } from '@/apis/modelConfigurations';
 import { ModelActionEnums } from './actions';
 import { IModelConfiguratorStateContext, IPropertyErrors, MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE } from './contexts';
-import { IErrorInfo } from '@/interfaces';
+import { DataTypes, IErrorInfo } from '@/interfaces';
+import { EntityFormats } from '@/interfaces/dataTypes';
 
 const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto => {
   return {
     ...data,
     properties: data.properties
-      .filter((p) => !p.isFrameworkRelated), // remove framework fields
+      .filter((p) => !p.isFrameworkRelated) // remove framework fields
+      .map((p) => {
+        const prop = { ...p };
+        if (p.dataType === DataTypes.entityReference && p.dataFormat === EntityFormats.genericEntity)
+          prop.genericEntityReference = true;
+        prop.allowEdit = !p.createdInDb && !p.inheritedFromId && p.source !== 1;
+        return prop;
+      }),
   };
 };
 

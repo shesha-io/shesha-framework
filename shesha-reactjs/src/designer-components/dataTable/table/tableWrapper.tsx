@@ -5,7 +5,7 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
-import { filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowStylingBoxToPadding, convertRowBorderStyleToBorder } from './utils';
+import { filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
@@ -48,7 +48,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const componentIdRef = useRef(id);
   const { styles: tableContextStyles } = useTableContextStyles();
 
-  // Reset auto-config flag when component ID changes (new DataTable instance)
   useEffect(() => {
     if (componentIdRef.current !== id) {
       componentIdRef.current = id;
@@ -56,16 +55,13 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     }
   }, [id]);
 
-  // Process shadow settings using getShadowStyle utility
   const shadowStyles = useMemo(() => getShadowStyle(props?.shadow), [props?.shadow]);
+
   const finalBoxShadow = useMemo(() => {
-    // If there's a shadow object, use the processed styles, otherwise use the boxShadow string
     return props?.shadow ? shadowStyles?.boxShadow : props?.boxShadow;
   }, [props?.shadow, shadowStyles?.boxShadow, props?.boxShadow]);
 
-  // Convert new property structures to old format for backward compatibility
   const effectiveRowHeight = useMemo(() => {
-    // Prefer new rowDimensions over old rowHeight
     const converted = convertRowDimensionsToHeight(props?.rowDimensions);
     if (isDesignMode) {
       console.warn('Row Height - rowDimensions:', props?.rowDimensions, 'converted:', converted, 'fallback:', props?.rowHeight);
@@ -74,7 +70,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   }, [props?.rowDimensions, props?.rowHeight, isDesignMode]);
 
   const effectiveRowPadding = useMemo(() => {
-    // Prefer new rowStylingBox over old rowPadding
     const converted = convertRowStylingBoxToPadding(props?.rowStylingBox);
     if (isDesignMode) {
       console.warn('Row Padding - rowStylingBox:', props?.rowStylingBox, 'converted:', converted, 'fallback:', props?.rowPadding);
@@ -83,7 +78,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   }, [props?.rowStylingBox, props?.rowPadding, isDesignMode]);
 
   const effectiveRowBorder = useMemo(() => {
-    // Prefer new rowBorderStyle over old rowBorder
     const converted = convertRowBorderStyleToBorder(props?.rowBorderStyle);
     if (isDesignMode) {
       console.warn('Row Border - rowBorderStyle:', props?.rowBorderStyle, 'converted:', converted, 'fallback:', props?.rowBorder);
@@ -131,8 +125,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         baseStyle = props.allStyles.fullStyle;
       }
 
-      // Remove border properties from the outer container when border is being passed to DataTable
-      // This prevents double borders
       if (props.border && baseStyle) {
         const {
           border,
@@ -382,12 +374,23 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             headerFontWeight={props.headerFontWeight}
             headerBackgroundColor={props.headerBackgroundColor}
             headerTextColor={props.headerTextColor}
+            textAlign={props.font?.align}
             rowHeight={effectiveRowHeight}
             rowPadding={effectiveRowPadding}
             rowBorder={effectiveRowBorder}
             rowBorderStyle={props.rowBorderStyle}
             boxShadow={finalBoxShadow}
             sortableIndicatorColor={props.sortableIndicatorColor}
+            cellTextColor={props.cellTextColor}
+            cellBackgroundColor={props.cellBackgroundColor}
+            cellBorderColor={props.cellBorderColor}
+            cellBorders={props.cellBorders}
+            cellPadding={props.cellPadding}
+            headerBorder={props.headerBorder}
+            cellBorder={props.cellBorder}
+            headerShadow={props.headerShadow}
+            rowShadow={props.rowShadow}
+            rowDividers={props.rowDividers}
           />
         </div>
       </div>
