@@ -59,7 +59,17 @@ export const useStyles = createStyles(({ css, cx, token }, {
         .sha-react-table .sha-table .tr.tr-body.sha-tr-selected {
           background-color: ${rowSelectedBackgroundColor} !important;
         }
-      ` : ''}
+        /* Ensure selected row styling always takes priority over striped rows */
+        .sha-react-table .sha-table .tr.tr-body.tr-odd.sha-tr-selected {
+          background-color: ${rowSelectedBackgroundColor} !important;
+        }
+      ` : `
+        /* Ensure selected row styling always takes priority over striped rows */
+        .sha-react-table .sha-table .tr.tr-body.tr-odd.sha-tr-selected {
+          background-color: ${token.colorPrimary} !important;
+          color: white !important;
+        }
+      `}
 
       .ant-table-thead > tr > th {
         border-bottom: 1px solid ${token.colorBorder};

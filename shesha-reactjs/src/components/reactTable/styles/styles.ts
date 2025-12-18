@@ -401,12 +401,18 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               .ant-form-item-control-input-content, a, button {
                   color: inherit;
               }
-            
+
               .sha-stored-files-renderer, .ant-upload-list {
                   color: white;
               }
 
             }
+          }
+
+          /* Ensure selected row styling always takes priority over striped rows */
+          &.${trOdd}.${trSelected} {
+            background: ${rowSelectedBackgroundColor || token.colorPrimary} !important;
+            color: white;
           }
 
           .${prefixCls}-form-item {
