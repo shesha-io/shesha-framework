@@ -437,6 +437,32 @@ namespace Shesha.DynamicEntities
             }
         }
 
+        private void NormalizePropertyInput(ModelPropertyDto input)
+        {
+            // remove unused nested properties
+            if (input.DataType != DataTypes.Array)
+                input.ItemsType = null;
+            if (input.DataType != DataTypes.Array && !(input.DataType == DataTypes.Object && input.DataFormat == ObjectFormats.Interface))
+                input.Properties = new List<ModelPropertyDto>();
+
+            if (input.ItemsType != null)
+                NormalizePropertyInput(input.ItemsType);
+
+            input.Properties.ForEach(NormalizePropertyInput);
+
+            // clear unused validations
+            if (input.DataType != DataTypes.String)
+            {
+                input.MinLength = null;
+                input.MaxLength = null;
+            }
+            if (input.DataType != DataTypes.Number)
+            {
+                input.Min = null;
+                input.Max = null;
+            }
+        }
+
         private async Task<EntityProperty?> BindPropertiesAndReturnItemsTypeAsync(
             List<EntityProperty> allProperties,
             List<ModelPropertyDto> inputProperties,
@@ -452,6 +478,8 @@ namespace Shesha.DynamicEntities
             var sortOrder = 0;
             foreach (var inputProp in inputProperties.OrderBy(x => x.SortOrder ?? int.MaxValue))
             {
+                NormalizePropertyInput(inputProp);
+
                 var inputName = inputProp.Name.Trim();
 
                 var propId = inputProp.Id.ToGuidOrNull();
@@ -647,11 +675,10 @@ namespace Shesha.DynamicEntities
             dbProp.Formatting = dto.Formatting;
             dbProp.Label = dto.Label;
 
-            // Recheck data types to avoid extra limitations
-            dbProp.Min = dto.DataType == DataTypes.Number ? dto.Min : null;
-            dbProp.Max = dto.DataType == DataTypes.Number ? dto.Max : null;
-            dbProp.MaxLength = dto.DataType == DataTypes.String ? dto.MaxLength : null;
-            dbProp.MinLength = dto.DataType == DataTypes.String ? dto.MinLength : null;
+            dbProp.Min = dto.Min;
+            dbProp.Max = dto.Max;
+            dbProp.MaxLength = dto.MaxLength;
+            dbProp.MinLength = dto.MinLength;
 
             dbProp.ReadOnly = dto.ReadOnly ?? false;
             dbProp.ReferenceListModule = dto.ReferenceListId?.Module;
