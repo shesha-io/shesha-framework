@@ -1,5 +1,6 @@
 import React, { FC, useState, CSSProperties } from 'react';
 import { Button, FormInstance } from 'antd';
+import { ButtonType } from 'antd/es/button/buttonHelpers';
 import { ShaIcon, IconType } from '@/components';
 import classNames from 'classnames';
 import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
@@ -9,6 +10,7 @@ import { DataContextTopLevels, isNavigationActionConfiguration, useShaRouting, u
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { IFullAuditedEntity } from '@/publicJsApis/entities';
 import { useStyles } from './style';
+import { getGhostStyleOverrides } from '@/utils/style';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
@@ -71,6 +73,13 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
 
   const isSameUrl = navigationUrl === window.location.href;
 
+  // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
+  const isGhostType = props.buttonType === 'ghost';
+  const actualButtonType = isGhostType ? 'default' : (props.buttonType as ButtonType);
+
+  // Ghost buttons: only foreground color, no background/border/shadow
+  const ghostOverrides = isGhostType ? getGhostStyleOverrides() : {};
+
   return (
     <Button
       href={navigationUrl}
@@ -81,7 +90,8 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       tabIndex={buttonDisabled ? -1 : undefined}
       loading={buttonLoading}
       onClick={onButtonClick}
-      type={props.buttonType}
+      type={actualButtonType}
+      ghost={isGhostType}
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
       iconPosition={props.iconPosition}
@@ -89,7 +99,8 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       size={props?.size}
       style={{
         ...props?.style,
-        ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }),
+        ...(isSameUrl && !isGhostType && { background: theme.application.primaryColor, color: theme.text.default }),
+        ...ghostOverrides,
         ...(buttonDisabled && { pointerEvents: "none" }),
       }}
     >
