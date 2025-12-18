@@ -351,6 +351,16 @@ namespace Shesha.DynamicEntities
                 throw new AbpValidationException("Check the validation errors", errors);
         }
 
+
+        private async Task SetPermissionIfNotNullAsync(PermissionedObjectDto? permission, string type)
+        {
+            if (permission != null)
+            {
+                permission.Type = type;
+                await _permissionedObjectManager.SetAsync(permission);
+            }
+        }
+
         [UnitOfWork]
         private async Task<ModelConfigurationDto> CreateOrUpdateAsync(EntityConfig entityConfig, ModelConfigurationDto input, bool isNew)
         {
@@ -411,31 +421,11 @@ namespace Shesha.DynamicEntities
                 await PropertyConfigRepo.DeleteAsync(prop);
             }
 
-            if (input.Permission != null)
-            {
-                input.Permission.Type = ShaPermissionedObjectsTypes.Entity;
-                await _permissionedObjectManager.SetAsync(input.Permission);
-            }
-            if (input.PermissionGet != null)
-            {
-                input.PermissionGet.Type = ShaPermissionedObjectsTypes.EntityAction;
-                await _permissionedObjectManager.SetAsync(input.PermissionGet);
-            }
-            if (input.PermissionCreate != null)
-            {
-                input.PermissionCreate.Type = ShaPermissionedObjectsTypes.EntityAction;
-                await _permissionedObjectManager.SetAsync(input.PermissionCreate);
-            }
-            if (input.PermissionUpdate != null)
-            {
-                input.PermissionUpdate.Type = ShaPermissionedObjectsTypes.EntityAction;
-                await _permissionedObjectManager.SetAsync(input.PermissionUpdate);
-            }
-            if (input.PermissionDelete != null)
-            {
-                input.PermissionDelete.Type = ShaPermissionedObjectsTypes.EntityAction;
-                await _permissionedObjectManager.SetAsync(input.PermissionDelete);
-            }
+            await SetPermissionIfNotNullAsync(input.Permission, ShaPermissionedObjectsTypes.Entity);
+            await SetPermissionIfNotNullAsync(input.PermissionGet, ShaPermissionedObjectsTypes.EntityAction);
+            await SetPermissionIfNotNullAsync(input.PermissionCreate, ShaPermissionedObjectsTypes.EntityAction);
+            await SetPermissionIfNotNullAsync(input.PermissionUpdate, ShaPermissionedObjectsTypes.EntityAction);
+            await SetPermissionIfNotNullAsync(input.PermissionDelete, ShaPermissionedObjectsTypes.EntityAction);
 
             await _unitOfWorkManager.Current.SaveChangesAsync();
 

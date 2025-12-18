@@ -4,12 +4,12 @@ import { ArrayFormats, EntityFormats, ObjectFormats } from '@/interfaces/dataTyp
 import { IPropertyErrors } from '@/providers/modelConfigurator/contexts';
 
 export const validateDuplicated = (properties: ModelPropertyDto[], path: string): IPropertyErrors[] => {
-  const duplicated: string[] = [];
+  const duplicated = new Set<string>();
   const errors: IPropertyErrors[] = [];
   properties.forEach((p) => {
     const fullPath = path ? `${path}.${p.name}` : p.name;
-    if (p.name && properties.find((x) => x !== p && x.name === p.name && !duplicated.includes(fullPath))) {
-      duplicated.push(fullPath);
+    if (p.name && properties.find((x) => x !== p && x.name === p.name && !duplicated.has(fullPath))) {
+      duplicated.add(fullPath);
       errors.push({ propertyName: fullPath, errors: [`Duplicated property name ${fullPath}`] });
     }
   });
