@@ -35,6 +35,7 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   stickyHeader?: boolean;
 
   // Header styling
+  headerFontFamily?: string;
   headerFontSize?: string;
   headerFontWeight?: string;
   headerBackgroundColor?: string;

@@ -82,6 +82,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   backgroundColor?: string;
 
   // Header styling
+  headerFontFamily?: string;
   headerFontSize?: string;
   headerFontWeight?: string;
   headerBackgroundColor?: string;
@@ -159,6 +160,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   onRowSelect,
   onSelectionChange,
   backgroundColor,
+  headerFontFamily,
   headerFontSize,
   headerFontWeight,
   headerBackgroundColor,
@@ -919,6 +921,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     border,
     striped,
     backgroundColor,
+    headerFontFamily,
     headerFontSize,
     headerFontWeight,
     headerBackgroundColor,

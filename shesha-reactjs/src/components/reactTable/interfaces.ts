@@ -274,6 +274,7 @@ export interface IReactTableProps extends ITableRowDragProps {
   showExpandedView?: boolean;
 
   // Header styling
+  headerFontFamily?: string;
   headerFontSize?: string;
   headerFontWeight?: string;
   headerBackgroundColor?: string;

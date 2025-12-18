@@ -102,6 +102,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     rowSelectedBackgroundColor: props?.rowSelectedBackgroundColor,
     border: props?.border,
     backgroundColor: props?.background?.color,
+    headerFontFamily: props?.headerFontFamily,
     headerFontSize: props?.headerFontSize,
     headerFontWeight: props?.headerFontWeight,
     headerBackgroundColor: props?.headerBackgroundColor,
@@ -370,6 +371,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             striped={props.striped}
             hoverHighlight={props.hoverHighlight}
             backgroundColor={props.background?.color}
+            headerFontFamily={props.headerFontFamily}
             headerFontSize={props.headerFontSize}
             headerFontWeight={props.headerFontWeight}
             headerBackgroundColor={props.headerBackgroundColor}

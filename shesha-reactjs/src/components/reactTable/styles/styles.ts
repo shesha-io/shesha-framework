@@ -47,6 +47,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowSelectedBackgroundColor,
   border,
   backgroundColor,
+  headerFontFamily,
   headerFontSize,
   headerFontWeight,
   headerBackgroundColor,
@@ -75,6 +76,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowSelectedBackgroundColor?: string;
   border?: IBorderValue;
   backgroundColor?: string;
+  headerFontFamily?: string;
   headerFontSize?: string;
   headerFontWeight?: string;
   headerBackgroundColor?: string;
@@ -127,15 +129,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaSpanCenterVertically,
   } = tableClassNames;
 
-  // Generate border styles from the border configuration
   const borderStyles = getBorderStyle(border || {}, {});
   const headerBorderStyles = getBorderStyle(headerBorder || {}, {});
   const cellBorderStyles = getBorderStyle(cellBorder || {}, {});
   const headerShadowStyles = getShadowStyle(headerShadow);
   const rowShadowStyles = getShadowStyle(rowShadow);
 
-  // rowPadding should already be a string (converted in tableWrapper.tsx via convertRowStylingBoxToPadding)
-  // cellPadding is deprecated and migrated to rowStylingBox in migration v19
   const effectivePadding = rowPadding;
 
   const hasBorderRadius = border?.radius && (
@@ -288,6 +287,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
             ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : `background-color: ${backgroundColor} !important;`}
+            ${headerFontFamily ? `font-family: ${headerFontFamily};` : ''}
             ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
             ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
             ${headerTextColor ? `color: ${headerTextColor};` : ''}
@@ -478,6 +478,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${th} {
           ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : ''}
+          ${headerFontFamily ? `font-family: ${headerFontFamily};` : ''}
           ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
           ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
           ${headerTextColor ? `color: ${headerTextColor};` : ''}

@@ -525,6 +525,15 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     components: [...fbf()
                       .addSettingsInput({
                         id: nanoid(),
+                        propertyName: 'headerFontFamily',
+                        label: 'Font Family',
+                        inputType: 'dropdown',
+                        dropdownOptions: fontTypes,
+                        tooltip: 'Font family for table headers',
+                        jsSetting: false,
+                      })
+                      .addSettingsInput({
+                        id: nanoid(),
                         propertyName: 'headerFontSize',
                         label: 'Font Size',
                         inputType: 'textField',
