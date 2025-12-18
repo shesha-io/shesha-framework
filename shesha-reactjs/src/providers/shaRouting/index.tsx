@@ -70,7 +70,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
           : Promise.reject('Common:Navigate: url is empty');
       },
       argumentsFormMarkup: getNavigateArgumentsForm,
-      migrator: (m) => m.add<INavigateActoinArguments>(0, (prev: INavigateActoinArguments) => ({ ...prev,  navigationType: prev.navigationType ?? 'form' })),
+      migrator: (m) => m.add<INavigateActoinArguments>(0, (prev: INavigateActoinArguments) => ({ ...prev, navigationType: prev.navigationType ?? 'form' })),
     },
   );
 
