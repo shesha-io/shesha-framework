@@ -20,6 +20,9 @@ export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (pr
   const filterColumns = tableFilter?.map((filter) => filter.columnId);
   const hasFilters = filterColumns?.length > 0 || isFiltering;
 
+  // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
+  const isGhostType = props.buttonType === 'ghost';
+
   // Build base button style without border/shadow to avoid conflicts
   const baseButtonStyle = {
     display: 'flex',
@@ -39,7 +42,7 @@ export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (pr
       : {};
 
   // Ghost buttons: only foreground color, no background/border/shadow
-  const ghostOverrides = props.buttonType === 'ghost' ? getGhostStyleOverrides() : {};
+  const ghostOverrides = isGhostType ? getGhostStyleOverrides() : {};
 
   const buttonStyle = {
     ...baseButtonStyle,
@@ -77,9 +80,6 @@ export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (pr
   const IconComponent = icon;
   const defaultIcon = hasFilters ? <FilterFilled /> : <FilterOutlined />;
   const filterIcon = icon ? <IconComponent /> : defaultIcon;
-
-  // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern safely
-  const isGhostType = props.buttonType === 'ghost';
   const actualButtonType = isGhostType ? 'default' : (props.buttonType as ButtonType);
 
   return (
