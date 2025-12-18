@@ -44,6 +44,7 @@ export const useShowMessageAction = (): void => {
     owner: 'Common',
     ownerUid: SheshaActionOwners.Common,
     name: 'Show Message',
+    sortOrder: 6,
     hasArguments: true,
     argumentsFormMarkup: getShowMessageArgumentsForm,
     executer: (actionArgs, _context) => {
