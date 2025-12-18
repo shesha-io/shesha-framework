@@ -31,14 +31,14 @@ import { addPx } from '@/utils/style';
 const fullSizeBoxStyle: React.CSSProperties = {
   width: '100%',
   height: '100%',
-  boxSizing: 'border-box'
+  boxSizing: 'border-box',
 };
 
 const paddedBoxStyle: React.CSSProperties = {
   padding: '5px 3px',
   boxSizing: 'border-box',
   width: '100%',
-  height: '100%'
+  height: '100%',
 };
 
 const isValidDeviceKey = (device: unknown): device is 'desktop' | 'tablet' | 'mobile' => {
@@ -121,7 +121,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
       height: addPx(dimensions?.height),
       minHeight: addPx(dimensions?.minHeight),
       maxHeight: addPx(dimensions?.maxHeight),
-      margin: '0px'
+      margin: '0px',
     };
   }, [dimensions, shouldApplyDimensions]);
 
@@ -174,7 +174,7 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
       <div style={fullSizeBoxStyle}>
-        <DragWrapper componentId={componentModel.id} readOnly={readOnly} >
+        <DragWrapper componentId={componentModel.id} readOnly={readOnly}>
           <div style={paddedBoxStyle}>
             <FormComponent componentModel={renderComponentModel} />
           </div>
