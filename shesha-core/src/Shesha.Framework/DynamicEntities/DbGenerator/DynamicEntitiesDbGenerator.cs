@@ -157,7 +157,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                         tableName = numberTableName;
 
                         // ToDo: AS - get Id Column and naming generator
-                        entityProperty.ListConfiguration.DbMapping.ManyToManyTableName = $"{schema}.{tableName}";
+                        entityProperty.ListConfiguration.DbMapping.ManyToManyTableName = string.IsNullOrEmpty(schema) ? tableName : $"{schema}.{tableName}";
                         entityProperty.ListConfiguration.DbMapping.ManyToManyKeyColumnName = $"{columnName}_id";
                         entityProperty.ListConfiguration.DbMapping.ManyToManyChildColumnName = $"{refConfig.TableName}_id";
                     }
