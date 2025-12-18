@@ -49,7 +49,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
       );
     }
 
-    return model.hidden ? null : <AdvancedFilterButton {...model as IButtonComponentProps} styles={finalStyle} />;
+    return model.hidden ? null : <AdvancedFilterButton {...model as IAdvancedFilterButtonComponentProps} styles={finalStyle} />;
   },
   initModel: (model) => {
     return {

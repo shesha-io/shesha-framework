@@ -5,8 +5,14 @@ import { useDataTableStore } from '@/providers';
 import { useStyles } from './style';
 import { IButtonComponentProps } from '@/designer-components/button/interfaces';
 import * as Icons from '@ant-design/icons';
+import { ButtonType } from 'antd/es/button/buttonHelpers';
+import { getGhostStyleOverrides } from '@/utils/style';
 
-export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
+export interface IAdvancedFilterButtonComponentProps extends Omit<IButtonComponentProps, 'buttonType'> {
+  buttonType: 'primary' | 'default' | 'dashed' | 'text' | 'ghost' | 'link';
+}
+
+export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (props) => {
   const {
     isInProgress: { isFiltering },
     setIsInProgressFlag,
@@ -27,18 +33,23 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
     padding: '3px',
   };
 
-  // Only add border for link type or when there are filters
+  // Ghost buttons should never have borders, backgrounds, or shadows - only foreground color
+  // Link buttons also don't have borders
   // For other types (primary, default, dashed), let the configured styles handle borders/shadows
-  const borderStyle = props.buttonType === 'link'
+  const borderStyle = ['link', 'ghost'].includes(props.buttonType)
     ? { border: 'none' }
     : hasFilters
       ? { border: `1px solid ${styles.primaryColor}` }
       : {};
 
+  // Ghost buttons: only foreground color, no background/border/shadow
+  const ghostOverrides = props.buttonType === 'ghost' ? getGhostStyleOverrides() : {};
+
   const buttonStyle = {
     ...baseButtonStyle,
     ...borderStyle,
     ...props.styles,
+    ...ghostOverrides,
   };
 
   const startFilteringColumns = (): void => setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
@@ -71,6 +82,10 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
   const defaultIcon = hasFilters ? <FilterFilled /> : <FilterOutlined />;
   const filterIcon = icon ? <IconComponent /> : defaultIcon;
 
+  // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern safely
+  const isGhostType = props.buttonType === 'ghost';
+  const actualButtonType = isGhostType ? 'default' : (props.buttonType as ButtonType);
+
   return (
     <span>
       <Badge
@@ -81,7 +96,8 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
       >
         <Tooltip title={props.tooltip}>
           <Button
-            type={props.buttonType}
+            type={actualButtonType}
+            ghost={isGhostType}
             title={filterColumns?.join('  ')}
             onClick={startFilteringColumns}
             className={styles.button}
@@ -90,7 +106,7 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
             icon={filterIcon}
             size={props.size}
             style={isFiltering || props.readOnly
-              ? { ...buttonStyle, opacity: 0.5, border: props.buttonType === 'link' ? 'none' : buttonStyle.border }
+              ? { ...buttonStyle, opacity: 0.5, border: ['link', 'ghost'].includes(props.buttonType) ? 'none' : buttonStyle.border }
               : { ...buttonStyle }}
           >
             {props.label}
