@@ -63,8 +63,8 @@ export const ReactTable: FC<IReactTableProps> = ({
   onSort,
   onRowClickAction,
   onRowHoverAction,
-  onRowSelectAction,
-  onSelectionChangeAction,
+  onRowSelectAction: _onRowSelectAction,
+  onSelectionChangeAction: _onSelectionChangeAction,
   scrollBodyHorizontally = false,
   height = 250,
   allowReordering = false,
@@ -226,48 +226,11 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   };
 
-  const toggleAllRowsRef = useRef<((value?: boolean) => void) | null>(null);
-
-  const createOnSingleRowToggle = (callback: (...args: any) => void, row: Row<any>) => (e: ChangeEvent) => {
-    const isSelected = !!(e.target as any)?.checked;
-
-    // For single selection mode, first clear all selections if this row is being selected
-    if (isSelected && effectiveSelectionMode === 'single' && toggleAllRowsRef.current) {
-      // Clear all other selections first
-      toggleAllRowsRef.current(false);
-    }
-
-    callback(e);
-
-    if (onMultiRowSelect) {
-      const selectedRows = { ...getPlainValue(row), isSelected };
-      onMultiRowSelect(selectedRows);
-    }
-
-    // Fire onRowSelect when row becomes selected (not when deselected)
-    if (isSelected) {
-      dispatchRowEvent(onRowSelectAction, row.original, row.index);
-    }
-
-    // Fire onSelectionChange for both select and deselect
-    if (onSelectionChangeAction) {
-      const selectedRowsData = isSelected ? [row.original] : [];
-      const selectedIndices = isSelected ? [row.index] : [];
-      executeAction({
-        actionConfiguration: onSelectionChangeAction,
-        argumentsEvaluationContext: {
-          ...allData,
-          selectedRows: selectedRowsData,
-          selectedIndices: selectedIndices,
-        },
-      });
-    }
-  };
-
   const preparedColumns = useMemo(() => {
     const localColumns = [...allColumns];
 
-    if (effectiveSelectionMode !== 'none') {
+    // Only add selection column for multiple selection mode (like in releases/0.44)
+    if (effectiveSelectionMode === 'multiple') {
       localColumns.unshift({
         id: 'selection',
         // isVisible: true,
@@ -280,9 +243,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         // to render a checkbox (only for multiple selection mode)
         Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => (
           <span className={styles.shaSpanCenterVertically}>
-            {effectiveSelectionMode === 'multiple' && (
-              <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
-            )}
+            <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
           </span>
         ),
         // The cell can use the individual row's getToggleRowSelectedProps method
@@ -291,9 +252,7 @@ export const ReactTable: FC<IReactTableProps> = ({
           <span className={styles.shaSpanCenterVertically}>
             <IndeterminateCheckbox
               {...row.getToggleRowSelectedProps()}
-              onChange={effectiveSelectionMode === 'single'
-                ? createOnSingleRowToggle(row.getToggleRowSelectedProps().onChange, row)
-                : onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
+              onChange={onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
             />
           </span>
         ),
@@ -402,11 +361,6 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const { pageIndex, pageSize, selectedRowIds, sortBy } = state;
 
-  // Assign the toggleAllRowsSelected function to the ref so it can be used in createOnSingleRowToggle
-  useEffect(() => {
-    toggleAllRowsRef.current = toggleAllRowsSelected;
-  }, [toggleAllRowsSelected]);
-
   const previousSortBy = usePrevious(sortBy);
 
   useEffect(() => {
@@ -498,17 +452,35 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const handleSelectRow = (rowIndex: number) => (row: Row<object>): void => {
     if (!omitClick && !(canEditInline || canDeleteInline)) {
+      let isDeselecting = false;
+
       // For both single and multiple selection modes, update the row selection state
       if (selectionMode === 'single' || selectionMode === 'multiple') {
         if (selectionMode === 'single') {
-          // For single selection, first clear all selections then select this row
-          toggleAllRowsSelected(false);
+          // For single selection mode, check if the row is already selected
+          const isAlreadySelected = row.isSelected;
+
+          if (isAlreadySelected) {
+            // If already selected, just deselect it
+            toggleRowSelected(row.id, false);
+            isDeselecting = true;
+          } else {
+            // If not selected, clear all selections first then select this row
+            toggleAllRowsSelected(false);
+            toggleRowSelected(row.id, true);
+          }
+        } else {
+          // For multiple selection mode, just toggle the row
+          toggleRowSelected(row.id);
         }
-        toggleRowSelected(row.id);
       }
-      // Call the onSelectRow callback
+      // Call the onSelectRow callback (pass null for deselection in single mode)
       if (onSelectRow) {
-        onSelectRow(rowIndex, row?.original);
+        if (selectionMode === 'single' && isDeselecting) {
+          onSelectRow(null, null);
+        } else {
+          onSelectRow(rowIndex, row?.original);
+        }
       }
     }
   };
