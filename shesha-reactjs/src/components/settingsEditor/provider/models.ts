@@ -14,6 +14,7 @@ export interface ISettingConfiguration {
     description?: string;
     module?: string;
     isClientSpecific: boolean;
+    isUserSpecific: boolean;
 }  
 
 export type SettingValue = any;
