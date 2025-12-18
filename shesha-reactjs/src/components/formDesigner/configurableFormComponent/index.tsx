@@ -105,27 +105,17 @@ const ConfigurableFormComponentDesignerInner: FC<IConfigurableFormComponentDesig
   // Apply dimensions to the outermost wrapper so width/height affect the actual component size
   const shouldApplyDimensions = componentModel.type === 'container';
 
-  const deviceModel = isValidDeviceKey(activeDevice)
-    ? { ...componentModel, ...componentModel[activeDevice] }
-    : componentModel;
+  // Memoize deviceModel to ensure stable reference
+  const deviceModel = useMemo(() => {
+    return isValidDeviceKey(activeDevice)
+      ? { ...componentModel, ...componentModel[activeDevice] }
+      : componentModel;
+  }, [componentModel, activeDevice]);
 
-  // Memoize dimensions to prevent unnecessary recalculations
+  // Memoize dimensions based on stable deviceModel
   const dimensions = useMemo(() => {
     return deviceModel?.container?.dimensions ?? deviceModel?.dimensions ?? {};
-  }, [
-    deviceModel?.container?.dimensions?.width,
-    deviceModel?.container?.dimensions?.minWidth,
-    deviceModel?.container?.dimensions?.maxWidth,
-    deviceModel?.container?.dimensions?.height,
-    deviceModel?.container?.dimensions?.minHeight,
-    deviceModel?.container?.dimensions?.maxHeight,
-    deviceModel?.dimensions?.width,
-    deviceModel?.dimensions?.minWidth,
-    deviceModel?.dimensions?.maxWidth,
-    deviceModel?.dimensions?.height,
-    deviceModel?.dimensions?.minHeight,
-    deviceModel?.dimensions?.maxHeight,
-  ]);
+  }, [deviceModel]);
 
   const componentStyle = useMemo(() => {
     if (!shouldApplyDimensions) return { margin: '0px' };
