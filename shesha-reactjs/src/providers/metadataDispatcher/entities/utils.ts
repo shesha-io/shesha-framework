@@ -217,8 +217,8 @@ export const isEntityTypeIdEqual = (a: string | IEntityTypeIdentifier, b: string
 export const isEntityTypeIdEmpty = (a: string | IEntityTypeIdentifier | null | undefined): boolean =>
   a === null || a === undefined ||
   (typeof a === 'string' && a.trim().length === 0) ||
-  !isEntityTypeIdentifier(a) ||
-  (a.name.trim().length === 0);
+  (typeof a === 'object' && !isEntityTypeIdentifier(a)) ||
+  (isEntityTypeIdentifier(a) && a.name.trim().length === 0);
 
 export const getEntityTypeName = (modelType: string | IEntityTypeIdentifier | null | undefined): string | null | undefined =>
   isEntityTypeIdentifier(modelType)
