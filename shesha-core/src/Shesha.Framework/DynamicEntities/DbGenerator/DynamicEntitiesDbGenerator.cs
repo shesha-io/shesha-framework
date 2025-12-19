@@ -80,7 +80,6 @@ namespace Shesha.DynamicEntities.DbGenerator
                     .Where(x =>
                         x.EntityConfig.Id == entityConfig.Id
                         && x.InitStatus.HasFlag(EntityInitFlags.DbActionRequired)
-                        && (x.InheritedFrom == null || x.InheritedFrom.IsDeleted)
                         && x.ParentProperty == null
                         && !x.IsFrameworkRelated)
                     .ToListAsync();
@@ -113,6 +112,12 @@ namespace Shesha.DynamicEntities.DbGenerator
 
         private async Task ProcessEntityPropertyAsync(EntityProperty entityProperty, bool force)
         {
+            if (entityProperty.InheritedFrom != null && !entityProperty.InheritedFrom.IsDeleted)
+            {
+                await UpdateSuccessAsync(entityProperty);
+                return;
+            }
+
             var propertyDbType = GetDbColumnType(entityProperty);
             var columnName = entityProperty.ColumnName.NotNull($"Column name for property {entityProperty.Name} of {entityProperty.EntityConfig.FullClassName} should not be null");
 
