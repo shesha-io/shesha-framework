@@ -252,14 +252,14 @@ export const ReactTable: FC<IReactTableProps> = ({
         // The header can use the table's getToggleAllRowsSelectedProps method
         // to render a checkbox (only for multiple selection mode)
         Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => (
-          <span className={styles.shaSpanCenterVertically}>
+          <span className={styles.shaSpanCenterVertically} onClick={(e) => e.stopPropagation()}>
             <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
           </span>
         ),
         // The cell can use the individual row's getToggleRowSelectedProps method
         // to the render a checkbox
         Cell: ({ row }) => (
-          <span className={styles.shaSpanCenterVertically}>
+          <span className={styles.shaSpanCenterVertically} onClick={(e) => e.stopPropagation()}>
             <IndeterminateCheckbox
               {...row.getToggleRowSelectedProps()}
               onChange={onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
@@ -355,7 +355,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     useRowSelect,
     // useBlockLayout,
     ({ useInstanceBeforeDimensions }) => {
-      if (useMultiSelect) {
+      if (effectiveSelectionMode === 'multiple') {
         useInstanceBeforeDimensions?.push(({ headerGroups: localHeaderGroups }) => {
           if (Array.isArray(localHeaderGroups)) {
             // fix the parent group of the selection button to not be resizable
@@ -460,7 +460,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
 
-  const handleSelectRow = (rowIndex: number) => (row: Row<object>): void => {
+  const handleSelectRow = (rowIndex: number) => (row: Row<any>): void => {
     if (!omitClick && !(canEditInline || canDeleteInline)) {
       let isDeselecting = false;
 
@@ -479,9 +479,22 @@ export const ReactTable: FC<IReactTableProps> = ({
             toggleAllRowsSelected(false);
             toggleRowSelected(row.id, true);
           }
-        } else {
-          // For multiple selection mode, just toggle the row
-          toggleRowSelected(row.id);
+        } else if (selectionMode === 'multiple') {
+          // For multiple selection mode, toggle based on React Table's state (single source of truth)
+          const isCurrentlySelected = row.isSelected;
+          const willBeSelected = !isCurrentlySelected;
+
+          // Update react-table's selection state
+          toggleRowSelected(row.id, willBeSelected);
+
+          // Sync with Redux store - same format as checkbox behavior
+          if (onMultiRowSelect) {
+            const selectedRow = {
+              ...getPlainValue(row),
+              isSelected: willBeSelected,
+            };
+            onMultiRowSelect(selectedRow);
+          }
         }
       }
       // Call the onSelectRow callback (pass null for deselection in single mode)

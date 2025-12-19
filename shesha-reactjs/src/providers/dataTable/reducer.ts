@@ -85,22 +85,36 @@ const reducer = handleActions<IDataTableStateContext, any>(
       action: ReduxActions.Action<Row[] | Row>,
     ) => {
       const { payload } = action;
-      const { selectedRows: rows } = state;
+      const { selectedRows: rows = [] } = state; // Ensure rows is always an array
       let selectedRows;
 
       if (Array.isArray(payload)) {
         selectedRows = payload?.filter(({ isSelected }) => isSelected).map(({ original }) => original);
       } else {
         const data = payload.original as any;
-        const exists = rows.some(({ id }) => id === data?.id);
+        const rowId = data?.id;
         const isSelected = payload.isSelected;
 
+        if (!rowId) {
+          console.warn('SetMultiSelectedRow: Row ID is missing', { payload, data });
+          return state;
+        }
+
+        // Check if row exists in selectedRows using strict equality
+        const exists = rows.some((row) => String(row.id) === String(rowId));
+
         if (exists && isSelected) {
-          selectedRows = [...rows.filter(({ id }) => id !== data?.id), data];
+          // Row exists and should be selected - replace it with updated data
+          selectedRows = [...rows.filter((row) => String(row.id) !== String(rowId)), data];
         } else if (exists && !isSelected) {
-          selectedRows = rows.filter(({ id }) => id !== data?.id);
+          // Row exists and should be deselected - remove it
+          selectedRows = rows.filter((row) => String(row.id) !== String(rowId));
         } else if (!exists && isSelected) {
+          // Row doesn't exist and should be selected - add it
           selectedRows = [...rows, data];
+        } else {
+          // Row doesn't exist and should be deselected - no change
+          selectedRows = rows;
         }
       }
 

@@ -284,8 +284,8 @@ export interface IReactTableProps extends ITableRowDragProps {
   headerBackgroundColor?: string;
 
   // Text alignment
-  headerTextAlign?: string;  // Alignment for header cells
-  bodyTextAlign?: string;     // Alignment for body cells
+  headerTextAlign?: string; // Alignment for header cells
+  bodyTextAlign?: string; // Alignment for body cells
 
   // Deprecated - kept for backward compatibility
   /** @deprecated Use headerFont.type instead */

@@ -90,8 +90,8 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
     align?: string;
   };
   headerBackgroundColor?: string;
-  headerTextAlign?: string;  // Alignment for header cells
-  bodyTextAlign?: string;     // Alignment for body cells
+  headerTextAlign?: string; // Alignment for header cells
+  bodyTextAlign?: string; // Alignment for body cells
 
   // Deprecated - kept for backward compatibility
   /** @deprecated Use headerFont.type instead */
@@ -202,7 +202,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const effectiveHeaderFontWeight = headerFont?.weight ?? headerFontWeight;
   const effectiveHeaderTextColor = headerFont?.color ?? headerTextColor;
   const effectiveHeaderTextAlign = headerFont?.align ?? headerTextAlign ?? textAlign;
-  const effectiveBodyTextAlign = bodyTextAlign ?? textAlign;  // Body uses bodyTextAlign or falls back to textAlign (deprecated)
+  const effectiveBodyTextAlign = bodyTextAlign ?? textAlign; // Body uses bodyTextAlign or falls back to textAlign (deprecated)
 
   if (tableRef) tableRef.current = store;
 
