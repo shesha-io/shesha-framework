@@ -21,6 +21,7 @@ export const RadioWrapper: FC<IRadioSettingsInputProps> = (props) => {
       disabled={readOnly}
       buttonStyle="solid"
       size={size}
+      className={styles.radioBtns}
     >
       {
         buttonGroupOptions?.map(({ value: optionValue, icon, title }) => {
