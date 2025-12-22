@@ -45,10 +45,10 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         value={searchQuery}
         onChange={handleSearchChange}
         suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}
-        {...(options?.ref && { ref: options.ref })}
-        {...(options?.className && { className: options.className })}
-        {...(options?.style && { style: options.style })}
-        {...(options?.autoFocus && { autoFocus: options.autoFocus })}
+        ref={options?.ref}
+        className={options?.className}
+        style={options?.style}
+        autoFocus={options?.autoFocus}
       />
     );
 
