@@ -5,7 +5,7 @@ import { useStyles } from '../styles';
 import { Input } from 'antd';
 
 export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
-  const { value, readOnly, size, variant, placeholder, icon, textType, tooltip, width, onChange, regExp } = props;
+  const { value, readOnly, size, variant, placeholder, icon, textType, tooltip, label, width, onChange, regExp } = props;
   const { styles } = useStyles();
 
   const regExpObj = useMemo(() => {
@@ -32,7 +32,7 @@ export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
       variant={variant}
       placeholder={placeholder}
       style={{ width: width ?? "100%" }}
-      suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip} className={styles.icon} /></span>}
+      suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip ?? label} className={styles.icon} /></span>}
       value={value}
       type={textType}
     />
