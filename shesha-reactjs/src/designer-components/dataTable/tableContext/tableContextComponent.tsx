@@ -1,11 +1,8 @@
 import React from 'react';
 import { DatabaseOutlined } from '@ant-design/icons';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { TableContext } from './tableContext';
-import { ITableContextComponentProps, TableContextComponentDefinition } from './models';
-import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import { TableContextComponentDefinition } from './models';
 import { getSettings } from './settingsForm';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 
@@ -23,24 +20,23 @@ const TableContextComponent: TableContextComponentDefinition = {
   Factory: ({ model }) => {
     return model.hidden ? null : <TableContext {...model} />;
   },
-  migrator: (m) =>
-    m
-      .add<ITableContextComponentProps>(0, (prev) => {
-        return {
-          ...prev,
-          sourceType: 'Entity',
-          entityType: 'Shesha.Core.DummyTable',
-          dataFetchingMode: 'paging',
-          defaultPageSize: 10,
-          sortMode: 'standard',
-          strictSortOrder: 'asc',
-          allowReordering: 'no',
-          name: prev['uniqueStateId'] ?? prev['name'],
-        };
-      })
-      .add<ITableContextComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<ITableContextComponentProps>(2, (prev) => migrateVisibility(prev))
-      .add<ITableContextComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) })),
+  initModel: (model) => {
+    // Set defaults for new components (when dragging from toolbox)
+    const isNewComponent = !model.sourceType && isEntityTypeIdEmpty(model.entityType);
+
+    const initialModel = isNewComponent ? {
+      ...model,
+      sourceType: 'Entity' as const,
+      entityType: 'Shesha.Core.DummyTable',
+      dataFetchingMode: 'paging' as const,
+      defaultPageSize: 10,
+      sortMode: 'standard' as const,
+      strictSortOrder: 'asc' as const,
+      allowReordering: 'no' as const,
+    } : model;
+
+    return initialModel;
+  },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   getFieldsToFetch: (propertyName, rawModel) => {

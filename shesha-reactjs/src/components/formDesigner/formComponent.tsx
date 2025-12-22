@@ -6,7 +6,7 @@ import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
-import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, useCalculatedModel } from '@/index';
+import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, useCalculatedModel, useDataTableStore } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useStyles } from './styles/styles';
 
@@ -31,7 +31,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   const { styles } = useStyles();
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
-  const { isComponentFiltered } = useForm();
+  const { isComponentFiltered, formMode } = useForm();
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
@@ -77,10 +77,47 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     );
   }, [toolboxComponent, actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
 
+  // Check if component needs data context validation
+  // All components that require being inside a data context must report upwards
+  const shouldValidateDataContext = useMemo(() => {
+    return [
+      'datatable',
+      'dataList',
+      'tableViewSelector',
+      'childTable',
+      'datatable.filter',
+      'datatable.quickSearch',
+      'datatable.pager',
+    ].includes(componentModel.type);
+  }, [componentModel.type]);
+
+  const store = useDataTableStore(false);
+  const needsDataContextButMissing = useMemo(() => {
+    // Validate all components that need data context
+    if (shouldValidateDataContext) {
+      // If component requires data context but store is missing, validation should fail
+      return !store;
+    }
+    // Component doesn't need validation, so no issue
+    return false;
+  }, [shouldValidateDataContext, store]);
 
   // Run validation in both designer and runtime modes
   const validationResult = useMemo((): IModelValidation | undefined => {
     const errors: Array<{ propertyName?: string; error: string }> = [];
+
+    if (needsDataContextButMissing) {
+      // clear all other errors and return early
+      errors.push({ propertyName: 'No ancestor Data Context component is set', error: '\nPlace this component inside a Data Context component to connect it to data' });
+
+      return {
+        hasErrors: true,
+        componentId: actualModel.id,
+        componentName: actualModel.componentName,
+        componentType: actualModel.type,
+        errors,
+      };
+    }
 
     if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
       errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
@@ -101,16 +138,15 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     }
 
     return undefined;
-  }, [toolboxComponent, actualModel]);
+  }, [toolboxComponent, actualModel, needsDataContextButMissing]);
 
   // Wrap component with error icon if there are validation errors
-  const wrappedControl = useMemo(() => {
-    return validationResult?.hasErrors ? (
-      <ErrorIconPopover validationResult={validationResult} type="warning">
-        {control}
-      </ErrorIconPopover>
-    ) : control;
-  }, [validationResult, control]);
+  // Show error icons only in designer mode
+  const wrappedControl = validationResult?.hasErrors && formMode === 'designer' ? (
+    <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={true}>
+      {control}
+    </ErrorIconPopover>
+  ) : control;
 
   // Check for validation errors (in both designer and runtime modes)
   if (!toolboxComponent) {
@@ -122,14 +158,20 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
       errors: [{ error: `Component '${actualModel.type}' not found` }],
     };
     // Component not found - return early with just error message
+    const unregisteredMessage = <div className={styles.unregisteredComponentMessage}>Component &apos;{actualModel.type}&apos; not registered</div>;
+
     return (
       <div className={styles.unregisteredComponentContainer}>
-        <ErrorIconPopover
-          validationResult={componentNotFoundError}
-          type="error"
-        >
-          <div className={styles.unregisteredComponentMessage}>Component &apos;{actualModel.type}&apos; not registered</div>
-        </ErrorIconPopover>
+        {shaForm.formMode !== 'designer' ? (
+          <ErrorIconPopover
+            mode="validation"
+            validationResult={componentNotFoundError}
+            type="error"
+            isDesignerMode={false}
+          >
+            {unregisteredMessage}
+          </ErrorIconPopover>
+        ) : unregisteredMessage}
       </div>
     );
   }

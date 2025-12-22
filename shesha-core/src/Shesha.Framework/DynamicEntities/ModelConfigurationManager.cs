@@ -1,4 +1,4 @@
-﻿using Abp.Collections.Extensions;
+﻿﻿using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
@@ -6,6 +6,7 @@ using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Abp.Runtime.Caching;
+using Abp.Runtime.Validation;
 using AutoMapper;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
@@ -28,6 +29,7 @@ using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -297,9 +299,73 @@ namespace Shesha.DynamicEntities
             return res;
         }
 
+        private void ValidateDuplicatedProperties(List<ModelPropertyDto> properties, List<ValidationResult> errors, List<string> duplicated, string path)
+        {
+            foreach (var prop in properties)
+            {
+                var fullPath = string.IsNullOrEmpty(path) ? prop.Name : $"{path}.{prop.Name}";
+                try
+                {
+                    CodeNamingHelper.ValidateCodeIdentifier(prop.Name);
+                }
+                catch (Exception e)
+                {
+                    errors.Add(new ValidationResult($"Wrong property name {fullPath}: {e.Message}"));
+                }
+
+                if (properties.Any(x => x != prop && x.Name == prop.Name && !duplicated.Contains(fullPath)))
+                {
+                    duplicated.Add(fullPath);
+                    errors.Add(new ValidationResult($"Duplicated property name '{fullPath}'"));                }
+                if (prop.Properties.Any())
+                    ValidateDuplicatedProperties(prop.Properties, errors, duplicated, fullPath);
+            }
+        }
+
+        private void Validate(ModelConfigurationDto input, bool isNew)
+        {
+            var errors = new List<ValidationResult>();
+
+            try
+            {
+                CodeNamingHelper.ValidateCodeIdentifier(input.Name);
+            }
+            catch (Exception e)
+            {
+                errors.Add(new ValidationResult($"Wrong Entity name '{input.Name}': {e.Message}"));
+            }
+
+            if (isNew && Repository.GetAll().Any(x => 
+                x.Name == input.Name
+                && (
+                    x.Module != null && x.Module.Name == input.Module 
+                    || x.Module == null && (input.Module == "" || input.Module == null))))
+            {
+                errors.Add(new ValidationResult($"The Entity with name {input.Name} is already exist in the Module '{input.Module}'"));
+            }
+
+            var duplicated = new List<string>();
+            ValidateDuplicatedProperties(input.Properties, errors, duplicated, "");
+
+            if (errors.Any())
+                throw new AbpValidationException("Check the validation errors", errors);
+        }
+
+
+        private async Task SetPermissionIfNotNullAsync(PermissionedObjectDto? permission, string type)
+        {
+            if (permission != null)
+            {
+                permission.Type = type;
+                await _permissionedObjectManager.SetAsync(permission);
+            }
+        }
+
         [UnitOfWork]
         private async Task<ModelConfigurationDto> CreateOrUpdateAsync(EntityConfig entityConfig, ModelConfigurationDto input, bool isNew)
         {
+            Validate(input, isNew);
+
             // ToDo: AS - Think if we allow to change name because there can be created inherited classes
             //config.Name = config.CreatedInDb ? config.Name : dto.Name; // update only if the property is not created in DB yet
 
@@ -355,31 +421,11 @@ namespace Shesha.DynamicEntities
                 await PropertyConfigRepo.DeleteAsync(prop);
             }
 
-            if (input.Permission != null)
-            {
-                input.Permission.Type = ShaPermissionedObjectsTypes.Entity;
-                await _permissionedObjectManager.SetAsync(input.Permission);
-            }
-            if (input.PermissionGet != null)
-            {
-                input.PermissionGet.Type = ShaPermissionedObjectsTypes.EntityAction;
-                await _permissionedObjectManager.SetAsync(input.PermissionGet);
-            }
-            if (input.PermissionCreate != null)
-            {
-                input.PermissionCreate.Type = ShaPermissionedObjectsTypes.EntityAction;
-                await _permissionedObjectManager.SetAsync(input.PermissionCreate);
-            }
-            if (input.PermissionUpdate != null)
-            {
-                input.PermissionUpdate.Type = ShaPermissionedObjectsTypes.EntityAction;
-                await _permissionedObjectManager.SetAsync(input.PermissionUpdate);
-            }
-            if (input.PermissionDelete != null)
-            {
-                input.PermissionDelete.Type = ShaPermissionedObjectsTypes.EntityAction;
-                await _permissionedObjectManager.SetAsync(input.PermissionDelete);
-            }
+            await SetPermissionIfNotNullAsync(input.Permission, ShaPermissionedObjectsTypes.Entity);
+            await SetPermissionIfNotNullAsync(input.PermissionGet, ShaPermissionedObjectsTypes.EntityAction);
+            await SetPermissionIfNotNullAsync(input.PermissionCreate, ShaPermissionedObjectsTypes.EntityAction);
+            await SetPermissionIfNotNullAsync(input.PermissionUpdate, ShaPermissionedObjectsTypes.EntityAction);
+            await SetPermissionIfNotNullAsync(input.PermissionDelete, ShaPermissionedObjectsTypes.EntityAction);
 
             await _unitOfWorkManager.Current.SaveChangesAsync();
 
@@ -437,6 +483,32 @@ namespace Shesha.DynamicEntities
             }
         }
 
+        private void NormalizePropertyInput(ModelPropertyDto input)
+        {
+            // remove unused nested properties
+            if (input.DataType != DataTypes.Array)
+                input.ItemsType = null;
+            if (input.DataType != DataTypes.Array && !(input.DataType == DataTypes.Object && input.DataFormat == ObjectFormats.Interface))
+                input.Properties = new List<ModelPropertyDto>();
+
+            if (input.ItemsType != null)
+                NormalizePropertyInput(input.ItemsType);
+
+            input.Properties.ForEach(NormalizePropertyInput);
+
+            // clear unused validations
+            if (input.DataType != DataTypes.String)
+            {
+                input.MinLength = null;
+                input.MaxLength = null;
+            }
+            if (input.DataType != DataTypes.Number)
+            {
+                input.Min = null;
+                input.Max = null;
+            }
+        }
+
         private async Task<EntityProperty?> BindPropertiesAndReturnItemsTypeAsync(
             List<EntityProperty> allProperties,
             List<ModelPropertyDto> inputProperties,
@@ -452,6 +524,8 @@ namespace Shesha.DynamicEntities
             var sortOrder = 0;
             foreach (var inputProp in inputProperties.OrderBy(x => x.SortOrder ?? int.MaxValue))
             {
+                NormalizePropertyInput(inputProp);
+
                 var inputName = inputProp.Name.Trim();
 
                 var propId = inputProp.Id.ToGuidOrNull();
@@ -646,10 +720,12 @@ namespace Shesha.DynamicEntities
             dbProp.Description = dto.Description;
             dbProp.Formatting = dto.Formatting;
             dbProp.Label = dto.Label;
+
             dbProp.Min = dto.Min;
             dbProp.Max = dto.Max;
             dbProp.MaxLength = dto.MaxLength;
             dbProp.MinLength = dto.MinLength;
+
             dbProp.ReadOnly = dto.ReadOnly ?? false;
             dbProp.ReferenceListModule = dto.ReferenceListId?.Module;
             dbProp.ReferenceListName = dto.ReferenceListId?.Name;

@@ -22,7 +22,6 @@ import { StandaloneTable } from './standaloneTable';
 import { useDataTableStore } from '@/providers/dataTable';
 import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './utils';
 
-
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStore(false);
@@ -55,6 +54,11 @@ const TableComponent: TableComponentDefinition = {
       items: [],
       striped: true,
       hoverHighlight: true,
+      rowDimensions: {
+        height: '40px',
+        minHeight: 'auto',
+        maxHeight: 'auto',
+      },
       ...defaults,
       ...tableDefaults,
       ...tableSettingsDefaults,
@@ -63,6 +67,15 @@ const TableComponent: TableComponentDefinition = {
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  validateModel: (model, addModelError) => {
+    // Data context validation is now handled centrally in formComponent.tsx
+
+    // Validate that table has columns configured
+    const hasColumns = model.items && Array.isArray(model.items) && model.items.length > 0;
+    if (!hasColumns) {
+      addModelError('items', 'Configure at least one column in the settings panel');
+    }
+  },
   migrator: (m) =>
     m
       .add<ITableComponentProps>(0, (prev) => {
@@ -143,7 +156,11 @@ const TableComponent: TableComponentDefinition = {
       }))
       .add<ITableComponentProps>(18, migrateV17toV18)
       .add<ITableComponentProps>(19, migrateV18toV19)
-      .add<ITableComponentProps>(20, (prev) => ({ ...prev, hoverHighlight: prev.hoverHighlight ?? true })),
+      .add<ITableComponentProps>(20, (prev) => ({ ...prev, hoverHighlight: prev.hoverHighlight ?? true }))
+      .add<ITableComponentProps>(21, (prev) => ({
+        ...prev,
+        rowDimensions: prev.rowDimensions ?? { height: '40px' },
+      })),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [

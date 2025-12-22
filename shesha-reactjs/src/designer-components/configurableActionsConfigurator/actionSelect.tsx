@@ -42,7 +42,20 @@ export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions,
       const ownerActions = actions[owner];
       const ownerNodes: IActionSelectItem[] = [];
 
-      ownerActions.actions.forEach((action) => {
+      // Sort actions by sortOrder (lower numbers first), then by name if sortOrder is not specified
+      const sortedActions = [...ownerActions.actions].sort((a, b) => {
+        const orderA = a.sortOrder ?? 999;
+        const orderB = b.sortOrder ?? 999;
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+        // If sortOrder is the same, sort alphabetically by label/name
+        const nameA = (a.label ?? a.name).toLowerCase();
+        const nameB = (b.label ?? b.name).toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+
+      sortedActions.forEach((action) => {
         const displayName = action.label ?? action.name;
 
         ownerNodes.push({

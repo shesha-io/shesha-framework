@@ -17,11 +17,38 @@ import { getEntityTypeName, isEntityTypeIdEmpty } from '@/providers/metadataDisp
 
 type ITableContextInnerProps = ITableContextComponentProps;
 
+/**
+ * Helper to check if component has configuration errors (for internal DataTableProvider logic)
+ * This does NOT display errors - that's handled by FormComponent wrapper via validateModel
+ */
+const getInternalValidationStatus = (
+  sourceType: ITableContextComponentProps['sourceType'],
+  entityType: ITableContextComponentProps['entityType'],
+  endpoint: ITableContextComponentProps['endpoint'],
+  propertyName: ITableContextComponentProps['propertyName'],
+): IModelValidation | undefined => {
+  const hasConfigError = !sourceType ||
+    (sourceType === 'Entity' && isEntityTypeIdEmpty(entityType)) ||
+    (sourceType === 'Url' && !endpoint) ||
+    (sourceType === 'Form' && !propertyName);
+
+  if (hasConfigError) {
+    return {
+      hasErrors: true,
+      componentType: 'dataContext',
+      errors: [],
+      validationType: 'warning',
+    };
+  }
+
+  return undefined;
+};
+
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
   const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering, components, onBeforeRowReorder, onAfterRowReorder } = props;
   const { formMode } = useForm();
   const { data } = useFormData();
-  const { styles, cx } = useStyles();
+  const { styles } = useStyles();
   const parent = useParent();
 
   const isDesignerMode = formMode === 'designer';
@@ -39,80 +66,29 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
   const getDataPath = evaluateString(endpoint, { data });
 
-  // Validation: Check for missing required properties
-  const missingProperty = !sourceType
-    ? 'sourceType'
-    : sourceType === 'Entity' && isEntityTypeIdEmpty(entityType)
-      ? 'entityType'
-      : sourceType === 'Url' && !endpoint
-        ? 'endpoint'
-        : sourceType === 'Form' && !propertyName
-          ? 'propertyName'
-          : null;
-
-  // Create validation result for error icon display (in both designer and runtime modes)
-  let validationResult: IModelValidation | undefined;
-  let validationType: 'error' | 'warning' | 'info' = 'warning';
-
-  if (missingProperty) {
-    const getErrorMessage = (prop: string): string => {
-      switch (prop) {
-        case 'entityType':
-          return 'Please configure a valid Entity Type in the component settings.';
-        case 'endpoint':
-          return 'Please configure a valid Endpoint in the component settings.';
-        case 'propertyName':
-          return 'Please configure a valid Property Name in the component settings.';
-        case 'sourceType':
-          return 'Please configure a Source Type in the component settings.';
-        default:
-          return 'Please configure the required properties in the component settings.';
-      }
-    };
-
-    validationResult = {
-      hasErrors: true,
-      componentId: id,
-      componentName: componentName,
-      componentType: 'datatableContext',
-      errors: [{ propertyName: missingProperty, error: getErrorMessage(missingProperty) }],
-    };
-  } else if (!hasChildComponents) {
-    // Show info icon when configured correctly but has no children
-    validationResult = {
-      hasErrors: true,
-      componentId: id,
-      componentName: componentName,
-      componentType: 'datatableContext',
-      errors: [{ error: 'Drag and drop child components inside this Data Context to display data.' }],
-    };
-    validationType = 'info';
-  }
+  // Get internal validation status for DataTableProvider (used for internal logic only)
+  // Error display is handled by FormComponent wrapper via validateModel
+  const internalValidation = getInternalValidationStatus(sourceType, entityType, endpoint, propertyName);
 
   const provider = (getFieldValue = undefined, onChange = undefined): ReactElement => {
     // Determine the appropriate style class based on designer mode and child components
-    const getStyleClass = (): string => {
-      if (isDesignerMode)
-        return hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty;
-      else {
-        if (hasChildComponents)
-          return styles.dataContextRuntime;
-        else
-          return styles.dataContextRuntimeEmpty;
-      }
-    };
+    const styleClass = isDesignerMode
+      ? (hasChildComponents ? styles.dataContextDesignerWithChildren : styles.dataContextDesignerEmpty)
+      : (hasChildComponents ? styles.dataContextRuntime : styles.dataContextRuntimeEmpty);
 
-    // Show only the empty state box when empty and in designer mode
-    let content: ReactElement;
-    if (isDesignerMode && !hasChildComponents) {
-      content = (
-        <div className={cx(styles.dataContextDesignerEmpty)}>
-          <TableContextEmptyState containerId={id} componentId={id} />
-        </div>
-      );
-    } else {
-      content = (
-        <div className={getStyleClass()}>
+    // If there are validation errors, don't render children - just show the empty state or wrapper
+    const hasValidationErrors = internalValidation?.hasErrors;
+
+    // Render wrapper div with computed styleClass; inner children differ based on empty state
+    return (
+      <div className={styleClass}>
+        {hasValidationErrors || (isDesignerMode && !hasChildComponents) ? (
+          <TableContextEmptyState
+            containerId={id}
+            componentId={id}
+            readOnly={hasValidationErrors}
+          />
+        ) : (
           <DataTableProvider
             userConfigId={props.id}
             entityType={entityType}
@@ -136,41 +112,34 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
             customReorderEndpoint={customReorderEndpoint}
             onBeforeRowReorder={onBeforeRowReorder}
             onAfterRowReorder={onAfterRowReorder}
+            contextValidation={internalValidation}
           >
             <ComponentsContainer
               containerId={id}
-              className={isDesignerMode ? `${styles.dataContextComponentsContainer} ${!hasChildComponents ? styles.dataContextComponentsContainerEmpty : ''}` : undefined}
+              className={isDesignerMode ? [styles.dataContextComponentsContainer, !hasChildComponents && styles.dataContextComponentsContainerEmpty].filter(Boolean).join(' ') : undefined}
               itemsLimit={-1}
               emptyInsertThreshold={20}
               showHintWhenEmpty={false}
             />
           </DataTableProvider>
-        </div>
-      );
-    }
-
-    // Wrap with error icon if there are validation errors
-    if (validationResult?.hasErrors) {
-      return (
-        <ErrorIconPopover validationResult={validationResult} type={validationType}>
-          {content}
-        </ErrorIconPopover>
-      );
-    }
-
-    return content;
+        )}
+      </div>
+    );
   };
 
-  if (props?.hidden) {
+  if (props.hidden) {
     return null;
   }
-  return sourceType === 'Form'
+
+  const componentContent = sourceType === 'Form'
     ? (
       <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
         {(value, onChange) => provider(() => value, onChange)}
       </ConfigurableFormItem>
     )
     : provider();
+
+  return componentContent;
 };
 
 export const TableContext: FC<ITableContextComponentProps> = (props) => {

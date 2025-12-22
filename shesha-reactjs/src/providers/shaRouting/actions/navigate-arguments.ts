@@ -12,8 +12,8 @@ export const getNavigateArgumentsForm: FormMarkupFactory = ({ fbf }) => {
         parentId: 'root',
         label: 'Navigation Type',
         buttonGroupOptions: [
-          { icon: 'LinkOutlined', title: 'Url', value: 'url' },
           { icon: 'FormOutlined', title: 'Form', value: 'form' },
+          { icon: 'LinkOutlined', title: 'Url', value: 'url' },
         ],
       },
       {

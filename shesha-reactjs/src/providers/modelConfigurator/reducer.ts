@@ -11,9 +11,11 @@ const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto =
     properties: data.properties
       .filter((p) => !p.isFrameworkRelated) // remove framework fields
       .map((p) => {
+        const prop = { ...p };
         if (p.dataType === DataTypes.entityReference && p.dataFormat === EntityFormats.genericEntity)
-          return { ...p, genericEntityReference: true };
-        return p;
+          prop.genericEntityReference = true;
+        prop.allowEdit = !p.createdInDb && !p.inheritedFromId && p.source !== 1;
+        return prop;
       }),
   };
 };
@@ -130,6 +132,7 @@ const modelReducer = handleActions<IModelConfiguratorStateContext, any>(
         isModified: false,
         isSaving: false,
         id: payload.id,
+        initialConfiguration: preparedData,
         modelConfiguration: preparedData,
         showErrors: false,
         errors: [],

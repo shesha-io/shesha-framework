@@ -21,7 +21,7 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
         {
         }
 
-        public string ItemType => NotificationChannelConfig.ItemTypeName;
+        public override string ItemType => NotificationChannelConfig.ItemTypeName;
 
         protected override Task<bool> CustomPropsAreEqualAsync(NotificationChannelConfig item, DistributedNotificationChannel distributedItem)
         {

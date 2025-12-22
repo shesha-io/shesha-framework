@@ -285,7 +285,6 @@ export const convertRowStylingBoxToPadding = (rowStylingBox?: string | RowStylin
     return undefined;
   }
 
-  // Add px units to values if needed
   const topPx = addPxUnit(top);
   const rightPx = addPxUnit(right);
   const bottomPx = addPxUnit(bottom);

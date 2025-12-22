@@ -29,7 +29,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
             _distributionHelper = distributionHelper;
         }
 
-        public string ItemType => ReferenceList.ItemTypeName;
+        public override string ItemType => ReferenceList.ItemTypeName;
 
         protected override async Task AfterImportAsync(ReferenceList item, DistributedReferenceList distributedItem, IConfigurationItemsImportContext context)
         {

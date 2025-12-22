@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain;
+using Shesha.Services.ConfigurationItems;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -41,6 +42,13 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <param name="items"></param>
         /// <returns></returns>
         Task<List<DistributedConfigurableItemBase>> SortItemsAsync(List<DistributedConfigurableItemBase> items);
+
+        /// <summary>
+        /// Get importer for a subtype (if applicable). Is used when single importer supports multiple item subtypes
+        /// </summary>
+        /// <param name="distributedItem"></param>
+        /// <returns></returns>
+        IConfigurableItemImport GetSubtypeImporter(DistributedConfigurableItemBase distributedItem);
     }
 
     public interface IConfigurableItemImport<TItem> : IConfigurableItemImport where TItem : ConfigurationItem 

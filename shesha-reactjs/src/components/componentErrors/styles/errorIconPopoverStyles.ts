@@ -1,9 +1,9 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }) => {
+export const useStyles = createStyles(({ css, cx, token }, { isDesignerMode = false }: { isDesignerMode?: boolean }) => {
   const errorIconContainer = cx("sha-error-icon-container", css`
     position: relative;
-    display: contents;
+    ${isDesignerMode ? 'display: block; width: 100%;' : 'display: contents;'}
   `);
 
   const iconWrapper = cx("sha-error-icon-wrapper", css`
@@ -11,13 +11,11 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
     cursor: pointer;
     border-radius: 50%;
-    background-color: ${token.colorBgContainer};
+    background-color: transparent;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 9999;
+    z-index: ${isDesignerMode ? '100' : '10'};
     transition: all 0.2s ease;
 
     &:hover {
@@ -27,8 +25,8 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   `);
 
   const iconTopRight = cx("sha-error-icon-top-right", css`
-    top: 4px;
-    right: 4px;
+    top: ${isDesignerMode ? '28px' : '4px'};
+    right: 6px;
 
     &:hover {
       transform: scale(1.1);

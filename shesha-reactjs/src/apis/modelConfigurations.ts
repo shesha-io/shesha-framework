@@ -220,6 +220,9 @@ export interface ModelPropertyDto {
 
   /** Used only for Model Configurator */
   genericEntityReference?: boolean;
+
+  /** Used only for Model Configurator */
+  allowEdit?: boolean;
 }
 
 /**

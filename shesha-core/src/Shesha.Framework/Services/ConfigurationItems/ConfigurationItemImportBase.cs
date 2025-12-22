@@ -89,12 +89,13 @@ namespace Shesha.Services.ConfigurationItems
         }
     }
 
-    public abstract class ConfigurationItemImportBase<TItem, TDistributedItem> : ConfigurationItemImportBase
+    public abstract class ConfigurationItemImportBase<TItem, TDistributedItem> : ConfigurationItemImportBase, IConfigurableItemImport
         where TItem : ConfigurationItem, new()
         where TDistributedItem : DistributedConfigurableItemBase
     {
         protected IRepository<TItem, Guid> Repository { get; private set; }
         public IRepository<ConfigurationItemRevision, Guid> RevisionRepository { get; set; }
+        public abstract string ItemType { get; }
 
         protected ConfigurationItemImportBase(
             IRepository<TItem, Guid> repository,
@@ -105,22 +106,44 @@ namespace Shesha.Services.ConfigurationItems
         }
 
         /// <summary>
+        /// Get importer for a subtype (if applicable). Is used when single importer supports multiple item subtypes
+        /// </summary>
+        /// <param name="distributedItem"></param>
+        /// <returns></returns>
+        public virtual IConfigurableItemImport GetSubtypeImporter(DistributedConfigurableItemBase distributedItem) 
+        {
+            return this;
+        }
+
+        /// <summary>
         /// Reads configuration item from json stream
         /// </summary>
         public virtual async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)
         {
+            var json = await ReadJsonAsync(jsonStream);
+            return await ReadFromJsonAsync(json);
+        }
+
+        protected async Task<string> ReadJsonAsync(Stream jsonStream)
+        {
             using (var reader = new StreamReader(jsonStream))
             {
-                var json = await reader.ReadToEndAsync();
-
-                return await ReadFromJsonAsync(json);
+                return await reader.ReadToEndAsync();
             }
         }
 
         /// <summary>
         /// Reads configuration item from json
         /// </summary>
-        public virtual Task<DistributedConfigurableItemBase> ReadFromJsonAsync(string json) 
+        public virtual async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(string json) 
+        {
+            return await ReadDistributedItemFromJsonAsync(json);
+        }
+
+        /// <summary>
+        /// Reads configuration item from json
+        /// </summary>
+        protected virtual Task<TDistributedItem> ReadDistributedItemFromJsonAsync(string json)
         {
             var result = !string.IsNullOrWhiteSpace(json)
                     ? JsonConvert.DeserializeObject<TDistributedItem>(json)
@@ -129,7 +152,7 @@ namespace Shesha.Services.ConfigurationItems
             if (result == null)
                 throw new Exception($"Failed to read {typeof(TDistributedItem).FullName} from json");
 
-            return Task.FromResult<DistributedConfigurableItemBase>(result);
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -151,6 +174,8 @@ namespace Shesha.Services.ConfigurationItems
             return await ImportAsync(itemConfig, context);
         }
 
+        protected virtual TItem CreateNew(TDistributedItem distributedItem) => new TItem();
+
         protected virtual async Task<TItem> ImportAsync(TDistributedItem distributedItem, IConfigurationItemsImportContext context) 
         {
             using (CfRuntime.DisableConfigurationTracking()) 
@@ -164,12 +189,10 @@ namespace Shesha.Services.ConfigurationItems
                 var isNew = item == null;
                 if (item == null)
                 {
-                    item = new TItem
-                    {
-                        Module = await GetModuleAsync(distributedItem.ModuleName, context),
-                        Application = await GetFrontEndAppAsync(distributedItem.FrontEndApplication, context),
-                        Name = distributedItem.Name,
-                    };
+                    item = CreateNew(distributedItem);
+                    item.Module = await GetModuleAsync(distributedItem.ModuleName, context);
+                    item.Application = await GetFrontEndAppAsync(distributedItem.FrontEndApplication, context);
+                    item.Name = distributedItem.Name;
                 }
 
                 await MapStandardPropsToItemAsync(item, distributedItem);
