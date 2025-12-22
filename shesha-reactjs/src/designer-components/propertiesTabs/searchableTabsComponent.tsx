@@ -35,7 +35,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     style?: React.CSSProperties;
     autoFocus?: boolean;
     wrapperStyle?: React.CSSProperties;
-  }) => {
+  }): JSX.Element => {
     const input = (
       <Input
         type="search"
@@ -139,7 +139,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
                     searchRefs.current.delete(tabKey);
                   }
                 },
-                className: styles.searchField
+                className: styles.searchField,
               })}
               <ComponentsContainer
                 containerId={tab.id + tab.key}
@@ -178,8 +178,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
       {newFilteredTabs.length === 0 &&
         renderSearchInput({
           autoFocus: true,
-        })
-      }
+        })}
       {newFilteredTabs.length === 0 && searchQuery
         ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
         : (
