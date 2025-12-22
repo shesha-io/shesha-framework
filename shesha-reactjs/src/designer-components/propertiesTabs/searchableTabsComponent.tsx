@@ -156,6 +156,29 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
   return (
     <>
+      {newFilteredTabs.length === 0 && (
+        <div
+          className={styles.searchField}
+          style={{
+            top: -16,
+            zIndex: 2,
+            padding: '8px 0',
+          }}
+        >
+          <Input
+            type="search"
+            size="small"
+            allowClear
+            placeholder="Search properties"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            autoFocus
+            suffix={
+              <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+            }
+          />
+        </div>
+      )}
       {newFilteredTabs.length === 0 && searchQuery
         ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
         : (
