@@ -61,6 +61,7 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
     ...stylingBoxAsCSS,
     ...jsStyle,
     justifyContent: model.font?.align,
+    zIndex: 0,
   });
 
 
