@@ -29,6 +29,36 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     setSearchQuery(e.target.value);
   };
 
+  const renderSearchInput = (options?: {
+    ref?: (el: any) => void;
+    className?: string;
+    style?: React.CSSProperties;
+    autoFocus?: boolean;
+    wrapperStyle?: React.CSSProperties;
+  }): JSX.Element => {
+    const input = (
+      <Input
+        type="search"
+        size="small"
+        allowClear
+        placeholder="Search properties"
+        value={searchQuery}
+        onChange={handleSearchChange}
+        suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}
+        ref={options?.ref}
+        className={options?.className}
+        style={options?.style}
+        autoFocus={options?.autoFocus}
+      />
+    );
+
+    return options?.wrapperStyle ? (
+      <div className={styles.searchField} style={options.wrapperStyle}>
+        {input}
+      </div>
+    ) : input;
+  };
+
   const focusActiveTabSearch = useCallback(() => {
     const activeSearchInput = searchRefs.current.get(activeTabKey);
     if (activeSearchInput) {
@@ -101,25 +131,16 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
           ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
           : (
             <ParentProvider model={model}>
-              <Input
-                type="search"
-                size="small"
-                allowClear
-                style={{
-                  marginBottom: '16px',
-                }}
-                ref={(el) => {
+              {renderSearchInput({
+                ref: (el) => {
                   if (el) {
                     searchRefs.current.set(tabKey, el);
                   } else {
                     searchRefs.current.delete(tabKey);
                   }
-                }}
-                placeholder="Search properties"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}
-              />
+                },
+                className: styles.searchField,
+              })}
               <ComponentsContainer
                 containerId={tab.id + tab.key}
                 dynamicComponents={visibleComponents}
@@ -154,28 +175,10 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
 
   return (
     <>
-      {newFilteredTabs.length === 0 && (
-        <div
-          className={styles.searchField}
-          style={{
-            position: 'sticky',
-            top: -16,
-            zIndex: 2,
-            padding: '8px 0',
-          }}
-        >
-          <Input
-            type="search"
-            size="small"
-            allowClear
-            placeholder="Search properties"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            autoFocus
-            suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}
-          />
-        </div>
-      )}
+      {newFilteredTabs.length === 0 &&
+        renderSearchInput({
+          autoFocus: true,
+        })}
       {newFilteredTabs.length === 0 && searchQuery
         ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
         : (
