@@ -20,6 +20,7 @@ import { App } from 'antd';
 import moment from 'moment';
 import { INote } from '@/providers/notes/contexts';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { AdvancedFormats } from '@/interfaces/dataTypes';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -43,7 +44,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   isInput: false,
   name: 'Notes',
   icon: <FormOutlined />,
-  dataTypeSupported: (dataTypeInfo) => dataTypeInfo.dataType === DataTypes.advanced && dataTypeInfo.dataFormat === 'notes',
+  dataTypeSupported: (dataTypeInfo) => dataTypeInfo.dataType === DataTypes.advanced && dataTypeInfo.dataFormat === AdvancedFormats.notes,
   Factory: ({ model }) => {
     const httpClient = useHttpClient();
     const form = useForm();
@@ -138,6 +139,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     ownerType: metadata.entityType && { module: metadata.entityModule, name: metadata.entityType },
     category: metadata.path,
   }),
+  getFieldsToFetch: () => [],
   migrator: (m) =>
     m
       .add<INotesProps>(
