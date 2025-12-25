@@ -12,15 +12,6 @@ namespace Shesha.ConfigurationItems
     /// </summary>
     public interface IModuleManager
     {
-        /*
-        /// <summary>
-        /// Get existing module by alias
-        /// </summary>
-        /// <param name="moduleAlias">Module alias</param>
-        /// <returns></returns>
-        Task<Module> GetModuleByAliasOrNullAsync(string moduleAlias);
-        */
-
         /// <summary>
         /// Get existing module or create it if missing
         /// </summary>

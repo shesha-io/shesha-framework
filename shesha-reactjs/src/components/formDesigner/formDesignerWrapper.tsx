@@ -69,12 +69,12 @@ const FormPersisterStateConsumer: FC<PropsWithChildren> = ({ children }) => {
     return (<Skeleton loading active />);
 
   if (formStore.loaded) {
-    const { flatStructure, settings } = formStore.formProps;
+    const { flatStructure, settings, readOnly } = formStore.formProps;
     return (
       <FormDesignerProvider
         flatMarkup={flatStructure}
         formSettings={settings}
-        readOnly={false}
+        readOnly={readOnly}
       >
         <FormProviderWrapperInner form={form}>
           {children}

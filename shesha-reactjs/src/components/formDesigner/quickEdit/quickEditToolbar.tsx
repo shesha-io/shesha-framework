@@ -8,6 +8,7 @@ import { PreviewButton } from '../toolbar/previewButton';
 import { SaveMenu } from '../toolbar/saveMenu';
 import { UndoRedoButtons } from '../toolbar/undoRedoButtons';
 import { CanvasConfig } from '../toolbar/canvasConfig';
+import { FormName } from '../toolbar/formName';
 
 export interface IQuickEditToolbarProps {
   onUpdated: () => void;
@@ -38,10 +39,8 @@ export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, render
           {!readOnly && (<UndoRedoButtons size="small" />)}
         </div>
       </Space>
-      <div className="sha-designer-toolbar-left">
-        {!readOnly && (
-          <SaveMenu onSaved={onSaved} />
-        )}
+      <div className="sha-designer-toolbar-right">
+        {readOnly ? <FormName /> : <SaveMenu onSaved={onSaved} />}
       </div>
     </div>
   );
