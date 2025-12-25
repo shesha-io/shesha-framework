@@ -3,7 +3,6 @@ import { ConfigurableForm, ShaIcon } from '@/components/';
 import ValidationErrors from '@/components/validationErrors';
 import { FormItemProvider, FormMarkupWithSettings, MetadataProvider, useSheshaApplication } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
-import { useFormConfiguration } from '@/providers/form/api';
 import { FormIdentifier } from '@/providers/form/models';
 import ParentProvider from '@/providers/parentProvider';
 import { get } from '@/utils/fetchers';
@@ -79,7 +78,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const [formTitle, setFormTitle] = useState(displayName);
   const [formMarkup, setFormMarkup] = useState<FormMarkupWithSettings>(null);
   const { backendUrl, httpHeaders } = useSheshaApplication();
-  const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
+  const { getFormAsync } = useConfigurationItemsLoader();
   const { notification } = App.useApp();
   const { styles } = useStyles();
 
@@ -96,9 +95,13 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
     // Only fetch markup for backward compatibility when not using formArguments
     if (formIdentifier) {
-      fetchForm()
+      getFormAsync({ formId: formIdentifier, skipCache: false })
         .then((response) => {
-          if (response) setFormMarkup(response);
+          const form: FormMarkupWithSettings = {
+            formSettings: response.settings,
+            components: response.markup ?? [],
+          };
+          if (response) setFormMarkup(form);
           else setLoadingState('error');
         })
         .catch(() => {

@@ -28,7 +28,7 @@ interface IMigrationRegistrationsOwner<TDst = IHasVersion, TContext = any> {
 }
 
 export class MigratorFluent<TModel = IHasVersion, TDst = IHasVersion, TContext = any> {
-  readonly migrator: IMigrationRegistrationsOwner<TDst>;
+  readonly migrator: IMigrationRegistrationsOwner<TDst, TContext>;
 
   constructor(owner: IMigrationRegistrationsOwner<TDst>) {
     this.migrator = owner;

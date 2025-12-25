@@ -81,7 +81,7 @@ export interface IConfigurableActionIdentifier extends IHasActionOwner {
 export type DynamicContextHook = () => GenericDictionary;
 export const EMPTY_DYNAMIC_CONTEXT_HOOK: DynamicContextHook = () => ({});
 
-export type ConfigurableActionArgumentsMigrationContext = never;
+export type ConfigurableActionArgumentsMigrationContext = void;
 
 /**
  * Arguments migrator
