@@ -398,5 +398,10 @@ namespace Shesha.ConfigurationItems
 
             await importer.ImportItemAsync(distributedItem, new PackageImportContext());
         }
+
+        public virtual Task<string> GetBackwardCompatibleModuleNameAsync(string name)
+        {
+            return Task.FromResult(string.Empty);
+        }
     }
 }
