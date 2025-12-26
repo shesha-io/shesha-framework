@@ -181,7 +181,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         isDynamic: false,
                         validate: {},
                         settingsValidationErrors: [],
-                        modelType: '{{data.entityType}}',
+                        modelType: {
+                          _code: 'return getSettingValue(data?.entityType);',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
                         fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                         hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
                       },

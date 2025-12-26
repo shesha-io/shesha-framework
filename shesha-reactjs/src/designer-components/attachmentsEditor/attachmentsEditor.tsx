@@ -4,7 +4,7 @@ import moment from 'moment';
 import React from 'react';
 import { CustomFile, IconType } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IToolboxComponent } from '@/interfaces';
+import { DataTypes, IToolboxComponent } from '@/interfaces';
 import { IStyleType, useDataContextManagerActions, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
 import { FormIdentifier, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
@@ -24,6 +24,7 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
+import { AdvancedFormats } from '@/interfaces/dataTypes';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -163,6 +164,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   type: 'attachmentsEditor',
   isInput: true,
   name: 'File list',
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.advanced && dataFormat === AdvancedFormats.fileList,
   icon: <FolderAddOutlined />,
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
@@ -261,6 +263,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     ...model,
     filesCategory: metadata.path,
   }),
+  // remove field from the payload even if propertyName is provided
+  getFieldsToFetch: () => [],
   migrator: (m) => m
     .add<IAttachmentsEditorProps>(0, (prev) => {
       return {

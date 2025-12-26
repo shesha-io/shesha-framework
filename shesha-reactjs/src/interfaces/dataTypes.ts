@@ -43,6 +43,11 @@ export const NumberFormats = {
   decimal: 'decimal',
 };
 
+export const AdvancedFormats = {
+  notes: 'notes',
+  fileList: 'attachmentsEditor',
+};
+
 export const DataTypes = {
   guid: 'guid',
   string: 'string',
