@@ -197,7 +197,7 @@ namespace Shesha.Bootstrappers
                 LogInfo($"  list in the DB: not found");
 
                 listInDb = new ReferenceList() { 
-                    Module = module,
+                    Module = listModule,
                     Name = list.RefListId.Name,
                 };
 
@@ -216,11 +216,9 @@ namespace Shesha.Bootstrappers
                 LogInfo($"  list in the DB: found");
 
                 // update list if required
-                if (module != null && listInDb.Module != module || !listInDb.HardLinkToApplication)
+                if (!listInDb.HardLinkToApplication)
                 {
-                    listInDb.Module = listModule;
                     listInDb.SetHardLinkToApplication(true);
-
                     await _listRepo.UpdateAsync(listInDb);
                 }
             }
