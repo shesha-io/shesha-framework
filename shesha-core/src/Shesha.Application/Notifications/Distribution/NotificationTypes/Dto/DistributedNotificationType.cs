@@ -1,7 +1,6 @@
 ﻿using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
 {
@@ -33,8 +32,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
         /// <summary>
         /// List of NotificationChannelConfigs
         /// </summary>
-        [MaxLength(int.MaxValue)]
-        public string OverrideChannels { get; set; } = string.Empty;
+        public IList<ConfigurationItemIdentifierDto>? OverrideChannels { get; set; } = new List<ConfigurationItemIdentifierDto>();
         /// <summary>
         ///  messages without which the user should not proceed in any case e.g. OTP
         /// </summary>
