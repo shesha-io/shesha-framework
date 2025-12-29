@@ -145,7 +145,7 @@ const DropdownComponent: DropdownComponentDefinition = {
       delete result['referenceListName'];
       const { referenceListId } = result;
       const knownPrefixes = ["Shesha.Framework", "Shesha.Core", "Shesha.Scheduler"];
-      if (referenceListId && !referenceListId.module && knownPrefixes.some((p) => referenceListId.name.startsWith(p)))
+      if (referenceListId && referenceListId.name && !referenceListId.module && knownPrefixes.some((p) => referenceListId.name.startsWith(p)))
         result.referenceListId = { module: "Shesha", name: referenceListId.name };
       return result;
     }),
