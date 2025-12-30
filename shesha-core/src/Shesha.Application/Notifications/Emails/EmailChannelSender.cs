@@ -3,13 +3,13 @@ using Castle.Core.Logging;
 using Shesha.Configuration;
 using Shesha.Configuration.Email;
 using Shesha.Domain;
+using Shesha.Email;
 using Shesha.Email.Dtos;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.MessageParticipants;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
@@ -86,38 +86,15 @@ namespace Shesha.Notifications
         {
             try
             {
-                using (var smtpClient = await GetSmtpClientAsync())
-                {
-                    smtpClient.Send(mail);
-                }
+                using var mimeMessage = MailKitEmailHelper.ConvertToMimeMessage(mail);
+                var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
+                await MailKitEmailHelper.SendAsync(mimeMessage, smtpSettings);
             }
             catch (Exception ex)
             {
                 Logger.Error($"Error sending email: {ex.Message}", ex);
                 throw new InvalidOperationException($"An error occurred while sending the email. Message: {ex.Message} ", ex);
             }
-        }
-
-        private async Task<SmtpClient> GetSmtpClientAsync() 
-        {
-            var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
-            return GetSmtpClient(smtpSettings);
-        }
-
-        /// <summary>
-        /// Returns SmtpClient configured according to the current application settings
-        /// </summary>
-        private SmtpClient GetSmtpClient(SmtpSettings smtpSettings)
-        {
-            var client = new SmtpClient(smtpSettings.Host, smtpSettings.Port)
-            {
-                EnableSsl = smtpSettings.EnableSsl,
-                Credentials = string.IsNullOrWhiteSpace(smtpSettings.Domain)
-                    ? new NetworkCredential(smtpSettings.UserName, smtpSettings.Password)
-                    : new NetworkCredential(smtpSettings.UserName, smtpSettings.Password, smtpSettings.Domain)
-            };
-
-            return client;
         }
 
         /// <summary>
