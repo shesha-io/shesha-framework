@@ -5,30 +5,36 @@ import { MovieOutlined } from './movieOutlined';
 //file icons
 const imageTypes = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'];
 const videoTypes = ['.mp4', '.webm', '.ogg'];
-const audioTypes = ['.mp3', '.wav', '.ogg'];
+const audioTypes = ['.mp3', '.wav', '.ogg', '.m4a'];
 const compressedTypes = ['.zip', '.rar', '.tar'];
 
-export const isImageType = (type) => imageTypes.includes(type);
-export const isVideoType = (type) => videoTypes.includes(type);
-export const isAudioType = (type) => audioTypes.includes(type);
+export const isImageType = (type: string): boolean => imageTypes.includes(type);
+export const isVideoType = (type: string): boolean => videoTypes.includes(type);
+export const isAudioType = (type: string): boolean => audioTypes.includes(type);
 
 export const fileIcons = {
-    ...Object.assign({}, ...imageTypes.map(type => ({ [type]: { component: <FileImageOutlined style={{ color: '#0083BE', verticalAlign: 'middle' }} /> } }))),
-    ...Object.assign({}, ...videoTypes.map(type => ({ [type]: { component: <MovieOutlined fill='#FF6D01' style={{ color: '#FF6D01', verticalAlign: 'middle' }} /> } }))),
-    ...Object.assign({}, ...audioTypes.map(type => ({ [type]: { component: <MusicNoteOutlined fill='#8A4FFF' style={{ color: '#8A4FFF', verticalAlign: 'middle' }} /> } }))),
-    ...Object.assign({}, ...compressedTypes.map(type => ({ [type]: { component: <FileZipOutlined style={{ color: '#F9AA00', verticalAlign: 'middle' }} /> } }))),
-    '.pdf': { component: <FilePdfOutlined style={{ color: '#ED2224', verticalAlign: 'middle' }} /> },
-    '.doc': { component: <FileWordOutlined style={{ color: '#2B579A', verticalAlign: 'middle' }} /> },
-    '.docx': { component: <FileWordOutlined style={{ color: '#2B579A', verticalAlign: 'middle' }} /> },
-    '.xls': { component: <FileExcelOutlined style={{ color: '#217346', verticalAlign: 'middle' }} /> },
-    '.xlsx': { component: <FileExcelOutlined style={{ color: '#217346', verticalAlign: 'middle' }} /> },
-    '.ppt': { component: <FilePptOutlined style={{ color: '#D24726', verticalAlign: 'middle' }} /> },
-    '.pptx': { component: <FilePptOutlined style={{ color: '#D24726', verticalAlign: 'middle' }} /> },
-    '.txt': { component: <FileTextOutlined style={{ color: '#848588', verticalAlign: 'middle' }} /> },
-    '.csv': { component: <FileTextOutlined style={{ color: '#848588', verticalAlign: 'middle' }} /> },
-    default: { component: <PaperClipOutlined style={{ color: '#848588', verticalAlign: 'middle' }} /> },
+  ...Object.assign({}, ...imageTypes.map((type) => ({ [type]: { color: '#0083BE', icon: FileImageOutlined } }))),
+  ...Object.assign({}, ...videoTypes.map((type) => ({ [type]: { color: '#FF6D01', icon: MovieOutlined, fill: true } }))),
+  ...Object.assign({}, ...audioTypes.map((type) => ({ [type]: { color: '#8A4FFF', icon: MusicNoteOutlined, fill: true } }))),
+  ...Object.assign({}, ...compressedTypes.map((type) => ({ [type]: { color: '#F9AA00', icon: FileZipOutlined } }))),
+  '.pdf': { color: '#ED2224', icon: FilePdfOutlined },
+  '.doc': { color: '#2B579A', icon: FileWordOutlined },
+  '.docx': { color: '#2B579A', icon: FileWordOutlined },
+  '.xls': { color: '#217346', icon: FileExcelOutlined },
+  '.xlsx': { color: '#217346', icon: FileExcelOutlined },
+  '.ppt': { color: '#D24726', icon: FilePptOutlined },
+  '.pptx': { color: '#D24726', icon: FilePptOutlined },
+  '.txt': { color: '#848588', icon: FileTextOutlined },
+  '.csv': { color: '#848588', icon: FileTextOutlined },
+  "default": { color: '#848588', icon: PaperClipOutlined },
 };
 
-export const getFileIcon = (type: string) => {
-    return fileIcons[type]?.component || fileIcons.default?.component;
+export const getFileIcon = (type: string, fontSize?: string | number): JSX.Element => {
+  const fileIcon = fileIcons[type] || fileIcons.default;
+  const Icon = fileIcon.icon;
+  const style = { color: fileIcon.color, fontSize };
+
+  return fileIcon.fill
+    ? <Icon fill={fileIcon.color} style={style} />
+    : <Icon style={style} />;
 };

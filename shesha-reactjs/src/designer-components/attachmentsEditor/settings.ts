@@ -85,6 +85,12 @@ export const getSettings = () =>
               },
             ],
           })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'hideFileName',
+            label: 'Hide File Name',
+            parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
+          })
           .addDropdown({
             id: 'f01e54aa-a1a4-4bd6-ba73-c39te48af8ce',
             propertyName: 'layout',
@@ -160,6 +166,21 @@ export const getSettings = () =>
             hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
           })
           .addCheckbox({
+            id: nanoid(),
+            propertyName: 'allowReplace',
+            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+            label: 'Allow Replace',
+            validate: {},
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'allowViewHistory',
+            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+            label: 'Allow View History',
+            validate: {},
+          })
+          .addCheckbox({
             id: '332d298a-0e82-4420-ae3c-38bf5a2246d4',
             propertyName: 'downloadZip',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
@@ -200,6 +221,37 @@ export const getSettings = () =>
               useAsyncDeclaration: true,
             },
             availableConstantsExpression: "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+          })
+          .toJson()
+        ]
+      }
+    })
+    .addCollapsiblePanel({
+      id: nanoid(),
+      propertyName: 'pnlCustom',
+      parentId: 'root',
+      label: 'Custom',
+      labelAlign: "left",
+      expandIconPosition: "start",
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: nanoid(),
+        components: [...new DesignerToolbarSettings()
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'customContent',
+            parentId: 'root',
+            label: 'Show Custom Content',
+            description: 'Enable to show custom content below each file.',
+          })
+          .addFormAutocomplete({
+            id: nanoid(),
+            propertyName: 'extraFormId',
+            parentId: 'root',
+            label: 'Custom Content Form',
+            description: 'Select a form to display custom content under each file.',
+            hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false } as any,
           })
           .toJson()
         ]
@@ -389,14 +441,14 @@ export const getSettings = () =>
                   propertyName: 'width',
                   parentId: 'container-styles-content-880d-4308-c3d996619cb',
                   label: 'Width',
-                  hidden: { _code: 'return getSettingValue(data?.layout) === "vertical";', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.filesLayout) === "vertical";', _mode: 'code', _value: false } as any,
                 })
                 .addTextField({
                   id: '1c03863c-880d-4308-8667-c3d996619cb2',
                   propertyName: 'height',
                   parentId: 'container-styles-content-880d-4308-c3d996619cb',
                   label: 'Height',
-                  hidden: { _code: 'return getSettingValue(data?.layout) === "horizontal";', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.filesLayout) === "horizontal";', _mode: 'code', _value: false } as any,
                 })
                 .addStyleBox({
                   id: '1c03863c-880d-4308-8567-c3d996619cb3',
@@ -412,7 +464,45 @@ export const getSettings = () =>
                 .toJson()]
             }
           })
-
+          .addCollapsiblePanel({
+            id: 'downloaded-file-style',
+            label: 'Downloaded File Style',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            content: {
+              id: 'container-styles-content-880d-4308-c3d996619cb',
+              components: [...new DesignerToolbarSettings()
+                .addCheckbox({
+                    id: nanoid(),
+                    label: 'Style Downloaded File',
+                    propertyName: 'styleDownloadedFiles'
+                  })
+                .addIconPicker({
+                    id: nanoid(),
+                    label: 'Icon',
+                    propertyName: 'downloadedIcon',
+                    hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                  })
+                  .addNumberField({
+                      id: nanoid(),
+                      label: 'Font Size',
+                      propertyName: 'downloadedFileStyles.fontSize',
+                    })
+                    .addColorPicker({
+                      id: nanoid(),
+                      label: 'Font Color',
+                      propertyName: 'downloadedFileStyles.color'
+                    })
+                    .addCodeEditor({
+                      id: nanoid(),
+                      propertyName: 'downloadedFileStyles.style',
+                      hideLabel: false,
+                      label: 'Style',
+                      description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                      parentId: 'pnlDownloadedFileCustomStylePanel',
+                    })
+                .toJson()]
+            },
+          })
           .toJson()]
       }
     })
