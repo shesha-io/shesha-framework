@@ -469,7 +469,7 @@ export const getSettings = () =>
             label: 'Downloaded File Style',
             parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
             content: {
-              id: 'container-styles-content-880d-4308-c3d996619cb',
+              id: 'downloaded-file-style-880d-4308-c3d996619cb',
               components: [...new DesignerToolbarSettings()
                 .addCheckbox({
                     id: nanoid(),

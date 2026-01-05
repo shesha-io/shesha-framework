@@ -55,6 +55,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   borderRadius?: number;
   hideFileName?: boolean;
   removeFieldFromPayload?: boolean;
+  downloadedFileStyles?: any;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {

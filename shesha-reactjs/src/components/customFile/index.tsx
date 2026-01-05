@@ -27,7 +27,7 @@ export interface ICustomFileProps extends IInputStyles {
   maxHeight?: string;
   isDragger?: boolean;
   downloadZip?: boolean;
-  filesLayout?: layoutType;
+  layout?: layoutType;
   listType?: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
@@ -75,7 +75,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       isDownloadZipSucceeded={downloadZipSuccess}
       allowedFileTypes={props?.allowedFileTypes}
       maxHeight={props?.maxHeight}
-      layout={props?.filesLayout}
+      layout={props?.layout}
       listType={props?.listType}
       hasExtraContent={props.hasExtraContent}
       extraFormSelectionMode={props.extraFormSelectionMode}
