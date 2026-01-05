@@ -26,7 +26,6 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
   accept = [],
   layout,
   listType,
-  onFileListChanged,
 }) => {
   const {
     fileList,

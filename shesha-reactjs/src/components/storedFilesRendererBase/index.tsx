@@ -194,7 +194,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const styling = JSON.parse(model.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
   const jsStyle = getStyle(model.style, allData.data);
-  const downloadedFileStyle = getStyle(downloadedFileStyles.style)
+  const downloadedFileStyle = getStyle(downloadedFileStyles.style);
 
   const fullStyle = {
     width: addPx(width),
@@ -207,7 +207,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     borderRadius,
     borderWidth: borderSize,
     borderStyle: borderType
-  }
+  };
 
   const { styles } = useStyles({
     containerStyles: {
