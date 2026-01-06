@@ -62,7 +62,7 @@ export const getSettings = () =>
             parentId: 'root',
             label: 'Is Dragger',
             description: 'Where the uploader should show a dragger instead of buttom',
-            hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false } ,
           })
 
           .addDropdown({
@@ -70,7 +70,7 @@ export const getSettings = () =>
             propertyName: 'listType',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'List Type',
-            hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false } ,
             dataSourceType: 'values',
             values: [
               {
@@ -90,7 +90,7 @@ export const getSettings = () =>
             label: 'Hide File Name',
             propertyName: 'hideFileName',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
           })
           .addDropdown({
             id: 'f01e54aa-a1a4-4bd6-ba73-c39te48af8ce',
@@ -98,7 +98,7 @@ export const getSettings = () =>
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Layout',
             dataSourceType: 'values',
-            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } ,
             values: [
               {
                 label: 'Vertical',
@@ -123,7 +123,7 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Gap',
             description: 'The gap between the thumbnails.',
-            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } ,
           })
           .addCheckbox({
             id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
@@ -149,7 +149,7 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Allow Add',
             validate: {},
-            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } ,
           })
           .addCheckbox({
             id: '6b3d298a-0e82-4420-ae3c-38bf5a2246d4',
@@ -157,7 +157,7 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Allow Remove',
             validate: {},
-            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } ,
           })
           .addCheckbox({
             id: nanoid(),
@@ -165,7 +165,7 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Allow Replace',
             validate: {},
-            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } ,
           })
           .addCheckbox({
             id: nanoid(),
@@ -245,7 +245,7 @@ export const getSettings = () =>
             parentId: 'root',
             label: 'Custom Content Form',
             description: 'Select a form to display custom content under each file.',
-            hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false } ,
           })
           .toJson()
         ]
@@ -353,14 +353,14 @@ export const getSettings = () =>
                   propertyName: 'fontSize',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Font Size',
-                  hidden: { _code: 'return getSettingValue(data?.hideFileName);', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.hideFileName);', _mode: 'code', _value: false } ,
                 })
                 .addColorPicker({
                   id: '1c03863c-880d-4308-8667-c3d996619cb0',
                   propertyName: 'fontColor',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Color',
-                  hidden: { _code: 'return getSettingValue(data?.hideFileName);', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.hideFileName);', _mode: 'code', _value: false } ,
                   allowClear: true
                 })
                 .addTextField({
@@ -368,21 +368,21 @@ export const getSettings = () =>
                   propertyName: 'thumbnailWidth',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Thumbnail Width',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } ,
                 })
                 .addTextField({
                   id: '1c03863c-880d-4308-8667-c3d9966197',
                   propertyName: 'thumbnailHeight',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Thumbnail Height',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } ,
                 })
                 .addTextField({
                   id: '1c03863c-880d-4308-8667-c3d996619cb5',
                   propertyName: 'borderSize',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Border Width',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } ,
                 })
                 .addColorPicker({
                   id: '1c03863c-880d-4308-8667-c3d996619cb6',
@@ -390,14 +390,14 @@ export const getSettings = () =>
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Border Color',
                   allowClear: true,
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } ,
                 })
                 .addDropdown({
                   id: '1c03863c-type-4308-8667-c3d996619cb9',
                   propertyName: 'borderType',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Border Type',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } ,
                   dataSourceType: 'values',
                   values: [
                     {
@@ -417,7 +417,7 @@ export const getSettings = () =>
                   propertyName: 'borderRadius',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Border Radius',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } ,
                 })
                 .toJson()]
             }
@@ -435,14 +435,14 @@ export const getSettings = () =>
                   propertyName: 'width',
                   parentId: 'container-styles-content-880d-4308-c3d996619cb',
                 label: 'Width',
-                  hidden: { _code: 'return getSettingValue(data?.layout) === "vertical";', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.layout) === "vertical";', _mode: 'code', _value: false } ,
                 })
                 .addTextField({
                   id: '1c03863c-880d-4308-8667-c3d996619cb2',
                   propertyName: 'height',
                   parentId: 'container-styles-content-880d-4308-c3d996619cb',
                   label: 'Height',
-                  hidden: { _code: 'return getSettingValue(data?.layout) === "horizontal";', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.layout) === "horizontal";', _mode: 'code', _value: false } ,
                 })
                 .addStyleBox({
                   id: '1c03863c-880d-4308-8567-c3d996619cb3',
@@ -474,27 +474,28 @@ export const getSettings = () =>
                     id: nanoid(),
                     label: 'Icon',
                     propertyName: 'downloadedIcon',
-                    hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
                   })
                   .addNumberField({
                       id: nanoid(),
                       label: 'Font Size',
                       propertyName: 'downloadedFileStyles.fontSize',
-                      hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
                     })
                     .addColorPicker({
                       id: nanoid(),
                       label: 'Font Color',
                       propertyName: 'downloadedFileStyles.color',
-                      hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
                     })
                     .addCodeEditor({
                       id: nanoid(),
                       hideLabel: false,
                       label: 'Style',
+                      propertyName: 'downloadedFileStyles.style',
                       description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                       parentId: 'pnlDownloadedFileCustomStylePanel',
-                      hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
                     })
                 .toJson()]
             },

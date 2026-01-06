@@ -205,8 +205,12 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       formData.append('filesCategory', `${filesCategory}`);
     formData.append('propertyName', '');
 
-    const tempUid = Math.random().toString(36).slice(2);
-    const newFile: IStoredFile = { uid: tempUid, ...file, status: 'uploading', name: file.name };
+    const tempUid: string = Math.random().toString(36).slice(2);
+    const newFile: IStoredFile = {
+      uid: tempUid,
+      status: 'uploading',
+      ...file
+    };
 
     if (!Boolean(payload.ownerId || ownerId) && typeof addDelayedUpdate !== 'function') {
       console.error('File list component is not configured');
