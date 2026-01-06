@@ -474,7 +474,7 @@ export const getSettings = () =>
                     id: nanoid(),
                     label: 'Icon',
                     propertyName: 'downloadedIcon',
-                    hidden: { _code: 'return !getSettingValue(data.styleDownloadedFiles);', _mode: 'code', _value: false } ,
+                    hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
                   })
                   .addNumberField({
                       id: nanoid(),
