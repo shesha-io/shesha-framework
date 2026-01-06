@@ -1,6 +1,7 @@
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, downloadedFileStyles }) => {
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, downloadedFileStyles }: {style: CSSProperties; model: any; containerStyles: CSSProperties; downloadedFileStyles: CSSProperties}) => {
   const { borderRadius, borderWidth, borderColor, borderStyle, color, fontSize, width, height
   } = style;
 

@@ -134,7 +134,9 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
   const uploads = serverData?.success ? serverData.result : [];
 
   const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto): void => {
-    onDownload(fileVersion.versionNo, fileVersion.fileName);
+    if (fileVersion.versionNo != null && fileVersion.fileName != null) {
+      onDownload(fileVersion.versionNo, fileVersion.fileName);
+    }
   };
 
   const content = (

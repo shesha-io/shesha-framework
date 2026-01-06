@@ -30,6 +30,7 @@ import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAnd
 import classNames from 'classnames';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { addPx } from '@/designer-components/button/util';
+import { IDownloadedFileStyleType } from '../customFile';
 
 interface IUploaderFileTypes {
   name: string;
@@ -80,7 +81,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   hideFileName?: boolean;
   gap?: number;
   enableStyleOnReadonly?: boolean;
-  downloadedFileStyles?: any;
+  downloadedFileStyles?: IDownloadedFileStyleType;
   styleDownloadedFiles?: boolean;
   downloadedIcon?: IconType;
 }
@@ -193,8 +194,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   } = model;
   const styling = JSON.parse(model.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
-  const jsStyle = getStyle(model.style, allData.data);
-  const downloadedFileStyle = getStyle(downloadedFileStyles.style);
+  const jsStyle = getStyle(model?.style, allData.data);
+  const downloadedFileStyle = getStyle(downloadedFileStyles?.style);
 
   const fullStyle = {
     width: addPx(width),
@@ -427,7 +428,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               onConfirm={(e) => {
                 e?.preventDefault();
                 e?.stopPropagation();
-                deleteFile(file.uid);
+                deleteFile(fileId);
               }}
               description="Are you sure you want to delete this attachment?"
             >

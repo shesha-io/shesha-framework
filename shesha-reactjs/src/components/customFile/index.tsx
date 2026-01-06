@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { CSSProperties, FC } from 'react';
 import { IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { IconType, StoredFilesRendererBase } from '@/components/';
 import { IInputStyles, useSheshaApplication, useStoredFilesStore } from '@/providers';
@@ -6,6 +6,9 @@ import { layoutType, listType } from '@/designer-components/attachmentsEditor/at
 import { FormIdentifier } from '@/providers/form/models';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 
+export interface IDownloadedFileStyleType extends CSSProperties {
+  style?: string;
+}
 export interface ICustomFileProps extends IInputStyles {
   id?: string;
   ownerId?: string;
@@ -33,7 +36,7 @@ export interface ICustomFileProps extends IInputStyles {
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
-  downloadedFileStyles?: any;
+  downloadedFileStyles?: IDownloadedFileStyleType;
   styleDownloadedFiles?: boolean;
   downloadedIcon?: IconType;
 }
@@ -41,7 +44,6 @@ export interface ICustomFileProps extends IInputStyles {
 export const CustomFile: FC<ICustomFileProps> = (props) => {
   const {
     fileList,
-    // downloadFile,
     deleteFile,
     uploadFile,
     replaceFile,

@@ -20,6 +20,7 @@ import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
+import { IDownloadedFileStyleType } from '@/components/customFile';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -55,7 +56,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   borderRadius?: number;
   hideFileName?: boolean;
   removeFieldFromPayload?: boolean;
-  downloadedFileStyles?: any;
+  downloadedFileStyles?: IDownloadedFileStyleType;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -97,14 +98,16 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       // File list uses propertyName only for support Required feature
       <ConfigurableFormItem model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.id}` }}>
         {(value, onChange) => {
-          const onFileListChanged = (fileList) => {
+          const onFileListChanged = (fileList, isUserAction = false): void => {
             onChange(fileList);
-            if (model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
+            // Only execute custom script if this is a user action (upload/delete)
+            if (isUserAction && model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
           };
 
-          const onDownload = (fileList) => {
+          const onDownload = (fileList, isUserAction = false): void => {
             onChange(fileList);
-            if (model.onDownload) executeScript(model.onDownload, fileList);
+            // Only execute custom script if this is a user action (download)
+            if (isUserAction && model.onDownload) executeScript(model.onDownload, fileList);
           };
 
           return (
