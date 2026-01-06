@@ -86,10 +86,11 @@ export const getSettings = () =>
             ],
           })
           .addCheckbox({
-            id: nanoid(),
-            propertyName: 'hideFileName',
+            id: 'b920ef96-ae27-4a01-bfad-b5b7d0xc18da',
             label: 'Hide File Name',
-            parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
+            propertyName: 'hideFileName',
+            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
           })
           .addDropdown({
             id: 'f01e54aa-a1a4-4bd6-ba73-c39te48af8ce',
@@ -141,13 +142,6 @@ export const getSettings = () =>
             propertyName: 'editMode',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: "Edit mode",
-          })
-          .addCheckbox({
-            id: 'b920ef96-ae27-4a01-bfad-b5b7d0xc18da',
-            label: 'Hide File Name',
-            propertyName: 'hideFileName',
-            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
           })
           .addCheckbox({
             id: '40024b1c-edd4-4b5d-9c85-1dda6fb8db6c',
@@ -486,19 +480,21 @@ export const getSettings = () =>
                       id: nanoid(),
                       label: 'Font Size',
                       propertyName: 'downloadedFileStyles.fontSize',
+                      hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                     })
                     .addColorPicker({
                       id: nanoid(),
                       label: 'Font Color',
-                      propertyName: 'downloadedFileStyles.color'
+                      propertyName: 'downloadedFileStyles.color',
+                      hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                     })
                     .addCodeEditor({
                       id: nanoid(),
-                      propertyName: 'downloadedFileStyles.style',
                       hideLabel: false,
                       label: 'Style',
                       description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                       parentId: 'pnlDownloadedFileCustomStylePanel',
+                      hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                     })
                 .toJson()]
             },

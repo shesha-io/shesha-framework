@@ -132,7 +132,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const allData = useAvailableConstantsData();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<{ url: string; uid: string; name: string } | null>(null);
-  const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
+  const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => (url ? { ...acc, [uid]: url } : acc), {}));
   const [fileToReplace, setFileToReplace] = useState<{ uid: string; id: string } | null>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const fileContextCache = useRef<Map<string, Promise<{ file: UploadFile; fileId: string; fileName: string; fileType: string }>>>(new Map());
@@ -180,7 +180,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const hasFiles = !!fileList.length;
 
   const { height: containerHeight, width: containerWidth } = model;
-  const { 
+  const {
     thumbnailHeight: height,
     thumbnailWidth: width,
     fontColor,
@@ -586,11 +586,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               <div
                 className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
               >
-                <Button type="link" 
-                icon={<PictureOutlined />} 
-                disabled={disabled} 
-                {...uploadBtnProps} 
-                style={listType === 'thumbnail' ? { ...fullStyle } : { color: fontColor }}>
+                <Button type="link"
+                  icon={<PictureOutlined />}
+                  disabled={disabled}
+                  {...uploadBtnProps}
+                  style={listType === 'thumbnail' ? { ...fullStyle } : { color: fontColor }}>
                   {listType === 'text' && '(press to upload)'}
                 </Button>
               </div>
@@ -614,12 +614,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         : (props.disabled && fileList.length === 0
           ? null
           : props.disabled
-            ? <Upload {...props} style={fullStyle} 
-            listType={listTypeAndLayout} />
+            ? <Upload {...props} style={fullStyle}
+              listType={listTypeAndLayout} />
             : isDragger
               ? (
                 <Dragger {...props}>
-                  <DraggerStub  />
+                  <DraggerStub />
                 </Dragger>
               )
               : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
