@@ -474,19 +474,19 @@ export const getSettings = () =>
                     id: nanoid(),
                     label: 'Icon',
                     propertyName: 'downloadedIcon',
-                    hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
+                    hidden: { _code: 'return !getSettingValue(data.styleDownloadedFiles);', _mode: 'code', _value: false } ,
                   })
                   .addNumberField({
                       id: nanoid(),
                       label: 'Font Size',
                       propertyName: 'downloadedFileStyles.fontSize',
-                      hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
+                      hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
                     })
                     .addColorPicker({
                       id: nanoid(),
                       label: 'Font Color',
                       propertyName: 'downloadedFileStyles.color',
-                      hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
+                      hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
                     })
                     .addCodeEditor({
                       id: nanoid(),
@@ -495,7 +495,7 @@ export const getSettings = () =>
                       propertyName: 'downloadedFileStyles.style',
                       description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                       parentId: 'pnlDownloadedFileCustomStylePanel',
-                      hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
+                      hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
                     })
                 .toJson()]
             },
