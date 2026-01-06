@@ -494,7 +494,6 @@ export const getSettings = () =>
                       label: 'Style',
                       propertyName: 'downloadedFileStyles.style',
                       description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                      parentId: 'pnlDownloadedFileCustomStylePanel',
                       hidden: { _code: 'return !getSettingValue(data?.styleDownloadedFiles);', _mode: 'code', _value: false } ,
                     })
                 .toJson()]
