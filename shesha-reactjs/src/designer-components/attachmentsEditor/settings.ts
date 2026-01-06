@@ -440,15 +440,15 @@ export const getSettings = () =>
                   id: '1c03863c-880d-4308-8667-c3d996619cb1',
                   propertyName: 'width',
                   parentId: 'container-styles-content-880d-4308-c3d996619cb',
-                  label: 'Width',
-                  hidden: { _code: 'return getSettingValue(data?.filesLayout) === "vertical";', _mode: 'code', _value: false } as any,
+                label: 'Width',
+                  hidden: { _code: 'return getSettingValue(data?.layout) === "vertical";', _mode: 'code', _value: false } as any,
                 })
                 .addTextField({
                   id: '1c03863c-880d-4308-8667-c3d996619cb2',
                   propertyName: 'height',
                   parentId: 'container-styles-content-880d-4308-c3d996619cb',
                   label: 'Height',
-                  hidden: { _code: 'return getSettingValue(data?.filesLayout) === "horizontal";', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.layout) === "horizontal";', _mode: 'code', _value: false } as any,
                 })
                 .addStyleBox({
                   id: '1c03863c-880d-4308-8567-c3d996619cb3',

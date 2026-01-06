@@ -101,7 +101,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           const onFileListChanged = (fileList, isUserAction = false): void => {
             onChange(fileList);
             // Only execute custom script if this is a user action (upload/delete)
-            if (isUserAction && model.onChangeCustom) executeScript(model.onChangeCustom, fileList);
+            if (isUserAction && model.onFileChanged) executeScript(model.onFileChanged, fileList);
           };
 
           const onDownload = (fileList, isUserAction = false): void => {

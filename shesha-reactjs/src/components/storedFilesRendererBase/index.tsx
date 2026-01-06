@@ -224,9 +224,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       gap: addPx(gap),
       layout: listType === 'thumbnail' && !isDragger,
       hideFileName: rest.hideFileName && listType === 'thumbnail',
-      isDragger,
-      isStub,
-      downloadZip,
     },
     downloadedFileStyles: {
       ...downloadedFileStyle

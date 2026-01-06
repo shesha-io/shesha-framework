@@ -189,7 +189,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       connection?.off('OnFileAdded');
       connection?.off('OnFileDeleted');
     };
-  }, []);
+  }, [connection]);
   //#endregion
 
   const uploadFile = (payload: IUploadFilePayload): void => {
@@ -207,7 +207,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
     const tempUid = (file as any)?.uid ?? Math.random().toString(36).slice(2);
     const newFile: IStoredFile = { uid: tempUid, ...(file as any), status: 'uploading', name: file.name };
-
     if (!Boolean(payload.ownerId || ownerId) && typeof addDelayedUpdate !== 'function') {
       console.error('File list component is not configured');
       dispatch(

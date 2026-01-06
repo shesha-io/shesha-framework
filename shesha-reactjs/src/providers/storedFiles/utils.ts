@@ -1,26 +1,28 @@
-export const removeFile = (fileList = [], fileIdToDelete) => {
-  return fileList.filter(({ id, uid }) => id !== fileIdToDelete && uid !== fileIdToDelete);
+import { IStoredFile } from "@/index";
+
+export const removeFile = (fileList: IStoredFile[] = [], fileIdToDelete: string): IStoredFile[] => {
+    return fileList.filter(({ id, uid }) => id !== fileIdToDelete && uid !== fileIdToDelete);
 };
 
-export const addFile = (newFile, fileList = []) => {
+export const addFile = (newFile: IStoredFile, fileList: IStoredFile[] = []): IStoredFile[] => {
   const found = fileList.some((file) => file.uid === newFile.uid);
   if (!found) {
-    return [...fileList, { ...newFile, uid: newFile.id }];
+    return [...fileList, { ...newFile, uid: newFile.id ?? newFile.uid }];
   }
   return fileList.map((file) =>
     file.uid === newFile.uid
-      ? { ...newFile, uid: newFile.id }
+  ? { ...newFile, uid: newFile.id ?? newFile.uid }
       : file
   );
 };
 
-export const updateDownloadedAFile = (fileList, fileId) => fileList?.map((file) =>
+export const updateDownloadedAFile = (fileList: IStoredFile[] | undefined, fileId: string): IStoredFile[] | undefined => fileList?.map((file) =>
   file.id === fileId || file.uid === fileId
     ? { ...file, userHasDownloaded: true }
     : file
 );
 
-export const updateAllFilesDownloaded = (fileList) => fileList?.map((file) => ({
+export const updateAllFilesDownloaded = (fileList: IStoredFile[] | undefined): IStoredFile[] | undefined => fileList?.map((file) => ({
   ...file,
   userHasDownloaded: true,
 }));
