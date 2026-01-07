@@ -80,7 +80,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   borderRadius?: number;
   hideFileName?: boolean;
   gap?: number;
-  enableStyleOnReadonly?: boolean;
   downloadedFileStyles?: IDownloadedFileStyleType;
   styleDownloadedFiles?: boolean;
   downloadedIcon?: IconType;
@@ -121,7 +120,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   layout,
   listType,
   gap,
-  enableStyleOnReadonly = true,
   downloadedFileStyles,
   styleDownloadedFiles = false,
   downloadedIcon = 'CheckCircleOutlined',
@@ -192,10 +190,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     borderSize,
     borderType
   } = model;
+
+  console.log("Model :: ", model)
   const styling = JSON.parse(model.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
   const jsStyle = getStyle(model?.style, allData.data);
-  const downloadedFileStyle = getStyle(downloadedFileStyles?.style);
+  const downloadedFileStyle = { 
+    ...getStyle(downloadedFileStyles?.style),
+    ...downloadedFileStyles
+  };
 
   const fullStyle = {
     width: addPx(width),
@@ -206,7 +209,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     backgroundColor,
     borderColor,
     borderRadius,
-    borderWidth: borderSize,
+    borderWidth: addPx(borderSize),
     borderStyle: borderType
   };
 
@@ -217,9 +220,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ...jsStyle,
       ...stylingBoxAsCSS,
     },
-    style: enableStyleOnReadonly && disabled
-      ? { height: addPx(model.thumbnailHeight), width: addPx(model.thumbnailWidth) }
-      : { ...fullStyle },
+    style: { ...fullStyle },
     model: {
       gap: addPx(gap),
       layout: listType === 'thumbnail' && !isDragger,
@@ -590,7 +591,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   icon={<PictureOutlined />}
                   disabled={disabled}
                   {...uploadBtnProps}
-                  style={listType === 'thumbnail' ? { ...fullStyle } : { color: fontColor }}>
+                  style={{ color: fontColor }}>
                   {listType === 'text' && '(press to upload)'}
                 </Button>
               </div>

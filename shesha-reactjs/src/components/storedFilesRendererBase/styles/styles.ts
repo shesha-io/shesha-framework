@@ -71,6 +71,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       opacity: 0.8;
       border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
       box-shadow: 0 0 0 1px ${downloadedFileStyles?.color ?? token.colorSuccess}20;
+      ${{...downloadedFileStyles}}
     }
 
     .item-file-name {
@@ -134,16 +135,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .ant-upload-list-item {
       display: flex;
       padding: 0 !important;
+      border: none !important;
 
       :before {
-
         display: none;
       }
     }
 
     .ant-upload-list-item-thumbnail {
-
-      border: ${borderWidth} ${borderStyle} ${borderColor};
+      border: ${borderWidth || '1px'} ${borderStyle || 'solid'} ${borderColor || '#d9d9d9'} !important;
       border-radius: ${borderRadius ?? '8px'} !important;
       height: ${thumbnailHeight} !important;
       width: ${thumbnailWidth} !important;
