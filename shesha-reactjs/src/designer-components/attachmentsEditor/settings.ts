@@ -232,6 +232,11 @@ export const getSettings = () =>
       content: {
         id: nanoid(),
         components: [...new DesignerToolbarSettings()
+          .addButtons({
+            id: nanoid(),
+            label: 'Custom Actions',
+            propertyName: 'customActions'
+          })
           .addCheckbox({
             id: nanoid(),
             propertyName: 'customContent',
