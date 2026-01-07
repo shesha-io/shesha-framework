@@ -25,11 +25,6 @@ import { IDownloadedFileStyleType } from '@/components/customFile';
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
 
-export interface IAttachmentContent {
-  id: string;
-  components?: IConfigurableFormComponent[];
-}
-
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
   ownerId: string;
   ownerType: string;
@@ -77,7 +72,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const enabled = !model.readOnly;
 
-    const executeScript = (script: string, value: unknown) => {
+    const executeScript = (script: string, value: unknown): void => {
 
       executeScriptSync(script, {
         value,
