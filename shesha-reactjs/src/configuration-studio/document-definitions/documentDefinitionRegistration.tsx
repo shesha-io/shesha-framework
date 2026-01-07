@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useConfigurationStudioDocumentDefinitions } from '../cs/hooks';
+import { useConfigurationStudioDocumentDefinitions } from '../cs-environment/hooks';
 import { DocumentDefinition } from '../models';
 
 export interface IDocumentDefinitionRegistrationProps {

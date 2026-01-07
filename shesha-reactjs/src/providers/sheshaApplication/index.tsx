@@ -46,6 +46,7 @@ import { EntityActions } from '../dynamicActions/implementations/dataSourceDynam
 import { UrlActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/urlDynamicMenuItem';
 import { WebStorageContextProvider } from '../dataContextProvider/contexts/webStorageContext';
 import { ProgressBar } from './progressBar';
+import { ConfigurationStudioEnvironmentProvider } from '@/configuration-studio/cs-environment/contexts';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -129,36 +130,38 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                           type="app"
                                           webStorageType="localStorage"
                                         >
-                                          <FormDataLoadersProvider>
-                                            <FormDataSubmittersProvider>
-                                              <CanvasProvider>
-                                                <DataSourcesProvider>
-                                                  <DynamicModalProvider>
-                                                    {(status === 'inprogress' || status === 'waiting') && (
-                                                      <SheshaLoader message={hint || 'Initializing...'} />
-                                                    )}
-                                                    {status === 'ready' && (
-                                                      <DebugPanel>
-                                                        <ApplicationActionsProcessor>
-                                                          <MainMenuProvider>
-                                                            <ProgressBar>{children}</ProgressBar>
-                                                          </MainMenuProvider>
-                                                        </ApplicationActionsProcessor>
-                                                      </DebugPanel>
-                                                    )}
-                                                    {status === 'failed' && (
-                                                      <Result
-                                                        status="500"
-                                                        title="500"
-                                                        subTitle={error?.message || 'Sorry, something went wrong.'}
+                                          <ConfigurationStudioEnvironmentProvider>
+                                            <FormDataLoadersProvider>
+                                              <FormDataSubmittersProvider>
+                                                <CanvasProvider>
+                                                  <DataSourcesProvider>
+                                                    <DynamicModalProvider>
+                                                      {(status === 'inprogress' || status === 'waiting') && (
+                                                        <SheshaLoader message={hint || 'Initializing...'} />
+                                                      )}
+                                                      {status === 'ready' && (
+                                                        <DebugPanel>
+                                                          <ApplicationActionsProcessor>
+                                                            <MainMenuProvider>
+                                                              <ProgressBar>{children}</ProgressBar>
+                                                            </MainMenuProvider>
+                                                          </ApplicationActionsProcessor>
+                                                        </DebugPanel>
+                                                      )}
+                                                      {status === 'failed' && (
+                                                        <Result
+                                                          status="500"
+                                                          title="500"
+                                                          subTitle={error?.message || 'Sorry, something went wrong.'}
                                                         // extra={<Button type="primary">Back Home</Button>}
-                                                      />
-                                                    )}
-                                                  </DynamicModalProvider>
-                                                </DataSourcesProvider>
-                                              </CanvasProvider>
-                                            </FormDataSubmittersProvider>
-                                          </FormDataLoadersProvider>
+                                                        />
+                                                      )}
+                                                    </DynamicModalProvider>
+                                                  </DataSourcesProvider>
+                                                </CanvasProvider>
+                                              </FormDataSubmittersProvider>
+                                            </FormDataLoadersProvider>
+                                          </ConfigurationStudioEnvironmentProvider>
                                         </DataContextProvider>
                                       </WebStorageContextProvider>
                                     </ApplicationContextsProvider>

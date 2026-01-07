@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Events.Bus;
+using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Dtos;
 using Shesha.ConfigurationItems.Events;
@@ -99,6 +100,11 @@ namespace Shesha.ConfigurationItems
             };
         }
 
+        [HttpPost]
+        public async Task CleanClientSideCacheAsync() 
+        {
+            await _clientSideCache.ClearAsync();
+        }
 
         public Task TriggerConfigurationChangedEventAsync(TriggerConfigurationChangedEventRequest  request)
         {
