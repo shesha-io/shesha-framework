@@ -4,7 +4,7 @@ import moment from 'moment';
 import React from 'react';
 import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IToolboxComponent } from '@/interfaces';
+import { IStoredFile, IToolboxComponent } from '@/interfaces';
 import { useDataContextManagerActions, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
 import { FormIdentifier, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
@@ -94,13 +94,13 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       // File list uses propertyName only for support Required feature
       <ConfigurableFormItem model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.id}` }}>
         {(value, onChange) => {
-          const onFileListChanged = (fileList, isUserAction = false): void => {
+          const onFileListChanged = (fileList: IStoredFile[], isUserAction: boolean = false): void => {
             onChange(fileList);
             // Only execute custom script if this is a user action (upload/delete)
             if (isUserAction && model.onFileChanged) executeScript(model.onFileChanged, fileList);
           };
 
-          const onDownload = (fileList, isUserAction = false): void => {
+          const onDownload = (fileList: IStoredFile[], isUserAction: boolean = false): void => {
             onChange(fileList);
             // Only execute custom script if this is a user action (download)
             if (isUserAction && model.onDownload) executeScript(model.onDownload, fileList);
