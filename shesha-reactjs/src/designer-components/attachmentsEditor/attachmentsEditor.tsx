@@ -4,9 +4,9 @@ import moment from 'moment';
 import React from 'react';
 import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IToolboxComponent } from '@/interfaces';
+import { IStoredFile, IToolboxComponent } from '@/interfaces';
 import { useDataContextManagerActions, useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
-import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
+import { FormIdentifier, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValue,
   executeScriptSync,
@@ -19,9 +19,12 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
+import { IDownloadedFileStyleType } from '@/components/customFile';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
+
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
   ownerId: string;
   ownerType: string;
@@ -32,18 +35,24 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   allowDelete: boolean;
   allowReplace: boolean;
   allowRename: boolean;
+  allowViewHistory?: boolean;
+  customActions?: ButtonGroupItemProps[];
+  customContent?: boolean;
+  extraFormId?: FormIdentifier;
   isDragger?: boolean;
   maxHeight?: string;
   onFileChanged?: string;
   onDownload?: string;
   downloadZip?: boolean;
-  layout: layoutType;
+  layout?: layoutType;
   listType: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
   removeFieldFromPayload?: boolean;
+  downloadedFileStyles?: IDownloadedFileStyleType;
+  itemStyle?: string;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -63,10 +72,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const enabled = !model.readOnly;
 
-    const executeScript = (script, value) => {
+    const executeScript = (script: string, value: unknown): void => {
 
       executeScriptSync(script, {
-        value: value,
+        value,
         data,
         form: getFormApi(form),
         globalState,
@@ -74,24 +83,27 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         message,
         moment,
         setGlobalState,
-        pageContext
+        pageContext,
       });
     };
-    
+
+    const hasExtraContent = Boolean(model?.customContent);
+
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
       <ConfigurableFormItem model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.id}` }}>
         {(value, onChange) => {
-
-          const onFileListChanged = (fileList) => {
+          const onFileListChanged = (fileList: IStoredFile[], isUserAction: boolean = false): void => {
             onChange(fileList);
-            if(model.onFileChanged) executeScript(model.onFileChanged, fileList);
+            // Only execute custom script if this is a user action (upload/delete)
+            if (isUserAction && model.onFileChanged) executeScript(model.onFileChanged, fileList);
           };
 
-          const onDownload = (fileList) => {
+          const onDownload = (fileList: IStoredFile[], isUserAction: boolean = false): void => {
             onChange(fileList);
-            if(model.onDownload) executeScript(model.onDownload, fileList);
+            // Only execute custom script if this is a user action (download)
+            if (isUserAction && model.onDownload) executeScript(model.onDownload, fileList);
           };
 
           return (
@@ -116,13 +128,18 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}
                 allowRename={enabled && model.allowRename}
+                allowViewHistory={model.allowViewHistory}
+                customActions={model.customActions}
                 allowedFileTypes={model.allowedFileTypes}
                 maxHeight={model.maxHeight}
                 isDragger={model?.isDragger}
                 downloadZip={model.downloadZip}
                 layout={model.layout}
                 listType={model.listType}
+                hasExtraContent={hasExtraContent}
+                extraFormId={model.extraFormId}
                 {...model}
+                itemStyle={model.itemStyle}
                 ownerId={ownerId}
               />
             </StoredFilesProvider>
@@ -131,8 +148,13 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: getSettings(),
+  settingsFormMarkup: () => getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  initModel: (model) => ({
+    ...model,
+    allowViewHistory: true,
+    customActions: [],  
+  }),
   migrator: (m) => m
     .add<IAttachmentsEditorProps>(0, (prev) => {
       return {
@@ -158,8 +180,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       ...migrateFormApi.eventsAndProperties(prev),
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
-    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType }))
-    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, propertyName: prev.propertyName || '' })),
+    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType, layout: prev.layout ?? 'horizontal' }))
+    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '' })),
 };
 
 export default AttachmentsEditor;

@@ -62,7 +62,7 @@ export const getSettings = () =>
             parentId: 'root',
             label: 'Is Dragger',
             description: 'Where the uploader should show a dragger instead of buttom',
-            hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false },
           })
 
           .addDropdown({
@@ -70,7 +70,7 @@ export const getSettings = () =>
             propertyName: 'listType',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'List Type',
-            hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false },
             dataSourceType: 'values',
             values: [
               {
@@ -85,13 +85,20 @@ export const getSettings = () =>
               },
             ],
           })
+          .addCheckbox({
+            id: 'b920ef96-ae27-4a01-bfad-b5b7d0xc18da',
+            label: 'Hide File Name',
+            propertyName: 'hideFileName',
+            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
+          })
           .addDropdown({
             id: 'f01e54aa-a1a4-4bd6-ba73-c39te48af8ce',
             propertyName: 'layout',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Layout',
             dataSourceType: 'values',
-            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false },
             values: [
               {
                 label: 'Vertical',
@@ -116,7 +123,7 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Gap',
             description: 'The gap between the thumbnails.',
-            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
           })
           .addCheckbox({
             id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
@@ -137,19 +144,12 @@ export const getSettings = () =>
             label: "Edit mode",
           })
           .addCheckbox({
-            id: 'b920ef96-ae27-4a01-bfad-b5b7d0xc18da',
-            label: 'Hide File Name',
-            propertyName: 'hideFileName',
-            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
-          })
-          .addCheckbox({
             id: '40024b1c-edd4-4b5d-9c85-1dda6fb8db6c',
             propertyName: 'allowAdd',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Allow Add',
             validate: {},
-            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false },
           })
           .addCheckbox({
             id: '6b3d298a-0e82-4420-ae3c-38bf5a2246d4',
@@ -157,7 +157,22 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Allow Remove',
             validate: {},
-            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false },
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'allowReplace',
+            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+            label: 'Allow Replace',
+            validate: {},
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false },
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'allowViewHistory',
+            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+            label: 'Allow View History',
+            validate: {},
           })
           .addCheckbox({
             id: '332d298a-0e82-4420-ae3c-38bf5a2246d4',
@@ -200,6 +215,37 @@ export const getSettings = () =>
               useAsyncDeclaration: true,
             },
             availableConstantsExpression: "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+          })
+          .toJson()
+        ]
+      }
+    })
+    .addCollapsiblePanel({
+      id: nanoid(),
+      propertyName: 'pnlCustom',
+      parentId: 'root',
+      label: 'Custom',
+      labelAlign: "left",
+      expandIconPosition: "start",
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: nanoid(),
+        components: [...new DesignerToolbarSettings()
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'customContent',
+            parentId: 'root',
+            label: 'Show Custom Content',
+            description: 'Enable to show custom content below each file.',
+          })
+          .addFormAutocomplete({
+            id: nanoid(),
+            propertyName: 'extraFormId',
+            parentId: 'root',
+            label: 'Custom Content Form',
+            description: 'Select a form to display custom content under each file.',
+            hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false },
           })
           .toJson()
         ]
@@ -280,141 +326,245 @@ export const getSettings = () =>
         ]
       }
     })
-    .addCollapsiblePanel({
-      id: 'd675bfe4-ee69-431e-931b-b0e0b9ceee6',
-      propertyName: 'styles',
+    .addPropertyRouter({
+      id: nanoid(),
+      propertyName: 'propertyRouter1',
+      componentName: 'propertyRouter1',
+      label: 'Property router1',
+      labelAlign: 'right',
       parentId: 'root',
-
-      label: 'Styles',
-      labelAlign: "right",
-      expandIconPosition: "start",
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
-        components: [...new DesignerToolbarSettings()
+      hidden: false,
+      propertyRouteName: {
+        _mode: "code",
+        _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        _value: ""
+      },
+      components: [
+        ...new DesignerToolbarSettings()
           .addCollapsiblePanel({
-            id: 'item-styles-1c03863c-880d-4308-8667-c3d996619cb',
-            propertyName: 'itemStyles',
-            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
-            label: 'Item Styles',
-            hideWhenEmpty: true,
+            id: 'd675bfe4-ee69-431e-931b-b0e0b9ceee6',
+            propertyName: 'styles',
+            parentId: 'root',
+            label: 'Styles',
+            labelAlign: "right",
+            expandIconPosition: "start",
+            ghost: true,
+            collapsible: 'header',
             content: {
-              id: 'item-styles-content-880d-4308-c3d996619cb',
+              id: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
               components: [...new DesignerToolbarSettings()
-                .addTextField({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb3',
-                  propertyName: 'fontSize',
+                .addCollapsiblePanel({
+                  id: 'item-styles-1c03863c-880d-4308-8667-c3d996619cb',
+                  propertyName: 'itemStyles',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
-                  label: 'Font Size',
-                  hidden: { _code: 'return getSettingValue(data?.hideFileName);', _mode: 'code', _value: false } as any,
+                  label: 'Item Styles',
+                  hideWhenEmpty: true,
+                  content: {
+                    id: 'item-styles-content-880d-4308-c3d996619cb',
+                    components: [...new DesignerToolbarSettings()
+                      .addTextField({
+                        id: '1c03863c-880d-4308-8667-c3d996619cb3',
+                        propertyName: 'fontSize',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
+                        label: 'Font Size',
+                        hidden: { _code: 'return getSettingValue(data?.hideFileName);', _mode: 'code', _value: false },
+                      })
+                      .addColorPicker({
+                        id: '1c03863c-880d-4308-8667-c3d996619cb0',
+                        propertyName: 'fontColor',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
+                        label: 'Color',
+                        hidden: { _code: 'return getSettingValue(data?.hideFileName);', _mode: 'code', _value: false },
+                        allowClear: true
+                      })
+                      .addTextField({
+                        id: '1c03863c-880d-4308-8667-c3d996619cb8',
+                        propertyName: 'thumbnailWidth',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
+                        label: 'Thumbnail Width',
+                        hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
+                      })
+                      .addTextField({
+                        id: '1c03863c-880d-4308-8667-c3d9966197',
+                        propertyName: 'thumbnailHeight',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
+                        label: 'Thumbnail Height',
+                        hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
+                      })
+                      .addTextField({
+                        id: '1c03863c-880d-4308-8667-c3d996619cb5',
+                        propertyName: 'borderSize',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
+                        label: 'Border Width',
+                        hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
+                      })
+                      .addColorPicker({
+                        id: '1c03863c-880d-4308-8667-c3d996619cb6',
+                        propertyName: 'borderColor',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
+                        label: 'Border Color',
+                        allowClear: true,
+                        hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
+                      })
+                      .addDropdown({
+                        id: '1c03863c-type-4308-8667-c3d996619cb9',
+                        propertyName: 'borderType',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
+                        label: 'Border Type',
+                        hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
+                        dataSourceType: 'values',
+                        values: [
+                          {
+                            label: 'dashed',
+                            value: 'dashed',
+                            id: 'f01e54aa-a1a4-4bd6-ba73-c395e48af8ce',
+                          },
+                          {
+                            label: 'solid',
+                            value: 'solid',
+                            id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
+                          },
+                        ],
+                      })
+                      .addTextField({
+                        id: '1c03863c-880d-4308-8667-c3d996619cb',
+                        propertyName: 'borderRadius',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
+                        label: 'Border Radius',
+                        hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
+                      })
+                      .addCodeEditor({
+                        id: nanoid(),
+                        propertyName: 'itemStyle',
+                        label: 'Style',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb'
+                      })
+                      .toJson()
+                    ]
+                  }
                 })
-                .addColorPicker({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb0',
-                  propertyName: 'fontColor',
+                .addCollapsiblePanel({
+                  id: 'container-styles-1c03863c-880d-4308-8667-c3d996619cb',
+                  propertyName: 'containerStyles',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
-                  label: 'Color',
-                  hidden: { _code: 'return getSettingValue(data?.hideFileName);', _mode: 'code', _value: false } as any,
-                  allowClear: true
+                  label: 'Container Styles',
+                  content: {
+                    id: 'container-styles-content-880d-4308-c3d996619cb',
+                    components: [...new DesignerToolbarSettings()
+                      .addTextField({
+                        id: '1c03863c-880d-4308-8667-c3d996619cb1',
+                        propertyName: 'width',
+                        parentId: 'container-styles-content-880d-4308-c3d996619cb',
+                        label: 'Width',
+                        hidden: { _code: 'return getSettingValue(data?.layout) === "vertical";', _mode: 'code', _value: false },
+                      })
+                      .addTextField({
+                        id: '1c03863c-880d-4308-8667-c3d996619cb2',
+                        propertyName: 'height',
+                        parentId: 'container-styles-content-880d-4308-c3d996619cb',
+                        label: 'Height',
+                        hidden: { _code: 'return getSettingValue(data?.layout) === "horizontal";', _mode: 'code', _value: false },
+                      })
+                      .addStyleBox({
+                        id: '1c03863c-880d-4308-8567-c3d996619cb3',
+                        propertyName: 'stylingBox',
+                        parentId: 'container-styles-content-880d-4308-c3d996619cb',
+                        jsSetting: false,
+                      })
+                      .addCodeEditor({
+                        id: '1c03863c-880d-4308-8667-c3d996619cb4',
+                        propertyName: 'style',
+                        label: 'Style',
+                        parentId: 'container-styles-content-880d-4308-c3d996619cb'
+                      })
+                      .toJson()]
+                  }
                 })
-                .addTextField({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb8',
-                  propertyName: 'thumbnailWidth',
+                .addCollapsiblePanel({
+                  id: 'downloaded-file-style',
+                  label: 'Downloaded File Style',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
-                  label: 'Thumbnail Width',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
-                })
-                .addTextField({
-                  id: '1c03863c-880d-4308-8667-c3d9966197',
-                  propertyName: 'thumbnailHeight',
-                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
-                  label: 'Thumbnail Height',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
-                })
-                .addTextField({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb5',
-                  propertyName: 'borderSize',
-                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
-                  label: 'Border Width',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
-                })
-                .addColorPicker({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb6',
-                  propertyName: 'borderColor',
-                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
-                  label: 'Border Color',
-                  allowClear: true,
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
-                })
-                .addDropdown({
-                  id: '1c03863c-type-4308-8667-c3d996619cb9',
-                  propertyName: 'borderType',
-                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
-                  label: 'Border Type',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
-                  dataSourceType: 'values',
-                  values: [
-                    {
-                      label: 'dashed',
-                      value: 'dashed',
-                      id: 'f01e54aa-a1a4-4bd6-ba73-c395e48af8ce',
-                    },
-                    {
-                      label: 'solid',
-                      value: 'solid',
-                      id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
-                    },
-                  ],
-                })
-                .addTextField({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb',
-                  propertyName: 'borderRadius',
-                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
-                  label: 'Border Radius',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                  content: {
+                    id: 'downloaded-file-style-880d-4308-c3d996619cb',
+                    components: [...new DesignerToolbarSettings()
+                      .addCheckbox({
+                        id: nanoid(),
+                        label: 'Style Downloaded File',
+                        propertyName: 'styleDownloadedFiles',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb'
+                      })
+                      .addIconPicker({
+                        id: nanoid(),
+                        label: 'Icon',
+                        propertyName: 'downloadedIcon',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
+                        hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
+                      })
+                      .addNumberField({
+                        id: nanoid(),
+                        label: 'Font Size',
+                        propertyName: 'downloadedFileStyles.fontSize',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
+                        hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
+                      })
+                      .addColorPicker({
+                        id: nanoid(),
+                        label: 'Font Color',
+                        propertyName: 'downloadedFileStyles.color',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
+                        hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
+                      })
+                      .addTextField({
+                        id: nanoid(),
+                        propertyName: 'downloadedFileStyles.borderWidth',
+                        label: 'Border Width',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
+                        hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
+                      })
+                      .addColorPicker({
+                        id: nanoid(),
+                        propertyName: 'downloadedFileStyles.borderColor',
+                        label: 'Border Color',
+                        allowClear: true,
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
+                        hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
+                      })
+                      .addDropdown({
+                        id: nanoid(),
+                        propertyName: 'downloadedFileStyles.borderStyle',
+                        label: 'Border Type',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
+                        hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
+                        dataSourceType: 'values',
+                        values: [
+                          {
+                            label: 'dashed',
+                            value: 'dashed',
+                            id: nanoid(),
+                          },
+                          {
+                            label: 'solid',
+                            value: 'solid',
+                            id: nanoid(),
+                          },
+                        ],
+                      })
+                      .addCodeEditor({
+                        id: nanoid(),
+                        hideLabel: false,
+                        label: 'Style',
+                        propertyName: 'downloadedFileStyles.style',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
+                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                        hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
+                      })
+                      .toJson()]
+                  },
                 })
                 .toJson()]
             }
-          })
-          .addCollapsiblePanel({
-            id: 'container-styles-1c03863c-880d-4308-8667-c3d996619cb',
-            propertyName: 'containerStyles',
-            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
-            label: 'Container Styles',
-            content: {
-              id: 'container-styles-content-880d-4308-c3d996619cb',
-              components: [...new DesignerToolbarSettings()
-                .addTextField({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb1',
-                  propertyName: 'width',
-                  parentId: 'container-styles-content-880d-4308-c3d996619cb',
-                  label: 'Width',
-                  hidden: { _code: 'return getSettingValue(data?.layout) === "vertical";', _mode: 'code', _value: false } as any,
-                })
-                .addTextField({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb2',
-                  propertyName: 'height',
-                  parentId: 'container-styles-content-880d-4308-c3d996619cb',
-                  label: 'Height',
-                  hidden: { _code: 'return getSettingValue(data?.layout) === "horizontal";', _mode: 'code', _value: false } as any,
-                })
-                .addStyleBox({
-                  id: '1c03863c-880d-4308-8567-c3d996619cb3',
-                  propertyName: 'stylingBox',
-                  parentId: 'container-styles-content-880d-4308-c3d996619cb',
-                  jsSetting: false,
-                })
-                .addCodeEditor({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb4',
-                  propertyName: 'style',
-                  label: 'Style',
-                })
-                .toJson()]
-            }
-          })
-
-          .toJson()]
-      }
+          }).toJson()
+      ]
     })
     .addCollapsiblePanel({
       id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',

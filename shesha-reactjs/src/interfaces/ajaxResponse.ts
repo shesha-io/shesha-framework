@@ -13,6 +13,11 @@ export interface IAjaxResponse<T> extends IAjaxResponseBase {
   result?: T;
 }
 
+export interface IAjaxSuccessResponse<T> extends IAjaxResponseBase {
+  success: true;
+  result: T;
+}
+
 export const isAjaxResponseBase = (value: any): value is IAjaxResponseBase => {
   const typed = value as IAjaxResponseBase;;
   return value && typeof(value) === 'object'
@@ -20,6 +25,8 @@ export const isAjaxResponseBase = (value: any): value is IAjaxResponseBase => {
     && typed.success !== undefined
     && typed.error !== undefined;
 };
+
+export const isAjaxSuccessResponse = <T>(value: IAjaxResponse<T>): value is IAjaxSuccessResponse<T> => value && value.success === true;
 
 export const isAxiosResponse = (value: any): value is AxiosResponse => {
   const typed = value as AxiosResponse;
