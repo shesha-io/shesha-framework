@@ -83,6 +83,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadedFileStyles?: IDownloadedFileStyleType;
   styleDownloadedFiles?: boolean;
   downloadedIcon?: IconType;
+  itemStyle?: string;
 }
 
 const EMPTY_ARRAY = [];
@@ -123,6 +124,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   downloadedFileStyles,
   styleDownloadedFiles = false,
   downloadedIcon = 'CheckCircleOutlined',
+  itemStyle,
   ...rest
 }) => {
   const { message, notification } = App.useApp();
@@ -188,16 +190,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     borderColor,
     borderRadius,
     borderSize,
-    borderType
+    borderType,
   } = model;
 
-  console.log("Model :: ", model)
   const styling = JSON.parse(model.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
   const jsStyle = getStyle(model?.style, allData.data);
-  const downloadedFileStyle = { 
-    ...getStyle(downloadedFileStyles?.style),
-    ...downloadedFileStyles
+  const downloadedFileStyle = {
+    ...downloadedFileStyles, 
+    ...getStyle(downloadedFileStyles?.style, allData.data),
   };
 
   const fullStyle = {
@@ -208,9 +209,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     fontWeight,
     backgroundColor,
     borderColor,
-    borderRadius,
+    borderRadius: addPx(borderRadius),
     borderWidth: addPx(borderSize),
-    borderStyle: borderType
+    borderStyle: borderType,
+    ...getStyle(itemStyle, allData.data)
   };
 
   const { styles } = useStyles({
@@ -220,7 +222,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ...jsStyle,
       ...stylingBoxAsCSS,
     },
-    style: { ...fullStyle },
+    style: { ...fullStyle,  },
     model: {
       gap: addPx(gap),
       layout: listType === 'thumbnail' && !isDragger,
@@ -574,10 +576,17 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     );
   };
 
+  const layoutClassName = useMemo(() => {
+        if (listTypeAndLayout === 'text') return '';
+        switch (layout) {
+          case 'horizontal': return styles.shaStoredFilesRendererHorizontal;
+          case 'vertical': return styles.shaStoredFilesRendererVertical;
+          case 'grid': return styles.shaStoredFilesRendererGrid;
+          default: return '';
+        }
+      }, [layout, listTypeAndLayout, styles]);
   return (
-    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
-      : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
-        : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
+    <div className={classNames(styles.shaStoredFilesRenderer, layoutClassName)}
     >
       {isStub
         ? (isDragger

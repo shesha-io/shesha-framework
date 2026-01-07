@@ -345,7 +345,6 @@ export const getSettings = () =>
             id: 'd675bfe4-ee69-431e-931b-b0e0b9ceee6',
             propertyName: 'styles',
             parentId: 'root',
-
             label: 'Styles',
             labelAlign: "right",
             expandIconPosition: "start",
@@ -366,14 +365,14 @@ export const getSettings = () =>
                       .addTextField({
                         id: '1c03863c-880d-4308-8667-c3d996619cb3',
                         propertyName: 'fontSize',
-                        parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
                         label: 'Font Size',
                         hidden: { _code: 'return getSettingValue(data?.hideFileName);', _mode: 'code', _value: false },
                       })
                       .addColorPicker({
                         id: '1c03863c-880d-4308-8667-c3d996619cb0',
                         propertyName: 'fontColor',
-                        parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
                         label: 'Color',
                         hidden: { _code: 'return getSettingValue(data?.hideFileName);', _mode: 'code', _value: false },
                         allowClear: true
@@ -381,28 +380,28 @@ export const getSettings = () =>
                       .addTextField({
                         id: '1c03863c-880d-4308-8667-c3d996619cb8',
                         propertyName: 'thumbnailWidth',
-                        parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
                         label: 'Thumbnail Width',
                         hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
                       })
                       .addTextField({
                         id: '1c03863c-880d-4308-8667-c3d9966197',
                         propertyName: 'thumbnailHeight',
-                        parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
                         label: 'Thumbnail Height',
                         hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
                       })
                       .addTextField({
                         id: '1c03863c-880d-4308-8667-c3d996619cb5',
                         propertyName: 'borderSize',
-                        parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
                         label: 'Border Width',
                         hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
                       })
                       .addColorPicker({
                         id: '1c03863c-880d-4308-8667-c3d996619cb6',
                         propertyName: 'borderColor',
-                        parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
                         label: 'Border Color',
                         allowClear: true,
                         hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
@@ -410,7 +409,7 @@ export const getSettings = () =>
                       .addDropdown({
                         id: '1c03863c-type-4308-8667-c3d996619cb9',
                         propertyName: 'borderType',
-                        parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
                         label: 'Border Type',
                         hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
                         dataSourceType: 'values',
@@ -430,11 +429,18 @@ export const getSettings = () =>
                       .addTextField({
                         id: '1c03863c-880d-4308-8667-c3d996619cb',
                         propertyName: 'borderRadius',
-                        parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb',
                         label: 'Border Radius',
                         hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
                       })
-                      .toJson()]
+                      .addCodeEditor({
+                        id: nanoid(),
+                        propertyName: 'itemStyle',
+                        label: 'Style',
+                        parentId: 'item-styles-content-880d-4308-c3d996619cb'
+                      })
+                      .toJson()
+                    ]
                   }
                 })
                 .addCollapsiblePanel({
@@ -469,6 +475,7 @@ export const getSettings = () =>
                         id: '1c03863c-880d-4308-8667-c3d996619cb4',
                         propertyName: 'style',
                         label: 'Style',
+                        parentId: 'container-styles-content-880d-4308-c3d996619cb'
                       })
                       .toJson()]
                   }
@@ -483,31 +490,71 @@ export const getSettings = () =>
                       .addCheckbox({
                         id: nanoid(),
                         label: 'Style Downloaded File',
-                        propertyName: 'styleDownloadedFiles'
+                        propertyName: 'styleDownloadedFiles',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb'
                       })
                       .addIconPicker({
                         id: nanoid(),
                         label: 'Icon',
                         propertyName: 'downloadedIcon',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
                         hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
                       })
                       .addNumberField({
                         id: nanoid(),
                         label: 'Font Size',
                         propertyName: 'downloadedFileStyles.fontSize',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
                         hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
                       })
                       .addColorPicker({
                         id: nanoid(),
                         label: 'Font Color',
                         propertyName: 'downloadedFileStyles.color',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
                         hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
+                      })
+                      .addTextField({
+                        id: nanoid(),
+                        propertyName: 'downloadedFileStyles.borderWidth',
+                        label: 'Border Width',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
+                        hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
+                      })
+                      .addColorPicker({
+                        id: nanoid(),
+                        propertyName: 'downloadedFileStyles.borderColor',
+                        label: 'Border Color',
+                        allowClear: true,
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
+                        hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
+                      })
+                      .addDropdown({
+                        id: nanoid(),
+                        propertyName: 'downloadedFileStyles.borderStyle',
+                        label: 'Border Type',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
+                        hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
+                        dataSourceType: 'values',
+                        values: [
+                          {
+                            label: 'dashed',
+                            value: 'dashed',
+                            id: nanoid(),
+                          },
+                          {
+                            label: 'solid',
+                            value: 'solid',
+                            id: nanoid(),
+                          },
+                        ],
                       })
                       .addCodeEditor({
                         id: nanoid(),
                         hideLabel: false,
                         label: 'Style',
                         propertyName: 'downloadedFileStyles.style',
+                        parentId: 'downloaded-file-style-880d-4308-c3d996619cb',
                         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                         hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
                       })

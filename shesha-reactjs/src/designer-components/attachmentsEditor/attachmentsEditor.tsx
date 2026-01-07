@@ -57,6 +57,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   hideFileName?: boolean;
   removeFieldFromPayload?: boolean;
   downloadedFileStyles?: IDownloadedFileStyleType;
+  itemStyle?: string;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -143,6 +144,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 hasExtraContent={hasExtraContent}
                 extraFormId={model.extraFormId}
                 {...model}
+                itemStyle={model.itemStyle}
                 ownerId={ownerId}
               />
             </StoredFilesProvider>

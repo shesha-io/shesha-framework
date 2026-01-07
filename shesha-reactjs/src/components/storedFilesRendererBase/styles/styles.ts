@@ -1,3 +1,4 @@
+import { addPx } from '@/designer-components/button/util';
 import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
@@ -9,12 +10,12 @@ interface ModelProps {
 }
 
 export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, downloadedFileStyles }: {style: CSSProperties; model: ModelProps; containerStyles: CSSProperties; downloadedFileStyles: CSSProperties}) => {
-  const { borderRadius, borderWidth, borderColor, borderStyle, color, fontSize, width, height
-  } = style;
+  const { borderRadius, borderWidth, borderColor, borderStyle, color, fontSize, width, height, ...restStyles } = style;
 
   const { width: containerWidth, height: containerHeight, marginTop, marginLeft, marginRight, marginBottom, paddingTop,
     paddingLeft, paddingRight, paddingBottom, ...restContainerStyles } = containerStyles;
 
+    const { color: downloadedFileColor, fontSize: downloadedFileFontSize, ...restDownloadedFileStyles} = downloadedFileStyles;
   const { gap, layout, isDragger } = model;
 
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
@@ -69,20 +70,20 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-thumbnail {
       opacity: 0.8;
-      border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
-      box-shadow: 0 0 0 1px ${downloadedFileStyles?.color ?? token.colorSuccess}20;
-      ${{...downloadedFileStyles}}
+      border: 2px solid ${downloadedFileColor ?? token.colorSuccess} !important;
+      box-shadow: 0 0 0 1px ${downloadedFileColor ?? token.colorSuccess}20;
+      ${restDownloadedFileStyles}
     }
 
     .item-file-name {
       display: ${model.hideFileName ? 'none' : 'flex'};
-      color: ${downloadedFileStyles?.color ?? color} !important;
-      font-size: ${downloadedFileStyles?.fontSize ?? fontSize} !important;
+      color: ${downloadedFileColor ?? color} !important;
+      font-size: ${addPx(downloadedFileFontSize) ?? fontSize} !important;
     }
 
     .ant-upload-list-item-action {
       .anticon-download {
-        color: ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
+        color: ${downloadedFileColor ?? token.colorSuccess} !important;
       }
     }
 
@@ -96,7 +97,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     position: ${layout ? 'absolute' : 'relative'};
     top: 4px;
     right: 4px;
-    background: ${downloadedFileStyles?.color ?? token.colorSuccess};
+    background: ${downloadedFileColor ?? token.colorSuccess};
     color: white;
     border-radius: 50%;
     width: 20px;
@@ -143,10 +144,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .ant-upload-list-item-thumbnail {
-      border: ${borderWidth || '1px'} ${borderStyle || 'solid'} ${borderColor || '#d9d9d9'} !important;
+      border: ${borderWidth || '1px'} ${borderStyle || 'solid'} ${borderColor || '#d9d9d9'};
       border-radius: ${borderRadius ?? '8px'} !important;
       height: ${thumbnailHeight} !important;
       width: ${thumbnailWidth} !important;
+      ${restStyles}
+
 
       img {
         width: ${thumbnailWidth} !important;
