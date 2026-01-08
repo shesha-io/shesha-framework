@@ -106,16 +106,21 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   // Validate that table columns match the data context metadata
   // Extract arrays inside useMemo to avoid invalidation on every render
   const columnsValidation = useMemo(() => {
+    // Type guard for properties with path
+    const isPropertyWithPath = (property: unknown): property is { path: string } => {
+      return typeof property === 'object' && property !== null && 'path' in property && typeof (property as { path: string }).path === 'string';
+    };
+
     // Extract configurable columns from store
     const configurableColumnsNames = store?.configurableColumns
       ?.map((column) => column.id)
       .filter((id): id is string => typeof id === 'string');
 
-    // Extract metadata properties
+    // Extract metadata properties using type guard
     const tableMetadataProperties = Array.isArray(entityMetadata?.metadata?.properties)
       ? entityMetadata.metadata.properties
-        .map((property) => (typeof property === 'object' && property !== null && 'path' in property ? (property as { path: string }).path : undefined))
-        .filter((path): path is string => typeof path === 'string')
+        .filter(isPropertyWithPath)
+        .map((property) => property.path)
       : undefined;
 
     if (!configurableColumnsNames || !tableMetadataProperties || configurableColumnsNames.length === 0) {
