@@ -59,7 +59,11 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
   migrator: (m) =>
     m
       .add<IAdvancedFilterButtonComponentProps>(3, (prev) => migrateReadOnly(prev as IAdvancedFilterButtonComponentProps, 'inherited'))
-      .add<IAdvancedFilterButtonComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))
+      .add<IAdvancedFilterButtonComponentProps>(4, (prev) => {
+        // Omit buttonType when calling defaultStyles as it expects Omit<IButtonComponentProps, 'buttonType'>
+        const { buttonType, ...rest } = prev;
+        return { ...migratePrevStyles(prev, defaultStyles(rest)), buttonType };
+      })
       .add<IAdvancedFilterButtonComponentProps>(5, (prev, context) => ({
         ...prev,
         editMode: (context.isNew ? 'editable' : prev.editMode),
