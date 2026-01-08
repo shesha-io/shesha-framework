@@ -150,11 +150,12 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     }
 
     // Validate that datatable columns match the data context metadata
-    if (shouldValidateDataContext && store && entityMetadata && !columnsValidation.isValid) {
+    if (shouldValidateDataContext && !columnsValidation.isValid && columnsValidation.missingColumns.length > 0) {
       const missingColumnsList = columnsValidation.missingColumns.join(', ');
+      const modelType = store?.modelType;
       errors.push({
         propertyName: 'Table columns mismatch',
-        error: `\nThe following columns do not exist in the entity type ${JSON.stringify(store.modelType)}: [${missingColumnsList}]. Please re-configure the columns on the datatable.`,
+        error: `\nThe following columns do not exist in the entity type ${JSON.stringify(modelType)}: [${missingColumnsList}]. Please re-configure the columns on the datatable.`,
       });
     }
 
@@ -177,7 +178,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     }
 
     return undefined;
-  }, [toolboxComponent, actualModel, needsDataContextButMissing, shouldValidateDataContext, store, entityMetadata, columnsValidation]);
+  }, [toolboxComponent, actualModel, needsDataContextButMissing, shouldValidateDataContext, store?.modelType, columnsValidation]);
 
   // Wrap component with error icon if there are validation errors
   // Show error icons only in designer mode
