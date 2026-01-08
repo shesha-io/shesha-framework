@@ -594,7 +594,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           : (
             <>
               <div
-                className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
+                className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail thumbnail-stub' : ''}
               >
                 <Button type="link"
                   icon={<PictureOutlined />}
