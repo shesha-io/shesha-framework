@@ -9,6 +9,7 @@ import AttributeDecorator from '../attributeDecorator';
 import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, useCalculatedModel, useDataTableStore, useMetadata } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useStyles } from './styles/styles';
+import { useDeepCompareMemo } from '@/hooks/useDeepCompareMemo';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -93,6 +94,12 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
 
   const store = useDataTableStore(false);
   const entityMetadata = useMetadata(false);
+
+  // Extract specific values at component scope for stable useMemo dependencies
+  const configurableColumns = store?.configurableColumns;
+  const metadataProperties = entityMetadata?.metadata?.properties;
+  const modelType = store?.modelType;
+
   const needsDataContextButMissing = useMemo(() => {
     // Validate all components that need data context
     if (shouldValidateDataContext) {
@@ -104,27 +111,31 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   }, [shouldValidateDataContext, store]);
 
   // Validate that table columns match the data context metadata
-  // Extract arrays inside useMemo to avoid invalidation on every render
-  const columnsValidation = useMemo(() => {
+  // Use deep comparison to avoid unnecessary recalculations when array contents are the same
+  // Returns: { isValid: boolean, missingColumns: string[], skipped: boolean }
+  //   - skipped=true means validation was not performed (no columns or metadata)
+  //   - skipped=false means validation was performed, check isValid for result
+  const columnsValidation = useDeepCompareMemo(() => {
     // Type guard for properties with path
     const isPropertyWithPath = (property: unknown): property is { path: string } => {
       return typeof property === 'object' && property !== null && 'path' in property && typeof (property as { path: string }).path === 'string';
     };
 
     // Extract configurable columns from store
-    const configurableColumnsNames = store?.configurableColumns
+    const configurableColumnsNames = configurableColumns
       ?.map((column) => column.id)
       .filter((id): id is string => typeof id === 'string');
 
     // Extract metadata properties using type guard
-    const tableMetadataProperties = Array.isArray(entityMetadata?.metadata?.properties)
-      ? entityMetadata.metadata.properties
+    const tableMetadataProperties = Array.isArray(metadataProperties)
+      ? metadataProperties
         .filter(isPropertyWithPath)
         .map((property) => property.path)
       : undefined;
 
+    // Skip validation if no columns or metadata to validate against
     if (!configurableColumnsNames || !tableMetadataProperties || configurableColumnsNames.length === 0) {
-      return { isValid: true, missingColumns: [] }; // No columns or no metadata to validate against
+      return { isValid: true, missingColumns: [], skipped: true };
     }
 
     const missingColumns = configurableColumnsNames.filter(
@@ -134,8 +145,9 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     return {
       isValid: missingColumns.length === 0,
       missingColumns,
+      skipped: false,
     };
-  }, [store?.configurableColumns, entityMetadata?.metadata?.properties]);
+  }, [configurableColumns, metadataProperties]);
 
   // Run validation in both designer and runtime modes
   const validationResult = useMemo((): IModelValidation | undefined => {
@@ -155,9 +167,9 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     }
 
     // Validate that datatable columns match the data context metadata
-    if (shouldValidateDataContext && !columnsValidation.isValid && columnsValidation.missingColumns.length > 0) {
+    // Only validate if validation was not skipped (i.e., we have columns and metadata to validate)
+    if (shouldValidateDataContext && !columnsValidation.skipped && !columnsValidation.isValid && columnsValidation.missingColumns.length > 0) {
       const missingColumnsList = columnsValidation.missingColumns.join(', ');
-      const modelType = store?.modelType;
       errors.push({
         propertyName: 'Table columns mismatch',
         error: `\nThe following columns do not exist in the entity type ${JSON.stringify(modelType)}: [${missingColumnsList}]. Please re-configure the columns on the datatable.`,
@@ -183,7 +195,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     }
 
     return undefined;
-  }, [toolboxComponent, actualModel, needsDataContextButMissing, shouldValidateDataContext, store?.modelType, columnsValidation]);
+  }, [toolboxComponent, actualModel, needsDataContextButMissing, shouldValidateDataContext, modelType, columnsValidation]);
 
   // Wrap component with error icon if there are validation errors
   // Show error icons only in designer mode
