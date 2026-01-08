@@ -40,6 +40,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
 const TableComponent: TableComponentDefinition = {
   type: 'datatable',
   isInput: true,
+  isOutput: true,
   name: 'Data Table',
   icon: <TableOutlined />,
   Factory: ({ model }) => {

@@ -6,7 +6,7 @@ import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
-import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, useCalculatedModel, useDataTableStore } from '@/index';
+import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, useCalculatedModel, useDataTableStore, useMetadata } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useStyles } from './styles/styles';
 
@@ -92,6 +92,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   }, [componentModel.type]);
 
   const store = useDataTableStore(false);
+  const metadata = useMetadata(false);
   const needsDataContextButMissing = useMemo(() => {
     // Validate all components that need data context
     if (shouldValidateDataContext) {
@@ -101,6 +102,26 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     // Component doesn't need validation, so no issue
     return false;
   }, [shouldValidateDataContext, store]);
+
+  // needs data context but the model.items are not the same as the data context
+  const configurableColumnsNames = store?.configurableColumns?.map((column) => (column.id as string));
+  const tableMetadataProperties = (metadata?.metadata?.properties as Array<object>)?.map((property: { path: string }) => property?.path);
+
+  // make sure every item in configurableColumnsNames exists atleast once in tableMetadataProperties
+  const columnsValidation = useMemo(() => {
+    if (!configurableColumnsNames || !tableMetadataProperties || configurableColumnsNames.length === 0) {
+      return { isValid: true, missingColumns: [] }; // No columns or no metadata to validate against
+    }
+
+    const missingColumns = configurableColumnsNames.filter(
+      (columnName) => !tableMetadataProperties.includes(columnName),
+    );
+
+    return {
+      isValid: missingColumns.length === 0,
+      missingColumns,
+    };
+  }, [configurableColumnsNames, tableMetadataProperties]);
 
   // Run validation in both designer and runtime modes
   const validationResult = useMemo((): IModelValidation | undefined => {
@@ -117,6 +138,15 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
         componentType: actualModel.type,
         errors,
       };
+    }
+
+    // Validate that datatable columns match the data context metadata
+    if (shouldValidateDataContext && store && metadata && !columnsValidation.isValid) {
+      const missingColumnsList = columnsValidation.missingColumns.join(', ');
+      errors.push({
+        propertyName: 'Table columns mismatch',
+        error: `\nThe following columns do not exist in the entity type ${JSON.stringify(store.modelType)}: [${missingColumnsList}]. Please re-configure the columns on the datatable.`,
+      });
     }
 
     if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
@@ -138,7 +168,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     }
 
     return undefined;
-  }, [toolboxComponent, actualModel, needsDataContextButMissing]);
+  }, [toolboxComponent, actualModel, needsDataContextButMissing, shouldValidateDataContext, store, metadata, columnsValidation]);
 
   // Wrap component with error icon if there are validation errors
   // Show error icons only in designer mode
