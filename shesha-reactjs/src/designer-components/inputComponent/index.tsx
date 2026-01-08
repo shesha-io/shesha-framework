@@ -52,7 +52,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize, buttonText, buttonTextReadOnly, title,
 
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true, settings, templateSettings } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true, settings, templateSettings, allowDeselect } = props;
 
     const allData = useAvailableConstantsData();
 
@@ -124,13 +124,20 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 options={[...(options || [])].map(option => ({ ...option, label: <Icon icon={option.label} size={option.value} styles={styles} hint={tooltip} /> }))}
             />;
         }
-        case 'radio':
+        case 'radio': {
+            const handleClick = (clickedValue: string | number): void => {
+                if (allowDeselect && (value || defaultValue) === clickedValue) {
+                    onChange?.(undefined);
+                }
+            };
+
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value || defaultValue} onChange={onChange} size={size} disabled={readOnly}>
                 {
-                    buttonGroupOptions.map(({ value, icon, title }) => {
-                        return <Radio.Button key={value} value={value}>{icon ? <Icon icon={icon || title} hint={title} styles={styles} /> : title}</Radio.Button>;
+                    buttonGroupOptions.map(({ value: optionValue, icon, title }) => {
+                        return <Radio.Button key={optionValue} value={optionValue} onClick={() => handleClick(optionValue)}>{icon ? <Icon icon={icon || title} hint={title} styles={styles} /> : title}</Radio.Button>;
                     })}
             </Radio.Group>;
+        }
         case 'switch':
             /*Handle cases where defaultValue is used in place of defaultChecked*/
             return <Switch disabled={readOnly} size='small'
