@@ -74,7 +74,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
   const isSameUrl = navigationUrl === window.location.href;
 
   // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
-  const isGhostType = props.buttonType === 'ghost';
+  const isGhostType = props.ghost === true;
   const actualButtonType = isGhostType ? 'default' : (props.buttonType as ButtonType);
 
   // Ghost buttons: only foreground color, no background/border/shadow

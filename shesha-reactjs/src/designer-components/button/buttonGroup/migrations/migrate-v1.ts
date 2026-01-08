@@ -6,6 +6,7 @@ import { IButtonItem } from "@/providers/buttonGroupConfigurator/models";
 import { getClosestTableId } from "@/providers/form/utils";
 import { getDispatchEventReplacement } from "@/components/formDesigner/components/_common-migrations/migrate-events";
 import { IShowModalActionArgumentsV0 } from "@/providers/dynamicModal/migrations/ver0";
+import { ButtonType } from 'antd/es/button/buttonHelpers';
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments'>): IConfigurableActionConfiguration => {
   return {
@@ -274,9 +275,10 @@ export const migrateV0toV1 = (props: IButtonGroupComponentProps, context: Settin
 
     const button = item as IButtonGroupButtonV0;
     const isGhost = button.buttonType === 'ghost';
+    const buttonType = (isGhost ? 'default' : button.buttonType) as ButtonType;
     const newItem: IButtonItem = {
       ...button,
-      buttonType: isGhost ? 'default' : button.buttonType,
+      buttonType,
       ghost: isGhost,
     };
     newItem.actionConfiguration = getActionConfiguration(button, context);
