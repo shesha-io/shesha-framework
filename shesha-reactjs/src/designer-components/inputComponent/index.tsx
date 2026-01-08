@@ -131,7 +131,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 }
             };
 
-            return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value || defaultValue} onChange={onChange} size={size} disabled={readOnly}>
+            return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value ?? defaultValue} onChange={onChange} size={size} disabled={readOnly}>
                 {
                     buttonGroupOptions.map(({ value: optionValue, icon, title }) => {
                         return <Radio.Button key={optionValue} value={optionValue} onClick={() => handleClick(optionValue)}>{icon ? <Icon icon={icon || title} hint={title} styles={styles} /> : title}</Radio.Button>;
