@@ -7,6 +7,7 @@ import {
 } from './contexts';
 
 export const URLS = {
+  GET_MODULES: '/api/services/app/ConfigurationStudio/GetModules',
   GET_CURRENT_CONFIG: '/api/services/app/ConfigurationItem/GetCurrent',
   GET_CONFIG: '/api/services/app/ConfigurationItem/Get',
   GET_ENTITY_CONFIG_FORM: '/api/services/app/EntityConfig/GetEntityConfigForm',

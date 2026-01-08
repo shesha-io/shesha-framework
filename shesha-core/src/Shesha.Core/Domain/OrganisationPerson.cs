@@ -27,7 +27,7 @@ namespace Shesha.Domain
     [Table("Core_OrganisationPersons")]
     public class OrganisationPerson : OrganisationPersonBase<Organisation, Person>
     {
-        [ReferenceList("Shesha.Core", "OrganisationPersonRole")]
+        [ReferenceList("OrganisationPersonRole")]
         public override int? Role { get; set; }
     }
 }

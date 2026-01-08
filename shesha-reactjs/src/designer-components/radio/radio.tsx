@@ -2,7 +2,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import RadioGroup from './radioGroup';
 import React from 'react';
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { DataTypes } from '@/interfaces/dataTypes';
+import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { evaluateValue, executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -24,7 +24,7 @@ const RadioComponent: RadioComponentDefinition = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.simple),
   calculateModel: (model, allData) => ({
     eventHandlers: getAllEventHandlers(model, allData),
     dataSourceUrl: model.dataSourceUrl ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,

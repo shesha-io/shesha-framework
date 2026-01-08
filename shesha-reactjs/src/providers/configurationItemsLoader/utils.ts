@@ -29,7 +29,7 @@ const getMarkupFromResponse = (data: FormConfigurationDto): FormMarkupWithSettin
   return markupJson ? (JSON.parse(markupJson) as FormMarkupWithSettings) : null;
 };
 
-export const convertFormConfigurationDto2FormDto = (dto: FormConfigurationDto): IFormDto => {
+export const convertFormConfigurationDto2FormDto = (dto: FormConfigurationDto, readOnly: boolean): IFormDto => {
   const markupWithSettings = getMarkupFromResponse(dto);
 
   const result: IFormDto = {
@@ -41,6 +41,9 @@ export const convertFormConfigurationDto2FormDto = (dto: FormConfigurationDto): 
     modelType: dto.modelType,
     markup: markupWithSettings?.components ?? null,
     settings: markupWithSettings?.formSettings ?? null,
+    access: dto.access,
+    permissions: dto.permissions,
+    readOnly: readOnly,
   };
 
   if (result.settings) {

@@ -81,7 +81,7 @@ export interface IConfigurableActionIdentifier extends IHasActionOwner {
 export type DynamicContextHook = () => GenericDictionary;
 export const EMPTY_DYNAMIC_CONTEXT_HOOK: DynamicContextHook = () => ({});
 
-export type ConfigurableActionArgumentsMigrationContext = never;
+export type ConfigurableActionArgumentsMigrationContext = void;
 
 /**
  * Arguments migrator
@@ -103,6 +103,10 @@ export interface IConfigurableActionDescriptor<TArguments extends object = objec
    * Action description
    */
   description?: string;
+  /**
+   * Sort order for displaying actions in the list. Lower numbers appear first.
+   */
+  sortOrder?: number;
   /**
    * If true, indicaes that the action has configurable arguments
    */

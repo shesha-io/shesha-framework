@@ -92,6 +92,7 @@ export const isCustomDropdownProps = (value: ISettingsInputBase): value is ICust
 export interface IRadioSettingsInputProps extends ISettingsInputBase {
   type: 'radio';
   buttonGroupOptions?: IRadioOption[];
+  allowDeselect?: boolean;
 }
 export const isRadioProps = (value: ISettingsInputBase): value is IRadioSettingsInputProps => value.type === 'radio';
 
@@ -167,6 +168,9 @@ export const isButtonProps = (value: ISettingsInputBase): value is IButtonSettin
 export interface IButtonGroupConfiguratorSettingsInputProps extends ISettingsInputBase {
   type: 'buttonGroupConfigurator';
   buttonGroupOptions?: IRadioOption[];
+  buttonText?: string;
+  buttonTextReadOnly?: string;
+  title?: string;
 }
 export const isButtonGroupConfiguratorProps = (value: ISettingsInputBase): value is IButtonGroupConfiguratorSettingsInputProps => value.type === 'buttonGroupConfigurator';
 

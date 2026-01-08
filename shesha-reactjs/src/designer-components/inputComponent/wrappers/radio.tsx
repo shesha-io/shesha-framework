@@ -6,7 +6,14 @@ import { Radio } from 'antd';
 
 export const RadioWrapper: FC<IRadioSettingsInputProps> = (props) => {
   const { styles } = useStyles();
-  const { value, onChange, readOnly, buttonGroupOptions, size } = props;
+  const { value, onChange, readOnly, buttonGroupOptions, size, allowDeselect } = props;
+
+  const handleClick = (clickedValue: string | number): void => {
+    if (allowDeselect && value === clickedValue) {
+      onChange?.(undefined);
+    }
+  };
+
   return (
     <Radio.Group
       value={value}
@@ -14,10 +21,19 @@ export const RadioWrapper: FC<IRadioSettingsInputProps> = (props) => {
       disabled={readOnly}
       buttonStyle="solid"
       size={size}
+      className={styles.radioBtns}
     >
       {
-        buttonGroupOptions.map(({ value, icon, title }) => {
-          return <Radio.Button key={value} value={value}>{icon ? <Icon icon={icon || title} hint={title} className={styles.icon} /> : title}</Radio.Button>;
+        buttonGroupOptions?.map(({ value: optionValue, icon, title }) => {
+          return (
+            <Radio.Button
+              key={optionValue}
+              value={optionValue}
+              onClick={() => handleClick(optionValue)}
+            >
+              {icon ? <Icon icon={icon || title} hint={title} className={styles.icon} /> : title}
+            </Radio.Button>
+          );
         })
       }
     </Radio.Group>

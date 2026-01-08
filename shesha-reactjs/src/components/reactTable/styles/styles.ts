@@ -211,9 +211,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }).join('\n')}
 
         /* When border-radius is present, ensure content respects the bounds */
-        ${hasBorderRadius ? `
-          overflow: hidden;
-        ` : ''}
+        /* Only apply to tables without fixed columns since overflow:hidden breaks position:sticky */
+        &:not(:has(.${fixedColumn})) {
+          ${hasBorderRadius ? `overflow: hidden;` : ''}
+        }
 
         .${thead} {
           /* These styles are required for a scrollable body to align with the header properly */

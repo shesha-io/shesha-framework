@@ -8,6 +8,7 @@ import {
   IDataTableStateContext,
   ISelectionProps,
 } from './contexts';
+import { IModelValidation } from '@/utils/errors';
 import {
   DataTableActionEnums,
   IChangeFilterAction,
@@ -584,6 +585,18 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return {
         ...state,
         standardSorting: [...payload],
+      };
+    },
+
+    [DataTableActionEnums.SetContextValidation]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<IModelValidation | undefined>,
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        contextValidation: payload,
       };
     },
 

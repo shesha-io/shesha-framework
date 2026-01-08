@@ -3,8 +3,7 @@ import { migratePrevStyles } from '@/designer-components/_common-migrations/migr
 import { IButtonComponentProps } from '@/designer-components/button/interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { FilterOutlined, InfoCircleFilled } from '@ant-design/icons';
-import { Popover } from 'antd';
+import { FilterOutlined } from '@ant-design/icons';
 import React from 'react';
 import { AdvancedFilterButton } from './advancedFilterButton';
 import { getSettings } from './settingsForm';
@@ -26,10 +25,12 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
       ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.borderStyles),
       ...model.allStyles.fontStyles,
       ...(['dashed', 'default'].includes(model.buttonType) && model.allStyles.backgroundStyles),
-      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles.shadowStyles),
+      ...(['primary', 'default', 'dashed'].includes(model.buttonType) && model.allStyles.shadowStyles),
       ...model.allStyles.stylingBoxAsCSS,
       ...model.allStyles.jsStyle,
     };
+
+    if (model.hidden) return null;
 
     if (!store) {
       return (
@@ -40,37 +41,11 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
               Table Filter
             </div>
           </div>
-          <Popover
-            placement="right"
-            title="Hint:"
-            rootClassName={styles.tablePagerHintPopover}
-            classNames={{
-              body: styles.tablePagerHintPopover,
-            }}
-            content={(
-              <p>The Table Filter component must be<br />
-                placed inside of a Data Table Context<br />
-                component to be fully functional.
-                <br />
-                <br />
-                <a
-                  href="https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/table-filter"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  See component documentation
-                </a><br />
-                for setup and usage.
-              </p>
-            )}
-          >
-            <InfoCircleFilled style={{ color: '#faad14', cursor: 'help', fontSize: '16px' }} />
-          </Popover>
         </div>
       );
     }
 
-    return model.hidden ? null : <AdvancedFilterButton {...model} styles={finalStyle} />;
+    return <AdvancedFilterButton {...model} styles={finalStyle} />;
   },
   initModel: (model) => {
     return {

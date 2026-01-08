@@ -22,7 +22,6 @@ import { StandaloneTable } from './standaloneTable';
 import { useDataTableStore } from '@/providers/dataTable';
 import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './utils';
 
-
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStore(false);
@@ -68,6 +67,15 @@ const TableComponent: TableComponentDefinition = {
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  validateModel: (model, addModelError) => {
+    // Data context validation is now handled centrally in formComponent.tsx
+
+    // Validate that table has columns configured
+    const hasColumns = model.items && Array.isArray(model.items) && model.items.length > 0;
+    if (!hasColumns) {
+      addModelError('items', 'Configure at least one column in the settings panel');
+    }
+  },
   migrator: (m) =>
     m
       .add<ITableComponentProps>(0, (prev) => {

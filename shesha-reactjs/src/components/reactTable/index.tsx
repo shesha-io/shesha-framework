@@ -795,8 +795,6 @@ export const ReactTable: FC<IReactTableProps> = ({
 
                     const { key, ...headerProps } = { ...column.getHeaderProps(column.getSortByToggleProps()) };
 
-                    delete headerProps.style.position;
-
                     const numOfFixed = leftColumn.shadowPosition || rightColumn.shadowPosition;
 
                     const hasShadow = numOfFixed === index && anchored?.isFixed;
@@ -813,7 +811,10 @@ export const ReactTable: FC<IReactTableProps> = ({
                         })}
                         style={{
                           ...headerProps?.style,
-                          [direction]: shiftedBy,
+                          ...(anchored?.isFixed && {
+                            position: 'sticky',
+                            [direction]: shiftedBy,
+                          }),
                           backgroundColor: 'white',
                           borderBottom: '1px solid #f0f0f0',
                           fontWeight: '600',

@@ -3,7 +3,6 @@ using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
-using GraphQL;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Exceptions;
@@ -296,6 +295,24 @@ namespace Shesha.ConfigurationStudio
             var fileName = $"{revision.ConfigurationItem.FullName} (revision {revision.VersionNo})".RemovePathIllegalCharacters() + ".json";
 
             return new ShaFileContentResult(bytes, "application/json") { FileDownloadName = fileName };
+        }
+
+        [HttpGet]
+        public Task<GetModulesResponse> GetModulesAsync() 
+        {
+            var modules = ModuleManager.GetModuleInfos();
+            var response = new GetModulesResponse
+            {
+                Modules = modules.Select(m => new GetModulesResponse.ModuleInfo
+                {
+                    Name = m.Name,
+                    Description = m.Description,
+                    Alias = m.Alias,
+                    IsEditable = m.IsEditable,
+                }).ToList()
+            };
+
+            return Task.FromResult(response);
         }
     }
 }

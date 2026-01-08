@@ -4,7 +4,7 @@ interface IStyle {
   subText?: string;
 }
 
-export const useStyles = createStyles(({ css, cx }, props: IStyle) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, props: IStyle) => {
   const shaProfileDropdownWrapper = cx(
     'sha-profile-dropdown-wrapper',
     css`
@@ -28,9 +28,18 @@ export const useStyles = createStyles(({ css, cx }, props: IStyle) => {
       gap: 5px;
     `,
   );
+  const shaProfileMenu = cx('sha-profile-menu', css`
+    >.${prefixCls}-dropdown-menu-item {
+      &:has(>.${prefixCls}-dropdown-menu-title-content>.active-menu-item) {
+        background-color: ${token.colorPrimaryBg} !important;
+        color:  ${token.colorPrimary} !important;
+      }
+    }    
+  `);
 
   return {
     shaProfileDropdownWrapper,
     shaProfileDropdown,
+    shaProfileMenu,
   };
 });

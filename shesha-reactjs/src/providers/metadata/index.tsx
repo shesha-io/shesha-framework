@@ -13,6 +13,7 @@ import {
 import metadataReducer from './reducer';
 import camelcase from 'camelcase';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { isEntityTypeIdEmpty } from '../metadataDispatcher/entities/utils';
 
 export interface IMetadataProviderProps {
   id?: string;
@@ -34,7 +35,7 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id = 
   const { getMetadata } = useMetadataDispatcher();
 
   useEffect(() => {
-    if (modelType) {
+    if (!isEntityTypeIdEmpty(modelType)) {
       getMetadata({ modelType, dataType }).then((meta) => {
         dispatch(setMetadataAction({ metadata: meta, dataType, modelType }));
       });

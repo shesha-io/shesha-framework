@@ -32,7 +32,7 @@ const getActualActionArguments = <TArguments extends ActionParametersDictionary 
   const versionedValue = { ...actionArguments } as IHasVersion;
   if (versionedValue.version === undefined)
     versionedValue.version = -1;
-  const model = fluent.migrator.upgrade(versionedValue, {});
+  const model = fluent.migrator.upgrade(versionedValue);
   return model;
 };
 

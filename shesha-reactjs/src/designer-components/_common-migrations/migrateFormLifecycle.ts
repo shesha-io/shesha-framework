@@ -32,6 +32,7 @@ const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): st
   // Convert to JSON
   const initialData = {};
   const initValues = [...initialValues, { key: "__shaFormData", value: 0 }];
+  let initialCount = 0;
   initValues.forEach((item) => {
     const value = typeof item.value === "string"
       ? item.value.toLowerCase().indexOf("return") !== -1
@@ -40,8 +41,15 @@ const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): st
           ? "'" + item.value.replaceAll("{", "' + ").replaceAll("}", " + '") + "'" // replace Mustache syntax if needed
           : item.value
       : item.value;
+    if (value === undefined || value === null || value === "") return; // skip empty values
     setValueByPropertyName(initialData, item.key, value);
+    initialCount++;
   });
+
+  // If there is only one value (__shaFormData), just return initial onDataLoaded code
+  if (initialCount === 1)
+    return onDataLoaded || null;
+
   const initialObjString = JSON.stringify(initialData, null, 4)
     .replaceAll("\"#", "").replaceAll("#\"", "").replaceAll("#\\\"", "\"")
     .replaceAll("\"'' + ", "").replaceAll(" + ''\"", "")
