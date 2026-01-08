@@ -124,6 +124,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     padding-left: ${paddingLeft ?? '2px'};
     padding-right: ${paddingRight ?? '2px'};
     padding-bottom: ${paddingBottom ?? '2px'};
+    height: ${containerHeight ?? 'auto'} !important;
+    width: ${containerWidth ?? '100%'} !important;
+    display: flex;
+    flex-direction: column;
     ${restContainerStyles}
     overflow: auto;
     scrollbar-width: thin;
@@ -132,7 +136,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         width: 8px;
         background-color: transparent;
       }
-  
+    .ant-upload-wrapper {
+      flex: 1 !important;
+    }
+
     .ant-upload-list-item {
       display: flex;
       padding: 0 !important;
@@ -167,11 +174,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-name {
       ${layout ? 'display: none !important' : ''};
-    }
-
-    .ant-upload-list {
-      height: calc(${containerHeight} - 32px) !important;
-      width: calc(${containerWidth} - 32px) !important;
     }
 
     .ant-upload-list-text {
@@ -211,6 +213,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   
     .ant-btn {
       padding: 0;
+      height: max-content !important;
       * {
         font-size: ${fontSize ?? '14px'} !important;
         color: ${color} !important;
@@ -220,7 +223,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       display: flex;
       margin-top: 4px;
       justify-content: flex-end;
-      width: ${containerWidth};
+      width: 100% !important;
+      height: max-content !important;
     }
   
     .${prefixCls}-upload-list {
@@ -282,8 +286,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       overflow-x: auto;
       overflow-y: clip !important;
       align-items: stretch !important;
-      width: ${containerWidth} !important;
-      height: ${containerHeight} !important;
     }
 
     .ant-upload-list-item-container {
@@ -308,7 +310,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       flex-direction: column !important;
       flex-wrap: nowrap !important;
       padding: 2px ${borderWidth ?? '2px'} !important;
-      height: ${containerHeight} !important;
       width: 100% !important;
     }
 
@@ -340,8 +341,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       align-items: stretch !important;
       align-content: flex-start !important;
       padding: 2px;
-      width: ${containerWidth} !important;
-      height: calc(${containerHeight} - 32px) !important;
       overflow-y: auto !important;
       overflow-x: hidden !important;
       .${prefixCls}-upload-list-item {

@@ -241,7 +241,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           });
       })
       .catch((e) => {
-        message.error(`File upload failed. Probably file size is too big`);
+        const errorMessage = e?.response?.data?.error || e?.message || 'Please check your configuration and try again';
+        message.error(`File upload failed. ${errorMessage}`);
         console.error(e);
         dispatch(uploadFileErrorAction({ ...newFile, status: 'error' }));
       });
