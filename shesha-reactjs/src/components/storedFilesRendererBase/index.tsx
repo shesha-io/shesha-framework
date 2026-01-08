@@ -495,7 +495,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
               <div className={styles.fileName}>
                 <Popover content={actions} trigger="hover" placement="top" style={{ padding: '0px' }}>
-                  {iconRender(file)}{file.name}
+                  <Space direction='horizontal' size='small'>
+                    <span>{iconRender(file)}</span>
+                    <span>{file.name}</span>
+                  </Space>
                 </Popover>
               </div>
               {isDownloaded && styleDownloadedFiles && (

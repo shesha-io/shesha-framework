@@ -1,10 +1,10 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, primaryColor, downloadedFileStyles }) => {
-  const { background, backgroundImage, borderRadius: allRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
-    borderBottomWidth, borderLeftWidth, borderLeftColor, borderLeftStyle, borderRightColor, borderRightStyle, borderColor, borderTopStyle, borderTopColor,
+  const { background, backgroundImage, borderRadius: allRadius, borderWidth = '1px', borderTopWidth, width, minWidth, maxWidth,
+    borderBottomWidth, borderLeftWidth, borderLeftColor, borderLeftStyle, borderRightColor, borderRightStyle, borderColor = '#d9d9d9', borderTopStyle, borderTopColor,
     borderTop, boxShadow, borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, backgroundColor, backgroundPosition,
-    backgroundRepeat, backgroundSize, borderStyle, color, fontFamily, fontSize, fontWeight, height, maxHeight, minHeight, textAlign,
+    backgroundRepeat, backgroundSize, borderStyle = 'solid', color, fontFamily, fontSize, fontWeight, height, maxHeight, minHeight, textAlign,
     borderTopRightRadius, borderBottomRightRadius, borderBottomLeftRadius, borderTopLeftRadius,
     ...rest
   } = style;
@@ -32,6 +32,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     font-weight: ${fontWeight ?? '400'} !important;
     font-family: ${fontFamily ?? 'Segoe UI'} !important;
     text-align: ${textAlign ?? 'left'} !important;
+    justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'} !important;
     margin: 2px 0px;
     position: relative;
     white-space: nowrap;
@@ -40,14 +41,16 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     flex: 1;
     cursor: pointer;
     &:hover {
-      background-color: ${token.colorBgSpotlight} !important;
+      background-color: #f0f0f0 !important;
       opacity: 1 !important;
       overflow: visible;
       width: max-content;
+      min-width: 100%;
       border-radius: 4px;
       padding: 0 8px;
       z-index: 999 !important;
       white-space: nowrap;
+      justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'} !important;
     }
   `);
 
@@ -55,7 +58,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     display: ${model.hideFileName ? 'none' : 'flex'};
     cursor: pointer;
     &:hover {
-      background-color: ${token.colorBgTextHover} !important;
+      background-color: #f0f0f0 !important;
       border-radius: ${borderRadius ?? '4px'} !important;
     }
     > .item-file-name {
@@ -77,8 +80,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-thumbnail {
       opacity: 0.8;
-      border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
+      border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess};
       box-shadow: 0 0 0 1px ${downloadedFileStyles?.color ?? token.colorSuccess}20;
+      ${downloadedFileStyles}
     }
 
     .item-file-name {
@@ -133,6 +137,14 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     padding-left: ${paddingLeft ?? '2px'};
     padding-right: ${paddingRight ?? '2px'};
     padding-bottom: ${paddingBottom ?? '2px'};
+    height: ${containerHeight ?? 'auto'} !important;
+    width: ${containerWidth ?? '100%'} !important;
+    max-height: ${containerMaxHeight ?? 'auto'} !important;
+    max-width: ${containerMaxWidth ?? '100%'} !important;
+    min-height: ${containerMinHeight ?? 'auto'} !important;
+    min-width: ${containerMinWidth ?? '100%'} !important;
+    display: flex;
+    flex-direction: column;
     ${restContainerStyles}
     overflow: auto;
     scrollbar-width: thin;
@@ -142,7 +154,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         background-color: transparent;
       }
 
-    
+    .ant-upload-wrapper {
+      flex: 1 !important;
+    }
+
     .ant-upload:not(.ant-upload-disabled) {
       .icon {
         color: ${primaryColor ?? token.colorPrimary} !important;
@@ -152,7 +167,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .ant-upload-list-item {
       display: flex;
       padding: 0 !important;
-
+      border: unset !important;
+      border: ${borderWidth} ${borderStyle} ${borderColor} !important;
+      border-top: ${borderTopWidth ?? borderWidth} ${borderTopStyle ?? borderStyle} ${borderTopColor ?? borderColor};
+      border-right: ${borderRightWidth ?? borderWidth} ${borderRightStyle ?? borderStyle} ${borderRightColor ?? borderColor};
+      border-left: ${borderLeftWidth ?? borderWidth} ${borderLeftStyle ?? borderStyle} ${borderLeftColor ?? borderColor};
+      border-bottom: ${borderBottomWidth ?? borderWidth} ${borderBottomStyle ?? borderStyle} ${borderBottomColor ?? borderColor};
+      
       :before {
         ${rest}
         display: none;
@@ -162,15 +183,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .ant-upload-list-item-thumbnail {
       ${rest}
       background: ${background ?? backgroundImage ?? (backgroundColor ?? 'transparent')} !important;
-      border: ${borderWidth} ${borderStyle} ${borderColor};
-      border-top: ${borderTopWidth ?? borderWidth} ${borderTopStyle ?? borderStyle} ${borderTopColor ?? borderColor};
-      border-right: ${borderRightWidth ?? borderWidth} ${borderRightStyle ?? borderStyle} ${borderRightColor ?? borderColor};
-      border-left: ${borderLeftWidth ?? borderWidth} ${borderLeftStyle ?? borderStyle} ${borderLeftColor ?? borderColor};
-      border-bottom: ${borderBottomWidth ?? borderWidth} ${borderBottomStyle ?? borderStyle} ${borderBottomColor ?? borderColor};
+      background-size: ${backgroundSize ?? 'cover'} !important;
+      background-position: ${backgroundPosition ?? 'center'} !important;
+      background-repeat: ${backgroundRepeat ?? 'no-repeat'} !important;
       box-shadow: ${boxShadow};
       border-radius: ${borderRadius ?? '8px'} !important;
       height: ${thumbnailHeight} !important;
-
+      
       img {
         width: ${thumbnailWidth} !important;
         height: ${thumbnailHeight} !important;
@@ -187,15 +206,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-name {
       ${layout ? 'display: none !important' : ''};
-    }
-
-    .ant-upload-list {
-      height: calc(${containerHeight} - 32px) !important;
-      max-height: calc(${containerMaxHeight} - calc(${isDragger ? '0px' : fontSize} * 1.2) - 40px) !important;
-      min-height: calc(${containerMinHeight} - 32px) !important;
-      width: calc(${containerWidth} - 32px) !important;
-      max-width: calc(${containerMaxWidth} - 32px) !important;
-      min-width: calc(${containerMinWidth} - 32px) !important;
     }
 
     .ant-upload-list-text {
@@ -310,12 +320,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       overflow-x: auto;
       overflow-y: clip !important;
       align-items: stretch !important;
-      width: ${containerWidth} !important;
-      min-width: ${containerMinWidth} !important;
-      max-width: ${containerMaxWidth} !important;
-      max-height: calc(${containerMaxHeight} - 40px) !important;
-      height: ${containerHeight} !important;
-      min-height: ${containerMinHeight} !important;
+      // width: ${containerWidth} !important;
+      // min-width: ${containerMinWidth} !important;
+      // max-width: ${containerMaxWidth} !important;
+      // max-height: calc(${containerMaxHeight} - 40px) !important;
+      // height: ${containerHeight} !important;
+      // min-height: ${containerMinHeight} !important;
     }
 
     .ant-upload-list-item-container {
@@ -340,10 +350,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       flex-direction: column !important;
       flex-wrap: nowrap !important;
       padding: 2px ${borderWidth ?? '2px'} !important;
-      height: ${containerHeight} !important;
+      // height: ${containerHeight} !important;
       width: 100% !important;
-      max-height: calc(${containerMaxHeight} - 72px) !important;
-      min-height: calc(${containerMinHeight} - 32px) !important;
+      // max-height: calc(${containerMaxHeight} - 72px) !important;
+      // min-height: calc(${containerMinHeight} - 32px) !important;
     }
 
     .stored-files-renderer-btn-container {
@@ -374,12 +384,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       align-items: stretch !important;
       align-content: flex-start !important;
       padding: 2px;
-      width: ${containerWidth} !important;
-      max-height: calc(${containerMaxHeight} - 40px) !important;
-      max-width: ${containerMaxWidth} !important;
-      height: calc(${containerHeight} - 32px) !important;
-      min-height: ${containerMinHeight} !important;
-      min-width: ${containerMinWidth} !important;
+      // width: ${containerWidth} !important;
+      // max-height: calc(${containerMaxHeight} - 40px) !important;
+      // max-width: ${containerMaxWidth} !important;
+      // height: calc(${containerHeight} - 32px) !important;
+      // min-height: ${containerMinHeight} !important;
+      // min-width: ${containerMinWidth} !important;
       overflow-y: auto !important;
       overflow-x: hidden !important;
       .${prefixCls}-upload-list-item {
