@@ -10,6 +10,7 @@ import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, u
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useStyles } from './styles/styles';
 import { useDeepCompareMemo } from '@/hooks/useDeepCompareMemo';
+import { toCamelCase } from '@/utils/string';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -121,16 +122,22 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
       return typeof property === 'object' && property !== null && 'path' in property && typeof (property as { path: string }).path === 'string';
     };
 
-    // Extract configurable columns from store
+    // Extract configurable columns from store and convert to camelCase
     const configurableColumnsNames = configurableColumns
-      ?.map((column) => column.id)
-      .filter((id): id is string => typeof id === 'string');
+      ?.map((column) => {
+        // Account for nested properties
+        if (column?.propertyName?.includes('.')) {
+          return column?.propertyName?.split('.')[0];
+        }
+        return column?.propertyName;
+      })
+      .filter((name): name is string => typeof name === 'string')
+      .map((name) => toCamelCase(name));
 
-    // Extract metadata properties using type guard
     const tableMetadataProperties = Array.isArray(metadataProperties)
       ? metadataProperties
         .filter(isPropertyWithPath)
-        .map((property) => property.path)
+        .map((property) => toCamelCase(property.path))
       : undefined;
 
     // Skip validation if no columns or metadata to validate against

@@ -38,6 +38,7 @@ export interface IConfigurableColumnsBase {
  * Configurable table column
  */
 export interface IConfigurableColumnsProps extends IConfigurableColumnsBase {
+  propertyName?: string;
   hidden?: boolean;
   accessor?: string;
   columnType: DatatableColumnType;
