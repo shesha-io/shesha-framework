@@ -204,7 +204,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     };
   },
   actualModelPropertyFilter: (propName) => propName !== 'queryParams',
-  getFieldsToFetch(propertyName, rawModel) {
+  getFieldsToFetch: (propertyName, rawModel) => {
     return rawModel.valueFormat === 'entityReference'
       ? [`${propertyName}.id`, `${propertyName}._className`, `${propertyName}._displayName`]
       : [propertyName];

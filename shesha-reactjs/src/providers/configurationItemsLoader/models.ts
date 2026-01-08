@@ -26,7 +26,6 @@ export interface IConfigurationItemDto<TConfigDto extends ConfigurationDto = Con
 export type FormConfigurationDto = ConfigurationDto & {
   markup: string;
   modelType: string | null;
-  suppress: boolean;
   access: number | null;
   permissions: string[];
 };

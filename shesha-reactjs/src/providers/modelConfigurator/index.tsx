@@ -34,7 +34,7 @@ import {
 } from './contexts';
 import modelReducer from './reducer';
 import { IAjaxResponse, isAjaxErrorResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
-import propertyModelValidator from '@/components/modelConfigurator/propertiesEditor/renderer/propertySettings/propertyModelValidator';
+import { propertyModelValidator, validateDuplicated } from '@/components/modelConfigurator/propertiesEditor/renderer/propertySettings/propertyModelValidator';
 
 export interface IModelConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -102,7 +102,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
   };
 
   const validateModel = (model: ModelConfigurationDto): IPropertyErrors[] => {
-    let errors: IPropertyErrors[] = [];
+    let errors: IPropertyErrors[] = validateDuplicated(model.properties, '');
     model.properties?.forEach((prop) => {
       errors = errors.concat(propertyModelValidator(prop));
     });

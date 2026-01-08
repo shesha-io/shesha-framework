@@ -90,7 +90,7 @@ namespace Shesha.Web.FormsDesigner.Services
             return await base.CreateItemAsync(baseInput, additionalData);
         }
 
-        protected override Task HandleAdditionalPropertiesAsync(FormConfiguration form, object additionalData)
+        protected override Task BeforeCreateAsync(FormConfiguration form, object? additionalData)
         {
             if (additionalData is FormCreationData data)
             {

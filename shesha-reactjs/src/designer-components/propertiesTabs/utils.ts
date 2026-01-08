@@ -1,68 +1,9 @@
-import { IComponentsContainer, IConfigurableFormComponent, IStyleType } from "@/providers";
+import { IComponentsContainer, IConfigurableFormComponent } from "@/providers";
 import { ICollapsiblePanelComponentProps, isCollapsiblePanel } from "../collapsiblePanel/interfaces";
 import { isSettingsInputRow } from "../settingsInputRow";
 import { isPropertyRouterComponent } from "../propertyRouter";
 import { isDefined } from "@/utils/nullables";
 import { ISettingsInputRowProps } from "../settingsInputRow/interfaces";
-
-export const getHeaderStyles = (): IStyleType => (
-  {
-    font: {
-      color: "darkslategray",
-      size: 14,
-      weight: "500",
-      align: "left",
-    },
-    background: {
-      type: "color",
-      color: "#fff",
-    },
-    dimensions: {
-      width: "auto",
-      height: "auto",
-      minHeight: "0",
-      maxHeight: "auto",
-      minWidth: "0",
-      maxWidth: "auto",
-    },
-    border: {
-      radiusType: "all",
-      borderType: "custom",
-      border: {
-        all: {},
-        top: {},
-        right: {},
-        bottom: {
-          width: "2px",
-          style: "solid",
-          color: "#d9d9d9",
-        },
-        left: {},
-      },
-      radius: {
-        all: '0',
-      },
-    },
-    stylingBox: "{\"paddingLeft\":\"0\",\"paddingBottom\":\"4\",\"paddingTop\":\"4\",\"paddingRight\":\"0\"}",
-  }
-);
-
-export const getBodyStyles = (): IStyleType => ({
-  border: {
-    radiusType: "all",
-    borderType: "all",
-    border: {
-      all: { width: '0px', style: 'none', color: '' },
-      top: {},
-      right: {},
-      bottom: {},
-      left: {},
-    },
-    radius: {
-      all: 0,
-    },
-  },
-});
 
 const isComponent = (component: unknown): component is IConfigurableFormComponent => isDefined(component) && "id" in component && "type" in component;
 const isComponentsContainer = (component: IConfigurableFormComponent): component is IConfigurableFormComponent & IComponentsContainer => isComponent(component) && "components" in component && Array.isArray(component.components);
@@ -119,14 +60,8 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
           ...c.content,
           components: contentComponents,
         },
-        ghost: false,
-        collapsedByDefault: false,
-        headerStyles: getHeaderStyles(),
-        // TODO: review and convert styles. I relized that types are incompatible after conversion to typed version
-        // allStyles: getBodyStyles(),
-        border: getBodyStyles().border,
-        stylingBox: "{\"paddingLeft\":\"4\",\"paddingBottom\":\"4\",\"paddingTop\":\"0\",\"paddingRight\":\"4\",\"marginBottom\":\"5\"}",
         hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren),
+        collapsedByDefault: false,
       } satisfies ICollapsiblePanelComponentProps;
     }
 
@@ -171,8 +106,8 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
     // Evaluate final hidden state
     const hasVisibleChildren = (
       (isComponentsContainer(c) && c.components.length > 0) ||
-      (isCollapsiblePanel(c) && c.content.components.length > 0) ||
-      (isSettingsInputRow(c) && c.inputs.length > 0)
+      (isCollapsiblePanel(c) && c.content?.components?.length > 0) ||
+      (isSettingsInputRow(c) && c.inputs?.length > 0)
     );
 
     return !c.hidden || hasVisibleChildren;

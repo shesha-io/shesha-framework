@@ -8,6 +8,7 @@ export interface IReadOnlyModeSelectorProps {
   readOnly?: boolean;
   onChange?: (value: EditMode) => void;
   size?: 'small' | 'middle' | 'large';
+  className?: string;
 }
 
 const EditModeSelector: FC<IReadOnlyModeSelectorProps> = (props) => {
@@ -18,7 +19,7 @@ const EditModeSelector: FC<IReadOnlyModeSelectorProps> = (props) => {
       : props.value;
 
   return (
-    <Radio.Group buttonStyle="solid" value={val} onChange={(e) => props.onChange(e.target.value)} size={props.size} disabled={props.readOnly}>
+    <Radio.Group buttonStyle="solid" value={val} onChange={(e) => props.onChange(e.target.value)} size={props.size} disabled={props.readOnly} className={props.className}>
       <Radio.Button key="editable" value="editable"><Icon icon="editIcon" hint="Editable" /></Radio.Button>
       <Radio.Button key="readOnly" value="readOnly"><Icon icon="readonlyIcon" hint="Read only" /></Radio.Button>
       <Radio.Button key="inherited" value="inherited"><Icon icon="inheritIcon" hint="Inherited" /></Radio.Button>
