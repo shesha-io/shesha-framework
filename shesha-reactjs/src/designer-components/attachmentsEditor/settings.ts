@@ -235,7 +235,10 @@ export const getSettings = () =>
           .addButtons({
             id: nanoid(),
             label: 'Custom Actions',
-            propertyName: 'customActions'
+            title: 'Configure Actions',
+            propertyName: 'customActions',
+            caption: 'Customize Actions',
+            readOnlyCaption: 'View Custom actions',
           })
           .addCheckbox({
             id: nanoid(),
