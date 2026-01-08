@@ -126,7 +126,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         }
         case 'radio': {
             const handleClick = (clickedValue: string | number): void => {
-                if (allowDeselect && (value || defaultValue) === clickedValue) {
+                if (allowDeselect && (value ?? defaultValue) === clickedValue) {
                     onChange?.(undefined);
                 }
             };
