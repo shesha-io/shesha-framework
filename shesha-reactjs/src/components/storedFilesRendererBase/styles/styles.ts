@@ -124,8 +124,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     padding-left: ${paddingLeft ?? '2px'};
     padding-right: ${paddingRight ?? '2px'};
     padding-bottom: ${paddingBottom ?? '2px'};
-    height: calc(${containerHeight}) !important;
-    width: calc(${containerWidth}) !important;
+    height: ${containerHeight} !important;
+    width: ${containerWidth} !important;
     display: flex;
     flex-direction: column;
     ${restContainerStyles}
