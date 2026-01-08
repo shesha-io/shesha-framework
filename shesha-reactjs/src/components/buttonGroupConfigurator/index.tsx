@@ -15,7 +15,6 @@ export interface IToolbarSettingsModal {
 }
 
 interface IButtonGroupConfiguratorProps extends IToolbarSettingsModal {
- 
 }
 
 export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
@@ -24,7 +23,7 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
   readOnly,
   title = 'Buttons Configuration',
   readOnlyCaption,
-  caption = 'Buttons Configuration',
+  caption = 'Customize Button Group',
 }) => {
   const isSmall = useMedia('(max-width: 480px)');
   const [showModal, setShowModal] = useState(false);
