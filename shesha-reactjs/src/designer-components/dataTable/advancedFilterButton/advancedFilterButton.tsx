@@ -23,9 +23,6 @@ export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (pr
   // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
   const isGhostType = props.buttonType === 'ghost';
 
-  // Text-like buttons (link, ghost) don't have borders/backgrounds
-  const isTextLikeButton = ['link', 'ghost'].includes(props.buttonType);
-
   // Build base button style without border/shadow to avoid conflicts
   const baseButtonStyle = {
     display: 'flex',
@@ -38,7 +35,7 @@ export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (pr
   // Ghost buttons should never have borders, backgrounds, or shadows - only foreground color
   // Link buttons also don't have borders
   // For other types (primary, default, dashed), let the configured styles handle borders/shadows
-  const borderStyle = isTextLikeButton
+  const borderStyle = ['link', 'ghost'].includes(props.buttonType)
     ? { border: 'none' }
     : hasFilters
       ? { border: `1px solid ${styles.primaryColor}` }
@@ -105,7 +102,7 @@ export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (pr
             icon={filterIcon}
             size={props.size}
             style={isFiltering || props.readOnly
-              ? { ...buttonStyle, opacity: 0.5, border: isTextLikeButton ? 'none' : buttonStyle.border }
+              ? { ...buttonStyle, opacity: 0.5, border: ['link', 'ghost'].includes(props.buttonType) ? 'none' : buttonStyle.border }
               : { ...buttonStyle }}
           >
             {props.label}

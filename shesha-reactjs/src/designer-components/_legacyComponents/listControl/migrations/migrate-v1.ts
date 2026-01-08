@@ -2,7 +2,6 @@ import { getClosestTableId } from '@/providers/form/utils';
 import { getDispatchEventReplacement } from '../../../../components/formDesigner/components/_common-migrations/migrate-events';
 import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { ButtonType } from 'antd/es/button/buttonHelpers';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IListComponentProps } from '../models';
 import { SettingsMigrationContext } from '@/interfaces';
@@ -291,10 +290,9 @@ export const migrateV0toV1 = (props: IListComponentProps, context: SettingsMigra
 
     const button = item as IButtonGroupButtonV0;
     const isGhost = button.buttonType === 'ghost';
-    const buttonType = (isGhost ? 'default' : button.buttonType) as ButtonType;
     const newItem: IButtonItem = {
       ...button,
-      buttonType,
+      buttonType: isGhost ? 'default' : button.buttonType,
       ghost: isGhost,
     };
     newItem.actionConfiguration = getActionConfiguration(button, context);

@@ -40,7 +40,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
 
   const { icon, label, tooltip, iconPosition, size, buttonType, borderColor, borderRadius,
     height, width, backgroundColor, fontSize, fontWeight, color, borderStyle, borderWidth,
-    readOnly, block, danger, ghost } = actualItem;
+    readOnly, block, danger } = actualItem;
 
   const model = {
     ...actualItem,
@@ -61,18 +61,19 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
 
   const buttonStyles = useFormComponentStyles(prevStyles);
 
-  const isGhost = ghost === true;
-
   const newStyles = {
     ...buttonStyles.dimensionsStyles,
-    ...(['primary', 'default'].includes(item.buttonType) || isGhost) && buttonStyles.borderStyles,
+    ...(['primary', 'default', 'ghost'].includes(item.buttonType) && buttonStyles.borderStyles),
     ...buttonStyles.fontStyles,
-    ...(['dashed', 'default'].includes(item.buttonType) || isGhost) && buttonStyles.backgroundStyles,
-    ...(['primary', 'default', 'dashed'].includes(item.buttonType) || isGhost) && buttonStyles.shadowStyles,
+    ...(['dashed', 'default', 'ghost'].includes(item.buttonType) && buttonStyles.backgroundStyles),
+    ...(['primary', 'default', 'dashed', 'ghost'].includes(item.buttonType) && buttonStyles.shadowStyles),
     ...(buttonStyles.jsStyle),
     ...buttonStyles.stylingBoxAsCSS,
     justifyContent: buttonStyles.fontStyles.textAlign,
   };
+
+  // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
+  const isGhost = buttonType === 'ghost';
 
   return (
     <>

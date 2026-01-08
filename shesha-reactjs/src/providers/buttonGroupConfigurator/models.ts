@@ -39,7 +39,7 @@ export interface IButtonGroupItemBase extends IStyleType {
   icon?: string | React.ReactNode;
   iconPosition?: 'start' | 'end';
   downIcon?: string;
-  buttonType?: ButtonType;
+  buttonType?: ButtonType | 'ghost';
   ghost?: boolean;
   permissions?: string[];
   size?: SizeType;

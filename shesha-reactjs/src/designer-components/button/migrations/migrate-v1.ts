@@ -6,7 +6,6 @@ import { IKeyValue } from '@/interfaces/keyValue';
 import { ReactNode } from 'react';
 import { SettingsMigrationContext } from '@/interfaces';
 import { IShowModalActionArgumentsV0 } from '@/providers/dynamicModal/migrations/ver0';
-import { ButtonType } from 'antd/es/button/buttonHelpers';
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments'>): IConfigurableActionConfiguration => {
   return {
@@ -270,13 +269,12 @@ export const migrateV0toV1 = (props: IButtonGroupButtonV0, context: SettingsMigr
   const actionConfiguration = getActionConfiguration(props, context);
 
   const isGhost = props.buttonType === 'ghost';
-  const buttonType = (isGhost ? 'default' : props.buttonType) as ButtonType;
   const result: IButtonComponentProps = {
     ...props,
     actionConfiguration: actionConfiguration,
     type: props['type'] ?? "button",
     propertyName: props['name'],
-    buttonType,
+    buttonType: isGhost ? 'default' : props.buttonType,
     ghost: isGhost,
   };
   return result;
