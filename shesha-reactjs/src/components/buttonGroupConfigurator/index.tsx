@@ -22,7 +22,7 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
   onChange,
   readOnly,
   title = 'Buttons Configuration',
-  readOnlyCaption,
+  readOnlyCaption = 'View Button Group',
   caption = 'Customize Button Group',
 }) => {
   const isSmall = useMedia('(max-width: 480px)');
@@ -46,7 +46,7 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
 
   return (
     <Fragment>
-      <Button onClick={openModal}>{readOnly ? readOnlyCaption ?? 'View Button Group' : caption ?? 'Customize Button Group'}</Button>
+      <Button onClick={openModal}>{readOnly ? readOnlyCaption : caption}</Button>
 
       <Modal
         width={isSmall ? '90%' : '60%'}
