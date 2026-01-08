@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Badge, Button, Tooltip } from 'antd';
 import { FilterFilled, FilterOutlined } from '@ant-design/icons';
 import { useDataTableStore } from '@/providers';
@@ -60,7 +60,7 @@ export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (pr
       .split(' ');
   };
 
-  const customIcon = (): FC | null => {
+  const customIcon = useCallback(() => {
     if (props.icon) {
       const splitIconName = splitByCapitalLetters(props.icon as string);
       splitIconName.pop();
@@ -71,11 +71,11 @@ export const AdvancedFilterButton: FC<IAdvancedFilterButtonComponentProps> = (pr
     }
 
     return null;
-  };
+  }, [props.icon, hasFilters]);
 
   useEffect(() => {
     setIcon(customIcon());
-  }, [props.icon, hasFilters]);
+  }, [props.icon, hasFilters, customIcon]);
 
   const IconComponent = icon;
   const defaultIcon = hasFilters ? <FilterFilled /> : <FilterOutlined />;
