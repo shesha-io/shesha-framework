@@ -26,6 +26,7 @@ const EditorNotAvailable: FC = () => {
 };
 const EmptyComponent: FC = () => null;
 
+
 export const getUnknownDocumentDefinition = (itemType: string): DocumentDefinition => {
   const definition: DocumentDefinition = {
     documentType: itemType,

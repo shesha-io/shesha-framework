@@ -119,37 +119,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 margin: 0;
                 border-bottom: ${sheshaStyles.border};
             }
+            .${shaDesignerToolbar} {
+                .${shaDesignerToolbarRight} {
+                    margin-right: 20px;
+                }
+            }
         }
     `);
 
   const formDesignerClassName = "sha-form-designer";
   const designerPage = "sha-designer-page";
-  /*
-    const flexColumns = `
-        display: flex;
-        flex-direction: column;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        align-items: stretch;
-        align-content: flex-start;
-    `;
-    const flexFitHorizontal = 'flex-grow: 1;';
-    const designerPage = cx("sha-designer-page", css`
-        ${flexColumns}
 
-        .${formDesignerClassName} {
-            ${flexFitHorizontal}
-            ${flexColumns}
-
-            .${mainArea} {
-                ${flexFitHorizontal}
-                .sidebar-container {
-                    height: 100%;
-                }
-            }
-        }
-   `);
-    */
   const formDesigner = cx(formDesignerClassName, css`
         .${shaHelpIcon} {
             cursor: help;

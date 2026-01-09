@@ -138,6 +138,16 @@ const DropdownComponent: DropdownComponentDefinition = {
         tablet: { ...prev.tablet, tag: { ...initTagStyle } },
         mobile: { ...prev.mobile, tag: { ...initTagStyle } },
       };
+    })
+    .add<IDropdownComponentProps>(11, (prev) => {
+      const result = { ...prev };
+      delete result['referenceListNamespace'];
+      delete result['referenceListName'];
+      const { referenceListId } = result;
+      const knownPrefixes = ["Shesha.Framework", "Shesha.Core", "Shesha.Scheduler"];
+      if (referenceListId && referenceListId.name && !referenceListId.module && knownPrefixes.some((p) => referenceListId.name.startsWith(p)))
+        result.referenceListId = { module: "Shesha", name: referenceListId.name };
+      return result;
     }),
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;

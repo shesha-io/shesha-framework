@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain;
+using System.Collections.Generic;
 
 namespace Shesha.Notifications
 {
@@ -14,7 +15,7 @@ namespace Shesha.Notifications
             dst.Disable = src.Disable;
             dst.CanOptOut = src.CanOptOut;
             dst.Category = src.Category ?? string.Empty;
-            dst.OverrideChannels = src.OverrideChannels ?? string.Empty;
+            dst.OverrideChannels = src.OverrideChannels ?? new List<ConfigurationItemIdentifierDto>();
             
             return dst;
         }

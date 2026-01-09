@@ -15,7 +15,7 @@ namespace Shesha.ConfigurationItems.Dtos
         /// <summary>
         /// Module name
         /// </summary>
-        public required string Module { get; set; }
+        public string? Module { get; set; }
 
         /// <summary>
         /// Form name

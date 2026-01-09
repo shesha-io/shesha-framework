@@ -5,7 +5,6 @@ using Abp.Runtime.Validation;
 using Abp.Threading;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
 using Shesha.ConfigurationItems.Cache;
@@ -17,7 +16,6 @@ using Shesha.Extensions;
 using Shesha.Mvc;
 using Shesha.Permissions;
 using Shesha.Reflection;
-using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Dtos.Forms;
 using Shesha.Web.FormsDesigner.Exceptions;
@@ -235,12 +233,6 @@ namespace Shesha.Web.FormsDesigner.Services
             return dto;
         }
 
-        private string GetMd5(FormConfigurationDto dto)
-        {
-            var json = JsonConvert.SerializeObject(dto);
-            return json.ToMd5Fingerprint();
-        }
-
         /// <summary>
         /// Update form markup
         /// </summary>
@@ -251,6 +243,7 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             // todo: check rights
             var form = await Repository.GetAsync(input.Id);
+            form.Module?.EnsureEditable();
 
             form.Markup = input.Markup;
             await Repository.UpdateAsync(form);
@@ -297,6 +290,7 @@ namespace Shesha.Web.FormsDesigner.Services
         public async Task<FormConfigurationDto> ImportJsonAsync([FromForm] ImportFormJsonInput input)
         {
             var item = await Repository.GetAsync(input.ItemId);
+            item.Module?.EnsureEditable();
             
             var validationResults = new List<ValidationResult>();
 
@@ -347,6 +341,7 @@ namespace Shesha.Web.FormsDesigner.Services
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
             var entity = await GetEntityByIdAsync(input.Id);
+            entity.Module?.EnsureEditable();
 
             entity.Name = input.Name;
 
