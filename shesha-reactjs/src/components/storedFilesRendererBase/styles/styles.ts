@@ -1,14 +1,14 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, primaryColor, downloadedFileStyles }) => {
-  const { background, backgroundImage, borderRadius: allRadius, borderWidth = '1px', borderTopWidth, width, minWidth, maxWidth,
-    borderBottomWidth, borderLeftWidth, borderLeftColor, borderLeftStyle, borderRightColor, borderRightStyle, borderColor = '#d9d9d9', borderTopStyle, borderTopColor,
-    borderTop, boxShadow, borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, backgroundColor, backgroundPosition,
-    backgroundRepeat, backgroundSize, borderStyle = 'solid', color, fontFamily, fontSize, fontWeight, height, maxHeight, minHeight, textAlign,
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = {} as any, model = {} as any, containerStyles = {} as any, primaryColor, downloadedFileStyles }) => {
+  const { background, backgroundImage, borderRadius: allRadius, width, minWidth, maxWidth,
+    boxShadow, backgroundColor, backgroundPosition,
+    backgroundRepeat, backgroundSize, color, fontFamily, fontSize, fontWeight, height, maxHeight, minHeight, textAlign,
     borderTopRightRadius, borderBottomRightRadius, borderBottomLeftRadius, borderTopLeftRadius,
     ...rest
   } = style;
 
+  console.log("Downloaded file styles", downloadedFileStyles);
   const { width: containerWidth, height: containerHeight,
     maxHeight: containerMaxHeight, maxWidth: containerMaxWidth, minHeight: containerMinHeight,
     minWidth: containerMinWidth, marginTop, marginLeft, marginRight, marginBottom, paddingTop,
@@ -78,11 +78,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       position: relative;
     }
 
-    .ant-upload-list-item-thumbnail {
+    >.ant-upload-list-item > .ant-upload-list-item-thumbnail {
       opacity: 0.8;
       border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess};
       box-shadow: 0 0 0 1px ${downloadedFileStyles?.color ?? token.colorSuccess}20;
-      ${downloadedFileStyles}
+      ${downloadedFileStyles};
     }
 
     .item-file-name {
@@ -167,13 +167,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .ant-upload-list-item {
       display: flex;
       padding: 0 !important;
-      border: unset !important;
-      border: ${borderWidth} ${borderStyle} ${borderColor} !important;
-      border-top: ${borderTopWidth ?? borderWidth} ${borderTopStyle ?? borderStyle} ${borderTopColor ?? borderColor};
-      border-right: ${borderRightWidth ?? borderWidth} ${borderRightStyle ?? borderStyle} ${borderRightColor ?? borderColor};
-      border-left: ${borderLeftWidth ?? borderWidth} ${borderLeftStyle ?? borderStyle} ${borderLeftColor ?? borderColor};
-      border-bottom: ${borderBottomWidth ?? borderWidth} ${borderBottomStyle ?? borderStyle} ${borderBottomColor ?? borderColor};
-      
+      border: unset !important; 
       :before {
         ${rest}
         display: none;
@@ -222,6 +216,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .${prefixCls}-upload {
       ${rest}
+      border: unset;
       ${(layout && !isDragger) && `width: ${thumbnailWidth} !important;`};
       ${(layout && !isDragger) && `height: ${thumbnailHeight} !important;`};
 
@@ -349,11 +344,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       display: flex !important;
       flex-direction: column !important;
       flex-wrap: nowrap !important;
-      padding: 2px ${borderWidth ?? '2px'} !important;
-      // height: ${containerHeight} !important;
+      padding: 2px !important;
       width: 100% !important;
-      // max-height: calc(${containerMaxHeight} - 72px) !important;
-      // min-height: calc(${containerMinHeight} - 32px) !important;
     }
 
     .stored-files-renderer-btn-container {
