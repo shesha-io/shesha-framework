@@ -574,7 +574,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
           : (
             <>
-              <Button type="link" icon={<PictureOutlined />} disabled={disabled} {...uploadBtnProps} style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model.allStyles.fontStyles, justifyContent: model.allStyles.fontStyles?.textAlign === 'center' ? 'center' : model.allStyles.fontStyles?.textAlign === 'right' ? 'flex-end' : 'flex-start' }}>
+              <Button
+                type="link"
+                icon={<PictureOutlined />}
+                disabled={disabled}
+                {...uploadBtnProps}
+                style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model.allStyles.fontStyles }}
+              >
                 {listType === 'text' && '(press to upload)'}
               </Button>
               <div style={(listType === 'thumbnail' && !isDragger) ? { width, minWidth, maxWidth } : {}}>

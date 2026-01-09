@@ -42,7 +42,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     flex: 1;
     cursor: pointer;
     &:hover {
-      background-color: #f0f0f0 !important;
+      background-color: ${token.colorBgTextHover} !important;
       opacity: 1 !important;
       overflow: visible;
       width: max-content;
@@ -424,6 +424,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
   `);
 
+  const uploadButton = cx("upload-button", css`
+    justify-content: ${model.textAlign === 'center' ? 'center' : model.textAlign === 'right' ? 'flex-end' : 'flex-start'};
+    ${model.listType === 'thumbnail' ? style : model.fontStyles}
+  `);
+
   return {
     shaStoredFilesRenderer,
     shaStoredFilesRendererHorizontal,
@@ -439,5 +444,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     fileNameWrapper,
     hiddenElement,
     actionsPopover,
+    uploadButton,
   };
 });
