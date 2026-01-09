@@ -585,7 +585,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           default: return '';
         }
       }, [layout, listTypeAndLayout, styles]);
+      
   return (
+    fileList.length === 0 && disabled ? null : (
     <div className={classNames(styles.shaStoredFilesRenderer, layoutClassName)}
     >
       {isStub
@@ -671,6 +673,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       />
 
     </div>
+    )
   );
 };
 
