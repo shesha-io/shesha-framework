@@ -10,7 +10,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     ...rest
   } = style;
 
-  console.log("Downloaded file styles", downloadedFileStyles);
   const { width: containerWidth, height: containerHeight,
     maxHeight: containerMaxHeight, maxWidth: containerMaxWidth, minHeight: containerMinHeight,
     minWidth: containerMinWidth, marginTop, marginLeft, marginRight, marginBottom, paddingTop,
@@ -329,12 +328,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       overflow-x: auto;
       overflow-y: clip !important;
       align-items: stretch !important;
-      // width: ${containerWidth} !important;
-      // min-width: ${containerMinWidth} !important;
-      // max-width: ${containerMaxWidth} !important;
-      // max-height: calc(${containerMaxHeight} - 40px) !important;
-      // height: ${containerHeight} !important;
-      // min-height: ${containerMinHeight} !important;
     }
 
     .ant-upload-list-item-container {
@@ -390,12 +383,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       align-items: stretch !important;
       align-content: flex-start !important;
       padding: 2px;
-      // width: ${containerWidth} !important;
-      // max-height: calc(${containerMaxHeight} - 40px) !important;
-      // max-width: ${containerMaxWidth} !important;
-      // height: calc(${containerHeight} - 32px) !important;
-      // min-height: ${containerMinHeight} !important;
-      // min-width: ${containerMinWidth} !important;
       overflow-y: auto !important;
       overflow-x: hidden !important;
       .${prefixCls}-upload-list-item {
