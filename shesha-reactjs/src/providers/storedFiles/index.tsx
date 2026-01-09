@@ -46,7 +46,7 @@ import {
 } from './contexts';
 import { storedFilesReducer } from './reducer';
 import { App } from 'antd';
-import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { extractAjaxResponse, isAjaxSuccessResponse, isAxiosResponse } from '@/interfaces/ajaxResponse';
 import { addFile, normalizeFileName, removeFile, updateAllFilesDownloaded, updateDownloadedAFile } from './utils';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { fileListContextCode } from '@/publicJsApis';
@@ -245,13 +245,19 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       })
       .catch((e: unknown) => {
         let errorMessage = 'Please check your configuration and try again';
-        if (e && typeof e === 'object') {
-          const error = e as { data?: { error?: { details?: string; message?: string } }; message?: string };
-          errorMessage = error?.data?.error?.details ||
-            error?.data?.error?.message ||
-            error?.message ||
-            errorMessage;
+
+        if (isAxiosResponse(e)) {
+          const details = e.data?.error?.details;
+          const msg = e.data?.error?.message;
+          if (typeof details === 'string') {
+            errorMessage = details.slice(0, 200);
+          } else if (typeof msg === 'string') {
+            errorMessage = msg;
+          }
+        } else if (typeof e === 'object' && e !== null && 'message' in e && typeof e.message === 'string') {
+          errorMessage = e.message;
         }
+
         message.error(`File upload failed. ${errorMessage}`);
         console.error(e);
         dispatch(uploadFileErrorAction({ ...newFile, status: 'error' }));
