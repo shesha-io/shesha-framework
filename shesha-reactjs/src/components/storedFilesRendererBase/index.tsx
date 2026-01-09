@@ -203,7 +203,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       hideFileName: rest.hideFileName && listType === 'thumbnail',
       isDragger,
       isStub,
-      downloadZip
+      downloadZip,
     },
   });
 
@@ -306,10 +306,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           <>
             <Image src={imageUrls[uid]} alt={file.name} preview={false} />
             <p className="ant-upload-list-item-name">{file.name}</p>
-          </>)
-        }
+          </>
+        );
       }
-    
+    }
+
 
     return getFileIcon(type, model?.allStyles?.fontStyles?.fontSize);
   };
@@ -495,7 +496,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
               <div className={styles.fileName}>
                 <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
-                  <Space direction='horizontal' size='small'>
+                  <Space direction="horizontal" size="small">
                     <span>{iconRender(file)}</span>
                     <span>{file.name}</span>
                   </Space>

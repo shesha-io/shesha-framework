@@ -2,7 +2,7 @@ import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = {}, model = {}, containerStyles = {}, downloadedFileStyles } : { style: CSSProperties, model: any, containerStyles: any, downloadedFileStyles: CSSProperties }) => {
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = {}, model = {}, containerStyles = {}, downloadedFileStyles }: { style: CSSProperties; model: any; containerStyles: any; downloadedFileStyles: CSSProperties }) => {
   const { background, backgroundImage, borderRadius: allRadius, width, minWidth, maxWidth,
     boxShadow, backgroundColor, backgroundPosition,
     backgroundRepeat, backgroundSize, color, fontFamily, fontSize, fontWeight, height, maxHeight, minHeight, textAlign,
@@ -83,7 +83,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       ${rest}
       opacity: 0.8;
       border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess};
-      ${{...downloadedFileStyles}};
+      ${{ ...downloadedFileStyles }};
     }
 
     .item-file-name {
