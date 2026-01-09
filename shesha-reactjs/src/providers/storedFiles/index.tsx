@@ -244,9 +244,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           });
       })
       .catch((e) => {
-        const errorMessage = (e as any)?.data?.error?.details ||
-          (e as any)?.data?.error?.message ||
-          (e as any)?.message ||
+        const errorMessage = e?.data?.error?.details ||
+          e?.data?.error?.message ||
+          e?.message ||
           'Please check your configuration and try again';
         message.error(`File upload failed. ${errorMessage}`);
         console.error(e);

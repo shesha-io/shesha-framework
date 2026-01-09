@@ -1,8 +1,18 @@
+import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
+interface IModelInterface {
+  gap?: string;
+  layout?: boolean;
+  hideFileName?: boolean;
+  isDragger?: boolean;
+  isStub?: boolean;
+  downloadZip?: boolean;
+  listType?: listType;
+  fontStyles?: CSSProperties;
+};
 
-
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = {}, model = {}, containerStyles = {}, downloadedFileStyles }: { style: CSSProperties; model: any; containerStyles: any; downloadedFileStyles: CSSProperties }) => {
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = {}, model = {}, containerStyles = {}, downloadedFileStyles }: { style: CSSProperties; model: IModelInterface; containerStyles: CSSProperties; downloadedFileStyles: CSSProperties }) => {
   const { background, backgroundImage, borderRadius: allRadius, width, minWidth, maxWidth,
     boxShadow, backgroundColor, backgroundPosition,
     backgroundRepeat, backgroundSize, color, fontFamily, fontSize, fontWeight, height, maxHeight, minHeight, textAlign,
@@ -425,8 +435,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
   `);
 
   const uploadButton = cx("upload-button", css`
-    justify-content: ${model.textAlign === 'center' ? 'center' : model.textAlign === 'right' ? 'flex-end' : 'flex-start'};
-    ${model.listType === 'thumbnail' ? style : model.fontStyles}
+    justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'};
+    ${model.listType === 'thumbnail' ? { ...style } : { ...model.fontStyles }}
   `);
 
   return {

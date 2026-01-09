@@ -204,6 +204,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       isDragger,
       isStub,
       downloadZip,
+      fontStyles: model?.allStyles?.fontStyles,
     },
   });
 
@@ -579,7 +580,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                 icon={<PictureOutlined />}
                 disabled={disabled}
                 {...uploadBtnProps}
-                style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model.allStyles.fontStyles }}
+                style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model?.allStyles?.fontStyles }}
               >
                 {listType === 'text' && '(press to upload)'}
               </Button>
