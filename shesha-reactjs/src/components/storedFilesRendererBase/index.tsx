@@ -184,7 +184,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
   const hasFiles = !!fileList.length;
 
-  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS, borderStyles } = useFormComponentStyles({ ...model?.container });
+  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
   const defaultBorder = defaultStyles().border.border.all;
 
   const { styles } = useStyles({
