@@ -1,6 +1,8 @@
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = {} as any, model = {} as any, containerStyles = {} as any, primaryColor, downloadedFileStyles }) => {
+
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = {}, model = {}, containerStyles = {}, downloadedFileStyles } : { style: CSSProperties, model: any, containerStyles: any, downloadedFileStyles: CSSProperties }) => {
   const { background, backgroundImage, borderRadius: allRadius, width, minWidth, maxWidth,
     boxShadow, backgroundColor, backgroundPosition,
     backgroundRepeat, backgroundSize, color, fontFamily, fontSize, fontWeight, height, maxHeight, minHeight, textAlign,
@@ -82,8 +84,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       ${rest}
       opacity: 0.8;
       border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess};
-      box-shadow: 0 0 0 1px ${downloadedFileStyles?.color ?? token.colorSuccess}20;
-      ${downloadedFileStyles};
+      ${{...downloadedFileStyles}};
     }
 
     .item-file-name {
@@ -161,7 +162,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
     .ant-upload:not(.ant-upload-disabled) {
       .icon {
-        color: ${primaryColor ?? token.colorPrimary} !important;
+        color: ${token.colorPrimary} !important;
       };
     }
   
@@ -188,6 +189,14 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       display: flex !important;
       justify-content: center !important;
       align-items: center !important;
+
+      > div {
+       height: 100%;
+       width: 100%;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+      }
       
       img {
         width: ${thumbnailWidth} !important;
@@ -244,7 +253,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
   
     .ant-btn {
-      color: ${primaryColor ?? token.colorPrimary} !important;
+      color: ${token.colorPrimary} !important;
       padding: 0;
       * {
         font-size: ${fontSize ?? '14px'} !important;

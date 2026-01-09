@@ -203,7 +203,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       hideFileName: rest.hideFileName && listType === 'thumbnail',
       isDragger,
       isStub,
-      downloadZip,
+      downloadZip
     },
   });
 
@@ -303,13 +303,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
         return (
-          <Space size="small" direction="vertical">
+          <>
             <Image src={imageUrls[uid]} alt={file.name} preview={false} />
             <p className="ant-upload-list-item-name">{file.name}</p>
-          </Space>
-        );
+          </>)
+        }
       }
-    }
+    
 
     return getFileIcon(type, model?.allStyles?.fontStyles?.fontSize);
   };
@@ -494,7 +494,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           return (
             <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
               <div className={styles.fileName}>
-                <Popover content={actions} trigger="hover" placement="top"  classNames={{root: styles.actionsPopover}}>
+                <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
                   <Space direction='horizontal' size='small'>
                     <span>{iconRender(file)}</span>
                     <span>{file.name}</span>
@@ -523,7 +523,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         );
 
         return (
-          <Popover content={actions} trigger="hover" placement="top" classNames={{root: styles.actionsPopover}}>
+          <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
             {content}
           </Popover>
         );
@@ -573,9 +573,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
           : (
             <>
-                <Button type="link" icon={<PictureOutlined />} disabled={disabled} {...uploadBtnProps} style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model.allStyles.fontStyles, justifyContent: model.allStyles.fontStyles?.textAlign === 'center' ? 'center' : model.allStyles.fontStyles?.textAlign === 'right' ? 'flex-end' : 'flex-start' }}>
-                  {listType === 'text' && '(press to upload)'}
-                </Button>
+              <Button type="link" icon={<PictureOutlined />} disabled={disabled} {...uploadBtnProps} style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model.allStyles.fontStyles, justifyContent: model.allStyles.fontStyles?.textAlign === 'center' ? 'center' : model.allStyles.fontStyles?.textAlign === 'right' ? 'flex-end' : 'flex-start' }}>
+                {listType === 'text' && '(press to upload)'}
+              </Button>
               <div style={(listType === 'thumbnail' && !isDragger) ? { width, minWidth, maxWidth } : {}}>
                 {listType !== 'text' && !rest.hideFileName && (
                   <div className={styles.fileName}>
