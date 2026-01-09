@@ -1,6 +1,6 @@
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import { DataTypes, IAjaxResponse } from '@/interfaces';
+import { DataTypes, IAjaxResponse, IErrorInfo } from '@/interfaces';
 import qs from 'qs';
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
@@ -243,11 +243,15 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
             ownerName: payload.ownerName || ownerName,
           });
       })
-      .catch((e) => {
-        const errorMessage = e?.data?.error?.details ||
-          e?.data?.error?.message ||
-          e?.message ||
-          'Please check your configuration and try again';
+      .catch((e: unknown) => {
+        let errorMessage = 'Please check your configuration and try again';
+        if (e && typeof e === 'object') {
+          const error = e as { data?: { error?: { details?: string; message?: string } }; message?: string };
+          errorMessage = error?.data?.error?.details ||
+            error?.data?.error?.message ||
+            error?.message ||
+            errorMessage;
+        }
         message.error(`File upload failed. ${errorMessage}`);
         console.error(e);
         dispatch(uploadFileErrorAction({ ...newFile, status: 'error' }));
