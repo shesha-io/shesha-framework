@@ -252,7 +252,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           if (typeof details === 'string') {
             errorMessage = details.slice(0, 200);
           } else if (typeof msg === 'string') {
-            errorMessage = msg;
+            errorMessage = msg.slice(0, 200);;
           }
         } else if (typeof e === 'object' && e !== null && 'message' in e && typeof e.message === 'string') {
           errorMessage = e.message;
