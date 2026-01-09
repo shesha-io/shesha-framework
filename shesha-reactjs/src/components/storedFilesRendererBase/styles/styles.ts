@@ -421,6 +421,16 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       border-radius: 8px !important;
   `);
 
+  const hiddenElement = cx("hidden-element", css`
+    display: none !important;
+  `);
+
+  const actionsPopover = cx("actions-popover", css`
+    .ant-popover-inner {
+      padding: 4px;
+    }
+  `);
+
   return {
     shaStoredFilesRenderer,
     shaStoredFilesRendererHorizontal,
@@ -434,5 +444,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     thumbnailReadOnly,
     fileName,
     fileNameWrapper,
+    hiddenElement,
+    actionsPopover,
   };
 });
