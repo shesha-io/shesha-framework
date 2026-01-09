@@ -14,9 +14,9 @@ interface IModelInterface {
 
 export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = {}, model = {}, containerStyles = {}, downloadedFileStyles }: { style: CSSProperties; model: IModelInterface; containerStyles: CSSProperties; downloadedFileStyles: CSSProperties }) => {
   const { background, backgroundImage, borderRadius: allRadius, width, minWidth, maxWidth,
-    boxShadow, backgroundColor, backgroundPosition,
-    backgroundRepeat, backgroundSize, color, fontFamily, fontSize, fontWeight, height, maxHeight, minHeight, textAlign,
-    borderTopRightRadius, borderBottomRightRadius, borderBottomLeftRadius, borderTopLeftRadius,
+    boxShadow, backgroundColor, backgroundPosition, backgroundRepeat, backgroundSize, color, fontFamily,
+    fontSize, fontWeight, height, maxHeight, minHeight, textAlign, borderTopRightRadius, borderBottomRightRadius,
+    borderBottomLeftRadius, borderTopLeftRadius,
     ...rest
   } = style;
 

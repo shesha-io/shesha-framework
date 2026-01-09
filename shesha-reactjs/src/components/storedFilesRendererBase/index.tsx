@@ -33,6 +33,7 @@ import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAnd
 import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import ShaIcon, { IconType } from '@/components/shaIcon';
+import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
 
 interface IUploaderFileTypes {
   name: string;
@@ -183,7 +184,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
   const hasFiles = !!fileList.length;
 
-  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
+  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS, borderStyles } = useFormComponentStyles({ ...model?.container });
+  const defaultBorder = defaultStyles().border.border.all;
 
   const { styles } = useStyles({
     downloadedFileStyles: downloadedFileStyles,
@@ -194,8 +196,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ...containerJsStyle,
       ...stylingBoxAsCSS,
     },
-    style: enableStyleOnReadonly && disabled
-      ? { ...(model?.allStyles?.dimensionsStyles ?? {}), ...(model?.allStyles?.fontStyles ?? {}) }
+    style: !enableStyleOnReadonly && disabled
+      ? { ...(model?.allStyles?.dimensionsStyles ?? {}), ...(model?.allStyles?.fontStyles ?? {}), border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
       : { ...(model?.allStyles?.fullStyle ?? {}) },
     model: {
       gap: addPx(gap),
