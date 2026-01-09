@@ -1,6 +1,6 @@
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import { DataTypes, IAjaxResponse, IErrorInfo } from '@/interfaces';
+import { DataTypes, IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
