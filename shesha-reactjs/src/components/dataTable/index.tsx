@@ -194,6 +194,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   ...props
 }) => {
   const store = useDataTableStore();
+  const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
+  const multiSelect = mode === 'multiple';
   const appContext = useAvailableConstantsData();
 
   // Compute effective header font values with backward compatibility
@@ -258,12 +260,23 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [onRowSelect, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
 
+  // Clear selectedRow when in multiple selection mode to prevent interference
+  useEffect(() => {
+    if (mode === 'multiple' && selectedRow && setSelectedRow) {
+      setSelectedRow(null, null);
+    }
+  }, [mode, selectedRow, setSelectedRow]);
+
   const onSelectRowLocal = (index: number, row: any): void => {
+    if (mode === 'none') return;
+
     if (onSelectRow) {
       onSelectRow(index, row);
     }
 
-    if (setSelectedRow) {
+    // Only manage selectedRow (single row highlighting) in single mode
+    // In multiple mode, row selection is managed entirely by react-table's row.isSelected
+    if (mode === 'single' && setSelectedRow) {
       const rowId = row?.id;
       const currentId = store.selectedRow?.id;
       if (rowId !== currentId) {
@@ -280,10 +293,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const previousIds = usePrevious(selectedIds);
 
   useEffect(() => {
-    if (!(previousIds?.length === 0 && selectedIds?.length === 0) && typeof onSelectedIdsChanged === 'function') {
+    if (
+      mode === 'multiple' &&
+      !(previousIds?.length === 0 && selectedIds?.length === 0) &&
+      typeof onSelectedIdsChanged === 'function'
+    ) {
       onSelectedIdsChanged(selectedIds);
     }
-  }, [selectedIds, previousIds]);
+  }, [selectedIds]);
 
   useEffect(() => {
     if (!isFetchingTableData && tableData?.length && onFetchDataSuccess) {
@@ -890,16 +907,17 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     data: tableData,
     // Disable sorting if we're in create mode so that the new row is always the first
     defaultSorting: defaultSorting,
-    useMultiSelect: selectionMode === 'multiple' || (selectionMode === undefined && useMultiSelect),
-    selectionMode,
+    useMultiSelect: multiSelect,
+    selectionMode: mode,
     freezeHeaders,
-    onSelectRow: selectionMode === 'none' ? undefined : onSelectRowLocal,
+    onSelectRow: onSelectRowLocal,
     onRowDoubleClick: combinedDblClickHandler,
-    onSelectedIdsChanged: selectionMode === 'none' ? undefined : changeSelectedIds,
-    onMultiRowSelect: (selectionMode === 'multiple' || (selectionMode === undefined && useMultiSelect)) ? onMultiRowSelect : undefined,
+    onSelectedIdsChanged: mode === 'multiple' ? changeSelectedIds : undefined,
+    onMultiRowSelect: mode === 'multiple' ? onMultiRowSelect : undefined,
     onSort, // Update it so that you can pass it as param. Quick fix for now
     columns: preparedColumns,
-    selectedRowIndex,
+    // Only use selectedRowIndex in single mode; in multiple mode, row.isSelected controls highlighting
+    selectedRowIndex: mode === 'single' ? selectedRowIndex : undefined,
     loading: isFetchingTableData,
     pageCount: totalPages,
     manualFilters: true, // informs React Table that you'll be handling sorting and pagination server-side

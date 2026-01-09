@@ -131,6 +131,9 @@ export const ReactTable: FC<IReactTableProps> = ({
     allRows: data,
     allColumns: columns,
   });
+  const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
+  const multiSelect = mode === 'multiple';
+
   const { notification } = App.useApp();
 
   const [activeCell, setActiveCell] = useState();
@@ -182,17 +185,6 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const { allColumns, allRows } = componentState;
 
-  // Compute effective selection mode with backward compatibility
-  const effectiveSelectionMode = useMemo(() => {
-    // New prop takes precedence
-    if (selectionMode !== undefined) return selectionMode;
-    // Fallback to legacy prop
-    if (useMultiSelect === true) return 'multiple';
-    if (useMultiSelect === false) return 'none';
-    // Default
-    return 'none';
-  }, [selectionMode, useMultiSelect]);
-
   // Event dispatcher for configurable actions
   const { executeAction } = useConfigurableActionDispatcher();
   const allData = useAvailableConstantsData();
@@ -211,10 +203,8 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const defaultColumn = React.useMemo(
     () => ({
-      // When using the useFlexLayout:
-      minWidth: 30, // minWidth is only used as a limit for resizing
-      width: 150, // width is used for both the flex-basis and flex-grow
-      // maxWidth: 200, // maxWidth is only used as a limit for resizing
+      minWidth: 30,
+      width: 150,
     }),
     [],
   );
@@ -239,8 +229,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   const preparedColumns = useMemo(() => {
     const localColumns = [...allColumns];
 
-    // Only add selection column for multiple selection mode (like in releases/0.44)
-    if (effectiveSelectionMode === 'multiple') {
+    if (multiSelect) {
       localColumns.unshift({
         id: 'selection',
         // isVisible: true,
@@ -249,15 +238,13 @@ export const ReactTable: FC<IReactTableProps> = ({
         width: 37,
         maxWidth: 37,
         disableSortBy: true,
-        // The header can use the table's getToggleAllRowsSelectedProps method
-        // to render a checkbox (only for multiple selection mode)
+
         Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => (
           <span className={styles.shaSpanCenterVertically} onClick={(e) => e.stopPropagation()}>
             <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
           </span>
         ),
-        // The cell can use the individual row's getToggleRowSelectedProps method
-        // to the render a checkbox
+
         Cell: ({ row }) => (
           <span className={styles.shaSpanCenterVertically} onClick={(e) => e.stopPropagation()}>
             <IndeterminateCheckbox
@@ -272,7 +259,6 @@ export const ReactTable: FC<IReactTableProps> = ({
     if (allowReordering) {
       localColumns.unshift({
         accessor: nanoid(),
-        // id: accessor, // This needs to be fixed
         Header: '',
         width: 35,
         minWidth: 35,
@@ -291,7 +277,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
       return 0;
     });
-  }, [allColumns, allowReordering, effectiveSelectionMode]);
+  }, [allColumns, allowReordering, multiSelect]);
 
   const getColumnAccessor = (cid): string => {
     const column = columns.find((c) => c.id === cid);
@@ -355,7 +341,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     useRowSelect,
     // useBlockLayout,
     ({ useInstanceBeforeDimensions }) => {
-      if (effectiveSelectionMode === 'multiple') {
+      if (multiSelect) {
         useInstanceBeforeDimensions?.push(({ headerGroups: localHeaderGroups }) => {
           if (Array.isArray(localHeaderGroups)) {
             // fix the parent group of the selection button to not be resizable
@@ -380,7 +366,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   }, [sortBy]);
 
   useEffect(() => {
-    if (selectedRowIds && typeof onSelectedIdsChanged === 'function') {
+    if (multiSelect && selectedRowIds && typeof onSelectedIdsChanged === 'function') {
       const arrays: string[] = allRows
         ?.map(({ id }, index) => {
           if (selectedRowIds[index]) {
@@ -393,7 +379,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
       onSelectedIdsChanged(arrays);
     }
-  }, [selectedRowIds]);
+  }, [selectedRowIds, multiSelect]);
 
   const onSetList = (newState: ItemInterface[], _sortable, _store): void => {
     if (!onRowsReordered) {
@@ -461,49 +447,28 @@ export const ReactTable: FC<IReactTableProps> = ({
   const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
 
   const handleSelectRow = (rowIndex: number) => (row: Row<any>): void => {
+    if (mode === 'none') return;
     if (!omitClick && !(canEditInline || canDeleteInline)) {
-      let isDeselecting = false;
+      // In multiple selection mode, toggle the checkbox selection
+      if (mode === 'multiple' && row.id) {
+        const isCurrentlySelected = row.isSelected;
+        const willBeSelected = !isCurrentlySelected;
 
-      // For both single and multiple selection modes, update the row selection state
-      if (selectionMode === 'single' || selectionMode === 'multiple') {
-        if (selectionMode === 'single') {
-          // For single selection mode, check if the row is already selected
-          const isAlreadySelected = row.isSelected;
+        toggleRowSelected(row.id, willBeSelected);
 
-          if (isAlreadySelected) {
-            // If already selected, just deselect it
-            toggleRowSelected(row.id, false);
-            isDeselecting = true;
-          } else {
-            // If not selected, clear all selections first then select this row
-            toggleAllRowsSelected(false);
-            toggleRowSelected(row.id, true);
-          }
-        } else if (selectionMode === 'multiple') {
-          // For multiple selection mode, toggle based on React Table's state (single source of truth)
-          const isCurrentlySelected = row.isSelected;
-          const willBeSelected = !isCurrentlySelected;
-
-          // Update react-table's selection state
-          toggleRowSelected(row.id, willBeSelected);
-
-          // Sync with Redux store - same format as checkbox behavior
-          if (onMultiRowSelect) {
-            const selectedRow = {
-              ...getPlainValue(row),
-              isSelected: willBeSelected,
-            };
-            onMultiRowSelect(selectedRow);
-          }
+        // Sync with store - same format as checkbox behavior
+        if (onMultiRowSelect) {
+          const selectedRow = {
+            ...getPlainValue(row),
+            isSelected: willBeSelected,
+          };
+          onMultiRowSelect(selectedRow);
         }
       }
-      // Call the onSelectRow callback (pass null for deselection in single mode)
+
+      // Call the onSelectRow callback
       if (onSelectRow) {
-        if (selectionMode === 'single' && isDeselecting) {
-          onSelectRow(null, null);
-        } else {
-          onSelectRow(rowIndex, row?.original);
-        }
+        onSelectRow(rowIndex, row?.original);
       }
     }
   };
@@ -678,9 +643,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         onClick={handleSelectRow(rowIndex)}
         onDoubleClick={() => handleDoubleClickRow(row, rowIndex)}
         onRowClick={() => {
-          // Legacy handler
           if (onRowClick) onRowClick(rowIndex, row.original);
-          // New configurable action
           dispatchRowEvent(onRowClickAction, row.original, rowIndex);
         }}
         onRowHover={() => {
@@ -757,7 +720,6 @@ export const ReactTable: FC<IReactTableProps> = ({
                     let rightColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
 
                     if (anchored?.isFixed && index > 0) {
-                      // use first row cell values to calculate the left shift
 
                       if (anchored?.direction === 'right') {
                         const totalColumns = headerGroup?.headers?.length;

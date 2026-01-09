@@ -16,6 +16,7 @@ import { QuickSearchComponentDefinition } from '@/designer-components/dataTable/
 import { ColumnsEditorComponentDefinition } from '@/designer-components/dataTable/table/columnsEditor/interfaces';
 import { TableComponentDefinition } from '@/designer-components/dataTable/table/models';
 import { TableContextComponentDefinition } from '@/designer-components/dataTable/tableContext/models';
+import { DataTableContextComponentDefinition } from '@/designer-components/dataTable/tableContext/tableContextComponentLegacy';
 import { TableViewSelectorComponentDefinition } from '@/designer-components/dataTable/tableViewSelector/models';
 import { DateFieldDefinition } from '@/designer-components/dateField/interfaces';
 import { DropdownComponentDefinition } from '@/designer-components/dropdown/model';
@@ -102,7 +103,8 @@ type AllComponentDefinitions =
   SearchableTabsDefinition |
   LinkComponentDefinition |
   EditModeSelectorComponentDefinition |
-  KeyInformationBarComponentDefinition;
+  KeyInformationBarComponentDefinition | 
+  DataTableContextComponentDefinition;
 
 export type ComponentTypes = AllComponentDefinitions["type"];
 
