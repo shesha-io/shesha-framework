@@ -79,6 +79,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
 
     >.ant-upload-list-item > .ant-upload-list-item-thumbnail {
+      ${rest}
       opacity: 0.8;
       border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess};
       box-shadow: 0 0 0 1px ${downloadedFileStyles?.color ?? token.colorSuccess}20;
@@ -168,6 +169,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       display: flex;
       padding: 0 !important;
       border: unset !important; 
+      width: 100%;
       :before {
         ${rest}
         display: none;
@@ -183,6 +185,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       box-shadow: ${boxShadow};
       border-radius: ${borderRadius ?? '8px'} !important;
       height: ${thumbnailHeight} !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
       
       img {
         width: ${thumbnailWidth} !important;
