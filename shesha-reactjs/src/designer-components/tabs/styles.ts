@@ -89,8 +89,8 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 border: ${borderMap.default};
                 box-shadow: ${boxShadow} !important;
                 border-left: ${isLeft ? '0px solid transparent' : borderMap.left} !important;
-                border-right:${isRight ? '0px solid transparent' : borderMap.right} !important;
-                border-bottom : ${isBottom ? 'none' : borderMap.bottom} !important;
+                border-right: ${isRight ? '0px solid transparent' : borderMap.right} !important;
+                border-bottom: ${isBottom ? 'none' : borderMap.bottom} !important;
                 border-top: ${isTop ? 'none' : borderMap.top} !important;
                 background: ${backgroundImage || backgroundColor} !important;
                 ${isTop || isLeft ? 'border-top-left-radius: 0px;' : `border-top-left-radius: ${borderTopLeftRadius};`}
@@ -121,9 +121,9 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 ${color && `--ant-tabs-item-active-color: ${color} !important`};
                 --ant-line-width: ${isTop ? borderTopWidth || borderWidth : isBottom ? borderBottomWidth || borderWidth : isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth : isBottom};
                 --ant-color-border-secondary: ${isTop ? styles.borderTopColor || borderColor : isBottom
-                  ? styles.borderBottomColor || borderColor : isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor : isBottom};
+        ? styles.borderBottomColor || borderColor : isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor : isBottom};
                 --ant-line-type:  ${isTop ? styles.borderTopStyle || borderStyle : isBottom ? styles.borderBottomStyle || borderStyle : isLeft
-                  ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
+        ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
                 background: ${cardBgImage || cardBgColor} !important;
                 ${cardStyles};
                 background-repeat: ${cardStyles.backgroundRepeat} !important;
@@ -132,9 +132,9 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 box-shadow: ${tabType === 'card' && boxShadow} !important;
                 ${(isLeft && 'border-right-width: 0px !important') || (isRight && 'border-left-width: 0px !important') || (isTop && 'border-bottom-width: 0px !important') || (isBottom && 'border-top-width: 0px !important')};
                  border-radius: ${isTop ? `${cardTopLeftRadius} ${cardTopRightRadius} 0px 0px`
-                    : isBottom ? `0px 0px ${cardBottomLeftRadius} ${cardBottomRightRadius}`
-                      : isLeft ? `${cardTopRightRadius} 0px 0px ${cardBottomRightRadius}`
-                        : isRight ? `0px ${cardTopLeftRadius} ${cardBottomLeftRadius} 0px` : cardStyles.borderRadius};
+        : isBottom ? `0px 0px ${cardBottomLeftRadius} ${cardBottomRightRadius}`
+          : isLeft ? `${cardTopRightRadius} 0px 0px ${cardBottomRightRadius}`
+            : isRight ? `0px ${cardTopLeftRadius} ${cardBottomLeftRadius} 0px` : cardStyles.borderRadius};
 
                 .ant-tabs-tab-btn {
                     width: 100%;
@@ -147,9 +147,9 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 --ant-color-bg-container: ${backgroundColor || backgroundImage};
                 --ant-line-width: ${isTop ? borderTopWidth || borderWidth : isBottom ? borderBottomWidth || borderWidth : isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth : isBottom};
                 --ant-color-border-secondary: ${isTop ? styles.borderTopColor || borderColor : isBottom
-                  ? styles.borderBottomColor || borderColor : isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor : isBottom};
+        ? styles.borderBottomColor || borderColor : isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor : isBottom};
                 --ant-line-type:  ${isTop ? styles.borderTopStyle || borderStyle : isBottom ? styles.borderBottomStyle || borderStyle : isLeft
-                  ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
+        ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
                 --ant-color-bg-container: ${backgroundImage || backgroundColor};
                 background: ${tabType === 'card' ? backgroundImage || backgroundColor : ''} !important;
                 ${cardStyles};
@@ -181,11 +181,11 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
 
             .ant-tabs-nav::before {
                 --ant-line-width: ${isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth
-                  : isTop ? borderTopWidth || borderWidth : borderBottomWidth || borderWidth};
+        : isTop ? borderTopWidth || borderWidth : borderBottomWidth || borderWidth};
                 --ant-color-border-secondary: ${isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor
-                  : isTop ? styles.borderTopColor || borderColor : styles.borderBottomColor || borderColor};
+        : isTop ? styles.borderTopColor || borderColor : styles.borderBottomColor || borderColor};
                 --ant-line-type:  ${isLeft ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle
-                  : isTop ? styles.borderTopStyle || borderStyle : styles.borderBottomStyle || borderStyle};
+        : isTop ? styles.borderTopStyle || borderStyle : styles.borderBottomStyle || borderStyle};
            }
 
            .ant-tabs-nav-list {
