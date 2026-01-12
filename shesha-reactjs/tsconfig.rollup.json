@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "sourceMap": false,
-    "incremental": false,
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo.rollup",
     "declaration": true,
   },
   "exclude": [
