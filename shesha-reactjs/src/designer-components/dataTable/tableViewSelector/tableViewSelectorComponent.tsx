@@ -28,8 +28,8 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
           componentName: model.componentName,
           componentType: 'tableViewSelector',
           errors: [{
-            propertyName: 'No ancestor Data Context component is set',
-            error: '\nPlace this component inside a Data Context component to connect it to data',
+            propertyName: 'dataContext',
+            error: 'No ancestor Data Context component is set. Place this component inside a Data Context component to connect it to data.',
           }],
         };
       }
