@@ -26,7 +26,7 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
     const { formMode } = useForm();
-    const size = useMemo(() => modelSize, [modelSize]);
+    const size = modelSize;
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
