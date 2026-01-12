@@ -26,7 +26,6 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
     const { formMode } = useForm();
-    const size = useMemo(() => modelSize, [modelSize]);
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
@@ -62,14 +61,14 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
           block={block}
           style={finalStyle}
           searchProps={{
-            size,
+            size: modelSize,
           }}
         />
       )
       : (
         <div className={styles.quickSearchContainer} style={finalStyle}>
           <Search
-            size={size}
+            size={modelSize}
             disabled
           />
         </div>

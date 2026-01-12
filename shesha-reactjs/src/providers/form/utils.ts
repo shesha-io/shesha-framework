@@ -1487,7 +1487,7 @@ const propertiesToSkip = ['id', 'componentName', 'type', 'jsSetting', 'isDynamic
  * @returns true if the property should be included, false otherwise
  */
 export const standardActualModelPropertyFilter = (name: string): boolean => {
-  return propertiesToSkip.indexOf(name) === -1;
+  return !propertiesToSkip.includes(name);
 };
 
 /**
