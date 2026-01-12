@@ -210,10 +210,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           return `${cssKey}: ${value};`;
         }).join('\n')}
 
-        /* When border-radius is present, ensure content respects the bounds */
-        /* Only apply to tables without fixed columns since overflow:hidden breaks position:sticky */
+        /* When border-radius is present, clip content but not shadows */
+        /* Only apply to tables without fixed columns since overflow affects position:sticky */
         &:not(:has(.${fixedColumn})) {
-          ${hasBorderRadius ? `overflow: hidden;` : ''}
+          ${hasBorderRadius ? `
+            border-radius: inherit;
+            > .${thead}, > .${tbody} {
+              overflow: hidden;
+            }
+          ` : ''}
         }
 
         .${thead} {

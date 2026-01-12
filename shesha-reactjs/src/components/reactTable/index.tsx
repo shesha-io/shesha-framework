@@ -689,7 +689,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   };
 
   const fixedHeadersStyle: React.CSSProperties = freezeHeaders
-    ? { position: 'sticky', top: 0, zIndex: 15, background: 'white', opacity: 1 }
+    ? { position: 'sticky', top: 0, zIndex: 15, background: headerBackgroundColor || 'white', opacity: 1 }
     : null;
 
   return (

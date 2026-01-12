@@ -160,6 +160,11 @@ const TableComponent: TableComponentDefinition = {
       .add<ITableComponentProps>(21, (prev) => ({
         ...prev,
         rowDimensions: prev.rowDimensions ?? { height: '40px' },
+      }))
+      .add<ITableComponentProps>(22, (prev) => ({
+        ...prev,
+        rowAlternateBackgroundColor: prev.rowAlternateBackgroundColor ?? '#f5f5f5',
+        headerFontWeight: prev.headerFontWeight ?? '500',
       })),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form

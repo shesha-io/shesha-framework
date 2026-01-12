@@ -65,6 +65,7 @@ export const getTableDefaults = (): {
   rowBorder: string;
   headerFontSize: string;
   headerFontWeight: string;
+  rowAlternateBackgroundColor: string;
 } => {
   return {
     // Row styling defaults
@@ -74,7 +75,10 @@ export const getTableDefaults = (): {
 
     // Header styling defaults
     headerFontSize: '14px',
-    headerFontWeight: '400',
+    headerFontWeight: '500',
+
+    // Row color defaults
+    rowAlternateBackgroundColor: '#f5f5f5',
   };
 };
 
@@ -85,6 +89,7 @@ export const getTableSettingsDefaults = (): {
     rowBorder: string;
     headerFontSize: string;
     headerFontWeight: string;
+    rowAlternateBackgroundColor: string;
   };
 } => {
   const flatDefaults = getTableDefaults();
