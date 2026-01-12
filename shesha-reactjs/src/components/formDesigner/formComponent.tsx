@@ -6,11 +6,9 @@ import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
-import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, useCalculatedModel, useDataTableStore, useMetadata } from '@/index';
+import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useStyles } from './styles/styles';
-import { useDeepCompareMemo } from '@/hooks/useDeepCompareMemo';
-import { toCamelCase } from '@/utils/string';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -79,109 +77,9 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     );
   }, [toolboxComponent, actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
 
-  // Check if component needs data context validation
-  // All components that require being inside a data context must report upwards
-  const shouldValidateDataContext = useMemo(() => {
-    return [
-      'datatable',
-      'dataList',
-      'tableViewSelector',
-      'childTable',
-      'datatable.filter',
-      'datatable.quickSearch',
-      'datatable.pager',
-    ].includes(componentModel.type);
-  }, [componentModel.type]);
-
-  const store = useDataTableStore(false);
-  const entityMetadata = useMetadata(false);
-
-  // Extract specific values at component scope for stable useMemo dependencies
-  const configurableColumns = store?.configurableColumns;
-  const metadataProperties = entityMetadata?.metadata?.properties;
-  const modelType = store?.modelType;
-
-  const needsDataContextButMissing = useMemo(() => {
-    // Validate all components that need data context
-    if (shouldValidateDataContext) {
-      // If component requires data context but store is missing, validation should fail
-      return !store;
-    }
-    // Component doesn't need validation, so no issue
-    return false;
-  }, [shouldValidateDataContext, store]);
-
-  // Validate that table columns match the data context metadata
-  // Use deep comparison to avoid unnecessary recalculations when array contents are the same
-  // Returns: { isValid: boolean, missingColumns: string[], skipped: boolean }
-  //   - skipped=true means validation was not performed (no columns or metadata)
-  //   - skipped=false means validation was performed, check isValid for result
-  const columnsValidation = useDeepCompareMemo(() => {
-    // Type guard for properties with path
-    const isPropertyWithPath = (property: unknown): property is { path: string } => {
-      return typeof property === 'object' && property !== null && 'path' in property && typeof (property as { path: string }).path === 'string';
-    };
-
-    // Extract configurable columns from store and convert to camelCase
-    const configurableColumnsNames = configurableColumns
-      ?.map((column) => {
-        // Account for nested properties
-        if (column?.propertyName?.includes('.')) {
-          return column?.propertyName?.split('.')[0];
-        }
-        return column?.propertyName;
-      })
-      .filter((name): name is string => typeof name === 'string')
-      .map((name) => toCamelCase(name));
-
-    const tableMetadataProperties = Array.isArray(metadataProperties)
-      ? metadataProperties
-        .filter(isPropertyWithPath)
-        .map((property) => toCamelCase(property.path))
-      : undefined;
-
-    // Skip validation if no columns or metadata to validate against
-    if (!configurableColumnsNames || !tableMetadataProperties || configurableColumnsNames.length === 0) {
-      return { isValid: true, missingColumns: [], skipped: true };
-    }
-
-    const missingColumns = configurableColumnsNames.filter(
-      (columnName) => !tableMetadataProperties.includes(columnName),
-    );
-
-    return {
-      isValid: missingColumns.length === 0,
-      missingColumns,
-      skipped: false,
-    };
-  }, [configurableColumns, metadataProperties]);
-
   // Run validation in both designer and runtime modes
   const validationResult = useMemo((): IModelValidation | undefined => {
     const errors: Array<{ propertyName?: string; error: string }> = [];
-
-    if (needsDataContextButMissing) {
-      // clear all other errors and return early
-      errors.push({ propertyName: 'No ancestor Data Context component is set', error: '\nPlace this component inside a Data Context component to connect it to data' });
-
-      return {
-        hasErrors: true,
-        componentId: actualModel.id,
-        componentName: actualModel.componentName,
-        componentType: actualModel.type,
-        errors,
-      };
-    }
-
-    // Validate that datatable columns match the data context metadata
-    // Only validate if validation was not skipped (i.e., we have columns and metadata to validate)
-    if (shouldValidateDataContext && !columnsValidation.skipped && !columnsValidation.isValid && columnsValidation.missingColumns.length > 0) {
-      const missingColumnsList = columnsValidation.missingColumns.join(', ');
-      errors.push({
-        propertyName: 'Table columns mismatch',
-        error: `\nThe following columns do not exist in the entity type ${JSON.stringify(modelType)}: [${missingColumnsList}]. Please re-configure the columns on the datatable.`,
-      });
-    }
 
     if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
       errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
@@ -202,7 +100,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     }
 
     return undefined;
-  }, [toolboxComponent, actualModel, needsDataContextButMissing, shouldValidateDataContext, modelType, columnsValidation]);
+  }, [toolboxComponent, actualModel]);
 
   // Wrap component with error icon if there are validation errors
   // Show error icons only in designer mode

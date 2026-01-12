@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ITableViewSelectorComponentProps, TableViewSelectorComponentDefinition } from './models';
 import { migrateFilterMustacheExpressions } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { SelectOutlined } from '@ant-design/icons';
 import { TableViewSelector } from './tableViewSelector';
-import { ConfigurableFormItem, useDataTableStore, validateConfigurableComponentSettings } from '@/index';
+import { ConfigurableFormItem, useDataTableStore, validateConfigurableComponentSettings, useForm } from '@/index';
 import { getSettings } from './settingsForm';
 import { useStyles } from '../tableContext/styles';
+import ErrorIconPopover from '@/components/componentErrors/errorIconPopover';
+import { IModelValidation } from '@/utils/errors';
 
 const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   type: 'tableViewSelector',
@@ -16,6 +18,23 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
+    const { formMode } = useForm();
+
+    const validationResult = useMemo((): IModelValidation | undefined => {
+      if (!store) {
+        return {
+          hasErrors: true,
+          componentId: model.id,
+          componentName: model.componentName,
+          componentType: 'tableViewSelector',
+          errors: [{
+            propertyName: 'No ancestor Data Context component is set',
+            error: '\nPlace this component inside a Data Context component to connect it to data'
+          }],
+        };
+      }
+      return undefined;
+    }, [store, model.id, model.componentName]);
 
     const content = store
       ? <TableViewSelector {...model} />
@@ -27,9 +46,15 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
         </div>
       );
 
+    const wrappedContent = validationResult?.hasErrors && formMode === 'designer' ? (
+      <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={true}>
+        {content}
+      </ErrorIconPopover>
+    ) : content;
+
     return (
       <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
-        {content}
+        {wrappedContent}
       </ConfigurableFormItem>
     );
   },

@@ -7,21 +7,25 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './tabbedSettingsForm';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import Search from 'antd/lib/input/Search';
-import { useDataTableStore } from '@/index';
+import { useDataTableStore, useForm } from '@/index';
 import { useStyles } from '../tableContext/styles';
 import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { IQuickSearchComponentProps, QuickSearchComponentDefinition } from './interfaces';
+import ErrorIconPopover from '@/components/componentErrors/errorIconPopover';
+import { IModelValidation } from '@/utils/errors';
 
 const QuickSearchComponent: QuickSearchComponentDefinition = {
   type: 'datatable.quickSearch',
   isInput: false,
   name: 'Quick Search',
   icon: <SearchOutlined />,
-  Factory: ({ model: { block, hidden, dimensions, size: _size } }) => {
+  Factory: ({ model }) => {
+    const { block, hidden, dimensions, size: _size, id, componentName } = model;
     const store = useDataTableStore(false);
     const { styles } = useStyles();
+    const { formMode } = useForm();
     const size = useMemo(() => _size, [_size]);
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
 
@@ -35,6 +39,22 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
     });
 
     if (hidden) return null;
+
+    const validationResult = useMemo((): IModelValidation | undefined => {
+      if (!store) {
+        return {
+          hasErrors: true,
+          componentId: id,
+          componentName: componentName,
+          componentType: 'datatable.quickSearch',
+          errors: [{
+            propertyName: 'No ancestor Data Context component is set',
+            error: '\nPlace this component inside a Data Context component to connect it to data'
+          }],
+        };
+      }
+      return undefined;
+    }, [store, id, componentName]);
 
     const content = store
       ? (
@@ -55,7 +75,11 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
         </div>
       );
 
-    return content;
+    return validationResult?.hasErrors && formMode === 'designer' ? (
+      <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={true}>
+        {content}
+      </ErrorIconPopover>
+    ) : content;
   },
   initModel: (model: IQuickSearchComponentProps) => {
     return {

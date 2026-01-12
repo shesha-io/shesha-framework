@@ -6,10 +6,13 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { ControlOutlined } from '@ant-design/icons';
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useMemo } from 'react';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { IPagerComponentProps, PagerComponentDefinition } from './interfaces';
+import { useDataTableStore, useForm } from '@/providers';
+import ErrorIconPopover from '@/components/componentErrors/errorIconPopover';
+import { IModelValidation } from '@/utils/errors';
 
 const PagerComponent: PagerComponentDefinition = {
   type: 'datatable.pager',
@@ -21,6 +24,8 @@ const PagerComponent: PagerComponentDefinition = {
     const jsStyle = allStyles?.jsStyle;
     const fontStyles = allStyles?.fontStyles;
     const stylingBoxAsCSS = allStyles?.stylingBoxAsCSS;
+    const store = useDataTableStore(false);
+    const { formMode } = useForm();
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...stylingBoxAsCSS,
@@ -30,9 +35,29 @@ const PagerComponent: PagerComponentDefinition = {
 
     if (model.hidden) return null;
 
-    return (
-      <TablePager {...model} style={additionalStyles} />
-    );
+    const validationResult = useMemo((): IModelValidation | undefined => {
+      if (!store) {
+        return {
+          hasErrors: true,
+          componentId: model.id,
+          componentName: model.componentName,
+          componentType: 'datatable.pager',
+          errors: [{
+            propertyName: 'No ancestor Data Context component is set',
+            error: '\nPlace this component inside a Data Context component to connect it to data'
+          }],
+        };
+      }
+      return undefined;
+    }, [store, model.id, model.componentName]);
+
+    const content = <TablePager {...model} style={additionalStyles} />;
+
+    return validationResult?.hasErrors && formMode === 'designer' ? (
+      <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={true}>
+        {content}
+      </ErrorIconPopover>
+    ) : content;
   },
   initModel: (model: IPagerComponentProps) => {
     return {

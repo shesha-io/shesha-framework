@@ -4,12 +4,14 @@ import { IButtonComponentProps } from '@/designer-components/button/interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FilterOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { AdvancedFilterButton } from './advancedFilterButton';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { useDataTableStore } from '@/providers';
+import { useDataTableStore, useForm } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
+import ErrorIconPopover from '@/components/componentErrors/errorIconPopover';
+import { IModelValidation } from '@/utils/errors';
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'datatable.filter',
@@ -19,6 +21,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
+    const { formMode } = useForm();
 
     const finalStyle = {
       ...model.allStyles.dimensionsStyles,
@@ -32,20 +35,38 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
 
     if (model.hidden) return null;
 
-    if (!store) {
-      return (
-        <div className={styles.hintContainer}>
-          <div className={styles.disabledComponentWrapper}>
-            <div className={styles.filterButtonMockup}>
-              <FilterOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
-              Table Filter
-            </div>
+    const validationResult = useMemo((): IModelValidation | undefined => {
+      if (!store) {
+        return {
+          hasErrors: true,
+          componentId: model.id,
+          componentName: model.componentName,
+          componentType: 'datatable.filter',
+          errors: [{
+            propertyName: 'No ancestor Data Context component is set',
+            error: '\nPlace this component inside a Data Context component to connect it to data'
+          }],
+        };
+      }
+      return undefined;
+    }, [store, model.id, model.componentName]);
+
+    const content = !store ? (
+      <div className={styles.hintContainer}>
+        <div className={styles.disabledComponentWrapper}>
+          <div className={styles.filterButtonMockup}>
+            <FilterOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
+            Table Filter
           </div>
         </div>
-      );
-    }
+      </div>
+    ) : <AdvancedFilterButton {...model} styles={finalStyle} />;
 
-    return <AdvancedFilterButton {...model} styles={finalStyle} />;
+    return validationResult?.hasErrors && formMode === 'designer' ? (
+      <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={true}>
+        {content}
+      </ErrorIconPopover>
+    ) : content;
   },
   initModel: (model) => {
     return {

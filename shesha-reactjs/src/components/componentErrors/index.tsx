@@ -1,72 +1,61 @@
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
-import { Button } from 'antd';
 import React, { FC } from 'react';
 import ErrorIconPopover from './errorIconPopover';
-import { useStyles } from './styles/styles';
 
 export interface IComponentErrorProps {
   errors?: IModelValidation;
   resetErrorBoundary?: (...args: Array<unknown>) => void;
   type?: ISheshaErrorTypes;
   message?: string;
+  children?: React.ReactNode;
 }
 
 const ComponentError: FC<IComponentErrorProps> = ({
   errors,
-  resetErrorBoundary,
   type = 'warning',
   message,
+  children,
 }) => {
-  const { styles } = useStyles();
 
-  const componentLabel = errors?.componentType ?? 'Component';
-  const messageText =
-    message ??
-    (type === 'info'
-      ? `'${componentLabel}' Hint:`
-      : `'${componentLabel}' has configuration issue(s)`);
+  // If children are provided, wrap them with ErrorIconPopover
+  // Otherwise, just show the ErrorIconPopover without any component content
+  // This ensures we always render the component (or nothing) with an error icon overlay
 
-  const containerClassMap: Record<string, string | undefined> = {
-    info: styles.componentErrorTextInfo,
-    warning: styles.componentErrorTextWaring,
-    error: styles.componentErrorTextError,
-  };
-  const containerClassName = containerClassMap[type] ?? '';
+  if (!children) {
+    // No component to render - just return null
+    // The error boundary will handle showing error details if needed
+    return null;
+  }
 
-  const content = (
-    <div className={`${styles.componentErrorContainer} ${containerClassName}`}>
-      <div className={styles.componentErrorHeader}>
-        <strong className={styles.componentErrorMessage}>{messageText}</strong>
-        {Boolean(resetErrorBoundary) && (
-          <Button type="link" onClick={resetErrorBoundary} className={styles.componentErrorButton}>
-            Try again
-          </Button>
-        )}
-      </div>
-    </div>
-  );
+  // Component exists - wrap it with the error icon
+  if (errors) {
+    return (
+      <ErrorIconPopover
+        mode="validation"
+        validationResult={errors}
+        type={type}
+        position="top-right"
+      >
+        {children}
+      </ErrorIconPopover>
+    );
+  }
 
-  return errors ? (
-    <ErrorIconPopover
-      mode="validation"
-      validationResult={errors}
-      type={type}
-      position="top-right"
-    >
-      {content}
-    </ErrorIconPopover>
-  ) : message ? (
-    <ErrorIconPopover
-      mode="message"
-      message={message}
-      type={type}
-      position="top-right"
-    >
-      {content}
-    </ErrorIconPopover>
-  ) : (
-    content
-  );
+  if (message) {
+    return (
+      <ErrorIconPopover
+        mode="message"
+        message={message}
+        type={type}
+        position="top-right"
+      >
+        {children}
+      </ErrorIconPopover>
+    );
+  }
+
+  // No errors or message - just return the children
+  return <>{children}</>;
 };
 
 export default ComponentError;

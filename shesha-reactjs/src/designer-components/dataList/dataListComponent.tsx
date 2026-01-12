@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "@/interfaces";
 import { useDataSources } from '@/providers/dataSourcesProvider';
@@ -6,12 +6,14 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
 import DataListControl, { NotConfiguredWarning } from './dataListControl';
-import { useDataTableStore } from '@/providers';
+import { useDataTableStore, useForm } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import ErrorIconPopover from '@/components/componentErrors/errorIconPopover';
+import { IModelValidation } from '@/utils/errors';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -21,15 +23,39 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   Factory: ({ model }) => {
     const ds = useDataSources();
     const dts = useDataTableStore(false);
+    const { formMode } = useForm();
+
     if (model.hidden) return null;
 
     const dataSource = model.dataSource
       ? ds.getDataSource(model.dataSource)?.dataSource
       : dts;
 
-    return dataSource
+    const validationResult = useMemo((): IModelValidation | undefined => {
+      if (!dataSource) {
+        return {
+          hasErrors: true,
+          componentId: model.id,
+          componentName: model.componentName,
+          componentType: 'dataList',
+          errors: [{
+            propertyName: 'No ancestor Data Context component is set',
+            error: '\nPlace this component inside a Data Context component to connect it to data'
+          }],
+        };
+      }
+      return undefined;
+    }, [dataSource, model.id, model.componentName]);
+
+    const content = dataSource
       ? <DataListControl {...model} dataSourceInstance={dataSource} />
       : <NotConfiguredWarning />;
+
+    return validationResult?.hasErrors && formMode === 'designer' ? (
+      <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={true}>
+        {content}
+      </ErrorIconPopover>
+    ) : content;
   },
   migrator: (m) => m
     .add<IDataListComponentProps>(0, (prev) => ({
