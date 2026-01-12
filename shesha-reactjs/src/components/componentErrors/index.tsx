@@ -4,7 +4,6 @@ import ErrorIconPopover from './errorIconPopover';
 
 export interface IComponentErrorProps {
   errors?: IModelValidation;
-  resetErrorBoundary?: (...args: Array<unknown>) => void;
   type?: ISheshaErrorTypes;
   message?: string;
   children?: React.ReactNode;
