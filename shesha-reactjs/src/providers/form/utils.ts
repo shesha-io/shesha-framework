@@ -1501,5 +1501,5 @@ export const standardActualModelPropertyFilter = (name: string): boolean => {
  */
 export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: unknown): boolean => {
   return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true) &&
-    propertiesToSkip.indexOf(name) === -1;
+    !propertiesToSkip.includes(name);
 };
