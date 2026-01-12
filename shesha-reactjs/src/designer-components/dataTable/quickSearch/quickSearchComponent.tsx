@@ -22,11 +22,11 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
   name: 'Quick Search',
   icon: <SearchOutlined />,
   Factory: ({ model }) => {
-    const { block, hidden, dimensions, size: _size, id, componentName } = model;
+    const { block, hidden, dimensions, size: modelSize, id, componentName } = model;
     const store = useDataTableStore(false);
     const { styles } = useStyles();
     const { formMode } = useForm();
-    const size = useMemo(() => _size, [_size]);
+    const size = useMemo(() => modelSize, [modelSize]);
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
@@ -38,8 +38,6 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
       ...(store ? {} : { width: additionalStyles.width ?? '360px' }),
     });
 
-    if (hidden) return null;
-
     const validationResult = useMemo((): IModelValidation | undefined => {
       if (!store) {
         return {
@@ -49,12 +47,14 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
           componentType: 'datatable.quickSearch',
           errors: [{
             propertyName: 'No ancestor Data Context component is set',
-            error: '\nPlace this component inside a Data Context component to connect it to data'
+            error: '\nPlace this component inside a Data Context component to connect it to data',
           }],
         };
       }
       return undefined;
     }, [store, id, componentName]);
+
+    if (hidden) return null;
 
     const content = store
       ? (

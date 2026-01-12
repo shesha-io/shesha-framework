@@ -16,7 +16,6 @@ const ComponentError: FC<IComponentErrorProps> = ({
   message,
   children,
 }) => {
-
   // If children are provided, wrap them with ErrorIconPopover
   // Otherwise, just show the ErrorIconPopover without any component content
   // This ensures we always render the component (or nothing) with an error icon overlay

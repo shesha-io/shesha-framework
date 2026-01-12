@@ -367,7 +367,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!store) {
       errors.push({
         propertyName: 'No ancestor Data Context component is set',
-        error: '\nPlace this component inside a Data Context component to connect it to data'
+        error: '\nPlace this component inside a Data Context component to connect it to data',
       });
 
       return {

@@ -25,8 +25,6 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     const dts = useDataTableStore(false);
     const { formMode } = useForm();
 
-    if (model.hidden) return null;
-
     const dataSource = model.dataSource
       ? ds.getDataSource(model.dataSource)?.dataSource
       : dts;
@@ -40,12 +38,14 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
           componentType: 'dataList',
           errors: [{
             propertyName: 'No ancestor Data Context component is set',
-            error: '\nPlace this component inside a Data Context component to connect it to data'
+            error: '\nPlace this component inside a Data Context component to connect it to data',
           }],
         };
       }
       return undefined;
     }, [dataSource, model.id, model.componentName]);
+
+    if (model.hidden) return null;
 
     const content = dataSource
       ? <DataListControl {...model} dataSourceInstance={dataSource} />

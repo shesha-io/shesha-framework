@@ -33,8 +33,6 @@ const PagerComponent: PagerComponentDefinition = {
       ...jsStyle,
     });
 
-    if (model.hidden) return null;
-
     const validationResult = useMemo((): IModelValidation | undefined => {
       if (!store) {
         return {
@@ -44,12 +42,14 @@ const PagerComponent: PagerComponentDefinition = {
           componentType: 'datatable.pager',
           errors: [{
             propertyName: 'No ancestor Data Context component is set',
-            error: '\nPlace this component inside a Data Context component to connect it to data'
+            error: '\nPlace this component inside a Data Context component to connect it to data',
           }],
         };
       }
       return undefined;
     }, [store, model.id, model.componentName]);
+
+    if (model.hidden) return null;
 
     const content = <TablePager {...model} style={additionalStyles} />;
 
