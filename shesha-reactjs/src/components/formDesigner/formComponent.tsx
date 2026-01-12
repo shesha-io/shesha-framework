@@ -2,30 +2,18 @@ import React, { FC, useMemo } from 'react';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { formComponentActualModelPropertyFilter } from '@/providers/form/utils';
 import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
-import { IStyleType, isValidGuid, IToolboxComponentBase, useActualContextData, useCalculatedModel } from '@/index';
+import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useStyles } from './styles/styles';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
 }
-
-// skip some properties by default
-// nested components will be handled by their own FormComponent
-// action configuration details will be handled by their own FormComponent
-const propertiesToSkip = ['id', 'componentName', 'type', 'jsSetting', 'isDynamic', 'components', 'actionConfiguration'];
-export const standartActualModelPropertyFilter = (name: string): boolean => {
-  return propertiesToSkip.indexOf(name) === -1;
-};
-
-export const formComponentActualModelPropertyFilter = (component: IToolboxComponentBase, name: string, value: unknown): boolean => {
-  return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true) &&
-    propertiesToSkip.indexOf(name) === -1;
-};
 
 const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   const { styles } = useStyles();

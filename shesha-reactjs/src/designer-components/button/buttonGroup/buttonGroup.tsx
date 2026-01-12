@@ -19,6 +19,7 @@ import { ConfigurableButton } from '../configurableButton';
 import { DynamicActionsEvaluator } from '@/providers/dynamicActions/evaluator/index';
 import {
   IApplicationContext,
+  standardActualModelPropertyFilter,
   useAvailableConstantsData,
 } from '@/providers/form/utils';
 import { getButtonGroupMenuItem } from './utils';
@@ -32,7 +33,6 @@ import classNames from 'classnames';
 import { removeNullUndefined } from '@/providers/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
-import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 import { addPx } from '@/utils/style';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
@@ -251,7 +251,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
     props.items?.map((item) => ({ ...item, size: item.size ?? props.size ?? 'middle' })),
     props.readOnly,
     null,
-    standartActualModelPropertyFilter,
+    standardActualModelPropertyFilter,
   );
   const memoizedItems = useDeepCompareMemo(() => items, [items]) ?? [];
   return (

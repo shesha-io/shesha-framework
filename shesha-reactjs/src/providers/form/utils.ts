@@ -1472,3 +1472,34 @@ export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSett
 
   return newFlatComponents;
 };
+
+/**
+ * Properties to skip when filtering actual model properties.
+ * These properties are handled by the form component itself or nested components.
+ */
+const propertiesToSkip = ['id', 'componentName', 'type', 'jsSetting', 'isDynamic', 'components', 'actionConfiguration'];
+
+/**
+ * Standard filter for actual model properties.
+ * Filters out properties that should not be included in the actual model.
+ *
+ * @param name - The property name to check
+ * @returns true if the property should be included, false otherwise
+ */
+export const standardActualModelPropertyFilter = (name: string): boolean => {
+  return propertiesToSkip.indexOf(name) === -1;
+};
+
+/**
+ * Form component actual model property filter.
+ * Combines the component's custom filter with the standard filter.
+ *
+ * @param component - The toolbox component
+ * @param name - The property name to check
+ * @param value - The property value
+ * @returns true if the property should be included, false otherwise
+ */
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: unknown): boolean => {
+  return (component?.actualModelPropertyFilter ? component.actualModelPropertyFilter(name, value) : true) &&
+    propertiesToSkip.indexOf(name) === -1;
+};
