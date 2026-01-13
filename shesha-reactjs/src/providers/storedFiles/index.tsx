@@ -242,7 +242,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           });
       })
       .catch((e) => {
-        const errorMessage = e?.response?.data?.error || e?.message || 'Please check your configuration and try again';
+        const errorMessage = e?.data?.error?.details || e?.data?.message || 'Please check your configuration and try again';
         message.error(`File upload failed. ${errorMessage}`);
         console.error(e);
         dispatch(uploadFileErrorAction({ ...newFile, status: 'error' }));
