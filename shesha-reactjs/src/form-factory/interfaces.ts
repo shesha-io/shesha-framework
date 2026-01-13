@@ -103,7 +103,7 @@ type AllComponentDefinitions =
   SearchableTabsDefinition |
   LinkComponentDefinition |
   EditModeSelectorComponentDefinition |
-  KeyInformationBarComponentDefinition | 
+  KeyInformationBarComponentDefinition |
   DataTableContextComponentDefinition;
 
 export type ComponentTypes = AllComponentDefinitions["type"];

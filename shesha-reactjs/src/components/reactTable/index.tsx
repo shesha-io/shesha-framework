@@ -312,7 +312,6 @@ export const ReactTable: FC<IReactTableProps> = ({
     state,
     rows,
     columns: tableColumns,
-    toggleAllRowsSelected,
     toggleRowSelected,
   } = useTable(
     {
@@ -720,7 +719,6 @@ export const ReactTable: FC<IReactTableProps> = ({
                     let rightColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
 
                     if (anchored?.isFixed && index > 0) {
-
                       if (anchored?.direction === 'right') {
                         const totalColumns = headerGroup?.headers?.length;
                         rightColumn.shift = (
