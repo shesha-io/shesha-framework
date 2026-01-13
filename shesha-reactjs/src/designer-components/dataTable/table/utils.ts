@@ -66,6 +66,10 @@ export const getTableDefaults = (): {
   headerFontSize: string;
   headerFontWeight: string;
   rowAlternateBackgroundColor: string;
+  striped: boolean;
+  hoverHighlight: boolean;
+  stickyHeader: boolean;
+  headerBackgroundColor: string;
 } => {
   return {
     // Row styling defaults
@@ -76,9 +80,15 @@ export const getTableDefaults = (): {
     // Header styling defaults
     headerFontSize: '14px',
     headerFontWeight: '500',
+    headerBackgroundColor: '#fafafa',
 
     // Row color defaults
     rowAlternateBackgroundColor: '#f5f5f5',
+
+    // Table behavior defaults
+    striped: true,
+    hoverHighlight: true,
+    stickyHeader: false,
   };
 };
 
@@ -90,6 +100,10 @@ export const getTableSettingsDefaults = (): {
     headerFontSize: string;
     headerFontWeight: string;
     rowAlternateBackgroundColor: string;
+    striped: boolean;
+    hoverHighlight: boolean;
+    stickyHeader: boolean;
+    headerBackgroundColor: string;
   };
 } => {
   const flatDefaults = getTableDefaults();

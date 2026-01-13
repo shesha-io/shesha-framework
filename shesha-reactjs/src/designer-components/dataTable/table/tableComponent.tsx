@@ -52,8 +52,6 @@ const TableComponent: TableComponentDefinition = {
 
     return {
       items: [],
-      striped: true,
-      hoverHighlight: true,
       rowDimensions: {
         height: '40px',
         minHeight: 'auto',
@@ -165,6 +163,8 @@ const TableComponent: TableComponentDefinition = {
         ...prev,
         rowAlternateBackgroundColor: prev.rowAlternateBackgroundColor ?? '#f5f5f5',
         headerFontWeight: prev.headerFontWeight ?? '500',
+        headerBackgroundColor: prev.headerBackgroundColor ?? '#fafafa',
+        stickyHeader: prev.stickyHeader ?? false,
       })),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
