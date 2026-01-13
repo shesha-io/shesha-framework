@@ -45,10 +45,12 @@ export const defaultStyles = (): IDefaultStyles => {
     },
     border: {
       border: {
-        all: {
-          width: 1,
-          color: '#d9d9d9',
-          style: 'solid',
+        border: {
+          all: {
+            width: 1,
+            color: '#d9d9d9',
+            style: 'solid',
+          },
         },
       },
       borderRadius: {
