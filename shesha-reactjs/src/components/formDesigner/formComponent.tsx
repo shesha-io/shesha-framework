@@ -10,12 +10,13 @@ import AttributeDecorator from '../attributeDecorator';
 import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useStyles } from './styles/styles';
+import { ValidationErrorsProvider, useValidationErrorsActions, useValidationErrorsState } from '@/providers/validationErrors';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
 }
 
-const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
+const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
   const { styles } = useStyles();
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
@@ -23,6 +24,9 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
+  const { getValidation } = useValidationErrorsActions();
+  const { errors } = useValidationErrorsState(); // Get errors map to trigger re-renders when errors change
+  const errorCount = errors.size; // Track size to trigger useMemo
 
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
     ? { ...componentModel, ...componentModel?.[activeDevice] }
@@ -66,16 +70,35 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   }, [toolboxComponent, actualModel, actualModel.hidden, actualModel.allStyles, calculatedModel]);
 
   // Run validation in both designer and runtime modes
+  // Collect errors from:
+  // 1. Toolbox validateModel function
+  // 2. Child components registered via useComponentValidation hook
   const validationResult = useMemo((): IModelValidation | undefined => {
     const errors: Array<{ propertyName?: string; error: string }> = [];
+    let validationType: 'error' | 'warning' | 'info' | undefined;
 
     if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
       errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
     }
 
+    // Collect errors from toolbox validateModel
     toolboxComponent?.validateModel?.(actualModel, (propertyName, error) => {
       errors.push({ propertyName, error });
     });
+
+    // Collect errors from child components registered via hook
+    const childValidation = getValidation(actualModel.id);
+    if (childValidation?.hasErrors && childValidation.errors) {
+      errors.push(...childValidation.errors);
+      // Use the child's validationType if present (prioritize 'error' > 'warning' > 'info')
+      if (childValidation.validationType) {
+        if (!validationType ||
+          (childValidation.validationType === 'error') ||
+          (childValidation.validationType === 'warning' && validationType === 'info')) {
+          validationType = childValidation.validationType;
+        }
+      }
+    }
 
     if (errors.length > 0) {
       return {
@@ -83,17 +106,25 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
         componentId: actualModel.id,
         componentName: actualModel.componentName,
         componentType: actualModel.type,
+        validationType,
         errors,
       };
     }
 
     return undefined;
-  }, [toolboxComponent, actualModel]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toolboxComponent, actualModel, getValidation, errorCount]);
 
   // Wrap component with error icon if there are validation errors
   // Show error icons only in designer mode
+  // Use the validationType from the validation result (error/warning/info) or default to 'warning'
   const wrappedControl = validationResult?.hasErrors && formMode === 'designer' ? (
-    <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={true}>
+    <ErrorIconPopover
+      mode="validation"
+      validationResult={validationResult}
+      type={validationResult.validationType ?? 'warning'}
+      isDesignerMode={true}
+    >
       {control}
     </ErrorIconPopover>
   ) : control;
@@ -148,6 +179,14 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     <AttributeDecorator attributes={attributes}>
       {wrappedControl}
     </AttributeDecorator>
+  );
+};
+
+const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
+  return (
+    <ValidationErrorsProvider>
+      <FormComponentInner componentModel={componentModel} />
+    </ValidationErrorsProvider>
   );
 };
 

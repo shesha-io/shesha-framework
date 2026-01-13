@@ -7,14 +7,13 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './tabbedSettingsForm';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import Search from 'antd/lib/input/Search';
-import { useDataTableStore, useForm } from '@/index';
+import { useDataTableStore } from '@/index';
 import { useStyles } from '../tableContext/styles';
 import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { IQuickSearchComponentProps, QuickSearchComponentDefinition } from './interfaces';
-import ErrorIconPopover from '@/components/componentErrors/errorIconPopover';
-import { IModelValidation } from '@/utils/errors';
+import { useComponentValidation } from '@/providers/validationErrors';
 
 const QuickSearchComponent: QuickSearchComponentDefinition = {
   type: 'datatable.quickSearch',
@@ -25,7 +24,6 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
     const { block, hidden, dimensions, size: modelSize, id, componentName } = model;
     const store = useDataTableStore(false);
     const { styles } = useStyles();
-    const { formMode } = useForm();
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
@@ -37,25 +35,30 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
       ...(store ? {} : { width: additionalStyles.width ?? '360px' }),
     });
 
-    const validationResult = useMemo((): IModelValidation | undefined => {
-      if (!store) {
-        return {
-          hasErrors: true,
-          componentId: id,
-          componentName: componentName,
-          componentType: 'datatable.quickSearch',
-          errors: [{
-            propertyName: 'No ancestor Data Context component is set',
-            error: '\nPlace this component inside a Data Context component to connect it to data',
-          }],
-        };
-      }
-      return undefined;
-    }, [store, id, componentName]);
+    // CRITICAL: Register validation errors - FormComponent will display them
+    useComponentValidation(
+      id,
+      componentName,
+      'datatable.quickSearch',
+      () => {
+        if (!store) {
+          return {
+            hasErrors: true,
+            validationType: 'error',
+            errors: [{
+              propertyName: 'Missing Required Parent Component',
+              error: 'CONFIGURATION ERROR: Quick Search MUST be placed inside a Data Context, Data Table, or Data List component. This component cannot function without a data source.',
+            }],
+          };
+        }
+        return undefined;
+      },
+      [store],
+    );
 
     if (hidden) return null;
 
-    const content = store
+    return store
       ? (
         <GlobalTableFilter
           block={block}
@@ -73,12 +76,6 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
           />
         </div>
       );
-
-    return validationResult?.hasErrors && formMode === 'designer' ? (
-      <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={true}>
-        {content}
-      </ErrorIconPopover>
-    ) : content;
   },
   initModel: (model: IQuickSearchComponentProps) => {
     return {

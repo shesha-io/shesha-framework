@@ -21,10 +21,33 @@ import { migratePrevStyles } from '@/designer-components/_common-migrations/migr
 import { StandaloneTable } from './standaloneTable';
 import { useDataTableStore } from '@/providers/dataTable';
 import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './utils';
+import { useComponentValidation } from '@/providers/validationErrors';
 
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStore(false);
+
+  // CRITICAL: Register validation errors - FormComponent will display them
+  // Must be called before any conditional returns (React Hooks rules)
+  useComponentValidation(
+    model.id,
+    model.componentName,
+    'datatable',
+    () => {
+      if (!store) {
+        return {
+          hasErrors: true,
+          validationType: 'error',
+          errors: [{
+            propertyName: 'Missing Required Parent Component',
+            error: 'CONFIGURATION ERROR: Data Table MUST be placed inside a Data Context component. This component cannot function without a data source.',
+          }],
+        };
+      }
+      return undefined;
+    },
+    [store],
+  );
 
   if (model.hidden) return null;
 
@@ -69,13 +92,13 @@ const TableComponent: TableComponentDefinition = {
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   validateModel: (model, addModelError) => {
-    // Data context validation is now handled centrally in formComponent.tsx
-
-    // Validate that table has columns configured
+    // CRITICAL: Validate that table has columns configured
     const hasColumns = model.items && Array.isArray(model.items) && model.items.length > 0;
     if (!hasColumns) {
       addModelError('items', 'Configure at least one column in the settings panel');
     }
+
+    // Note: DataContext validation is now handled via useComponentValidation hook in the Factory function
   },
   migrator: (m) =>
     m

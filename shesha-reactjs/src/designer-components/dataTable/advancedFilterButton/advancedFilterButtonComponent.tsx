@@ -10,6 +10,7 @@ import { defaultStyles } from './utils';
 import { useDataTableStore } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { IAdvancedFilterButtonComponentProps } from './types';
+import { useComponentValidation } from '@/providers/validationErrors';
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
   type: 'datatable.filter',
@@ -30,22 +31,41 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
       ...model.allStyles.jsStyle,
     };
 
+    // CRITICAL: Register validation errors - FormComponent will display them
+    useComponentValidation(
+      model.id,
+      model.componentName,
+      'datatable.filter',
+      () => {
+        if (!store) {
+          return {
+            hasErrors: true,
+            validationType: 'error',
+            errors: [{
+              propertyName: 'Missing Required Parent Component',
+              error: 'CONFIGURATION ERROR: Table Filter MUST be placed inside a Data Context, Data Table, or Data List component. This component cannot function without a data source.',
+            }],
+          };
+        }
+        return undefined;
+      },
+      [store],
+    );
+
     if (model.hidden) return null;
 
-    if (!store) {
-      return (
-        <div className={styles.hintContainer}>
-          <div className={styles.disabledComponentWrapper}>
-            <div className={styles.filterButtonMockup}>
-              <FilterOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
-              Table Filter
-            </div>
+    return !store ? (
+      <div className={styles.hintContainer}>
+        <div className={styles.disabledComponentWrapper}>
+          <div className={styles.filterButtonMockup}>
+            <FilterOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
+            Table Filter
           </div>
         </div>
-      );
-    }
-
-    return <AdvancedFilterButton {...model as IAdvancedFilterButtonComponentProps} styles={finalStyle} />;
+      </div>
+    ) : (
+      <AdvancedFilterButton {...model as IAdvancedFilterButtonComponentProps} styles={finalStyle} />
+    );
   },
   initModel: (model) => {
     return {
