@@ -70,22 +70,19 @@ export const getTableDefaults = (): {
   hoverHighlight: boolean;
   stickyHeader: boolean;
   headerBackgroundColor: string;
+  headerFontFamily: string;
 } => {
   return {
-    // Row styling defaults
     rowHeight: '40px',
     rowPadding: '8px 12px',
     rowBorder: 'none',
 
-    // Header styling defaults
     headerFontSize: '14px',
     headerFontWeight: '500',
     headerBackgroundColor: '#fafafa',
+    headerFontFamily: 'Segoe UI',
 
-    // Row color defaults
     rowAlternateBackgroundColor: '#f5f5f5',
-
-    // Table behavior defaults
     striped: true,
     hoverHighlight: true,
     stickyHeader: false,
