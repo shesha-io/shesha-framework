@@ -68,8 +68,17 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     font-weight: ${fontWeight};
     text-align: ${textAlign};
   `;
+  const selectedRowOverride = css`
+    .sha-tr-selected & {
+      .thumbnail-item-name a {
+        color: #fff !important;
+      }
+    }
+  `;
+
   const shaStoredFilesRenderer = cx(
     'sha-stored-files-renderer',
+    selectedRowOverride,
     css`
       --thumbnail-width: ${layout ? (width ?? height ?? '54px') : '100%'};
       --thumbnail-height: ${layout ? (height ?? width ?? '54px') : '100%'};

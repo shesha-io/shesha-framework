@@ -97,6 +97,22 @@ export interface ITableFormColumn extends ITableColumn, ITableDataFetchColumn {
   editFormId?: FormFullName;
 
   minHeight?: number;
+
+  /**
+   * Enable lazy loading for this form column. When enabled, the form will only render
+   * when the row becomes visible in the viewport, reducing initial load time and
+   * preventing unnecessary API calls for file components and other data fetches.
+   * @default true
+   */
+  lazyLoad?: boolean;
+
+  /**
+   * Margin around the viewport to trigger lazy loading before the row is visible.
+   * Positive values (e.g., '150px') will start loading content before it enters the viewport.
+   * This provides a smoother user experience by preloading content as the user scrolls.
+   * @default '150px'
+   */
+  lazyLoadMargin?: string;
 }
 
 export const isDataColumn = (column: ITableColumn): column is ITableDataColumn => {
