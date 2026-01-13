@@ -26,6 +26,7 @@ import {
   replaceFileErrorAction,
   replaceFileRequestAction,
   replaceFileSuccessAction,
+  setCurrentFileAction,
   updateAllFilesDownloadedByCurrentUser,
   updateIsDownloadedByCurrentUser,
   uploadFileErrorAction,
@@ -389,6 +390,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       });
   };
 
+  const setCurrentFile = (file: IStoredFile): void => {
+    dispatch(setCurrentFileAction(file));
+  };
+
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
     typeDefinitionLoader: () => {
       return Promise.resolve({
@@ -424,7 +429,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
             replaceFile,
             deleteFile,
             downloadZipFile,
-            downloadFile, /* NEW_ACTION_GOES_HERE */
+            downloadFile,
+            setCurrentFile, /* NEW_ACTION_GOES_HERE */
           }}
         >
           {children}
