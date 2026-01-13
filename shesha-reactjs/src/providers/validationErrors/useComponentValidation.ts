@@ -67,10 +67,11 @@ export const useComponentValidation = (
     }
 
     return {
+      ...partialResult,
       componentId,
       componentName,
       componentType,
-      ...partialResult,
+      hasErrors: true,
     };
   }, [componentId, componentName, componentType, ...deps]); // eslint-disable-next-line react-hooks/exhaustive-deps -- deps provided explicitly by caller
 
