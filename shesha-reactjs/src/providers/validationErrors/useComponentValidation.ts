@@ -72,7 +72,7 @@ export const useComponentValidation = (
       componentType,
       ...partialResult,
     };
-  }, [componentId, componentName, componentType, ...deps]);
+  }, [componentId, componentName, componentType, validationFn, ...deps]);
 
   useEffect(() => {
     // Register validation errors using the actions from the provider
