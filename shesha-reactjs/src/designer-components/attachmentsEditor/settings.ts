@@ -162,10 +162,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     },
                     {
                       id: nanoid(),
-                      propertyName: 'allowRename',
-                      label: 'Allow Rename',
+                      propertyName: 'allowViewHistory',
+                      label: 'Allow View History',
                       type: 'switch',
-                      hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
                       jsSetting: true,
                     },
                   ],
@@ -174,13 +173,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   id: nanoid(),
                   parentId: commonTabId,
                   inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: 'allowViewHistory',
-                      label: 'Allow View History',
-                      type: 'switch',
-                      jsSetting: true,
-                    },
                     {
                       id: nanoid(),
                       propertyName: 'downloadZip',
