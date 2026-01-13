@@ -53,7 +53,7 @@ export const useComponentValidation = (
   componentName: string,
   componentType: string,
   validationFn: () => Partial<IModelValidation> | undefined,
-  deps: any[],
+  deps: unknown[],
 ): IModelValidation | undefined => {
   // Get the validation actions from the provider
   const validationActions = useValidationErrorsActions();
