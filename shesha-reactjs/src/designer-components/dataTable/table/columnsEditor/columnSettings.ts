@@ -250,6 +250,7 @@ export const getColumnSettings = (data?: any) => ({
                                     "propertyName": "anchored",
                                     "label": "Anchored",
                                     "jsSetting": true,
+                                    "allowDeselect": true,
                                     "buttonGroupOptions": [
                                         {
                                             "title": "Left",

@@ -124,4 +124,5 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<ILabelVa
     title?: string;
     showSearch?: boolean;
     defaultChecked?: boolean;
+    allowDeselect?: boolean;
 };
