@@ -8,6 +8,7 @@ import {
   Menu,
   Space,
 } from 'antd';
+import { ButtonType } from 'antd/es/button/buttonHelpers';
 import {
   ButtonGroupItemProps,
   IButtonGroup,
@@ -33,6 +34,8 @@ import classNames from 'classnames';
 import { removeNullUndefined } from '@/providers/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
+import { getGhostStyleOverrides } from '@/utils/style';
+import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 import { addPx } from '@/utils/style';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 
@@ -127,6 +130,10 @@ const InlineItem: FC<InlineItemProps> = (props) => {
     const menuItems = item.childItems
       .filter((item) => (getIsVisible(item)))
       .map((childItem) => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, form)));
+    // Ghost buttons: only foreground color, no background/border/shadow
+    const isGhostType = item.buttonType === 'ghost';
+    const ghostOverrides = isGhostType ? getGhostStyleOverrides() : {};
+
     return (
       <Dropdown
         key={uuid}
@@ -135,10 +142,12 @@ const InlineItem: FC<InlineItemProps> = (props) => {
       >
         <Button
           icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
-          type={item.buttonType}
+          type={isGhostType ? 'default' : (item.buttonType as ButtonType)}
+          ghost={isGhostType}
           title={item.tooltip}
           disabled={item.readOnly}
           className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
+          style={ghostOverrides}
         >
           {item.label ? item.label : undefined}
           {item.downIcon ? <ShaIcon iconName={item.downIcon as IconType} /> : undefined}

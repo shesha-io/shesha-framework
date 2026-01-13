@@ -1,6 +1,5 @@
 import { migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
-import { IButtonComponentProps } from '@/designer-components/button/interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FilterOutlined } from '@ant-design/icons';
@@ -10,10 +9,9 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { useDataTableStore, useForm } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
-import ErrorIconPopover from '@/components/componentErrors/errorIconPopover';
-import { IModelValidation } from '@/utils/errors';
+import { IAdvancedFilterButtonComponentProps } from './types';
 
-const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = {
+const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
   type: 'datatable.filter',
   isInput: false,
   name: 'Table Filter',
@@ -51,22 +49,20 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
 
     if (model.hidden) return null;
 
-    const content = !store ? (
-      <div className={styles.hintContainer}>
-        <div className={styles.disabledComponentWrapper}>
-          <div className={styles.filterButtonMockup}>
-            <FilterOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
-            Table Filter
+    if (!store) {
+      return (
+        <div className={styles.hintContainer}>
+          <div className={styles.disabledComponentWrapper}>
+            <div className={styles.filterButtonMockup}>
+              <FilterOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
+              Table Filter
+            </div>
           </div>
         </div>
-      </div>
-    ) : <AdvancedFilterButton {...model} styles={finalStyle} />;
+      );
+    }
 
-    return validationResult?.hasErrors && formMode === 'designer' ? (
-      <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={true}>
-        {content}
-      </ErrorIconPopover>
-    ) : content;
+    return <AdvancedFilterButton {...model as IAdvancedFilterButtonComponentProps} styles={finalStyle} />;
   },
   initModel: (model) => {
     return {
@@ -79,9 +75,13 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = 
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
-      .add<IButtonComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))
-      .add<IButtonComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))
-      .add<IButtonComponentProps>(5, (prev, context) => ({
+      .add<IAdvancedFilterButtonComponentProps>(3, (prev) => migrateReadOnly(prev as IAdvancedFilterButtonComponentProps, 'inherited'))
+      .add<IAdvancedFilterButtonComponentProps>(4, (prev) => {
+        // Omit buttonType when calling defaultStyles as it expects Omit<IButtonComponentProps, 'buttonType'>
+        const { buttonType, ...rest } = prev;
+        return { ...migratePrevStyles(prev, defaultStyles(rest)), buttonType };
+      })
+      .add<IAdvancedFilterButtonComponentProps>(5, (prev, context) => ({
         ...prev,
         editMode: (context.isNew ? 'editable' : prev.editMode),
       })),
