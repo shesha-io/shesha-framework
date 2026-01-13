@@ -35,7 +35,6 @@ import { removeNullUndefined } from '@/providers/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
 import { getGhostStyleOverrides } from '@/utils/style';
-import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 import { addPx } from '@/utils/style';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 

@@ -3,11 +3,11 @@ import { migratePrevStyles } from '@/designer-components/_common-migrations/migr
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FilterOutlined } from '@ant-design/icons';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { AdvancedFilterButton } from './advancedFilterButton';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { useDataTableStore, useForm } from '@/providers';
+import { useDataTableStore } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { IAdvancedFilterButtonComponentProps } from './types';
 
@@ -19,7 +19,6 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
-    const { formMode } = useForm();
 
     const finalStyle = {
       ...model.allStyles.dimensionsStyles,
@@ -30,22 +29,6 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
       ...model.allStyles.stylingBoxAsCSS,
       ...model.allStyles.jsStyle,
     };
-
-    const validationResult = useMemo((): IModelValidation | undefined => {
-      if (!store) {
-        return {
-          hasErrors: true,
-          componentId: model.id,
-          componentName: model.componentName,
-          componentType: 'datatable.filter',
-          errors: [{
-            propertyName: 'No ancestor Data Context component is set',
-            error: '\nPlace this component inside a Data Context component to connect it to data',
-          }],
-        };
-      }
-      return undefined;
-    }, [store, model.id, model.componentName]);
 
     if (model.hidden) return null;
 
