@@ -39,7 +39,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
             validationType: 'error',
             errors: [{
               propertyName: 'Missing Required Parent Component',
-              error: 'CONFIGURATION ERROR: Data List MUST be placed inside a Data Context component. This component cannot function without a data source.',
+              error: 'CONFIGURATION ERROR: Data List requires either a configured Data Source property or placement inside a Data Context component.',
             }],
           };
         }
