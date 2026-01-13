@@ -463,7 +463,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           {customActions && customActions.length > 0 && (
             <DataContextProvider
               id={`file_ctx_${fileId}`}
-              name="fileContext"
+              name="currentFile"
               description="File context for custom actions"
               type="control"
               initialData={getFileContextData(file, fileId)}
