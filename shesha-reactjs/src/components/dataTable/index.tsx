@@ -247,7 +247,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!onRowSelect?.actionName) return undefined;
 
     return (row: any, rowIndex: number) => {
-      const evaluationContext = { ...appContext, data: row, rowIndex };
+      const currentSelectedRow = { index: rowIndex, row: row, id: row?.id };
+      const evaluationContext = { ...appContext, data: row, rowIndex, selectedRow: currentSelectedRow };
 
       try {
         executeAction({
