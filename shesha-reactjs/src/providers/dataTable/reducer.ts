@@ -98,7 +98,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
     ) => {
       const { payload } = action;
       const { selectedRows: rows = [] } = state; // Ensure rows is always an array
-      let selectedRows: ITableRowData[];
+      let selectedRows: any[];
 
       if (Array.isArray(payload)) {
         selectedRows = payload?.filter(({ isSelected }) => isSelected).map(({ original }) => original);
@@ -123,13 +123,13 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
         if (exists && isSelected) {
           // Row exists and should be selected - replace it with updated data
-          selectedRows = [...rows.filter((row) => String(row.id) !== String(rowId)), data];
+          selectedRows = [...rows.filter((row) => String(row.id) !== String(rowId)), data as any];
         } else if (exists && !isSelected) {
           // Row exists and should be deselected - remove it
           selectedRows = rows.filter((row) => String(row.id) !== String(rowId));
         } else if (!exists && isSelected) {
           // Row doesn't exist and should be selected - add it
-          selectedRows = [...rows, data];
+          selectedRows = [...rows, data as any];
         } else {
           // Row doesn't exist and should be deselected - no change
           selectedRows = rows;

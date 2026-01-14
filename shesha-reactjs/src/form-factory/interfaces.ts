@@ -15,8 +15,7 @@ import { PagerComponentDefinition } from '@/designer-components/dataTable/pager/
 import { QuickSearchComponentDefinition } from '@/designer-components/dataTable/quickSearch/interfaces';
 import { ColumnsEditorComponentDefinition } from '@/designer-components/dataTable/table/columnsEditor/interfaces';
 import { TableComponentDefinition } from '@/designer-components/dataTable/table/models';
-import { TableContextComponentDefinition } from '@/designer-components/dataTable/tableContext/models';
-import { DataTableContextComponentDefinition } from '@/designer-components/dataTable/tableContext/tableContextComponentLegacy';
+import { TableContextComponentDefinition, TableContextComponentLegacyDefinition as DataTableContextComponentDefinition } from '@/designer-components/dataTable/tableContext/models';
 import { TableViewSelectorComponentDefinition } from '@/designer-components/dataTable/tableViewSelector/models';
 import { DateFieldDefinition } from '@/designer-components/dateField/interfaces';
 import { DropdownComponentDefinition } from '@/designer-components/dropdown/model';
