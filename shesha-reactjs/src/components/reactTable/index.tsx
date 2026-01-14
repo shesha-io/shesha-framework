@@ -224,23 +224,19 @@ export const ReactTable: FC<IReactTableProps> = ({
 
       onMultiRowSelect(selectedRows);
 
-      // Dispatch selection change action for bulk selection
       if (Array.isArray(rows)) {
-        rows.forEach((row, index) => {
-          // Dispatch row select action when transitioning to selected state
+        rows.forEach((row) => {
+          const rowIndex = allRows.findIndex((r) => r === row.original);
           if (isSelected) {
-            dispatchRowEvent(_onRowSelectAction, row.original, index);
+            dispatchRowEvent(_onRowSelectAction, row.original, rowIndex);
           }
-          // Dispatch selection change action on any selection change
-          dispatchRowEvent(_onSelectionChangeAction, row.original, index);
+          dispatchRowEvent(_onSelectionChangeAction, row.original, rowIndex);
         });
       } else {
         const rowIndex = allRows.findIndex((r) => r === rows.original);
-        // Dispatch row select action when transitioning to selected state
         if (isSelected) {
           dispatchRowEvent(_onRowSelectAction, rows.original, rowIndex);
         }
-        // Dispatch selection change action on any selection change
         dispatchRowEvent(_onSelectionChangeAction, rows.original, rowIndex);
       }
     }

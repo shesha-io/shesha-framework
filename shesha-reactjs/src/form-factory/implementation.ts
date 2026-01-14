@@ -177,12 +177,12 @@ export class FormBuilderImplementation implements FormBuilder {
   protected addProperty(props: FluentSettings<IConfigurableFormComponent>, type: ComponentTypes, meta?: IPropertyMetadata): FormBuilder {
     const { id, hidden, version, ...restProps } = props;
 
-    const componentDefinition = this.getComponentDefinition(type as string);
+    const componentDefinition = this.getComponentDefinition(type);
 
     let formComponent: IConfigurableFormComponent = {
       ...restProps, // use restProps for correct migrations (migrations can initialise some properties depends on other properties)
       id: id ?? nanoid(),
-      type: type as string,
+      type,
       version: typeof (version) === 'number'
         ? version
         : undefined,
