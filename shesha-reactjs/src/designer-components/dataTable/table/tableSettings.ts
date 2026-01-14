@@ -1322,42 +1322,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           ],
                         },
                       })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'footerStyling',
-                        label: 'Footer Styling',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [...fbf()
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              inputs: [
-                                {
-                                  id: nanoid(),
-                                  propertyName: 'footerBackgroundColor',
-                                  label: 'Footer Background',
-                                  type: 'colorPicker',
-                                  tooltip: 'Background color for table footer',
-                                  jsSetting: true,
-                                },
-                                {
-                                  id: nanoid(),
-                                  propertyName: 'footerTextColor',
-                                  label: 'Footer Text Color',
-                                  type: 'colorPicker',
-                                  tooltip: 'Text color for table footer',
-                                  jsSetting: true,
-                                },
-                              ],
-                            })
-                            .toJson(),
-                          ],
-                        },
-                      })
                       .toJson(),
                   ],
                 })
