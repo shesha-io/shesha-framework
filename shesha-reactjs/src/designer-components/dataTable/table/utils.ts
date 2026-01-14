@@ -266,6 +266,32 @@ export type RowStylingBoxType = {
   paddingLeft?: string | number;
 };
 
+export const convertRowPaddingFieldsToPadding = (
+  top?: string,
+  right?: string,
+  bottom?: string,
+  left?: string,
+): string | undefined => {
+  // If none of the fields are provided, return undefined
+  if (!top && !right && !bottom && !left) return undefined;
+
+  const topPx = addPxUnit(top);
+  const rightPx = addPxUnit(right);
+  const bottomPx = addPxUnit(bottom);
+  const leftPx = addPxUnit(left);
+
+  if (topPx === rightPx && rightPx === bottomPx && bottomPx === leftPx) {
+    return topPx;
+  }
+
+  if (topPx === bottomPx && leftPx === rightPx) {
+    return `${topPx} ${leftPx}`;
+  }
+
+  return `${topPx} ${rightPx} ${bottomPx} ${leftPx}`;
+};
+
+/** @deprecated Use convertRowPaddingFieldsToPadding instead */
 export const convertRowStylingBoxToPadding = (rowStylingBox?: string | RowStylingBoxType): string | undefined => {
   if (!rowStylingBox) return undefined;
 

@@ -67,7 +67,14 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
     maxHeight?: string;
   };
 
+  // Row padding (individual fields)
+  rowPaddingTop?: string;
+  rowPaddingRight?: string;
+  rowPaddingBottom?: string;
+  rowPaddingLeft?: string;
+
   // Row padding using styling box
+  /** @deprecated Use rowPaddingTop, rowPaddingRight, rowPaddingBottom, rowPaddingLeft instead */
   rowStylingBox?: {
     margin?: {
       top?: string;
