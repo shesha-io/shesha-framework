@@ -50,6 +50,9 @@ import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form
 import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
 
 export class FormBuilderImplementation implements FormBuilder {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: `add${Capitalize<string>}`]: (props: any, metadata?: IPropertyMetadata) => FormBuilder;
+
   addKeyInformationBar = (props: FluentSettings<IKeyInformationBarProps>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'KeyInformationBar', meta);
 
   addEditModeSelector = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this.addProperty(props, 'editModeSelector', meta);
