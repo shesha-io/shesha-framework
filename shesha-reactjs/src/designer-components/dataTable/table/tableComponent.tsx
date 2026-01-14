@@ -181,7 +181,42 @@ const TableComponent: TableComponentDefinition = {
           ...prev.desktop,
           striped: prev.striped ?? true,
         },
-      })),
+      }))
+      .add<ITableComponentProps>(24, (prev) => {
+        // Migrate rowStylingBox to individual padding fields
+        if (prev.rowStylingBox?.padding) {
+          const { padding } = prev.rowStylingBox;
+          return {
+            ...prev,
+            rowPaddingTop: padding.top,
+            rowPaddingRight: padding.right,
+            rowPaddingBottom: padding.bottom,
+            rowPaddingLeft: padding.left,
+            mobile: {
+              ...prev.mobile,
+              rowPaddingTop: padding.top,
+              rowPaddingRight: padding.right,
+              rowPaddingBottom: padding.bottom,
+              rowPaddingLeft: padding.left,
+            },
+            tablet: {
+              ...prev.tablet,
+              rowPaddingTop: padding.top,
+              rowPaddingRight: padding.right,
+              rowPaddingBottom: padding.bottom,
+              rowPaddingLeft: padding.left,
+            },
+            desktop: {
+              ...prev.desktop,
+              rowPaddingTop: padding.top,
+              rowPaddingRight: padding.right,
+              rowPaddingBottom: padding.bottom,
+              rowPaddingLeft: padding.left,
+            },
+          };
+        }
+        return prev;
+      }),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [

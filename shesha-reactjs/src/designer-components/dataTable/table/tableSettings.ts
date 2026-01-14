@@ -657,7 +657,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'rowStylingBoxPanel',
+                        propertyName: 'rowPaddingPanel',
                         label: 'Padding',
                         labelAlign: 'right',
                         ghost: true,
@@ -665,11 +665,51 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         content: {
                           id: nanoid(),
                           components: [...fbf()
-                            .addStyleBox({
+                            .addSettingsInputRow({
                               id: nanoid(),
-                              label: 'Padding',
-                              hideLabel: true,
-                              propertyName: 'rowStylingBox',
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'rowPaddingTop',
+                                  label: 'Top',
+                                  type: 'textField',
+                                  placeholder: '8px',
+                                  tooltip: 'Top padding for table rows (e.g., 8px, 1rem, 0.5em)',
+                                  jsSetting: true,
+                                },
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'rowPaddingRight',
+                                  label: 'Right',
+                                  type: 'textField',
+                                  placeholder: '12px',
+                                  tooltip: 'Right padding for table rows (e.g., 12px, 1rem, 0.5em)',
+                                  jsSetting: true,
+                                },
+                              ],
+                            })
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'rowPaddingBottom',
+                                  label: 'Bottom',
+                                  type: 'textField',
+                                  placeholder: '8px',
+                                  tooltip: 'Bottom padding for table rows (e.g., 8px, 1rem, 0.5em)',
+                                  jsSetting: true,
+                                },
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'rowPaddingLeft',
+                                  label: 'Left',
+                                  type: 'textField',
+                                  placeholder: '12px',
+                                  tooltip: 'Left padding for table rows (e.g., 12px, 1rem, 0.5em)',
+                                  jsSetting: true,
+                                },
+                              ],
                             })
                             .toJson(),
                           ],
