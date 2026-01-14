@@ -62,7 +62,7 @@ namespace Shesha.Validations
                 && !obj.GetType().IsJsonEntityType())
                 return true;
 
-            var entityType = obj.GetType();
+            var entityType = obj.GetType().StripCastleProxyType();
 
             var props = (modelConfig == null
                 ? await _configurationManager.GetCachedModelConfigurationOrNullAsync(null, entityType.Namespace, entityType.Name, true)
@@ -175,7 +175,7 @@ namespace Shesha.Validations
             if (useNewValue && prevValue == value)
                 return true;
 
-            if (useNewValue && (propConfig.Suppress ?? false))
+            if (useNewValue && (propConfig.Suppress ?? false) && !propConfig.IsItemsType)
             {
                 validationResult.Add(new ValidationResult($"Property '{friendlyName}' is suppressed."));
                 return false;
