@@ -35,7 +35,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     borderBottomLeftRadius ?? allRadius ?? '8px',
     borderTopLeftRadius ?? allRadius ?? '8px',
   ].join(' ');
-  
+
   const colorBgTextHover = '#f0f0f0'
 
   const fileName = cx("item-file-name", css`
@@ -71,7 +71,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     display: ${model.hideFileName ? 'none' : 'flex'};
     cursor: pointer;
     &:hover {
-      background-color: #f0f0f0 !important;
+      background-color: ${colorBgTextHover} !important;
       border-radius: ${borderRadius ?? '4px'} !important;
     }
     > .item-file-name {
