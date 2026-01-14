@@ -6,14 +6,12 @@ export interface IComponentErrorProps {
   errors?: IModelValidation;
   type?: ISheshaErrorTypes;
   message?: string;
-  children?: React.ReactNode;
 }
 
 const ComponentError: FC<IComponentErrorProps> = ({
   errors,
   type = 'warning',
   message,
-  children,
 }) => {
   // Show error icon if there are validation errors
   if (errors) {
@@ -23,9 +21,7 @@ const ComponentError: FC<IComponentErrorProps> = ({
         validationResult={errors}
         type={type}
         position="top-right"
-      >
-        {children}
-      </ErrorIconPopover>
+      />
     );
   }
 
@@ -37,14 +33,12 @@ const ComponentError: FC<IComponentErrorProps> = ({
         message={message}
         type={type}
         position="top-right"
-      >
-        {children}
-      </ErrorIconPopover>
+      />
     );
   }
 
-  // No errors or message - just return the children (or null if no children)
-  return children ? <>{children}</> : null;
+  // No errors or message - return null
+  return null;
 };
 
 export default ComponentError;
