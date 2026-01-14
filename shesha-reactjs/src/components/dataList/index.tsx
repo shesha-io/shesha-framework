@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/no-use-before-define: 0 */
-import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Collapse, Divider, Popover, Typography } from 'antd';
+import { PlusOutlined, WarningOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject, CSSProperties, ReactElement, useMemo } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
@@ -259,12 +259,29 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     // If it's a string, it should not be empty
     if (typeof formId === 'string') {
-      return formId.trim().length > 0;
+      const isValid = formId.trim().length > 0;
+      if (!isValid) {
+        console.warn('Invalid formId: empty string');
+      }
+      return isValid;
     }
 
     // If it's an object (FormFullName), it should have both name and module
     if (typeof formId === 'object') {
-      return !!(formId.name && formId.module);
+      const hasName = formId.name && typeof formId.name === 'string' && formId.name.trim().length > 0;
+      const hasModule = formId.module && typeof formId.module === 'string' && formId.module.trim().length > 0;
+      const isValid = hasName && hasModule;
+
+      if (!isValid) {
+        console.warn('Invalid formId object:', {
+          name: formId.name,
+          module: formId.module,
+          hasName,
+          hasModule,
+        });
+      }
+
+      return isValid;
     }
 
     return false;
@@ -411,42 +428,92 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         return null;
       }
 
-      // In designer mode, show the configuration warning
+      // In designer mode, show the clean placeholder (matching NotConfiguredWarning style)
+      const popoverContent = (
+        <div style={{ maxWidth: '280px' }}>
+          <div style={{ fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>
+            Hint:
+          </div>
+          <div style={{ fontSize: '12px', lineHeight: '1.5' }}>
+            This Data List has no form configuration loaded. Make sure the form exists and is properly configured.
+          </div>
+        </div>
+      );
+
       return (
-        <div
-          style={{
-            padding: '16px 20px',
-            border: `2px dashed ${theme.colorWarning}`,
-            borderRadius: '8px',
-            backgroundColor: theme.colorWarningBg,
-            minHeight: '100px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-          }}
-        >
-          <div style={{ fontSize: '24px', color: theme.colorWarning, flexShrink: 0 }}>
-            ⚠️
-          </div>
-          <div style={{ flex: 1, textAlign: 'left' }}>
+        <div style={{ position: 'relative' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '12px 16px',
+              backgroundColor: theme.colorBgContainer,
+              borderTop: `1px solid ${theme.colorBorder}`,
+              borderBottom: `1px solid ${theme.colorBorder}`,
+            }}
+          >
+            {/* Icon placeholder */}
             <div
               style={{
-                fontWeight: 600,
-                fontSize: '14px',
-                marginBottom: '4px',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                backgroundColor: theme.colorFillSecondary,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                fontSize: '18px',
+                color: theme.colorTextQuaternary,
               }}
             >
-              Configuration Required
+              <span role="img" aria-label="User placeholder">👤</span>
             </div>
-            <div
-              style={{
-                fontSize: '13px',
-                lineHeight: '1.5',
-              }}
-            >
-              Please configure a valid Form ID in the DataList settings to display list items
+            {/* Text content */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  color: theme.colorTextSecondary,
+                  marginBottom: '4px',
+                }}
+              >
+                Heading
+              </div>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: theme.colorTextTertiary,
+                }}
+              >
+                Subtext
+              </div>
             </div>
           </div>
+
+          {/* Warning icon with popover - positioned at top right, below delete button */}
+          <Popover content={popoverContent} title={null} trigger={['hover', 'focus']} placement="left" styles={{ body: { backgroundColor: '#D9DCDC' } }}>
+            <WarningOutlined
+              role="button"
+              tabIndex={0}
+              aria-label="Data list configuration warning"
+              style={{
+                position: 'absolute',
+                top: '44px',
+                right: '0px',
+                color: theme.colorWarning,
+                fontSize: '20px',
+                zIndex: 9999,
+                cursor: 'help',
+                backgroundColor: '#fff',
+                borderRadius: '50%',
+                padding: '4px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              }}
+            />
+          </Popover>
         </div>
       );
     }
