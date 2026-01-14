@@ -5,7 +5,7 @@ import { useDataSources } from '@/providers/dataSourcesProvider';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
-import DataListControl from './dataListControl';
+import DataListControl, { DataListPlaceholder } from './dataListControl';
 import { useDataTableStore } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -50,8 +50,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
 
     if (model.hidden) return null;
 
-    // If no dataSource, return null - validation error will be shown by parent FormComponent
-    if (!dataSource) return null;
+    // If no dataSource, show placeholder - validation error will be shown by parent FormComponent
+    if (!dataSource) return <DataListPlaceholder />;
 
     return <DataListControl {...model} dataSourceInstance={dataSource} />;
   },

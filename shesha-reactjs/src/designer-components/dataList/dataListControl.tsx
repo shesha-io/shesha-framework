@@ -13,6 +13,79 @@ import { EmptyState } from '@/components';
 import { OnSaveHandler, OnSaveSuccessHandler } from '@/components/dataTable/interfaces';
 import { useComponentValidation } from '@/providers/validationErrors';
 
+// Static placeholder shown when DataList has configuration errors
+export const DataListPlaceholder: FC = () => {
+  const { theme } = useStyles();
+
+  // Show preview items that look like actual list items
+  const previewItems = [
+    { heading: 'Heading', subtext: 'Subtext' },
+    { heading: 'Heading', subtext: 'Subtext' },
+    { heading: 'Heading', subtext: 'Subtext' },
+  ];
+
+  return (
+    <div style={{ position: 'relative' }}>
+      {/* Preview list items - clean placeholder style */}
+      <div>
+        {previewItems.map((item, index) => (
+          <div
+            key={index}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '12px 16px',
+              marginBottom: index < previewItems.length - 1 ? '1px' : '0',
+              borderTop: index === 0 ? `1px solid ${theme.colorBorder}` : 'none',
+              borderBottom: `1px solid ${theme.colorBorder}`,
+            }}
+          >
+            {/* Icon placeholder */}
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                backgroundColor: theme.colorFillSecondary,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                fontSize: '18px',
+                color: theme.colorTextQuaternary,
+              }}
+            >
+              👤
+            </div>
+            {/* Text content */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  color: theme.colorTextSecondary,
+                  marginBottom: '4px',
+                }}
+              >
+                {item.heading}
+              </div>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: theme.colorTextTertiary,
+                }}
+              >
+                {item.subtext}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const {
     dataSourceInstance: dataSource,
@@ -328,10 +401,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  // When there's no repository or invalid form config, return null
+  // When there's no repository or invalid form config, show placeholder
   // Validation errors will be shown by parent FormComponent via useComponentValidation
   if (!repository || hasInvalidFormConfig) {
-    return null;
+    return <DataListPlaceholder />;
   }
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
