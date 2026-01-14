@@ -112,7 +112,6 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
     }
 
     return undefined;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toolboxComponent, actualModel, getValidation, errorCount]);
 
   // Wrap component with error icon if there are validation errors
