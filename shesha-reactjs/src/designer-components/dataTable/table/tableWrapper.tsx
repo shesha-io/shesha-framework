@@ -5,7 +5,7 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
-import { filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding } from './utils';
+import { filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding, convertRowPaddingFieldsToPadding } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
@@ -66,12 +66,28 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   }, [props?.rowDimensions, props?.rowHeight, isDesignMode]);
 
   const effectiveRowPadding = useMemo(() => {
-    const converted = convertRowStylingBoxToPadding(props?.rowStylingBox);
+    // Try new individual padding fields first
+    const convertedFromFields = convertRowPaddingFieldsToPadding(
+      props?.rowPaddingTop,
+      props?.rowPaddingRight,
+      props?.rowPaddingBottom,
+      props?.rowPaddingLeft,
+    );
+
+    // Fall back to deprecated rowStylingBox for backward compatibility
+    const convertedFromBox = convertRowStylingBoxToPadding(props?.rowStylingBox);
+
     if (isDesignMode) {
-      console.warn('Row Padding - rowStylingBox:', props?.rowStylingBox, 'converted:', converted, 'fallback:', props?.rowPadding);
+      console.warn('Row Padding - individual fields:', {
+        top: props?.rowPaddingTop,
+        right: props?.rowPaddingRight,
+        bottom: props?.rowPaddingBottom,
+        left: props?.rowPaddingLeft,
+      }, 'converted:', convertedFromFields, 'fallback rowStylingBox:', props?.rowStylingBox, 'converted:', convertedFromBox, 'final fallback:', props?.rowPadding);
     }
-    return converted || props?.rowPadding;
-  }, [props?.rowStylingBox, props?.rowPadding, isDesignMode]);
+
+    return convertedFromFields || convertedFromBox || props?.rowPadding;
+  }, [props?.rowPaddingTop, props?.rowPaddingRight, props?.rowPaddingBottom, props?.rowPaddingLeft, props?.rowStylingBox, props?.rowPadding, isDesignMode]);
 
   const effectiveRowBorder = useMemo(() => {
     const converted = convertRowBorderStyleToBorder(props?.rowBorderStyle);
