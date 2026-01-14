@@ -37,6 +37,7 @@ import { isDataColumn, ITableDataColumn } from '@/providers/dataTable/interfaces
 import {
   IColumnEditorProps,
   IFieldComponentProps,
+  isDataColumnProps,
   standardCellComponentTypes,
 } from '@/providers/datatableColumnsConfigurator/models';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
@@ -55,9 +56,7 @@ import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
 import { useDeepCompareMemo } from '@/hooks/useDeepCompareMemo';
-import { IModelValidation } from '@/utils/errors';
-import ErrorIconPopover from '../componentErrors/errorIconPopover';
-import { useForm } from '@/providers';
+import { useComponentValidation } from '@/providers/validationErrors';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -178,7 +177,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 }) => {
   const store = useDataTableStore();
   const appContext = useAvailableConstantsData();
-  const { formMode } = useForm();
 
   if (tableRef) tableRef.current = store;
 
@@ -326,13 +324,19 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
 
     // Extract configurable columns from store and convert to camelCase
+    // Only validate data columns which have propertyName
     const configurableColumnsNames = configurableColumns
       ?.map((column) => {
+        // Only data columns have propertyName - use type guard
+        const propName = isDataColumnProps(column) ? column.propertyName : undefined;
+
+        if (!propName) return undefined;
+
         // Account for nested properties
-        if (column?.propertyName?.includes('.')) {
-          return column?.propertyName?.split('.')[0];
+        if (propName.includes('.')) {
+          return propName.split('.')[0];
         }
-        return column?.propertyName;
+        return propName;
       })
       .filter((name): name is string => typeof name === 'string')
       .map((name) => toCamelCase(name));
@@ -359,48 +363,44 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [configurableColumns, metadataProperties]);
 
-  // Run validation in both designer and runtime modes
-  const validationResult = useMemo((): IModelValidation | undefined => {
-    const errors: Array<{ propertyName?: string; error: string }> = [];
+  // Register validation errors with parent FormComponent using the hook
+  // This follows the centralized validation architecture where FormComponent
+  // decides how to display errors based on form mode
+  // Component identity (id, name, type) is automatically obtained from FormComponentValidationProvider
+  useComponentValidation(
+    () => {
+      const errors: Array<{ propertyName?: string; error: string }> = [];
 
-    // Validate that component is inside a data context
-    if (!store) {
-      errors.push({
-        propertyName: 'No ancestor Data Context component is set',
-        error: '\nPlace this component inside a Data Context component to connect it to data',
-      });
+      // Validate that component is inside a data context
+      if (!store) {
+        errors.push({
+          propertyName: 'No ancestor Data Context component is set',
+          error: '\nPlace this component inside a Data Context component to connect it to data',
+        });
+      }
 
-      return {
-        hasErrors: true,
-        componentId: 'datatable',
-        componentName: 'DataTable',
-        componentType: 'datatable',
-        errors,
-      };
-    }
+      // Validate that datatable columns match the data context metadata
+      // Only validate if validation was not skipped (i.e., we have columns and metadata to validate)
+      if (!columnsValidation.skipped && !columnsValidation.isValid && columnsValidation.missingColumns.length > 0) {
+        const missingColumnsList = columnsValidation.missingColumns.join(', ');
+        errors.push({
+          propertyName: 'Table columns mismatch',
+          error: `\nThe following columns do not exist in the entity type ${JSON.stringify(modelType)}: [${missingColumnsList}]. Please re-configure the columns on the datatable.`,
+        });
+      }
 
-    // Validate that datatable columns match the data context metadata
-    // Only validate if validation was not skipped (i.e., we have columns and metadata to validate)
-    if (!columnsValidation.skipped && !columnsValidation.isValid && columnsValidation.missingColumns.length > 0) {
-      const missingColumnsList = columnsValidation.missingColumns.join(', ');
-      errors.push({
-        propertyName: 'Table columns mismatch',
-        error: `\nThe following columns do not exist in the entity type ${JSON.stringify(modelType)}: [${missingColumnsList}]. Please re-configure the columns on the datatable.`,
-      });
-    }
+      if (errors.length > 0) {
+        return {
+          hasErrors: true,
+          validationType: 'warning',
+          errors,
+        };
+      }
 
-    if (errors.length > 0) {
-      return {
-        hasErrors: true,
-        componentId: 'datatable',
-        componentName: 'DataTable',
-        componentType: 'datatable',
-        errors,
-      };
-    }
-
-    return undefined;
-  }, [store, modelType, columnsValidation]);
+      return undefined;
+    },
+    [store, modelType, columnsValidation],
+  );
 
   const handleRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick?.actionName) return undefined;
@@ -1047,7 +1047,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowDividers: props.rowDividers,
   };
 
-  const tableContent = (
+  // Validation errors are now handled by the parent FormComponent via useComponentValidation hook
+  // FormComponent will automatically wrap this component with ErrorIconPopover in designer mode
+  return (
     <Fragment>
       <div className={styles.shaChildTableErrorContainer}>
         {exportToExcelError && <ValidationErrors error="Error occurred while exporting to excel" />}
@@ -1056,12 +1058,4 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps} />}
     </Fragment>
   );
-
-  // Wrap table with error icon if there are validation errors
-  // Show error icons only in designer mode
-  return validationResult?.hasErrors && formMode === 'designer' ? (
-    <ErrorIconPopover mode="validation" validationResult={validationResult} type="warning" isDesignerMode={true}>
-      {tableContent}
-    </ErrorIconPopover>
-  ) : tableContent;
 };

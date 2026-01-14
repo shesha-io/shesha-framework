@@ -21,7 +21,7 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
   name: 'Quick Search',
   icon: <SearchOutlined />,
   Factory: ({ model }) => {
-    const { block, hidden, dimensions, size: modelSize, id, componentName } = model;
+    const { block, hidden, dimensions, size: modelSize } = model;
     const store = useDataTableStore(false);
     const { styles } = useStyles();
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
@@ -36,10 +36,8 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
     });
 
     // CRITICAL: Register validation errors - FormComponent will display them
+    // Component identity is automatically obtained from FormComponentValidationProvider
     useComponentValidation(
-      id,
-      componentName,
-      'datatable.quickSearch',
       () => {
         if (!store) {
           return {

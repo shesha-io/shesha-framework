@@ -32,10 +32,8 @@ const PagerComponent: PagerComponentDefinition = {
     });
 
     // CRITICAL: Register validation errors - FormComponent will display them
+    // Component identity is automatically obtained from FormComponentValidationProvider
     useComponentValidation(
-      model.id,
-      model.componentName,
-      'datatable.pager',
       () => {
         if (!store) {
           return {

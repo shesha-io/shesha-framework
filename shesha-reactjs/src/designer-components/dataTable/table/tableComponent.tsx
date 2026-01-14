@@ -29,10 +29,8 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
 
   // CRITICAL: Register validation errors - FormComponent will display them
   // Must be called before any conditional returns (React Hooks rules)
+  // Component identity is automatically obtained from FormComponentValidationProvider
   useComponentValidation(
-    model.id,
-    model.componentName,
-    'datatable',
     () => {
       if (!store) {
         return {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { IModelValidation } from '@/utils/errors';
-import { useValidationErrorsActions } from './index';
+import { useValidationErrorsActions, useValidationErrorsState } from './index';
 
 /**
  * Hook for components to register validation errors with the parent FormComponent
@@ -8,25 +8,18 @@ import { useValidationErrorsActions } from './index';
  * This hook automatically registers and unregisters validation errors when the component
  * mounts/unmounts or when validation results change.
  *
- * The hook exposes the validation registration actions from ValidationErrorsProvider,
- * making the data flow explicit: components get the actions object and can use it
- * to register their validation errors.
+ * The component identity (id, name, type) is automatically obtained from the nearest
+ * FormComponentValidationProvider, so you don't need to pass these values.
  *
- * @param componentId - Unique identifier for the component
- * @param componentName - Name of the component
- * @param componentType - Type of the component
  * @param validationFn - Function that returns validation result or undefined if no errors
  * @param deps - Dependencies array for the validation function
  *
  * @example
  * ```tsx
- * const MyComponent = ({ model }) => {
+ * const MyComponent = () => {
  *   const store = useDataTableStore(false);
  *
  *   useComponentValidation(
- *     model.id,
- *     model.componentName,
- *     'datatable.filter',
  *     () => {
  *       if (!store) {
  *         return {
@@ -49,15 +42,14 @@ import { useValidationErrorsActions } from './index';
  * ```
  */
 export const useComponentValidation = (
-  componentId: string,
-  componentName: string,
-  componentType: string,
   validationFn: () => Partial<IModelValidation> | undefined,
   deps: unknown[],
 ): IModelValidation | undefined => {
+  // Get component identity from the provider context
+  const { componentId, componentName, componentType } = useValidationErrorsState();
+
   // Get the validation actions from the provider
-  const validationActions = useValidationErrorsActions();
-  const { registerValidation, unregisterValidation } = validationActions;
+  const { registerValidation, unregisterValidation } = useValidationErrorsActions();
 
   const validationResult = useMemo((): IModelValidation | undefined => {
     const partialResult = validationFn();
@@ -73,7 +65,7 @@ export const useComponentValidation = (
       componentType,
       hasErrors: true,
     };
-  }, [componentId, componentName, componentType, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps -- deps provided explicitly by caller
+  }, [componentId, componentName, componentType, validationFn, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps -- deps provided explicitly by caller
 
   useEffect(() => {
     // Register validation errors using the actions from the provider

@@ -8,6 +8,9 @@ export interface IComponentValidationError extends IModelValidation {
 
 export interface IValidationErrorsStateContext {
   errors: Map<string, IComponentValidationError>;
+  componentId: string;
+  componentName: string;
+  componentType: string;
 }
 
 export interface IValidationErrorsActionsContext {
@@ -46,12 +49,25 @@ const ValidationErrorsActionsContext = createNamedContext<IValidationErrorsActio
   "ValidationErrorsActionsContext",
 );
 
-export type IValidationErrorsProviderProps = unknown;
+export interface IFormComponentValidationProviderProps {
+  componentId: string;
+  componentName: string;
+  componentType: string;
+}
 
 /**
- * Provider that manages validation errors from child components
+ * Provider that manages validation errors from child components within a FormComponent
+ *
+ * This provider should wrap each FormComponent to collect validation errors from its children.
+ * The component identity (id, name, type) is provided once at the provider level, so child
+ * components using useComponentValidation don't need to specify it repeatedly.
  */
-export const ValidationErrorsProvider: FC<PropsWithChildren<IValidationErrorsProviderProps>> = ({ children }) => {
+export const FormComponentValidationProvider: FC<PropsWithChildren<IFormComponentValidationProviderProps>> = ({
+  componentId,
+  componentName,
+  componentType,
+  children,
+}) => {
   const errorsRef = useRef<Map<string, IComponentValidationError>>(new Map());
   // State to trigger re-renders when errors change
   const [errorVersion, setErrorVersion] = useState(0);
@@ -83,8 +99,12 @@ export const ValidationErrorsProvider: FC<PropsWithChildren<IValidationErrorsPro
   const stateValue = useMemo<IValidationErrorsStateContext>(
     () => ({
       errors: errorsRef.current,
+      componentId,
+      componentName,
+      componentType,
     }),
-    [errorVersion], // Re-create state when errors change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [errorVersion, componentId, componentName, componentType], // errorVersion triggers re-render when errors change
   );
 
   const actionsValue = useMemo<IValidationErrorsActionsContext>(
@@ -137,6 +157,9 @@ export const useValidationErrors = (): IValidationErrorsStateContext & IValidati
     ...useValidationErrorsActions(),
   };
 };
+
+// Backward compatibility: export with old name
+export const ValidationErrorsProvider = FormComponentValidationProvider;
 
 // Export the component validation hook
 export { useComponentValidation } from './useComponentValidation';

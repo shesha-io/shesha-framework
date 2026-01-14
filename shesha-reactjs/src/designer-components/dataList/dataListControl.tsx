@@ -160,10 +160,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const hasInvalidFormConfig = !!formConfigErrorMessage;
 
   // Register validation errors - FormComponent will display them
+  // Component identity is automatically obtained from FormComponentValidationProvider
   useComponentValidation(
-    props.id,
-    props.componentName,
-    'datalist',
     () => {
       // Check for missing repository
       if (!repository) {

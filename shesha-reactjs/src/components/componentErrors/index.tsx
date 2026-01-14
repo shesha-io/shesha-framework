@@ -15,17 +15,7 @@ const ComponentError: FC<IComponentErrorProps> = ({
   message,
   children,
 }) => {
-  // If children are provided, wrap them with ErrorIconPopover
-  // Otherwise, just show the ErrorIconPopover without any component content
-  // This ensures we always render the component (or nothing) with an error icon overlay
-
-  if (!children) {
-    // No component to render - just return null
-    // The error boundary will handle showing error details if needed
-    return null;
-  }
-
-  // Component exists - wrap it with the error icon
+  // Show error icon if there are validation errors
   if (errors) {
     return (
       <ErrorIconPopover
@@ -39,6 +29,7 @@ const ComponentError: FC<IComponentErrorProps> = ({
     );
   }
 
+  // Show error icon if there's an error message
   if (message) {
     return (
       <ErrorIconPopover
@@ -52,8 +43,8 @@ const ComponentError: FC<IComponentErrorProps> = ({
     );
   }
 
-  // No errors or message - just return the children
-  return <>{children}</>;
+  // No errors or message - just return the children (or null if no children)
+  return children ? <>{children}</> : null;
 };
 
 export default ComponentError;

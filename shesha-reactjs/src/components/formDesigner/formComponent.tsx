@@ -10,7 +10,7 @@ import AttributeDecorator from '../attributeDecorator';
 import { IStyleType, isValidGuid, useActualContextData, useCalculatedModel } from '@/index';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useStyles } from './styles/styles';
-import { ValidationErrorsProvider, useValidationErrorsActions, useValidationErrorsState } from '@/providers/validationErrors';
+import { FormComponentValidationProvider, useValidationErrorsActions, useValidationErrorsState } from '@/providers/validationErrors';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -184,9 +184,13 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
 
 const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   return (
-    <ValidationErrorsProvider>
+    <FormComponentValidationProvider
+      componentId={componentModel.id}
+      componentName={componentModel.componentName}
+      componentType={componentModel.type}
+    >
       <FormComponentInner componentModel={componentModel} />
-    </ValidationErrorsProvider>
+    </FormComponentValidationProvider>
   );
 };
 

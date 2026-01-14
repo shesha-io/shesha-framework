@@ -19,10 +19,8 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
     const { styles } = useStyles();
 
     // CRITICAL: Register validation errors - FormComponent will display them
+    // Component identity is automatically obtained from FormComponentValidationProvider
     useComponentValidation(
-      model.id,
-      model.componentName,
-      'tableViewSelector',
       () => {
         if (!store) {
           return {
