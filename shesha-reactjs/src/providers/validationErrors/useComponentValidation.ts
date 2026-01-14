@@ -73,7 +73,7 @@ export const useComponentValidation = (
       componentType,
       hasErrors: true,
     };
-  }, [componentId, componentName, componentType, ...deps]); // eslint-disable-next-line react-hooks/exhaustive-deps -- deps provided explicitly by caller
+  }, [componentId, componentName, componentType, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps -- deps provided explicitly by caller
 
   useEffect(() => {
     // Register validation errors using the actions from the provider

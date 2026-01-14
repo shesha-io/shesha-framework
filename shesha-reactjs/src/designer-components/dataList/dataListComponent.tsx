@@ -5,7 +5,7 @@ import { useDataSources } from '@/providers/dataSourcesProvider';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
-import DataListControl, { NotConfiguredWarning } from './dataListControl';
+import DataListControl from './dataListControl';
 import { useDataTableStore } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -50,22 +50,10 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
 
     if (model.hidden) return null;
 
-    // Check if form is configured
-    const hasFormConfigured =
-      (model.formSelectionMode === "name" && model.formId) ||
-      (model.formSelectionMode === "view" && model.formType) ||
-      (model.formSelectionMode === "expression" && model.formIdExpression);
+    // If no dataSource, return null - validation error will be shown by parent FormComponent
+    if (!dataSource) return null;
 
-    return dataSource
-      ? <DataListControl {...model} dataSourceInstance={dataSource} />
-      : (
-        <NotConfiguredWarning
-          message={hasFormConfigured
-            ? "This Data List has no data source configured. Data Lists require to be placed inside a Data Context (like a Data Table or Entity Picker) to fetch data."
-            : "This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items."}
-          isWarning={true}
-        />
-      );
+    return <DataListControl {...model} dataSourceInstance={dataSource} />;
   },
   migrator: (m) => m
     .add<IDataListComponentProps>(0, (prev) => ({
