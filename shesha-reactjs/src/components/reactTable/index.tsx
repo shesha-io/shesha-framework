@@ -329,6 +329,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     rows,
     columns: tableColumns,
     toggleRowSelected,
+    toggleAllRowsSelected,
   } = useTable(
     {
       columns: preparedColumns,
@@ -373,6 +374,15 @@ export const ReactTable: FC<IReactTableProps> = ({
   const { pageIndex, pageSize, selectedRowIds, sortBy } = state;
 
   const previousSortBy = usePrevious(sortBy);
+  const previousMode = usePrevious(mode);
+
+  // Clear all row selections when selection mode changes
+  useEffect(() => {
+    // Only clear if mode actually changed
+    if (previousMode !== undefined && previousMode !== mode && toggleAllRowsSelected) {
+      toggleAllRowsSelected(false);
+    }
+  }, [mode, previousMode, toggleAllRowsSelected]);
 
   useEffect(() => {
     if (onSort && !_.isEqual(_.sortBy(previousSortBy), _.sortBy(sortBy))) {

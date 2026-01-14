@@ -260,12 +260,19 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
   }, [onRowSelect, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
 
-  // Clear selectedRow when in multiple selection mode to prevent interference
+  // Clear all selections when selection mode changes
+  const previousMode = usePrevious(mode);
   useEffect(() => {
-    if (mode === 'multiple' && selectedRow && setSelectedRow) {
-      setSelectedRow(null, null);
+    // Only clear if mode actually changed
+    if (previousMode !== undefined && previousMode !== mode) {
+      if (selectedRow && setSelectedRow) {
+        setSelectedRow(null, null);
+      }
+      if (selectedIds && selectedIds.length > 0 && changeSelectedIds) {
+        changeSelectedIds([]);
+      }
     }
-  }, [mode, selectedRow, setSelectedRow]);
+  }, [mode, previousMode, selectedRow, selectedIds, setSelectedRow, changeSelectedIds]);
 
   const onSelectRowLocal = (index: number, row: any): void => {
     if (mode === 'none') return;
