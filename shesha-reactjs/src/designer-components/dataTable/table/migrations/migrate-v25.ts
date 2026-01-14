@@ -91,5 +91,8 @@ export const migrateV24toV25 = (props: ITableComponentProps, _context: SettingsM
   result.rowPaddingBottom ??= '8px';
   result.rowPaddingLeft ??= '12px';
 
+  // Fix hoverHighlight default - migration v20 set it to true, but new default is false
+  result.hoverHighlight = false;
+
   return result;
 };
