@@ -1,5 +1,5 @@
 export interface IHasVersion {
-  version?: number | 'latest' | undefined;
+  version?: number | 'latest' | undefined | undefined;
 }
 
 export type Migration<TPrev = IHasVersion, TNext = IHasVersion, TContext = any> = (

@@ -65,16 +65,27 @@ export const getTableDefaults = (): {
   rowBorder: string;
   headerFontSize: string;
   headerFontWeight: string;
+  rowAlternateBackgroundColor: string;
+  striped: boolean;
+  hoverHighlight: boolean;
+  stickyHeader: boolean;
+  headerBackgroundColor: string;
+  headerFontFamily: string;
 } => {
   return {
-    // Row styling defaults
     rowHeight: '40px',
     rowPadding: '8px 12px',
     rowBorder: 'none',
 
-    // Header styling defaults
     headerFontSize: '14px',
-    headerFontWeight: '400',
+    headerFontWeight: '500',
+    headerBackgroundColor: '#fafafa',
+    headerFontFamily: 'Segoe UI',
+
+    rowAlternateBackgroundColor: '#f5f5f5',
+    striped: true,
+    hoverHighlight: false,
+    stickyHeader: false,
   };
 };
 
@@ -85,6 +96,11 @@ export const getTableSettingsDefaults = (): {
     rowBorder: string;
     headerFontSize: string;
     headerFontWeight: string;
+    rowAlternateBackgroundColor: string;
+    striped: boolean;
+    hoverHighlight: boolean;
+    stickyHeader: boolean;
+    headerBackgroundColor: string;
   };
 } => {
   const flatDefaults = getTableDefaults();
@@ -250,6 +266,32 @@ export type RowStylingBoxType = {
   paddingLeft?: string | number;
 };
 
+export const convertRowPaddingFieldsToPadding = (
+  top?: string,
+  right?: string,
+  bottom?: string,
+  left?: string,
+): string | undefined => {
+  // If none of the fields are provided, return undefined
+  if (!top && !right && !bottom && !left) return undefined;
+
+  const topPx = addPxUnit(top);
+  const rightPx = addPxUnit(right);
+  const bottomPx = addPxUnit(bottom);
+  const leftPx = addPxUnit(left);
+
+  if (topPx === rightPx && rightPx === bottomPx && bottomPx === leftPx) {
+    return topPx;
+  }
+
+  if (topPx === bottomPx && leftPx === rightPx) {
+    return `${topPx} ${leftPx}`;
+  }
+
+  return `${topPx} ${rightPx} ${bottomPx} ${leftPx}`;
+};
+
+/** @deprecated Use convertRowPaddingFieldsToPadding instead */
 export const convertRowStylingBoxToPadding = (rowStylingBox?: string | RowStylingBoxType): string | undefined => {
   if (!rowStylingBox) return undefined;
 
