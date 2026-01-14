@@ -169,7 +169,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowSelectedBackgroundColor,
   border,
   hoverHighlight,
-  striped = true,
+  striped,
   onRowClick,
   onRowDoubleClick,
   onRowHover,

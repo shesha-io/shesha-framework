@@ -115,7 +115,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   rowBorderStyle,
   boxShadow,
   sortableIndicatorColor,
-  striped = true,
+  striped,
   cellTextColor,
   cellBackgroundColor,
   cellBorderColor,

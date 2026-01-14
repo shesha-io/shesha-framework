@@ -165,6 +165,22 @@ const TableComponent: TableComponentDefinition = {
         headerFontWeight: prev.headerFontWeight ?? '500',
         headerBackgroundColor: prev.headerBackgroundColor ?? '#fafafa',
         stickyHeader: prev.stickyHeader ?? false,
+      }))
+      .add<ITableComponentProps>(23, (prev) => ({
+        ...prev,
+        striped: prev.striped ?? true,
+        mobile: {
+          ...prev.mobile,
+          striped: prev.striped ?? true,
+        },
+        tablet: {
+          ...prev.tablet,
+          striped: prev.striped ?? true,
+        },
+        desktop: {
+          ...prev.desktop,
+          striped: prev.striped ?? true,
+        },
       })),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
