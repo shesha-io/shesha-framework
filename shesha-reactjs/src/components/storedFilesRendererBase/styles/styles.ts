@@ -36,7 +36,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     borderTopLeftRadius ?? allRadius ?? '8px',
   ].join(' ');
 
-  const colorBgTextHover = '#f0f0f0'
+  const colorBgTextHover = '#f0f0f0';
 
   const fileName = cx("item-file-name", css`
     display: ${model.hideFileName ? 'none' : 'flex'};
