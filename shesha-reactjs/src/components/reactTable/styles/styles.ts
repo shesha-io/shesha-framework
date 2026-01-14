@@ -184,7 +184,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
       /* These styles are suggested for the table fill all available space in its containing element */
       display: block;
       /* These styles are required for a horizontaly scrollable table overflow */
-      overflow: auto;
+      overflow: ${boxShadow ? 'visible' : 'auto'};
+      ${boxShadow ? `
+        /* Apply box shadow to container */
+        box-shadow: ${boxShadow};
+        /* Add margin to create space for shadow without affecting table width */
+        margin: 8px;
+        /* Remove margin from parent to compensate */
+        position: relative;
+      ` : ''}
 
       .${shaSpanCenterVertically} {
         display: flex;
@@ -201,7 +209,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         display: inline-block;
         min-width: 100%;
         background-color: ${backgroundColor}
-        ${boxShadow ? `box-shadow: ${boxShadow};` : ''}
 
         /* Apply border styles to the inner table */
         ${Object.entries(borderStyles).map(([key, value]) => {

@@ -816,6 +816,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                           fontWeight: '600',
                           display: 'flex',
                           alignItems: 'center',
+                          justifyContent: effectiveHeaderTextAlign === 'center' ? 'center' : effectiveHeaderTextAlign === 'right' ? 'flex-end' : 'flex-start',
                         }}
                       >
                         {column.render('Header')}

@@ -1162,26 +1162,30 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 },
                               ],
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                               id: nanoid(),
-                              propertyName: 'stickyHeader',
-                              label: 'Sticky Header',
-                              inputType: 'switch',
-                              tooltip: 'Make header stick to top when scrolling. Default: disabled',
-                              jsSetting: true,
+                              inputs: [
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'stickyHeader',
+                                  label: 'Sticky Header',
+                                  type: 'switch',
+                                  tooltip: 'Make header stick to top when scrolling. Default: disabled',
+                                  jsSetting: true,
+                                },
+                                {
+                                  id: nanoid(),
+                                  propertyName: 'sortableIndicatorColor',
+                                  label: 'Sort Indicator Color',
+                                  type: 'colorPicker',
+                                  tooltip: 'Color for sortable column indicators',
+                                  jsSetting: true,
+                                },
+                              ],
                             })
                             .toJson(),
                           ],
                         },
-                      })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        propertyName: 'sortableIndicatorColor',
-                        label: 'Sort Indicator Color',
-                        inputType: 'colorPicker',
-                        tooltip: 'Color for sortable column indicators',
-                        parentId: styleRouterId,
-                        jsSetting: true,
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
