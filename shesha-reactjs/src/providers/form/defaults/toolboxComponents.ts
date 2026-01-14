@@ -43,6 +43,7 @@ import SectionSeprator from '@/designer-components/sectionSeprator';
 import SizableColumnsComponent from '@/designer-components/sizableColumns/sizableColumns';
 import Space from '@/designer-components/space';
 import Statistic from '@/designer-components/statistic';
+import AdvancedStatistic from '@/designer-components/advancedStatistic';
 import StatusTag from '@/designer-components/statusTag';
 import StyleBox from '@/designer-components/styleBox';
 import SubForm from '@/designer-components/subForm';
@@ -145,7 +146,7 @@ export const getToolboxComponents = (
     {
       name: 'Data display',
       visible: true,
-      components: [Alert, Link, Statistic, Text, ValidationErrors, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent],
+      components: [Alert, Link, Statistic, AdvancedStatistic, Text, ValidationErrors, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent],
     },
     {
       name: 'Advanced',
