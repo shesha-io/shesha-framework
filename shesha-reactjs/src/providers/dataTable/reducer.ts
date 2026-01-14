@@ -36,16 +36,27 @@ import { Row } from 'react-table';
 import { ProperyDataType } from '@/interfaces/metadata';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
+/** Represents the shape of a table row with at minimum an id property */
+interface ITableRowData {
+  id: string;
+  [key: string]: any;
+}
+
+/** Type guard to check if an object has the required row data shape */
+const isTableRowData = (obj: unknown): obj is ITableRowData => {
+  return typeof obj === 'object' && obj !== null && 'id' in obj;
+};
+
 /** get dirty filter if exists and fallback to current filter state */
 const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
   return [...(state.tableFilterDirty || state.tableFilter || [])];
 };
 
-const getRowSelection = (rows: object[], selectedId: string): ISelectionProps => {
+const getRowSelection = (rows: ITableRowData[], selectedId: string): ISelectionProps => {
   if (!selectedId || !rows || rows.length === 0)
     return null;
 
-  const rowIndex = rows.findIndex((row) => row["id"] === selectedId);
+  const rowIndex = rows.findIndex((row) => row.id === selectedId);
   return rowIndex > -1
     ? {
       row: rows[rowIndex],
@@ -83,17 +94,23 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
     [DataTableActionEnums.SetMultiSelectedRow]: (
       state: IDataTableStateContext,
-      action: ReduxActions.Action<Row[] | Row>,
+      action: ReduxActions.Action<Row<ITableRowData>[] | Row<ITableRowData>>,
     ) => {
       const { payload } = action;
       const { selectedRows: rows = [] } = state; // Ensure rows is always an array
-      let selectedRows;
+      let selectedRows: ITableRowData[];
 
       if (Array.isArray(payload)) {
         selectedRows = payload?.filter(({ isSelected }) => isSelected).map(({ original }) => original);
       } else {
-        const data = payload.original as any;
-        const rowId = data?.id;
+        // Type-safe extraction with runtime validation
+        if (!isTableRowData(payload.original)) {
+          console.warn('SetMultiSelectedRow: Invalid row data shape', { payload });
+          return state;
+        }
+
+        const data = payload.original;
+        const rowId = data.id;
         const isSelected = payload.isSelected;
 
         if (!rowId) {
@@ -278,7 +295,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         payload: { rows, totalPages, totalRows, totalRowsBeforeFilter },
       } = action;
 
-      const selectedRow = getRowSelection(rows, state.selectedRow?.id);
+      const selectedRow = getRowSelection(rows as ITableRowData[], state.selectedRow?.id);
 
       return {
         ...state,
