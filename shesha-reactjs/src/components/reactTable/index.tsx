@@ -193,12 +193,23 @@ export const ReactTable: FC<IReactTableProps> = ({
     actionConfig: IConfigurableActionConfiguration | undefined,
     rowData: any,
     rowIndex: number,
+    deferExecution: boolean = false,
   ): void => {
     if (!actionConfig) return;
-    executeAction({
-      actionConfiguration: actionConfig,
-      argumentsEvaluationContext: { ...allData, row: rowData, rowIndex },
-    });
+
+    const executeNow = () => {
+      executeAction({
+        actionConfiguration: actionConfig,
+        argumentsEvaluationContext: { ...allData, row: rowData, rowIndex },
+      });
+    };
+
+    if (deferExecution) {
+      // Defer execution to allow state updates to propagate to exposed variables
+      setTimeout(executeNow, 0);
+    } else {
+      executeNow();
+    }
   };
 
   const defaultColumn = React.useMemo(
@@ -667,7 +678,8 @@ export const ReactTable: FC<IReactTableProps> = ({
         onDoubleClick={() => handleDoubleClickRow(row, rowIndex)}
         onRowClick={() => {
           if (onRowClick) onRowClick(rowIndex, row.original);
-          dispatchRowEvent(onRowClickAction, row.original, rowIndex);
+          // Defer onRowClickAction to ensure selection state has updated
+          dispatchRowEvent(onRowClickAction, row.original, rowIndex, true);
         }}
         onRowHover={() => {
           // Legacy handler

@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
-import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
+import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo, useRef } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import { ValidationErrors } from '..';
@@ -267,12 +267,33 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     }
   }, [mode, selectedRow, setSelectedRow]);
 
+  // Track the previous selectedRow to detect changes and trigger callbacks
+  const prevSelectedRow = useRef(selectedRow);
+  useEffect(() => {
+    // Only trigger callbacks when selectedRow actually changes (not on initial mount)
+    if (mode === 'single' && prevSelectedRow.current !== selectedRow) {
+      // Call callbacks after state has updated to ensure exposed variables are current
+      if (selectedRow?.row) {
+        // Use setTimeout to defer execution until after the current render cycle completes
+        // This ensures appContext has been updated with the latest global state
+        setTimeout(() => {
+          // Call onSelectRow prop callback if provided
+          if (onSelectRow) {
+            onSelectRow(selectedRow.index, selectedRow.row);
+          }
+
+          // Call handleRowSelect (which executes the configured action)
+          if (handleRowSelect) {
+            handleRowSelect(selectedRow.row, selectedRow.index);
+          }
+        }, 0);
+      }
+      prevSelectedRow.current = selectedRow;
+    }
+  }, [selectedRow, handleRowSelect, onSelectRow, mode]);
+
   const onSelectRowLocal = (index: number, row: any): void => {
     if (mode === 'none') return;
-
-    if (onSelectRow) {
-      onSelectRow(index, row);
-    }
 
     // Only manage selectedRow (single row highlighting) in single mode
     // In multiple mode, row selection is managed entirely by react-table's row.isSelected
@@ -281,9 +302,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       const currentId = store.selectedRow?.id;
       if (rowId !== currentId) {
         setSelectedRow(index, row);
-        if (handleRowSelect) {
-          handleRowSelect(row, index);
-        }
+        // handleRowSelect and onSelectRow are now called in useEffect after state updates
       } else {
         setSelectedRow(null, null);
       }
