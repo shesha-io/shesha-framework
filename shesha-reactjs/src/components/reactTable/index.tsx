@@ -197,7 +197,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   ): void => {
     if (!actionConfig) return;
 
-    const executeNow = ():void => {
+    const executeNow = (): void => {
       executeAction({
         actionConfiguration: actionConfig,
         argumentsEvaluationContext: { ...allData, row: rowData, rowIndex },
