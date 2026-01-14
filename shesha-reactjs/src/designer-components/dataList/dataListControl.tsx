@@ -86,6 +86,25 @@ export const DataListPlaceholder: FC = () => {
   );
 };
 
+// Helper to get form configuration error message
+const getFormConfigErrorMessage = (
+  formSelectionMode: string,
+  formId: any,
+  formType: any,
+  formIdExpression: any,
+): string | undefined => {
+  if (formSelectionMode === "name" && !formId) {
+    return 'This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items.';
+  }
+  if (formSelectionMode === "view" && !formType) {
+    return 'This Data List has no form type specified. Selecting a Form Type tells the Data List what data structure it should use when rendering items.';
+  }
+  if (formSelectionMode === "expression" && !formIdExpression) {
+    return 'This Data List has no form identifier expression configured. Configuring an expression tells the Data List how to dynamically determine which form to use.';
+  }
+  return undefined;
+};
+
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const {
     dataSourceInstance: dataSource,
@@ -130,11 +149,14 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   const repository = getRepository();
 
-  // Form configuration validation - check for invalid configurations
-  const hasInvalidFormConfig =
-    (props.formSelectionMode === "name" && !props.formId) ||
-    (props.formSelectionMode === "view" && !props.formType) ||
-    (props.formSelectionMode === "expression" && !props.formIdExpression);
+  // Get form configuration error message if any
+  const formConfigErrorMessage = getFormConfigErrorMessage(
+    props.formSelectionMode,
+    props.formId,
+    props.formType,
+    props.formIdExpression,
+  );
+  const hasInvalidFormConfig = !!formConfigErrorMessage;
 
   // Register validation errors - FormComponent will display them
   useComponentValidation(
@@ -155,29 +177,20 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       }
 
       // Check for invalid form configuration
-      if (hasInvalidFormConfig) {
-        let errorMessage = '';
-        if (props.formSelectionMode === "name" && !props.formId) {
-          errorMessage = 'This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items.';
-        } else if (props.formSelectionMode === "view" && !props.formType) {
-          errorMessage = 'This Data List has no form type specified. Selecting a Form Type tells the Data List what data structure it should use when rendering items.';
-        } else if (props.formSelectionMode === "expression" && !props.formIdExpression) {
-          errorMessage = 'This Data List has no form identifier expression configured. Configuring an expression tells the Data List how to dynamically determine which form to use.';
-        }
-
+      if (formConfigErrorMessage) {
         return {
           hasErrors: true,
           validationType: 'error',
           errors: [{
             propertyName: 'Missing Form Configuration',
-            error: errorMessage,
+            error: formConfigErrorMessage,
           }],
         };
       }
 
       return undefined;
     },
-    [repository, hasInvalidFormConfig, props.formSelectionMode, props.formId, props.formType, props.formIdExpression],
+    [repository, formConfigErrorMessage],
   );
 
   const onSelectRow = useCallback((index: number, row: any) => {
