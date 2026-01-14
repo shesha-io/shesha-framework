@@ -51,7 +51,7 @@ export const useStyles = createStyles(({ css, cx, token }, {
         }
       ` : hoverHighlight ? `
         .sha-react-table .sha-table .tbody .tr.tr-body:hover {
-          background-color: ${token.colorPrimaryBg} !important;
+          background-color: ${token.colorPrimary} !important;
         }
       ` : ''}
 

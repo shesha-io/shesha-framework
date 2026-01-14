@@ -543,7 +543,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             propertyName: 'headerFont.size',
                             hideLabel: true,
                             width: 50,
-                            placeholder: '14',
                             tooltip: 'Font size in pixels. Default: 14px',
                           },
                           {
@@ -555,7 +554,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             tooltip: "Controls text thickness (light, normal, bold, etc.). Default: 500 (medium)",
                             dropdownOptions: fontWeightsOptions,
                             width: 100,
-                            placeholder: "500",
                           },
                           {
                             type: 'colorPicker',
@@ -585,7 +583,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             type: 'colorPicker',
                             tooltip: 'Background color for table headers. Default: #fafafa',
                             jsSetting: true,
-                            placeholder: '#fafafa',
                           },
                         ],
                       })
@@ -627,7 +624,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: "rowDimensions.height",
                                   icon: "heightIcon",
                                   tooltip: "Row height. You can use any unit (%, px, em, etc). px by default if without unit",
-                                  placeholder: "40px",
                                 },
                                 {
                                   type: 'textField',
@@ -673,7 +669,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: 'rowPaddingTop',
                                   label: 'Top',
                                   type: 'textField',
-                                  placeholder: '8px',
                                   tooltip: 'Top padding for table rows (e.g., 8px, 1rem, 0.5em)',
                                   jsSetting: true,
                                 },
@@ -682,7 +677,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: 'rowPaddingRight',
                                   label: 'Right',
                                   type: 'textField',
-                                  placeholder: '12px',
                                   tooltip: 'Right padding for table rows (e.g., 12px, 1rem, 0.5em)',
                                   jsSetting: true,
                                 },
@@ -696,7 +690,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: 'rowPaddingBottom',
                                   label: 'Bottom',
                                   type: 'textField',
-                                  placeholder: '8px',
                                   tooltip: 'Bottom padding for table rows (e.g., 8px, 1rem, 0.5em)',
                                   jsSetting: true,
                                 },
@@ -705,7 +698,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: 'rowPaddingLeft',
                                   label: 'Left',
                                   type: 'textField',
-                                  placeholder: '12px',
                                   tooltip: 'Left padding for table rows (e.g., 12px, 1rem, 0.5em)',
                                   jsSetting: true,
                                 },
@@ -768,7 +760,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: 'font.size',
                                   hideLabel: true,
                                   width: 50,
-                                  placeholder: '14',
                                   tooltip: 'Font size in pixels. Default: 14px',
                                 },
                                 {
@@ -780,7 +771,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   tooltip: "Controls text thickness (light, normal, bold, etc.). Default: 400 (normal)",
                                   dropdownOptions: fontWeightsOptions,
                                   width: 100,
-                                  placeholder: '400',
                                 },
                                 {
                                   type: 'colorPicker',
@@ -788,7 +778,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Color',
                                   hideLabel: true,
                                   propertyName: 'font.color',
-                                  placeholder: '#000000',
                                   tooltip: 'Font color. Default: black (#000000)',
                                 },
                                 {
@@ -830,7 +819,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
                                   tooltip: "You can use any unit (%, px, em, etc). Default: 100%",
-                                  placeholder: "100%",
                                 },
                                 {
                                   type: 'textField',
@@ -840,7 +828,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.minWidth",
                                   icon: "minWidthIcon",
-                                  placeholder: "0px",
                                   tooltip: "Minimum width. Default: 0px",
                                 },
                                 {
@@ -851,7 +838,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
-                                  placeholder: "none",
                                   tooltip: "Maximum width. Default: none",
                                 },
                               ],
@@ -869,7 +855,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: "dimensions.height",
                                   icon: "heightIcon",
                                   tooltip: "You can use any unit (%, px, em, etc). Default: auto",
-                                  placeholder: "auto",
                                 },
                                 {
                                   type: 'textField',
@@ -879,7 +864,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.minHeight",
                                   icon: "minHeightIcon",
-                                  placeholder: "auto",
                                   tooltip: "Minimum height. Default: auto",
                                 },
                                 {
@@ -890,7 +874,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxHeight",
                                   icon: "maxHeightIcon",
-                                  placeholder: "auto",
                                   tooltip: "Maximum height. Default: auto",
                                 },
                               ],
@@ -931,7 +914,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   propertyName: "background.color",
                                   hideLabel: true,
                                   jsSetting: false,
-                                  placeholder: '#fff',
                                   tooltip: 'Background color. Default: white (#fff)',
                                 }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
@@ -1056,7 +1038,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   width: 80,
                                   icon: "offsetHorizontalIcon",
                                   propertyName: 'shadow.offsetX',
-                                  placeholder: '0',
                                 },
                                 {
                                   type: 'numberField',
@@ -1067,7 +1048,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   width: 80,
                                   icon: 'offsetVerticalIcon',
                                   propertyName: 'shadow.offsetY',
-                                  placeholder: '2',
                                 },
                                 {
                                   type: 'numberField',
@@ -1078,7 +1058,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   width: 80,
                                   icon: 'blurIcon',
                                   propertyName: 'shadow.blurRadius',
-                                  placeholder: '8',
                                 },
                                 {
                                   type: 'numberField',
@@ -1089,7 +1068,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   width: 80,
                                   icon: 'spreadIcon',
                                   propertyName: 'shadow.spreadRadius',
-                                  placeholder: '0',
                                 },
                                 {
                                   type: 'colorPicker',
@@ -1097,7 +1075,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Color',
                                   hideLabel: true,
                                   propertyName: 'shadow.color',
-                                  placeholder: 'rgba(0, 0, 0, 0.1)',
                                   tooltip: 'Shadow color. Default: rgba(0, 0, 0, 0.1)',
                                 },
                               ],
@@ -1176,7 +1153,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   type: 'colorPicker',
                                   tooltip: 'Background color for alternate rows (when striped is enabled). Default: #f5f5f5',
                                   jsSetting: true,
-                                  placeholder: '#f5f5f5',
                                 },
                               ],
                             })

@@ -84,7 +84,7 @@ export const getTableDefaults = (): {
 
     rowAlternateBackgroundColor: '#f5f5f5',
     striped: true,
-    hoverHighlight: true,
+    hoverHighlight: false,
     stickyHeader: false,
   };
 };
