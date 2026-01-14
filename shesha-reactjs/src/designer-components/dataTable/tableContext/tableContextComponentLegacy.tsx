@@ -4,7 +4,6 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ITableContextComponentProps, TableContextComponentLegacyDefinition } from './models';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import { ComponentDefinition } from '@/index';
 
 /**
  * Legacy DataTable Context component (datatableContext)
@@ -43,6 +42,3 @@ const TableContextComponentLegacy: TableContextComponentLegacyDefinition = {
 };
 
 export default TableContextComponentLegacy;
-
-export type DataTableContextComponentDefinition = ComponentDefinition<"datatableContext", any>;
-
