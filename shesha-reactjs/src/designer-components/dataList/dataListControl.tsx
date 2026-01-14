@@ -8,10 +8,11 @@ import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions }
 import { useStyles } from '@/components/dataList/styles/styles';
 import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
-import { YesNoInherit } from '@/interfaces';
+import { FormIdentifier, YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { OnSaveHandler, OnSaveSuccessHandler } from '@/components/dataTable/interfaces';
 import { useComponentValidation } from '@/providers/validationErrors';
+import { FormSelectionMode } from '@/components/dataList/models';
 
 // Static placeholder shown when DataList has configuration errors
 export const DataListPlaceholder: FC = () => {
@@ -88,10 +89,10 @@ export const DataListPlaceholder: FC = () => {
 
 // Helper to get form configuration error message
 const getFormConfigErrorMessage = (
-  formSelectionMode: string,
-  formId: any,
-  formType: any,
-  formIdExpression: any,
+  formSelectionMode: FormSelectionMode | undefined,
+  formId: FormIdentifier | undefined,
+  formType: string | undefined,
+  formIdExpression: string | undefined,
 ): string | undefined => {
   if (formSelectionMode === "name" && !formId) {
     return 'This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items.';
