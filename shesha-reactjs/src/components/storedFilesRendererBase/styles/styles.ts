@@ -35,6 +35,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     borderBottomLeftRadius ?? allRadius ?? '8px',
     borderTopLeftRadius ?? allRadius ?? '8px',
   ].join(' ');
+  
+  const colorBgTextHover = '#f0f0f0'
 
   const fileName = cx("item-file-name", css`
     display: ${model.hideFileName ? 'none' : 'flex'};
@@ -52,7 +54,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     flex: 1;
     cursor: pointer;
     &:hover {
-      background-color: ${token.colorBgTextHover} !important;
+      background-color: ${colorBgTextHover} !important;
       opacity: 1 !important;
       overflow: visible;
       width: max-content;
@@ -82,7 +84,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
   const downloadedFile = cx("downloaded-file", css`
     position: relative;
-    display: flex;
 
     .ant-upload-list-item-container {
       opacity: 0.8;
@@ -97,7 +98,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
 
     .item-file-name {
-      display: ${model.hideFileName ? 'none' : 'flex'};
       color: ${downloadedFileStyles?.color ?? color} !important;
       font-size: ${downloadedFileStyles?.fontSize ?? fontSize} !important;
       font-weight: ${downloadedFileStyles?.fontWeight ?? fontWeight} !important;
