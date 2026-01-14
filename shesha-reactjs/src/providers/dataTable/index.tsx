@@ -3,7 +3,6 @@ import React, {
   PropsWithChildren,
   useContext,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
 } from 'react';
@@ -719,14 +718,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
   const partialState = getPartialState();
 
-  // Use useLayoutEffect to update global state synchronously before other effects run
-  // This ensures the exposed variables are up-to-date when row selection callbacks execute
-  const prevPartialStateRef = useRef(partialState);
-  useLayoutEffect(() => {
-    // Only update if the state actually changed (manual deep comparison)
-    const stateChanged = !isEqual(prevPartialStateRef.current, partialState);
-
-    if (actionOwnerName && stateChanged) {
+  useDeepCompareEffect(() => {
+    // write state by name
+    if (actionOwnerName) {
       setGlobalState({
         key: actionOwnerName,
         data: {
@@ -734,9 +728,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
           refreshTable,
         },
       });
-      prevPartialStateRef.current = partialState;
     }
-  }, [partialState, actionOwnerName, refreshTable]);
+  }, [partialState, actionOwnerName]);
 
   useConfigurableAction(
     {
@@ -815,8 +808,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   const getRepository = (): IRepository => repository;
 
   const setSelectedRow = (index: number, row: any): void => {
-    const payload = row ? { index, row, id: row?.id } : null;
-    dispatch(setSelectedRowAction(payload));
+    dispatch(setSelectedRowAction(state.selectedRow?.id !== row?.id ? { index, row, id: row?.id } : null));
   };
 
   const setDraggingState = (dragState: DragState): void => {

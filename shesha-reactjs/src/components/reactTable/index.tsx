@@ -193,23 +193,20 @@ export const ReactTable: FC<IReactTableProps> = ({
     actionConfig: IConfigurableActionConfiguration | undefined,
     rowData: any,
     rowIndex: number,
-    deferExecution: boolean = false,
+    overrideSelectedRow?: { index: number; row: any; id: any },
   ): void => {
     if (!actionConfig) return;
 
-    const executeNow = (): void => {
-      executeAction({
-        actionConfiguration: actionConfig,
-        argumentsEvaluationContext: { ...allData, row: rowData, rowIndex },
-      });
-    };
+    // Create context with the clicked row data
+    // If overrideSelectedRow is provided, use it as selectedRow in the context
+    const context = overrideSelectedRow
+      ? { ...allData, row: rowData, rowIndex, selectedRow: overrideSelectedRow }
+      : { ...allData, row: rowData, rowIndex };
 
-    if (deferExecution) {
-      // Defer execution to allow state updates to propagate to exposed variables
-      setTimeout(executeNow, 0);
-    } else {
-      executeNow();
-    }
+    executeAction({
+      actionConfiguration: actionConfig,
+      argumentsEvaluationContext: context,
+    });
   };
 
   const defaultColumn = React.useMemo(
@@ -688,13 +685,11 @@ export const ReactTable: FC<IReactTableProps> = ({
         onDoubleClick={() => handleDoubleClickRow(row, rowIndex)}
         onRowClick={() => {
           if (onRowClick) onRowClick(rowIndex, row.original);
-          // Defer onRowClickAction to ensure selection state has updated
-          dispatchRowEvent(onRowClickAction, row.original, rowIndex, true);
+          const currentSelectedRow = { index: rowIndex, row: row.original, id: row.original?.id };
+          dispatchRowEvent(onRowClickAction, row.original, rowIndex, currentSelectedRow);
         }}
         onRowHover={() => {
-          // Legacy handler
           if (onRowHover) onRowHover(rowIndex, row.original);
-          // New configurable action
           dispatchRowEvent(onRowHoverAction, row.original, rowIndex);
         }}
         row={row}
@@ -826,6 +821,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                           fontWeight: '600',
                           display: 'flex',
                           alignItems: 'center',
+                          justifyContent: effectiveHeaderTextAlign === 'center' ? 'center' : effectiveHeaderTextAlign === 'right' ? 'flex-end' : 'flex-start',
                         }}
                       >
                         {column.render('Header')}
