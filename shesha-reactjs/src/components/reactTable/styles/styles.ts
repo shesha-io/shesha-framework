@@ -208,7 +208,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         border-spacing: 0;
         display: inline-block;
         min-width: 100%;
-        background-color: ${backgroundColor}
+        background-color: ${backgroundColor};
 
         /* Apply border styles to the inner table */
         ${Object.entries(borderStyles).map(([key, value]) => {
