@@ -85,6 +85,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   styleDownloadedFiles?: boolean;
   downloadedIcon?: IconType;
   itemStyle?: string;
+  iconSize?: string | number;
 }
 
 const EMPTY_ARRAY = [];
@@ -187,6 +188,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     thumbnailWidth: width,
     fontColor,
     fontSize,
+    iconSize,
     fontWeight,
     backgroundColor,
     borderColor,
@@ -338,7 +340,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     }
 
-    return getFileIcon(type, fontSize);
+    return getFileIcon(type, iconSize);
   };
 
   // Helper function to get or create cached file context data
