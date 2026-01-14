@@ -3,6 +3,7 @@ import { layoutType, listType } from '@/designer-components/attachmentsEditor/at
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { getStyle, IInputStyles, pickStyleFromModel, useAvailableConstantsData, useSheshaApplication } from '@/index';
 import { IDownloadFilePayload, IReplaceFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import { useStoredFilesActions } from '@/providers/storedFiles';
 import { normalizeFileName } from '@/providers/storedFiles/utils';
 import { DeleteOutlined, DownloadOutlined, FileZipOutlined, PictureOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import {
@@ -84,6 +85,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   styleDownloadedFiles?: boolean;
   downloadedIcon?: IconType;
   itemStyle?: string;
+  iconSize?: string | number;
 }
 
 const EMPTY_ARRAY = [];
@@ -130,6 +132,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const { message, notification } = App.useApp();
   const { httpHeaders } = useSheshaApplication();
   const allData = useAvailableConstantsData();
+  const storedFilesActions = useStoredFilesActions();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<{ url: string; uid: string; name: string } | null>(null);
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => (url ? { ...acc, [uid]: url } : acc), {}));
@@ -185,6 +188,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     thumbnailWidth: width,
     fontColor,
     fontSize,
+    iconSize,
     fontWeight,
     backgroundColor,
     borderColor,
@@ -336,7 +340,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     }
 
-    return getFileIcon(type, fontSize);
+    return getFileIcon(type, iconSize);
   };
 
   // Helper function to get or create cached file context data
@@ -459,24 +463,22 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           />
           {/* Custom Actions Button Group */}
           {customActions && customActions.length > 0 && (
-            <div onClick={(e) => e.stopPropagation()}>
-              <DataContextProvider
-                id={`file_ctx_${fileId}`}
-                name="fileContext"
-                description="File context for custom actions"
-                type="control"
-                initialData={getFileContextData(file, fileId)}
-              >
-                <ButtonGroup
-                  id={`file_actions_${fileId}`}
-                  items={customActions}
-                  size="small"
-                  readOnly={false}
-                  spaceSize="small"
-                  isInline={true}
-                />
-              </DataContextProvider>
-            </div>
+            <DataContextProvider
+              id={`file_ctx_${fileId}`}
+              name="currentFile"
+              description="File context for custom actions"
+              type="control"
+              initialData={getFileContextData(file, fileId)}
+            >
+              <ButtonGroup
+                id={`file_actions_${fileId}`}
+                items={customActions}
+                size="small"
+                readOnly={false}
+                spaceSize="small"
+                isInline={true}
+              />
+            </DataContextProvider>
           )}
         </Space>
       );
@@ -510,7 +512,17 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           return (
             <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
               <div className={styles.fileName}>
-                <Popover content={actions} trigger="hover" placement="top" style={{ padding: '0px' }}>
+                <Popover
+                  content={actions}
+                  trigger="hover"
+                  placement="top"
+                  style={{ padding: '0px' }}
+                  onOpenChange={(open) => {
+                    if (open) {
+                      storedFilesActions?.setCurrentFile(file as IStoredFile);
+                    }
+                  }}
+                >
                   {iconRender(file)}{file.name}
                 </Popover>
               </div>
@@ -536,7 +548,17 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         );
 
         return (
-          <Popover content={actions} trigger="hover" placement="top" style={{ padding: '0px' }}>
+          <Popover
+            content={actions}
+            trigger="hover"
+            placement="top"
+            style={{ padding: '0px' }}
+            onOpenChange={(open) => {
+              if (open) {
+                storedFilesActions?.setCurrentFile(file as IStoredFile);
+              }
+            }}
+          >
             {content}
           </Popover>
         );
@@ -585,7 +607,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           default: return '';
         }
       }, [layout, listTypeAndLayout, styles]);
+      
   return (
+    fileList.length === 0 && disabled ? null : (
     <div className={classNames(styles.shaStoredFilesRenderer, layoutClassName)}
     >
       {isStub
@@ -671,6 +695,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       />
 
     </div>
+    )
   );
 };
 

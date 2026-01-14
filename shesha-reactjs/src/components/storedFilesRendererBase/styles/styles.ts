@@ -156,6 +156,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       height: ${thumbnailHeight} !important;
       width: ${thumbnailWidth} !important;
       ${restStyles}
+      position: relative !important;
+      display: flex !important;
+      justify-content: center;
 
 
       img {

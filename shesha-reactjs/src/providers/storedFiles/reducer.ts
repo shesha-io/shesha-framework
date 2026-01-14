@@ -28,6 +28,7 @@ export function storedFilesReducer(
     case StoredFilesActionEnums.DownloadZipSuccess:
     case StoredFilesActionEnums.DownloadZipError:
     case StoredFilesActionEnums.InitializeFileList:
+    case StoredFilesActionEnums.SetCurrentFile:
       /* NEW_ACTION_ENUM_GOES_HERE */
 
       return {
