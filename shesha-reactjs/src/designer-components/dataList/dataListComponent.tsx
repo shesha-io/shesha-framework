@@ -62,7 +62,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       selectionMode: 'single',
       items: [],
       // Set default form to the starter template
-      // formId: { name: 'data-list-dummy-default', module: 'Shesha' }
+      formId: { name: 'dummy-datalist-item', module: 'Shesha' },
     }))
     .add<IDataListComponentProps>(1, (prev) => ({ ...prev, orientation: 'vertical', listItemWidth: 1 }))
     .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
