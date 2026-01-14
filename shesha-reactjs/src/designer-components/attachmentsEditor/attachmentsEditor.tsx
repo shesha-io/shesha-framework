@@ -53,7 +53,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   removeFieldFromPayload?: boolean;
   downloadedFileStyles?: IDownloadedFileStyleType;
   itemStyle?: string;
-  iconSize?: number;
+  iconSize?: string | number;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
