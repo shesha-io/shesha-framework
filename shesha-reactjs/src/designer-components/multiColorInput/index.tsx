@@ -68,7 +68,6 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
           icon={<PlusOutlined />}
           style={{ marginTop: '5px' }}
         >
-          Add Color
         </Button>
       </Row>
 
