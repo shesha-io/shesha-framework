@@ -560,7 +560,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const renderUploadContent = (): React.ReactNode => {
     return (
       !disabled && (
-        <Button type="link" className={styles.uploadButton} icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
+        <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps} className={classNames(styles.uploadButton, uploadBtnProps?.className)}>
           {listType === 'text' && '(press to upload)'}
         </Button>
       )
@@ -582,7 +582,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                 icon={<PictureOutlined />}
                 disabled={disabled}
                 {...uploadBtnProps}
-                className={styles.uploadButton}
+                className={classNames(styles.uploadButton, uploadBtnProps?.className)}
                 style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model?.allStyles?.fontStyles }}
               >
                 {listType === 'text' && '(press to upload)'}
