@@ -1219,7 +1219,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 },
                               ],
                             })
-                          .addSettingsInputRow({
+                            .addSettingsInputRow({
                               id: nanoid(),
                               inputs: [
                                 {
