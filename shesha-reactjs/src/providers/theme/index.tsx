@@ -88,10 +88,10 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
             ...themeConfig,
             token: { ...themeConfig.token },
             components: {
-             Tabs: {
-              zIndexPopup: 2000,
-             }
-            }
+              Tabs: {
+                zIndexPopup: 2000,
+              },
+            },
           }}
           form={{
             // override required mark position
