@@ -1150,7 +1150,7 @@ export const createComponentModelForDataProperty = (
   propertyMetadata: IPropertyMetadata,
   migrator?: (
     componentModel: IConfigurableFormComponent,
-    toolboxComponent: IToolboxComponent
+    toolboxComponent: IToolboxComponent,
   ) => IConfigurableFormComponent,
 ): IConfigurableFormComponent => {
   let toolboxComponent = findToolboxComponent(components, (c) => c.type === propertyMetadata.formatting.defaultEditor);

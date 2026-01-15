@@ -16,7 +16,7 @@ export interface IOverlayProps {
 
 export type ConfigurableComponentChildrenFn<TSettings = any> = (
   componentState: IComponentStateProps<TSettings>,
-  BlockOverlay: (props: IOverlayProps) => React.ReactElement
+  BlockOverlay: (props: IOverlayProps) => React.ReactElement,
 ) => React.ReactNode | null;
 
 export interface ISettingsEditorProps<TSettings = any> {
@@ -36,7 +36,7 @@ export type ComponentSettingsMigrationContext = unknown;
  * Settings migrator
  */
 export type ComponentSettingsMigrator<TSettings> = (
-  migrator: Migrator<any, TSettings, ComponentSettingsMigrationContext>
+  migrator: Migrator<any, TSettings, ComponentSettingsMigrationContext>,
 ) => MigratorFluent<TSettings, TSettings, ComponentSettingsMigrationContext>;
 
 export interface IConfigurableApplicationComponentProps<TSettings = any> {

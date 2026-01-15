@@ -207,7 +207,7 @@ export interface SettingsMigrationContext {
  * Settings migrator
  */
 export type SettingsMigrator<TSettings> = (
-  migrator: Migrator<IConfigurableFormComponent, TSettings, SettingsMigrationContext>
+  migrator: Migrator<IConfigurableFormComponent, TSettings, SettingsMigrationContext>,
 ) => MigratorFluent<TSettings, TSettings, SettingsMigrationContext>;
 
 export interface IToolboxComponentGroup {

@@ -1,4 +1,4 @@
-import { ButtonType } from 'antd/lib/button';
+import { ButtonType } from 'antd/es/button/buttonHelpers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
@@ -6,7 +6,6 @@ import { EditMode, IStyleType } from '@/index';
 import React from 'react';
 import { IFullAuditedEntity } from '@/publicJsApis/entities';
 import { ListItemWithId } from '@/components/listEditor/models';
-
 
 type ButtonGroupItemType = 'item' | 'group';
 
@@ -40,7 +39,7 @@ export interface IButtonGroupItemBase extends IStyleType {
   icon?: string | React.ReactNode;
   iconPosition?: 'start' | 'end';
   downIcon?: string;
-  buttonType?: ButtonType;
+  buttonType?: ButtonType | 'ghost';
   ghost?: boolean;
   permissions?: string[];
   size?: SizeType;

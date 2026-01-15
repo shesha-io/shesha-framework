@@ -33,6 +33,7 @@ import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAnd
 import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import ShaIcon, { IconType } from '@/components/shaIcon';
+import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
 
 interface IUploaderFileTypes {
   name: string;
@@ -184,6 +185,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const hasFiles = !!fileList.length;
 
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model?.container });
+  const defaultBorder = defaultStyles().border.border.all;
 
   const { styles } = useStyles({
     downloadedFileStyles: downloadedFileStyles,
@@ -194,8 +196,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ...containerJsStyle,
       ...stylingBoxAsCSS,
     },
-    style: enableStyleOnReadonly && disabled
-      ? { ...(model?.allStyles?.dimensionsStyles ?? {}), ...(model?.allStyles?.fontStyles ?? {}) }
+    style: !enableStyleOnReadonly && disabled
+      ? { ...(model?.allStyles?.dimensionsStyles ?? {}), ...(model?.allStyles?.fontStyles ?? {}), border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
       : { ...(model?.allStyles?.fullStyle ?? {}) },
     model: {
       gap: addPx(gap),
@@ -204,6 +206,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       isDragger,
       isStub,
       downloadZip,
+      fontStyles: model?.allStyles?.fontStyles,
     },
   });
 
@@ -303,13 +306,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     if (isImageType(type)) {
       if (listType === 'thumbnail' && !isDragger) {
         return (
-          <Space size="small" direction="vertical">
+          <>
             <Image src={imageUrls[uid]} alt={file.name} preview={false} />
             <p className="ant-upload-list-item-name">{file.name}</p>
-          </Space>
+          </>
         );
       }
     }
+
 
     return getFileIcon(type, model?.allStyles?.fontStyles?.fontSize);
   };
@@ -494,8 +498,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           return (
             <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
               <div className={styles.fileName}>
-                <Popover content={actions} trigger="hover" placement="top" style={{ padding: '0px' }}>
-                  {iconRender(file)}{file.name}
+                <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
+                  <Space direction="horizontal" size="small">
+                    <span>{iconRender(file)}</span>
+                    <span>{file.name}</span>
+                  </Space>
                 </Popover>
               </div>
               {isDownloaded && styleDownloadedFiles && (
@@ -520,7 +527,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         );
 
         return (
-          <Popover content={actions} trigger="hover" placement="top" style={{ padding: '0px' }}>
+          <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
             {content}
           </Popover>
         );
@@ -553,7 +560,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const renderUploadContent = (): React.ReactNode => {
     return (
       !disabled && (
-        <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
+        <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps} className={classNames(styles.uploadButton, uploadBtnProps?.className)}>
           {listType === 'text' && '(press to upload)'}
         </Button>
       )
@@ -570,13 +577,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
           : (
             <>
-              <div
-                className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail ant-upload-list-item thumbnail-stub' : ''}
+              <Button
+                type="link"
+                icon={<PictureOutlined />}
+                disabled={disabled}
+                {...uploadBtnProps}
+                className={classNames(styles.uploadButton, uploadBtnProps?.className)}
+                style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model?.allStyles?.fontStyles }}
               >
-                <Button type="link" icon={<PictureOutlined />} disabled={disabled} {...uploadBtnProps} style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle } : { ...model.allStyles.fontStyles }}>
-                  {listType === 'text' && '(press to upload)'}
-                </Button>
-              </div>
+                {listType === 'text' && '(press to upload)'}
+              </Button>
               <div style={(listType === 'thumbnail' && !isDragger) ? { width, minWidth, maxWidth } : {}}>
                 {listType !== 'text' && !rest.hideFileName && (
                   <div className={styles.fileName}>
@@ -607,7 +617,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
       {previewImage && (
         <Image
-          wrapperStyle={{ display: 'none' }}
+          wrapperClassName={styles.hiddenElement}
           preview={{
             visible: previewOpen,
             onVisibleChange: (visible) => setPreviewOpen(visible),
@@ -637,7 +647,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       <input
         type="file"
         ref={hiddenUploadInputRef}
-        style={{ display: 'none' }}
+        className={styles.hiddenElement}
         accept={allowedFileTypes?.join(',')}
         onChange={handleReplaceFileChange}
       />
