@@ -323,7 +323,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           &.${trBody} {
             ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
             ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
-            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : ''}
+            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
 
             /* Apply text alignment to body cells */
             .${td} {
@@ -338,6 +338,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
             ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${bodyTextAlign ? `text-align: ${bodyTextAlign};` : ''}
+            ${!rowDividers && !cellBorders ? `border-bottom: none;` : ''}
           }
 
           .${th} {
