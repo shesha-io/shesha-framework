@@ -621,7 +621,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                 className={listType === 'thumbnail' ? 'ant-upload-list-item-thumbnail thumbnail-stub' : ''}
               >
                 <Button type="link"
-                  icon={<PictureOutlined />}
+                  icon={<PictureOutlined style={{fontSize: iconSize}}/>}
                   disabled={disabled}
                   {...uploadBtnProps}
                   style={{ color: fontColor }}>
