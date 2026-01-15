@@ -78,4 +78,5 @@ export interface IFileListContextApi
   newFile?: IStoredFile;
   fileId?: string;
   url?: string;
+  currentFile?: IStoredFile;
 }

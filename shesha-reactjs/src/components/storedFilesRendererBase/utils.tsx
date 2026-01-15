@@ -46,31 +46,53 @@ export const createPlaceholderFile = (): IStoredFile => ({
  * @returns The Upload component list type to use
  */
 export const getListTypeAndLayout = (
-  type: listType | undefined, isDragger: boolean
+  type: listType | undefined, isDragger: boolean,
 ): 'text' | 'picture' | 'picture-card' => {
   return type === 'text' || !type || isDragger ? 'text' : 'picture-card';
 };
 
 
 /**
- * Fetches a stored file and returns a blob URL for display/preview.
+ * Result object returned by fetchStoredFile containing the object URL and cleanup function.
+ */
+export interface IFetchStoredFileResult {
+  /** The blob URL that can be used in img src, etc. */
+  url: string;
+  /** Cleanup function that revokes the object URL to prevent memory leaks. Must be called when the URL is no longer needed. */
+  revoke: () => void;
+}
+
+/**
+ * Fetches a stored file and returns a blob URL for display/preview along with a cleanup function.
  *
- * **Important**: The returned URL is created via `URL.createObjectURL()`. Callers are
- * responsible for calling `URL.revokeObjectURL()` on the returned string when the URL
- * is no longer needed to prevent memory leaks.
+ * **Important**: The returned object contains a `revoke()` function that MUST be called when
+ * the URL is no longer needed to prevent memory leaks. The revoke function is safe to call
+ * multiple times.
  *
  * @param url - The file URL to fetch
  * @param httpHeaders - Optional HTTP headers to include in the request
- * @returns A Promise resolving to a blob URL (string) that can be used in img src, etc.
+ * @returns A Promise resolving to an object containing the blob URL and revoke function
  * @throws {Error} If the fetch fails (non-ok response status)
+ *
+ * @example
+ * ```typescript
+ * const { url, revoke } = await fetchStoredFile('/api/files/123');
+ * try {
+ *   // Use the URL...
+ *   imgElement.src = url;
+ * } finally {
+ *   // Always clean up
+ *   revoke();
+ * }
+ * ```
  */
 export const fetchStoredFile = async (
   url: string,
-  httpHeaders: Record<string, string> = {}
-): Promise<string> => {
+  httpHeaders: Record<string, string> = {},
+): Promise<IFetchStoredFileResult> => {
   const fetchUrl = buildUrl(url, { skipMarkDownload: 'true' });
   const response = await fetch(fetchUrl, {
-    headers: { ...httpHeaders, "Content-Type": "application/octet-stream" },
+    headers: { ...httpHeaders },
   });
 
   if (!response.ok) {
@@ -78,7 +100,17 @@ export const fetchStoredFile = async (
   }
 
   const blob = await response.blob();
-  return URL.createObjectURL(blob);
+  const objectUrl = URL.createObjectURL(blob);
+
+  let revoked = false;
+  const revoke = (): void => {
+    if (!revoked) {
+      URL.revokeObjectURL(objectUrl);
+      revoked = true;
+    }
+  };
+
+  return { url: objectUrl, revoke };
 };
 
 export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDownload }) => {
@@ -93,7 +125,7 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
 
   if (fileId == null) return null;
 
-  const handleVisibleChange = (visible: boolean) => {
+  const handleVisibleChange = (visible: boolean): void => {
     if (visible) {
       fetchHistory();
     }
@@ -101,7 +133,7 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
 
   const uploads = serverData?.success ? serverData.result : [];
 
-  const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto) => {
+  const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto): void => {
     onDownload(fileVersion.versionNo, fileVersion.fileName);
   };
 
@@ -110,8 +142,8 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
       <ul>
         {uploads &&
           uploads.map((item, i) => (
-            <li key={item.versionNo ?? i}>
-              <strong>Version {i + 1}</strong> Uploaded{' '}
+            <li key={item.versionNo ?? `version-${i}`}>
+              <strong>Version {item.versionNo}</strong> Uploaded{' '}
               {item.dateUploaded && <DateDisplay>{item.dateUploaded}</DateDisplay>} by {item.uploadedBy}
               <br />
               <Button type="link" onClick={() => handleVersionDownloadClick(item)}>

@@ -40,6 +40,7 @@ export interface ICustomFileProps extends IInputStyles {
   downloadedFileStyles?: CSSProperties;
   styleDownloadedFiles?: boolean;
   downloadedIcon?: IconType;
+  iconSize?: string | number;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {
@@ -83,7 +84,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         layout={props?.filesLayout}
         listType={props?.listType}
         hasExtraContent={props.hasExtraContent}
-        extraContent={props.extraContent}
         extraFormSelectionMode={props.extraFormSelectionMode}
         extraFormId={props.extraFormId}
         extraFormType={props.extraFormType}
