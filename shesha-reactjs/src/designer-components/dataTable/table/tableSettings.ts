@@ -1183,14 +1183,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               inputs: [
                                 {
                                   id: nanoid(),
-                                  propertyName: 'stickyHeader',
-                                  label: 'Sticky Header',
-                                  type: 'switch',
-                                  tooltip: 'Make header stick to top when scrolling. Default: disabled',
-                                  jsSetting: true,
-                                },
-                                {
-                                  id: nanoid(),
                                   propertyName: 'sortableIndicatorColor',
                                   label: 'Sort Indicator Color',
                                   type: 'colorPicker',

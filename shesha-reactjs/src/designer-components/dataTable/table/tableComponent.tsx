@@ -165,7 +165,6 @@ const TableComponent: TableComponentDefinition = {
         rowAlternateBackgroundColor: prev.rowAlternateBackgroundColor ?? '#f5f5f5',
         headerFontWeight: prev.headerFontWeight ?? '500',
         headerBackgroundColor: prev.headerBackgroundColor ?? '#fafafa',
-        stickyHeader: prev.stickyHeader ?? false,
       }))
       .add<ITableComponentProps>(23, (prev) => ({
         ...prev,

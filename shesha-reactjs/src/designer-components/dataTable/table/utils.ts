@@ -68,7 +68,6 @@ export const getTableDefaults = (): {
   rowAlternateBackgroundColor: string;
   striped: boolean;
   hoverHighlight: boolean;
-  stickyHeader: boolean;
   headerBackgroundColor: string;
   headerFontFamily: string;
 } => {
@@ -85,7 +84,6 @@ export const getTableDefaults = (): {
     rowAlternateBackgroundColor: '#f5f5f5',
     striped: true,
     hoverHighlight: false,
-    stickyHeader: false,
   };
 };
 
@@ -99,7 +97,6 @@ export const getTableSettingsDefaults = (): {
     rowAlternateBackgroundColor: string;
     striped: boolean;
     hoverHighlight: boolean;
-    stickyHeader: boolean;
     headerBackgroundColor: string;
   };
 } => {
