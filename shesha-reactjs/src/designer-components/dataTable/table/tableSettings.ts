@@ -1212,23 +1212,23 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 {
                                   id: nanoid(),
                                   type: 'codeEditor',
-                                  propertyName: 'tableStyle',
-                                  label: 'Table Style',
-                                  tooltip: 'Custom CSS styles for the table element',
-                                  description: 'The style that will be applied to the table',
+                                  propertyName: 'containerStyle',
+                                  label: 'Container Style',
+                                  tooltip: 'Custom CSS styles for the table container/wrapper',
+                                  description: 'The style that will be applied to the table container/wrapper',
                                 },
                               ],
                             })
-                            .addSettingsInputRow({
+                          .addSettingsInputRow({
                               id: nanoid(),
                               inputs: [
                                 {
                                   id: nanoid(),
                                   type: 'codeEditor',
-                                  propertyName: 'containerStyle',
-                                  label: 'Container Style',
-                                  tooltip: 'Custom CSS styles for the table container/wrapper',
-                                  description: 'The style that will be applied to the table container/wrapper',
+                                  propertyName: 'tableStyle',
+                                  label: 'Table Style',
+                                  tooltip: 'Custom CSS styles for the table element',
+                                  description: 'The style that will be applied to the table',
                                 },
                               ],
                             })
