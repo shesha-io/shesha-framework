@@ -251,10 +251,26 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   useEffect(() => {
     let isCancelled = false;
-    const revokeCallbacks: Array<() => void> = [];
+    const imageRevokeMap = new Map<string, () => void>();
 
     const fetchImages = async (): Promise<void> => {
       const newImageUrls: { [key: string]: string } = {};
+
+      // First, handle removed images by revoking their URLs
+      const oldUids = Object.keys(imageUrlsRef.current);
+      const newFileUids = new Set(fileList.filter(f => isImageType(f.type)).map(f => f.uid));
+
+      oldUids.forEach((uid) => {
+        if (!newFileUids.has(uid)) {
+          // This image was removed, revoke its URL
+          const url = imageUrlsRef.current[uid];
+          if (url) {
+            URL.revokeObjectURL(url);
+          }
+        }
+      });
+
+      // Fetch new images
       for (const file of fileList) {
         if (isImageType(file.type)) {
           try {
@@ -264,24 +280,17 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               revoke();
               return;
             }
-            // Track revoke callback for cleanup
-            revokeCallbacks.push(revoke);
+            // Register revoke function in map keyed by file.uid
+            imageRevokeMap.set(file.uid, revoke);
             newImageUrls[file.uid] = imageUrl;
           } catch (error) {
             console.error(`Failed to fetch image for file ${file.name} (${file.uid}):`, error);
-            // Don't add to newImageUrls or revokeCallbacks - this file will not have a thumbnail
+            // Don't add to newImageUrls or imageRevokeMap - this file will not have a thumbnail
           }
         }
       }
-      if (!isCancelled) {
-        const oldUrls = Object.values(imageUrlsRef.current);
-        const newUrls = Object.values(newImageUrls);
-        oldUrls.forEach((url) => {
-          if (!newUrls.includes(url)) {
-            URL.revokeObjectURL(url);
-          }
-        });
 
+      if (!isCancelled) {
         setImageUrls(newImageUrls);
       }
     };
@@ -290,8 +299,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
     return () => {
       isCancelled = true;
-      // Call all revoke functions to clean up blob URLs
-      revokeCallbacks.forEach((revoke) => revoke());
+      // Revoke all remaining blob URLs in the map
+      imageRevokeMap.forEach((revoke) => revoke());
+      imageRevokeMap.clear();
     };
   }, [fileList, httpHeaders]);
 
