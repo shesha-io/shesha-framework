@@ -148,9 +148,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   );
 
   // var(--ant-primary-3)
-  const hoverableRow = rowHoverBackgroundColor ? `
+  const hoverableRow = rowHoverBackgroundColor !== undefined ? `
         &:not(.${trSelected}) {
-            background: ${rowHoverBackgroundColor} !important;
+            background: ${rowHoverBackgroundColor || token.colorPrimaryBgHover} !important;
         }
     ` : '';
 
@@ -254,7 +254,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             align-items: center;
           }
 
-          //
           .${prefixCls}-collapse {
             border: none;
 
@@ -323,7 +322,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           &.${trBody} {
             ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
             ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
-            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : ''}
+            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
 
             /* Apply text alignment to body cells */
             .${td} {

@@ -130,7 +130,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     fontSize: props?.font?.size,
     striped: props?.striped,
     hoverHighlight: props?.hoverHighlight,
-    stickyHeader: props?.stickyHeader,
     enableStyleOnReadonly: props?.enableStyleOnReadonly,
     readOnly: props?.readOnly,
     rowBackgroundColor: props?.rowBackgroundColor,
@@ -321,7 +320,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             selectedRowIndex={selectedRow?.index}
             useMultiselect={useMultiselect}
             selectionMode={selectionMode}
-            freezeHeaders={props.stickyHeader || props.freezeHeaders}
+            freezeHeaders={props.freezeHeaders}
             allowReordering={allowReordering}
             tableStyle={getStyle(tableStyle, formData, globalState)}
             containerStyle={getStyle(containerStyle, formData, globalState)}

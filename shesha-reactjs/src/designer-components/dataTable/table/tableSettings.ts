@@ -1183,14 +1183,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               inputs: [
                                 {
                                   id: nanoid(),
-                                  propertyName: 'stickyHeader',
-                                  label: 'Sticky Header',
-                                  type: 'switch',
-                                  tooltip: 'Make header stick to top when scrolling. Default: disabled',
-                                  jsSetting: true,
-                                },
-                                {
-                                  id: nanoid(),
                                   propertyName: 'sortableIndicatorColor',
                                   label: 'Sort Indicator Color',
                                   type: 'colorPicker',
@@ -1220,14 +1212,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 {
                                   id: nanoid(),
                                   type: 'codeEditor',
-                                  propertyName: 'style',
-                                  label: 'Style',
-                                  tooltip: 'Custom CSS styles for the table component',
-                                  description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                  propertyName: 'containerStyle',
+                                  label: 'Container Style',
+                                  tooltip: 'Custom CSS styles for the table container/wrapper',
+                                  description: 'The style that will be applied to the table container/wrapper',
                                 },
                               ],
                             })
-                            .addSettingsInputRow({
+                          .addSettingsInputRow({
                               id: nanoid(),
                               inputs: [
                                 {
@@ -1237,19 +1229,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Table Style',
                                   tooltip: 'Custom CSS styles for the table element',
                                   description: 'The style that will be applied to the table',
-                                },
-                              ],
-                            })
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              inputs: [
-                                {
-                                  id: nanoid(),
-                                  type: 'codeEditor',
-                                  propertyName: 'containerStyle',
-                                  label: 'Container Style',
-                                  tooltip: 'Custom CSS styles for the table container/wrapper',
-                                  description: 'The style that will be applied to the table container/wrapper',
                                 },
                               ],
                             })
