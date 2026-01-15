@@ -148,9 +148,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   );
 
   // var(--ant-primary-3)
-  const hoverableRow = rowHoverBackgroundColor ? `
+  const hoverableRow = rowHoverBackgroundColor !== undefined ? `
         &:not(.${trSelected}) {
-            background: ${rowHoverBackgroundColor} !important;
+            background: ${rowHoverBackgroundColor || token.colorPrimaryBgHover} !important;
         }
     ` : '';
 
@@ -254,7 +254,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             align-items: center;
           }
 
-          //
           .${prefixCls}-collapse {
             border: none;
 
@@ -305,7 +304,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${headerFontFamily ? `font-family: ${headerFontFamily};` : ''}
             ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
             ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
-            ${headerTextColor ? `color: ${headerTextColor};` : ''}
+            ${headerTextColor ? `color: ${headerTextColor};` : 'color: #000000ff !important;'}
             ${Object.entries(headerBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${Object.entries(headerShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
 
@@ -323,11 +322,35 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           &.${trBody} {
             ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
             ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
-            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : ''}
+            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
 
             /* Apply text alignment to body cells */
             .${td} {
               ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply alignment to body cell content divs */
+            .${td} > div {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+              ${bodyTextAlign ? `justify-content: ${bodyTextAlign === 'right' ? 'flex-end' : bodyTextAlign === 'center' ? 'center' : 'flex-start'} !important;` : ''}
+            }
+
+            /* Apply alignment to nested body cell content */
+            .${td} > div > div {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+              ${bodyTextAlign ? `justify-content: ${bodyTextAlign === 'right' ? 'flex-end' : bodyTextAlign === 'center' ? 'center' : 'flex-start'} !important;` : ''}
+            }
+
+            /* Apply text alignment to text elements inside body table cells */
+            .${td} span,
+            .${td} p,
+            .${td} div:not(.sha-action-button):not(.sha-link) {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply alignment to crud cells within body rows only */
+            .${shaCrudCell} {
+              ${bodyTextAlign ? `justify-content: ${bodyTextAlign === 'right' ? 'flex-end' : bodyTextAlign === 'center' ? 'center' : 'flex-start'} !important;` : ''}
             }
           }
 
@@ -337,7 +360,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${cellBackgroundColor ? `background-color: ${cellBackgroundColor};` : ''}
             ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
             ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
-            ${bodyTextAlign ? `text-align: ${bodyTextAlign};` : ''}
           }
 
           .${th} {
@@ -506,7 +528,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           ${headerFontFamily ? `font-family: ${headerFontFamily};` : ''}
           ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
           ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
-          ${headerTextColor ? `color: ${headerTextColor};` : ''}
+          ${headerTextColor ? `color: ${headerTextColor};` : 'color: #000000ff !important;'}
 
           &.${sortedAsc} {
             border-top: 3px solid ${sortableIndicatorColor || token.colorPrimary};

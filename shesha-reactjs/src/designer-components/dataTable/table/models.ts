@@ -32,7 +32,6 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
 
   striped?: boolean;
   hoverHighlight?: boolean;
-  stickyHeader?: boolean;
 
   // Header styling
   headerFont?: {
