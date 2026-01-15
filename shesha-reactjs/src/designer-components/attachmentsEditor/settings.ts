@@ -496,7 +496,6 @@ export const getSettings = () => {
                             id: nanoid(),
                             inputType: 'textField',
                             propertyName: 'iconSize',
-                            parentId: 'item-styles-content-880d-4308-c3d996619cb',
                             label: 'Icon Size',
                           })
                           .toJson(),

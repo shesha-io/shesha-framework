@@ -12,7 +12,13 @@ export const isImageType = (type: string): boolean => imageTypes.includes(type);
 export const isVideoType = (type: string): boolean => videoTypes.includes(type);
 export const isAudioType = (type: string): boolean => audioTypes.includes(type);
 
-export const fileIcons = {
+interface IFileIconConfig {
+    color: string;
+    icon: React.ComponentType<{ style?: React.CSSProperties; fill?: string }>;
+    fill?: boolean;
+  }
+  
+export const fileIcons: Record<string, IFileIconConfig> =  {
   ...Object.assign({}, ...imageTypes.map((type) => ({ [type]: { color: '#0083BE', icon: FileImageOutlined } }))),
   ...Object.assign({}, ...videoTypes.map((type) => ({ [type]: { color: '#FF6D01', icon: MovieOutlined, fill: true } }))),
   ...Object.assign({}, ...audioTypes.map((type) => ({ [type]: { color: '#8A4FFF', icon: MusicNoteOutlined, fill: true } }))),
