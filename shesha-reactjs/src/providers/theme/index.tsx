@@ -88,6 +88,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
             ...themeConfig,
             token: { ...themeConfig.token },
             components: {
+              ...themeConfig.components,
               Tabs: {
                 zIndexPopup: 2000,
               },
