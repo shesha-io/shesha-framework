@@ -48,7 +48,7 @@ export const useFormDataRegistration = (): MetadataBuilderAction => {
         });
       });
     };
-  }, [formId, formMetadata]);
+  }, [formId, formMetadata, getMetadata]);
 
   return action;
 };

@@ -34,7 +34,7 @@ class StatefulPromise<T> implements PromisedValue<T> {
     executorOrPromise:
       | ((
         resolve: (value: T | PromiseLike<T>) => void,
-        reject: (reason?: unknown) => void
+        reject: (reason?: unknown) => void,
       ) => void) |
       Promise<T>,
   ) {
@@ -242,7 +242,7 @@ class StatefulPromise<T> implements PromisedValue<T> {
 function createStatefulPromise<T>(
   executor: (
     resolve: (value: T | PromiseLike<T>) => void,
-    reject: (reason?: unknown) => void
+    reject: (reason?: unknown) => void,
   ) => void,
 ): StatefulPromise<T> {
   return new StatefulPromise<T>(executor);

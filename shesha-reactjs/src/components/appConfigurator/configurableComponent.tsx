@@ -15,7 +15,7 @@ export interface IOverlayProps {
 
 export type ConfigurableComponentChildrenFn<TSettings = any> = (
   componentState: IComponentStateProps<TSettings>,
-  BlockOverlay: (props: IOverlayProps) => React.ReactElement
+  BlockOverlay: (props: IOverlayProps) => React.ReactElement,
 ) => React.ReactNode | null;
 
 export interface IConfigurableComponentProps<TSettings = any> {
