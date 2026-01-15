@@ -1,12 +1,12 @@
 import { BranchesOutlined, ExportOutlined, ImportOutlined } from "@ant-design/icons";
 import { MenuProps } from "antd";
 import React from "react";
-import { ConfigItemTreeNode, FolderTreeNode, isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, ModuleTreeNode, TreeNode, TreeNodeType } from "./models";
+import { ConfigItemTreeNode, DocumentDefinition, FolderTreeNode, isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, ModuleTreeNode, TreeNode, TreeNodeType } from "./models";
 import { getIcon } from "./tree-utils";
 import { IConfigurationStudio } from "./cs/interfaces";
 import { isDefined } from "../utils/nullables";
 
-type MenuItemType = NonNullable<MenuProps["items"]>[number];
+export type MenuItemType = NonNullable<MenuProps["items"]>[number];
 
 const getDivider = (): MenuItemType => {
   return {
@@ -16,7 +16,8 @@ const getDivider = (): MenuItemType => {
 
 export type BuildNodeMenuArgs<TNode extends TreeNode = TreeNode> = {
   configurationStudio: IConfigurationStudio;
-  node?: TNode;
+  node?: TNode | undefined;
+  getDocumentDefinition?: (itemType: string) => DocumentDefinition | undefined;
 };
 
 const buildConfiguraitonItemActionsMenu = ({ configurationStudio, node }: BuildNodeMenuArgs<ConfigItemTreeNode>): MenuItemType[] => {
@@ -226,8 +227,13 @@ const buildModuleNodeContextMenu = (args: BuildNodeMenuArgs<ModuleTreeNode>): Me
 };
 
 export const buildNodeContextMenu = (args: BuildNodeMenuArgs): MenuItemType[] => {
-  if (isConfigItemTreeNode(args.node))
-    return buildConfigurationItemNodeContextMenu({ ...args, node: args.node });
+  if (isConfigItemTreeNode(args.node)) {
+    const menu = buildConfigurationItemNodeContextMenu({ ...args, node: args.node });
+    const definition = args.getDocumentDefinition?.(args.node.itemType);
+    return definition && definition.contextMenuBuilder
+      ? definition.contextMenuBuilder(menu, args.configurationStudio)
+      : menu;
+  }
 
   if (isFolderTreeNode(args.node))
     return buildFolderNodeContextMenu({ ...args, node: args.node });
