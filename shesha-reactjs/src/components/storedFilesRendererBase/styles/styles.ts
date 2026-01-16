@@ -22,63 +22,45 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
 
   const fileName = cx("item-file-name", css`
-    display: ${model.hideFileName ? 'none' : 'flex'};
-    color: ${color ?? token.colorPrimary} !important;
-    font-size: ${fontSize ?? '14px'} !important;
-    margin: 2px 0px;
-    position: relative;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex: 1;
-    cursor: pointer;
-    &:hover {
-      background-color: ${token.colorBgSpotlight} !important;
-      opacity: 1 !important;
-      overflow: visible;
-      width: max-content;
-      border-radius: 4px;
-      padding: 0 8px;
-      z-index: 999 !important;
+    .ant-typography {
+      display: ${model.hideFileName ? 'none' : 'flex'};
+      color: ${color ?? token.colorPrimary} !important;
+      font-size: ${fontSize ?? '14px'} !important;
+      margin: 2px 0px;
+      position: relative;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      cursor: pointer;
     }
   `);
 
   const fileNameWrapper = cx("file-name-wrapper", css`
     display: ${model.hideFileName ? 'none' : 'flex'};
     cursor: pointer;
-    &:hover {
-      background-color: ${token.colorBgTextHover} !important;
-      border-radius: ${borderRadius ?? '4px'} !important;
-    }
-    > .item-file-name {
-      &:hover {
-        background-color: transparent !important;
-        padding: 0;
-      }
-    }
   `);
 
   const downloadedFile = cx("downloaded-file", css`
-    position: relative;
-    display: flex;
-
-    .ant-upload-list-item-container {
-      opacity: 0.8;
-      position: relative;
-    }
-
     .ant-upload-list-item-thumbnail {
-      opacity: 0.8;
       border: 2px solid ${downloadedFileColor ?? token.colorSuccess} !important;
       box-shadow: 0 0 0 1px ${downloadedFileColor ?? token.colorSuccess}20;
       ${restDownloadedFileStyles}
     }
 
     .item-file-name {
-      display: ${model.hideFileName ? 'none' : 'flex'};
-      color: ${downloadedFileColor ?? color} !important;
-      font-size: ${addPx(downloadedFileFontSize) ?? fontSize} !important;
+      .ant-typography {
+        display: ${model.hideFileName ? 'none' : 'flex'};
+        color: ${downloadedFileColor ?? color} !important;
+        font-size: ${addPx(downloadedFileFontSize) ?? fontSize} !important;margin: 2px 0px;
+        position: relative;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1;
+        cursor: pointer;
+      }
+      
     }
 
     .ant-upload-list-item-action {

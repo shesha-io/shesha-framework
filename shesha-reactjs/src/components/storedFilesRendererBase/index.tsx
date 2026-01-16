@@ -15,6 +15,7 @@ import {
   Popconfirm,
   Popover,
   Space,
+  Typography,
   Upload,
   UploadFile,
 } from 'antd';
@@ -89,6 +90,35 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
 }
 
 const EMPTY_ARRAY = [];
+
+const { Text } = Typography;
+
+// Helper function to format file size
+const formatFileSize = (bytes?: number): string => {
+  if (!bytes) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+};
+
+// Helper component to render file name with ellipsis and title
+const FileNameDisplay: FC<{ file: UploadFile; className?: string }> = ({ file, className }) => {
+  const sizeStr = formatFileSize(file.size);
+  const title = sizeStr ? `${file.name} (${sizeStr})` : file.name;
+
+  return (
+    <div className={className} style={{ overflow: 'hidden', flex: 1 }}>
+      <Text
+        ellipsis
+        title={title}
+        style={{ display: 'block' }}
+      >
+        {file.name}
+      </Text>
+    </div>
+  );
+};
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   multiple = true,
@@ -334,7 +364,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         return (
           <Space size="small" direction="vertical">
             <Image src={imageUrls[uid]} alt={file.name} preview={false} />
-            <p className="ant-upload-list-item-name">{file.name}</p>
+            <p className="ant-upload-list-item-name">{file.size}</p>
           </Space>
         );
       }
@@ -511,21 +541,22 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         if (listType === 'text') {
           return (
             <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
-              <div className={styles.fileName}>
-                <Popover
-                  content={actions}
-                  trigger="hover"
-                  placement="top"
-                  style={{ padding: '0px' }}
-                  onOpenChange={(open) => {
-                    if (open) {
-                      storedFilesActions?.setCurrentFile(file as IStoredFile);
-                    }
-                  }}
-                >
-                  {iconRender(file)}{file.name}
-                </Popover>
-              </div>
+              <Popover
+                content={actions}
+                trigger="hover"
+                placement="top"
+                style={{ padding: '0px' }}
+                onOpenChange={(open) => {
+                  if (open) {
+                    storedFilesActions?.setCurrentFile(file as IStoredFile);
+                  }
+                }}
+              >
+                <div className={styles.fileName}>
+                  {iconRender(file)}
+                  <FileNameDisplay file={file} />
+                </div>
+              </Popover>
               {isDownloaded && styleDownloadedFiles && (
                 <div className={styles.downloadedIcon}>
                   <ShaIcon iconName={downloadedIcon} />
@@ -569,7 +600,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           {renderContent()}
           {listType === 'thumbnail' && (
             <div className={isDownloaded ? styles.downloadedFile : ''}>
-              <div className={styles.fileName}>{file.name}</div>
+              <FileNameDisplay file={file} className={styles.fileName} />
             </div>
           )}
           {hasExtraContent && extraFormId && (
@@ -630,9 +661,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               </div>
               <div style={(listType === 'thumbnail' && !isDragger) ? { width } : {}}>
                 {listType !== 'text' && !rest.hideFileName && (
-                  <div className={styles.fileName}>
-                    file name
-                  </div>
+                  <FileNameDisplay file={placeholderFile} className={styles.fileName} />
                 )}
                 {hasExtraContent && extraFormId && (
                   <ExtraContent
