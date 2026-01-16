@@ -69,7 +69,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   };
 
   // Parse error into structured format
-  const parseError = (): { message: string; details?: string | React.ReactElement; validationErrors?: IErrorInfo['validationErrors'] } => {
+  const parseError = (): { message?: string; details?: string | React.ReactElement; validationErrors?: IErrorInfo['validationErrors'] } => {
     if (typeof error === 'string') {
       return { message: error };
     }
@@ -90,7 +90,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
     const { message, details, validationErrors } = errorObj || {};
 
     return {
-      message: message || DEFAULT_ERROR_MSG,
+      message: message || undefined,
       details,
       validationErrors,
     };
@@ -111,13 +111,13 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
       });
     } else if (parsedError.details) {
       errors.push({
-        propertyName: parsedError.message || defaultMessage,
+        propertyName: parsedError.message ?? defaultMessage ?? 'Error',
         error: typeof parsedError.details === 'string' ? parsedError.details : 'See details',
       });
     } else {
       errors.push({
         propertyName: 'Error',
-        error: parsedError.message,
+        error: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG,
       });
     }
 
@@ -143,14 +143,14 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   // Legacy alert/raw modes
   if (parsedError.validationErrors?.length) {
     const violations = <ul>{parsedError.validationErrors.map((e, i) => <li key={i}>{e.message || 'Validation error'}</li>)}</ul>;
-    return renderValidationErrors({ message: parsedError.message || defaultMessage, description: violations, ...rest });
+    return renderValidationErrors({ message: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, description: violations, ...rest });
   }
 
   if (parsedError.details) {
-    return renderValidationErrors({ message: parsedError.message || defaultMessage, description: parsedError.details, ...rest });
+    return renderValidationErrors({ message: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, description: parsedError.details, ...rest });
   }
 
-  return renderValidationErrors({ message: parsedError.message, ...rest });
+  return renderValidationErrors({ message: parsedError.message ?? defaultMessage ?? DEFAULT_ERROR_MSG, ...rest });
 };
 
 export default ValidationErrors;
