@@ -66,7 +66,7 @@ const validationError = {
   validationType: 'error' as const,
   errors: [{
     propertyName: 'Column Mismatches',
-    error: 'CONFIGURATION ERROR: The DataTable columns do not match teh parent data context.',
+    error: 'CONFIGURATION ERROR: The DataTable columns do not match the parent data context.',
   }],
 };
 
