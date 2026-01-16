@@ -33,6 +33,7 @@ import { StandaloneTable } from './standaloneTable';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IPropertyMetadata, NestedProperties } from '@/interfaces/metadata';
 import { toCamelCase } from '@/utils/string';
+import { useComponentValidation } from '@/providers/validationErrors';
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const { id, items: configuredColumns, useMultiselect, selectionMode, tableStyle, containerStyle } = props;
@@ -41,11 +42,90 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
   const { anyOfPermissionsGranted } = useSheshaApplication();
+  const dataTableStore = useDataTableStore(false);
   const isDesignMode = formMode === 'designer';
   const metadata = useMetadata(false); // Don't require - DataTable may not be in a DataSource
   const formDesigner = useFormDesignerOrUndefined();
   const hasAutoConfiguredRef = useRef(false);
   const componentIdRef = useRef(id);
+
+  // Report fetch errors to validation system
+  const parseFetchError = (error: any): Array<{ propertyName: string; error: string }> | null => {
+    if (!error) return null;
+
+    // Handle ABP error format (from the example provided by user)
+    if (error?.error) {
+      const { error: abpError } = error;
+      const errors = [];
+
+      // Add main error message
+      if (abpError.message) {
+        errors.push({
+          propertyName: 'Data Fetch Error',
+          error: abpError.message,
+        });
+      }
+
+      // Add validation errors if present
+      if (abpError.validationErrors && Array.isArray(abpError.validationErrors)) {
+        abpError.validationErrors.forEach((ve: any) => {
+          errors.push({
+            propertyName: ve.members?.[0] || 'Field Error',
+            error: ve.message,
+          });
+        });
+      }
+
+      // Add details if no validation errors
+      if (errors.length === 1 && abpError.details) {
+        errors.push({
+          propertyName: 'Details',
+          error: abpError.details,
+        });
+      }
+
+      return errors.length > 0 ? errors : null;
+    }
+
+    // Handle generic error
+    if (error?.message) {
+      return [{
+        propertyName: 'Data Fetch Error',
+        error: error.message,
+      }];
+    }
+
+    // Fallback
+    if (typeof error === 'string') {
+      return [{
+        propertyName: 'Data Fetch Error',
+        error,
+      }];
+    }
+
+    return [{
+      propertyName: 'Data Fetch Error',
+      error: 'An unknown error occurred while fetching data',
+    }];
+  };
+
+  const validationError = React.useMemo(() => {
+    if (!dataTableStore?.fetchTableDataError) return undefined;
+
+    const parsedErrors = parseFetchError(dataTableStore.fetchTableDataError);
+    if (!parsedErrors) return undefined;
+
+    return {
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: parsedErrors,
+    };
+  }, [dataTableStore?.fetchTableDataError]);
+
+  useComponentValidation(
+    () => isDesignMode && validationError ? validationError : undefined,
+    [isDesignMode, validationError],
+  );
 
   useEffect(() => {
     if (componentIdRef.current !== id) {
@@ -219,7 +299,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             } as ITableComponentProps,
           });
         }
-      } catch (_error) {
+      } catch {
         // Reset flag to allow retry if it failed
         hasAutoConfiguredRef.current = false;
       }

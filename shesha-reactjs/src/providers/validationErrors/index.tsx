@@ -69,7 +69,7 @@ export const FormComponentValidationProvider: FC<PropsWithChildren<IFormComponen
   componentType,
   children,
 }) => {
-  const errorsRef = useRef<Map<string, IComponentValidation>>(new Map());
+  const errorsRef = useRef<Map<string, IComponentValidationError>>(new Map());
   // State to trigger re-renders when errors change
   const [errorVersion, setErrorVersion] = useState(0);
 
@@ -79,9 +79,14 @@ export const FormComponentValidationProvider: FC<PropsWithChildren<IFormComponen
     // Check if validation actually changed using deep equality
     let hasChanged = false;
     if (validation && validation.hasErrors) {
-      hasChanged = !isEqual(currentValidation, validation);
+      // Ensure componentId is included in the stored validation
+      const componentValidation: IComponentValidationError = {
+        ...validation,
+        componentId: validation.componentId ?? componentId,
+      };
+      hasChanged = !isEqual(currentValidation, componentValidation);
       if (hasChanged) {
-        errorsRef.current.set(componentId, validation);
+        errorsRef.current.set(componentId, componentValidation);
       }
     } else {
       // Clear validation if no errors

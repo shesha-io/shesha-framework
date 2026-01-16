@@ -15,6 +15,7 @@ import {
   IChangeFilterOptionPayload,
   IFetchColumnsSuccessSuccessPayload,
   IFetchGroupingColumnsSuccessPayload,
+  IFetchTableDataErrorPayload,
   IRegisterConfigurableColumnsPayload,
   ISetPermanentFilterActionPayload,
   ISetPredefinedFiltersPayload,
@@ -248,11 +249,15 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return newState;
     },
 
-    [DataTableActionEnums.FetchTableDataError]: (state: IDataTableStateContext) => {
+    [DataTableActionEnums.FetchTableDataError]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<IFetchTableDataErrorPayload>,
+    ) => {
       return {
         ...state,
         isFetchingTableData: false,
         hasFetchTableDataError: true,
+        fetchTableDataError: action.payload?.error,
       };
     },
 

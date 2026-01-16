@@ -1,4 +1,11 @@
-import { IFlatComponentsStructure } from '@/providers/form/models';
+import { IFlatComponentsStructure, IConfigurableFormComponent } from '@/providers/form/models';
+
+/**
+ * Type guard to check if a component is IConfigurableFormComponent (has type property)
+ */
+const isConfigurableFormComponent = (component: any): component is IConfigurableFormComponent => {
+  return component && typeof component === 'object' && 'type' in component;
+};
 
 /**
  * Check if a component is placed inside a parent component of a specific type
@@ -18,8 +25,8 @@ export const isComponentInsideParentOfType = (
     if (children?.includes(componentId)) {
       const parent = allComponents[parentId];
 
-      // Check if this parent matches the type
-      if (parent && parent.type === parentType) {
+      // Check if this parent matches the type (only for IConfigurableFormComponent)
+      if (parent && isConfigurableFormComponent(parent) && parent.type === parentType) {
         return true;
       }
 

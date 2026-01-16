@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useForm } from '@/providers/form';
 import { isComponentInsideParentOfType } from './componentHierarchy';
 import { useFormMarkup } from '@/providers/form/providers/formMarkupProvider';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 
 /**
  * Hook to check if a component is inside a data context, with stable memoization
@@ -52,7 +53,11 @@ export const useIsInsideDataContext = (componentId: string): boolean => {
     // Serialize which components are DataContext types
     const dataContextTypes = allComponents
       ? Object.entries(allComponents)
-        .filter(([_, component]) => component.type === 'dataContext')
+        .filter(([_, component]) => {
+          // Type guard: only IConfigurableFormComponent has type property
+          const isConfigurable = component && typeof component === 'object' && 'type' in component;
+          return isConfigurable && (component as IConfigurableFormComponent).type === 'dataContext';
+        })
         .map(([id]) => id)
         .sort()
         .join(',')
@@ -85,7 +90,7 @@ export const useIsInsideDataContext = (componentId: string): boolean => {
         setIsInside(newIsInside);
       }
     }
-  }, [componentId, formMode, { allComponents, componentRelations }]); // Only depend on the actual values we need
+  }, [componentId, formMode, allComponents, componentRelations]); // Only depend on the actual values we need
 
   return isInside;
 };

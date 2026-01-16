@@ -474,7 +474,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
           })
           .catch((e) => {
             console.error(e);
-            dispatch(fetchTableDataErrorAction());
+            dispatch(fetchTableDataErrorAction({ error: e }));
           });
       } else {
         // skip fetching and return empty list
