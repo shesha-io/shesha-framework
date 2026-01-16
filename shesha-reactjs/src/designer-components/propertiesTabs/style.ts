@@ -24,6 +24,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     .sha-toolbar-btn-configurable, .ant-btn {
       display: flex;
       align-items: center;
+      justify-content: normal;
       max-width: 100%;
       span {
         max-width: 100%;

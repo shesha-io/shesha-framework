@@ -93,7 +93,12 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     viewType = 'configStudio',
     isSidebarCollapsed = false,
   } = params;
-  const availableWidthPercent = sizes[1];
+  // Determine the main area index based on the sizes array length
+  // 1 element: sizes[0] is main area (allowFullCollapse)
+  // 2 elements: sizes[0] is main area (no left panel)
+  // 3 elements: sizes[1] is main area (standard case)
+  const mainAreaIndex = sizes.length <= 2 ? 0 : 1;
+  const availableWidthPercent = sizes[mainAreaIndex];
 
   if (typeof window === 'undefined') {
     return 100;
