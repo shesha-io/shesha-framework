@@ -364,7 +364,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         return (
           <Space size="small" direction="vertical">
             <Image src={imageUrls[uid]} alt={file.name} preview={false} />
-            <p className="ant-upload-list-item-name">{file.fileName}</p>
+            <FileNameDisplay file={file} className={styles.fileName} />
           </Space>
         );
       }
