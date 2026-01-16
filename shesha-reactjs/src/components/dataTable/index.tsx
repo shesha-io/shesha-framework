@@ -4,6 +4,7 @@ import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, use
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import { ValidationErrors } from '..';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 import {
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
@@ -55,19 +56,16 @@ import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
 import { useComponentValidation } from '@/providers/validationErrors';
+import { StandaloneTable } from '@/designer-components/dataTable/table/standaloneTable';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
 }
 
-
-const validationError = {
-  hasErrors: true,
-  validationType: 'error' as const,
-  errors: [{
-    propertyName: 'Column Mismatches',
-    error: 'CONFIGURATION ERROR: The DataTable columns do not match the parent data context.',
-  }],
+// Error info for ValidationErrors component when no columns are configured
+const noColumnsErrorInfo: IErrorInfo = {
+  message: 'Column Mismatches',
+  details: 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.',
 };
 
 export interface IIndexTableProps extends IShaDataTableProps, TableProps {
@@ -501,7 +499,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         );
       }
     }
-    return false;
   };
 
   const crudOptions = useMemo(() => {
@@ -1043,11 +1040,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   };
 
 
-  useComponentValidation(
-    () => !(tableProps.columns && tableProps.columns.length > 0) ? validationError : undefined,
-    [],
-  );
-
   // FormComponent will automatically wrap this component with ErrorIconPopover in designer mode
   return (
     <Fragment>
@@ -1055,7 +1047,13 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         {exportToExcelError && <ValidationErrors error="Error occurred while exporting to excel" />}
       </div>
 
-      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps} />}
+      {tableProps.columns && tableProps.columns.length > 0 ? (
+        <ReactTable {...tableProps} />
+      ) : (
+        <ValidationErrors error={noColumnsErrorInfo}>
+          <StandaloneTable items={[]} type="" id="" />
+        </ValidationErrors>
+      )}
     </Fragment>
   );
 };

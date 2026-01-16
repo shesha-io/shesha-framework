@@ -30,8 +30,7 @@ import { useStyles } from './styles';
 import { useMetadata } from '@/providers/metadata';
 import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 import { StandaloneTable } from './standaloneTable';
-import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
-import { IPropertyMetadata, NestedProperties } from '@/interfaces/metadata';
+import { isPropertiesArray } from '@/interfaces/metadata';
 import { toCamelCase } from '@/utils/string';
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
@@ -214,24 +213,32 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   requireColumns(); // our component requires columns loading. it's safe to call on each render
 
   useDeepCompareEffect(() => {
+    // Normalize inputs: ensure configuredColumns is always an array
+    const normalizedConfiguredColumns = Array.isArray(configuredColumns) ? configuredColumns : [];
+
     // register columns
     const permissibleColumns = isDesignMode
-      ? configuredColumns
-      : configuredColumns
-        ?.filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
+      ? normalizedConfiguredColumns
+      : normalizedConfiguredColumns
+        .filter(({ permissions }) => anyOfPermissionsGranted(permissions || []))
         .filter(filterVisibility({ data: formData, globalState }));
 
-    // We need to check if the columns at least one exists in the store as well... otherwise the registragtion is going to fail
-    const qualifyingColumns = (metadata.metadata?.properties as NestedProperties as IPropertyMetadata[] ?? []).filter((propertyMetadata) => {
-      const exists = (permissibleColumns as IConfigurableColumnsProps[])
-        .map((permissibleColumn: IConfigurableColumnsProps) => toCamelCase(permissibleColumn.accessor))
+    // Normalize metadata properties using type guard helper
+    const metadataProperties = isPropertiesArray(metadata.metadata?.properties)
+      ? metadata.metadata.properties
+      : [];
+
+    // We need to check if the columns at least one exists in the store as well... otherwise the registration is going to fail
+    const qualifyingColumns = metadataProperties.filter((propertyMetadata) => {
+      const exists = permissibleColumns
+        .map((permissibleColumn) => toCamelCase(permissibleColumn.accessor))
         .includes(toCamelCase(propertyMetadata.path));
       return exists;
     });
 
-    if (qualifyingColumns?.length > 0 || configuredColumns?.length === 0)
+    if (qualifyingColumns.length > 0 || normalizedConfiguredColumns.length === 0)
       registerConfigurableColumns(id, permissibleColumns);
-  }, [configuredColumns, isDesignMode, metadata]);
+  }, [configuredColumns, isDesignMode, metadata, formData, globalState, anyOfPermissionsGranted, filterVisibility, toCamelCase]);
 
   // Auto-configure columns when DataTable is dropped into a DataContext
   useEffect(() => {
