@@ -14,6 +14,7 @@ import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { IQuickSearchComponentProps, QuickSearchComponentDefinition } from './interfaces';
 import { useComponentValidation } from '@/providers/validationErrors';
+import { useFormState } from '@/providers/form';
 
 const QuickSearchComponent: QuickSearchComponentDefinition = {
   type: 'datatable.quickSearch',
@@ -24,6 +25,7 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
     const { block, hidden, dimensions, size: modelSize } = model;
     const store = useDataTableStore(false);
     const { styles } = useStyles();
+    const { formMode } = useFormState();
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
@@ -35,23 +37,28 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
       ...(store ? {} : { width: additionalStyles.width ?? '360px' }),
     });
 
+    const hasStore = Boolean(store);
+    const isRuntime = formMode === 'readonly' || formMode === 'edit';
+    const validationError = useMemo(() => ({
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: [{
+        propertyName: 'Missing Required Parent Component',
+        error: 'CONFIGURATION ERROR: Quick Search MUST be placed inside a Data Context, Data Table, or Data List component. This component cannot function without a data source.',
+      }],
+    }), []);
+
     // CRITICAL: Register validation errors - FormComponent will display them
+    // Only register validation in runtime mode (not during design/dragging)
     // Component identity is automatically obtained from FormComponentValidationProvider
     useComponentValidation(
       () => {
-        if (!store) {
-          return {
-            hasErrors: true,
-            validationType: 'error',
-            errors: [{
-              propertyName: 'Missing Required Parent Component',
-              error: 'CONFIGURATION ERROR: Quick Search MUST be placed inside a Data Context, Data Table, or Data List component. This component cannot function without a data source.',
-            }],
-          };
-        }
-        return undefined;
+        // Skip validation in designer mode to prevent loops during drag operations
+        if (!isRuntime) return undefined;
+
+        return hasStore ? undefined : validationError;
       },
-      [store],
+      [hasStore, validationError, isRuntime],
     );
 
     if (hidden) return null;

@@ -6,12 +6,13 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { ControlOutlined } from '@ant-design/icons';
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useMemo } from 'react';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { IPagerComponentProps, PagerComponentDefinition } from './interfaces';
 import { useDataTableStore } from '@/providers';
 import { useComponentValidation } from '@/providers/validationErrors';
+import { useFormState } from '@/providers/form';
 
 const PagerComponent: PagerComponentDefinition = {
   type: 'datatable.pager',
@@ -24,6 +25,7 @@ const PagerComponent: PagerComponentDefinition = {
     const fontStyles = allStyles?.fontStyles;
     const stylingBoxAsCSS = allStyles?.stylingBoxAsCSS;
     const store = useDataTableStore(false);
+    const { formMode } = useFormState();
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...stylingBoxAsCSS,
@@ -31,23 +33,28 @@ const PagerComponent: PagerComponentDefinition = {
       ...jsStyle,
     });
 
+    const hasStore = Boolean(store);
+    const isRuntime = formMode === 'readonly' || formMode === 'edit';
+    const validationError = useMemo(() => ({
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: [{
+        propertyName: 'Missing Required Parent Component',
+        error: 'CONFIGURATION ERROR: Table Pager MUST be placed inside a Data Context, Data Table, or Data List component. This component cannot function without a data source.',
+      }],
+    }), []);
+
     // CRITICAL: Register validation errors - FormComponent will display them
+    // Only register validation in runtime mode (not during design/dragging)
     // Component identity is automatically obtained from FormComponentValidationProvider
     useComponentValidation(
       () => {
-        if (!store) {
-          return {
-            hasErrors: true,
-            validationType: 'error',
-            errors: [{
-              propertyName: 'Missing Required Parent Component',
-              error: 'CONFIGURATION ERROR: Table Pager MUST be placed inside a Data Context, Data Table, or Data List component. This component cannot function without a data source.',
-            }],
-          };
-        }
-        return undefined;
+        // Skip validation in designer mode to prevent loops during drag operations
+        if (!isRuntime) return undefined;
+
+        return hasStore ? undefined : validationError;
       },
-      [store],
+      [hasStore, validationError, isRuntime],
     );
 
     if (model.hidden) return null;

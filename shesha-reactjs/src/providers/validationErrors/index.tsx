@@ -1,6 +1,7 @@
 import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { IModelValidation } from '@/utils/errors';
 import { createNamedContext } from '@/utils/react';
+import { isEqual } from 'lodash';
 
 export interface IComponentValidationError extends IModelValidation {
   componentId: string;
@@ -68,24 +69,40 @@ export const FormComponentValidationProvider: FC<PropsWithChildren<IFormComponen
   componentType,
   children,
 }) => {
-  const errorsRef = useRef<Map<string, IComponentValidationError>>(new Map());
+  const errorsRef = useRef<Map<string, IComponentValidation>>(new Map());
   // State to trigger re-renders when errors change
   const [errorVersion, setErrorVersion] = useState(0);
 
   const registerValidation = useCallback((componentId: string, validation?: IModelValidation) => {
+    const currentValidation = errorsRef.current.get(componentId);
+
+    // Check if validation actually changed using deep equality
+    let hasChanged = false;
     if (validation && validation.hasErrors) {
-      errorsRef.current.set(componentId, { ...validation, componentId });
+      hasChanged = !isEqual(currentValidation, validation);
+      if (hasChanged) {
+        errorsRef.current.set(componentId, validation);
+      }
     } else {
-      errorsRef.current.delete(componentId);
+      // Clear validation if no errors
+      hasChanged = errorsRef.current.has(componentId);
+      if (hasChanged) {
+        errorsRef.current.delete(componentId);
+      }
     }
-    // Trigger re-render by incrementing version
-    setErrorVersion((v) => v + 1);
+
+    // Only trigger re-render if something actually changed
+    if (hasChanged) {
+      setErrorVersion((v) => v + 1);
+    }
   }, []);
 
   const unregisterValidation = useCallback((componentId: string) => {
-    errorsRef.current.delete(componentId);
-    // Trigger re-render by incrementing version
-    setErrorVersion((v) => v + 1);
+    if (errorsRef.current.has(componentId)) {
+      errorsRef.current.delete(componentId);
+      // Only trigger re-render if we actually deleted something
+      setErrorVersion((v) => v + 1);
+    }
   }, []);
 
   const getValidation = useCallback((componentId: string): IComponentValidationError | undefined => {

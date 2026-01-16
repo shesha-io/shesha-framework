@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ITableViewSelectorComponentProps, TableViewSelectorComponentDefinition } from './models';
 import { migrateFilterMustacheExpressions } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -8,6 +8,7 @@ import { ConfigurableFormItem, useDataTableStore, validateConfigurableComponentS
 import { getSettings } from './settingsForm';
 import { useStyles } from '../tableContext/styles';
 import { useComponentValidation } from '@/providers/validationErrors';
+import { useFormState } from '@/providers/form';
 
 const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   type: 'tableViewSelector',
@@ -17,24 +18,30 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
+    const { formMode } = useFormState();
+
+    const hasStore = Boolean(store);
+    const isRuntime = formMode === 'readonly' || formMode === 'edit';
+    const validationError = useMemo(() => ({
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: [{
+        propertyName: 'Missing Required Parent Component',
+        error: 'CONFIGURATION ERROR: Table View Selector MUST be placed inside a Data Context, Data Table, or Data List component. This component cannot function without a data source.',
+      }],
+    }), []);
 
     // CRITICAL: Register validation errors - FormComponent will display them
+    // Only register validation in runtime mode (not during design/dragging)
     // Component identity is automatically obtained from FormComponentValidationProvider
     useComponentValidation(
       () => {
-        if (!store) {
-          return {
-            hasErrors: true,
-            validationType: 'error',
-            errors: [{
-              propertyName: 'Missing Required Parent Component',
-              error: 'CONFIGURATION ERROR: Table View Selector MUST be placed inside a Data Context, Data Table, or Data List component. This component cannot function without a data source.',
-            }],
-          };
-        }
-        return undefined;
+        // Skip validation in designer mode to prevent loops during drag operations
+        if (!isRuntime) return undefined;
+
+        return hasStore ? undefined : validationError;
       },
-      [store],
+      [hasStore, validationError, isRuntime],
     );
 
     const content = store

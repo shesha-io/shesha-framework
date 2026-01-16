@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "@/interfaces";
 import { useDataSources } from '@/providers/dataSourcesProvider';
@@ -13,6 +13,7 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { useComponentValidation } from '@/providers/validationErrors';
+import { useFormState } from '@/providers/form';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -22,28 +23,34 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   Factory: ({ model }) => {
     const ds = useDataSources();
     const dts = useDataTableStore(false);
+    const { formMode } = useFormState();
 
     const dataSource = model.dataSource
       ? ds.getDataSource(model.dataSource)?.dataSource
       : dts;
 
+    const hasDataSource = Boolean(dataSource);
+    const isRuntime = formMode === 'readonly' || formMode === 'edit';
+    const validationError = useMemo(() => ({
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: [{
+        propertyName: 'Missing Required Parent Component',
+        error: 'CONFIGURATION ERROR: Data List requires either a configured Data Source property or placement inside a Data Context component.',
+      }],
+    }), []);
+
     // CRITICAL: Register validation errors - FormComponent will display them
+    // Only register validation in runtime mode (not during design/dragging)
     // Component identity is automatically obtained from FormComponentValidationProvider
     useComponentValidation(
       () => {
-        if (!dataSource) {
-          return {
-            hasErrors: true,
-            validationType: 'error',
-            errors: [{
-              propertyName: 'Missing Required Parent Component',
-              error: 'CONFIGURATION ERROR: Data List requires either a configured Data Source property or placement inside a Data Context component.',
-            }],
-          };
-        }
-        return undefined;
+        // Skip validation in designer mode to prevent loops during drag operations
+        if (!isRuntime) return undefined;
+
+        return hasDataSource ? undefined : validationError;
       },
-      [dataSource],
+      [hasDataSource, validationError, isRuntime],
     );
 
     if (model.hidden) return null;

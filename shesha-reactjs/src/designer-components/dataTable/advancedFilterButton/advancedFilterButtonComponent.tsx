@@ -3,7 +3,7 @@ import { migratePrevStyles } from '@/designer-components/_common-migrations/migr
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FilterOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { AdvancedFilterButton } from './advancedFilterButton';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
@@ -11,6 +11,7 @@ import { useDataTableStore } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { IAdvancedFilterButtonComponentProps } from './types';
 import { useComponentValidation } from '@/providers/validationErrors';
+import { useFormState } from '@/providers/form';
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
   type: 'datatable.filter',
@@ -20,6 +21,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
+    const { formMode } = useFormState();
 
     const finalStyle = {
       ...model.allStyles.dimensionsStyles,
@@ -31,23 +33,28 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
       ...model.allStyles.jsStyle,
     };
 
+    const hasStore = Boolean(store);
+    const isRuntime = formMode === 'readonly' || formMode === 'edit';
+    const validationError = useMemo(() => ({
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: [{
+        propertyName: 'Missing Required Parent Component',
+        error: 'CONFIGURATION ERROR: Table Filter MUST be placed inside a Data Context, Data Table, or Data List component. This component cannot function without a data source.',
+      }],
+    }), []);
+
     // CRITICAL: Register validation errors - FormComponent will display them
+    // Only register validation in runtime mode (not during design/dragging)
     // Component identity is automatically obtained from FormComponentValidationProvider
     useComponentValidation(
       () => {
-        if (!store) {
-          return {
-            hasErrors: true,
-            validationType: 'error',
-            errors: [{
-              propertyName: 'Missing Required Parent Component',
-              error: 'CONFIGURATION ERROR: Table Filter MUST be placed inside a Data Context, Data Table, or Data List component. This component cannot function without a data source.',
-            }],
-          };
-        }
-        return undefined;
+        // Skip validation in designer mode to prevent loops during drag operations
+        if (!isRuntime) return undefined;
+
+        return hasStore ? undefined : validationError;
       },
-      [store],
+      [hasStore, validationError, isRuntime],
     );
 
     if (model.hidden) return null;
