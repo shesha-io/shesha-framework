@@ -95,7 +95,7 @@ const { Text } = Typography;
 
 // Helper function to format file size
 const formatFileSize = (bytes?: number): string => {
-  if (!bytes) return '';
+  if (bytes === null) return '';
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
   if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
@@ -364,7 +364,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         return (
           <Space size="small" direction="vertical">
             <Image src={imageUrls[uid]} alt={file.name} preview={false} />
-            <p className="ant-upload-list-item-name">{file.size}</p>
+            <p className="ant-upload-list-item-name">{file.fileName}</p>
           </Space>
         );
       }
