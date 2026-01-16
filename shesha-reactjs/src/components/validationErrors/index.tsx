@@ -104,8 +104,11 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
 
     if (parsedError.validationErrors?.length) {
       parsedError.validationErrors.forEach((ve) => {
+        const memberName = Array.isArray(ve.members)
+          ? ve.members.join(', ')
+          : ve.members || 'Validation Error';
         errors.push({
-          propertyName: ve.propertyName || 'Validation Error',
+          propertyName: memberName,
           error: ve.message || 'Validation error occurred',
         });
       });
