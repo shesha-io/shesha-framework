@@ -1,11 +1,22 @@
+import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
+interface IModelInterface {
+  gap?: string;
+  layout?: boolean;
+  hideFileName?: boolean;
+  isDragger?: boolean;
+  isStub?: boolean;
+  downloadZip?: boolean;
+  listType?: listType;
+  fontStyles?: CSSProperties;
+};
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, primaryColor, downloadedFileStyles }) => {
-  const { background, backgroundImage, borderRadius: allRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
-    borderBottomWidth, borderLeftWidth, borderLeftColor, borderLeftStyle, borderRightColor, borderRightStyle, borderColor, borderTopStyle, borderTopColor,
-    borderTop, boxShadow, borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, backgroundColor, backgroundPosition,
-    backgroundRepeat, backgroundSize, borderStyle, color, fontFamily, fontSize, fontWeight, height, maxHeight, minHeight, textAlign,
-    borderTopRightRadius, borderBottomRightRadius, borderBottomLeftRadius, borderTopLeftRadius,
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = {}, model = {}, containerStyles = {}, downloadedFileStyles }: { style: CSSProperties; model: IModelInterface; containerStyles: CSSProperties; downloadedFileStyles: CSSProperties }) => {
+  const { background, backgroundImage, borderRadius: allRadius, width, minWidth, maxWidth,
+    boxShadow, backgroundColor, backgroundPosition, backgroundRepeat, backgroundSize, color, fontFamily,
+    fontSize, fontWeight, height, maxHeight, minHeight, textAlign, borderTopRightRadius, borderBottomRightRadius,
+    borderBottomLeftRadius, borderTopLeftRadius,
     ...rest
   } = style;
 
@@ -25,13 +36,16 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     borderTopLeftRadius ?? allRadius ?? '8px',
   ].join(' ');
 
+  const colorBgTextHover = '#f0f0f0';
+
   const fileName = cx("item-file-name", css`
-    display: ${ model.hideFileName ? 'none' : 'flex' };
+    display: ${model.hideFileName ? 'none' : 'flex'};
     color: ${color ?? token.colorPrimary} !important;
     font-size: ${fontSize ?? '14px'} !important;
     font-weight: ${fontWeight ?? '400'} !important;
     font-family: ${fontFamily ?? 'Segoe UI'} !important;
     text-align: ${textAlign ?? 'left'} !important;
+    justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'} !important;
     margin: 2px 0px;
     position: relative;
     white-space: nowrap;
@@ -40,21 +54,24 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     flex: 1;
     cursor: pointer;
     &:hover {
-      background-color: ${token.colorBgSpotlight} !important;      opacity: 1 !important;
+      background-color: ${colorBgTextHover} !important;
+      opacity: 1 !important;
       overflow: visible;
       width: max-content;
+      min-width: 100%;
       border-radius: 4px;
       padding: 0 8px;
-      z-index: 10 !important;
+      z-index: 999 !important;
       white-space: nowrap;
+      justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'} !important;
     }
   `);
 
   const fileNameWrapper = cx("file-name-wrapper", css`
-    display: ${ model.hideFileName ? 'none' : 'flex' };
+    display: ${model.hideFileName ? 'none' : 'flex'};
     cursor: pointer;
     &:hover {
-      background-color: ${token.colorBgTextHover} !important;
+      background-color: ${colorBgTextHover} !important;
       border-radius: ${borderRadius ?? '4px'} !important;
     }
     > .item-file-name {
@@ -74,14 +91,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       position: relative;
     }
 
-    .ant-upload-list-item-thumbnail {
+    >.ant-upload-list-item > .ant-upload-list-item-thumbnail {
+      ${rest}
       opacity: 0.8;
-      border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
-      box-shadow: 0 0 0 1px ${downloadedFileStyles?.color ?? token.colorSuccess}20;
+      border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess};
+      ${{ ...downloadedFileStyles }};
     }
 
     .item-file-name {
-      display: ${ model.hideFileName ? 'none' : 'flex' };
+      display: ${model.hideFileName ? 'none' : 'flex'};
       color: ${downloadedFileStyles?.color ?? color} !important;
       font-size: ${downloadedFileStyles?.fontSize ?? fontSize} !important;
       font-weight: ${downloadedFileStyles?.fontWeight ?? fontWeight} !important;
@@ -118,24 +136,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   `);
 
+  const thumbnailWidth = layout ? (width ?? '54px') : '100%';
+  const thumbnailHeight = layout ? (height ?? '54px') : '100%';
+  const marginGap = gap ?? '8px';
+
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
-    --thumbnail-width: ${layout ? (width ?? '54px') : '100%'};
-    --thumbnail-height: ${layout ? (height ?? '54px') : '100%'};
-    --ant-margin-xs: ${gap ?? '8px'} !important;
-    --ant-border-radius-xs: ${borderRadius ?? '8px'} !important;
-    --ant-border-radius-sm: ${borderRadius ?? '8px'} !important;
-    --ant-border-radius-lg: ${borderRadius ?? '8px'} !important;
-    --container-width: ${containerWidth};
-    --container-max-width: ${containerMaxWidth};
-    --container-min-width: ${containerMinWidth};
-    --container-min-height: ${containerMinHeight};
-    --container-max-height: ${containerMaxHeight};
-    --ant-upload-actions-color: ${token.colorError} !important;
-    --ant-button-content-font-size: ${fontSize ?? '14px'} !important;
-    --ant-button-font-weight: ${fontWeight ?? '400'} !important;
-    --ant-font-family: ${fontFamily ?? 'Segoe UI'} !important;
-    --ant-button-font-weight: ${fontWeight ?? '400'} !important;
     margin-top: ${marginTop};
     margin-left: ${marginLeft};
     margin-right: ${marginRight};
@@ -144,6 +150,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     padding-left: ${paddingLeft ?? '2px'};
     padding-right: ${paddingRight ?? '2px'};
     padding-bottom: ${paddingBottom ?? '2px'};
+    height: ${containerHeight ?? 'auto'} !important;
+    width: ${containerWidth ?? '100%'} !important;
+    max-height: ${containerMaxHeight ?? 'auto'} !important;
+    max-width: ${containerMaxWidth ?? '100%'} !important;
+    min-height: ${containerMinHeight ?? 'auto'} !important;
+    min-width: ${containerMinWidth ?? '100%'} !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     ${restContainerStyles}
     overflow: auto;
     scrollbar-width: thin;
@@ -153,22 +168,21 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         background-color: transparent;
       }
 
-    
+    .ant-upload-wrapper {
+      flex: 1 !important;
+    }
+
     .ant-upload:not(.ant-upload-disabled) {
       .icon {
-        color: ${primaryColor ?? token.colorPrimary} !important;
+        color: ${token.colorPrimary} !important;
       };
     }
   
     .ant-upload-list-item {
-      --ant-line-width: 0px !important;
-      --ant-padding-xs: 0px !important;
-      --font-size: ${fontSize ?? '14px'} !important;
-      --ant-font-size: ${fontSize ?? '14px'} !important;
       display: flex;
-      width: ${layout ? (width ?? '54px') + ' !important' : ''};
-      height: ${layout ? (height ?? '54px') + ' !important' : ''};
-
+      padding: 0 !important;
+      border: unset !important; 
+      width: 100%;
       :before {
         ${rest}
         display: none;
@@ -178,19 +192,27 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .ant-upload-list-item-thumbnail {
       ${rest}
       background: ${background ?? backgroundImage ?? (backgroundColor ?? 'transparent')} !important;
-      border: ${borderWidth} ${borderStyle} ${borderColor};
-      border-top: ${borderTopWidth ?? borderWidth} ${borderTopStyle ?? borderStyle} ${borderTopColor ?? borderColor};
-      border-right: ${borderRightWidth ?? borderWidth} ${borderRightStyle ?? borderStyle} ${borderRightColor ?? borderColor};
-      border-left: ${borderLeftWidth ?? borderWidth} ${borderLeftStyle ?? borderStyle} ${borderLeftColor ?? borderColor};
-      border-bottom: ${borderBottomWidth ?? borderWidth} ${borderBottomStyle ?? borderStyle} ${borderBottomColor ?? borderColor};
+      background-size: ${backgroundSize ?? 'cover'} !important;
+      background-position: ${backgroundPosition ?? 'center'} !important;
+      background-repeat: ${backgroundRepeat ?? 'no-repeat'} !important;
       box-shadow: ${boxShadow};
       border-radius: ${borderRadius ?? '8px'} !important;
-      width: var(--thumbnail-width, 54px) !important;
-      height: var(--thumbnail-height, 54px) !important;
+      height: ${thumbnailHeight} !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
 
+      > div {
+       height: 100%;
+       width: 100%;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+      }
+      
       img {
-        width: var(--thumbnail-width, 54px) !important;
-        height: var(--thumbnail-height, 54px) !important;
+        width: ${thumbnailWidth} !important;
+        height: ${thumbnailHeight} !important;
         border-radius: ${borderRadius ?? '8px'} !important;
         object-fit: cover !important;
         display: flex !important;
@@ -204,15 +226,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .ant-upload-list-item-name {
       ${layout ? 'display: none !important' : ''};
-    }
-
-    .ant-upload-list {
-      height: calc(${containerHeight} - 32px) !important;
-      max-height: calc(var(--container-max-height) - calc(${isDragger ? '0px' : fontSize} * 1.2) - 40px) !important;
-      min-height: calc(var(--container-min-height) - 32px) !important;
-      width: calc(var(--container-width) - 32px) !important;
-      max-width: calc(var(--container-max-width) - 32px) !important;
-      min-width: calc(var(--container-min-width) - 32px) !important;
     }
 
     .ant-upload-list-text {
@@ -229,29 +242,30 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
     .${prefixCls}-upload {
       ${rest}
-      ${(layout && !isDragger) && 'width: var(--thumbnail-width) !important;'};
-      ${(layout && !isDragger) && 'height: var(--thumbnail-height) !important;'};
-     
+      border: unset;
+      ${(layout && !isDragger) && `width: ${thumbnailWidth} !important;`};
+      ${(layout && !isDragger) && `height: ${thumbnailHeight} !important;`};
+
       align-items: center;
 
       &.${prefixCls}-upload-btn {
         .${prefixCls}-upload-drag-icon {
           margin: unset;
         }
-  
+
         .${storedFilesRendererNoFiles} {
           margin-bottom: 6px;
         }
 
         .ant-upload-select {
           align-content: center;
-          width: var(--thumbnail-width, 54px) !important;
+          width: ${thumbnailWidth} !important;
         }
       }
     }
   
     .ant-btn {
-      color: ${primaryColor ?? token.colorPrimary} !important;
+      color: ${token.colorPrimary} !important;
       padding: 0;
       * {
         font-size: ${fontSize ?? '14px'} !important;
@@ -263,10 +277,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       display: flex;
       margin-top: 4px;
       justify-content: flex-end;
+      width: ${containerWidth};
+      max-width: ${containerMaxWidth};
+      min-width: ${containerMinWidth};
     }
   
     .${prefixCls}-upload-list {
-      --ant-margin-xs: ${gap ?? '8px'} !important;
+      ${layout ? `gap: ${marginGap}` : 'unset'};
       padding: 2px;
       overflow-y: auto;
       display: flex;
@@ -304,18 +321,18 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .thumbnail-stub {
+      ${rest}
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      ${rest}
+      width: max-content;
     }
 
 `);
 
   const shaStoredFilesRendererHorizontal = cx("sha-stored-files-renderer-horizontal", css`
-    width: var(--container-width) !important;
-    max-width: var(--container-max-width) !important;
+      height: max-content;
     .${prefixCls}-upload-list {
       display: flex !important;
       flex-wrap: nowrap !important;
@@ -324,13 +341,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       overflow-x: auto;
       overflow-y: clip !important;
       align-items: stretch !important;
-      width: var(--container-width) !important;
-      min-width: var(--container-min-width) !important;
-      max-width: calc(var(--container-max-width) - 40px) !important;
-      max-height: calc(var(--container-max-height) - 40px) !important;
-      height: ${containerHeight} !important;
-      max-width: var(--container-max-width) !important;
-      min-height: var(--container-min-height) !important;
     }
 
     .ant-upload-list-item-container {
@@ -347,19 +357,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 `);
 
   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-vertical", css`
-    --container-width: max-content !important;
     max-width: max-content !important;
     width: max-content !important;
     min-width: max-content !important;
     .${prefixCls}-upload-list {
       display: flex !important;
-      flex-direction: column-reverse !important;
+      flex-direction: column !important;
       flex-wrap: nowrap !important;
-      padding: 2px ${borderWidth ?? '2px'} !important;
-      height: ${containerHeight} !important;
+      padding: 2px !important;
       width: 100% !important;
-      max-height: calc(var(--container-max-height) - 72px) !important;
-      min-height: calc(var(--container-min-height) - 32px) !important;
     }
 
     .stored-files-renderer-btn-container {
@@ -383,9 +389,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 `);
 
   const shaStoredFilesRendererGrid = cx("sha-stored-files-renderer-grid", css`
-    max-width: var(--container-width) !important;
-    max-height: ${containerHeight} !important;
-
     .${prefixCls}-upload-list {
       display: flex !important;
       flex-direction: row !important;
@@ -393,12 +396,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       align-items: stretch !important;
       align-content: flex-start !important;
       padding: 2px;
-      width: var(--container-width) !important;
-      max-height: calc(var(--container-max-height) - 40px) !important;
-      max-width: var(--container-max-width) !important;
-      height: calc(${containerHeight} - 32px) !important;
-      min-height: var(--container-min-height) !important;
-      min-width: var(--container-min-width) !important;
       overflow-y: auto !important;
       overflow-x: hidden !important;
       .${prefixCls}-upload-list-item {
@@ -430,6 +427,21 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       border-radius: 8px !important;
   `);
 
+  const hiddenElement = cx("hidden-element", css`
+    display: none !important;
+  `);
+
+  const actionsPopover = cx("actions-popover", css`
+    .ant-popover-inner {
+      padding: 4px;
+    }
+  `);
+
+  const uploadButton = cx("upload-button", css`
+    justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'};
+    ${model.listType === 'thumbnail' ? { ...style } : { ...model.fontStyles }}
+  `);
+
   return {
     shaStoredFilesRenderer,
     shaStoredFilesRendererHorizontal,
@@ -443,5 +455,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     thumbnailReadOnly,
     fileName,
     fileNameWrapper,
+    hiddenElement,
+    actionsPopover,
+    uploadButton,
   };
 });

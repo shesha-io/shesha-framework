@@ -26,6 +26,7 @@ import {
   replaceFileErrorAction,
   replaceFileRequestAction,
   replaceFileSuccessAction,
+  setCurrentFileAction,
   updateAllFilesDownloadedByCurrentUser,
   updateIsDownloadedByCurrentUser,
   uploadFileErrorAction,
@@ -50,7 +51,7 @@ import { fileListContextCode } from '@/publicJsApis';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 
-import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { isAjaxSuccessResponse, isAxiosResponse } from '@/interfaces/ajaxResponse';
 export interface IStoredFilesProviderProps {
   name?: string;
   ownerId: string;
@@ -235,8 +236,22 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
             ownerName: payload.ownerName || ownerName,
           });
       })
-      .catch((e) => {
-        message.error(`File upload failed. Probably file size is too big`);
+      .catch((e: unknown) => {
+        let errorMessage = 'Please check your configuration and try again';
+
+        if (isAxiosResponse(e)) {
+          const details = e.data?.error?.details;
+          const msg = e.data?.error?.message;
+          if (typeof details === 'string') {
+            errorMessage = details.slice(0, 200);
+          } else if (typeof msg === 'string') {
+            errorMessage = msg.slice(0, 200);
+          }
+        } else if (typeof e === 'object' && e !== null && 'message' in e && typeof e.message === 'string') {
+          errorMessage = e.message;
+        }
+
+        message.error(`File upload failed. ${errorMessage}`);
         console.error(e);
         dispatch(uploadFileErrorAction({ ...newFile, status: 'error' }));
       });
@@ -383,6 +398,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       });
   };
 
+  const setCurrentFile = (file: IStoredFile): void => {
+    dispatch(setCurrentFileAction(file));
+  };
+
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
     typeDefinitionLoader: () => {
       return Promise.resolve({
@@ -418,7 +437,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
             replaceFile,
             deleteFile,
             downloadZipFile,
-            downloadFile,          /* NEW_ACTION_GOES_HERE */
+            downloadFile,
+            setCurrentFile
+            /* NEW_ACTION_GOES_HERE */
           }}
         >
           {children}

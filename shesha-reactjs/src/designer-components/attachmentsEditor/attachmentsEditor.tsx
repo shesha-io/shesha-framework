@@ -151,6 +151,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   downloadedFileStyles?: IStyleType;
   styleDownloadedFiles?: boolean;
   downloadedIcon?: IconType;
+  iconSize?: string | number;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
