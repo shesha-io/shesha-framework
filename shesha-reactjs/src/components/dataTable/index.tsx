@@ -204,7 +204,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   sortableIndicatorColor,
   ...props
 }) => {
-  const store = useDataTableStore();
+  const store = useDataTableStore(false);
   const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
   const multiSelect = mode === 'multiple';
   const appContext = useAvailableConstantsData();

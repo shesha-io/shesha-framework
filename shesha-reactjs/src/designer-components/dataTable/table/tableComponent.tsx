@@ -38,29 +38,62 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
   const shouldShowMissingContextError = formMode === 'designer' && !isInsideDataContextInMarkup;
 
   // Parse fetch errors from the store
-  const parseFetchError = React.useCallback((error: any): Array<{ propertyName: string; error: string }> | null => {
+  const parseFetchError = React.useCallback((error: unknown): Array<{ propertyName: string; error: string }> | null => {
     if (!error) return null;
 
+    // Type guard for objects
+    const isObject = (value: unknown): value is Record<string, unknown> => {
+      return typeof value === 'object' && value !== null;
+    };
+
+    // Type guard for validation error entry
+    interface ValidationError {
+      message?: unknown;
+      members?: unknown;
+    }
+    const isValidationError = (ve: unknown): ve is ValidationError => {
+      return isObject(ve);
+    };
+
     // Handle Axios error format (error.response.data contains ABP response)
-    const abpResponse = error?.response?.data || error;
+    let abpResponse: unknown = error;
+    if (isObject(error) && 'response' in error && isObject(error.response) && 'data' in error.response) {
+      abpResponse = error.response.data;
+    }
+
+    // Type guard for ABP error structure
+    interface AbpError {
+      message?: unknown;
+      details?: unknown;
+      validationErrors?: unknown;
+    }
 
     // Handle ABP error format
-    if (abpResponse?.error) {
-      const { error: abpError } = abpResponse;
-      const errors = [];
+    if (isObject(abpResponse) && 'error' in abpResponse && isObject(abpResponse.error)) {
+      const abpError = abpResponse.error as AbpError;
+      const errors: Array<{ propertyName: string; error: string }> = [];
 
       // Add validation errors (these are the field-specific messages we want)
-      if (abpError.validationErrors && Array.isArray(abpError.validationErrors)) {
-        abpError.validationErrors.forEach((ve: any) => {
-          errors.push({
-            propertyName: ve.members?.[0] || 'Field Error',
-            error: ve.message, // This is "Cannot query field 'description' on type 'Area'."
-          });
+      if (Array.isArray(abpError.validationErrors)) {
+        abpError.validationErrors.forEach((ve: unknown) => {
+          if (isValidationError(ve)) {
+            const message = typeof ve.message === 'string' ? ve.message : 'Validation error';
+            let propertyName = 'Field Error';
+
+            if (Array.isArray(ve.members) && ve.members.length > 0 && typeof ve.members[0] === 'string') {
+              propertyName = ve.members[0];
+            }
+
+            errors.push({
+              propertyName,
+              error: message, // This is "Cannot query field 'description' on type 'Area'."
+            });
+          }
         });
       }
 
       // Only add main message if we don't have validation errors
-      if (errors.length === 0 && abpError.message) {
+      if (errors.length === 0 && typeof abpError.message === 'string') {
         errors.push({
           propertyName: 'Data Fetch Error',
           error: abpError.message,
@@ -68,7 +101,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
       }
 
       // Add details if present and helpful
-      if (errors.length === 1 && abpError.details && abpError.details !== abpError.message) {
+      if (errors.length === 1 && typeof abpError.details === 'string' && abpError.details !== abpError.message) {
         errors.push({
           propertyName: 'Details',
           error: abpError.details,
@@ -79,7 +112,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
     }
 
     // Fallback to generic error message
-    if (error?.message) {
+    if (isObject(error) && 'message' in error && typeof error.message === 'string') {
       return [{
         propertyName: 'Data Fetch Error',
         error: error.message,
