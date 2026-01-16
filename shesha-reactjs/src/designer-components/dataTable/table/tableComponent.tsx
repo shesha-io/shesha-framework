@@ -34,25 +34,104 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
   const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
 
   // Only show validation error in designer mode when component is not inside DataContext
-  const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
+  const shouldShowMissingContextError = formMode === 'designer' && !isInsideDataContextInMarkup;
 
-  // Memoize the validation error object to prevent unnecessary re-registrations
-  const validationError = React.useMemo(() => ({
+  // Parse fetch errors from the store
+  const parseFetchError = React.useCallback((error: any): Array<{ propertyName: string; error: string }> | null => {
+    if (!error) return null;
+
+    // Handle Axios error format (error.response.data contains ABP response)
+    const abpResponse = error?.response?.data || error;
+
+    // Handle ABP error format
+    if (abpResponse?.error) {
+      const { error: abpError } = abpResponse;
+      const errors = [];
+
+      // Add validation errors (these are the field-specific messages we want)
+      if (abpError.validationErrors && Array.isArray(abpError.validationErrors)) {
+        abpError.validationErrors.forEach((ve: any) => {
+          errors.push({
+            propertyName: ve.members?.[0] || 'Field Error',
+            error: ve.message, // This is "Cannot query field 'description' on type 'Area'."
+          });
+        });
+      }
+
+      // Only add main message if we don't have validation errors
+      if (errors.length === 0 && abpError.message) {
+        errors.push({
+          propertyName: 'Data Fetch Error',
+          error: abpError.message,
+        });
+      }
+
+      // Add details if present and helpful
+      if (errors.length === 1 && abpError.details && abpError.details !== abpError.message) {
+        errors.push({
+          propertyName: 'Details',
+          error: abpError.details,
+        });
+      }
+
+      return errors.length > 0 ? errors : null;
+    }
+
+    // Fallback to generic error message
+    if (error?.message) {
+      return [{
+        propertyName: 'Data Fetch Error',
+        error: error.message,
+      }];
+    }
+
+    if (typeof error === 'string') {
+      return [{
+        propertyName: 'Data Fetch Error',
+        error,
+      }];
+    }
+
+    return [{
+      propertyName: 'Data Fetch Error',
+      error: 'An unknown error occurred while fetching data',
+    }];
+  }, []);
+
+  // Memoize validation errors
+  const missingContextError = React.useMemo(() => ({
     hasErrors: true,
     validationType: 'error' as const,
     errors: [{
       propertyName: 'Missing Required Parent Component',
       error: 'CONFIGURATION ERROR: Data Table MUST be placed inside a Data Context component. This component cannot function without a data source.',
     }],
-  }), []); // Empty deps - this error message never changes
+  }), []);
+
+  const fetchError = React.useMemo(() => {
+    if (!store?.fetchTableDataError) return undefined;
+
+    const parsedErrors = parseFetchError(store.fetchTableDataError);
+    if (!parsedErrors) return undefined;
+
+    return {
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: parsedErrors,
+    };
+  }, [store?.fetchTableDataError, parseFetchError]);
 
   // CRITICAL: Register validation errors - FormComponent will display them
   // Must be called before any conditional returns (React Hooks rules)
-  // Component identity is automatically obtained from FormComponentValidationProvider
-  // Note: Deep equality check in validation provider prevents loops during drag
+  // Priority: Fetch errors > Missing context error
   useComponentValidation(
-    () => shouldShowError ? validationError : undefined,
-    [shouldShowError, validationError],
+    () => {
+      if (formMode !== 'designer') return undefined;
+      if (fetchError) return fetchError;
+      if (shouldShowMissingContextError) return missingContextError;
+      return undefined;
+    },
+    [formMode, fetchError, shouldShowMissingContextError, missingContextError],
   );
 
   if (model.hidden) return null;

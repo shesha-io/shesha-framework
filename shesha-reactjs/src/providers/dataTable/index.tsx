@@ -387,9 +387,14 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         allowSorting: true,
       }));
 
-      repository.prepareColumns(groupColumns).then((preparedColumns) => {
-        dispatch(fetchGroupingColumnsSuccessAction({ grouping, columns: preparedColumns }));
-      });
+      repository.prepareColumns(groupColumns)
+        .then((preparedColumns) => {
+          dispatch(fetchGroupingColumnsSuccessAction({ grouping, columns: preparedColumns }));
+        })
+        .catch((e) => {
+          console.error('Failed to prepare grouping columns:', e);
+          dispatch(fetchTableDataErrorAction({ error: e }));
+        });
     }
   }, [grouping, sortMode]);
 
@@ -578,6 +583,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     state.sortMode,
     state.strictSortBy,
     state.strictSortOrder,
+    state.modelType, // Refetch when model type changes
   ]);
 
   const setColumnWidths = (widths: IColumnWidth[]): void => {
@@ -706,10 +712,15 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
       dispatchThunk(registerConfigurableColumnsAction({ ownerId, columns: columnsToRegister }));
 
-      repository.prepareColumns(columnsToRegister).then((preparedColumns) => {
-        // backgroundColor
-        dispatchThunk(fetchColumnsSuccessSuccessAction({ configurableColumns: columnsToRegister, columns: preparedColumns, userConfig }));
-      });
+      repository.prepareColumns(columnsToRegister)
+        .then((preparedColumns) => {
+          // backgroundColor
+          dispatchThunk(fetchColumnsSuccessSuccessAction({ configurableColumns: columnsToRegister, columns: preparedColumns, userConfig }));
+        })
+        .catch((e) => {
+          console.error('Failed to prepare table columns:', e);
+          dispatch(fetchTableDataErrorAction({ error: e }));
+        });
     });
   };
 

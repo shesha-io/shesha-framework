@@ -278,6 +278,8 @@ const reducer = handleActions<IDataTableStateContext, any>(
         totalRows,
         totalRowsBeforeFilter,
         isFetchingTableData: false,
+        hasFetchTableDataError: false, // Clear error flag on success
+        fetchTableDataError: undefined, // Clear error details on success
         selectedRow: selectedRow,
       };
     },

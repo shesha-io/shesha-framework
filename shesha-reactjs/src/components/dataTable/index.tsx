@@ -60,6 +60,16 @@ export interface IIndexTableOptions {
   omitClick?: boolean;
 }
 
+
+const validationError = {
+  hasErrors: true,
+  validationType: 'error' as const,
+  errors: [{
+    propertyName: 'Column Mismatches',
+    error: 'CONFIGURATION ERROR: The DataTable columns do not match teh parent data context.',
+  }],
+};
+
 export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   tableRef?: MutableRefObject<Partial<DataTableFullInstance> | null>;
   options?: IIndexTableOptions;
@@ -979,7 +989,12 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowDividers: props.rowDividers,
   };
 
-  // Validation errors are now handled by the parent FormComponent via useComponentValidation hook
+
+  useComponentValidation(
+    () => !(tableProps.columns && tableProps.columns.length > 0) ? validationError : undefined,
+    [],
+  );
+
   // FormComponent will automatically wrap this component with ErrorIconPopover in designer mode
   return (
     <Fragment>

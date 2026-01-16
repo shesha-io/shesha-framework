@@ -42,7 +42,7 @@ const PagerComponent: PagerComponentDefinition = {
       validationType: 'error' as const,
       errors: [{
         propertyName: 'Missing Required Parent Component',
-        error: 'CONFIGURATION ERROR: Table Pager MUST be placed inside a Data Context, Data Table, or Data List component. This component cannot function without a data source.',
+        error: 'CONFIGURATION ERROR: Table Pager MUST be placed inside a Data Context component. This component cannot function without a data source.',
       }],
     }), []);
 
