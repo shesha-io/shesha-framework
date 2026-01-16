@@ -93,10 +93,27 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   backgroundColor?: string;
 
   // Header styling
-  headerFontSize?: string;
-  headerFontWeight?: string;
+  headerFont?: {
+    type?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+    align?: string;
+  };
   headerBackgroundColor?: string;
+  headerTextAlign?: string; // Alignment for header cells
+  bodyTextAlign?: string; // Alignment for body cells
+
+  // Deprecated - kept for backward compatibility
+  /** @deprecated Use headerFont.type instead */
+  headerFontFamily?: string;
+  /** @deprecated Use headerFont.size instead */
+  headerFontSize?: string;
+  /** @deprecated Use headerFont.weight instead */
+  headerFontWeight?: string;
+  /** @deprecated Use headerFont.color instead */
   headerTextColor?: string;
+  /** @deprecated Use headerTextAlign for headers or bodyTextAlign for body */
   textAlign?: string;
 
   // Table body styling
@@ -163,17 +180,21 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowSelectedBackgroundColor,
   border,
   hoverHighlight,
-  striped = true,
+  striped,
   onRowClick,
   onRowDoubleClick,
   onRowHover,
   onRowSelect,
   onSelectionChange,
   backgroundColor,
+  headerFont,
+  headerFontFamily,
   headerFontSize,
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
+  headerTextAlign,
+  bodyTextAlign,
   textAlign,
   rowHeight,
   rowPadding,
@@ -184,7 +205,17 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   ...props
 }) => {
   const store = useDataTableStore();
+  const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
+  const multiSelect = mode === 'multiple';
   const appContext = useAvailableConstantsData();
+
+  // Compute effective header font values with backward compatibility
+  const effectiveHeaderFontFamily = headerFont?.type ?? headerFontFamily;
+  const effectiveHeaderFontSize = headerFont?.size ? `${headerFont.size}px` : headerFontSize;
+  const effectiveHeaderFontWeight = headerFont?.weight ?? headerFontWeight;
+  const effectiveHeaderTextColor = headerFont?.color ?? headerTextColor;
+  const effectiveHeaderTextAlign = headerFont?.align ?? headerTextAlign ?? textAlign;
+  const effectiveBodyTextAlign = bodyTextAlign ?? textAlign; // Body uses bodyTextAlign or falls back to textAlign (deprecated)
 
   if (tableRef) tableRef.current = store;
 
@@ -227,7 +258,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (!onRowSelect?.actionName) return undefined;
 
     return (row: any, rowIndex: number) => {
-      const evaluationContext = { ...appContext, data: row, rowIndex };
+      const currentSelectedRow = { index: rowIndex, row: row, id: row?.id };
+      const evaluationContext = { ...appContext, data: row, rowIndex, selectedRow: currentSelectedRow };
 
       try {
         executeAction({
@@ -239,6 +271,20 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       }
     };
   }, [onRowSelect, appContext.contexts.lastUpdate, moment, executeAction, httpClient]);
+
+  // Clear all selections when selection mode changes
+  const previousMode = usePrevious(mode);
+  useEffect(() => {
+    // Only clear if mode actually changed
+    if (previousMode !== undefined && previousMode !== mode) {
+      if (selectedRow && setSelectedRow) {
+        setSelectedRow(null, null);
+      }
+      if (selectedIds && selectedIds.length > 0 && changeSelectedIds) {
+        changeSelectedIds([]);
+      }
+    }
+  }, [mode, previousMode, selectedRow, selectedIds, setSelectedRow, changeSelectedIds]);
 
   const onSelectRowLocal = (index: number, row: any): void => {
     if (onSelectRow) {
@@ -262,10 +308,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const previousIds = usePrevious(selectedIds);
 
   useEffect(() => {
-    if (!(previousIds?.length === 0 && selectedIds?.length === 0) && typeof onSelectedIdsChanged === 'function') {
+    if (
+      mode === 'multiple' &&
+      !(previousIds?.length === 0 && selectedIds?.length === 0) &&
+      typeof onSelectedIdsChanged === 'function'
+    ) {
       onSelectedIdsChanged(selectedIds);
     }
-  }, [selectedIds, previousIds]);
+  }, [selectedIds]);
 
   useEffect(() => {
     if (!isFetchingTableData && tableData?.length && onFetchDataSuccess) {
@@ -902,16 +952,17 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     data: tableData,
     // Disable sorting if we're in create mode so that the new row is always the first
     defaultSorting: defaultSorting,
-    useMultiSelect: selectionMode === 'multiple' || (selectionMode === undefined && useMultiSelect),
-    selectionMode,
+    useMultiSelect: multiSelect,
+    selectionMode: mode,
     freezeHeaders,
-    onSelectRow: selectionMode === 'none' ? undefined : onSelectRowLocal,
+    onSelectRow: onSelectRowLocal,
     onRowDoubleClick: combinedDblClickHandler,
-    onSelectedIdsChanged: selectionMode === 'none' ? undefined : changeSelectedIds,
-    onMultiRowSelect: (selectionMode === 'multiple' || (selectionMode === undefined && useMultiSelect)) ? onMultiRowSelect : undefined,
+    onSelectedIdsChanged: mode === 'multiple' ? changeSelectedIds : undefined,
+    onMultiRowSelect: mode === 'multiple' ? onMultiRowSelect : undefined,
     onSort, // Update it so that you can pass it as param. Quick fix for now
     columns: preparedColumns,
-    selectedRowIndex,
+    // Only use selectedRowIndex in single mode; in multiple mode, row.isSelected controls highlighting
+    selectedRowIndex: mode === 'single' ? selectedRowIndex : undefined,
     loading: isFetchingTableData,
     pageCount: totalPages,
     manualFilters: true, // informs React Table that you'll be handling sorting and pagination server-side
@@ -955,16 +1006,18 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     rowBackgroundColor,
     rowAlternateBackgroundColor,
-    rowHoverBackgroundColor: hoverHighlight ? rowHoverBackgroundColor : undefined,
+    rowHoverBackgroundColor: hoverHighlight ? (rowHoverBackgroundColor || '') : undefined,
     rowSelectedBackgroundColor,
     border,
     striped,
     backgroundColor,
-    headerFontSize,
-    headerFontWeight,
+    headerFontFamily: effectiveHeaderFontFamily,
+    headerFontSize: effectiveHeaderFontSize,
+    headerFontWeight: effectiveHeaderFontWeight,
     headerBackgroundColor,
-    headerTextColor,
-    textAlign,
+    headerTextColor: effectiveHeaderTextColor,
+    headerTextAlign: effectiveHeaderTextAlign,
+    bodyTextAlign: effectiveBodyTextAlign,
     rowHeight,
     rowPadding,
     rowBorder,

@@ -3,6 +3,8 @@ import { DataNode } from "antd/lib/tree";
 import { PropsWithChildren, ReactNode } from "react";
 import { isDefined } from "../utils/nullables";
 import { ModalFooterButtons } from "@/providers/dynamicModal/models";
+import { MenuItemType } from "./menu-utils";
+import { IConfigurationStudio } from "./cs/interfaces";
 
 export type ForceRenderFunc = () => void;
 
@@ -187,6 +189,7 @@ export type DocumentInstanceFactoryArgs = {
   flags?: DocumentFlags;
 };
 export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;
+export type ContextMenuBuilder = (menuItems: MenuItemType[], configurationStudio: IConfigurationStudio) => MenuItemType[];
 
 export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstance> = {
   documentType: string;
@@ -194,6 +197,7 @@ export type DocumentDefinition<TDoc extends IDocumentInstance = IDocumentInstanc
   Provider?: ProviderRenderer<TDoc> | undefined;
   Toolbar?: ItemEditorRenderer<TDoc> | undefined;
   documentInstanceFactory: DocumentInstanceFactory;
+  contextMenuBuilder?: ContextMenuBuilder;
   createModalFooterButtons?: ModalFooterButtons;
 };
 

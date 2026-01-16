@@ -11,7 +11,7 @@ interface IProps {
   items: MenuItem[];
   open: boolean;
   onClose?: (
-    e: React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>
+    e: React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>,
   ) => void;
   colors?: ILayoutColor;
   fontStyles?: React.CSSProperties;

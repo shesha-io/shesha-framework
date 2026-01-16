@@ -32,12 +32,25 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
 
   striped?: boolean;
   hoverHighlight?: boolean;
-  stickyHeader?: boolean;
 
   // Header styling
-  headerFontSize?: string;
-  headerFontWeight?: string;
+  headerFont?: {
+    type?: string;
+    size?: number;
+    weight?: string;
+    color?: string;
+    align?: string;
+  };
   headerBackgroundColor?: string;
+
+  // Deprecated header font properties - kept for backward compatibility
+  /** @deprecated Use headerFont.type instead */
+  headerFontFamily?: string;
+  /** @deprecated Use headerFont.size instead */
+  headerFontSize?: string;
+  /** @deprecated Use headerFont.weight instead */
+  headerFontWeight?: string;
+  /** @deprecated Use headerFont.color instead */
   headerTextColor?: string;
 
   // Table body styling
@@ -53,7 +66,14 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
     maxHeight?: string;
   };
 
+  // Row padding (individual fields)
+  rowPaddingTop?: string;
+  rowPaddingRight?: string;
+  rowPaddingBottom?: string;
+  rowPaddingLeft?: string;
+
   // Row padding using styling box
+  /** @deprecated Use rowPaddingTop, rowPaddingRight, rowPaddingBottom, rowPaddingLeft instead */
   rowStylingBox?: {
     margin?: {
       top?: string;

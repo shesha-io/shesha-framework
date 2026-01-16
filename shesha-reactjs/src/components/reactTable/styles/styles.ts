@@ -47,11 +47,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowSelectedBackgroundColor,
   border,
   backgroundColor,
+  headerFontFamily,
   headerFontSize,
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
-  textAlign,
+  headerTextAlign,
+  bodyTextAlign,
   rowHeight,
   rowPadding,
   rowBorder,
@@ -75,11 +77,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   rowSelectedBackgroundColor?: string;
   border?: IBorderValue;
   backgroundColor?: string;
+  headerFontFamily?: string;
   headerFontSize?: string;
   headerFontWeight?: string;
   headerBackgroundColor?: string;
   headerTextColor?: string;
-  textAlign?: string;
+  headerTextAlign?: string;
+  bodyTextAlign?: string;
   rowHeight?: string;
   rowPadding?: string;
   rowBorder?: string;
@@ -127,15 +131,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaSpanCenterVertically,
   } = tableClassNames;
 
-  // Generate border styles from the border configuration
   const borderStyles = getBorderStyle(border || {}, {});
   const headerBorderStyles = getBorderStyle(headerBorder || {}, {});
   const cellBorderStyles = getBorderStyle(cellBorder || {}, {});
   const headerShadowStyles = getShadowStyle(headerShadow);
   const rowShadowStyles = getShadowStyle(rowShadow);
 
-  // rowPadding should already be a string (converted in tableWrapper.tsx via convertRowStylingBoxToPadding)
-  // cellPadding is deprecated and migrated to rowStylingBox in migration v19
   const effectivePadding = rowPadding;
 
   const hasBorderRadius = border?.radius && (
@@ -147,9 +148,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   );
 
   // var(--ant-primary-3)
-  const hoverableRow = rowHoverBackgroundColor ? `
+  const hoverableRow = rowHoverBackgroundColor !== undefined ? `
         &:not(.${trSelected}) {
-            background: ${rowHoverBackgroundColor} !important;
+            background: ${rowHoverBackgroundColor || token.colorPrimaryBgHover} !important;
         }
     ` : '';
 
@@ -183,7 +184,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
       /* These styles are suggested for the table fill all available space in its containing element */
       display: block;
       /* These styles are required for a horizontaly scrollable table overflow */
-      overflow: auto;
+      overflow: ${boxShadow ? 'visible' : 'auto'};
+      ${boxShadow ? `
+        /* Apply box shadow to container */
+        box-shadow: ${boxShadow};
+        /* Add margin to create space for shadow without affecting table width */
+        margin: 8px;
+        /* Remove margin from parent to compensate */
+        position: relative;
+      ` : ''}
 
       .${shaSpanCenterVertically} {
         display: flex;
@@ -199,8 +208,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         border-spacing: 0;
         display: inline-block;
         min-width: 100%;
-        background-color: ${backgroundColor}
-        ${boxShadow ? `box-shadow: ${boxShadow};` : ''}
+        background-color: ${backgroundColor};
 
         /* Apply border styles to the inner table */
         ${Object.entries(borderStyles).map(([key, value]) => {
@@ -209,10 +217,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           return `${cssKey}: ${value};`;
         }).join('\n')}
 
-        /* When border-radius is present, ensure content respects the bounds */
-        /* Only apply to tables without fixed columns since overflow:hidden breaks position:sticky */
+        /* When border-radius is present, clip content but not shadows */
+        /* Only apply to tables without fixed columns since overflow affects position:sticky */
         &:not(:has(.${fixedColumn})) {
-          ${hasBorderRadius ? `overflow: hidden;` : ''}
+          ${hasBorderRadius ? `
+            border-radius: inherit;
+            > .${thead}, > .${tbody} {
+              overflow: hidden;
+            }
+          ` : ''}
         }
 
         .${thead} {
@@ -241,7 +254,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             align-items: center;
           }
 
-          //
           .${prefixCls}-collapse {
             border: none;
 
@@ -289,11 +301,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
             ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : `background-color: ${backgroundColor} !important;`}
+            ${headerFontFamily ? `font-family: ${headerFontFamily};` : ''}
             ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
             ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
-            ${headerTextColor ? `color: ${headerTextColor};` : ''}
+            ${headerTextColor ? `color: ${headerTextColor};` : 'color: #000000ff !important;'}
             ${Object.entries(headerBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${Object.entries(headerShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+
+            /* Apply text alignment to header cells */
+            .${th} {
+              ${headerTextAlign ? `text-align: ${headerTextAlign} !important;` : ''}
+            }
 
             /* Apply header background to relative columns within headers */
             .${relativeColumn} {
@@ -304,7 +322,36 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           &.${trBody} {
             ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
             ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
-            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : ''}
+            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
+
+            /* Apply text alignment to body cells */
+            .${td} {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply alignment to body cell content divs */
+            .${td} > div {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+              ${bodyTextAlign ? `justify-content: ${bodyTextAlign === 'right' ? 'flex-end' : bodyTextAlign === 'center' ? 'center' : 'flex-start'} !important;` : ''}
+            }
+
+            /* Apply alignment to nested body cell content */
+            .${td} > div > div {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+              ${bodyTextAlign ? `justify-content: ${bodyTextAlign === 'right' ? 'flex-end' : bodyTextAlign === 'center' ? 'center' : 'flex-start'} !important;` : ''}
+            }
+
+            /* Apply text alignment to text elements inside body table cells */
+            .${td} span,
+            .${td} p,
+            .${td} div:not(.sha-action-button):not(.sha-link) {
+              ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
+            }
+
+            /* Apply alignment to crud cells within body rows only */
+            .${shaCrudCell} {
+              ${bodyTextAlign ? `justify-content: ${bodyTextAlign === 'right' ? 'flex-end' : bodyTextAlign === 'center' ? 'center' : 'flex-start'} !important;` : ''}
+            }
           }
 
           .${td} {
@@ -313,12 +360,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${cellBackgroundColor ? `background-color: ${cellBackgroundColor};` : ''}
             ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
             ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
-            ${textAlign ? `text-align: ${textAlign};` : ''}
           }
 
           .${th} {
             vertical-align: middle;
-            ${textAlign ? `text-align: ${textAlign};` : ''}
+            ${headerTextAlign ? `text-align: ${headerTextAlign};` : ''}
           }
 
           .${shaCrudCell} {
@@ -479,9 +525,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${th} {
           ${headerBackgroundColor ? `background-color: ${headerBackgroundColor} !important;` : ''}
+          ${headerFontFamily ? `font-family: ${headerFontFamily};` : ''}
           ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
           ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
-          ${headerTextColor ? `color: ${headerTextColor};` : ''}
+          ${headerTextColor ? `color: ${headerTextColor};` : 'color: #000000ff !important;'}
 
           &.${sortedAsc} {
             border-top: 3px solid ${sortableIndicatorColor || token.colorPrimary};

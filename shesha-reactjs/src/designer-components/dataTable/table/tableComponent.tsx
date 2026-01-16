@@ -10,6 +10,7 @@ import { migrateV12toV13 } from './migrations/migrate-v13';
 import { migrateV15toV16 } from './migrations/migrate-v16';
 import { migrateV17toV18 } from './migrations/migrate-v18';
 import { migrateV18toV19 } from './migrations/migrate-v19';
+import { migrateV24toV25 } from './migrations/migrate-v25';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
 import { TableOutlined } from '@ant-design/icons';
@@ -161,8 +162,6 @@ const TableComponent: TableComponentDefinition = {
 
     return {
       items: [],
-      striped: true,
-      hoverHighlight: true,
       rowDimensions: {
         height: '40px',
         minHeight: 'auto',
@@ -269,7 +268,65 @@ const TableComponent: TableComponentDefinition = {
       .add<ITableComponentProps>(21, (prev) => ({
         ...prev,
         rowDimensions: prev.rowDimensions ?? { height: '40px' },
-      })),
+      }))
+      .add<ITableComponentProps>(22, (prev) => ({
+        ...prev,
+        rowAlternateBackgroundColor: prev.rowAlternateBackgroundColor ?? '#f5f5f5',
+        headerFontWeight: prev.headerFontWeight ?? '500',
+        headerBackgroundColor: prev.headerBackgroundColor ?? '#fafafa',
+      }))
+      .add<ITableComponentProps>(23, (prev) => ({
+        ...prev,
+        striped: prev.striped ?? true,
+        mobile: {
+          ...prev.mobile,
+          striped: prev.striped ?? true,
+        },
+        tablet: {
+          ...prev.tablet,
+          striped: prev.striped ?? true,
+        },
+        desktop: {
+          ...prev.desktop,
+          striped: prev.striped ?? true,
+        },
+      }))
+      .add<ITableComponentProps>(24, (prev) => {
+        // Migrate rowStylingBox to individual padding fields
+        if (prev.rowStylingBox?.padding) {
+          const { padding } = prev.rowStylingBox;
+          return {
+            ...prev,
+            rowPaddingTop: padding.top,
+            rowPaddingRight: padding.right,
+            rowPaddingBottom: padding.bottom,
+            rowPaddingLeft: padding.left,
+            mobile: {
+              ...prev.mobile,
+              rowPaddingTop: padding.top,
+              rowPaddingRight: padding.right,
+              rowPaddingBottom: padding.bottom,
+              rowPaddingLeft: padding.left,
+            },
+            tablet: {
+              ...prev.tablet,
+              rowPaddingTop: padding.top,
+              rowPaddingRight: padding.right,
+              rowPaddingBottom: padding.bottom,
+              rowPaddingLeft: padding.left,
+            },
+            desktop: {
+              ...prev.desktop,
+              rowPaddingTop: padding.top,
+              rowPaddingRight: padding.right,
+              rowPaddingBottom: padding.bottom,
+              rowPaddingLeft: padding.left,
+            },
+          };
+        }
+        return prev;
+      })
+      .add<ITableComponentProps>(25, migrateV24toV25),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [

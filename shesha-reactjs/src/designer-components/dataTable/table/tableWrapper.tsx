@@ -5,7 +5,7 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
-import { filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding } from './utils';
+import { filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding, convertRowPaddingFieldsToPadding } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
@@ -66,14 +66,58 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
   }, [props?.rowDimensions, props?.rowHeight, isDesignMode]);
 
   const effectiveRowPadding = useMemo(() => {
-    const converted = convertRowStylingBoxToPadding(props?.rowStylingBox);
-    return converted || props?.rowPadding;
-  }, [props?.rowStylingBox, props?.rowPadding, isDesignMode]);
+    // Try new individual padding fields first
+    const convertedFromFields = convertRowPaddingFieldsToPadding(
+      props?.rowPaddingTop,
+      props?.rowPaddingRight,
+      props?.rowPaddingBottom,
+      props?.rowPaddingLeft,
+    );
+
+    // Fall back to deprecated rowStylingBox for backward compatibility
+    const convertedFromBox = convertRowStylingBoxToPadding(props?.rowStylingBox);
+
+    if (isDesignMode) {
+      console.warn('Row Padding - individual fields:', {
+        top: props?.rowPaddingTop,
+        right: props?.rowPaddingRight,
+        bottom: props?.rowPaddingBottom,
+        left: props?.rowPaddingLeft,
+      }, 'converted:', convertedFromFields, 'fallback rowStylingBox:', props?.rowStylingBox, 'converted:', convertedFromBox, 'final fallback:', props?.rowPadding);
+    }
+
+    return convertedFromFields || convertedFromBox || props?.rowPadding;
+  }, [props?.rowPaddingTop, props?.rowPaddingRight, props?.rowPaddingBottom, props?.rowPaddingLeft, props?.rowStylingBox, props?.rowPadding, isDesignMode]);
 
   const effectiveRowBorder = useMemo(() => {
     const converted = convertRowBorderStyleToBorder(props?.rowBorderStyle);
     return converted || props?.rowBorder;
   }, [props?.rowBorderStyle, props?.rowBorder, isDesignMode]);
+
+  // Compute effective header font values with backward compatibility
+  const effectiveHeaderFontFamily = useMemo(() => {
+    return props?.headerFont?.type ?? props?.headerFontFamily;
+  }, [props?.headerFont?.type, props?.headerFontFamily]);
+
+  const effectiveHeaderFontSize = useMemo(() => {
+    return props?.headerFont?.size ? `${props.headerFont.size}px` : props?.headerFontSize;
+  }, [props?.headerFont?.size, props?.headerFontSize]);
+
+  const effectiveHeaderFontWeight = useMemo(() => {
+    return props?.headerFont?.weight ?? props?.headerFontWeight;
+  }, [props?.headerFont?.weight, props?.headerFontWeight]);
+
+  const effectiveHeaderTextColor = useMemo(() => {
+    return props?.headerFont?.color ?? props?.headerTextColor;
+  }, [props?.headerFont?.color, props?.headerTextColor]);
+
+  const effectiveHeaderTextAlign = useMemo(() => {
+    return props?.headerFont?.align;
+  }, [props?.headerFont?.align]);
+
+  const effectiveBodyTextAlign = useMemo(() => {
+    return props?.font?.align;
+  }, [props?.font?.align]);
 
   const { styles } = useStyles({
     fontFamily: props?.font?.type,
@@ -83,7 +127,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     fontSize: props?.font?.size,
     striped: props?.striped,
     hoverHighlight: props?.hoverHighlight,
-    stickyHeader: props?.stickyHeader,
     enableStyleOnReadonly: props?.enableStyleOnReadonly,
     readOnly: props?.readOnly,
     rowBackgroundColor: props?.rowBackgroundColor,
@@ -92,10 +135,11 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     rowSelectedBackgroundColor: props?.rowSelectedBackgroundColor,
     border: props?.border,
     backgroundColor: props?.background?.color,
-    headerFontSize: props?.headerFontSize,
-    headerFontWeight: props?.headerFontWeight,
+    headerFontFamily: effectiveHeaderFontFamily,
+    headerFontSize: effectiveHeaderFontSize,
+    headerFontWeight: effectiveHeaderFontWeight,
     headerBackgroundColor: props?.headerBackgroundColor,
-    headerTextColor: props?.headerTextColor,
+    headerTextColor: effectiveHeaderTextColor,
     rowHeight: effectiveRowHeight,
     rowPadding: effectiveRowPadding,
     rowBorder: effectiveRowBorder,
@@ -281,7 +325,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             selectedRowIndex={selectedRow?.index}
             useMultiselect={useMultiselect}
             selectionMode={selectionMode}
-            freezeHeaders={props.stickyHeader || props.freezeHeaders}
+            freezeHeaders={props.freezeHeaders}
             allowReordering={allowReordering}
             tableStyle={getStyle(tableStyle, formData, globalState)}
             containerStyle={getStyle(containerStyle, formData, globalState)}
@@ -320,11 +364,14 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             striped={props.striped}
             hoverHighlight={props.hoverHighlight}
             backgroundColor={props.background?.color}
-            headerFontSize={props.headerFontSize}
-            headerFontWeight={props.headerFontWeight}
+            headerFont={props.headerFont}
+            headerFontFamily={effectiveHeaderFontFamily}
+            headerFontSize={effectiveHeaderFontSize}
+            headerFontWeight={effectiveHeaderFontWeight}
             headerBackgroundColor={props.headerBackgroundColor}
-            headerTextColor={props.headerTextColor}
-            textAlign={props.font?.align}
+            headerTextColor={effectiveHeaderTextColor}
+            headerTextAlign={effectiveHeaderTextAlign}
+            bodyTextAlign={effectiveBodyTextAlign}
             rowHeight={effectiveRowHeight}
             rowPadding={effectiveRowPadding}
             rowBorder={effectiveRowBorder}
