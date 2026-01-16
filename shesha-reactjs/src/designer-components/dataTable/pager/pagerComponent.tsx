@@ -10,6 +10,9 @@ import React, { CSSProperties } from 'react';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { IPagerComponentProps, PagerComponentDefinition } from './interfaces';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { useForm } from '@/providers/form';
+import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 
 const PagerComponent: PagerComponentDefinition = {
   type: 'datatable.pager',
@@ -21,6 +24,7 @@ const PagerComponent: PagerComponentDefinition = {
     const jsStyle = allStyles?.jsStyle;
     const fontStyles = allStyles?.fontStyles;
     const stylingBoxAsCSS = allStyles?.stylingBoxAsCSS;
+    const { formMode } = useForm();
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...stylingBoxAsCSS,
@@ -28,11 +32,28 @@ const PagerComponent: PagerComponentDefinition = {
       ...jsStyle,
     });
 
+    // Use stable hook that only recomputes when actual hierarchy changes
+    const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
+
+    const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
+
+    const validationError = React.useMemo(() => ({
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: [{
+        propertyName: 'Missing Required Parent Component',
+        error: 'CONFIGURATION ERROR: Table Pager MUST be placed inside a Data Context component. This component cannot function without a data source.',
+      }],
+    }), []);
+
+    useComponentValidation(
+      () => shouldShowError ? validationError : undefined,
+      [shouldShowError, validationError],
+    );
+
     if (model.hidden) return null;
 
-    return (
-      <TablePager {...model} style={additionalStyles} />
-    );
+    return <TablePager {...model} style={additionalStyles} />;
   },
   initModel: (model: IPagerComponentProps) => {
     return {

@@ -7,6 +7,9 @@ import { TableViewSelector } from './tableViewSelector';
 import { ConfigurableFormItem, useDataTableStore, validateConfigurableComponentSettings } from '@/index';
 import { getSettings } from './settingsForm';
 import { useStyles } from '../tableContext/styles';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { useForm } from '@/providers/form';
+import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 
 const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   type: 'tableViewSelector',
@@ -16,6 +19,26 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
+    const { formMode } = useForm();
+
+    // Use stable hook that only recomputes when actual hierarchy changes
+    const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
+
+    const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
+
+    const validationError = React.useMemo(() => ({
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: [{
+        propertyName: 'Missing Required Parent Component',
+        error: 'CONFIGURATION ERROR: Table View Selector MUST be placed inside a Data Context component. This component cannot function without a data source.',
+      }],
+    }), []);
+
+    useComponentValidation(
+      () => shouldShowError ? validationError : undefined,
+      [shouldShowError, validationError],
+    );
 
     const content = store
       ? <TableViewSelector {...model} />

@@ -13,17 +13,21 @@ import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimens
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { IQuickSearchComponentProps, QuickSearchComponentDefinition } from './interfaces';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { useForm } from '@/providers/form';
+import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 
 const QuickSearchComponent: QuickSearchComponentDefinition = {
   type: 'datatable.quickSearch',
   isInput: false,
   name: 'Quick Search',
   icon: <SearchOutlined />,
-  Factory: ({ model: { block, hidden, dimensions, size: _size } }) => {
+  Factory: ({ model }) => {
+    const { block, hidden, dimensions, size: modelSize } = model;
     const store = useDataTableStore(false);
     const { styles } = useStyles();
-    const size = useMemo(() => _size, [_size]);
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
+    const { formMode } = useForm();
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...dimensionsStyles,
@@ -34,28 +38,45 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
       ...(store ? {} : { width: additionalStyles.width ?? '360px' }),
     });
 
+    // Use stable hook that only recomputes when actual hierarchy changes
+    const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
+
+    const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
+
+    const validationError = React.useMemo(() => ({
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: [{
+        propertyName: 'Missing Required Parent Component',
+        error: 'CONFIGURATION ERROR: Quick Search MUST be placed inside a Data Context component. This component cannot function without a data source.',
+      }],
+    }), []);
+
+    useComponentValidation(
+      () => shouldShowError ? validationError : undefined,
+      [shouldShowError, validationError],
+    );
+
     if (hidden) return null;
 
-    const content = store
+    return store
       ? (
         <GlobalTableFilter
           block={block}
           style={finalStyle}
           searchProps={{
-            size,
+            size: modelSize,
           }}
         />
       )
       : (
         <div className={styles.quickSearchContainer} style={finalStyle}>
           <Search
-            size={size}
+            size={modelSize}
             disabled
           />
         </div>
       );
-
-    return content;
   },
   initModel: (model: IQuickSearchComponentProps) => {
     return {

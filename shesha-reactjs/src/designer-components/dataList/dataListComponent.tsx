@@ -5,13 +5,16 @@ import { useDataSources } from '@/providers/dataSourcesProvider';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
-import DataListControl, { NotConfiguredWarning } from './dataListControl';
+import DataListControl, { DataListPlaceholder } from './dataListControl';
 import { useDataTableStore } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { useForm } from '@/providers/form';
+import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -21,28 +24,36 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   Factory: ({ model }) => {
     const ds = useDataSources();
     const dts = useDataTableStore(false);
-    if (model.hidden) return null;
+    const { formMode } = useForm();
 
     const dataSource = model.dataSource
       ? ds.getDataSource(model.dataSource)?.dataSource
       : dts;
 
-    // Check if form is configured
-    const hasFormConfigured =
-      (model.formSelectionMode === "name" && model.formId) ||
-      (model.formSelectionMode === "view" && model.formType) ||
-      (model.formSelectionMode === "expression" && model.formIdExpression);
+    // Use stable hook that only recomputes when actual hierarchy changes
+    const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
 
-    return dataSource
-      ? <DataListControl {...model} dataSourceInstance={dataSource} />
-      : (
-        <NotConfiguredWarning
-          message={hasFormConfigured
-            ? "This Data List has no data source configured. Data Lists require to be placed inside a Data Context (like a Data Table or Entity Picker) to fetch data."
-            : "This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items."}
-          isWarning={true}
-        />
-      );
+    const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup && !model.dataSource;
+
+    const validationError = React.useMemo(() => ({
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: [{
+        propertyName: 'Missing Required Parent Component',
+        error: 'CONFIGURATION ERROR: Data List requires either a configured Data Source property or placement inside a Data Context component.',
+      }],
+    }), []);
+
+    useComponentValidation(
+      () => shouldShowError ? validationError : undefined,
+      [shouldShowError, validationError],
+    );
+
+    if (model.hidden) return null;
+
+    if (!dataSource) return <DataListPlaceholder />;
+
+    return <DataListControl {...model} dataSourceInstance={dataSource} />;
   },
   migrator: (m) => m
     .add<IDataListComponentProps>(0, (prev) => ({
@@ -51,7 +62,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       selectionMode: 'single',
       items: [],
       // Set default form to the starter template
-      // formId: { name: 'data-list-dummy-default', module: 'Shesha' }
+      formId: { name: 'dummy-datalist-item', module: 'Shesha' },
     }))
     .add<IDataListComponentProps>(1, (prev) => ({ ...prev, orientation: 'vertical', listItemWidth: 1 }))
     .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

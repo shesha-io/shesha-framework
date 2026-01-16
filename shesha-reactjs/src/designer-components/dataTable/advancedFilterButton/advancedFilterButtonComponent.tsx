@@ -10,6 +10,9 @@ import { defaultStyles } from './utils';
 import { useDataTableStore } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { IAdvancedFilterButtonComponentProps } from './types';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { useForm } from '@/providers/form';
+import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
   type: 'datatable.filter',
@@ -19,6 +22,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
+    const { formMode } = useForm();
 
     const finalStyle = {
       ...model.allStyles.dimensionsStyles,
@@ -30,22 +34,39 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
       ...model.allStyles.jsStyle,
     };
 
+    // Use stable hook that only recomputes when actual hierarchy changes
+    const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
+
+    const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
+
+    const validationError = React.useMemo(() => ({
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: [{
+        propertyName: 'Missing Required Parent Component',
+        error: 'CONFIGURATION ERROR: Table Filter MUST be placed inside a Data Context component. This component cannot function without a data source.',
+      }],
+    }), []);
+
+    useComponentValidation(
+      () => shouldShowError ? validationError : undefined,
+      [shouldShowError, validationError],
+    );
+
     if (model.hidden) return null;
 
-    if (!store) {
-      return (
-        <div className={styles.hintContainer}>
-          <div className={styles.disabledComponentWrapper}>
-            <div className={styles.filterButtonMockup}>
-              <FilterOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
-              Table Filter
-            </div>
+    return !store ? (
+      <div className={styles.hintContainer}>
+        <div className={styles.disabledComponentWrapper}>
+          <div className={styles.filterButtonMockup}>
+            <FilterOutlined style={{ color: '#8c8c8c', marginRight: '8px' }} />
+            Table Filter
           </div>
         </div>
-      );
-    }
-
-    return <AdvancedFilterButton {...model as IAdvancedFilterButtonComponentProps} styles={finalStyle} />;
+      </div>
+    ) : (
+      <AdvancedFilterButton {...model as IAdvancedFilterButtonComponentProps} styles={finalStyle} />
+    );
   },
   initModel: (model) => {
     return {

@@ -8,13 +8,14 @@ import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions }
 import { useStyles } from '@/components/dataList/styles/styles';
 import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
-import { YesNoInherit } from '@/interfaces';
+import { FormIdentifier, YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { OnSaveHandler, OnSaveSuccessHandler } from '@/components/dataTable/interfaces';
-import { WarningOutlined } from '@ant-design/icons';
-import { Popover } from 'antd';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { FormSelectionMode } from '@/components/dataList/models';
 
-export const NotConfiguredWarning: FC<{ message?: string; isWarning?: boolean }> = ({ message, isWarning = false }) => {
+// Static placeholder shown when DataList has configuration errors
+export const DataListPlaceholder: FC = () => {
   const { theme } = useStyles();
 
   // Show preview items that look like actual list items
@@ -23,17 +24,6 @@ export const NotConfiguredWarning: FC<{ message?: string; isWarning?: boolean }>
     { heading: 'Heading', subtext: 'Subtext' },
     { heading: 'Heading', subtext: 'Subtext' },
   ];
-
-  const popoverContent = (
-    <div style={{ maxWidth: '280px' }}>
-      <div style={{ fontWeight: 600, fontSize: '13px', marginBottom: '8px' }}>
-        Hint:
-      </div>
-      <div style={{ fontSize: '12px', lineHeight: '1.5' }}>
-        {message || "This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items."}
-      </div>
-    </div>
-  );
 
   return (
     <div style={{ position: 'relative' }}>
@@ -93,51 +83,27 @@ export const NotConfiguredWarning: FC<{ message?: string; isWarning?: boolean }>
           </div>
         ))}
       </div>
-
-      {/* Info/Warning icon with popover - positioned at top right, below delete button (matching DataTable style) */}
-      <Popover content={popoverContent} title={null} trigger="hover" placement="left" styles={{ body: { backgroundColor: '#D9DCDC' } }}>
-        {isWarning ? (
-          <WarningOutlined
-            role="button"
-            tabIndex={0}
-            aria-label="Data list configuration warning"
-            style={{
-              position: 'absolute',
-              top: '44px',
-              right: '0px',
-              color: theme.colorWarning,
-              fontSize: '20px',
-              zIndex: 9999,
-              cursor: 'help',
-              backgroundColor: '#fff',
-              borderRadius: '50%',
-              padding: '4px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            }}
-          />
-        ) : (
-          <WarningOutlined
-            role="button"
-            tabIndex={0}
-            aria-label="Data list configuration help"
-            style={{
-              position: 'absolute',
-              top: '44px',
-              right: '0px',
-              color: theme.colorWarning,
-              fontSize: '20px',
-              zIndex: 9999,
-              cursor: 'help',
-              backgroundColor: '#fff',
-              borderRadius: '50%',
-              padding: '4px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            }}
-          />
-        )}
-      </Popover>
     </div>
   );
+};
+
+// Helper to get form configuration error message
+const getFormConfigErrorMessage = (
+  formSelectionMode: FormSelectionMode | undefined,
+  formId: FormIdentifier | undefined,
+  formType: string | undefined,
+  formIdExpression: string | undefined,
+): string | undefined => {
+  if (formSelectionMode === "name" && !formId) {
+    return 'This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items.';
+  }
+  if (formSelectionMode === "view" && !formType) {
+    return 'This Data List has no form type specified. Selecting a Form Type tells the Data List what data structure it should use when rendering items.';
+  }
+  if (formSelectionMode === "expression" && !formIdExpression) {
+    return 'This Data List has no form identifier expression configured. Configuring an expression tells the Data List how to dynamically determine which form to use.';
+  }
+  return undefined;
 };
 
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
@@ -183,6 +149,48 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const { executeAction } = useConfigurableActionDispatcher();
 
   const repository = getRepository();
+
+  // Get form configuration error message if any
+  const formConfigErrorMessage = getFormConfigErrorMessage(
+    props.formSelectionMode,
+    props.formId,
+    props.formType,
+    props.formIdExpression,
+  );
+  const hasInvalidFormConfig = !!formConfigErrorMessage;
+
+  // Register validation errors - FormComponent will display them
+  // Component identity is automatically obtained from FormComponentValidationProvider
+  useComponentValidation(
+    () => {
+      // Check for missing repository
+      if (!repository) {
+        return {
+          hasErrors: true,
+          validationType: 'error',
+          errors: [{
+            propertyName: 'Missing Data Source',
+            error: 'This Data List has no data source configured. Selecting a Data Source tells the Data List where to fetch data from.',
+          }],
+        };
+      }
+
+      // Check for invalid form configuration
+      if (formConfigErrorMessage) {
+        return {
+          hasErrors: true,
+          validationType: 'error',
+          errors: [{
+            propertyName: 'Missing Form Configuration',
+            error: formConfigErrorMessage,
+          }],
+        };
+      }
+
+      return undefined;
+    },
+    [repository, formConfigErrorMessage],
+  );
 
   const onSelectRow = useCallback((index: number, row: any) => {
     if (row) {
@@ -405,31 +413,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  // When there's no repository configured, don't render anything in runtime mode
-  if (!repository) {
-    // In runtime mode, don't render anything if datasource is not configured
-    if (!isDesignMode) {
-      return null;
-    }
-    // In design mode, show configuration hint
-    return <NotConfiguredWarning message="This Data List has no data source configured. Selecting a Data Source tells the Data List where to fetch data from." isWarning={true} />;
-  }
-
-  // Form configuration validation - check for invalid configurations
-  const hasInvalidFormConfig =
-    (props.formSelectionMode === "name" && !props.formId) ||
-    (props.formSelectionMode === "view" && !props.formType) ||
-    (props.formSelectionMode === "expression" && !props.formIdExpression);
-
-  if (hasInvalidFormConfig) {
-    // In runtime mode, don't render anything if form configuration is invalid
-    if (!isDesignMode) {
-      return null;
-    }
-    // In design mode, show specific configuration hints with warning icon
-    if (props.formSelectionMode === "name" && !props.formId) return <NotConfiguredWarning message="This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items." isWarning={true} />;
-    if (props.formSelectionMode === "view" && !props.formType) return <NotConfiguredWarning message="This Data List has no form type specified. Selecting a Form Type tells the Data List what data structure it should use when rendering items." isWarning={true} />;
-    if (props.formSelectionMode === "expression" && !props.formIdExpression) return <NotConfiguredWarning message="This Data List has no form identifier expression configured. Configuring an expression tells the Data List how to dynamically determine which form to use." isWarning={true} />;
+  // When there's no repository or invalid form config, show placeholder
+  // Validation errors will be shown by parent FormComponent via useComponentValidation
+  if (!repository || hasInvalidFormConfig) {
+    return <DataListPlaceholder />;
   }
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
