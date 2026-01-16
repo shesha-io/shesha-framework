@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { ITableViewSelectorComponentProps, TableViewSelectorComponentDefinition } from './models';
 import { migrateFilterMustacheExpressions } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -8,7 +8,8 @@ import { ConfigurableFormItem, useDataTableStore, validateConfigurableComponentS
 import { getSettings } from './settingsForm';
 import { useStyles } from '../tableContext/styles';
 import { useComponentValidation } from '@/providers/validationErrors';
-import { useFormState } from '@/providers/form';
+import { useForm } from '@/providers/form';
+import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 
 const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   type: 'tableViewSelector',
@@ -18,11 +19,14 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
-    const { formMode } = useFormState();
+    const { formMode } = useForm();
 
-    const hasStore = Boolean(store);
-    const isRuntime = formMode === 'readonly' || formMode === 'edit';
-    const validationError = useMemo(() => ({
+    // Use stable hook that only recomputes when actual hierarchy changes
+    const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
+
+    const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
+
+    const validationError = React.useMemo(() => ({
       hasErrors: true,
       validationType: 'error' as const,
       errors: [{
@@ -31,17 +35,9 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
       }],
     }), []);
 
-    // CRITICAL: Register validation errors - FormComponent will display them
-    // Only register validation in runtime mode (not during design/dragging)
-    // Component identity is automatically obtained from FormComponentValidationProvider
     useComponentValidation(
-      () => {
-        // Skip validation in designer mode to prevent loops during drag operations
-        if (!isRuntime) return undefined;
-
-        return hasStore ? undefined : validationError;
-      },
-      [hasStore, validationError, isRuntime],
+      () => shouldShowError ? validationError : undefined,
+      [shouldShowError, validationError],
     );
 
     const content = store

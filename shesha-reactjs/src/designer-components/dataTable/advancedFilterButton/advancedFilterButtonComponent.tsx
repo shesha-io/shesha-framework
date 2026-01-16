@@ -3,7 +3,7 @@ import { migratePrevStyles } from '@/designer-components/_common-migrations/migr
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FilterOutlined } from '@ant-design/icons';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { AdvancedFilterButton } from './advancedFilterButton';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
@@ -11,7 +11,8 @@ import { useDataTableStore } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { IAdvancedFilterButtonComponentProps } from './types';
 import { useComponentValidation } from '@/providers/validationErrors';
-import { useFormState } from '@/providers/form';
+import { useForm } from '@/providers/form';
+import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
   type: 'datatable.filter',
@@ -21,7 +22,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
-    const { formMode } = useFormState();
+    const { formMode } = useForm();
 
     const finalStyle = {
       ...model.allStyles.dimensionsStyles,
@@ -33,9 +34,12 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
       ...model.allStyles.jsStyle,
     };
 
-    const hasStore = Boolean(store);
-    const isRuntime = formMode === 'readonly' || formMode === 'edit';
-    const validationError = useMemo(() => ({
+    // Use stable hook that only recomputes when actual hierarchy changes
+    const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
+
+    const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
+
+    const validationError = React.useMemo(() => ({
       hasErrors: true,
       validationType: 'error' as const,
       errors: [{
@@ -44,17 +48,9 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
       }],
     }), []);
 
-    // CRITICAL: Register validation errors - FormComponent will display them
-    // Only register validation in runtime mode (not during design/dragging)
-    // Component identity is automatically obtained from FormComponentValidationProvider
     useComponentValidation(
-      () => {
-        // Skip validation in designer mode to prevent loops during drag operations
-        if (!isRuntime) return undefined;
-
-        return hasStore ? undefined : validationError;
-      },
-      [hasStore, validationError, isRuntime],
+      () => shouldShowError ? validationError : undefined,
+      [shouldShowError, validationError],
     );
 
     if (model.hidden) return null;

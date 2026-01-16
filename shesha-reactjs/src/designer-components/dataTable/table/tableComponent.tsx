@@ -22,16 +22,19 @@ import { StandaloneTable } from './standaloneTable';
 import { useDataTableStore } from '@/providers/dataTable';
 import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './utils';
 import { useComponentValidation } from '@/providers/validationErrors';
-import { useFormState } from '@/providers/form';
+import { useForm } from '@/providers/form';
+import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStore(false);
-  const { formMode } = useFormState();
+  const { formMode } = useForm();
 
-  // Track if store exists (not the store object itself) to avoid loops
-  const hasStore = Boolean(store);
-  const isRuntime = formMode === 'readonly' || formMode === 'edit';
+  // Use stable hook that only recomputes when actual hierarchy changes
+  const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
+
+  // Only show validation error in designer mode when component is not inside DataContext
+  const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
 
   // Memoize the validation error object to prevent unnecessary re-registrations
   const validationError = React.useMemo(() => ({
@@ -44,20 +47,12 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
   }), []); // Empty deps - this error message never changes
 
   // CRITICAL: Register validation errors - FormComponent will display them
-  // Only register validation in runtime mode (not during design/dragging)
   // Must be called before any conditional returns (React Hooks rules)
   // Component identity is automatically obtained from FormComponentValidationProvider
+  // Note: Deep equality check in validation provider prevents loops during drag
   useComponentValidation(
-    () => {
-      // Skip validation in designer mode to prevent loops during drag operations
-      if (!isRuntime) return undefined;
-
-      if (!hasStore) {
-        return validationError;
-      }
-      return undefined;
-    },
-    [hasStore, validationError, isRuntime], // Include isRuntime to skip validation during design
+    () => shouldShowError ? validationError : undefined,
+    [shouldShowError, validationError],
   );
 
   if (model.hidden) return null;

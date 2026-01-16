@@ -397,9 +397,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   useEffect(() => {
     const prev = prevPropsRef.current;
     const sortingChanged = sortMode !== prev.sortMode ||
-                          strictSortBy !== prev.strictSortBy ||
-                          strictSortOrder !== prev.strictSortOrder ||
-                          allowReordering !== prev.allowReordering;
+      strictSortBy !== prev.strictSortBy ||
+      strictSortOrder !== prev.strictSortOrder ||
+      allowReordering !== prev.allowReordering;
 
     if (sortingChanged) {
       prevPropsRef.current.sortMode = sortMode;

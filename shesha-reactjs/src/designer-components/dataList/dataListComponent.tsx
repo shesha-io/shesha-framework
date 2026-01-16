@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "@/interfaces";
 import { useDataSources } from '@/providers/dataSourcesProvider';
@@ -13,7 +13,8 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { useComponentValidation } from '@/providers/validationErrors';
-import { useFormState } from '@/providers/form';
+import { useForm } from '@/providers/form';
+import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -23,15 +24,18 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   Factory: ({ model }) => {
     const ds = useDataSources();
     const dts = useDataTableStore(false);
-    const { formMode } = useFormState();
+    const { formMode } = useForm();
 
     const dataSource = model.dataSource
       ? ds.getDataSource(model.dataSource)?.dataSource
       : dts;
 
-    const hasDataSource = Boolean(dataSource);
-    const isRuntime = formMode === 'readonly' || formMode === 'edit';
-    const validationError = useMemo(() => ({
+    // Use stable hook that only recomputes when actual hierarchy changes
+    const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
+
+    const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup && !model.dataSource;
+
+    const validationError = React.useMemo(() => ({
       hasErrors: true,
       validationType: 'error' as const,
       errors: [{
@@ -40,22 +44,13 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       }],
     }), []);
 
-    // CRITICAL: Register validation errors - FormComponent will display them
-    // Only register validation in runtime mode (not during design/dragging)
-    // Component identity is automatically obtained from FormComponentValidationProvider
     useComponentValidation(
-      () => {
-        // Skip validation in designer mode to prevent loops during drag operations
-        if (!isRuntime) return undefined;
-
-        return hasDataSource ? undefined : validationError;
-      },
-      [hasDataSource, validationError, isRuntime],
+      () => shouldShowError ? validationError : undefined,
+      [shouldShowError, validationError],
     );
 
     if (model.hidden) return null;
 
-    // If no dataSource, show placeholder - validation error will be shown by parent FormComponent
     if (!dataSource) return <DataListPlaceholder />;
 
     return <DataListControl {...model} dataSourceInstance={dataSource} />;

@@ -6,13 +6,13 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { ControlOutlined } from '@ant-design/icons';
-import React, { CSSProperties, useMemo } from 'react';
+import React, { CSSProperties } from 'react';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { IPagerComponentProps, PagerComponentDefinition } from './interfaces';
-import { useDataTableStore } from '@/providers';
 import { useComponentValidation } from '@/providers/validationErrors';
-import { useFormState } from '@/providers/form';
+import { useForm } from '@/providers/form';
+import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 
 const PagerComponent: PagerComponentDefinition = {
   type: 'datatable.pager',
@@ -24,8 +24,7 @@ const PagerComponent: PagerComponentDefinition = {
     const jsStyle = allStyles?.jsStyle;
     const fontStyles = allStyles?.fontStyles;
     const stylingBoxAsCSS = allStyles?.stylingBoxAsCSS;
-    const store = useDataTableStore(false);
-    const { formMode } = useFormState();
+    const { formMode } = useForm();
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...stylingBoxAsCSS,
@@ -33,9 +32,12 @@ const PagerComponent: PagerComponentDefinition = {
       ...jsStyle,
     });
 
-    const hasStore = Boolean(store);
-    const isRuntime = formMode === 'readonly' || formMode === 'edit';
-    const validationError = useMemo(() => ({
+    // Use stable hook that only recomputes when actual hierarchy changes
+    const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
+
+    const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
+
+    const validationError = React.useMemo(() => ({
       hasErrors: true,
       validationType: 'error' as const,
       errors: [{
@@ -44,17 +46,9 @@ const PagerComponent: PagerComponentDefinition = {
       }],
     }), []);
 
-    // CRITICAL: Register validation errors - FormComponent will display them
-    // Only register validation in runtime mode (not during design/dragging)
-    // Component identity is automatically obtained from FormComponentValidationProvider
     useComponentValidation(
-      () => {
-        // Skip validation in designer mode to prevent loops during drag operations
-        if (!isRuntime) return undefined;
-
-        return hasStore ? undefined : validationError;
-      },
-      [hasStore, validationError, isRuntime],
+      () => shouldShowError ? validationError : undefined,
+      [shouldShowError, validationError],
     );
 
     if (model.hidden) return null;

@@ -65,7 +65,7 @@ export const useComponentValidation = (
       componentType,
       hasErrors: true,
     };
-  }, [componentId, componentName, componentType, validationFn, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps -- deps provided explicitly by caller
+  }, [componentId, componentName, componentType, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps -- validationFn deliberately excluded to prevent infinite loops, deps provided explicitly by caller
 
   useEffect(() => {
     // Register validation errors using the actions from the provider
