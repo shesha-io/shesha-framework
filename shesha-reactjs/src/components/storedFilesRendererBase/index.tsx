@@ -363,9 +363,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       if (listType === 'thumbnail' && !isDragger) {
         return (
           <Space size="small" direction="vertical">
-            <Image src={imageUrls[uid]} alt={file.name} preview={false} />
-            <FileNameDisplay file={file} className={styles.fileName} />
-          </Space>
+            <Image src={imageUrls[uid]} alt={file.name} preview={false} />          </Space>
         );
       }
     }
