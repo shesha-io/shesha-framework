@@ -6,7 +6,7 @@ using System.ComponentModel;
 namespace Shesha.Domain
 {
     /// <summary>
-    /// Identifier oif the configuration item
+    /// Identifier of the configuration item
     /// </summary>
     public abstract class ConfigurationItemIdentifier: IEquatable<ConfigurationItemIdentifier>
     {

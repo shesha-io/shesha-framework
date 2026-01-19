@@ -52,4 +52,5 @@ export const EntityDocumentDefinition: DocumentDefinition = {
   documentInstanceFactory: (args) => {
     return new DocumentInstance({ ...args, itemType: EntityDocumentDefinition.documentType, definition: EntityDocumentDefinition });
   },
+  contextMenuBuilder: (menu) => menu.filter((item) => !['rename', 'duplicate', 'viewJsonConfig'].includes(item?.key as string)),
 };

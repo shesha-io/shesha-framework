@@ -80,7 +80,6 @@ namespace Shesha.DynamicEntities.DbGenerator
                     .Where(x =>
                         x.EntityConfig.Id == entityConfig.Id
                         && x.InitStatus.HasFlag(EntityInitFlags.DbActionRequired)
-                        && (x.InheritedFrom == null || x.InheritedFrom.IsDeleted)
                         && x.ParentProperty == null
                         && !x.IsFrameworkRelated)
                     .ToListAsync();
@@ -105,14 +104,16 @@ namespace Shesha.DynamicEntities.DbGenerator
             }
         }
 
-        public async Task ProcessEntityPropertyAsync(EntityProperty entityProperty)
+        public async Task ProcessEntityPropertyAsync(EntityProperty entityProperty, bool force = false)
         {
-            await UseSchemaAndTableAsync(entityProperty.EntityConfig);
-            await ProcessEntityPropertyAsync(entityProperty, false);
-        }
+            if (entityProperty.InheritedFrom != null && !entityProperty.InheritedFrom.IsDeleted)
+            {
+                await UpdateSuccessAsync(entityProperty);
+                return;
+            }
 
-        private async Task ProcessEntityPropertyAsync(EntityProperty entityProperty, bool force)
-        {
+            await UseSchemaAndTableAsync(entityProperty.EntityConfig);
+
             var propertyDbType = GetDbColumnType(entityProperty);
             var columnName = entityProperty.ColumnName.NotNull($"Column name for property {entityProperty.Name} of {entityProperty.EntityConfig.FullClassName} should not be null");
 
@@ -157,7 +158,7 @@ namespace Shesha.DynamicEntities.DbGenerator
                         tableName = numberTableName;
 
                         // ToDo: AS - get Id Column and naming generator
-                        entityProperty.ListConfiguration.DbMapping.ManyToManyTableName = $"{schema}.{tableName}";
+                        entityProperty.ListConfiguration.DbMapping.ManyToManyTableName = string.IsNullOrEmpty(schema) ? tableName : $"{schema}.{tableName}";
                         entityProperty.ListConfiguration.DbMapping.ManyToManyKeyColumnName = $"{columnName}_id";
                         entityProperty.ListConfiguration.DbMapping.ManyToManyChildColumnName = $"{refConfig.TableName}_id";
                     }
@@ -189,35 +190,42 @@ namespace Shesha.DynamicEntities.DbGenerator
                 return;
 
             // Create column
-            if (propertyDbType.ColumnType == DbColumnTypeEnum.EntityReference && (force || !await _dbActions.IsColumnExistsAsync(columnName)))
+            if (propertyDbType.ColumnType == DbColumnTypeEnum.EntityReference)
             {
-                var referenceConfig = (await _entityConfigCache.GetDynamicSafeEntityConfigAsync(
-                    entityProperty.DataType == DataTypes.File
-                        ? typeof(StoredFile).FullName.NotNull()
-                        : entityProperty.EntityFullClassName.NotNull()
-                )).NotNull();
-                var primarySchema = entityProperty.DataType == DataTypes.File
-                    ? MappingHelper.GetSchemaName(typeof(StoredFile))
-                    : referenceConfig?.SchemaName;
-                var primaryTable = entityProperty.DataType == DataTypes.File
-                    ? MappingHelper.GetTableName(typeof(StoredFile))
-                    : referenceConfig?.TableName.NotNull();
-                primaryTable = primarySchema.IsNullOrEmpty()
-                    ? primaryTable
-                    : $"{primarySchema}.{primaryTable}";
-                await _dbActions.CreateEntityReferenceColumnAsync($"{columnName}", primaryTable.NotNull(), "id"); // ToDo: AS - get Id Column
+                // ToDo: AS - check column type
+                if (force || !await _dbActions.IsColumnExistsAsync(columnName))
+                {
+                    var referenceConfig = (await _entityConfigCache.GetDynamicSafeEntityConfigAsync(
+                        entityProperty.DataType == DataTypes.File
+                            ? typeof(StoredFile).FullName.NotNull()
+                            : entityProperty.EntityFullClassName.NotNull()
+                    )).NotNull();
+                    var primarySchema = entityProperty.DataType == DataTypes.File
+                        ? MappingHelper.GetSchemaName(typeof(StoredFile))
+                        : referenceConfig?.SchemaName;
+                    var primaryTable = entityProperty.DataType == DataTypes.File
+                        ? MappingHelper.GetTableName(typeof(StoredFile))
+                        : referenceConfig?.TableName.NotNull();
+                    primaryTable = primarySchema.IsNullOrEmpty()
+                        ? primaryTable
+                        : $"{primarySchema}.{primaryTable}";
+                    await _dbActions.CreateEntityReferenceColumnAsync($"{columnName}", primaryTable.NotNull(), "id"); // ToDo: AS - get Id Column
+                }
 
                 await UpdateSuccessAsync(entityProperty);
                 await UpdateInheritedProperttiesAsync(entityProperty);
                 return;
             }
             // ToDo: AS - get Id Column and naming generator
-            if (propertyDbType.ColumnType == DbColumnTypeEnum.GenericEntityReference && (force || !await _dbActions.IsColumnExistsAsync($"{columnName}_id"))) // ToDo: AS - get Id Column
+            if (propertyDbType.ColumnType == DbColumnTypeEnum.GenericEntityReference) 
             {
-                await _dbActions.CreateColumnAsync($"{columnName}_id", new DbColumnType(DbColumnTypeEnum.String, 100));
-                await _dbActions.CreateColumnAsync($"{columnName}_class_name", new DbColumnType(DbColumnTypeEnum.String, 1000));
-                await _dbActions.CreateColumnAsync($"{columnName}_display_name", new DbColumnType(DbColumnTypeEnum.String));
-
+                // ToDo: AS - check columns type
+                if (force || !await _dbActions.IsColumnExistsAsync($"{columnName}_id")) // ToDo: AS - get Id Column
+                    await _dbActions.CreateColumnAsync($"{columnName}_id", new DbColumnType(DbColumnTypeEnum.String, 100));
+                if (force || !await _dbActions.IsColumnExistsAsync($"{columnName}_class_name"))
+                    await _dbActions.CreateColumnAsync($"{columnName}_class_name", new DbColumnType(DbColumnTypeEnum.String, 1000));
+                if (force || !await _dbActions.IsColumnExistsAsync($"{columnName}_display_name"))
+                    await _dbActions.CreateColumnAsync($"{columnName}_display_name", new DbColumnType(DbColumnTypeEnum.String));
                 await UpdateSuccessAsync(entityProperty);
                 await UpdateInheritedProperttiesAsync(entityProperty);
                 return;

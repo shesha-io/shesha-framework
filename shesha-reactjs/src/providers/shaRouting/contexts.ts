@@ -17,6 +17,7 @@ export interface IShaRoutingActionsContext {
    * @returns url to the dynamic page (e.g. '/dynamic/moduleName/formName' or '/no-auth/moduleName/formName')
    */
   getFormUrl: (formId: FormIdentifier) => string;
+  prepareUrl: (url: string) => string;
 
   /**
    * Get url from navigation request

@@ -1,5 +1,5 @@
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
-import { FormMarkupFactory } from '@/interfaces/configurableAction';
+import { FormMarkupFactory, IActionExecutionContext } from '@/interfaces/configurableAction';
 import { nanoid } from '@/utils/uuid';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
@@ -7,6 +7,7 @@ import { executeScript } from '../../form/utils';
 
 export interface IExecuteScriptArguments {
   expression: string;
+  executer?: (context: IActionExecutionContext) => Promise<unknown>;
 }
 
 const executeScriptArgumentsForm: FormMarkupFactory = ({ exposedVariables, availableConstants, fbf }) => {
@@ -114,13 +115,18 @@ export const useExecuteScriptAction = (): void => {
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
       name: 'Execute Script',
+      sortOrder: 1,
       hasArguments: true,
       argumentsFormMarkup: (formArgs) => executeScriptArgumentsForm(formArgs),
-      executer: (actionArgs, context) => {
-        if (!actionArgs.expression)
-          return Promise.reject('Expected expression to be defined but it was found to be empty.');
+      executer: ({ expression, executer }, context) => {
+        if (executer) {
+          return executer(context);
+        } else {
+          if (!expression)
+            return Promise.reject('Expected expression to be defined but it was found to be empty.');
 
-        return executeScript(actionArgs.expression, context);
+          return executeScript(expression, context);
+        }
       },
     },
     [],

@@ -32,7 +32,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             _manager = manager;           
         }
 
-        public string ItemType => NotificationTypeConfig.ItemTypeName;
+        public override string ItemType => NotificationTypeConfig.ItemTypeName;
 
         protected override async Task AfterImportAsync(NotificationTypeConfig item, DistributedNotificationType distributedItem, IConfigurationItemsImportContext context)
         {
@@ -75,7 +75,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
                 item.Disable == distributedItem.Disable &&
                 item.CanOptOut == distributedItem.CanOptOut &&
                 (item.Category ?? string.Empty) == (distributedItem.Category ?? string.Empty) &&
-                (item.OverrideChannels ?? string.Empty) == (distributedItem.OverrideChannels ?? string.Empty);
+                IdListsEqual(item.OverrideChannels ?? new List<ConfigurationItemIdentifierDto>(), distributedItem.OverrideChannels ?? new List<ConfigurationItemIdentifierDto>());
 
             if (!equals)
                 return false;
@@ -97,6 +97,11 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
                     return false;
             }
             return true;
+        }
+
+        private bool IdListsEqual(IList<ConfigurationItemIdentifierDto> listA, IList<ConfigurationItemIdentifierDto> listB)
+        { 
+            return listA.Count == listB.Count && listA.All(listB.Contains);
         }
 
         protected override Task MapCustomPropsToItemAsync(NotificationTypeConfig item, DistributedNotificationType distributedItem)

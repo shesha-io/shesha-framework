@@ -21,6 +21,7 @@ import {
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IHasModelType, IRepository } from './repository/interfaces';
 import { createNamedContext } from '@/utils/react';
+import { IModelValidation } from '@/utils/errors';
 
 /** Table Selection */
 
@@ -174,6 +175,9 @@ export interface IDataTableStateContext
   customReorderEndpoint?: string;
   onBeforeRowReorder?: IConfigurableActionConfiguration;
   onAfterRowReorder?: IConfigurableActionConfiguration;
+
+  /** Validation result from parent DataContext component */
+  contextValidation?: IModelValidation;
 }
 
 export type DragState = 'started' | 'finished' | null;
@@ -275,6 +279,7 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
   onBeforeRowReorder: undefined,
   onAfterRowReorder: undefined,
   customReorderEndpoint: null,
+  contextValidation: undefined,
 };
 
 export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }

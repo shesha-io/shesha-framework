@@ -35,7 +35,7 @@ export const HasPreviousActionResponse = (value: HasPreviousActionResult): value
  */
 export type IConfigurableActionExecuter<TArguments, TReponse> = (
   actionArguments: TArguments,
-  context: IActionExecutionContext
+  context: IActionExecutionContext,
 ) => Promise<TReponse>;
 
 export interface ISettingsFormFactoryArgs<TModel extends object = object> {
@@ -56,7 +56,7 @@ export interface FormMarkupFactoryArgs {
 export type FormMarkupFactory = (factoryArgs: FormMarkupFactoryArgs) => FormMarkup;
 
 export type IConfigurableActionArgumentsFormFactory<TModel extends object = object> = (
-  props: ISettingsFormFactoryArgs<TModel>
+  props: ISettingsFormFactoryArgs<TModel>,
 ) => ReactNode;
 
 export interface IHasActionOwner {
@@ -81,13 +81,13 @@ export interface IConfigurableActionIdentifier extends IHasActionOwner {
 export type DynamicContextHook = () => GenericDictionary;
 export const EMPTY_DYNAMIC_CONTEXT_HOOK: DynamicContextHook = () => ({});
 
-export type ConfigurableActionArgumentsMigrationContext = never;
+export type ConfigurableActionArgumentsMigrationContext = void;
 
 /**
  * Arguments migrator
  */
 export type ConfigurableActionArgumentsMigrator<TArguments> = (
-  migrator: Migrator<unknown, TArguments, ConfigurableActionArgumentsMigrationContext>
+  migrator: Migrator<unknown, TArguments, ConfigurableActionArgumentsMigrationContext>,
 ) => MigratorFluent<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>;
 
 /**
@@ -103,6 +103,10 @@ export interface IConfigurableActionDescriptor<TArguments extends object = objec
    * Action description
    */
   description?: string;
+  /**
+   * Sort order for displaying actions in the list. Lower numbers appear first.
+   */
+  sortOrder?: number;
   /**
    * If true, indicaes that the action has configurable arguments
    */

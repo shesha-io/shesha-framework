@@ -15,6 +15,7 @@ export type ShaRouterArgs = {
   router: IRouter;
   getFormUrlFunc?: FormUrlEvaluator | undefined;
   getIsLoggedIn: () => boolean;
+  urlOverrideFunc?: (url: string) => string;
 };
 
 export class ShaRouter implements IShaRouter {
@@ -23,6 +24,8 @@ export class ShaRouter implements IShaRouter {
   private _getFormUrlFunc?: (formId: FormIdentifier, isLoggedIn: boolean) => string;
 
   private _getIsLoggedIn: () => boolean;
+
+  private _urlOverrideFunc?: (url: string) => string;
 
   private _navigationValidators: Array<(url: string) => Promise<boolean>> = [];
 
@@ -34,7 +37,14 @@ export class ShaRouter implements IShaRouter {
     this._router = args.router;
     this._getFormUrlFunc = args.getFormUrlFunc;
     this._getIsLoggedIn = args.getIsLoggedIn;
+    this._urlOverrideFunc = args.urlOverrideFunc;
   }
+
+  prepareUrl = (url: string): string => {
+    return this._urlOverrideFunc
+      ? this._urlOverrideFunc(url)
+      : url;
+  };
 
   validateNavigation = async (url: string): Promise<boolean> => {
     for (const validator of this._navigationValidators) {
@@ -54,6 +64,7 @@ export class ShaRouter implements IShaRouter {
     this._router = args.router;
     this._getFormUrlFunc = args.getFormUrlFunc;
     this._getIsLoggedIn = args.getIsLoggedIn;
+    this._urlOverrideFunc = args.urlOverrideFunc;
   }
 
   goingToRoute = (route: string): Promise<boolean> => {
@@ -75,17 +86,18 @@ export class ShaRouter implements IShaRouter {
       : '';
   };
 
-  private _prepareUrl = (url: string, queryParameters?: IKeyValue[]): string => {
+  private _buildFinalUrl = (url: string, queryParameters?: IKeyValue[]): string => {
     const queryParams = mapKeyValueToDictionary(queryParameters);
-    return buildUrl(url, queryParams);
+    const fullUrl = buildUrl(url, queryParams);
+    return this.prepareUrl(fullUrl);
   };
 
   getUrlFromNavigationRequest = (request: INavigateActoinArguments): string | undefined => {
     switch (request?.navigationType) {
-      case 'url': return this._prepareUrl(request.url, request.queryParameters);
+      case 'url': return this._buildFinalUrl(request.url, request.queryParameters);
       case 'form': {
         const formUrl = this.getFormUrl(request.formId);
-        return this._prepareUrl(formUrl, request.queryParameters);
+        return this._buildFinalUrl(formUrl, request.queryParameters);
       }
       default: return undefined;
     }

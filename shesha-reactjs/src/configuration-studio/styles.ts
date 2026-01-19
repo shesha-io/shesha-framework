@@ -86,6 +86,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         .${csWorkArea}{
             height: calc(100vh - ${headerHeight}px);
             overflow: auto;
+            flex-grow: 1 !important;
             .${csDocTabs}{
                 height: 100%;
                 >.ant-tabs-content-holder{

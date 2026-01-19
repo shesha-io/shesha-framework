@@ -295,6 +295,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 labelAlign: 'right',
                 parentId: appearanceTabId,
                 hidden: false,
+
                 propertyRouteName: {
                   _mode: "code",
                   _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",

@@ -197,7 +197,10 @@ export const getCachedMetadataByClassName = (className: string, context: ISyncEn
 };
 
 export const isEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifier | null | undefined): modelType is IEntityTypeIdentifier =>
-  modelType !== null && modelType !== undefined && typeof modelType === 'object' && 'name' in modelType && 'module' in modelType;
+  modelType !== null && modelType !== undefined &&
+  typeof modelType === 'object' &&
+  'name' in modelType && 'module' in modelType &&
+  typeof modelType.name === 'string';
 
 export const getEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifier): IEntityTypeIdentifier =>
   (isEntityTypeIdentifier(modelType) ? modelType : { name: modelType, module: null });
@@ -214,7 +217,8 @@ export const isEntityTypeIdEqual = (a: string | IEntityTypeIdentifier, b: string
 export const isEntityTypeIdEmpty = (a: string | IEntityTypeIdentifier | null | undefined): boolean =>
   a === null || a === undefined ||
   (typeof a === 'string' && a.trim().length === 0) ||
-  (isEntityTypeIdentifier(a) && (a.name.trim().length === 0));
+  (typeof a === 'object' && !isEntityTypeIdentifier(a)) ||
+  (isEntityTypeIdentifier(a) && a.name.trim().length === 0);
 
 export const getEntityTypeName = (modelType: string | IEntityTypeIdentifier | null | undefined): string | null | undefined =>
   isEntityTypeIdentifier(modelType)

@@ -27,9 +27,22 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       ? ds.getDataSource(model.dataSource)?.dataSource
       : dts;
 
+    // Check if form is configured
+    const hasFormConfigured =
+      (model.formSelectionMode === "name" && model.formId) ||
+      (model.formSelectionMode === "view" && model.formType) ||
+      (model.formSelectionMode === "expression" && model.formIdExpression);
+
     return dataSource
       ? <DataListControl {...model} dataSourceInstance={dataSource} />
-      : <NotConfiguredWarning />;
+      : (
+        <NotConfiguredWarning
+          message={hasFormConfigured
+            ? "This Data List has no data source configured. Data Lists require to be placed inside a Data Context (like a Data Table or Entity Picker) to fetch data."
+            : "This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items."}
+          isWarning={true}
+        />
+      );
   },
   migrator: (m) => m
     .add<IDataListComponentProps>(0, (prev) => ({

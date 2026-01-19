@@ -82,6 +82,16 @@ type ConfigurationRawIdLookup = {
   name: string;
 };
 
+type ModuleInfo = {
+  name: string;
+  description: string | null;
+  alias: string | null;
+  isEditable: boolean;
+};
+type GetModulesResponse = {
+  modules: ModuleInfo[];
+};
+
 const LOOKUP_SUFFIX = '_lookup';
 
 export class ConfigurationLoader implements IConfigurationLoader {
@@ -92,6 +102,8 @@ export class ConfigurationLoader implements IConfigurationLoader {
   #cacheProvider: ICacheProvider;
 
   #requests: Map<string, IConfigurationRequests> = new Map<string, IConfigurationRequests>();
+
+  #modules: Map<string, ModuleInfo> | undefined;
 
   constructor(args: ConfigurationLoaderConstructorArgs) {
     this.#httpClient = args.httpClient;
@@ -119,10 +131,24 @@ export class ConfigurationLoader implements IConfigurationLoader {
     return { name: dto.name, module: dto.module };
   };
 
+  getModulesAsync = async (): Promise<Map<string, ModuleInfo>> => {
+    if (!isDefined(this.#modules)) {
+      const response = await this.#httpClient.get<IAjaxResponse<GetModulesResponse>>(URLS.GET_MODULES);
+      const modulesResponse = extractAjaxResponse(response.data);
+      this.#modules = new Map(modulesResponse.modules.map((m) => [m.name, m]));
+    }
+    return this.#modules;
+  };
+
+  isModuleEditableAsync = async (moduleName: string): Promise<boolean> => {
+    const modules = await this.getModulesAsync();
+    return modules.get(moduleName)?.isEditable ?? false;
+  };
+
   getFormAsync = async (payload: IGetFormPayload): Promise<IFormDto> => {
-    const form = await this.getCurrentConfigAsync({ type: ConfigurationType.Form, id: payload.formId, skipCache: payload.skipCache });
-    const formDto = form as FormConfigurationDto;
-    const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(formDto), this.#designerComponents);
+    const form = await this.getCurrentConfigAsync<FormConfigurationDto>({ type: ConfigurationType.Form, id: payload.formId, skipCache: payload.skipCache });
+    const isEditable = await this.isModuleEditableAsync(form.module);
+    const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(form, !isEditable), this.#designerComponents);
     return dto;
   };
 
@@ -340,6 +366,8 @@ export class ConfigurationLoader implements IConfigurationLoader {
               return cachedConfiguration;
             } else
               throw new Error('Unknown cache error', { cause: e });
+          case 400:
+            throw new ConfigurationLoadingError(getConfigurationNotFoundMessage(type, id), e.status, { cause: e });
           case 404:
             throw new ConfigurationLoadingError(getConfigurationNotFoundMessage(type, id), e.status, { cause: e });
           case 401:

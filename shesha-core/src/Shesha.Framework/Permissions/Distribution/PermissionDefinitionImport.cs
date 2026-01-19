@@ -15,7 +15,7 @@ namespace Shesha.DynamicEntities.Distribution
     /// inheritedDoc
     public class PermissionDefinitionImport : ConfigurationItemImportBase<PermissionDefinition, DistributedPermissionDefinition>, IPermissionDefinitionImport, ITransientDependency
     {
-        public string ItemType => PermissionDefinition.ItemTypeName;
+        public override string ItemType => PermissionDefinition.ItemTypeName;
 
         private readonly IShaPermissionManager _shaPermissionManager;
 

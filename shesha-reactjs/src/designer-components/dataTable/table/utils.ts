@@ -65,16 +65,25 @@ export const getTableDefaults = (): {
   rowBorder: string;
   headerFontSize: string;
   headerFontWeight: string;
+  rowAlternateBackgroundColor: string;
+  striped: boolean;
+  hoverHighlight: boolean;
+  headerBackgroundColor: string;
+  headerFontFamily: string;
 } => {
   return {
-    // Row styling defaults
     rowHeight: '40px',
-    rowPadding: '1px 1px',
+    rowPadding: '8px 12px',
     rowBorder: 'none',
 
-    // Header styling defaults
     headerFontSize: '14px',
-    headerFontWeight: '400',
+    headerFontWeight: '500',
+    headerBackgroundColor: '#fafafa',
+    headerFontFamily: 'Segoe UI',
+
+    rowAlternateBackgroundColor: '#f5f5f5',
+    striped: true,
+    hoverHighlight: false,
   };
 };
 
@@ -85,6 +94,10 @@ export const getTableSettingsDefaults = (): {
     rowBorder: string;
     headerFontSize: string;
     headerFontWeight: string;
+    rowAlternateBackgroundColor: string;
+    striped: boolean;
+    hoverHighlight: boolean;
+    headerBackgroundColor: string;
   };
 } => {
   const flatDefaults = getTableDefaults();
@@ -214,8 +227,145 @@ export const calculateDefaultColumns = async (metadata: IModelMetadata): Promise
     ? supportedProperties.slice(0, MAX_NUMBER_OF_DEFAULT_COLS)
     : supportedProperties;
 
-  // Create IDataColumnsProps from filtered properties
   const columnItems: IDataColumnsProps[] = tableColumns.map(propertyToDataColumn);
 
   return columnItems;
+};
+
+const addPxUnit = (value?: string | number): string => {
+  if (!value && value !== 0) return '0px';
+  const strValue = String(value);
+  if (/^-?\d+\.?\d*$/.test(strValue)) {
+    return `${strValue}px`;
+  }
+  return strValue;
+};
+
+export const convertRowDimensionsToHeight = (rowDimensions?: {
+  height?: string;
+  minHeight?: string;
+  maxHeight?: string;
+}): string | undefined => {
+  if (!rowDimensions?.height) return undefined;
+  return addPxUnit(rowDimensions.height);
+};
+
+export type RowStylingBoxType = {
+  padding?: {
+    top?: string | number;
+    right?: string | number;
+    bottom?: string | number;
+    left?: string | number;
+  };
+  paddingTop?: string | number;
+  paddingRight?: string | number;
+  paddingBottom?: string | number;
+  paddingLeft?: string | number;
+};
+
+export const convertRowPaddingFieldsToPadding = (
+  top?: string,
+  right?: string,
+  bottom?: string,
+  left?: string,
+): string | undefined => {
+  // If none of the fields are provided, return undefined
+  if (!top && !right && !bottom && !left) return undefined;
+
+  const topPx = addPxUnit(top);
+  const rightPx = addPxUnit(right);
+  const bottomPx = addPxUnit(bottom);
+  const leftPx = addPxUnit(left);
+
+  if (topPx === rightPx && rightPx === bottomPx && bottomPx === leftPx) {
+    return topPx;
+  }
+
+  if (topPx === bottomPx && leftPx === rightPx) {
+    return `${topPx} ${leftPx}`;
+  }
+
+  return `${topPx} ${rightPx} ${bottomPx} ${leftPx}`;
+};
+
+/** @deprecated Use convertRowPaddingFieldsToPadding instead */
+export const convertRowStylingBoxToPadding = (rowStylingBox?: string | RowStylingBoxType): string | undefined => {
+  if (!rowStylingBox) return undefined;
+
+  let stylingBox: RowStylingBoxType;
+  if (typeof rowStylingBox === 'string') {
+    try {
+      stylingBox = JSON.parse(rowStylingBox);
+    } catch (e) {
+      console.warn('Failed to parse rowStylingBox JSON:', e);
+      return undefined;
+    }
+  } else {
+    stylingBox = rowStylingBox;
+  }
+
+  let top: string | number | undefined;
+  let right: string | number | undefined;
+  let bottom: string | number | undefined;
+  let left: string | number | undefined;
+
+  if (stylingBox?.padding) {
+    top = stylingBox.padding.top;
+    right = stylingBox.padding.right;
+    bottom = stylingBox.padding.bottom;
+    left = stylingBox.padding.left;
+  } else if (stylingBox?.paddingTop || stylingBox?.paddingRight ||
+    stylingBox?.paddingBottom || stylingBox?.paddingLeft) {
+    top = stylingBox.paddingTop;
+    right = stylingBox.paddingRight;
+    bottom = stylingBox.paddingBottom;
+    left = stylingBox.paddingLeft;
+  } else {
+    return undefined;
+  }
+
+  const topPx = addPxUnit(top);
+  const rightPx = addPxUnit(right);
+  const bottomPx = addPxUnit(bottom);
+  const leftPx = addPxUnit(left);
+
+  if (topPx === rightPx && rightPx === bottomPx && bottomPx === leftPx) {
+    return topPx;
+  }
+
+  if (topPx === bottomPx && leftPx === rightPx) {
+    return `${topPx} ${leftPx}`;
+  }
+
+  return `${topPx} ${rightPx} ${bottomPx} ${leftPx}`;
+};
+
+export const convertRowBorderStyleToBorder = (rowBorderStyle?: {
+  borderType?: string;
+  border?: {
+    all?: { width?: string | number; style?: string; color?: string };
+    top?: { width?: string | number; style?: string; color?: string };
+    right?: { width?: string | number; style?: string; color?: string };
+    bottom?: { width?: string | number; style?: string; color?: string };
+    left?: { width?: string | number; style?: string; color?: string };
+  };
+}): string | undefined => {
+  if (!rowBorderStyle?.border) return undefined;
+
+  const { borderType, border } = rowBorderStyle;
+
+  if (borderType === 'all' && border.all) {
+    const { width, style, color } = border.all;
+    if (!width || !style || !color) return undefined;
+    return `${addPxUnit(width)} ${style} ${color}`;
+  }
+
+  const firstBorder = border.top || border.right || border.bottom || border.left;
+  if (firstBorder) {
+    const { width, style, color } = firstBorder;
+    if (!width || !style || !color) return undefined;
+    return `${addPxUnit(width)} ${style} ${color}`;
+  }
+
+  return undefined;
 };

@@ -1,5 +1,5 @@
 import { FormFullName } from "@/providers";
-import { DataTypes, ObjectFormats } from "./dataTypes";
+import { ArrayFormats, DataTypes, ObjectFormats } from "./dataTypes";
 import { IDictionary } from "./shesha";
 import { DataTypeInfo } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { isDefined } from "@/utils/nullables";
@@ -139,7 +139,7 @@ export const isEntityReferencePropertyMetadata = (propMeta: IMemberMetadata): pr
 };
 
 export const isEntityReferenceArrayPropertyMetadata = (propMeta: IMemberMetadata): propMeta is IEntityReferenceArrayPropertyMetadata => {
-  return propMeta && propMeta.dataType === DataTypes.array && propMeta.dataFormat === DataTypes.entityReference;
+  return propMeta && propMeta.dataType === DataTypes.array && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(propMeta.dataFormat);
 };
 
 export const isObjectReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IObjectReferencePropertyMetadata => {
@@ -309,6 +309,12 @@ export interface IObjectMetadata extends IMetadata, IContainerWithNestedProperti
 
 }
 
+export interface IJsonEntityMetadata extends ConfigurationDto, Omit<IObjectMetadata, 'name' | 'description'>, IHasFullEntityType {
+  md5?: string;
+  changeTime?: Date;
+  aliases?: string[];
+}
+
 export interface IEntityMetadata extends ConfigurationDto, Omit<IObjectMetadata, 'name' | 'description'>, IHasFullEntityType {
   md5?: string;
   changeTime?: Date;
@@ -326,15 +332,16 @@ export type IModelMetadata = IEntityMetadata | IObjectMetadata | IContextMetadat
 export const isEntityMetadata = (value: IModelMetadata): value is IEntityMetadata => {
   return value && value.dataType === DataTypes.entityReference;
 };
-export const isObjectMetadata = (value: IModelMetadata): value is IObjectMetadata => {
-  return value && value.dataType === DataTypes.object;
+export const isJsonEntityMetadata = (value: IModelMetadata): value is IJsonEntityMetadata => {
+  const typed = value as IJsonEntityMetadata;
+  return value && value.dataType === DataTypes.object && typeof typed.module === 'string';
 };
 export const isContextMetadata = (value: IModelMetadata): value is IContextMetadata => {
   return value && value.dataType === DataTypes.context;
 };
 
 export const metadataHasNestedProperties = (value: IModelMetadata): value is IContainerWithNestedProperties & IModelMetadata => {
-  return (isEntityMetadata(value) || isObjectMetadata(value) || isContextMetadata(value)) &&
+  return (isEntityMetadata(value) || isJsonEntityMetadata(value) || isContextMetadata(value)) &&
     Array.isArray((value as IContainerWithNestedProperties).properties);
 };
 

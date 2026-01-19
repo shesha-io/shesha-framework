@@ -73,7 +73,7 @@ export const getSettings = (
               .addSettingsInput({ parentId: commonTabId, inputType: 'switch', propertyName: 'suppress', label: 'Hidden' })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textField', propertyName: 'name', label: 'Name', validate: { required: true },
                 regExp: '(?!^)[^a-zA-Z0-9_-]|^[^a-zA-Z]',
-                editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
               })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textField', propertyName: 'label', label: 'Label', validate: { required: true } })
               .addSettingsInput({ parentId: commonTabId, inputType: 'textArea', propertyName: 'description', label: 'Description' })
@@ -96,7 +96,7 @@ export const getSettings = (
                   components: [...fbf()
                     .addSettingsInput({ parentId: entityFormatId, inputType: 'switch', context: 'formContext', propertyName: 'genericEntityReference',
                       label: 'Generic Entity Reference',
-                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !(data.createdInDb && !data.inheritedFromId) && data.source != 1;' } as any,
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit' } as any,
                       onChangeSetting: (value, _data, setFormData) => {
                         setFormData({
                           values: {
@@ -109,7 +109,7 @@ export const getSettings = (
                     })
                     .addSettingsInput({ parentId: entityFormatId, inputType: 'entityTypeAutocomplete', propertyName: 'entityType',
                       label: 'Entity Type', entityAutocompleteType: 'Entity',
-                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !(data.createdInDb && !data.inheritedFromId) && data.source != 1;' } as any,
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
                       hidden: { _code: 'return data.dataFormat === \'generic-entity\';', _mode: 'code', _value: false },
                       validate: { required: true },
                     })
@@ -125,7 +125,7 @@ export const getSettings = (
                 .addContainer({ id: objectRefFormatId, parentId: dataTabId, hidden: { _code: 'return data?.dataType !== \'object\';', _mode: 'code', _value: false },
                   components: [...fbf()
                     .addSettingsInput({ parentId: objectRefFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'Object Format',
-                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit' } as any,
                       dropdownOptions: [
                         { label: 'Nested object', value: 'object' },
                         { label: 'Part of entity', value: 'interface' },
@@ -135,7 +135,7 @@ export const getSettings = (
                     .addSettingsInput({ parentId: objectRefFormatId,
                       inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Part Of Entity Type', entityAutocompleteType: 'JsonEntity',
                       hidden: { _code: 'return data?.dataFormat !== \'interface\';', _mode: 'code', _value: false },
-                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !(data.createdInDb && !data.inheritedFromId) && data.source != 1;' } as any,
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
                       validate: { required: true },
                     })
                     .toJson(),
@@ -166,7 +166,7 @@ export const getSettings = (
                 .addContainer({ id: listFormatId, parentId: dataTabId, hidden: { _code: 'return data?.dataType !== \'array\';', _mode: 'code', _value: false },
                   components: [...fbf()
                     .addSettingsInput({ parentId: advancedFormatId, inputType: 'dropdown', propertyName: 'dataFormat', label: 'List Format',
-                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
                       dropdownOptions: [
                         { label: 'Simple Values', value: 'simple' },
                         { label: 'Referencing Entities (many to one)', value: 'entity' },
@@ -183,14 +183,14 @@ export const getSettings = (
                     .addSettingsInput({ parentId: listFormatId,
                       inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type', entityAutocompleteType: 'Entity',
                       hidden: { _code: 'const d = data?.dataFormat; return d !== \'many-entity\' && d !== \'entity\';', _mode: 'code', _value: false },
-                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
                       validate: { required: true },
                     })
                     .addSettingsInput({ parentId: listFormatId, inputType: 'propertyAutocomplete', propertyName: 'listConfiguration.foreignProperty', label: 'Referencing Property',
                       modelType: { _code: 'return data?.entityType;', _mode: 'code', _value: false } as any,
                       propertyModelType: { module: modelConfiguration.module, name: modelConfiguration.name } as IEntityTypeIdentifier,
                       hidden: { _code: 'return data?.dataFormat !== \'entity\';', _mode: 'code', _value: false },
-                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
                       tooltip: `Allow to select only the properties with the type of edited entity ${modelConfiguration.name ? '(' + modelConfiguration.name + ')' : ''}.`,
                       validate: { required: true },
                     })
@@ -199,7 +199,7 @@ export const getSettings = (
 
                     .addSettingsInput({ parentId: listFormatId,
                       inputType: 'dropdown', propertyName: 'itemsType.dataFormat', label: 'Object Format',
-                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
                       dropdownOptions: [
                         { label: 'Nested object', value: 'object' },
                         { label: 'Part of entity', value: 'interface' },
@@ -210,7 +210,7 @@ export const getSettings = (
                     .addSettingsInput({ parentId: listFormatId,
                       inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Part Of Entity Type', entityAutocompleteType: 'JsonEntity',
                       hidden: { _code: 'return data?.dataFormat !== \'object\' || data?.itemsType?.dataFormat !== \'interface\';', _mode: 'code', _value: false },
-                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return !data.createdInDb && data.source != 1;' } as any,
+                      editMode: { _value: 'inherited', _mode: 'code', _code: 'return data.allowEdit;' } as any,
                       validate: { required: true },
                     })
 

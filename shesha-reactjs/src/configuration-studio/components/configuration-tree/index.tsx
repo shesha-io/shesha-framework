@@ -12,6 +12,7 @@ import { useFilteredTreeNodes } from './filter';
 import { DndPreview } from './dndPreview';
 import { DropPositions } from './models';
 import { isDefined } from '@/utils/nullables';
+import { useConfigurationStudioEnvironment } from '@/configuration-studio/cs-environment/contexts';
 
 export interface IConfigurationTreeProps {
   debugDnd?: boolean;
@@ -60,6 +61,7 @@ type DndState = {
 
 export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = false }) => {
   const cs = useConfigurationStudio();
+  const { getDocumentDefinition } = useConfigurationStudioEnvironment();
   const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
   const { setIsDragging } = useCsTreeDnd();
   const [contextNode, setContextNode] = useState<TreeNode | null>(null);
@@ -133,8 +135,9 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
     return buildNodeContextMenu({
       node: contextNode,
       configurationStudio: cs,
+      getDocumentDefinition,
     });
-  }, [contextNode, cs]);
+  }, [contextNode, cs, getDocumentDefinition]);
 
   const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { value } = e.target;

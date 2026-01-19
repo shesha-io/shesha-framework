@@ -8,6 +8,9 @@ import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateV12toV13 } from './migrations/migrate-v13';
 import { migrateV15toV16 } from './migrations/migrate-v16';
+import { migrateV17toV18 } from './migrations/migrate-v18';
+import { migrateV18toV19 } from './migrations/migrate-v19';
+import { migrateV24toV25 } from './migrations/migrate-v25';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
 import { TableOutlined } from '@ant-design/icons';
@@ -19,7 +22,6 @@ import { migratePrevStyles } from '@/designer-components/_common-migrations/migr
 import { StandaloneTable } from './standaloneTable';
 import { useDataTableStore } from '@/providers/dataTable';
 import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './utils';
-
 
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
@@ -51,7 +53,11 @@ const TableComponent: TableComponentDefinition = {
 
     return {
       items: [],
-      striped: true,
+      rowDimensions: {
+        height: '40px',
+        minHeight: 'auto',
+        maxHeight: 'auto',
+      },
       ...defaults,
       ...tableDefaults,
       ...tableSettingsDefaults,
@@ -60,6 +66,15 @@ const TableComponent: TableComponentDefinition = {
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  validateModel: (model, addModelError) => {
+    // Data context validation is now handled centrally in formComponent.tsx
+
+    // Validate that table has columns configured
+    const hasColumns = model.items && Array.isArray(model.items) && model.items.length > 0;
+    if (!hasColumns) {
+      addModelError('items', 'Configure at least one column in the settings panel');
+    }
+  },
   migrator: (m) =>
     m
       .add<ITableComponentProps>(0, (prev) => {
@@ -137,11 +152,79 @@ const TableComponent: TableComponentDefinition = {
         rowBorder: prev.rowBorder ?? '1px solid #f0f0f0',
         headerFontSize: prev.headerFontSize ?? '14px',
         headerFontWeight: prev.headerFontWeight ?? '600',
-      })),
+      }))
+      .add<ITableComponentProps>(18, migrateV17toV18)
+      .add<ITableComponentProps>(19, migrateV18toV19)
+      .add<ITableComponentProps>(20, (prev) => ({ ...prev, hoverHighlight: prev.hoverHighlight ?? true }))
+      .add<ITableComponentProps>(21, (prev) => ({
+        ...prev,
+        rowDimensions: prev.rowDimensions ?? { height: '40px' },
+      }))
+      .add<ITableComponentProps>(22, (prev) => ({
+        ...prev,
+        rowAlternateBackgroundColor: prev.rowAlternateBackgroundColor ?? '#f5f5f5',
+        headerFontWeight: prev.headerFontWeight ?? '500',
+        headerBackgroundColor: prev.headerBackgroundColor ?? '#fafafa',
+      }))
+      .add<ITableComponentProps>(23, (prev) => ({
+        ...prev,
+        striped: prev.striped ?? true,
+        mobile: {
+          ...prev.mobile,
+          striped: prev.striped ?? true,
+        },
+        tablet: {
+          ...prev.tablet,
+          striped: prev.striped ?? true,
+        },
+        desktop: {
+          ...prev.desktop,
+          striped: prev.striped ?? true,
+        },
+      }))
+      .add<ITableComponentProps>(24, (prev) => {
+        // Migrate rowStylingBox to individual padding fields
+        if (prev.rowStylingBox?.padding) {
+          const { padding } = prev.rowStylingBox;
+          return {
+            ...prev,
+            rowPaddingTop: padding.top,
+            rowPaddingRight: padding.right,
+            rowPaddingBottom: padding.bottom,
+            rowPaddingLeft: padding.left,
+            mobile: {
+              ...prev.mobile,
+              rowPaddingTop: padding.top,
+              rowPaddingRight: padding.right,
+              rowPaddingBottom: padding.bottom,
+              rowPaddingLeft: padding.left,
+            },
+            tablet: {
+              ...prev.tablet,
+              rowPaddingTop: padding.top,
+              rowPaddingRight: padding.right,
+              rowPaddingBottom: padding.bottom,
+              rowPaddingLeft: padding.left,
+            },
+            desktop: {
+              ...prev.desktop,
+              rowPaddingTop: padding.top,
+              rowPaddingRight: padding.right,
+              rowPaddingBottom: padding.bottom,
+              rowPaddingLeft: padding.left,
+            },
+          };
+        }
+        return prev;
+      })
+      .add<ITableComponentProps>(25, migrateV24toV25),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [
+      // Old properties (deprecated but kept for backward compatibility)
       'rowHeight', 'rowPadding', 'rowBorder',
+      // New structured properties
+      'rowDimensions', 'rowStylingBox', 'rowBorderStyle',
       'headerFontSize', 'headerFontWeight',
       'tableSettings', // For nested structure
     ];

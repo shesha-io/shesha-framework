@@ -166,7 +166,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
           styles.tr,
           styles.trBody,
           { [styles.trOdd]: striped && index % 2 === 0 },
-          { [styles.trSelected]: selectedRowIndex === row?.index || row?.isSelected },
+          { [styles.trSelected]: selectedRowIndex === index || row.isSelected },
         )}
         key={rowId}
       >

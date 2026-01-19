@@ -2,8 +2,11 @@ import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }) => {
   const searchField = cx(css`
-    width: 100%;
-    background: #fff;
+    z-index: unset;
+
+    .ant-input-affix-wrapper-focused, .ant-input-affix-wrapper:hover {
+      z-index: unset !important;
+    }
   `);
 
   const content = cx(css`

@@ -24,6 +24,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const pnlFontStyleId = nanoid();
   const downloadedStylesPnlId = nanoid();
   const pnlDownloadedFileFontStylesId = nanoid();
+  const customActionsPnId = nanoid();
 
   return {
     components: fbf()
@@ -147,12 +148,123 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     },
                   ],
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  propertyName: 'downloadZip',
-                  label: 'Download Zip',
-                  inputType: 'switch',
-                  jsSetting: true,
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'allowReplace',
+                      label: 'Allow Replace',
+                      type: 'switch',
+                      jsSetting: true,
+                      hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+                    },
+                    {
+                      id: nanoid(),
+                      propertyName: 'allowViewHistory',
+                      label: 'Allow View History',
+                      type: 'switch',
+                      jsSetting: true,
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: 'downloadZip',
+                      label: 'Download Zip',
+                      type: 'switch',
+                      jsSetting: true,
+                    },
+                  ],
+                })
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  propertyName: 'customActionsPanel',
+                  parentId: commonTabId,
+                  label: 'Custom',
+                  labelAlign: 'left',
+                  expandIconPosition: 'start',
+                  ghost: true,
+                  collapsible: 'header',
+                  content: {
+                    id: customActionsPnId,
+                    components: [
+                      ...fbf()
+                        .addSettingsInputRow({
+                          id: "customActionsPanel",
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'customActions',
+                              parentId: customActionsPnId,
+                              label: 'Custom Actions',
+                              type: 'buttonGroupConfigurator',
+                              buttonText: 'Customize Actions',
+                              buttonTextReadOnly: 'View Actions',
+                              title: 'Actions Configuration',
+                              description: 'Configure custom actions that appear when hovering over files. Each action should have: id, name, label, icon (optional), tooltip (optional), hidden (optional), and actionConfiguration.',
+                              jsSetting: false,
+                            },
+                            {
+                              id: nanoid(),
+                              propertyName: 'customContent',
+                              parentId: customActionsPnId,
+                              label: 'Show Custom Content',
+                              type: 'switch',
+                              description: 'Enable to show custom content below each file.',
+                              jsSetting: false,
+                            },
+                          ],
+                        })
+                        .addSettingsInput({
+                          id: nanoid(),
+                          inputType: "dropdown",
+                          propertyName: "extraFormSelectionMode",
+                          parentId: customActionsPnId,
+                          label: "Form Selection Mode",
+                          tooltip: "Choose how to select the form for custom content",
+                          dropdownOptions: [
+                            { label: "Name", value: "name" },
+                            { label: "Dynamic", value: "dynamic" },
+                          ],
+                          hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false } as any,
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: customActionsPnId,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: "formTypeAutocomplete",
+                              propertyName: "extraFormType",
+                              label: "Form Type",
+                              jsSetting: true,
+                            },
+                          ],
+                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: customActionsPnId,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              type: "formAutocomplete",
+                              propertyName: "extraFormId",
+                              label: "Form",
+                              jsSetting: true,
+                            },
+                          ],
+                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) === "dynamic";', _mode: 'code', _value: false } as any,
+                        })
+                        .toJson(),
+                    ],
+                  },
                 })
                 .toJson(),
             ],
@@ -911,112 +1023,132 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               ],
                             },
                           })
+                          .toJson()],
+                      },
+                    })
+                    .addCollapsiblePanel({
+                      id: nanoid(),
+                      propertyName: 'pnlDownloadedStyles',
+                      label: 'Downloaded File Styles',
+                      labelAlign: 'right',
+                      ghost: true,
+                      collapsedByDefault: true,
+                      parentId: styleRouterId,
+                      collapsible: 'header',
+                      content: {
+                        id: downloadedStylesPnlId,
+                        components: [...fbf()
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            parentId: downloadedStylesPnlId,
+                            inputs: [{
+                              type: "switch",
+                              id: nanoid(),
+                              label: 'Style Downloaded File',
+                              propertyName: 'styleDownloadedFiles',
+                            },
+                            {
+                              id: nanoid(),
+                              type: 'iconPicker',
+                              label: 'Icon',
+                              propertyName: 'downloadedIcon',
+                              hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                            },
+                            ],
+                          })
                           .addCollapsiblePanel({
                             id: nanoid(),
-                            propertyName: 'pnlDownloadedStyles',
-                            label: 'Downloaded File Styles',
+                            propertyName: 'pnlDownloadedFileFontStyles',
+                            label: 'Font',
                             labelAlign: 'right',
+                            parentId: downloadedStylesPnlId,
                             ghost: true,
-                            collapsedByDefault: true,
-                            parentId: styleRouterId,
                             collapsible: 'header',
+                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
                             content: {
-                              id: downloadedStylesPnlId,
+                              id: pnlDownloadedFileFontStylesId,
                               components: [...fbf()
-                                .addCollapsiblePanel({
+                                .addSettingsInputRow({
                                   id: nanoid(),
-                                  propertyName: 'pnlDownloadedFileFontStyles',
-                                  label: 'Font',
-                                  labelAlign: 'right',
-                                  parentId: downloadedStylesPnlId,
-                                  ghost: true,
-                                  collapsible: 'header',
-                                  content: {
-                                    id: pnlDownloadedFileFontStylesId,
-                                    components: [...fbf()
-                                      .addSettingsInputRow({
-                                        id: nanoid(),
-                                        parentId: pnlDownloadedFileFontStylesId,
-                                        inline: true,
-                                        propertyName: 'downloadedFileStyles.font',
-                                        inputs: [
-                                          {
-                                            type: 'dropdown',
-                                            id: nanoid(),
-                                            label: 'Family',
-                                            propertyName: 'downloadedFileStyles.font.type',
-                                            hideLabel: true,
-                                            dropdownOptions: fontTypes,
-                                          },
-                                          {
-                                            type: 'numberField',
-                                            id: nanoid(),
-                                            label: 'Size',
-                                            propertyName: 'downloadedFileStyles.font.size',
-                                            hideLabel: true,
-                                            width: 50,
-                                          },
-                                          {
-                                            type: 'dropdown',
-                                            id: nanoid(),
-                                            label: 'Weight',
-                                            propertyName: 'downloadedFileStyles.font.weight',
-                                            hideLabel: true,
-                                            tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                            dropdownOptions: fontWeightsOptions,
-                                            width: 100,
-                                          },
-                                          {
-                                            type: 'colorPicker',
-                                            id: nanoid(),
-                                            label: 'Color',
-                                            hideLabel: true,
-                                            propertyName: 'downloadedFileStyles.font.color',
-                                          },
-                                          {
-                                            type: 'dropdown',
-                                            id: nanoid(),
-                                            label: 'Align',
-                                            propertyName: 'downloadedFileStyles.font.align',
-                                            hideLabel: true,
-                                            width: 60,
-                                            dropdownOptions: textAlignOptions,
-                                          },
-                                        ],
-                                      })
-                                      .toJson(),
-                                    ],
-                                  },
-                                })
-                                .addCollapsiblePanel({
-                                  id: nanoid(),
-                                  propertyName: 'pnlDownloadedFileCustomStylePanel',
-                                  label: 'Custom Styles',
-                                  labelAlign: 'right',
-                                  ghost: true,
-                                  parentId: downloadedStylesPnlId,
-                                  collapsible: 'header',
-                                  content: {
-                                    id: 'pnlDownloadedFileCustomStylePanel',
-                                    components: [...fbf()
-                                      .addSettingsInput({
-                                        id: nanoid(),
-                                        inputType: 'codeEditor',
-                                        propertyName: 'downloadedFileStyles.style',
-                                        hideLabel: false,
-                                        label: 'Style',
-                                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                        parentId: 'pnlDownloadedFileCustomStylePanel',
-                                      })
-                                      .toJson(),
-                                    ],
-                                  },
+                                  parentId: pnlDownloadedFileFontStylesId,
+                                  inline: true,
+                                  propertyName: 'downloadedFileStyles.font',
+                                  inputs: [
+                                    {
+                                      type: 'dropdown',
+                                      id: nanoid(),
+                                      label: 'Family',
+                                      propertyName: 'downloadedFileStyles.font.type',
+                                      hideLabel: true,
+                                      dropdownOptions: fontTypes,
+                                    },
+                                    {
+                                      type: 'numberField',
+                                      id: nanoid(),
+                                      label: 'Size',
+                                      propertyName: 'downloadedFileStyles.font.size',
+                                      hideLabel: true,
+                                      width: 50,
+                                    },
+                                    {
+                                      type: 'dropdown',
+                                      id: nanoid(),
+                                      label: 'Weight',
+                                      propertyName: 'downloadedFileStyles.font.weight',
+                                      hideLabel: true,
+                                      tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                      dropdownOptions: fontWeightsOptions,
+                                      width: 100,
+                                    },
+                                    {
+                                      type: 'colorPicker',
+                                      id: nanoid(),
+                                      label: 'Color',
+                                      hideLabel: true,
+                                      propertyName: 'downloadedFileStyles.font.color',
+                                    },
+                                    {
+                                      type: 'dropdown',
+                                      id: nanoid(),
+                                      label: 'Align',
+                                      propertyName: 'downloadedFileStyles.font.align',
+                                      hideLabel: true,
+                                      width: 60,
+                                      dropdownOptions: textAlignOptions,
+                                    },
+                                  ],
                                 })
                                 .toJson(),
                               ],
                             },
                           })
-                          .toJson()],
+                          .addCollapsiblePanel({
+                            id: nanoid(),
+                            propertyName: 'pnlDownloadedFileCustomStylePanel',
+                            label: 'Custom Styles',
+                            labelAlign: 'right',
+                            ghost: true,
+                            parentId: downloadedStylesPnlId,
+                            collapsible: 'header',
+                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                            content: {
+                              id: 'pnlDownloadedFileCustomStylePanel',
+                              components: [...fbf()
+                                .addSettingsInput({
+                                  id: nanoid(),
+                                  inputType: 'codeEditor',
+                                  propertyName: 'downloadedFileStyles.style',
+                                  hideLabel: false,
+                                  label: 'Style',
+                                  description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                  parentId: 'pnlDownloadedFileCustomStylePanel',
+                                })
+                                .toJson(),
+                              ],
+                            },
+                          })
+                          .toJson(),
+                        ],
                       },
                     })
                     .toJson()],

@@ -1,7 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Events.Bus;
-using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Dtos;
 using Shesha.ConfigurationItems.Events;
@@ -29,6 +29,13 @@ namespace Shesha.ConfigurationItems
 
         public async Task<GetCurrentResponse> GetCurrentAsync(GetCurrentRequest input)
         {
+            var manager = _ciHelper.GetManager(input.ItemType);
+
+            if (string.IsNullOrWhiteSpace(input.Module))
+            {
+                input.Module = await manager.GetBackwardCompatibleModuleNameAsync(input.Name);
+            }
+            
             // check cache
             if (!string.IsNullOrWhiteSpace(input.Md5))
             {
@@ -36,8 +43,6 @@ namespace Shesha.ConfigurationItems
                 if (input.Md5 == cachedMd5)
                     throw new ContentNotModifiedException("Not changed");
             }
-
-            var manager = _ciHelper.GetManager(input.ItemType);
 
             var resolvedItem = await manager.ResolveItemAsync(input.Module, input.Name);
 
@@ -95,6 +100,11 @@ namespace Shesha.ConfigurationItems
             };
         }
 
+        [HttpPost]
+        public async Task CleanClientSideCacheAsync() 
+        {
+            await _clientSideCache.ClearAsync();
+        }
 
         public Task TriggerConfigurationChangedEventAsync(TriggerConfigurationChangedEventRequest  request)
         {
