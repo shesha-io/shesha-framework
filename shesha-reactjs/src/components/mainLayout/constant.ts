@@ -31,11 +31,11 @@ export const FOOTER_CONFIGURATION: FormFullName = { name: 'footer-public-portal'
 export const LAYOUT_MODE: LayoutMode = 'defaultLayout';
 
 /** The header form to display in the layout */
-export const ACTIVE_HEADER = HEADER_CONFIGURATION;
+export const ACTIVE_HEADER: FormFullName = HEADER_CONFIGURATION;
 
 /** The login form to display on the login page */
-export const ACTIVE_LOGIN = LOGIN_CONFIGURATION;
+export const ACTIVE_LOGIN: FormFullName = LOGIN_CONFIGURATION;
 
 /** The footer form to display in the layout */
-export const ACTIVE_FOOTER = FOOTER_CONFIGURATION;
+export const ACTIVE_FOOTER: FormFullName = FOOTER_CONFIGURATION;
 //#endregion
