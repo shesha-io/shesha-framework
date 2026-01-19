@@ -91,7 +91,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
     return renderValidationErrors({ message: message || defaultMessage, description: details, ...rest });
   }
 
-  return renderValidationErrors({ message: DEFAULT_ERROR_MSG, ...rest });
+  return renderValidationErrors({ message: message || DEFAULT_ERROR_MSG, ...rest });
 };
 
 export default ValidationErrors;

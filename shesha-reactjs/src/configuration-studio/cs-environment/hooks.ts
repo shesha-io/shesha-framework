@@ -3,17 +3,17 @@ import { DocumentDefinition } from "../models";
 import { useConfigurationStudioEnvironment } from "./contexts";
 
 export const useConfigurationStudioDocumentDefinitions = (definitions: DocumentDefinition[]): void => {
-  const cs = useConfigurationStudioEnvironment();
+  const csEnv = useConfigurationStudioEnvironment();
 
   useEffect(() => {
     definitions.forEach((definition) => {
-      cs.registerDocumentDefinition(definition);
+      csEnv.registerDocumentDefinition(definition);
     });
 
     return (): void => {
       definitions.forEach((definition) => {
-        cs.unregisterDocumentDefinition(definition);
+        csEnv.unregisterDocumentDefinition(definition);
       });
     };
-  }, [cs, definitions]);
+  }, [csEnv, definitions]);
 };

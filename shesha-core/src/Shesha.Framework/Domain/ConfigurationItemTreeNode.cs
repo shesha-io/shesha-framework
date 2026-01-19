@@ -40,7 +40,8 @@ namespace Shesha.Domain
         /// <summary>
         /// Item type (form/reflist etc.)
         /// </summary>
-        public virtual string? ItemType { get; set; }
+        [Column("item_type")]
+        public virtual string? Discriminator { get; set; }
 
         /// <summary>
         /// If true, indicates that configuration is code based or has a corresponding code based portion
