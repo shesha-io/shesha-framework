@@ -835,7 +835,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
-                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                      // hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: customStylePnlId,
                         components: [...fbf()

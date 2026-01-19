@@ -207,6 +207,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       isStub,
       downloadZip,
       fontStyles: model?.allStyles?.fontStyles,
+      listType,
     },
   });
 

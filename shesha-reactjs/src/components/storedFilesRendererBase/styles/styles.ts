@@ -69,6 +69,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
   const fileNameWrapper = cx("file-name-wrapper", css`
     display: ${model.hideFileName ? 'none' : 'flex'};
+    gap: 8px;
     cursor: pointer;
     &:hover {
       background-color: ${colorBgTextHover} !important;
@@ -103,6 +104,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       font-weight: ${downloadedFileStyles?.fontWeight ?? fontWeight} !important;
       font-family: ${downloadedFileStyles?.fontFamily ?? fontFamily} !important;
       text-align: ${downloadedFileStyles?.textAlign ?? textAlign} !important;
+      ${downloadedFileStyles?.textAlign === 'center' ? 'justify-content: center' : downloadedFileStyles?.textAlign === 'right' ? 'justify-content: flex-end' : 'justify-content: flex-start'} !important;
     }
 
     .ant-upload-list-item-action {
@@ -280,7 +282,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
   
     .${prefixCls}-upload-list {
-      ${layout ? `gap: ${marginGap}` : 'unset'};
+      ${layout ? `gap: ${marginGap} !important` : 'unset'};
       padding: 2px;
       overflow-y: auto;
       display: flex;
@@ -435,8 +437,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
   `);
 
   const uploadButton = cx("upload-button", css`
-    justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'};
-    ${model.listType === 'thumbnail' ? { ...style } : { ...model.fontStyles }}
+    justify-content: ${textAlign === 'center' || model.listType === 'thumbnail' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'};
   `);
 
   return {
