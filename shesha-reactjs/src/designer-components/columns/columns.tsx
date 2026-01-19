@@ -119,7 +119,7 @@ const ColumnsComponent: ColumnsComponentDefinition = {
 
     return (
       <div style={{ ...getLayoutStyle(model, { data, globalState }), ...containerPadding, ...boxSizing, ...finalStyle }}>
-        <Row gutter={[gutterX || 0, gutterY || 0]} style={{marginLeft: 0, marginRight: 0}}>
+        <Row gutter={[gutterX || 0, gutterY || 0]} style={{ marginLeft: 0, marginRight: 0 }}>
           <ParentProvider model={model}>
             {validatedColumns &&
               validatedColumns.map((col, index) => (
