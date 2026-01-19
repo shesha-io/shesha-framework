@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { Result } from 'antd';
+import { Result, Skeleton } from 'antd';
 import { useCrud } from "@/providers/crudContext/index";
 import { IConfigurableCellProps, IFormCellProps } from '../interfaces';
 import { ComponentsContainer, ConfigurableItemFullName, FormIdentifier, FormItemProvider, isFormFullName, ROOT_COMPONENT_KEY, useAppConfigurator } from '@/index';
@@ -13,6 +13,7 @@ import { useFormById } from '@/providers/formManager/hooks';
 import { UpToDateForm } from '@/providers/formManager/interfaces';
 import { getFormForbiddenMessage, getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
 import AttributeDecorator from '@/components/attributeDecorator';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 const MODE_READONLY_TRUE = { readOnly: true };
 const MODE_READONLY_FALSE = { readOnly: false };
@@ -46,6 +47,14 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
     return { minHeight: props.columnConfig.minHeight ?? 0 };
   }, [props.columnConfig.minHeight]);
 
+  // Enable lazy loading by default (can be disabled via column config)
+  const lazyLoadEnabled = props.columnConfig.lazyLoad !== false;
+  const { elementRef, hasBeenVisible } = useIntersectionObserver({
+    enabled: lazyLoadEnabled,
+    threshold: 0.1,
+    rootMargin: props.columnConfig.lazyLoadMargin ?? '150px'
+  });
+
   const attributes = {
     'data-sha-datatable-cell-type': 'subForm',
     'data-sha-parent-form-id': `${props.parentFormId}`,
@@ -57,13 +66,26 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
   else if (typeof props.columnConfig.displayFormId === 'string' && props.columnConfig.displayFormId)
     attributes['data-sha-form-id'] = props.columnConfig.displayFormId;
 
+  // Render placeholder until row is visible
+  if (lazyLoadEnabled && !hasBeenVisible) {
+    return (
+      <div
+        ref={elementRef as any}
+        className={styles.shaFormCell}
+        style={styleMinHeight}
+      >
+        <Skeleton.Input active size="small" style={{ width: '100%', height: '24px' }} />
+      </div>
+    );
+  }
+
   return !props.columnConfig.displayFormId
     ? null
     : (
       <FormCellRender formId={props.columnConfig.displayFormId}>
         {(form) => (
           <AttributeDecorator attributes={attributes}>
-            <div className={styles.shaFormCell} style={styleMinHeight}>
+            <div ref={elementRef as any} className={styles.shaFormCell} style={styleMinHeight}>
               <FormItemProvider labelCol={form.settings?.labelCol}>
                 <ParentProvider model={MODE_READONLY_TRUE} formMode='readonly' formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
@@ -91,6 +113,14 @@ export const CreateFormCell = (props: ICreateFormCellProps) => {
     return { minHeight: props.columnConfig.minHeight ?? 0 };
   }, [props.columnConfig.minHeight]);
 
+  // Enable lazy loading by default (can be disabled via column config)
+  const lazyLoadEnabled = props.columnConfig.lazyLoad !== false;
+  const { elementRef, hasBeenVisible } = useIntersectionObserver({
+    enabled: lazyLoadEnabled,
+    threshold: 0.1,
+    rootMargin: props.columnConfig.lazyLoadMargin ?? '150px'
+  });
+
   const attributes = {
     'data-sha-datatable-cell-type': 'subForm',
     'data-sha-parent-form-name': `${props.parentFormName}`,
@@ -104,13 +134,26 @@ export const CreateFormCell = (props: ICreateFormCellProps) => {
   else if (typeof props.columnConfig.createFormId === 'string' && props.columnConfig.createFormId)
     attributes['data-sha-form-id'] = props.columnConfig.createFormId;
 
+  // Render placeholder until row is visible
+  if (lazyLoadEnabled && !hasBeenVisible) {
+    return (
+      <div
+        ref={elementRef as any}
+        className={styles.shaFormCell}
+        style={styleMinHeight}
+      >
+        <Skeleton.Input active size="small" style={{ width: '100%', height: '24px' }} />
+      </div>
+    );
+  }
+
   return !props.columnConfig.createFormId
     ? null
     : (
       <FormCellRender formId={props.columnConfig.createFormId}>
         {(form) => (
           <AttributeDecorator attributes={attributes}>
-            <div className={styles.shaFormCell} style={styleMinHeight} data-sha-form-name={`${(props.columnConfig.createFormId as ConfigurableItemFullName)?.module}/${(props.columnConfig.createFormId as ConfigurableItemFullName)?.name}`}>
+            <div ref={elementRef as any} className={styles.shaFormCell} style={styleMinHeight} data-sha-form-name={`${(props.columnConfig.createFormId as ConfigurableItemFullName)?.module}/${(props.columnConfig.createFormId as ConfigurableItemFullName)?.name}`}>
               <FormItemProvider labelCol={form.settings?.labelCol}>
                 <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
@@ -131,6 +174,14 @@ const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
     return { minHeight: props.columnConfig.minHeight ?? 0 };
   }, [props.columnConfig.minHeight]);
 
+  // Enable lazy loading by default (can be disabled via column config)
+  const lazyLoadEnabled = props.columnConfig.lazyLoad !== false;
+  const { elementRef, hasBeenVisible } = useIntersectionObserver({
+    enabled: lazyLoadEnabled,
+    threshold: 0.1,
+    rootMargin: props.columnConfig.lazyLoadMargin ?? '150px'
+  });
+
   const attributes = {
     'data-sha-datatable-cell-type': 'subForm',
     'data-sha-parent-form-id': `${props.parentFormId}`,
@@ -142,13 +193,26 @@ const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
   else if (typeof props.columnConfig.editFormId === 'string')
     attributes['data-sha-form-id'] = props.columnConfig.editFormId;
 
+  // Render placeholder until row is visible
+  if (lazyLoadEnabled && !hasBeenVisible) {
+    return (
+      <div
+        ref={elementRef as any}
+        className={styles.shaFormCell}
+        style={styleMinHeight}
+      >
+        <Skeleton.Input active size="small" style={{ width: '100%', height: '24px' }} />
+      </div>
+    );
+  }
+
   return !props.columnConfig.editFormId
     ? <ReadFormCell {...props} />
     : (
       <FormCellRender formId={props.columnConfig.editFormId}>
         {(form) => (
           <AttributeDecorator attributes={attributes}>
-            <div className={styles.shaFormCell} style={styleMinHeight}>
+            <div ref={elementRef as any} className={styles.shaFormCell} style={styleMinHeight}>
               <FormItemProvider labelCol={form.settings?.labelCol}>
                 <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
