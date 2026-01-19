@@ -28,7 +28,7 @@ export const FOOTER_CONFIGURATION: FormFullName = { name: 'footer-public-portal'
  */
 
 /** The layout mode to use throughout the application */
-export const LAYOUT_MODE: LayoutMode = 'horizontalLayout';
+export const LAYOUT_MODE: LayoutMode = 'defaultLayout';
 
 /** The header form to display in the layout */
 export const ACTIVE_HEADER = HEADER_CONFIGURATION;
