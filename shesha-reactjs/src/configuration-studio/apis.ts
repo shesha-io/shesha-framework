@@ -11,6 +11,8 @@ import { isDefined } from "@/utils/nullables";
 import { extractAjaxResponse } from "@/interfaces/ajaxResponse";
 import { getFileNameFromResponse } from "@/utils/fetchers";
 import FileSaver from "file-saver";
+import { IConfigurationStudioEnvironment } from "./cs-environment/interfaces";
+import { useConfigurationStudioEnvironment } from "./cs-environment/contexts";
 
 export const CS_URLS = {
   GET_FLAT_TREE: '/api/services/app/ConfigurationStudio/GetFlatTree',
@@ -61,14 +63,14 @@ export type TreeState = {
   treeNodeMap: Map<string, TreeNode>;
   treeNodes: TreeNode[];
 };
-const convertFlatTreeToExportTree = (flatTreeNodes: FlatTreeNode[]): TreeState => {
+const convertFlatTreeToExportTree = (csEnvironment: IConfigurationStudioEnvironment, flatTreeNodes: FlatTreeNode[]): TreeState => {
   try {
     const treeNodeMap = new Map<string, TreeNode>();
     const treeNodes: TreeNode[] = [];
 
     // First pass: create map and shallow copies
     flatTreeNodes.forEach((node) => {
-      treeNodeMap.set(node.id, flatNode2TreeNode(node));
+      treeNodeMap.set(node.id, flatNode2TreeNode(csEnvironment, node));
     });
 
     // Second pass: build hierarchy
@@ -100,11 +102,12 @@ const convertFlatTreeToExportTree = (flatTreeNodes: FlatTreeNode[]): TreeState =
 
 export const useTreeForExport = (): SWRResponse<TreeState, Error> => {
   const httpClient = useHttpClient();
+  const csEnv = useConfigurationStudioEnvironment();
 
   const fetcher = useCallback(async (): Promise<TreeState> => {
     const flatTree = await fetchFlatTreeAsync(httpClient);
-    return convertFlatTreeToExportTree(flatTree);
-  }, [httpClient]);
+    return convertFlatTreeToExportTree(csEnv, flatTree);
+  }, [httpClient, csEnv]);
 
   const url = CS_URLS.GET_FLAT_TREE;
   return useSWR(url, fetcher, { refreshInterval: 0, revalidateOnFocus: false });

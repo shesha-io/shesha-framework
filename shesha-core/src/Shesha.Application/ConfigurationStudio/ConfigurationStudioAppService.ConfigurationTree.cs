@@ -30,7 +30,10 @@ namespace Shesha.ConfigurationStudio
                     ParentId = e.ParentId,
                     ModuleId = e.ModuleId,
                     NodeType = e.NodeType,
-                    ItemType = e.ItemType,
+                    ItemType = !string.IsNullOrWhiteSpace(e.Discriminator)
+                        ? CiHelper.GetItemTypeByDiscriminator(e.Discriminator)
+                        : null,
+                    Discriminator = e.Discriminator,
                     Name = e.Name,
                     Label = e.Label,
                     Description = e.Description,

@@ -1,25 +1,17 @@
 import React, { ReactNode } from "react";
-import { ConfigItemTreeNode, CustomDocument, FlatTreeNode, FolderTreeNode, isConfigItemTreeNode, isTreeNode, ITEM_TYPES, ModuleTreeNode, SpecialTreeNode, TREE_NODE_TYPES, TreeNode, TreeNodeType } from "./models";
-import { FileUnknownOutlined, FolderOpenOutlined, FolderOutlined, FormOutlined, HomeOutlined, MessageOutlined, NotificationOutlined, OrderedListOutlined, ProductOutlined, SafetyOutlined, SettingOutlined, TableOutlined, TeamOutlined } from "@ant-design/icons";
+import { ConfigItemTreeNode, CustomDocument, FlatTreeNode, FolderTreeNode, isConfigItemTreeNode, isTreeNode, ModuleTreeNode, SpecialTreeNode, TREE_NODE_TYPES, TreeNode, TreeNodeType } from "./models";
+import { FileUnknownOutlined, FolderOpenOutlined, FolderOutlined, HomeOutlined, ProductOutlined, SettingOutlined } from "@ant-design/icons";
 
 import { TreeNodeProps } from "antd";
 import { CsTreeNode } from "./components/tree-node";
 import { isDefined } from "@/utils/nullables";
+import { IConfigurationStudioEnvironment } from "./cs-environment/interfaces";
 
-export const getIcon = (nodeType: TreeNodeType, itemType?: string, expanded?: boolean): ReactNode => {
+export const getIcon = (csEnvironment: IConfigurationStudioEnvironment, nodeType: TreeNodeType, itemType?: string, expanded?: boolean): ReactNode => {
   switch (nodeType) {
     case TreeNodeType.ConfigurationItem: {
-      switch (itemType) {
-        case ITEM_TYPES.FORM: return <FormOutlined />;
-        case ITEM_TYPES.ROLE: return <TeamOutlined />;
-        case ITEM_TYPES.ENTITY: return <TableOutlined />;
-        case ITEM_TYPES.PERMISSION: return <SafetyOutlined />;
-        case ITEM_TYPES.REFLIST: return <OrderedListOutlined />;
-        case ITEM_TYPES.SETTING: return <SettingOutlined />;
-        case ITEM_TYPES.NOTIFICATION: return <MessageOutlined />;
-        case ITEM_TYPES.NOTIFICATION_CHANNEL: return <NotificationOutlined />;
-        default: return <FileUnknownOutlined />;
-      }
+      const definition = itemType ? csEnvironment.getDocumentDefinition(itemType) : undefined;
+      return definition ? definition.icon : <FileUnknownOutlined />;
     }
     case TreeNodeType.Folder:
       return expanded === true ? <FolderOpenOutlined /> : <FolderOutlined />;
@@ -37,9 +29,10 @@ export const getCustomIcon = (doc: CustomDocument): ReactNode => {
   }
 };
 
-const applyIcon = (node: TreeNode): void => {
+const applyIcon = (csEnvironment: IConfigurationStudioEnvironment, node: TreeNode): void => {
   node.icon = (props: TreeNodeProps): ReactNode => {
     return getIcon(
+      csEnvironment,
       node.nodeType,
       isConfigItemTreeNode(node) ? node.itemType : undefined,
       props.expanded,
@@ -51,7 +44,7 @@ export const renderCsTreeNode = (node: TreeNode, displayText?: ReactNode): React
   return <CsTreeNode node={node}>{displayText ?? node.name}</CsTreeNode>;
 };
 
-export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
+export const flatNode2TreeNode = (csEnvironment: IConfigurationStudioEnvironment, node: FlatTreeNode): TreeNode => {
   const baseProps: TreeNode = {
     id: node.id,
     parentId: node.parentId ?? undefined,
@@ -66,11 +59,14 @@ export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
 
   switch (node.nodeType) {
     case TREE_NODE_TYPES.Special: {
+      if (!isDefined(node.itemType))
+        throw new Error("Missing item type in node", { cause: node });
       const specialNode: SpecialTreeNode = {
         ...baseProps,
+        itemType: node.itemType,
         children: [],
       };
-      applyIcon(specialNode);
+      applyIcon(csEnvironment, specialNode);
       return specialNode;
     }
     case TREE_NODE_TYPES.Module: {
@@ -78,7 +74,7 @@ export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
         ...baseProps,
         children: [],
       };
-      applyIcon(moduleNode);
+      applyIcon(csEnvironment, moduleNode);
       return moduleNode;
     }
     case TREE_NODE_TYPES.Folder: {
@@ -86,15 +82,19 @@ export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
         ...baseProps,
         children: [],
       };
-      applyIcon(folderNode);
+      applyIcon(csEnvironment, folderNode);
       return folderNode;
     }
     case TREE_NODE_TYPES.ConfigurationItem: {
       if (!isDefined(node.itemType))
         throw new Error("Missing item type in node", { cause: node });
+      if (!isDefined(node.discriminator))
+        throw new Error("Missing discriminator in node", { cause: node });
+
       const itemNode: ConfigItemTreeNode = {
         ...baseProps,
         itemType: node.itemType,
+        discriminator: node.discriminator,
         flags: {
           isCodeBased: node.isCodeBased,
           isCodegenPending: node.isCodegenPending,
@@ -107,7 +107,7 @@ export const flatNode2TreeNode = (node: FlatTreeNode): TreeNode => {
         baseModule: node.baseModule ?? undefined,
         moduleName: "",
       };
-      applyIcon(itemNode);
+      applyIcon(csEnvironment, itemNode);
       return itemNode;
     }
   }
