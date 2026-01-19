@@ -7,6 +7,7 @@ import { CollapsiblePanel } from '@/components';
 import styled from 'styled-components';
 import { PageWithLayout } from '@/interfaces';
 import { useLayoutSelection } from '@/hooks';
+import { LAYOUT_MODE } from '@/components/mainLayout/constant';
 
 /**
  * There was an error
@@ -22,7 +23,7 @@ const StyledAlert: any = styled(Alert)`
 `;
 
 const Home: PageWithLayout = () => {
-  const { LayoutComponent } = useLayoutSelection('defaultLayout');
+  const { LayoutComponent } = useLayoutSelection(LAYOUT_MODE);
 
   return (
     <LayoutComponent>
