@@ -176,7 +176,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       justify-content: ${textAlign === 'right' ? 'flex-end' : textAlign === 'center' ? 'center' : 'flex-start'} !important;
 
         >.file-name-wrapper {
-        width; 100%;
           >.item-file-name {
           width: 100%;
           display: flex;
