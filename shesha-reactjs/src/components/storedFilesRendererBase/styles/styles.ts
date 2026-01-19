@@ -46,6 +46,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   `);
 
   const downloadedFile = cx("downloaded-file", css`
+    position: relative;
     .ant-upload-list-item-thumbnail {
       border: 2px solid ${downloadedFileColor ?? token.colorSuccess} !important;
       box-shadow: 0 0 0 1px ${downloadedFileColor ?? token.colorSuccess}20;
