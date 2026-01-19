@@ -10,6 +10,7 @@ import {
   ItemTypeDefinition,
   TreeNode,
 } from "../models";
+import { IConfigurationStudioEnvironment } from "../cs-environment/interfaces";
 
 export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
 export type CsSubscriptionType = 'tree' | 'tabs' | 'doc' | 'tree-dnd';
@@ -30,6 +31,7 @@ export type CreateItemArgs = {
   folderId?: string | undefined;
   prevItemId?: string | undefined;
   itemType: string;
+  discriminator: string;
 };
 
 export type ExposeArgs = {
@@ -62,6 +64,7 @@ export type GetRevisionJsonAsyncArgs = {
 };
 
 export interface IConfigurationStudio {
+  readonly csEnvironment: IConfigurationStudioEnvironment;
   readonly treeNodes: TreeNode[];
   readonly treeLoadingState: ProcessingState;
   readonly quickSearch: string | undefined;
