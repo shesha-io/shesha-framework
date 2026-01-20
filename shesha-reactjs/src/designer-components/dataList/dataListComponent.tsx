@@ -112,6 +112,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     if (model.formSelectionMode === "name") {
       if (!model.formId) {
         addModelError('formId', 'This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items.');
+      } else if (typeof model.formId === 'string' && model.formId.trim() === '') {
+        addModelError('formId', 'This Data List has an invalid form selected (empty form name). Please select a valid form.');
       } else if (typeof model.formId === 'object' && (!model.formId.name || model.formId.name.trim() === '')) {
         addModelError('formId', 'This Data List has an invalid form selected (empty form name). Please select a valid form.');
       }
