@@ -567,12 +567,16 @@ export const ReactTable: FC<IReactTableProps> = ({
     if (maxHeight) result.maxHeight = `${maxHeight}px`;
 
     // to allow the table to overflow the container on y-axis
-    if (freezeHeaders && !result.maxHeight) {
-      result.maxHeight = '80vh';
+    if (freezeHeaders) {
+      if (!result.maxHeight) {
+        result.maxHeight = '80vh';
+      }
+      // Ensure overflow is set for sticky headers to work
+      result.overflow = 'auto';
     }
 
     return result;
-  }, [containerStyle, minHeight, maxHeight]);
+  }, [containerStyle, minHeight, maxHeight, freezeHeaders]);
 
   const renderExpandedContentView = (cellRef): JSX.Element => {
     const cellRect = cellRef?.current?.getBoundingClientRect();
@@ -850,8 +854,8 @@ export const ReactTable: FC<IReactTableProps> = ({
           <div
             className={styles.tbody}
             style={{
-              height: scrollBodyHorizontally ? height || 250 : 'unset',
-              overflowY: scrollBodyHorizontally ? 'auto' : 'unset',
+              height: (scrollBodyHorizontally && !freezeHeaders) ? height || 250 : 'unset',
+              overflowY: (scrollBodyHorizontally && !freezeHeaders) ? 'auto' : 'unset',
               overflowX: 'unset',
             }}
             {...getTableBodyProps()}
