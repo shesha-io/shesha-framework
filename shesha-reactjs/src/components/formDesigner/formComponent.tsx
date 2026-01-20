@@ -87,7 +87,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
     });
 
     // Collect errors from child components registered via hook
-    const childValidation = getValidation(actualModel.id);
+    const childValidation = getValidation();
     if (childValidation?.hasErrors && childValidation.errors) {
       errors.push(...childValidation.errors);
       // Use the child's validationType if present (prioritize 'error' > 'warning' > 'info')

@@ -266,7 +266,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             componentId: id,
             settings: {
               ...props,
-              configuredColumns: defaultColumns,
+              items: defaultColumns,
             } as ITableComponentProps,
           });
         }
