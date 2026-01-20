@@ -17,7 +17,8 @@ namespace Shesha.Web.Host.Startup
         {
             if (bool.TryParse(configuration["Authentication:JwtBearer:IsEnabled"], out var jwtEnabled) && jwtEnabled)
             {
-                services.AddAuthentication(options => {
+                services.AddAuthentication(options =>
+                {
                     options.DefaultAuthenticateScheme = "JwtBearer";
                     options.DefaultChallengeScheme = "JwtBearer";
                 }).AddJwtBearer("JwtBearer", options =>
@@ -49,6 +50,36 @@ namespace Shesha.Web.Host.Startup
                     {
                         OnMessageReceived = QueryStringTokenResolver
                     };
+                });
+            }
+
+            if (bool.Parse(configuration["Authentication:Microsoft:IsEnabled"]))
+            {
+                services.AddAuthentication()
+                .AddMicrosoftAccount(options =>
+                {
+                    options.ClientId = Configuration["Authentication:Microsoft:ClientId"];
+                    options.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+                })
+            }
+
+            if (bool.Parse(configuration["Authentication:Google:IsEnabled"]))
+            {
+                services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    options.ClientId = Configuration["Authentication:Google:ClientId"];
+                    options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                })
+            }
+
+            if (bool.Parse(configuration["Authentication:Facebook:IsEnabled"]))
+            {
+                services.AddAuthentication()
+                .AddFacebook(options =>
+                {
+                    options.AppId = Configuration["Authentication:Facebook:AppId"];
+                    options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
                 });
             }
         }
