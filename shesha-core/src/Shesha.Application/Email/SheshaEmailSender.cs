@@ -8,7 +8,6 @@ using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
@@ -78,10 +77,8 @@ namespace Shesha.Email
             if (!PrepareAndCheckMail(mail, smtpSettings))
                 return;
 
-            using (var smtpClient = GetSmtpClient(smtpSettings))
-            {
-                await smtpClient.SendMailAsync(mail);
-            }
+            using var mimeMessage = MailKitEmailHelper.ConvertToMimeMessage(mail);
+            await MailKitEmailHelper.SendAsync(mimeMessage, smtpSettings);
         }
 
         protected override void SendEmail(MailMessage mail)
@@ -95,10 +92,8 @@ namespace Shesha.Email
             if (!PrepareAndCheckMail(mail, smtpSettings))
                 return;
 
-            using (var smtpClient = GetSmtpClient(smtpSettings))
-            {
-                smtpClient.Send(mail);
-            }
+            using var mimeMessage = MailKitEmailHelper.ConvertToMimeMessage(mail);
+            MailKitEmailHelper.Send(mimeMessage, smtpSettings);
         }
 
         #region private methods
@@ -195,22 +190,6 @@ namespace Shesha.Email
                         );
                 }
             }
-        }
-
-        /// <summary>
-        /// Returns SmtpClient configured according to the current application settings
-        /// </summary>
-        private SmtpClient GetSmtpClient(SmtpSettings smtpSettings)
-        {
-            var client = new SmtpClient(smtpSettings.Host, smtpSettings.Port)
-            {
-                EnableSsl = smtpSettings.EnableSsl,
-                Credentials = string.IsNullOrWhiteSpace(smtpSettings.Domain)
-                    ? new NetworkCredential(smtpSettings.UserName, smtpSettings.Password)
-                    : new NetworkCredential(smtpSettings.UserName, smtpSettings.Password, smtpSettings.Domain)
-            };
-
-            return client;
         }
 
         #endregion
