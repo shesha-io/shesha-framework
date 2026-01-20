@@ -8,9 +8,18 @@
 import * as monaco from 'monaco-editor';
 
 // Configure Monaco environment for web workers
+type MonacoEnvironment = {
+  getWorker: (workerId: string, label: string) => Worker;
+};
+
+declare global {
+  // eslint-disable-next-line no-var
+  var MonacoEnvironment: MonacoEnvironment | undefined;
+}
+
 if (typeof window !== 'undefined') {
-  // Use self.MonacoEnvironment to configure workers
-  (self as any).MonacoEnvironment = {
+  // Use globalThis.MonacoEnvironment to configure workers
+  globalThis.MonacoEnvironment = {
     getWorker(_: string, label: string) {
       // For TypeScript/JavaScript workers
       if (label === 'typescript' || label === 'javascript') {
@@ -51,6 +60,7 @@ if (typeof window !== 'undefined') {
       );
     },
   };
+}
 }
 
 export default monaco;
