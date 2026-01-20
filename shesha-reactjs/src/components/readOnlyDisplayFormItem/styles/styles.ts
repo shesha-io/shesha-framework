@@ -45,11 +45,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: Us
             max-width: 100%;
             flex-wrap: wrap;
 
-            /* Ensure tags maintain their styles and colors */
+            /* Override the parent's nowrap/hidden for tags within wrapper */
             .${prefixCls}-tag {
-                max-width: 100%;
-                overflow: visible;
                 white-space: normal;
+                overflow: visible;
                 height: auto;
             }
         }
