@@ -309,6 +309,12 @@ export interface IReactTableProps extends ITableRowDragProps {
   rowBorder?: string; // Deprecated: use rowBorderStyle for full border control
   rowBorderStyle?: IBorderValue; // Full border configuration with per-side control
 
+  // Body font styling
+  bodyFontFamily?: string;
+  bodyFontSize?: string;
+  bodyFontWeight?: string;
+  bodyFontColor?: string;
+
   // Overall table styling
   borderRadius?: string;
   border?: IBorderValue;

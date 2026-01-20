@@ -384,6 +384,10 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             headerShadow={props.headerShadow}
             rowShadow={props.rowShadow}
             rowDividers={props.rowDividers}
+            bodyFontFamily={props?.font?.type}
+            bodyFontSize={props?.font?.size ? `${props.font.size}px` : undefined}
+            bodyFontWeight={props?.font?.weight}
+            bodyFontColor={props?.font?.color}
           />
         </div>
       </div>

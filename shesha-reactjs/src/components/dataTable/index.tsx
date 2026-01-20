@@ -111,6 +111,12 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   rowBorder?: string;
   rowBorderStyle?: IBorderValue;
 
+  // Body font styling
+  bodyFontFamily?: string;
+  bodyFontSize?: string;
+  bodyFontWeight?: string;
+  bodyFontColor?: string;
+
   // Cell styling
   cellTextColor?: string;
   cellBackgroundColor?: string;
@@ -191,6 +197,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   rowBorderStyle,
   boxShadow,
   sortableIndicatorColor,
+  bodyFontFamily,
+  bodyFontSize,
+  bodyFontWeight,
+  bodyFontColor,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -999,6 +1009,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     headerShadow: props.headerShadow,
     rowShadow: props.rowShadow,
     rowDividers: props.rowDividers,
+    bodyFontFamily,
+    bodyFontSize,
+    bodyFontWeight,
+    bodyFontColor,
   };
 
   return (

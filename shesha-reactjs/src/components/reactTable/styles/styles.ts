@@ -70,6 +70,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   headerShadow,
   rowShadow,
   rowDividers,
+  bodyFontFamily,
+  bodyFontSize,
+  bodyFontWeight,
+  bodyFontColor,
 }: {
   rowBackgroundColor?: string;
   rowAlternateBackgroundColor?: string;
@@ -101,6 +105,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   headerShadow?: IShadowValue;
   rowShadow?: IShadowValue;
   rowDividers?: boolean;
+  bodyFontFamily?: string;
+  bodyFontSize?: string;
+  bodyFontWeight?: string;
+  bodyFontColor?: string;
 }) => {
   const {
     shaTable,
@@ -361,7 +369,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             min-height: 22px;
             height: 100%;
             justify-content: center;
-            align-items: center; 
+            align-items: center;
+            ${bodyFontFamily ? `font-family: ${bodyFontFamily};` : ''}
+            ${bodyFontSize ? `font-size: ${bodyFontSize};` : ''}
+            ${bodyFontWeight ? `font-weight: ${bodyFontWeight};` : ''}
+            ${bodyFontColor ? `color: ${bodyFontColor};` : ''}
 
             .sha-link {
               border: none;
@@ -370,9 +382,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               height: auto;
 
               .${iconPrefixCls} {
-                font-size: 16px;
-                width: 16px;
-                min-width: 16px;
+                font-size: ${bodyFontSize || '16px'};
+                width: ${bodyFontSize || '16px'};
+                min-width: ${bodyFontSize || '16px'};
               }
             }
             .sha-action-button {
@@ -382,9 +394,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               align-items: center;
 
               .${iconPrefixCls} {
-                font-size: 16px;
-                width: 16px;
-                min-width: 16px;
+                font-size: ${bodyFontSize || '16px'};
+                width: ${bodyFontSize || '16px'};
+                min-width: ${bodyFontSize || '16px'};
               }
             }
           }

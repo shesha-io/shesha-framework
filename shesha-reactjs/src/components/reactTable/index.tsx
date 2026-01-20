@@ -126,6 +126,10 @@ export const ReactTable: FC<IReactTableProps> = ({
   headerShadow,
   rowShadow,
   rowDividers,
+  bodyFontFamily,
+  bodyFontSize,
+  bodyFontWeight,
+  bodyFontColor,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -176,6 +180,10 @@ export const ReactTable: FC<IReactTableProps> = ({
     headerShadow,
     rowShadow,
     rowDividers,
+    bodyFontFamily,
+    bodyFontSize,
+    bodyFontWeight,
+    bodyFontColor,
   });
 
   const { setDragState } = useDataTableStore();
