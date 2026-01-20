@@ -41,8 +41,11 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     return null;
   }
 
-  const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-    ? { ...componentModel, ...componentModel?.[activeDevice] }
+  // Default to 'desktop' when there's no canvas context (e.g., in datatables)
+  const effectiveDevice = activeDevice || 'desktop';
+
+  const deviceModel = Boolean(effectiveDevice) && typeof effectiveDevice === 'string'
+    ? { ...componentModel, ...componentModel?.[effectiveDevice] }
     : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);
