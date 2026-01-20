@@ -88,7 +88,15 @@ export const useStyles = createStyles(({ css, cx }) => {
       .ant-form-item-control-input-content {
         width: 100%;
         max-width: 100%;
-        overflow: hidden;
+        overflow: visible;
+      }
+
+      /* Ensure validation messages are visible */
+      .ant-form-item-explain,
+      .ant-form-item-explain-error {
+        overflow: visible;
+        white-space: normal;
+        word-wrap: break-word;
       }
     `);
 

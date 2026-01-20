@@ -553,6 +553,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           /* In this example we use an absolutely position resizer, so this is required. */
           position: relative;
 
+          /* Allow overflow for cells with forms to show validation messages */
+          &:has(.sha-form-cell) {
+            overflow: visible;
+          }
+
           .resizer {
             /* prevents from scrolling while dragging on touch devices */
             /* touch-action :none; */
