@@ -617,22 +617,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   {fileList.length === 0 ? (
                     <DraggerStub styles={styles} />
                   ) : (
-                    <>
-                    <div
-                      onClick={(e) => {
-                        // Prevent the dragger from opening file dialog on click
-                        // Only drag-and-drop and the upload button should work
-                        e.stopPropagation();
-                      }}
-                    >
+                    <div>
                       {fileList.map((file) => (
                         <div key={file.uid}>
                           {itemRenderFunction(<></>, file)}
                         </div>
                       ))}
-                    </div>
                       {renderUploadContent()}
-                    </>
+                    </div>
                   )}
                 </Dragger>
               )
