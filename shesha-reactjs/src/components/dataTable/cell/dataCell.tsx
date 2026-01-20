@@ -73,28 +73,12 @@ const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
 
   const injectables = useMemo(() => getInjectables(props), [defaultRow, defaultValue]);
 
-  const model = useMemo(() => {
-    const upgraded = upgradeComponent(
-      customComponent.settings,
-      component,
-      DEFAULT_FORM_SETTINGS,
-      { allComponents: { component: customComponent.settings }, componentRelations: {} },
-    );
-
-    // Debug: Check if appearance properties exist in settings
-    console.log('🔍 ComponentWrapper Debug:', {
-      componentType: customComponent.type,
-      propertyName: columnConfig.propertyName,
-      originalSettings: customComponent.settings,
-      upgradedModel: upgraded,
-      hasFont: !!upgraded?.font,
-      hasBorder: !!upgraded?.border,
-      hasDimensions: !!upgraded?.dimensions,
-      hasBackground: !!upgraded?.background,
-    });
-
-    return upgraded;
-  }, [customComponent.settings, component, customComponent.type, columnConfig.propertyName]);
+  const model = useMemo(() => upgradeComponent(
+    customComponent.settings,
+    component,
+    DEFAULT_FORM_SETTINGS,
+    { allComponents: { component: customComponent.settings }, componentRelations: {} },
+  ), [customComponent.settings, component]);
 
   const actualModel = useActualContextData(
     model, props.readOnly ? true : undefined,
@@ -125,19 +109,8 @@ const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
       }, propertyMeta), adapter.propertiesFilter);
     }
 
-    // Debug: Check if appearance properties are still present in final model
-    console.log('🎯 ComponentWrapper Final Model:', {
-      componentType: customComponent.type,
-      propertyName: columnConfig.propertyName,
-      hasFont: !!editorModel?.font,
-      hasBorder: !!editorModel?.border,
-      hasDimensions: !!editorModel?.dimensions,
-      hasBackground: !!editorModel?.background,
-      editorModel,
-    });
-
     return editorModel;
-  }, [actualModel, columnConfig, propertyMeta, injectables, customComponent.type, props.readOnly, columnConfig.propertyName]);
+  }, [actualModel, columnConfig, propertyMeta, injectables, customComponent.type, props.readOnly]);
 
   if (!component) {
     return <div>Component not found</div>;

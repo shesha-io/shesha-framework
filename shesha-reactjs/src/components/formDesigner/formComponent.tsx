@@ -61,23 +61,6 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
 
   actualModel.allStyles = useFormComponentStyles(actualModel);
 
-  // Debug: Check if appearance properties and allStyles are present
-  if (actualModel?.type === 'dropdown') {
-    console.log('📊 FormComponent allStyles Debug:', {
-      componentType: actualModel.type,
-      propertyName: actualModel.propertyName,
-      hasFont: !!actualModel?.font,
-      hasBorder: !!actualModel?.border,
-      hasDimensions: !!actualModel?.dimensions,
-      hasBackground: !!actualModel?.background,
-      hasAllStyles: !!actualModel?.allStyles,
-      allStylesKeys: actualModel?.allStyles ? Object.keys(actualModel.allStyles) : [],
-      fontStyles: actualModel?.allStyles?.fontStyles,
-      dimensionsStyles: actualModel?.allStyles?.dimensionsStyles,
-      fullStyle: actualModel?.allStyles?.fullStyle,
-    });
-  }
-
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
 
   const control = useMemo(() => {
