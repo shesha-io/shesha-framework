@@ -5,19 +5,15 @@ import { useDataSources } from '@/providers/dataSourcesProvider';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
-import DataListControl, { DataListPlaceholder } from './dataListControl';
+import DataListControl from './dataListControl';
 import { useDataTableStore } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { useComponentValidation } from '@/providers/validationErrors';
 import { useForm } from '@/providers/form';
 import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
-import { validationError } from '../dataTable/utils';
-
-const outsideContextValidationError = validationError('DataList');
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -36,18 +32,17 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     // Use stable hook that only recomputes when actual hierarchy changes
     const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
 
-    const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup && !model.dataSource;
-
-    useComponentValidation(
-      () => shouldShowError ? outsideContextValidationError : undefined,
-      [shouldShowError],
-    );
+    const shouldShowMissingContextError = formMode === 'designer' && !isInsideDataContextInMarkup && !model.dataSource;
 
     if (model.hidden) return null;
 
-    if (!dataSource) return <DataListPlaceholder />;
-
-    return <DataListControl {...model} dataSourceInstance={dataSource} />;
+    return (
+      <DataListControl
+        {...model}
+        dataSourceInstance={dataSource ?? null}
+        shouldShowMissingContextError={shouldShowMissingContextError}
+      />
+    );
   },
   migrator: (m) => m
     .add<IDataListComponentProps>(0, (prev) => ({
@@ -72,7 +67,6 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         inlineSaveMode: 'manual',
         dblClickActionConfiguration: prev['actionConfiguration'],
         showEditIcons: true,
-
       };
     })
     .add<IDataListComponentProps>(6, (prev) => ({ ...prev, dblClickActionConfiguration: migrateNavigateAction(prev.dblClickActionConfiguration) }))
@@ -120,6 +114,26 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     })
     .add<IDataListComponentProps>(11, (prev) => ({ ...prev, showEditIcons: true })),
   settingsFormMarkup: getSettings,
+  validateModel: (model, addModelError) => {
+    // Validate form configuration
+    if (model.formSelectionMode === "name") {
+      if (!model.formId) {
+        addModelError('formId', 'This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items.');
+      } else if (typeof model.formId === 'object' && (!model.formId.name || model.formId.name.trim() === '')) {
+        addModelError('formId', 'This Data List has an invalid form selected (empty form name). Please select a valid form.');
+      }
+    }
+
+    if (model.formSelectionMode === "view" && (!model.formType || model.formType.trim() === '')) {
+      addModelError('formType', 'This Data List has no form type specified. Selecting a Form Type tells the Data List what data structure it should use when rendering items.');
+    }
+
+    if (model.formSelectionMode === "expression" && (!model.formIdExpression || model.formIdExpression.trim() === '')) {
+      addModelError('formIdExpression', 'This Data List has no form identifier expression configured. Configuring an expression tells the Data List how to dynamically determine which form to use.');
+    }
+
+    // Note: DataContext validation is handled via useComponentValidation hook in the Factory/Control functions
+  },
 };
 
 export default DataListComponent;

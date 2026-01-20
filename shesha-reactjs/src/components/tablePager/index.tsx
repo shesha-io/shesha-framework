@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { PHONE_SIZE_QUERY } from '@/shesha-constants/media-queries';
-import { useDataTable } from '@/providers';
+import { useComponentValidation, useDataTable, useForm } from '@/providers';
 import TablePaging from './tablePaging';
 import TableNoPaging from './tableNoPaging';
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
@@ -10,8 +10,13 @@ import { IBackgroundValue } from '@/designer-components/_settings/utils/backgrou
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { Pagination } from 'antd';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
+import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
+import { validationError } from '@/designer-components/dataTable/utils';
+
+const outsideContextValidationError = validationError('Table Pager');
 
 export interface ITablePagerProps {
+  id: string;
   showSizeChanger?: boolean;
   showTotalItems?: boolean;
   font?: IFontValue;
@@ -48,8 +53,20 @@ const EmptyPager: FC<EmptyPagerProps> = ({ style }) => {
   );
 };
 
-export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalItems, style }) => {
+export const TablePager: FC<ITablePagerProps> = ({ id, showSizeChanger, showTotalItems, style }) => {
   const dataTableContext = useDataTable(false);
+  const { formMode } = useForm();
+
+
+  // Use stable hook that only recomputes when actual hierarchy changes
+  const isInsideDataContextInMarkup = useIsInsideDataContext(id);
+
+  const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
+
+  useComponentValidation(
+    () => shouldShowError ? outsideContextValidationError : undefined,
+    [shouldShowError],
+  );
 
   const hideTotalItems = useMediaQuery({
     query: PHONE_SIZE_QUERY,

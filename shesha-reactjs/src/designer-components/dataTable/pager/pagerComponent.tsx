@@ -10,12 +10,6 @@ import React, { CSSProperties } from 'react';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { IPagerComponentProps, PagerComponentDefinition } from './interfaces';
-import { useComponentValidation } from '@/providers/validationErrors';
-import { useForm } from '@/providers/form';
-import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
-import { validationError } from '../utils';
-
-const outsideContextValidationError = validationError('Table Pager');
 
 const PagerComponent: PagerComponentDefinition = {
   type: 'datatable.pager',
@@ -27,23 +21,12 @@ const PagerComponent: PagerComponentDefinition = {
     const jsStyle = allStyles?.jsStyle;
     const fontStyles = allStyles?.fontStyles;
     const stylingBoxAsCSS = allStyles?.stylingBoxAsCSS;
-    const { formMode } = useForm();
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...stylingBoxAsCSS,
       ...fontStyles,
       ...jsStyle,
     });
-
-    // Use stable hook that only recomputes when actual hierarchy changes
-    const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
-
-    const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
-
-    useComponentValidation(
-      () => shouldShowError ? outsideContextValidationError : undefined,
-      [shouldShowError],
-    );
 
     if (model.hidden) return null;
 

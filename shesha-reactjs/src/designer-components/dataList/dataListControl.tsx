@@ -87,28 +87,10 @@ export const DataListPlaceholder: FC = () => {
   );
 };
 
-// Helper to get form configuration error message
-const getFormConfigErrorMessage = (
-  formSelectionMode: FormSelectionMode | undefined,
-  formId: FormIdentifier | undefined,
-  formType: string | undefined,
-  formIdExpression: string | undefined,
-): string | undefined => {
-  if (formSelectionMode === "name" && !formId) {
-    return 'This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items.';
-  }
-  if (formSelectionMode === "view" && !formType) {
-    return 'This Data List has no form type specified. Selecting a Form Type tells the Data List what data structure it should use when rendering items.';
-  }
-  if (formSelectionMode === "expression" && !formIdExpression) {
-    return 'This Data List has no form identifier expression configured. Configuring an expression tells the Data List how to dynamically determine which form to use.';
-  }
-  return undefined;
-};
-
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const {
     dataSourceInstance: dataSource,
+    shouldShowMissingContextError,
     onListItemSave,
     onListItemSaveSuccessAction,
     customUpdateUrl,
@@ -130,6 +112,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     onListItemSelect,
     onSelectionChange,
   } = props;
+
+  // Handle null dataSource gracefully
   const {
     tableData,
     isFetchingTableData,
@@ -140,9 +124,21 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     grouping,
     groupingColumns,
     setRowData,
-  } = dataSource;
+    fetchTableDataError,
+  } = dataSource || {
+    tableData: [],
+    isFetchingTableData: false,
+    selectedIds: [],
+    changeSelectedIds: () => { /* noop */ },
+    getRepository: () => null,
+    modelType: null,
+    grouping: null,
+    groupingColumns: [],
+    setRowData: () => { /* noop */ },
+    fetchTableDataError: null,
+  };
   const { styles } = useStyles();
-  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
+  const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource || { selectedRow: null, selectedRows: [], setSelectedRow: () => { /* noop */ }, setMultiSelectedRow: () => { /* noop */ } };
   const appContext = useAvailableConstantsData();
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
@@ -150,46 +146,167 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   const repository = getRepository();
 
-  // Get form configuration error message if any
-  const formConfigErrorMessage = getFormConfigErrorMessage(
-    props.formSelectionMode,
-    props.formId,
-    props.formType,
-    props.formIdExpression,
-  );
-  const hasInvalidFormConfig = !!formConfigErrorMessage;
+  // Check if form configuration is invalid (for placeholder display in designer mode)
+  const hasInvalidFormConfig = React.useMemo(() => {
+    if (!isDesignMode) return false;
 
-  // Register validation errors - FormComponent will display them
-  // Component identity is automatically obtained from FormComponentValidationProvider
+    if (props.formSelectionMode === "name") {
+      if (!props.formId) return true;
+      if (typeof props.formId === 'object' && (!props.formId.name || props.formId.name.trim() === '')) return true;
+    }
+    if (props.formSelectionMode === "view" && (!props.formType || props.formType.trim() === '')) return true;
+    if (props.formSelectionMode === "expression" && (!props.formIdExpression || props.formIdExpression.trim() === '')) return true;
+
+    return false;
+  }, [isDesignMode, props.formSelectionMode, props.formId, props.formType, props.formIdExpression]);
+
+  // Parse fetch errors from the data source
+  const parseFetchError = React.useCallback((error: unknown): Array<{ propertyName: string; error: string }> | null => {
+    if (!error) return null;
+
+    // Type guard for objects
+    const isObject = (value: unknown): value is Record<string, unknown> => {
+      return typeof value === 'object' && value !== null;
+    };
+
+    // Type guard for validation error entry
+    interface ValidationError {
+      message?: unknown;
+      members?: unknown;
+    }
+    const isValidationError = (ve: unknown): ve is ValidationError => {
+      return isObject(ve);
+    };
+
+    // Handle Axios error format (error.response.data contains ABP response)
+    let abpResponse: unknown = error;
+    if (isObject(error) && 'response' in error && isObject(error.response) && 'data' in error.response) {
+      abpResponse = error.response.data;
+    }
+
+    // Type guard for ABP error structure
+    interface AbpError {
+      message?: unknown;
+      details?: unknown;
+      validationErrors?: unknown;
+    }
+
+    // Handle ABP error format
+    if (isObject(abpResponse) && 'error' in abpResponse && isObject(abpResponse.error)) {
+      const abpError = abpResponse.error as AbpError;
+      const errors: Array<{ propertyName: string; error: string }> = [];
+
+      // Add validation errors (these are the field-specific messages we want)
+      if (Array.isArray(abpError.validationErrors)) {
+        abpError.validationErrors.forEach((ve: unknown) => {
+          if (isValidationError(ve)) {
+            const message = typeof ve.message === 'string' ? ve.message : 'Validation error';
+            let propertyName = 'Field Error';
+
+            if (Array.isArray(ve.members) && ve.members.length > 0 && typeof ve.members[0] === 'string') {
+              propertyName = ve.members[0];
+            }
+
+            errors.push({
+              propertyName,
+              error: message,
+            });
+          }
+        });
+      }
+
+      // Only add main message if we don't have validation errors
+      if (errors.length === 0 && typeof abpError.message === 'string') {
+        errors.push({
+          propertyName: 'Data Fetch Error',
+          error: abpError.message,
+        });
+      }
+
+      // Add details if present and helpful
+      if (errors.length === 1 && typeof abpError.details === 'string' && abpError.details !== abpError.message) {
+        errors.push({
+          propertyName: 'Details',
+          error: abpError.details,
+        });
+      }
+
+      return errors.length > 0 ? errors : null;
+    }
+
+    // Fallback to generic error message
+    if (isObject(error) && 'message' in error && typeof error.message === 'string') {
+      return [{
+        propertyName: 'Data Fetch Error',
+        error: error.message,
+      }];
+    }
+
+    if (typeof error === 'string') {
+      return [{
+        propertyName: 'Data Fetch Error',
+        error,
+      }];
+    }
+
+    return [{
+      propertyName: 'Data Fetch Error',
+      error: 'An unknown error occurred while fetching data',
+    }];
+  }, []);
+
+  const fetchError = React.useMemo(() => {
+    if (!fetchTableDataError) return undefined;
+
+    const parsedErrors = parseFetchError(fetchTableDataError);
+    if (!parsedErrors) return undefined;
+
+    return {
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: parsedErrors,
+    };
+  }, [fetchTableDataError, parseFetchError]);
+
+  const missingContextError = React.useMemo(() => {
+    if (!shouldShowMissingContextError) return undefined;
+
+    return {
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: [{
+        propertyName: 'Missing Required Parent Component',
+        error: 'CONFIGURATION ERROR: DataList MUST be placed inside a Data Context component. This component cannot function without a data source.',
+      }],
+    };
+  }, [shouldShowMissingContextError]);
+
+  const missingRepositoryError = React.useMemo(() => {
+    if (shouldShowMissingContextError || repository) return undefined;
+
+    return {
+      hasErrors: true,
+      validationType: 'error' as const,
+      errors: [{
+        propertyName: 'Missing Data Source',
+        error: 'This Data List has no data source configured. Selecting a Data Source tells the Data List where to fetch data from.',
+      }],
+    };
+  }, [shouldShowMissingContextError, repository]);
+
+  // CRITICAL: Register validation errors - FormComponent will display them
+  // Must be called before any conditional returns (React Hooks rules)
+  // Priority: Fetch errors > Missing context error > Missing repository error
+  // Note: Form configuration errors are handled by validateModel in dataListComponent.tsx
   useComponentValidation(
     () => {
-      // Check for missing repository
-      if (!repository) {
-        return {
-          hasErrors: true,
-          validationType: 'error',
-          errors: [{
-            propertyName: 'Missing Data Source',
-            error: 'This Data List has no data source configured. Selecting a Data Source tells the Data List where to fetch data from.',
-          }],
-        };
-      }
-
-      // Check for invalid form configuration
-      if (formConfigErrorMessage) {
-        return {
-          hasErrors: true,
-          validationType: 'error',
-          errors: [{
-            propertyName: 'Missing Form Configuration',
-            error: formConfigErrorMessage,
-          }],
-        };
-      }
-
+      if (formMode !== 'designer') return undefined;
+      if (fetchError) return fetchError;
+      if (missingContextError) return missingContextError;
+      if (missingRepositoryError) return missingRepositoryError;
       return undefined;
     },
-    [repository, formConfigErrorMessage],
+    [formMode, fetchError, missingContextError, missingRepositoryError],
   );
 
   const onSelectRow = useCallback((index: number, row: any) => {
@@ -413,9 +530,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  // When there's no repository or invalid form config, show placeholder
-  // Validation errors will be shown by parent FormComponent via useComponentValidation
-  if (!repository || hasInvalidFormConfig) {
+  // When there's no repository OR invalid form config in designer mode, show placeholder
+  // Validation errors will be shown by parent FormComponent via useComponentValidation and validateModel
+  if (!repository || (isDesignMode && hasInvalidFormConfig)) {
     return <DataListPlaceholder />;
   }
 
