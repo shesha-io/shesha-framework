@@ -36,6 +36,11 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
 
+  // Early return if componentModel is undefined
+  if (!componentModel) {
+    return null;
+  }
+
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
     ? { ...componentModel, ...componentModel?.[activeDevice] }
     : componentModel;
