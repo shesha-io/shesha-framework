@@ -175,7 +175,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       members?: unknown;
     }
     const isValidationError = (ve: unknown): ve is ValidationError => {
-      return isObject(ve);
+      return isObject(ve) && ('message' in ve || 'members' in ve);
     };
 
     // Handle Axios error format (error.response.data contains ABP response)
