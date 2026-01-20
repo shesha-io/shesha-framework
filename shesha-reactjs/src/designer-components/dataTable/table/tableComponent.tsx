@@ -44,7 +44,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
       if (!store) {
         errors.push({
           propertyName: 'Missing Required Parent Component',
-          error: 'CONFIGURATION ERROR: DataTable MUST be placed inside a Data Context component. This component cannot function without a data source.',
+          error: 'CONFIGURATION ERROR: DataTable MUST be placed inside a Data Context component.\nThis component cannot function without a data source.',
         });
       }
 

@@ -111,20 +111,20 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     // Validate form configuration
     if (model.formSelectionMode === "name") {
       if (!model.formId) {
-        addModelError('formId', 'This Data List has no form selected. Selecting a Form tells the Data List what data structure it should use when rendering items.');
+        addModelError('formId', 'This Data List has no form selected.\nSelecting a Form tells the Data List what data structure it should use when rendering items.');
       } else if (typeof model.formId === 'string' && model.formId.trim() === '') {
-        addModelError('formId', 'This Data List has an invalid form selected (empty form name). Please select a valid form.');
+        addModelError('formId', 'This Data List has an invalid form selected (empty form name).\nPlease select a valid form.');
       } else if (typeof model.formId === 'object' && (!model.formId.name || model.formId.name.trim() === '')) {
-        addModelError('formId', 'This Data List has an invalid form selected (empty form name). Please select a valid form.');
+        addModelError('formId', 'This Data List has an invalid form selected (empty form name).\nPlease select a valid form.');
       }
     }
 
     if (model.formSelectionMode === "view" && (!model.formType || model.formType.trim() === '')) {
-      addModelError('formType', 'This Data List has no form type specified. Selecting a Form Type tells the Data List what data structure it should use when rendering items.');
+      addModelError('formType', 'This Data List has no form type specified.\nSelecting a Form Type tells the Data List what data structure it should use when rendering items.');
     }
 
     if (model.formSelectionMode === "expression" && (!model.formIdExpression || model.formIdExpression.trim() === '')) {
-      addModelError('formIdExpression', 'This Data List has no form identifier expression configured. Configuring an expression tells the Data List how to dynamically determine which form to use.');
+      addModelError('formIdExpression', 'This Data List has no form identifier expression configured.\nConfiguring an expression tells the Data List how to dynamically determine which form to use.');
     }
 
     // Note: DataContext validation is handled via useComponentValidation hook in the Factory/Control functions

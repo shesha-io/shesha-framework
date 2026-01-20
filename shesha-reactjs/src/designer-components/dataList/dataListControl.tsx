@@ -176,7 +176,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       if (!dataSource) {
         errors.push({
           propertyName: 'Missing Required Parent Component',
-          error: 'CONFIGURATION ERROR: DataList MUST be placed inside a Data Context component. This component cannot function without a data source.',
+          error: 'CONFIGURATION ERROR: DataList MUST be placed inside a Data Context component.\nThis component cannot function without a data source.',
         });
       }
 
@@ -184,7 +184,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       if (dataSource && !repository) {
         errors.push({
           propertyName: 'Missing Data Source',
-          error: 'This Data List has no data source configured. Selecting a Data Source tells the Data List where to fetch data from.',
+          error: 'This Data List has no data source configured.\nSelecting a Data Source tells the Data List where to fetch data from.',
         });
       }
 
