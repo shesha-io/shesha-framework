@@ -329,6 +329,16 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             .${td} {
               ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
             }
+
+            /* Make dropdowns transparent to inherit row background */
+            .ant-select-selector,
+            .ant-input,
+            .ant-picker,
+            .ant-input-number-input-wrap,
+            .ant-input-number {
+              background: transparent !important;
+              background-color: transparent !important;
+            }
           }
 
           .${td} {
@@ -408,6 +418,16 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
           &.${trOdd} {
             ${(rowAlternateBackgroundColor || rowBackgroundColor) ? `background: ${rowAlternateBackgroundColor || rowBackgroundColor} !important;` : ''}
+
+            /* Make dropdowns transparent to inherit row background */
+            .ant-select-selector,
+            .ant-input,
+            .ant-picker,
+            .ant-input-number-input-wrap,
+            .ant-input-number {
+              background: transparent !important;
+              background-color: transparent !important;
+            }
           }
 
           &.${trSelected} {
@@ -430,6 +450,22 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                   color: white;
               }
 
+            }
+
+            /* Remove white background from dropdowns in selected rows */
+            .ant-select-selector,
+            .ant-input,
+            .ant-picker,
+            .ant-input-number-input-wrap,
+            .ant-input-number {
+              background: transparent !important;
+              background-color: transparent !important;
+            }
+
+            /* Ensure dropdown text is white in selected rows */
+            .ant-select-selection-item,
+            .ant-select-selection-placeholder {
+              color: white !important;
             }
           }
 
