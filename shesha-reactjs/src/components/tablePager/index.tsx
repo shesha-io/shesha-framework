@@ -15,7 +15,6 @@ import { validationError } from '@/designer-components/dataTable/utils';
 const outsideContextValidationError = validationError('Table Pager');
 
 export interface ITablePagerProps {
-  id: string;
   showSizeChanger?: boolean;
   showTotalItems?: boolean;
   font?: IFontValue;
@@ -52,7 +51,7 @@ const EmptyPager: FC<EmptyPagerProps> = ({ style }) => {
   );
 };
 
-export const TablePager: FC<ITablePagerProps> = ({ id, showSizeChanger, showTotalItems, style }) => {
+export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalItems, style }) => {
   const dataTableContext = useDataTable(false);
   const { formMode } = useForm();
 

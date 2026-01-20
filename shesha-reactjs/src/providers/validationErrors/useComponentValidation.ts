@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { IModelValidation } from '@/utils/errors';
-import { useValidationErrorsActions, useValidationErrorsState } from './index';
+import { useValidationErrorsActions } from './index';
 
 /**
  * Hook for components to register validation errors with the parent FormComponent
