@@ -10,7 +10,7 @@ import * as monaco from 'monaco-editor';
 // Configure Monaco environment for web workers
 if (typeof window !== 'undefined') {
   // Use self.MonacoEnvironment to configure workers
-  (self as any).MonacoEnvironment = {
+  (self).MonacoEnvironment = {
     getWorker(_: string, label: string) {
       // For TypeScript/JavaScript workers
       if (label === 'typescript' || label === 'javascript') {
