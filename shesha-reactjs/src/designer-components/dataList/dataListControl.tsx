@@ -401,7 +401,12 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   const data = useDeepCompareMemo(() => {
     if (isDesignMode) {
-      // Provide sample data for design mode to show a realistic preview
+      // In designer mode, show actual data if available, otherwise show sample data
+      if (tableData && tableData.length > 0) {
+        return tableData;
+      }
+
+      // Provide sample data for design mode to show a realistic preview when no real data
       const sampleData = {
         id: '1',
         name: 'Sample Item',
@@ -530,9 +535,15 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   };
 
-  // When there's no repository OR invalid form config in designer mode, show placeholder
+  // Show placeholder only when form config is invalid in designer mode
+  // In designer mode with valid config, show sample data even without repository
+  // In runtime mode without repository, show placeholder
   // Validation errors will be shown by parent FormComponent via useComponentValidation and validateModel
-  if (!repository || (isDesignMode && hasInvalidFormConfig)) {
+  if (isDesignMode && hasInvalidFormConfig) {
+    return <DataListPlaceholder />;
+  }
+
+  if (!isDesignMode && !repository) {
     return <DataListPlaceholder />;
   }
 
