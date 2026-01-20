@@ -151,6 +151,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
     if (props.formSelectionMode === "name") {
       if (!props.formId) return true;
+      if (typeof props.formId === 'string' && props.formId.trim() === '') return true;
       if (typeof props.formId === 'object' && (!props.formId.name || props.formId.name.trim() === '')) return true;
     }
     if (props.formSelectionMode === "view" && (!props.formType || props.formType.trim() === '')) return true;
