@@ -526,11 +526,11 @@ export const ReactTable: FC<IReactTableProps> = ({
         /* noop */
       };
 
-    return (data) => {
+    return (data, selectedRow?) => {
       const evaluationContext = {
         ...allData,
         data,
-        selectedRow: data?.original,
+        selectedRow: selectedRow || data?.original,
       };
 
       executeAction({
@@ -542,7 +542,8 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const handleDoubleClickRow = (row, index): void => {
     if (typeof onRowDoubleClick === 'object') {
-      performOnRowDoubleClick(row);
+      const currentSelectedRow = { index, row: row.original, id: row.original?.id };
+      performOnRowDoubleClick(row, currentSelectedRow);
     } else if (typeof onRowDoubleClick === 'function') {
       onRowDoubleClick(row?.original, index);
     }
