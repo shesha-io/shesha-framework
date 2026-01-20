@@ -37,6 +37,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: Us
             white-space: nowrap;
         }
 
+        /* Allow wrapping for tag containers */
+        > [data-tag-wrapper="true"] {
+            white-space: normal;
+            overflow: visible;
+            width: 100%;
+            max-width: 100%;
+        }
+
         /* Handle Space component for multiple items */
         .${prefixCls}-space {
             width: 100%;
