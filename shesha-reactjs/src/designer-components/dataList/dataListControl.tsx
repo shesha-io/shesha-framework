@@ -8,11 +8,10 @@ import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions }
 import { useStyles } from '@/components/dataList/styles/styles';
 import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
-import { FormIdentifier, YesNoInherit } from '@/interfaces';
+import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { OnSaveHandler, OnSaveSuccessHandler } from '@/components/dataTable/interfaces';
 import { useComponentValidation } from '@/providers/validationErrors';
-import { FormSelectionMode } from '@/components/dataList/models';
 
 // Static placeholder shown when DataList has configuration errors
 export const DataListPlaceholder: FC = () => {
