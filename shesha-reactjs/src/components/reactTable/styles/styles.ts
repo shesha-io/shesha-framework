@@ -338,14 +338,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               ${bodyTextAlign ? `text-align: ${bodyTextAlign} !important;` : ''}
             }
 
-            /* Make dropdowns transparent to inherit row background */
+            /* Make dropdowns transparent to inherit row background by default */
+            /* Can be overridden by component-level appearance settings */
             .ant-select-selector,
             .ant-input,
             .ant-picker,
             .ant-input-number-input-wrap,
             .ant-input-number {
-              background: transparent !important;
-              background-color: transparent !important;
+              background: transparent;
+              background-color: transparent;
             }
           }
 
@@ -431,14 +432,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           &.${trOdd} {
             ${(rowAlternateBackgroundColor || rowBackgroundColor) ? `background: ${rowAlternateBackgroundColor || rowBackgroundColor} !important;` : ''}
 
-            /* Make dropdowns transparent to inherit row background */
+            /* Make dropdowns transparent to inherit row background by default */
+            /* Can be overridden by component-level appearance settings */
             .ant-select-selector,
             .ant-input,
             .ant-picker,
             .ant-input-number-input-wrap,
             .ant-input-number {
-              background: transparent !important;
-              background-color: transparent !important;
+              background: transparent;
+              background-color: transparent;
             }
           }
 
