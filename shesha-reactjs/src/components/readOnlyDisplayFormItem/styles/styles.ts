@@ -43,6 +43,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: Us
             overflow: visible;
             width: 100%;
             max-width: 100%;
+            flex-wrap: wrap;
+
+            /* Ensure tags maintain their styles and colors */
+            .${prefixCls}-tag {
+                max-width: 100%;
+                overflow: visible;
+                white-space: normal;
+                height: auto;
+            }
         }
 
         /* Handle Space component for multiple items */
@@ -52,7 +61,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: Us
             overflow: hidden;
         }
 
-        /* Handle tags and other components */
+        /* Handle tags and other components outside tag wrapper */
         .${prefixCls}-tag {
             max-width: 100%;
             overflow: hidden;

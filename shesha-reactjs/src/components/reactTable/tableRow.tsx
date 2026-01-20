@@ -87,12 +87,12 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     // Check if the click target is an editable element during inline editing
     const target = event.target as HTMLElement;
     const isEditableElement = target.tagName === 'INPUT' ||
-                              target.tagName === 'TEXTAREA' ||
-                              target.tagName === 'SELECT' ||
-                              target.closest('.ant-select') ||
-                              target.closest('.ant-picker') ||
-                              target.closest('.ant-input-number') ||
-                              target.closest('[contenteditable="true"]');
+      target.tagName === 'TEXTAREA' ||
+      target.tagName === 'SELECT' ||
+      target.closest('.ant-select') ||
+      target.closest('.ant-picker') ||
+      target.closest('.ant-input-number') ||
+      target.closest('[contenteditable="true"]');
 
     // Don't trigger row click when clicking on editable elements
     if (isEditableElement) {

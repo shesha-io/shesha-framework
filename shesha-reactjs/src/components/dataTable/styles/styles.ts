@@ -109,6 +109,11 @@ export const useStyles = createStyles(({ css, cx }) => {
         width: 100%;
         max-width: 100%;
         overflow: hidden;
+
+        /* Exception for tag wrappers - allow overflow for tags */
+        &[data-tag-wrapper="true"] {
+          overflow: visible;
+        }
       }
     `);
 
