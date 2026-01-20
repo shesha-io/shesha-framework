@@ -8,7 +8,6 @@ export interface IDataListComponentProps extends IDataListBaseProps, IDataListIn
 
 export interface IDataListWithDataSourceProps extends IDataListComponentProps {
   dataSourceInstance: DataTableFullInstance | null;
-  shouldShowMissingContextError?: boolean;
 }
 
 export interface IDataListInlineEditableProps {

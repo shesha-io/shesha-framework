@@ -12,7 +12,6 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { useForm } from '@/providers/form';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -22,7 +21,6 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   Factory: ({ model }) => {
     const ds = useDataSources();
     const dts = useDataTableStore(false);
-    const { formMode } = useForm();
 
     const dataSource = model.dataSource
       ? ds.getDataSource(model.dataSource)?.dataSource
@@ -30,15 +28,12 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
 
     // Check if there's a real data source available
     // In designer mode, if no data source is configured and none is available from context, show error
-    const shouldShowMissingContextError = formMode === 'designer' && !dataSource && !model.dataSource;
-
     if (model.hidden) return null;
 
     return (
       <DataListControl
         {...model}
         dataSourceInstance={dataSource ?? null}
-        shouldShowMissingContextError={shouldShowMissingContextError}
       />
     );
   },

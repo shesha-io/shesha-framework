@@ -128,7 +128,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
     </ErrorIconPopover>
   ) : control;
 
-  // Check for validation errors (in both designer and runtime modes)
+  // Check for validation errors (in both designer and runtime modes) when the toolbox component does not exist
   if (!toolboxComponent) {
     const componentNotFoundError: IModelValidation = {
       hasErrors: true,

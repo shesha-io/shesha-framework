@@ -11,7 +11,6 @@ import { useDataTableStore } from '@/providers';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { IAdvancedFilterButtonComponentProps } from './types';
 import { useComponentValidation } from '@/providers/validationErrors';
-import { useForm } from '@/providers/form';
 import { validationError } from '../utils';
 
 const outsideContextValidationError = validationError('Table Filter');
@@ -24,7 +23,6 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
-    const { formMode } = useForm();
 
     const finalStyle = {
       ...model.allStyles.dimensionsStyles,
@@ -36,13 +34,9 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
       ...model.allStyles.jsStyle,
     };
 
-    // Check if there's a real data table store available
-    // In designer mode, if no store is available, show error
-    const shouldShowError = formMode === 'designer' && !store;
-
     useComponentValidation(
-      () => shouldShowError ? outsideContextValidationError : undefined,
-      [shouldShowError],
+      () => !store ? outsideContextValidationError : undefined,
+      [store],
     );
 
     if (model.hidden) return null;

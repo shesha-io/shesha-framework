@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { PHONE_SIZE_QUERY } from '@/shesha-constants/media-queries';
-import { useComponentValidation, useDataTable, useForm } from '@/providers';
+import { useComponentValidation, useDataTable } from '@/providers';
 import TablePaging from './tablePaging';
 import TableNoPaging from './tableNoPaging';
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
@@ -53,15 +53,10 @@ const EmptyPager: FC<EmptyPagerProps> = ({ style }) => {
 
 export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalItems, style }) => {
   const dataTableContext = useDataTable(false);
-  const { formMode } = useForm();
-
-  // Check if there's a real data table context available
-  // In designer mode, if no context is available, show error
-  const shouldShowError = formMode === 'designer' && !dataTableContext;
 
   useComponentValidation(
-    () => shouldShowError ? outsideContextValidationError : undefined,
-    [shouldShowError],
+    () => !dataTableContext ? outsideContextValidationError : undefined,
+    [dataTableContext],
   );
 
   const hideTotalItems = useMediaQuery({

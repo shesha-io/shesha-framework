@@ -23,139 +23,43 @@ import { StandaloneTable } from './standaloneTable';
 import { useDataTableStore } from '@/providers/dataTable';
 import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './utils';
 import { useComponentValidation } from '@/providers/validationErrors';
-import { useForm } from '@/providers/form';
-import { validationError } from '../utils';
-
-const outsideContextValidationError = validationError('DataTable');
+import { parseFetchError } from '../utils';
 
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
   const store = useDataTableStore(false);
-  const { formMode } = useForm();
-
-  // Check if there's a real data store available
-  // In designer mode, if no store is available from context, show error
-  const shouldShowMissingContextError = formMode === 'designer' && !store;
-
-  // Parse fetch errors from the store
-  const parseFetchError = React.useCallback((error: unknown): Array<{ propertyName: string; error: string }> | null => {
-    if (!error) return null;
-
-    // Type guard for objects
-    const isObject = (value: unknown): value is Record<string, unknown> => {
-      return typeof value === 'object' && value !== null;
-    };
-
-    // Type guard for validation error entry
-    interface ValidationError {
-      message?: unknown;
-      members?: unknown;
-    }
-    const isValidationError = (ve: unknown): ve is ValidationError => {
-      return isObject(ve);
-    };
-
-    // Handle Axios error format (error.response.data contains ABP response)
-    let abpResponse: unknown = error;
-    if (isObject(error) && 'response' in error && isObject(error.response) && 'data' in error.response) {
-      abpResponse = error.response.data;
-    }
-
-    // Type guard for ABP error structure
-    interface AbpError {
-      message?: unknown;
-      details?: unknown;
-      validationErrors?: unknown;
-    }
-
-    // Handle ABP error format
-    if (isObject(abpResponse) && 'error' in abpResponse && isObject(abpResponse.error)) {
-      const abpError = abpResponse.error as AbpError;
-      const errors: Array<{ propertyName: string; error: string }> = [];
-
-      // Add validation errors (these are the field-specific messages we want)
-      if (Array.isArray(abpError.validationErrors)) {
-        abpError.validationErrors.forEach((ve: unknown) => {
-          if (isValidationError(ve)) {
-            const message = typeof ve.message === 'string' ? ve.message : 'Validation error';
-            let propertyName = 'Field Error';
-
-            if (Array.isArray(ve.members) && ve.members.length > 0 && typeof ve.members[0] === 'string') {
-              propertyName = ve.members[0];
-            }
-
-            errors.push({
-              propertyName,
-              error: message, // This is "Cannot query field 'description' on type 'Area'."
-            });
-          }
-        });
-      }
-
-      // Only add main message if we don't have validation errors
-      if (errors.length === 0 && typeof abpError.message === 'string') {
-        errors.push({
-          propertyName: 'Data Fetch Error',
-          error: abpError.message,
-        });
-      }
-
-      // Add details if present and helpful
-      if (errors.length === 1 && typeof abpError.details === 'string' && abpError.details !== abpError.message) {
-        errors.push({
-          propertyName: 'Details',
-          error: abpError.details,
-        });
-      }
-
-      return errors.length > 0 ? errors : null;
-    }
-
-    // Fallback to generic error message
-    if (isObject(error) && 'message' in error && typeof error.message === 'string') {
-      return [{
-        propertyName: 'Data Fetch Error',
-        error: error.message,
-      }];
-    }
-
-    if (typeof error === 'string') {
-      return [{
-        propertyName: 'Data Fetch Error',
-        error,
-      }];
-    }
-
-    return [{
-      propertyName: 'Data Fetch Error',
-      error: 'An unknown error occurred while fetching data',
-    }];
-  }, []);
-
-  const fetchError = React.useMemo(() => {
-    if (!store?.fetchTableDataError) return undefined;
-
-    const parsedErrors = parseFetchError(store.fetchTableDataError);
-    if (!parsedErrors) return undefined;
-
-    return {
-      hasErrors: true,
-      validationType: 'error' as const,
-      errors: parsedErrors,
-    };
-  }, [store?.fetchTableDataError, parseFetchError]);
 
   // CRITICAL: Register validation errors - FormComponent will display them
   // Must be called before any conditional returns (React Hooks rules)
-  // Priority: Fetch errors > Missing context error
   useComponentValidation(
     () => {
-      if (formMode !== 'designer') return undefined;
-      if (fetchError) return fetchError;
-      if (shouldShowMissingContextError) return outsideContextValidationError;
+      const errors: Array<{ propertyName: string; error: string }> = [];
+
+      // Parse fetch errors from the store
+      if (store?.fetchTableDataError) {
+        errors.push(...parseFetchError(store.fetchTableDataError));
+      }
+
+      // Check for missing context error
+      if (!store) {
+        errors.push({
+          propertyName: 'Missing Required Parent Component',
+          error: 'CONFIGURATION ERROR: DataTable MUST be placed inside a Data Context component. This component cannot function without a data source.',
+        });
+      }
+
+      // Return validation result if there are errors
+      if (errors.length > 0) {
+        return {
+          hasErrors: true,
+          validationType: 'error' as const,
+          errors,
+        };
+      }
+
       return undefined;
     },
-    [formMode, fetchError, shouldShowMissingContextError],
+    [store?.fetchTableDataError, store],
   );
 
   if (model.hidden) return null;

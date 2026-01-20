@@ -12,6 +12,7 @@ import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { OnSaveHandler, OnSaveSuccessHandler } from '@/components/dataTable/interfaces';
 import { useComponentValidation } from '@/providers/validationErrors';
+import { parseFetchError } from '@/designer-components/dataTable/utils';
 
 // Static placeholder shown when DataList has configuration errors
 export const DataListPlaceholder: FC = () => {
@@ -89,7 +90,6 @@ export const DataListPlaceholder: FC = () => {
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const {
     dataSourceInstance: dataSource,
-    shouldShowMissingContextError,
     onListItemSave,
     onListItemSaveSuccessAction,
     customUpdateUrl,
@@ -160,153 +160,46 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     return false;
   }, [isDesignMode, props.formSelectionMode, props.formId, props.formType, props.formIdExpression]);
 
-  // Parse fetch errors from the data source
-  const parseFetchError = React.useCallback((error: unknown): Array<{ propertyName: string; error: string }> | null => {
-    if (!error) return null;
-
-    // Type guard for objects
-    const isObject = (value: unknown): value is Record<string, unknown> => {
-      return typeof value === 'object' && value !== null;
-    };
-
-    // Type guard for validation error entry
-    interface ValidationError {
-      message?: unknown;
-      members?: unknown;
-    }
-    const isValidationError = (ve: unknown): ve is ValidationError => {
-      return isObject(ve) && ('message' in ve || 'members' in ve);
-    };
-
-    // Handle Axios error format (error.response.data contains ABP response)
-    let abpResponse: unknown = error;
-    if (isObject(error) && 'response' in error && isObject(error.response) && 'data' in error.response) {
-      abpResponse = error.response.data;
-    }
-
-    // Type guard for ABP error structure
-    interface AbpError {
-      message?: unknown;
-      details?: unknown;
-      validationErrors?: unknown;
-    }
-
-    // Handle ABP error format
-    if (isObject(abpResponse) && 'error' in abpResponse && isObject(abpResponse.error)) {
-      const abpError = abpResponse.error as AbpError;
-      const errors: Array<{ propertyName: string; error: string }> = [];
-
-      // Add validation errors (these are the field-specific messages we want)
-      if (Array.isArray(abpError.validationErrors)) {
-        abpError.validationErrors.forEach((ve: unknown) => {
-          if (isValidationError(ve)) {
-            const message = typeof ve.message === 'string' ? ve.message : 'Validation error';
-            let propertyName = 'Field Error';
-
-            if (Array.isArray(ve.members) && ve.members.length > 0 && typeof ve.members[0] === 'string') {
-              propertyName = ve.members[0];
-            }
-
-            errors.push({
-              propertyName,
-              error: message,
-            });
-          }
-        });
-      }
-
-      // Only add main message if we don't have validation errors
-      if (errors.length === 0 && typeof abpError.message === 'string') {
-        errors.push({
-          propertyName: 'Data Fetch Error',
-          error: abpError.message,
-        });
-      }
-
-      // Add details if present and helpful
-      if (errors.length === 1 && typeof abpError.details === 'string' && abpError.details !== abpError.message) {
-        errors.push({
-          propertyName: 'Details',
-          error: abpError.details,
-        });
-      }
-
-      return errors.length > 0 ? errors : null;
-    }
-
-    // Fallback to generic error message
-    if (isObject(error) && 'message' in error && typeof error.message === 'string') {
-      return [{
-        propertyName: 'Data Fetch Error',
-        error: error.message,
-      }];
-    }
-
-    if (typeof error === 'string') {
-      return [{
-        propertyName: 'Data Fetch Error',
-        error,
-      }];
-    }
-
-    return [{
-      propertyName: 'Data Fetch Error',
-      error: 'An unknown error occurred while fetching data',
-    }];
-  }, []);
-
-  const fetchError = React.useMemo(() => {
-    if (!fetchTableDataError) return undefined;
-
-    const parsedErrors = parseFetchError(fetchTableDataError);
-    if (!parsedErrors) return undefined;
-
-    return {
-      hasErrors: true,
-      validationType: 'error' as const,
-      errors: parsedErrors,
-    };
-  }, [fetchTableDataError, parseFetchError]);
-
-  const missingContextError = React.useMemo(() => {
-    if (!shouldShowMissingContextError) return undefined;
-
-    return {
-      hasErrors: true,
-      validationType: 'error' as const,
-      errors: [{
-        propertyName: 'Missing Required Parent Component',
-        error: 'CONFIGURATION ERROR: DataList MUST be placed inside a Data Context component. This component cannot function without a data source.',
-      }],
-    };
-  }, [shouldShowMissingContextError]);
-
-  const missingRepositoryError = React.useMemo(() => {
-    if (shouldShowMissingContextError || repository) return undefined;
-
-    return {
-      hasErrors: true,
-      validationType: 'error' as const,
-      errors: [{
-        propertyName: 'Missing Data Source',
-        error: 'This Data List has no data source configured. Selecting a Data Source tells the Data List where to fetch data from.',
-      }],
-    };
-  }, [shouldShowMissingContextError, repository]);
-
   // CRITICAL: Register validation errors - FormComponent will display them
   // Must be called before any conditional returns (React Hooks rules)
-  // Priority: Fetch errors > Missing context error > Missing repository error
   // Note: Form configuration errors are handled by validateModel in dataListComponent.tsx
   useComponentValidation(
     () => {
-      if (formMode !== 'designer') return undefined;
-      if (fetchError) return fetchError;
-      if (missingContextError) return missingContextError;
-      if (missingRepositoryError) return missingRepositoryError;
+      const errors: Array<{ propertyName: string; error: string }> = [];
+
+      // Parse fetch errors from the data source
+      if (fetchTableDataError) {
+        errors.push(...parseFetchError(fetchTableDataError));
+      }
+
+      // Check for missing context error
+      if (!dataSource) {
+        errors.push({
+          propertyName: 'Missing Required Parent Component',
+          error: 'CONFIGURATION ERROR: DataList MUST be placed inside a Data Context component. This component cannot function without a data source.',
+        });
+      }
+
+      // Check for missing repository error (only if not already showing missing context error)
+      if (dataSource && !repository) {
+        errors.push({
+          propertyName: 'Missing Data Source',
+          error: 'This Data List has no data source configured. Selecting a Data Source tells the Data List where to fetch data from.',
+        });
+      }
+
+      // Return validation result if there are errors
+      if (errors.length > 0) {
+        return {
+          hasErrors: true,
+          validationType: 'error' as const,
+          errors,
+        };
+      }
+
       return undefined;
     },
-    [formMode, fetchError, missingContextError, missingRepositoryError],
+    [fetchTableDataError, dataSource, repository],
   );
 
   const onSelectRow = useCallback((index: number, row: any) => {
