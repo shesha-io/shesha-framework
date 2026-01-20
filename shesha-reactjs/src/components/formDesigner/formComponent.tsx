@@ -48,6 +48,25 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     ? { ...componentModel, ...componentModel?.[effectiveDevice] }
     : componentModel;
 
+  // Debug logging for dropdown in datatable
+  if (componentModel.type === 'dropdown' && componentModel.propertyName) {
+    console.log('🔍 FormComponent Device Merge:', {
+      propertyName: componentModel.propertyName,
+      activeDevice,
+      effectiveDevice,
+      hasComponentModelDesktop: !!componentModel['desktop'],
+      componentModelDesktop: componentModel['desktop'],
+      hasDeviceModelFont: !!deviceModel['font'],
+      hasDeviceModelBorder: !!deviceModel['border'],
+      hasDeviceModelDimensions: !!deviceModel['dimensions'],
+      hasDeviceModelBackground: !!deviceModel['background'],
+      deviceModelFont: deviceModel['font'],
+      deviceModelBorder: deviceModel['border'],
+      deviceModelDimensions: deviceModel['dimensions'],
+      deviceModelBackground: deviceModel['background'],
+    });
+  }
+
   const toolboxComponent = getToolboxComponent(componentModel.type);
 
   const actualModel = useActualContextData<IConfigurableFormComponent & IStyleType>(
@@ -68,6 +87,22 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     actualModel.propertyName = undefined;
 
   actualModel.allStyles = useFormComponentStyles(actualModel);
+
+  // Debug logging after allStyles creation
+  if (componentModel.type === 'dropdown' && componentModel.propertyName) {
+    console.log('📊 FormComponent allStyles:', {
+      propertyName: componentModel.propertyName,
+      hasActualModelFont: !!actualModel['font'],
+      hasActualModelBorder: !!actualModel['border'],
+      actualModelFont: actualModel['font'],
+      actualModelBorder: actualModel['border'],
+      fontStyles: actualModel.allStyles?.fontStyles,
+      borderStyles: actualModel.allStyles?.borderStyles,
+      dimensionsStyles: actualModel.allStyles?.dimensionsStyles,
+      backgroundStyles: actualModel.allStyles?.backgroundStyles,
+      fullStyle: actualModel.allStyles?.fullStyle,
+    });
+  }
 
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent?.useCalculateModel, toolboxComponent?.calculateModel);
 
