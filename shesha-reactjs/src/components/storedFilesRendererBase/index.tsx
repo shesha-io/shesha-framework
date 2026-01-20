@@ -344,55 +344,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
 
-  const props: DraggerProps = {
-    name: '',
-    accept: allowedFileTypes?.join(','),
-    multiple,
-    fileList,
-    disabled,
-    onChange(info: UploadChangeParam) {
-      const { status } = info.file;
-      if (status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-    customRequest(options: any) {
-      // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
-      // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
-      const lastDotIndex = options?.file?.name.lastIndexOf(".");
-      const fileName = lastDotIndex === -1 ? options?.file?.name : options?.file?.name.substring(0, lastDotIndex) + options?.file?.name.substring(lastDotIndex).toLowerCase();
-
-      const normalizedFile = new File([options.file], fileName, { type: options.file.type });
-
-      uploadFile({ file: normalizedFile, ownerId, ownerType });
-    },
-    beforeUpload(file: RcFile) {
-      const { type, size, name } = file;
-
-      if (!isFileTypeAllowed(name, allowedFileTypes)) {
-        message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
-        return false;
-      }
-
-      const isValidFileType =
-        validFileTypes.length === 0 ? true : validFileTypes.map(({ type: fileType }) => fileType).includes(type);
-
-      if (!isValidFileType) {
-        const validTypes = validFileTypes.map(({ name }) => name).join(',');
-        message.error(`You can only upload files of type: (${validTypes})`);
-      }
-
-      const isAcceptableFileSize = maxFileLength === 0 ? true : size / 1024 / 1024 <= maxFileLength;
-
-      if (!isAcceptableFileSize) {
-        message.error(`Image must smaller than ${maxFileLength}MB!`);
-      }
-      return isValidFileType && isAcceptableFileSize;
-    },
-    iconRender,
-    itemRender: (originNode, file) => {
+  const itemRenderFunction = (originNode: React.ReactElement, file: UploadFile): React.ReactElement => {
       const isDownloaded = (file as IStoredFile).userHasDownloaded === true;
       const fileId = (file as IStoredFile).id || file.uid;
       const persistedFileId = (file as IStoredFile).id; // Only persisted files have .id
@@ -550,8 +502,58 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           )}
         </div>
       );
+    };
+
+  const props: DraggerProps = {
+    name: '',
+    accept: allowedFileTypes?.join(','),
+    multiple,
+    fileList,
+    disabled,
+    onChange(info: UploadChangeParam) {
+      const { status } = info.file;
+      if (status === 'done') {
+        message.success(`${info.file.name} file uploaded successfully.`);
+      } else if (status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
     },
-    showUploadList: {
+    customRequest(options: any) {
+      // It used to be RcCustomRequestOptions, but it doesn't seem to be found anymore
+      // Normalize file extension to lowercase to avoid case sensitivity issues on Linux
+      const lastDotIndex = options?.file?.name.lastIndexOf(".");
+      const fileName = lastDotIndex === -1 ? options?.file?.name : options?.file?.name.substring(0, lastDotIndex) + options?.file?.name.substring(lastDotIndex).toLowerCase();
+
+      const normalizedFile = new File([options.file], fileName, { type: options.file.type });
+
+      uploadFile({ file: normalizedFile, ownerId, ownerType });
+    },
+    beforeUpload(file: RcFile) {
+      const { type, size, name } = file;
+
+      if (!isFileTypeAllowed(name, allowedFileTypes)) {
+        message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
+        return false;
+      }
+
+      const isValidFileType =
+        validFileTypes.length === 0 ? true : validFileTypes.map(({ type: fileType }) => fileType).includes(type);
+
+      if (!isValidFileType) {
+        const validTypes = validFileTypes.map(({ name }) => name).join(',');
+        message.error(`You can only upload files of type: (${validTypes})`);
+      }
+
+      const isAcceptableFileSize = maxFileLength === 0 ? true : size / 1024 / 1024 <= maxFileLength;
+
+      if (!isAcceptableFileSize) {
+        message.error(`Image must smaller than ${maxFileLength}MB!`);
+      }
+      return isValidFileType && isAcceptableFileSize;
+    },
+    iconRender,
+    itemRender: itemRenderFunction,
+    showUploadList: isDragger && fileList.length > 0 || !disabled ? false : {
       showRemoveIcon: false,
       showPreviewIcon: false,
       showDownloadIcon: false,
@@ -562,7 +564,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return (
       !disabled && (
         <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps} className={classNames(styles.uploadButton, uploadBtnProps?.className)}>
-          {listType === 'text' && '(press to upload)'}
+          {isDragger ? "Click or drag file to this area to upload" : listType === 'text' && '(press to upload)'}
         </Button>
       )
     );
@@ -575,7 +577,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     >
       {isStub
         ? (isDragger
-          ? <Dragger disabled><DraggerStub styles={styles} /></Dragger>
+          ? <Dragger style={{padding: 0}} disabled><DraggerStub styles={styles} /></Dragger>
           : (
             <>
               <Button
@@ -612,7 +614,26 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             : isDragger
               ? (
                 <Dragger {...props}>
-                  <DraggerStub styles={styles} />
+                  {fileList.length === 0 ? (
+                    <DraggerStub styles={styles} />
+                  ) : (
+                    <>
+                    <div
+                      onClick={(e) => {
+                        // Prevent the dragger from opening file dialog on click
+                        // Only drag-and-drop and the upload button should work
+                        e.stopPropagation();
+                      }}
+                    >
+                      {fileList.map((file) => (
+                        <div key={file.uid}>
+                          {itemRenderFunction(<></>, file)}
+                        </div>
+                      ))}
+                    </div>
+                      {renderUploadContent()}
+                    </>
+                  )}
                 </Dragger>
               )
               : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}

@@ -140,7 +140,19 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
   const thumbnailHeight = layout ? (height ?? '54px') : '100%';
   const marginGap = gap ?? '8px';
 
-  const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
+  const antUploadDragIcon = cx(`${prefixCls}-upload-drag-icon`, css`
+     .${prefixCls}-upload-drag-icon {
+          width: 32px;
+        }
+    `);
+  const antUploadText = cx(`${prefixCls}-upload-text`, css`
+    font-size: 16px !important;
+    `);
+  const antUploadHint = cx(`${prefixCls}-upload-hint`, css`
+
+    `);
+
+
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
     margin-top: ${marginTop};
     margin-left: ${marginLeft};
@@ -235,8 +247,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
      }
     }
 
-    .ant-upload-drag:hover:not(.ant-upload-disabled) {
-      border-color: ${token.colorPrimary} !important;
+    &.ant-upload-drag:hover:not(.ant-upload-disabled) {
+      border: 1px dashed ${token.colorPrimary} !important;
     }
 
     .${prefixCls}-upload {
@@ -248,6 +260,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       align-items: center;
 
       &.${prefixCls}-upload-btn {
+          padding: unset;
+
         .${prefixCls}-upload-drag-icon {
           margin: unset;
         }
@@ -450,6 +464,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     downloadedFile,
     downloadedIcon,
     antUploadDragIcon,
+    antUploadText,
+    antUploadHint,
     thumbnailReadOnly,
     fileName,
     fileNameWrapper,
