@@ -481,7 +481,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const handleSelectRow = (rowIndex: number) => (row: Row<any>): void => {
     if (mode === 'none') return;
-    if (!omitClick && !(canEditInline || canDeleteInline)) {
+    if (!omitClick) {
       // In multiple selection mode, toggle the checkbox selection
       if (mode === 'multiple' && row.id) {
         const isCurrentlySelected = row.isSelected;
