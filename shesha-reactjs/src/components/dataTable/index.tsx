@@ -369,21 +369,15 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   // Component identity (id, name, type) is automatically obtained from FormComponentValidationProvider
   useComponentValidation(
     () => {
-      const errors: Array<{ propertyName?: string; error: string }> = [];
-
       // Validate that component is inside a data context
       if (!store) {
-        errors.push({
-          propertyName: 'No ancestor Data Context component is set',
-          error: '\nPlace this component inside a Data Context component to connect it to data',
-        });
-      }
-
-      if (errors.length > 0) {
         return {
           hasErrors: true,
           validationType: 'warning',
-          errors,
+          errors: [{
+            propertyName: 'No ancestor Data Context component is set',
+            error: '\nPlace this component inside a Data Context component to connect it to data',
+          }],
         };
       }
 
