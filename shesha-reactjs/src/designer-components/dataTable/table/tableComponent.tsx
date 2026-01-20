@@ -24,7 +24,6 @@ import { useDataTableStore } from '@/providers/dataTable';
 import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './utils';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { useForm } from '@/providers/form';
-import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 import { validationError } from '../utils';
 
 const outsideContextValidationError = validationError('DataTable');
@@ -34,11 +33,9 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
   const store = useDataTableStore(false);
   const { formMode } = useForm();
 
-  // Use stable hook that only recomputes when actual hierarchy changes
-  const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
-
-  // Only show validation error in designer mode when component is not inside DataContext
-  const shouldShowMissingContextError = formMode === 'designer' && !isInsideDataContextInMarkup;
+  // Check if there's a real data store available
+  // In designer mode, if no store is available from context, show error
+  const shouldShowMissingContextError = formMode === 'designer' && !store;
 
   // Parse fetch errors from the store
   const parseFetchError = React.useCallback((error: unknown): Array<{ propertyName: string; error: string }> | null => {

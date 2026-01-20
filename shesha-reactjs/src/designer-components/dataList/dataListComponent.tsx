@@ -13,7 +13,6 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { useForm } from '@/providers/form';
-import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -29,10 +28,9 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       ? ds.getDataSource(model.dataSource)?.dataSource
       : dts;
 
-    // Use stable hook that only recomputes when actual hierarchy changes
-    const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
-
-    const shouldShowMissingContextError = formMode === 'designer' && !isInsideDataContextInMarkup && !model.dataSource;
+    // Check if there's a real data source available
+    // In designer mode, if no data source is configured and none is available from context, show error
+    const shouldShowMissingContextError = formMode === 'designer' && !dataSource && !model.dataSource;
 
     if (model.hidden) return null;
 

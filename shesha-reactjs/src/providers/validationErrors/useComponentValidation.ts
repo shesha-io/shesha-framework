@@ -45,9 +45,6 @@ export const useComponentValidation = (
   validationFn: () => Partial<IModelValidation> | undefined,
   deps: unknown[],
 ): IModelValidation | undefined => {
-  // Get component identity from the provider context
-  const { componentId, componentName, componentType } = useValidationErrorsState();
-
   // Get the validation actions from the provider
   const { registerValidation, unregisterValidation } = useValidationErrorsActions();
 
@@ -60,27 +57,24 @@ export const useComponentValidation = (
 
     return {
       ...partialResult,
-      componentId,
-      componentName,
-      componentType,
       hasErrors: true,
     };
-  }, [componentId, componentName, componentType, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps -- validationFn deliberately excluded to prevent infinite loops, deps provided explicitly by caller
+  }, deps); // eslint-disable-line react-hooks/exhaustive-deps -- validationFn deliberately excluded to prevent infinite loops, deps provided explicitly by caller
 
   useEffect(() => {
     // Register validation errors using the actions from the provider
     if (validationResult) {
-      registerValidation(componentId, validationResult);
+      registerValidation(validationResult);
     } else {
       // Clear errors if validation passes
-      unregisterValidation(componentId);
+      unregisterValidation();
     }
 
     // Cleanup on unmount
     return () => {
-      unregisterValidation(componentId);
+      unregisterValidation();
     };
-  }, [componentId, validationResult, registerValidation, unregisterValidation]);
+  }, [validationResult, registerValidation, unregisterValidation]);
 
   return validationResult;
 };

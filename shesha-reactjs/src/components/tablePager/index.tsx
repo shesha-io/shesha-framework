@@ -10,7 +10,6 @@ import { IBackgroundValue } from '@/designer-components/_settings/utils/backgrou
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { Pagination } from 'antd';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
-import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 import { validationError } from '@/designer-components/dataTable/utils';
 
 const outsideContextValidationError = validationError('Table Pager');
@@ -57,11 +56,9 @@ export const TablePager: FC<ITablePagerProps> = ({ id, showSizeChanger, showTota
   const dataTableContext = useDataTable(false);
   const { formMode } = useForm();
 
-
-  // Use stable hook that only recomputes when actual hierarchy changes
-  const isInsideDataContextInMarkup = useIsInsideDataContext(id);
-
-  const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
+  // Check if there's a real data table context available
+  // In designer mode, if no context is available, show error
+  const shouldShowError = formMode === 'designer' && !dataTableContext;
 
   useComponentValidation(
     () => shouldShowError ? outsideContextValidationError : undefined,

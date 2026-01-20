@@ -12,7 +12,6 @@ import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { IAdvancedFilterButtonComponentProps } from './types';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { useForm } from '@/providers/form';
-import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
 import { validationError } from '../utils';
 
 const outsideContextValidationError = validationError('Table Filter');
@@ -37,10 +36,9 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
       ...model.allStyles.jsStyle,
     };
 
-    // Use stable hook that only recomputes when actual hierarchy changes
-    const isInsideDataContextInMarkup = useIsInsideDataContext(model.id);
-
-    const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
+    // Check if there's a real data table store available
+    // In designer mode, if no store is available, show error
+    const shouldShowError = formMode === 'designer' && !store;
 
     useComponentValidation(
       () => shouldShowError ? outsideContextValidationError : undefined,

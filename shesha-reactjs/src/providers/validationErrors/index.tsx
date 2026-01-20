@@ -16,23 +16,20 @@ export interface IValidationErrorsStateContext {
 
 export interface IValidationErrorsActionsContext {
   /**
-   * Register or update validation errors for a component
-   * @param componentId - The unique identifier of the component
+   * Register or update validation errors for the component
    * @param validation - The validation result, or undefined to clear errors
    */
-  registerValidation: (componentId: string, validation?: IModelValidation) => void;
+  registerValidation: (validation?: IModelValidation) => void;
 
   /**
-   * Unregister validation errors for a component (cleanup on unmount)
-   * @param componentId - The unique identifier of the component
+   * Unregister validation errors for the component (cleanup on unmount)
    */
-  unregisterValidation: (componentId: string) => void;
+  unregisterValidation: () => void;
 
   /**
-   * Get validation errors for a specific component
-   * @param componentId - The unique identifier of the component
+   * Get validation errors for the component
    */
-  getValidation: (componentId: string) => IComponentValidationError | undefined;
+  getValidation: () => IComponentValidationError | undefined;
 
   /**
    * Get all validation errors
@@ -73,7 +70,7 @@ export const FormComponentValidationProvider: FC<PropsWithChildren<IFormComponen
   // State to trigger re-renders when errors change
   const [errorVersion, setErrorVersion] = useState(0);
 
-  const registerValidation = useCallback((componentId: string, validation?: IModelValidation) => {
+  const registerValidation = useCallback((validation?: IModelValidation) => {
     const currentValidation = errorsRef.current.get(componentId);
 
     // Check if validation actually changed using deep equality
@@ -82,7 +79,7 @@ export const FormComponentValidationProvider: FC<PropsWithChildren<IFormComponen
       // Ensure componentId is included in the stored validation
       const componentValidation: IComponentValidationError = {
         ...validation,
-        componentId: validation.componentId ?? componentId,
+        componentId,
       };
       hasChanged = !isEqual(currentValidation, componentValidation);
       if (hasChanged) {
@@ -100,19 +97,19 @@ export const FormComponentValidationProvider: FC<PropsWithChildren<IFormComponen
     if (hasChanged) {
       setErrorVersion((v) => v + 1);
     }
-  }, []);
+  }, [componentId]);
 
-  const unregisterValidation = useCallback((componentId: string) => {
+  const unregisterValidation = useCallback(() => {
     if (errorsRef.current.has(componentId)) {
       errorsRef.current.delete(componentId);
       // Only trigger re-render if we actually deleted something
       setErrorVersion((v) => v + 1);
     }
-  }, []);
+  }, [componentId]);
 
-  const getValidation = useCallback((componentId: string): IComponentValidationError | undefined => {
+  const getValidation = useCallback((): IComponentValidationError | undefined => {
     return errorsRef.current.get(componentId);
-  }, []);
+  }, [componentId]);
 
   const getAllValidations = useCallback((): IComponentValidationError[] => {
     return Array.from(errorsRef.current.values());
