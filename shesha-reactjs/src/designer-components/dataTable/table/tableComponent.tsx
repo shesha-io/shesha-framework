@@ -25,6 +25,9 @@ import { defaultStyles, getTableDefaults, getTableSettingsDefaults } from './uti
 import { useComponentValidation } from '@/providers/validationErrors';
 import { useForm } from '@/providers/form';
 import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
+import { validationError } from '../utils';
+
+const outsideContextValidationError = validationError('DataTable');
 
 // Factory component that conditionally renders TableWrapper or StandaloneTable based on data context
 const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ model }) => {
@@ -132,16 +135,6 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
     }];
   }, []);
 
-  // Memoize validation errors
-  const missingContextError = React.useMemo(() => ({
-    hasErrors: true,
-    validationType: 'error' as const,
-    errors: [{
-      propertyName: 'Missing Required Parent Component',
-      error: 'CONFIGURATION ERROR: Data Table MUST be placed inside a Data Context component. This component cannot function without a data source.',
-    }],
-  }), []);
-
   const fetchError = React.useMemo(() => {
     if (!store?.fetchTableDataError) return undefined;
 
@@ -162,10 +155,10 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
     () => {
       if (formMode !== 'designer') return undefined;
       if (fetchError) return fetchError;
-      if (shouldShowMissingContextError) return missingContextError;
+      if (shouldShowMissingContextError) return outsideContextValidationError;
       return undefined;
     },
-    [formMode, fetchError, shouldShowMissingContextError, missingContextError],
+    [formMode, fetchError, shouldShowMissingContextError],
   );
 
   if (model.hidden) return null;

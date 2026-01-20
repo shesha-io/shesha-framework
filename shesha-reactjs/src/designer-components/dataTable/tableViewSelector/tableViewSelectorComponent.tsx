@@ -10,11 +10,14 @@ import { useStyles } from '../tableContext/styles';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { useForm } from '@/providers/form';
 import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
+import { validationError } from '../utils';
+
+const outsideContextValidationError = validationError('Table View Selector');
 
 const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   type: 'tableViewSelector',
   isInput: false,
-  name: 'Table view selector',
+  name: 'Table View Selector',
   icon: <SelectOutlined />,
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
@@ -26,18 +29,9 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
 
     const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
 
-    const validationError = React.useMemo(() => ({
-      hasErrors: true,
-      validationType: 'error' as const,
-      errors: [{
-        propertyName: 'Missing Required Parent Component',
-        error: 'CONFIGURATION ERROR: Table View Selector MUST be placed inside a Data Context component. This component cannot function without a data source.',
-      }],
-    }), []);
-
     useComponentValidation(
-      () => shouldShowError ? validationError : undefined,
-      [shouldShowError, validationError],
+      () => shouldShowError ? outsideContextValidationError : undefined,
+      [shouldShowError],
     );
 
     const content = store

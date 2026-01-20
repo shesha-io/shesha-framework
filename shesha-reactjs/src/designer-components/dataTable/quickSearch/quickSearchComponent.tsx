@@ -16,6 +16,9 @@ import { IQuickSearchComponentProps, QuickSearchComponentDefinition } from './in
 import { useComponentValidation } from '@/providers/validationErrors';
 import { useForm } from '@/providers/form';
 import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
+import { validationError } from '../utils';
+
+const outsideContextValidationError = validationError('Quick Search');
 
 const QuickSearchComponent: QuickSearchComponentDefinition = {
   type: 'datatable.quickSearch',
@@ -43,18 +46,9 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
 
     const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
 
-    const validationError = React.useMemo(() => ({
-      hasErrors: true,
-      validationType: 'error' as const,
-      errors: [{
-        propertyName: 'Missing Required Parent Component',
-        error: 'CONFIGURATION ERROR: Quick Search MUST be placed inside a Data Context component. This component cannot function without a data source.',
-      }],
-    }), []);
-
     useComponentValidation(
-      () => shouldShowError ? validationError : undefined,
-      [shouldShowError, validationError],
+      () => shouldShowError ? outsideContextValidationError : undefined,
+      [shouldShowError],
     );
 
     if (hidden) return null;

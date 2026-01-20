@@ -13,6 +13,9 @@ import { IPagerComponentProps, PagerComponentDefinition } from './interfaces';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { useForm } from '@/providers/form';
 import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
+import { validationError } from '../utils';
+
+const outsideContextValidationError = validationError('Table Pager');
 
 const PagerComponent: PagerComponentDefinition = {
   type: 'datatable.pager',
@@ -37,18 +40,9 @@ const PagerComponent: PagerComponentDefinition = {
 
     const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup;
 
-    const validationError = React.useMemo(() => ({
-      hasErrors: true,
-      validationType: 'error' as const,
-      errors: [{
-        propertyName: 'Missing Required Parent Component',
-        error: 'CONFIGURATION ERROR: Table Pager MUST be placed inside a Data Context component. This component cannot function without a data source.',
-      }],
-    }), []);
-
     useComponentValidation(
-      () => shouldShowError ? validationError : undefined,
-      [shouldShowError, validationError],
+      () => shouldShowError ? outsideContextValidationError : undefined,
+      [shouldShowError],
     );
 
     if (model.hidden) return null;

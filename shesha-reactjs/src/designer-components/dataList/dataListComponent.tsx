@@ -15,6 +15,9 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { useForm } from '@/providers/form';
 import { useIsInsideDataContext } from '@/utils/form/useComponentHierarchyCheck';
+import { validationError } from '../dataTable/utils';
+
+const outsideContextValidationError = validationError('DataList');
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -35,18 +38,9 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
 
     const shouldShowError = formMode === 'designer' && !isInsideDataContextInMarkup && !model.dataSource;
 
-    const validationError = React.useMemo(() => ({
-      hasErrors: true,
-      validationType: 'error' as const,
-      errors: [{
-        propertyName: 'Missing Required Parent Component',
-        error: 'CONFIGURATION ERROR: Data List requires either a configured Data Source property or placement inside a Data Context component.',
-      }],
-    }), []);
-
     useComponentValidation(
-      () => shouldShowError ? validationError : undefined,
-      [shouldShowError, validationError],
+      () => shouldShowError ? outsideContextValidationError : undefined,
+      [shouldShowError],
     );
 
     if (model.hidden) return null;
