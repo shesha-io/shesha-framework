@@ -74,15 +74,15 @@ const nextConfig = (phase) => {
     webpack: (
       config
     ) => {
-      
+
       const extendResourceQuery = (rule, index) => {
         const { resourceQuery: initialQuery } = rule;
         const notRawQuery = { not: [/\?raw/] };
-        
+
         const newQuery = initialQuery
           ? { and: [(Array.isArray(initialQuery) ? { or: initialQuery } : initialQuery), notRawQuery] }
           : notRawQuery
-        
+
         return { ...rule, resourceQuery: newQuery };
       };
 
@@ -100,6 +100,13 @@ const nextConfig = (phase) => {
         },
         ...existingRules,
       ];
+
+      // Configure Monaco Editor for local bundling
+      // Handle TTF fonts used by Monaco
+      config.module.rules.push({
+        test: /\.ttf$/,
+        type: 'asset/resource',
+      });
 
       return {
         ...config,

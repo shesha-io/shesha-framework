@@ -19,9 +19,11 @@ import { useAsyncMemo } from "@/hooks/useAsyncMemo";
 import { CodeEditorLoadingProgressor } from "../loadingProgressor";
 import { Environment } from "@/publicJsApis/metadataBuilder";
 import { useIsDevMode } from "@/hooks/useIsDevMode";
+import monaco from './monacoSetup';
 
-// you can change the source of the monaco files
-loader.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs' } });
+// Configure Monaco to use local files instead of CDN
+// The monaco-editor package will be bundled with the application
+loader.config({ monaco });
 
 interface EditorFileNamesState {
   modelFilePath: string;
