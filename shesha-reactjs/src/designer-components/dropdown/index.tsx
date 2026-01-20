@@ -42,7 +42,7 @@ const DropdownComponent: DropdownComponentDefinition = {
       ? model.enableStyleOnReadonly
         ? { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles }
         : { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles, ...model.allStyles.backgroundStyles, width: '100%', height: '100%', overflow: 'hidden' }
-      : { ...model.allStyles.fullStyle, width: '100%', height: '100%', overflow: 'hidden' };
+      : { ...model.allStyles.fullStyle};
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
