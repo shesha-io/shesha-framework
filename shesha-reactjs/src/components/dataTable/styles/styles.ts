@@ -70,6 +70,9 @@ export const useStyles = createStyles(({ css, cx }) => {
     `;
 
   const shaFormCell = cx("sha-form-cell", shaCellBase, css`
+      /* Override base overflow to allow dropdowns and validation messages */
+      overflow: visible;
+
       .ant-form-item-control {
         flex-direction: column;
         display: flex;
