@@ -105,7 +105,7 @@ const DropdownComponent: DropdownComponentDefinition = {
         style: prev.style,
       };
 
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile, ...styles } };
     })
     .add<IDropdownComponentProps>(8, (prev) => {
       const styles: IInputStyles = {
@@ -121,7 +121,7 @@ const DropdownComponent: DropdownComponentDefinition = {
         backgroundColor: prev.backgroundColor,
         stylingBox: prev.stylingBox,
       };
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile, ...styles } };
     })
     .add<IDropdownComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
     .add<IDropdownComponentProps>(10, (prev) => {
