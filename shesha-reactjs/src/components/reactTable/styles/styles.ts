@@ -294,7 +294,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
         }
         .${tr} {
-          ${rowHeight ? `height: ${rowHeight};` : 'height: 100%;'}
+          ${rowHeight ? `height: ${rowHeight};` : 'height: auto;'}
           ${(() => {
             // Prefer rowBorderStyle over rowBorder for full border control
             if (rowBorderStyle) {

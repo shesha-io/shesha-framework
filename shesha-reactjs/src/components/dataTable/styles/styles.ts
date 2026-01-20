@@ -36,6 +36,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box;
+        height: auto !important;
       }
 
       /* Handle select dropdowns */
