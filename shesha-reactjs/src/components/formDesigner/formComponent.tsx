@@ -3,7 +3,7 @@ import { IConfigurableFormComponent } from '@/interfaces';
 import { useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { formComponentActualModelPropertyFilter } from '@/providers/form/utils';
-import { IModelValidation } from '@/utils/errors';
+import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ErrorIconPopover from '../componentErrors/errorIconPopover';
 import AttributeDecorator from '../attributeDecorator';
@@ -75,7 +75,7 @@ const FormComponentInner: FC<IFormComponentProps> = ({ componentModel }) => {
   // 2. Child components registered via useComponentValidation hook
   const validationResult = useMemo((): IModelValidation | undefined => {
     const errors: Array<{ propertyName?: string; error: string }> = [];
-    let validationType: 'error' | 'warning' | 'info' | undefined;
+    let validationType: ISheshaErrorTypes | undefined;
 
     if (actualModel?.background?.type === 'storedFile' && actualModel?.background.storedFile?.id && !isValidGuid(actualModel?.background.storedFile.id)) {
       errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
