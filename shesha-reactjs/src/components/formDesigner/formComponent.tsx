@@ -49,7 +49,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
     : componentModel;
 
   // Debug logging for dropdown in datatable
-  if (componentModel.type === 'dropdown' && componentModel.propertyName) {
+  if (componentModel.type === 'dropdown') {
     console.log('🔍 FormComponent Device Merge:', {
       propertyName: componentModel.propertyName,
       activeDevice,
@@ -89,7 +89,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   actualModel.allStyles = useFormComponentStyles(actualModel);
 
   // Debug logging after allStyles creation
-  if (componentModel.type === 'dropdown' && componentModel.propertyName) {
+  if (componentModel.type === 'dropdown') {
     console.log('📊 FormComponent allStyles:', {
       propertyName: componentModel.propertyName,
       hasActualModelFont: !!actualModel['font'],

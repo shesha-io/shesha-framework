@@ -45,14 +45,12 @@ const DropdownComponent: DropdownComponentDefinition = {
       : { ...model.allStyles.fullStyle, overflow: 'auto' };
 
     // Debug logging
-    if (model.propertyName) {
-      console.log('🎨 Dropdown finalStyle:', {
-        propertyName: model.propertyName,
-        readOnly: model.readOnly,
-        enableStyleOnReadonly: model.enableStyleOnReadonly,
-        finalStyle,
-      });
-    }
+    console.log('🎨 Dropdown finalStyle:', {
+      propertyName: model.propertyName,
+      readOnly: model.readOnly,
+      enableStyleOnReadonly: model.enableStyleOnReadonly,
+      finalStyle,
+    });
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
