@@ -29,7 +29,7 @@ namespace Shesha.ConfigurationItems
 
         public async Task<GetCurrentResponse> GetCurrentAsync(GetCurrentRequest input)
         {
-            var manager = _ciHelper.GetManager(input.ItemType);
+            var manager = _ciHelper.GetManagerByDiscriminator(input.ItemType);
 
             if (string.IsNullOrWhiteSpace(input.Module))
             {
@@ -76,7 +76,7 @@ namespace Shesha.ConfigurationItems
                     throw new ContentNotModifiedException("Not changed");
             }
 
-            var manager = _ciHelper.GetManager(input.ItemType);
+            var manager = _ciHelper.GetManagerByDiscriminator(input.ItemType);
 
             var item = await manager.GetAsync(input.Id);
 

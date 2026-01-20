@@ -100,7 +100,7 @@ namespace Shesha.ConfigurationStudio
         {
             var moduleId = await ModuleManager.GetModuleIdAsync(request.Module);
 
-            var manager = CiHelper.GetManager(request.ItemType);
+            var manager = CiHelper.GetManagerByDiscriminator(request.ItemType);
 
             var item = await manager.ResolveItemAsync(request.Module, request.Name);
 
@@ -128,7 +128,7 @@ namespace Shesha.ConfigurationStudio
             var module = await ModuleManager.GetModuleAsync(request.ModuleId);
             module.EnsureEditable();
 
-            var manager = CiHelper.GetManager(request.ItemType);
+            var manager = CiHelper.GetManagerByDiscriminator(request.Discriminator);
             var folder = request.FolderId != null
                 ? await FolderRepository.GetAsync(request.FolderId.Value)
                 : null;
@@ -155,7 +155,7 @@ namespace Shesha.ConfigurationStudio
 
             await NonGenericUpdateItemAsync(item, request);
 
-            var manager = CiHelper.GetManager(item.ItemType);
+            var manager = CiHelper.GetManagerByDiscriminator(item.ItemType);
             var dto = await manager.MapToDtoAsync(item);
             return dto;
         }
@@ -275,7 +275,7 @@ namespace Shesha.ConfigurationStudio
             if (revision.ConfigurationItem != item)
                 throw new AbpValidationException("Selected revision doesn't belong to the item");
             
-            var manager = CiHelper.GetManager(item.ItemType);
+            var manager = CiHelper.GetManagerByDiscriminator(item.ItemType);
 
             await manager.RestoreRevisionAsync(revision);
         }
