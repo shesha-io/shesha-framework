@@ -800,6 +800,17 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   deleteFolderAsync = async (node: FolderTreeNode): Promise<void> => {
+    if (node.children.length > 0) {
+      await this.modalApi.warning({
+        title: 'Delete Folder',
+        content: (
+          <div>
+            The folder &quot;{node.name}&quot; cannot be deleted while it contains items.
+          </div>
+        ),
+      });
+      return;
+    }
     if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete '${node.name}'?` }))
       return;
 
