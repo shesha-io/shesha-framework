@@ -38,19 +38,13 @@ const DropdownComponent: DropdownComponentDefinition = {
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
     const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
 
+    // When enableStyleOnReadonly is true, apply all configured styles in readonly mode
+    // When enableStyleOnReadonly is false, apply only minimal styles (font + dimensions)
     const finalStyle = model.readOnly
       ? model.enableStyleOnReadonly
-        ? { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles }
-        : { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles, ...model.allStyles.backgroundStyles, ...model.allStyles.borderStyles, overflow: 'auto' }
+        ? { ...model.allStyles.fullStyle, overflow: 'auto' }
+        : { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles }
       : { ...model.allStyles.fullStyle, overflow: 'auto' };
-
-    // Debug logging
-    console.log('🎨 Dropdown finalStyle:', {
-      propertyName: model.propertyName,
-      readOnly: model.readOnly,
-      enableStyleOnReadonly: model.enableStyleOnReadonly,
-      finalStyle,
-    });
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
