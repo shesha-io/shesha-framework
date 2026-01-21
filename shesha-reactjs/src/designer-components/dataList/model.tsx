@@ -7,7 +7,7 @@ export interface IDataListComponentProps extends IDataListBaseProps, IDataListIn
 }
 
 export interface IDataListWithDataSourceProps extends IDataListComponentProps {
-  dataSourceInstance: DataTableFullInstance;
+  dataSourceInstance: DataTableFullInstance | null;
 }
 
 export interface IDataListInlineEditableProps {

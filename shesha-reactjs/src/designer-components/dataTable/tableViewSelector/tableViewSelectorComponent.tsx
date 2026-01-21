@@ -7,15 +7,24 @@ import { TableViewSelector } from './tableViewSelector';
 import { ConfigurableFormItem, useDataTableStore, validateConfigurableComponentSettings } from '@/index';
 import { getSettings } from './settingsForm';
 import { useStyles } from '../tableContext/styles';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { validationError } from '../utils';
+
+const outsideContextValidationError = validationError('Table View Selector');
 
 const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   type: 'tableViewSelector',
   isInput: false,
-  name: 'Table view selector',
+  name: 'Table View Selector',
   icon: <SelectOutlined />,
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     const { styles } = useStyles();
+
+    useComponentValidation(
+      () => !store ? outsideContextValidationError : undefined,
+      [store],
+    );
 
     const content = store
       ? <TableViewSelector {...model} />
