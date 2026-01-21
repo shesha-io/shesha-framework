@@ -302,7 +302,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`)
                 .join(' ');
             }
-            // Fallback to simple border string
             return rowBorder ? `border: ${rowBorder};` : '';
           })()}
 

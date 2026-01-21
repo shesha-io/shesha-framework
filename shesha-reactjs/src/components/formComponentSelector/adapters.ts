@@ -30,7 +30,7 @@ export const getAllExceptPredicate = (names: string[]): PropertyInclusionPredica
 const labelProperties = ['label', 'hideLabel', 'labelAlign', 'description'];
 const bindingProperties = ['name', 'propertyName', 'defaultValue'];
 const visibilityProperties = ['hidden', 'disabled', 'readOnly', 'visibility', 'hideBorder', 'editMode'];
-// Note: styleProperties removed from filters to expose Appearance tab for datatable column components
+const styleProperties = ['propertyRouter1', 'propertyRouter', 'container', 'style', 'size', 'pnlFontStyle', 'pnlShadowStyle', 'stylingBox'];
 const allBaseProperties = [...labelProperties, ...bindingProperties, ...visibilityProperties];
 
 export const editorAdapters: IDictionary<IEditorAdapter> = {
@@ -42,6 +42,7 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
   [DropdownComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,
+      ...styleProperties,
       // 'referenceListId',
       // 'dataSourceType',
       // 'valueFormat',
@@ -54,6 +55,7 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
   [AutocompleteComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,
+      ...styleProperties,
       'dataSourceType',
       'dataSourceUrl',
       'entityType',
@@ -66,23 +68,24 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
     ]),
   },
   [CheckboxComponent.type]: {
-    propertiesFilter: getAllExceptPredicate([...allBaseProperties]),
+    propertiesFilter: getAllExceptPredicate([...allBaseProperties, ...styleProperties]),
   },
   [TimeFieldComponent.type]: {
-    propertiesFilter: getAllExceptPredicate([...allBaseProperties, 'range', 'picker']),
+    propertiesFilter: getAllExceptPredicate([...allBaseProperties, ...styleProperties, 'range', 'picker']),
   },
   [DateFieldComponent.type]: {
-    propertiesFilter: getAllExceptPredicate([...allBaseProperties, 'range', 'picker']),
+    propertiesFilter: getAllExceptPredicate([...allBaseProperties, ...styleProperties, 'range', 'picker']),
   },
   [NumberComponent.type]: {
-    propertiesFilter: getAllExceptPredicate([...allBaseProperties]),
+    propertiesFilter: getAllExceptPredicate([...allBaseProperties, ...styleProperties]),
   },
   [RefListStatusComponent.type]: {
-    propertiesFilter: getAllExceptPredicate([...allBaseProperties, 'referenceListId']),
+    propertiesFilter: getAllExceptPredicate([...allBaseProperties, ...styleProperties, 'referenceListId']),
   },
   [TextFieldComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,
+      ...styleProperties,
       'initialValue',
       'passEmptyStringByDefault',
       'textType',
@@ -95,7 +98,7 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
     ]),
   },
   [EntityReferenceComponent.type]: {
-    propertiesFilter: getAllExceptPredicate([...allBaseProperties]),
+    propertiesFilter: getAllExceptPredicate([...allBaseProperties, ...styleProperties]),
   },
   [StatusTagComponent.type]: {
     propertiesFilter: getAllExceptPredicate([]),
