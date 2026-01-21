@@ -99,7 +99,7 @@ export const showDialogArgumentsFormFactory: SettingsFormMarkupFactory = ({ fbf 
           functionName: 'getArguments',
         },
         language: 'typescript',
-        resultTypeExpression: '    return metadataBuilder.object();',
+        resultTypeExpression: '    return metadataBuilder.anyObject();',
         readOnly: {
           _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
         } as any,
