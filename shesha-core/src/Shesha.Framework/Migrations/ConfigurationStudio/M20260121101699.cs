@@ -8,8 +8,11 @@ namespace Shesha.Migrations.ConfigurationStudio
     {
         public override void Up()
         {
-            if (Schema.Table("Core_NotificationTemplates").Exists())
+            if (Schema.Table("Core_NotificationTemplates").Exists()) 
+            {
+                this.Shesha().MoveForeignKeys("Core_NotificationTemplates", null, "Id", "notification_templates", "frwk", "id");
                 Delete.Table("Core_NotificationTemplates");
+            }                
         }
     }
 }
