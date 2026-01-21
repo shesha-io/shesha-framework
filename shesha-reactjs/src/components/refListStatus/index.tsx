@@ -13,6 +13,7 @@ export interface IRefListStatusProps {
   showReflistName?: boolean;
   style?: CSSProperties;
   value?: any;
+  readOnly?: boolean;
 }
 
 const Icon = ({ type, ...rest }) => {
@@ -30,12 +31,13 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
     solidBackground,
     showReflistName,
     style = {},
+    readOnly = false,
   } = props;
   const { width, height, minHeight, minWidth, maxHeight, maxWidth } = style;
   const dimensionsStyles = { width, height, minHeight, minWidth, maxHeight, maxWidth };
   const { fontSize, fontWeight, textAlign, color, backgroundColor, backgroundImage, ...rest } = style;
   const fontStyles = { fontSize, fontWeight, textAlign };
-  const { styles } = useStyles({ dimensionsStyles, fontStyles });
+  const { styles } = useStyles({ dimensionsStyles, fontStyles, readOnly });
   const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, value);
 
   if (listItem?.error && !listItem?.loading) {
