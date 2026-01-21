@@ -570,103 +570,105 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   return (
-    fileList.length === 0 && disabled ? null :
-    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
-      : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
-        : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
-    >
-      {isStub
-        ? (isDragger
-          ? <Dragger style={{ padding: 0 }} disabled><DraggerStub styles={styles} /></Dragger>
-          : (
-            <>
-              <Button
-                type="link"
-                icon={<PictureOutlined />}
-                disabled={disabled}
-                {...uploadBtnProps}
-                className={classNames(styles.uploadButton, uploadBtnProps?.className)}
-                style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle, border: 'unset' } : { ...model?.allStyles?.fontStyles }}
-              >
-                {listType === 'text' && '(press to upload)'}
-              </Button>
-              <div style={(listType === 'thumbnail' && !isDragger) ? { width, minWidth, maxWidth } : {}}>
-                {listType !== 'text' && !rest.hideFileName && (
-                  <div className={styles.fileName}>
-                    file name
+    fileList.length === 0 && disabled ? null
+      : (
+        <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
+          : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
+            : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
+        >
+          {isStub
+            ? (isDragger
+              ? <Dragger style={{ padding: 0 }} disabled><DraggerStub styles={styles} /></Dragger>
+              : (
+                <>
+                  <Button
+                    type="link"
+                    icon={<PictureOutlined />}
+                    disabled={disabled}
+                    {...uploadBtnProps}
+                    className={classNames(styles.uploadButton, uploadBtnProps?.className)}
+                    style={listType === 'thumbnail' ? { ...model?.allStyles?.fullStyle, border: 'unset' } : { ...model?.allStyles?.fontStyles }}
+                  >
+                    {listType === 'text' && '(press to upload)'}
+                  </Button>
+                  <div style={(listType === 'thumbnail' && !isDragger) ? { width, minWidth, maxWidth } : {}}>
+                    {listType !== 'text' && !rest.hideFileName && (
+                      <div className={styles.fileName}>
+                        file name
+                      </div>
+                    )}
+                    {hasExtraContent && extraFormId && (
+                      <ExtraContent
+                        file={placeholderFile}
+                        formId={extraFormId}
+                      />
+                    )}
                   </div>
-                )}
-                {hasExtraContent && extraFormId && (
-                  <ExtraContent
-                    file={placeholderFile}
-                    formId={extraFormId}
-                  />
-                )}
-              </div>
 
-            </>
-          )
-        )
-        : (props.disabled && fileList.length === 0
-          ? null
-          : props.disabled && !isDragger
-            ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
-            : isDragger
-              ? (
-                <Dragger {...props} openFileDialogOnClick={true}>
-                  {fileList.length === 0 ? (
-                    <DraggerStub styles={styles} />
-                  ) : !disabled ? (
-                    <div>
-                      {fileList.map((file) => (
-                        <div key={file.uid}>
-                          {itemRenderFunction(<></>, file)}
-                        </div>
-                      ))}
-                      {renderUploadContent()}
-                    </div>
-                  ) : null}
-                </Dragger>
+                </>
               )
-              : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
-      {previewImage && (
-        <Image
-          wrapperClassName={styles.hiddenElement}
-          preview={{
-            visible: previewOpen,
-            onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage(null),
-          }}
-          src={previewImage.url}
-        />
-      )}
+            )
+            : (props.disabled && fileList.length === 0
+              ? null
+              : props.disabled && !isDragger
+                ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
+                : isDragger
+                  ? (
+                    <Dragger {...props} openFileDialogOnClick={true}>
+                      {fileList.length === 0 ? (
+                        <DraggerStub styles={styles} />
+                      ) : !disabled ? (
+                        <div>
+                          {fileList.map((file) => (
+                            <div key={file.uid}>
+                              {itemRenderFunction(<></>, file)}
+                            </div>
+                          ))}
+                          {renderUploadContent()}
+                        </div>
+                      ) : null}
+                    </Dragger>
+                  )
+                  : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
+          {previewImage && (
+            <Image
+              wrapperClassName={styles.hiddenElement}
+              preview={{
+                visible: previewOpen,
+                onVisibleChange: (visible) => setPreviewOpen(visible),
+                afterOpenChange: (visible) => !visible && setPreviewImage(null),
+              }}
+              src={previewImage.url}
+            />
+          )}
 
-      {fetchFilesError && (
-        <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
-      )}
+          {fetchFilesError && (
+            <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
+          )}
 
-      {downloadZipFileError && (
-        <Alert message="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
-      )}
+          {downloadZipFileError && (
+            <Alert message="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
+          )}
 
-      {downloadZip && hasFiles && !!downloadZipFile && (
-        <div className={styles.storedFilesRendererBtnContainer}>
-          <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
-            {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
-          </Button>
+          {downloadZip && hasFiles && !!downloadZipFile && (
+            <div className={styles.storedFilesRendererBtnContainer}>
+              <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
+                {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
+              </Button>
+            </div>
+          )}
+
+          {/* Hidden file input for replace functionality */}
+          <input
+            type="file"
+            ref={hiddenUploadInputRef}
+            className={styles.hiddenElement}
+            accept={allowedFileTypes?.join(',')}
+            onChange={handleReplaceFileChange}
+          />
+
         </div>
-      )}
-
-      {/* Hidden file input for replace functionality */}
-      <input
-        type="file"
-        ref={hiddenUploadInputRef}
-        className={styles.hiddenElement}
-        accept={allowedFileTypes?.join(',')}
-        onChange={handleReplaceFileChange}
-      />
-
-    </div>
+      )
   );
 };
 
