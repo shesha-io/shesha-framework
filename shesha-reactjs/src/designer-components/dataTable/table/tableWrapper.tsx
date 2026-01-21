@@ -238,7 +238,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
     // Check if there are any non-data columns (actions, crud-operations, etc.)
     const hasNonDataColumns = permissibleColumns.some((col) =>
-      col.columnType && col.columnType !== 'data'
+      col.columnType && col.columnType !== 'data',
     );
 
     // Register columns if:

@@ -122,7 +122,7 @@ export const FormComponentValidationProvider: FC<PropsWithChildren<IFormComponen
       componentName,
       componentType,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [errorVersion, componentId, componentName, componentType], // errorVersion triggers re-render when errors change
   );
 
