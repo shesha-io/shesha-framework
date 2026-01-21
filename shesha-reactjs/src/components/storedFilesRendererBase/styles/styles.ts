@@ -248,10 +248,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
 
     &.ant-upload-drag:hover:not(.ant-upload-disabled) {
-      border: 1px dashed ${token.colorPrimary} !important;
+      border: 1px dashed red !important;
     }
 
-    .${prefixCls}-upload {
+    .${prefixCls}-upload:not(.ant-upload-drag) {
       ${rest}
       border: unset;
       ${(layout && !isDragger) && `width: ${thumbnailWidth} !important;`};

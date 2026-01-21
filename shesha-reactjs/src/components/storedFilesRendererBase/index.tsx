@@ -350,76 +350,78 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       const persistedFileId = (file as IStoredFile).id; // Only persisted files have .id
 
       const actions = (
-        <Space size={5}>
-          {allowReplace && !disabled && persistedFileId && isValidGuid(persistedFileId) && (
-            <Button
-              size="small"
-              icon={<SyncOutlined />}
-              title="Replace file"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onReplaceClick(file);
-              }}
-            />
-          )}
-          {allowDelete && !disabled && (
-            <Popconfirm
-              title="Delete Attachment"
-              onConfirm={(e) => {
-                e?.preventDefault();
-                e?.stopPropagation();
-                deleteFile(file.uid);
-              }}
-              description="Are you sure you want to delete this attachment?"
-            >
+        <div onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+          <Space size={5}>
+            {allowReplace && !disabled && persistedFileId && isValidGuid(persistedFileId) && (
               <Button
                 size="small"
-                icon={<DeleteOutlined />}
-                title="Delete file"
+                icon={<SyncOutlined />}
+                title="Replace file"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onReplaceClick(file);
+                }}
               />
-            </Popconfirm>
+            )}
+            {allowDelete && !disabled && (
+              <Popconfirm
+                title="Delete Attachment"
+                onConfirm={(e) => {
+                  e?.preventDefault();
+                  e?.stopPropagation();
+                  deleteFile(file.uid);
+                }}
+                description="Are you sure you want to delete this attachment?"
+              >
+                <Button
+                  size="small"
+                  icon={<DeleteOutlined />}
+                  title="Delete file"
+                />
+              </Popconfirm>
 
-          )}
-          {allowViewHistory && fileId && isValidGuid(fileId) && (
-            <FileVersionsButton
-              fileId={fileId}
-              onDownload={(versionNo, fileName) => {
-                downloadFile({ fileId, versionNo, fileName });
+            )}
+            {allowViewHistory && fileId && isValidGuid(fileId) && (
+              <FileVersionsButton
+                fileId={fileId}
+                onDownload={(versionNo, fileName) => {
+                  downloadFile({ fileId, versionNo, fileName });
+                }}
+              />
+            )}
+            <Button
+              size="small"
+              icon={<DownloadOutlined />}
+              title="Download file"
+              onClick={(e) => {
+                e.stopPropagation();
+                downloadFile({ fileId: file.uid, fileName: file.name });
               }}
             />
-          )}
-          <Button
-            size="small"
-            icon={<DownloadOutlined />}
-            title="Download file"
-            onClick={(e) => {
-              e.stopPropagation();
-              downloadFile({ fileId: file.uid, fileName: file.name });
-            }}
-          />
-          {/* Custom Actions Button Group */}
-          {customActions && customActions.length > 0 && (
-            <div onClick={(e) => e.stopPropagation()}>
-              <DataContextProvider
-                id={`file_ctx_${fileId}`}
-                name="fileContext"
-                description="File context for custom actions"
-                type="control"
-                initialData={getFileContextData(file, fileId)}
-              >
-                <ButtonGroup
-                  id={`file_actions_${fileId}`}
-                  items={customActions}
-                  size="small"
-                  readOnly={false}
-                  spaceSize="small"
-                  isInline={true}
-                />
-              </DataContextProvider>
-            </div>
-          )}
-        </Space>
+            {/* Custom Actions Button Group */}
+            {customActions && customActions.length > 0 && (
+              <div onClick={(e) => e.stopPropagation()}>
+                <DataContextProvider
+                  id={`file_ctx_${fileId}`}
+                  name="fileContext"
+                  description="File context for custom actions"
+                  type="control"
+                  initialData={getFileContextData(file, fileId)}
+                >
+                  <ButtonGroup
+                    id={`file_actions_${fileId}`}
+                    items={customActions}
+                    size="small"
+                    readOnly={false}
+                    spaceSize="small"
+                    isInline={true}
+                  />
+                </DataContextProvider>
+              </div>
+            )}
+          </Space>
+        </div>
       );
 
       const handleItemClick = (e: React.MouseEvent): void => {
@@ -427,7 +429,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         const target = e.target as HTMLElement;
         const isActionElement = target.closest('button') ||
           target.closest('.ant-btn') ||
-          target.closest('.ant-popover') ||
           target.closest('[role="button"]');
 
         if (isActionElement) {
@@ -553,7 +554,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     iconRender,
     itemRender: itemRenderFunction,
-    showUploadList: isDragger && fileList.length > 0 || !disabled ? false : {
+    showUploadList: {
       showRemoveIcon: false,
       showPreviewIcon: false,
       showDownloadIcon: false,
@@ -563,7 +564,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const renderUploadContent = (): React.ReactNode => {
     return (
       !disabled && (
-        <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps} className={classNames(styles.uploadButton, uploadBtnProps?.className)}>
+        <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps} onClick={()=>   hiddenUploadInputRef.current.click()}
+         className={classNames(styles.uploadButton, uploadBtnProps?.className)}>
           {isDragger ? "Click or drag file to this area to upload" : listType === 'text' && '(press to upload)'}
         </Button>
       )
@@ -609,11 +611,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         )
         : (props.disabled && fileList.length === 0
           ? null
-          : props.disabled
+          : props.disabled && !isDragger
             ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
             : isDragger
               ? (
-                <Dragger {...props}>
+                <Dragger {...props} openFileDialogOnClick={fileList.length === 0}>
                   {fileList.length === 0 ? (
                     <DraggerStub styles={styles} />
                   ) : (
