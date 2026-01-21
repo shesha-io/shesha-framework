@@ -495,7 +495,10 @@ export const upgradeComponents = (
 
       const componentDefinition = toolboxComponents[component.type];
       if (componentDefinition) {
-        allComponents[key] = upgradeComponent(component, componentDefinition, formSettings, flatStructure, isNew);
+        const upgraded = upgradeComponent(component, componentDefinition, formSettings, flatStructure, isNew);
+        allComponents[key] = upgraded.type === 'datatableContext'
+          ? { ...upgraded, type: 'dataContext' }
+          : upgraded;
       }
     }
   }
@@ -515,7 +518,7 @@ export const getClosestComponent = (componentId: string, context: SettingsMigrat
 };
 
 export const getClosestTableId = (context: SettingsMigrationContext): string | null => {
-  const table = getClosestComponent(context.componentId, context, 'datatableContext');
+  const table = getClosestComponent(context.componentId, context, 'dataContext');
   return table ? table['uniqueStateId'] ?? table.propertyName : null;
 };
 

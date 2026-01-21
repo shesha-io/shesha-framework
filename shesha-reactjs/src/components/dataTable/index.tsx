@@ -3,7 +3,6 @@ import { ModalProps } from 'antd/lib/modal';
 import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
-import { ValidationErrors } from '..';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import {
   IFlatComponentsStructure,
@@ -50,7 +49,6 @@ import { IShadowValue } from '@/designer-components/_settings/utils/shadow/inter
 import { isEqual } from 'lodash';
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
-import { useStyles } from './styles/styles';
 import { adjustWidth } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
@@ -222,6 +220,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     isFetchingTableData,
     totalPages,
     columns,
+    configurableColumns,
     groupingColumns,
     pageSizeOptions,
     currentPage,
@@ -358,7 +357,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       onRowsChanged(tableData);
     }
   }, [tableData]);
-  const { styles } = useStyles();
 
   const entityMetadata = useMetadata(false);
   const metadata = entityMetadata?.metadata;
@@ -1033,20 +1031,55 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowDividers: props.rowDividers,
   };
 
+  // Register validation errors with the parent FormComponent
+  // FormComponent will automatically display errors in designer mode
+  useComponentValidation(
+    () => {
+      // Check for export to excel errors
+      if (exportToExcelError) {
+        return {
+          hasErrors: true,
+          errors: [{ error: 'Error occurred while exporting to excel' }],
+          validationType: 'error',
+        };
+      }
 
-  // FormComponent will automatically wrap this component with ErrorIconPopover in designer mode
+      // Check for no columns configured
+      // Use columns from store (which includes both configurableColumns and prepared columns)
+      // Only validate when we have definitive information (not during initial load)
+      const storeColumns = columns || [];
+      const hasStoreColumns = storeColumns.length > 0;
+      const hasConfiguredColumns = configurableColumns && configurableColumns.length > 0;
+
+      // Only show validation error if:
+      // 1. Store has been initialized (configurableColumns is defined, even if empty)
+      // 2. There are truly no columns in both configured and prepared state
+      if (configurableColumns !== undefined && !hasConfiguredColumns && !hasStoreColumns) {
+        return {
+          hasErrors: true,
+          errors: [{ error: noColumnsErrorInfo.details }],
+          validationType: 'error',
+        };
+      }
+
+      return undefined;
+    },
+    [exportToExcelError, configurableColumns, columns],
+  );
+
+  // Always render ReactTable - it handles empty columns gracefully
+  // Only show StandaloneTable in designer mode when there are truly no configured columns
+  const shouldShowStandaloneTable =
+    appContext.form?.formMode === 'designer' &&
+    (!configurableColumns || configurableColumns.length === 0) &&
+    (!columns || columns.length === 0);
+
   return (
     <Fragment>
-      <div className={styles.shaChildTableErrorContainer}>
-        {exportToExcelError && <ValidationErrors error="Error occurred while exporting to excel" />}
-      </div>
-
-      {tableProps.columns && tableProps.columns.length > 0 ? (
-        <ReactTable {...tableProps} />
+      {shouldShowStandaloneTable ? (
+        <StandaloneTable items={[]} type="" id="" />
       ) : (
-        <ValidationErrors error={noColumnsErrorInfo}>
-          <StandaloneTable items={[]} type="" id="" />
-        </ValidationErrors>
+        <ReactTable {...tableProps} />
       )}
     </Fragment>
   );
