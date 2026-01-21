@@ -93,7 +93,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         { label: 'File name', value: 'text' },
                         { label: 'Thumbnail', value: 'thumbnail' },
                       ],
-                      // hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
                       jsSetting: true,
                     },
                     {
@@ -835,7 +835,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
-                      // hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: customStylePnlId,
                         components: [...fbf()
@@ -878,7 +878,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   { label: 'Grid', value: 'grid' },
                                 ],
                                 jsSetting: true,
-                                // hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
                               },
                               {
                                 id: nanoid(),
