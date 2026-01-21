@@ -555,9 +555,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const renderUploadContent = (): React.ReactNode => {
     return (
       !disabled && (
-        <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps} onClick={()=>   hiddenUploadInputRef.current.click()}
-         className={classNames(styles.uploadButton, uploadBtnProps?.className)}>
-          {isDragger ? "Click to upload" : listType === 'text' && '(press to upload)'}
+        <Button
+          type="link"
+          icon={<UploadOutlined />}
+          disabled={disabled}
+          {...uploadBtnProps}
+          onClick={isDragger ? undefined : () => hiddenUploadInputRef.current.click()}
+          className={classNames(styles.uploadButton, uploadBtnProps?.className)}
+        >
+          {isDragger ? "Click or drag file to upload" : listType === 'text' && '(press to upload)'}
         </Button>
       )
     );
@@ -606,7 +612,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
             : isDragger
               ? (
-                <Dragger {...props} openFileDialogOnClick={fileList.length === 0}>
+                <Dragger {...props} openFileDialogOnClick={true}>
                   {fileList.length === 0 ? (
                     <DraggerStub styles={styles} />
                   ) : (
