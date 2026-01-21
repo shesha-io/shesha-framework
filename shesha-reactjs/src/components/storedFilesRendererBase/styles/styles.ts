@@ -10,6 +10,7 @@ interface IModelInterface {
   downloadZip?: boolean;
   listType?: listType;
   fontStyles?: CSSProperties;
+  hasFiles?: boolean;
 };
 
 export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = {}, model = {}, containerStyles = {}, downloadedFileStyles }: { style: CSSProperties; model: IModelInterface; containerStyles: CSSProperties; downloadedFileStyles: CSSProperties }) => {
@@ -25,7 +26,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     minWidth: containerMinWidth, marginTop, marginLeft, marginRight, marginBottom, paddingTop,
     paddingLeft, paddingRight, paddingBottom, ...restContainerStyles } = containerStyles;
 
-  const { gap, layout, isDragger } = model;
+  const { gap, layout, isDragger, hasFiles } = model;
 
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
@@ -188,6 +189,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
         color: ${token.colorPrimary} !important;
       };
     }
+
+    .ant-upload-drag {
+      ${hasFiles ? 'border: unset' : ''}
+    }
   
     .ant-upload-list-item {
       display: flex;
@@ -245,10 +250,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       top: unset;
       right: unset;
      }
-    }
-
-    &.ant-upload-drag:hover:not(.ant-upload-disabled) {
-      border: 1px dashed red !important;
     }
 
     .${prefixCls}-upload:not(.ant-upload-drag) {
@@ -451,6 +452,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
   `);
 
   const uploadButton = cx("upload-button", css`
+    width: 100%;
     justify-content: ${textAlign === 'center' || model.listType === 'thumbnail' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'};
   `);
 

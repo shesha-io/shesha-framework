@@ -208,6 +208,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       downloadZip,
       fontStyles: model?.allStyles?.fontStyles,
       listType,
+      hasFiles: fileList.length > 0
     },
   });
 
@@ -425,16 +426,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       );
 
       const handleItemClick = (e: React.MouseEvent): void => {
-        // Don't trigger preview if clicking on buttons, links, or action elements
-        const target = e.target as HTMLElement;
-        const isActionElement = target.closest('button') ||
-          target.closest('.ant-btn') ||
-          target.closest('[role="button"]');
-
-        if (isActionElement) {
-          return;
-        }
-
         // If it's an image, trigger preview instead of download
         if (isImageType(file.type)) {
           e.preventDefault();
@@ -554,7 +545,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     iconRender,
     itemRender: itemRenderFunction,
-    showUploadList: {
+    showUploadList: isDragger && !disabled ? false : {
       showRemoveIcon: false,
       showPreviewIcon: false,
       showDownloadIcon: false,
@@ -566,7 +557,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       !disabled && (
         <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps} onClick={()=>   hiddenUploadInputRef.current.click()}
          className={classNames(styles.uploadButton, uploadBtnProps?.className)}>
-          {isDragger ? "Click or drag file to this area to upload" : listType === 'text' && '(press to upload)'}
+          {isDragger ? "Click to upload" : listType === 'text' && '(press to upload)'}
         </Button>
       )
     );
