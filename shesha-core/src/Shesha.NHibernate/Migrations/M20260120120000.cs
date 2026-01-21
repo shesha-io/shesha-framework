@@ -71,7 +71,7 @@ namespace Shesha.Migrations
                             REPLACE(
                                 REPLACE(override_channels, E'\\', ''),
                             '""{', '{'),
-                        '}""}', '}')
+                        '}""', '}')
                     WHERE override_channels LIKE '%\\%';
                 ");
 
