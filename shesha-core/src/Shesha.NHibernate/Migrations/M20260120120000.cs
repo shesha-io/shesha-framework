@@ -20,16 +20,19 @@ namespace Shesha.Migrations
 
                 // Step 1: Remove escaped characters to fix double-serialization
                 IfDatabase("SqlServer").Execute.Sql(@"
-                   UPDATE frwk.notification_types
-                    SET override_channels =
-                        REPLACE(
-                            REPLACE(
-                                REPLACE(override_channels, '\', ''),
-                            '""{', '{'),
-                        '}""', '}')
-                    WHERE override_channels LIKE '%\%'
-                       OR override_channels LIKE '%""{%'
-                       OR override_channels LIKE '%}""%';
+                    UPDATE frwk.notification_types
+                    SET override_channels = 
+                        '[' + 
+                        STUFF(
+                            (
+                                SELECT ',' + JSON_QUERY(j.value)
+                                FROM OPENJSON(override_channels) j
+                                FOR XML PATH(''), TYPE
+                            ).value('.', 'NVARCHAR(MAX)'),
+                            1, 1, ''
+                        ) + 
+                        ']'
+                    WHERE ISJSON(override_channels) = 1
                 ");
 
                 // Step 2: Normalize property names to proper casing (Module, Name)
