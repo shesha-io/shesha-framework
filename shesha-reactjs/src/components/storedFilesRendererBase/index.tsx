@@ -302,7 +302,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     setPreviewOpen(true);
   };
 
-  const iconRender = (file: UploadFile): React.ReactNode => {
+  const iconRender = (file: UploadFile): React.ReactElement => {
     const { type, uid } = file;
 
     if (isImageType(type)) {
@@ -439,7 +439,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     // For text listType, we need to wrap only the file name in Popover
     // For thumbnail and other types, wrap the entire content
     const renderContent = (): React.ReactNode => {
-      if (listType === 'text') {
+      if (listType === 'text' || isDragger) {
         return (
           <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
             <div className={styles.fileName}>
