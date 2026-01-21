@@ -21,6 +21,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getValueByPropertyName } from '@/utils/object';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
@@ -207,7 +208,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         : prev.footerButtons ?? prev.showModalFooter ? 'default' : 'none',
     }))
     .add<IEntityPickerComponentProps>(9, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IEntityPickerComponentProps>(10, (prev) => ({ ...prev, desktop: { ...defaultStyles(prev) }, mobile: { ...defaultStyles(prev) }, tablet: { ...defaultStyles(prev) } }))
+    .add<IEntityPickerComponentProps>(10, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))
     .add<IEntityPickerComponentProps>(11, (prev, context) => ({
       ...prev,
       // Default to Person for backward compatibility with legacy forms

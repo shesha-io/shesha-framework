@@ -69,13 +69,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: Us
   `);
 
   const inputField = css`
-    padding: 0px 8px;
+    padding: 4px 11px;
     margin: 0;
-    margin-right: 8px;
-    align-items: center;
     overflow: hidden;
     text-overflow: ellipsis;
-    // white-space: nowrap;
   `;
 
   const wrapper = css`
