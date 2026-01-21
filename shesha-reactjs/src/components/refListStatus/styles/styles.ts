@@ -1,6 +1,6 @@
-import { createStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyles }) => {
+export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyles, readOnly }) => {
 
   const shaStatusTag = 'sha-status-tag';
   const shaStatusTagContainer = cx(
@@ -16,6 +16,7 @@ export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyl
       }
 
       .${shaStatusTag} {
+        margin: ${readOnly ? `0 ${sheshaStyles.paddingLG}px` : '0'} !important;
         text-transform: uppercase;
         display: flex;
         width: 100%;

@@ -49,6 +49,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
               showReflistName={showReflistName}
               solidBackground={solidBackground}
               style={model.allStyles?.fullStyle ?? {}}
+              readOnly={formMode === 'readonly'}
             />
           );
         }}
