@@ -21,13 +21,15 @@ namespace Shesha.Migrations
                 // Step 1: Remove escaped characters to fix double-serialization
                 IfDatabase("SqlServer").Execute.Sql(@"
                    UPDATE frwk.notification_types
-                    SET override_channels = 
+                    SET override_channels =
                         REPLACE(
                             REPLACE(
                                 REPLACE(override_channels, '\', ''),
                             '""{', '{'),
                         '}""', '}')
-                    WHERE override_channels LIKE '%\""%';
+                    WHERE override_channels LIKE '%\%'
+                       OR override_channels LIKE '%""{%'
+                       OR override_channels LIKE '%}""%';
                 ");
 
                 // Step 2: Normalize property names to proper casing (Module, Name)
@@ -66,17 +68,30 @@ namespace Shesha.Migrations
                 // Step 1: Remove escaped characters to fix double-serialization
                 IfDatabase("PostgreSQL").Execute.Sql(@"
                     UPDATE frwk.notification_types
-                    SET override_channels = 
+                    SET override_channels =
                         REPLACE(
                             REPLACE(
                                 REPLACE(override_channels, E'\\', ''),
                             '""{', '{'),
                         '}""', '}')
-                    WHERE override_channels LIKE '%\\%';
+                    WHERE override_channels LIKE '%\\%'
+                       OR override_channels LIKE '%""{%'
+                       OR override_channels LIKE '%}""%';
                 ");
 
                 // Step 2: Normalize property names to proper casing (Module, Name)
+                // Use a safe JSON validation approach to avoid migration failure on invalid JSON
                 IfDatabase("PostgreSQL").Execute.Sql(@"
+                    -- Create a temporary function to safely validate JSON
+                    CREATE OR REPLACE FUNCTION pg_temp.is_valid_json(text) RETURNS boolean AS $$
+                    BEGIN
+                        PERFORM $1::json;
+                        RETURN true;
+                    EXCEPTION WHEN OTHERS THEN
+                        RETURN false;
+                    END;
+                    $$ LANGUAGE plpgsql IMMUTABLE;
+
                     UPDATE frwk.notification_types
                     SET override_channels =
                         (
@@ -91,7 +106,7 @@ namespace Shesha.Migrations
                     WHERE override_channels IS NOT NULL
                         AND TRIM(override_channels) != ''
                         AND TRIM(override_channels) != '[]'
-                        AND override_channels::jsonb IS NOT NULL;
+                        AND pg_temp.is_valid_json(override_channels);
                 ");
             }
         }
