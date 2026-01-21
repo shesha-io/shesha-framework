@@ -306,7 +306,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     const { type, uid } = file;
 
     if (isImageType(type)) {
-      if (listType === 'thumbnail') {
+      if (listType === 'thumbnail' && !isDragger) {
         return (
           <>
             <Image src={imageUrls[uid]} alt={file.name} preview={false} />
@@ -606,7 +606,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             ? <Upload {...props} style={model?.allStyles?.fullStyle} listType={listTypeAndLayout} />
             : isDragger
               ? (
-                <Dragger {...props} openFileDialogOnClick={fileList.length === 0} >
+                <Dragger {...props} openFileDialogOnClick={fileList.length === 0}>
                   {fileList.length === 0 ? (
                     <DraggerStub styles={styles} />
                   ) : (
