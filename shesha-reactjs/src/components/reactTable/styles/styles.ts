@@ -156,9 +156,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   );
 
   // var(--ant-primary-3)
-  const hoverableRow = rowHoverBackgroundColor ? `
+  const hoverableRow = rowHoverBackgroundColor !== undefined ? `
         &:not(.${trSelected}) {
-            background: ${rowHoverBackgroundColor} !important;
+            background: ${rowHoverBackgroundColor || token.colorPrimaryBgHover} !important;
         }
     ` : '';
 
@@ -262,7 +262,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             align-items: center;
           }
 
-          //
           .${prefixCls}-collapse {
             border: none;
 
@@ -313,7 +312,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${headerFontFamily ? `font-family: ${headerFontFamily};` : ''}
             ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
             ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
-            ${headerTextColor ? `color: ${headerTextColor};` : ''}
+            ${headerTextColor ? `color: ${headerTextColor};` : 'color: #000000ff !important;'}
             ${Object.entries(headerBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${Object.entries(headerShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
 
@@ -331,7 +330,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           &.${trBody} {
             ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : ''}
             ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
-            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : ''}
+            ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
 
             /* Apply text alignment to body cells */
             .${td} {
@@ -356,7 +355,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${cellBackgroundColor ? `background-color: ${cellBackgroundColor};` : ''}
             ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
             ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
-            ${bodyTextAlign ? `text-align: ${bodyTextAlign};` : ''}
           }
 
           .${th} {
@@ -556,7 +554,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           ${headerFontFamily ? `font-family: ${headerFontFamily};` : ''}
           ${headerFontSize ? `font-size: ${headerFontSize};` : ''}
           ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
-          ${headerTextColor ? `color: ${headerTextColor};` : ''}
+          ${headerTextColor ? `color: ${headerTextColor};` : 'color: #000000ff !important;'}
 
           &.${sortedAsc} {
             border-top: 3px solid ${sortableIndicatorColor || token.colorPrimary};

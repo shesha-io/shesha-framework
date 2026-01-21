@@ -104,19 +104,15 @@ namespace Shesha.DynamicEntities.DbGenerator
             }
         }
 
-        public async Task ProcessEntityPropertyAsync(EntityProperty entityProperty)
-        {
-            await UseSchemaAndTableAsync(entityProperty.EntityConfig);
-            await ProcessEntityPropertyAsync(entityProperty, false);
-        }
-
-        private async Task ProcessEntityPropertyAsync(EntityProperty entityProperty, bool force)
+        public async Task ProcessEntityPropertyAsync(EntityProperty entityProperty, bool force = false)
         {
             if (entityProperty.InheritedFrom != null && !entityProperty.InheritedFrom.IsDeleted)
             {
                 await UpdateSuccessAsync(entityProperty);
                 return;
             }
+
+            await UseSchemaAndTableAsync(entityProperty.EntityConfig);
 
             var propertyDbType = GetDbColumnType(entityProperty);
             var columnName = entityProperty.ColumnName.NotNull($"Column name for property {entityProperty.Name} of {entityProperty.EntityConfig.FullClassName} should not be null");

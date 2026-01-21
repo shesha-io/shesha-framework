@@ -975,7 +975,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     rowBackgroundColor,
     rowAlternateBackgroundColor,
-    rowHoverBackgroundColor: hoverHighlight ? rowHoverBackgroundColor : undefined,
+    rowHoverBackgroundColor: hoverHighlight ? (rowHoverBackgroundColor || '') : undefined,
     rowSelectedBackgroundColor,
     border,
     striped,
