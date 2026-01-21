@@ -18,37 +18,21 @@ namespace Shesha.Migrations
                 // SQL SERVER VERSION
                 // ============================================
 
-                // Step 1: Remove escaped characters to fix double-serialization
-                IfDatabase("SqlServer").Execute.Sql(@"
-                    UPDATE frwk.notification_types
-                    SET override_channels = 
-                        '[' + 
-                        STUFF(
-                            (
-                                SELECT ',' + JSON_QUERY(j.value)
-                                FROM OPENJSON(override_channels) j
-                                FOR XML PATH(''), TYPE
-                            ).value('.', 'NVARCHAR(MAX)'),
-                            1, 1, ''
-                        ) + 
-                        ']'
-                    WHERE ISJSON(override_channels) = 1
-                ");
-
-                // Step 2: Normalize property names to proper casing (Module, Name)
+                // Use OPENJSON to safely parse (handling any escaping) and normalize property names
+                // in a single operation. OPENJSON automatically handles double-serialized JSON.
                 IfDatabase("SqlServer").Execute.Sql(@"
                     UPDATE frwk.notification_types
                     SET override_channels =
                         (
                             SELECT '[' + STRING_AGG(
                                 JSON_MODIFY(
-                                    JSON_MODIFY('{}', '$.Module', 
+                                    JSON_MODIFY('{}', '$.Module',
                                         COALESCE(
                                             JSON_VALUE(obj.value, '$.module'),
                                             JSON_VALUE(obj.value, '$.Module')
                                         )
                                     ),
-                                    '$.Name', 
+                                    '$.Name',
                                     COALESCE(
                                         JSON_VALUE(obj.value, '$.name'),
                                         JSON_VALUE(obj.value, '$.Name')
@@ -68,27 +52,14 @@ namespace Shesha.Migrations
                 // POSTGRESQL VERSION
                 // ============================================
 
-                // Step 1: Remove escaped characters to fix double-serialization
-                IfDatabase("PostgreSQL").Execute.Sql(@"
-                    UPDATE frwk.notification_types
-                    SET override_channels =
-                        REPLACE(
-                            REPLACE(
-                                REPLACE(override_channels, E'\\', ''),
-                            '""{', '{'),
-                        '}""', '}')
-                    WHERE override_channels LIKE '%\\%'
-                       OR override_channels LIKE '%""{%'
-                       OR override_channels LIKE '%}""%';
-                ");
-
-                // Step 2: Normalize property names to proper casing (Module, Name)
-                // Use a safe JSON validation approach to avoid migration failure on invalid JSON
+                // Use PostgreSQL's built-in JSON functions to safely handle deserialization
+                // and normalize property names. jsonb_array_elements automatically handles
+                // any escaped JSON when parsing, avoiding unsafe manual string replacement.
                 IfDatabase("PostgreSQL").Execute.Sql(@"
                     -- Create a temporary function to safely validate JSON
                     CREATE OR REPLACE FUNCTION pg_temp.is_valid_json(text) RETURNS boolean AS $$
                     BEGIN
-                        PERFORM $1::json;
+                        PERFORM $1::jsonb;
                         RETURN true;
                     EXCEPTION WHEN OTHERS THEN
                         RETURN false;
