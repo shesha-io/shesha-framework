@@ -1152,9 +1152,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   // Always render ReactTable - it handles empty columns gracefully
   // Only show StandaloneTable in designer mode when there are truly no configured columns
+  // Only show StandaloneTable when:
+  // 1. In designer mode
+  // 2. configurableColumns has been initialized (not undefined) AND is empty
+  // 3. columns (from store) is also empty
+  // This prevents showing StandaloneTable during initial load before columns are registered
   const shouldShowStandaloneTable =
     appContext.form?.formMode === 'designer' &&
-    (!configurableColumns || configurableColumns.length === 0) &&
+    configurableColumns !== undefined && configurableColumns.length === 0 &&
     (!columns || columns.length === 0);
 
   return (
