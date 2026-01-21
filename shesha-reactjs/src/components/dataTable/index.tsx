@@ -3,7 +3,7 @@ import { ModalProps } from 'antd/lib/modal';
 import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
-import { IErrorInfo } from '@/interfaces/errorInfo';
+import { IErrorInfo, IValidationErrorInfo } from '@/interfaces/errorInfo';
 import {
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
@@ -14,6 +14,8 @@ import {
   useShaFormInstanceOrUndefined,
   useSheshaApplication,
 } from '@/providers';
+import { AxiosError } from 'axios';
+import { IAjaxErrorResponse } from '@/interfaces/ajaxResponse';
 import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
 import { removeUndefinedProperties } from '@/utils/array';
 import { camelcaseDotNotation, toCamelCase } from '@/utils/string';
@@ -64,6 +66,76 @@ export interface IIndexTableOptions {
 const noColumnsErrorInfo: IErrorInfo = {
   message: 'Column Mismatches',
   details: 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.',
+};
+
+/**
+ * Type guard to check if an error is an AxiosError
+ */
+const isAxiosError = (error: unknown): error is AxiosError<IAjaxErrorResponse> => {
+  return (
+    error !== null &&
+    typeof error === 'object' &&
+    'isAxiosError' in error &&
+    error.isAxiosError === true
+  );
+};
+
+/**
+ * Helper function to extract error messages from API response
+ * Extracts individual validation errors from ABP error format
+ */
+const getErrorMessages = (error: unknown): { error: string }[] => {
+  if (!error) return [{ error: 'An unknown error occurred' }];
+
+  // Try to extract error info from AxiosError
+  let errorInfo: IErrorInfo | undefined;
+
+  // Check for AxiosError with response data
+  if (isAxiosError(error) && error.response?.data) {
+    const responseData = error.response.data;
+    if ('error' in responseData && responseData.error) {
+      errorInfo = responseData.error;
+    }
+  } else if (typeof error === 'object' && error !== null && 'error' in error) {
+    const errorWithProp = error as { error: IErrorInfo };
+    errorInfo = errorWithProp.error;
+  } else if (error instanceof Error) {
+    errorInfo = { message: error.message };
+  }
+
+  // Extract validation errors from errorInfo
+  if (errorInfo) {
+    const errors: { error: string }[] = [];
+
+    // If there are individual validation errors, use those as separate entries
+    if (errorInfo.validationErrors && Array.isArray(errorInfo.validationErrors)) {
+      errorInfo.validationErrors.forEach((ve: IValidationErrorInfo) => {
+        if (ve.message) {
+          errors.push({ error: ve.message });
+        }
+      });
+      if (errors.length > 0) return errors;
+    }
+
+    // Otherwise, fall back to details or message
+    if (errorInfo.details) {
+      errors.push({ error: errorInfo.details });
+    } else if (errorInfo.message) {
+      errors.push({ error: errorInfo.message });
+    }
+
+    if (errors.length > 0) return errors;
+  }
+
+  // Last resort - try to extract message from error object
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    const errorWithMessage = error as { message: string };
+    if (errorWithMessage.message && !errorWithMessage.message.includes('status code')) {
+      return [{ error: errorWithMessage.message }];
+    }
+  }
+
+  return [{ error: 'An error occurred while fetching data' }];
 };
 
 export interface IIndexTableProps extends IShaDataTableProps, TableProps {
@@ -218,6 +290,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const {
     tableData,
     isFetchingTableData,
+    hasFetchTableDataError,
+    fetchTableDataError,
     totalPages,
     columns,
     configurableColumns,
@@ -1035,11 +1109,20 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   // FormComponent will automatically display errors in designer mode
   useComponentValidation(
     () => {
+      // Check for data fetch errors (highest priority)
+      if (hasFetchTableDataError && fetchTableDataError) {
+        return {
+          hasErrors: true,
+          errors: getErrorMessages(fetchTableDataError),
+          validationType: 'error',
+        };
+      }
+
       // Check for export to excel errors
       if (exportToExcelError) {
         return {
           hasErrors: true,
-          errors: [{ error: 'Error occurred while exporting to excel' }],
+          errors: getErrorMessages(exportToExcelError),
           validationType: 'error',
         };
       }
@@ -1064,7 +1147,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
       return undefined;
     },
-    [exportToExcelError, configurableColumns, columns],
+    [hasFetchTableDataError, fetchTableDataError, exportToExcelError, configurableColumns, columns],
   );
 
   // Always render ReactTable - it handles empty columns gracefully

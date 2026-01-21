@@ -1,6 +1,21 @@
 import { IModelValidation } from "@/utils/errors";
 import { IErrorInfo, IValidationErrorInfo } from "@/interfaces/errorInfo";
-import { isAjaxErrorResponse, isAxiosResponse } from "@/interfaces/ajaxResponse";
+import { isAjaxErrorResponse, isAxiosResponse, IAjaxErrorResponse } from "@/interfaces/ajaxResponse";
+import { AxiosError } from "axios";
+
+/**
+ * Type guard to check if an error is an AxiosError with response data
+ */
+const isAxiosErrorWithResponse = (error: unknown): error is AxiosError<IAjaxErrorResponse> => {
+  return (
+    error !== null &&
+    typeof error === 'object' &&
+    'isAxiosError' in error &&
+    error.isAxiosError === true &&
+    'response' in error &&
+    error.response !== undefined
+  );
+};
 
 export const validationError = (componentName: string): IModelValidation => ({
   hasErrors: true,
@@ -18,9 +33,19 @@ export const validationError = (componentName: string): IModelValidation => ({
 export const parseFetchError = (error: unknown): Array<{ propertyName: string; error: string }> => {
   if (!error) return [];
 
-  // Extract error info using existing type guards
-  const errorInfo: IErrorInfo | undefined =
-    isAxiosResponse(error) && isAjaxErrorResponse(error.data)
+  // Extract error info - handle Axios error structure
+  let errorInfo: IErrorInfo | undefined;
+
+  // Check for AxiosError with response.data.error (ABP format)
+  if (isAxiosErrorWithResponse(error)) {
+    if (isAjaxErrorResponse(error.response.data)) {
+      errorInfo = error.response.data.error;
+    }
+  }
+
+  // Fallback to existing type guards if not found
+  if (!errorInfo) {
+    errorInfo = isAxiosResponse(error) && isAjaxErrorResponse(error.data)
       ? error.data.error
       : isAjaxErrorResponse(error)
         ? error.error
@@ -29,6 +54,7 @@ export const parseFetchError = (error: unknown): Array<{ propertyName: string; e
           : typeof error === 'string'
             ? { message: error }
             : undefined;
+  }
 
   if (!errorInfo) {
     return [{
