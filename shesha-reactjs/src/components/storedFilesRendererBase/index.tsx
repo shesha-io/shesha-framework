@@ -208,7 +208,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       downloadZip,
       fontStyles: model?.allStyles?.fontStyles,
       listType,
-      hasFiles: fileList.length > 0
+      hasFiles: fileList.length > 0,
     },
   });
 
@@ -346,123 +346,110 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   }
 
   const itemRenderFunction = (originNode: React.ReactElement, file: UploadFile): React.ReactElement => {
-      const isDownloaded = (file as IStoredFile).userHasDownloaded === true;
-      const fileId = (file as IStoredFile).id || file.uid;
-      const persistedFileId = (file as IStoredFile).id; // Only persisted files have .id
+    const isDownloaded = (file as IStoredFile).userHasDownloaded === true;
+    const fileId = (file as IStoredFile).id || file.uid;
+    const persistedFileId = (file as IStoredFile).id; // Only persisted files have .id
 
-      const actions = (
-        <div onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
-          <Space size={5}>
-            {allowReplace && !disabled && persistedFileId && isValidGuid(persistedFileId) && (
-              <Button
-                size="small"
-                icon={<SyncOutlined />}
-                title="Replace file"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onReplaceClick(file);
-                }}
-              />
-            )}
-            {allowDelete && !disabled && (
-              <Popconfirm
-                title="Delete Attachment"
-                onConfirm={(e) => {
-                  e?.preventDefault();
-                  e?.stopPropagation();
-                  deleteFile(file.uid);
-                }}
-                description="Are you sure you want to delete this attachment?"
-              >
-                <Button
-                  size="small"
-                  icon={<DeleteOutlined />}
-                  title="Delete file"
-                />
-              </Popconfirm>
-
-            )}
-            {allowViewHistory && fileId && isValidGuid(fileId) && (
-              <FileVersionsButton
-                fileId={fileId}
-                onDownload={(versionNo, fileName) => {
-                  downloadFile({ fileId, versionNo, fileName });
-                }}
-              />
-            )}
+    const actions = (
+      <div onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+        <Space size={5}>
+          {allowReplace && !disabled && persistedFileId && isValidGuid(persistedFileId) && (
             <Button
               size="small"
-              icon={<DownloadOutlined />}
-              title="Download file"
+              icon={<SyncOutlined />}
+              title="Replace file"
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
-                downloadFile({ fileId: file.uid, fileName: file.name });
+                onReplaceClick(file);
               }}
             />
-            {/* Custom Actions Button Group */}
-            {customActions && customActions.length > 0 && (
-              <div onClick={(e) => e.stopPropagation()}>
-                <DataContextProvider
-                  id={`file_ctx_${fileId}`}
-                  name="fileContext"
-                  description="File context for custom actions"
-                  type="control"
-                  initialData={getFileContextData(file, fileId)}
-                >
-                  <ButtonGroup
-                    id={`file_actions_${fileId}`}
-                    items={customActions}
-                    size="small"
-                    readOnly={false}
-                    spaceSize="small"
-                    isInline={true}
-                  />
-                </DataContextProvider>
-              </div>
-            )}
-          </Space>
-        </div>
-      );
+          )}
+          {allowDelete && !disabled && (
+            <Popconfirm
+              title="Delete Attachment"
+              onConfirm={(e) => {
+                e?.preventDefault();
+                e?.stopPropagation();
+                deleteFile(file.uid);
+              }}
+              description="Are you sure you want to delete this attachment?"
+            >
+              <Button
+                size="small"
+                icon={<DeleteOutlined />}
+                title="Delete file"
+              />
+            </Popconfirm>
 
-      const handleItemClick = (e: React.MouseEvent): void => {
-        // If it's an image, trigger preview instead of download
-        if (isImageType(file.type)) {
-          e.preventDefault();
-          e.stopPropagation();
-          handlePreview(file);
-        } else {
-          downloadFile({ fileId: file.uid, fileName: file.name });
-        };
-      };
-
-      // For text listType, we need to wrap only the file name in Popover
-      // For thumbnail and other types, wrap the entire content
-      const renderContent = (): React.ReactNode => {
-        if (listType === 'text') {
-          return (
-            <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
-              <div className={styles.fileName}>
-                <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
-                  <Space direction="horizontal" size="small">
-                    <span>{iconRender(file)}</span>
-                    <span>{file.name}</span>
-                  </Space>
-                </Popover>
-              </div>
-              {isDownloaded && styleDownloadedFiles && (
-                <div className={styles.downloadedIcon}>
-                  <ShaIcon iconName={downloadedIcon} />
-                </div>
-              )}
+          )}
+          {allowViewHistory && fileId && isValidGuid(fileId) && (
+            <FileVersionsButton
+              fileId={fileId}
+              onDownload={(versionNo, fileName) => {
+                downloadFile({ fileId, versionNo, fileName });
+              }}
+            />
+          )}
+          <Button
+            size="small"
+            icon={<DownloadOutlined />}
+            title="Download file"
+            onClick={(e) => {
+              e.stopPropagation();
+              downloadFile({ fileId: file.uid, fileName: file.name });
+            }}
+          />
+          {/* Custom Actions Button Group */}
+          {customActions && customActions.length > 0 && (
+            <div onClick={(e) => e.stopPropagation()}>
+              <DataContextProvider
+                id={`file_ctx_${fileId}`}
+                name="fileContext"
+                description="File context for custom actions"
+                type="control"
+                initialData={getFileContextData(file, fileId)}
+              >
+                <ButtonGroup
+                  id={`file_actions_${fileId}`}
+                  items={customActions}
+                  size="small"
+                  readOnly={false}
+                  spaceSize="small"
+                  isInline={true}
+                />
+              </DataContextProvider>
             </div>
-          );
-        }
+          )}
+        </Space>
+      </div>
+    );
 
-        // For thumbnail and other types, wrap entire content
-        const content = (
-          <div className={isDownloaded && styleDownloadedFiles ? styles.downloadedFile : ''} onClick={handleItemClick}>
-            {originNode}
+    const handleItemClick = (e: React.MouseEvent): void => {
+      // If it's an image, trigger preview instead of download
+      if (isImageType(file.type)) {
+        e.preventDefault();
+        e.stopPropagation();
+        handlePreview(file);
+      } else {
+        downloadFile({ fileId: file.uid, fileName: file.name });
+      };
+    };
+
+    // For text listType, we need to wrap only the file name in Popover
+    // For thumbnail and other types, wrap the entire content
+    const renderContent = (): React.ReactNode => {
+      if (listType === 'text') {
+        return (
+          <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
+            <div className={styles.fileName}>
+              <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
+                <Space direction="horizontal" size="small">
+                  <span>{iconRender(file)}</span>
+                  <span>{file.name}</span>
+                </Space>
+              </Popover>
+            </div>
             {isDownloaded && styleDownloadedFiles && (
               <div className={styles.downloadedIcon}>
                 <ShaIcon iconName={downloadedIcon} />
@@ -470,31 +457,44 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             )}
           </div>
         );
+      }
 
-        return (
-          <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
-            {content}
-          </Popover>
-        );
-      };
-
-      return (
-        <div>
-          {renderContent()}
-          {listType === 'thumbnail' && (
-            <div className={isDownloaded ? styles.downloadedFile : ''}>
-              <div className={styles.fileName}>{file.name}</div>
+      // For thumbnail and other types, wrap entire content
+      const content = (
+        <div className={isDownloaded && styleDownloadedFiles ? styles.downloadedFile : ''} onClick={handleItemClick}>
+          {originNode}
+          {isDownloaded && styleDownloadedFiles && (
+            <div className={styles.downloadedIcon}>
+              <ShaIcon iconName={downloadedIcon} />
             </div>
-          )}
-          {hasExtraContent && extraFormId && (
-            <ExtraContent
-              file={file}
-              formId={extraFormId}
-            />
           )}
         </div>
       );
+
+      return (
+        <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
+          {content}
+        </Popover>
+      );
     };
+
+    return (
+      <div>
+        {renderContent()}
+        {listType === 'thumbnail' && (
+          <div className={isDownloaded ? styles.downloadedFile : ''}>
+            <div className={styles.fileName}>{file.name}</div>
+          </div>
+        )}
+        {hasExtraContent && extraFormId && (
+          <ExtraContent
+            file={file}
+            formId={extraFormId}
+          />
+        )}
+      </div>
+    );
+  };
 
   const props: DraggerProps = {
     name: '',
@@ -576,7 +576,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     >
       {isStub
         ? (isDragger
-          ? <Dragger style={{padding: 0}} disabled><DraggerStub styles={styles} /></Dragger>
+          ? <Dragger style={{ padding: 0 }} disabled><DraggerStub styles={styles} /></Dragger>
           : (
             <>
               <Button
