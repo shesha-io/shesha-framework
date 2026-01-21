@@ -570,6 +570,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   return (
+    fileList.length === 0 && disabled ? null :
     <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
       : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
         : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
@@ -615,7 +616,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                 <Dragger {...props} openFileDialogOnClick={true}>
                   {fileList.length === 0 ? (
                     <DraggerStub styles={styles} />
-                  ) : (
+                  ) : !disabled ? (
                     <div>
                       {fileList.map((file) => (
                         <div key={file.uid}>
@@ -624,7 +625,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                       ))}
                       {renderUploadContent()}
                     </div>
-                  )}
+                  ) : null}
                 </Dragger>
               )
               : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
