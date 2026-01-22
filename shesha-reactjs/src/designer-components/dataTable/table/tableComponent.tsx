@@ -11,6 +11,7 @@ import { migrateV15toV16 } from './migrations/migrate-v16';
 import { migrateV17toV18 } from './migrations/migrate-v18';
 import { migrateV18toV19 } from './migrations/migrate-v19';
 import { migrateV24toV25 } from './migrations/migrate-v25';
+import { migrateV25toV26 } from './migrations/migrate-v26';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
 import { TableOutlined } from '@ant-design/icons';
@@ -217,7 +218,8 @@ const TableComponent: TableComponentDefinition = {
         }
         return prev;
       })
-      .add<ITableComponentProps>(25, migrateV24toV25),
+      .add<ITableComponentProps>(25, migrateV24toV25)
+      .add<ITableComponentProps>(26, migrateV25toV26),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [

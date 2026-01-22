@@ -61,8 +61,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   boxShadow,
   sortableIndicatorColor,
   striped: _striped,
-  cellTextColor,
-  cellBackgroundColor,
   cellBorderColor,
   cellBorders,
   headerBorder,
@@ -95,8 +93,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   boxShadow?: string;
   sortableIndicatorColor?: string;
   striped?: boolean;
-  cellTextColor?: string;
-  cellBackgroundColor?: string;
   cellBorderColor?: string;
   cellBorders?: boolean;
   cellPadding?: string;
@@ -350,8 +346,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
           .${td} {
             vertical-align: middle;
-            ${cellTextColor ? `color: ${cellTextColor};` : ''}
-            ${cellBackgroundColor ? `background-color: ${cellBackgroundColor};` : ''}
             ${cellBorders && cellBorderColor ? `border: 1px solid ${cellBorderColor};` : ''}
             ${Object.entries(cellBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
           }

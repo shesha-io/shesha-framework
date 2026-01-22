@@ -654,7 +654,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'rowPaddingPanel',
-                        label: 'Padding',
+                        label: 'Cell Padding',
                         labelAlign: 'right',
                         ghost: true,
                         collapsible: 'header',
@@ -1247,27 +1247,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         content: {
                           id: nanoid(),
                           components: [...fbf()
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              inputs: [
-                                {
-                                  id: nanoid(),
-                                  propertyName: 'cellTextColor',
-                                  label: 'Cell Text Color',
-                                  type: 'colorPicker',
-                                  tooltip: 'Text color for table cells',
-                                  jsSetting: true,
-                                },
-                                {
-                                  id: nanoid(),
-                                  propertyName: 'cellBackgroundColor',
-                                  label: 'Cell Background',
-                                  type: 'colorPicker',
-                                  tooltip: 'Background color for table cells',
-                                  jsSetting: true,
-                                },
-                              ],
-                            })
                             .addSettingsInputRow({
                               id: nanoid(),
                               inputs: [

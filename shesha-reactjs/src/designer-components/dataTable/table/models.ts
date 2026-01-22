@@ -110,7 +110,9 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   enableStyleOnReadonly?: boolean;
 
   // Cell-specific styling
+  /** @deprecated Use bodyFontColor (via font.color) instead. Cell text color duplicates body font color. */
   cellTextColor?: string;
+  /** @deprecated Use rowBackgroundColor instead. Cell background color duplicates row background color. */
   cellBackgroundColor?: string;
   cellBorderColor?: string;
   /** @deprecated Use rowStylingBox instead. This property is migrated to rowStylingBox in migration v19 */
