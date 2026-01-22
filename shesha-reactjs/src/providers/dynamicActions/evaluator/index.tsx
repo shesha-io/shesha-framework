@@ -28,7 +28,6 @@ export const DynamicActionsEvaluator: FC<IDynamicActionsEvaluatorProps> = ({ ite
   // build a resulting tree that includes all resolved items but excludes non resolved ones
   const finalItems = useMemo(() => {
     return getItemsWithResolved(evaluation.items);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [evaluation.items, numResolved]);
 
 

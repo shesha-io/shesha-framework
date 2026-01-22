@@ -3,8 +3,7 @@ import { ModalProps } from 'antd/lib/modal';
 import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, useEffect, useMemo } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
-import { ValidationErrors } from '..';
-import { IErrorInfo } from '@/interfaces/errorInfo';
+import { IErrorInfo, IValidationErrorInfo } from '@/interfaces/errorInfo';
 import {
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
@@ -15,6 +14,7 @@ import {
   useShaFormInstanceOrUndefined,
   useSheshaApplication,
 } from '@/providers';
+import axios from 'axios';
 import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
 import { removeUndefinedProperties } from '@/utils/array';
 import { camelcaseDotNotation, toCamelCase } from '@/utils/string';
@@ -50,7 +50,6 @@ import { IShadowValue } from '@/designer-components/_settings/utils/shadow/inter
 import { isEqual } from 'lodash';
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
-import { useStyles } from './styles/styles';
 import { adjustWidth } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
@@ -66,6 +65,93 @@ export interface IIndexTableOptions {
 const noColumnsErrorInfo: IErrorInfo = {
   message: 'Column Mismatches',
   details: 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.',
+};
+
+/**
+ * Type guard to check if an object has an error property of type IErrorInfo
+ */
+const isErrorWithProp = (obj: unknown): obj is { error: IErrorInfo } => {
+  if (obj === null || typeof obj !== 'object') return false;
+
+  if (!('error' in obj)) return false;
+
+  const typedObj = obj as { error: unknown };
+  const errorProp = typedObj.error;
+
+  // Check if error property is a valid IErrorInfo object
+  return (
+    errorProp !== null &&
+    typeof errorProp === 'object' &&
+    ('message' in errorProp || 'details' in errorProp || 'validationErrors' in errorProp)
+  );
+};
+
+/**
+ * Type guard to check if an object has a message property of type string
+ */
+const isErrorWithStringMessage = (obj: unknown): obj is { message: string } => {
+  return (
+    obj !== null &&
+    typeof obj === 'object' &&
+    'message' in obj &&
+    typeof (obj as { message: unknown }).message === 'string'
+  );
+};
+
+/**
+ * Helper function to extract error messages from API response
+ * Extracts individual validation errors from ABP error format
+ */
+const getErrorMessages = (error: unknown): { error: string }[] => {
+  if (!error) return [{ error: 'An unknown error occurred' }];
+
+  // Try to extract error info from AxiosError
+  let errorInfo: IErrorInfo | undefined;
+
+  // Check for AxiosError with response data
+  if (axios.isAxiosError(error) && error.response?.data) {
+    const responseData = error.response.data;
+    if (isErrorWithProp(responseData)) {
+      errorInfo = responseData.error;
+    }
+  } else if (isErrorWithProp(error)) {
+    errorInfo = error.error;
+  } else if (error instanceof Error) {
+    errorInfo = { message: error.message };
+  }
+
+  // Extract validation errors from errorInfo
+  if (errorInfo) {
+    const errors: { error: string }[] = [];
+
+    // If there are individual validation errors, use those as separate entries
+    if (errorInfo.validationErrors && Array.isArray(errorInfo.validationErrors)) {
+      errorInfo.validationErrors.forEach((ve: IValidationErrorInfo) => {
+        if (ve.message) {
+          errors.push({ error: ve.message });
+        }
+      });
+      if (errors.length > 0) return errors;
+    }
+
+    // Otherwise, fall back to details or message
+    if (errorInfo.details) {
+      errors.push({ error: errorInfo.details });
+    } else if (errorInfo.message) {
+      errors.push({ error: errorInfo.message });
+    }
+
+    if (errors.length > 0) return errors;
+  }
+
+  // Last resort - try to extract message from error object
+  if (isErrorWithStringMessage(error)) {
+    if (error.message && !error.message.includes('status code')) {
+      return [{ error: error.message }];
+    }
+  }
+
+  return [{ error: 'An error occurred while fetching data' }];
 };
 
 export interface IIndexTableProps extends IShaDataTableProps, TableProps {
@@ -220,8 +306,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const {
     tableData,
     isFetchingTableData,
+    hasFetchTableDataError,
+    fetchTableDataError,
     totalPages,
     columns,
+    configurableColumns,
     groupingColumns,
     pageSizeOptions,
     currentPage,
@@ -358,7 +447,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       onRowsChanged(tableData);
     }
   }, [tableData]);
-  const { styles } = useStyles();
 
   const entityMetadata = useMetadata(false);
   const metadata = entityMetadata?.metadata;
@@ -1033,20 +1121,69 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowDividers: props.rowDividers,
   };
 
+  // Register validation errors with the parent FormComponent
+  // FormComponent will automatically display errors in designer mode
+  useComponentValidation(
+    () => {
+      // Check for data fetch errors (highest priority)
+      if (hasFetchTableDataError && fetchTableDataError) {
+        return {
+          hasErrors: true,
+          errors: getErrorMessages(fetchTableDataError),
+          validationType: 'error',
+        };
+      }
 
-  // FormComponent will automatically wrap this component with ErrorIconPopover in designer mode
+      // Check for export to excel errors
+      if (exportToExcelError) {
+        return {
+          hasErrors: true,
+          errors: getErrorMessages(exportToExcelError),
+          validationType: 'error',
+        };
+      }
+
+      // Check for no columns configured
+      // Use columns from store (which includes both configurableColumns and prepared columns)
+      // Only validate when we have definitive information (not during initial load)
+      const storeColumns = columns || [];
+      const hasStoreColumns = storeColumns.length > 0;
+      const hasConfiguredColumns = configurableColumns && configurableColumns.length > 0;
+
+      // Only show validation error if:
+      // 1. Store has been initialized (configurableColumns is defined, even if empty)
+      // 2. There are truly no columns in both configured and prepared state
+      if (configurableColumns !== undefined && !hasConfiguredColumns && !hasStoreColumns) {
+        return {
+          hasErrors: true,
+          errors: [{ error: noColumnsErrorInfo.details }],
+          validationType: 'error',
+        };
+      }
+
+      return undefined;
+    },
+    [hasFetchTableDataError, fetchTableDataError, exportToExcelError, configurableColumns, columns],
+  );
+
+  // Always render ReactTable - it handles empty columns gracefully
+  // Only show StandaloneTable in designer mode when there are truly no configured columns
+  // Only show StandaloneTable when:
+  // 1. In designer mode
+  // 2. configurableColumns has been initialized (not undefined) AND is empty
+  // 3. columns (from store) is also empty
+  // This prevents showing StandaloneTable during initial load before columns are registered
+  const shouldShowStandaloneTable =
+    appContext.form?.formMode === 'designer' &&
+    configurableColumns !== undefined && configurableColumns.length === 0 &&
+    (!columns || columns.length === 0);
+
   return (
     <Fragment>
-      <div className={styles.shaChildTableErrorContainer}>
-        {exportToExcelError && <ValidationErrors error="Error occurred while exporting to excel" />}
-      </div>
-
-      {tableProps.columns && tableProps.columns.length > 0 ? (
-        <ReactTable {...tableProps} />
+      {shouldShowStandaloneTable ? (
+        <StandaloneTable items={[]} type="" id="" />
       ) : (
-        <ValidationErrors error={noColumnsErrorInfo}>
-          <StandaloneTable items={[]} type="" id="" />
-        </ValidationErrors>
+        <ReactTable {...tableProps} />
       )}
     </Fragment>
   );

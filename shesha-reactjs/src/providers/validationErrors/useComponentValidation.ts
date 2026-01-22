@@ -59,7 +59,7 @@ export const useComponentValidation = (
       ...partialResult,
       hasErrors: true,
     };
-  }, deps); // eslint-disable-line react-hooks/exhaustive-deps -- validationFn deliberately excluded to prevent infinite loops, deps provided explicitly by caller
+  }, deps);
 
   useEffect(() => {
     // Register validation errors using the actions from the provider

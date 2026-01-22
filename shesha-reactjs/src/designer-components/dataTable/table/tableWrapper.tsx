@@ -236,7 +236,16 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
       return exists;
     });
 
-    if (qualifyingColumns.length > 0 || normalizedConfiguredColumns.length === 0)
+    // Check if there are any non-data columns (actions, crud-operations, etc.)
+    const hasNonDataColumns = permissibleColumns.some((col) =>
+      col.columnType && col.columnType !== 'data',
+    );
+
+    // Register columns if:
+    // 1. At least one column matches metadata properties, OR
+    // 2. There are no configured columns (empty state), OR
+    // 3. There are non-data columns that don't need to match metadata
+    if (qualifyingColumns.length > 0 || normalizedConfiguredColumns.length === 0 || hasNonDataColumns)
       registerConfigurableColumns(id, permissibleColumns);
   }, [configuredColumns, isDesignMode, metadata, formData, globalState, anyOfPermissionsGranted, filterVisibility, toCamelCase]);
 
