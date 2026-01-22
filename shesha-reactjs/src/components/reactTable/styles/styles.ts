@@ -454,13 +454,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
             .sha-form-cell{
               .ant-form-item-control-input-content, a, button {
-                  color: inherit;
+                  color: white;
               }
 
               .sha-stored-files-renderer, .ant-upload-list {
                   color: white;
               }
 
+            }
+
+            .sha-data-cell {
+              color: white;
             }
 
             /* Remove white background from dropdowns in selected rows */
@@ -473,10 +477,36 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               background-color: transparent !important;
             }
 
-            /* Ensure dropdown text is white in selected rows */
+            /* Ensure all form component text is white in selected rows */
             .ant-select-selection-item,
-            .ant-select-selection-placeholder {
+            .ant-select-selection-placeholder,
+            .ant-input,
+            .ant-input-number-input,
+            .ant-picker-input > input,
+            .sha-data-cell input,
+            .sha-data-cell .ant-select-selection-search-input {
               color: white !important;
+            }
+
+            /* Ensure autocomplete text is white */
+            .sha-autocomplete-raw-value,
+            .sha-entity-reference-display-name {
+              color: white !important;
+            }
+
+            /* Ensure readonly display components show white text */
+            .read-only-display-form-item,
+            .read-only-display-form-item div {
+              color: white !important;
+            }
+
+            /* Ensure sha-input components (textfield) show white text */
+            .sha-input {
+              color: white !important;
+
+              input {
+                color: white !important;
+              }
             }
           }
 
