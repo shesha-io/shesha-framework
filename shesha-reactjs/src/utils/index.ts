@@ -1,6 +1,6 @@
 import { IPersistedFormProps } from '@/providers';
 import { CSSProperties } from 'react';
-import { ISidebarGroup, ISidebarMenuItem, isSidebarButton } from '@/interfaces/sidebar';
+import { ISidebarMenuItem, isSidebarButton, isSidebarGroup } from '@/interfaces/sidebar';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { normalizeUrl } from './url';
 import { isNavigationActionConfiguration } from '@/providers/shaRouting';
@@ -19,9 +19,8 @@ export const getSelectedKeys = (path: string, menuItems: ISidebarMenuItem[]): st
   const findSelectedItem = (items: ISidebarMenuItem[], parentIds: string[] = []): string[] => {
     for (const item of items) {
       // First, check children recursively (important: do this before checking the item itself)
-      const group = item as ISidebarGroup;
-      if (group.childItems && group.childItems.length > 0) {
-        const result = findSelectedItem(group.childItems, [...parentIds, item.id]);
+      if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0) {
+        const result = findSelectedItem(item.childItems, [...parentIds, item.id]);
         if (result.length > 0) {
           return result;
         }

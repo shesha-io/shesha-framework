@@ -98,8 +98,8 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     const height = model?.height || "6";
 
     // Normalize width: if no unit provided, append 'px'
-    const rawWidth = model?.dimensions?.width || model?.width || "500px";
-    const width = /^\d+$/.test(rawWidth) ? `${rawWidth}px` : rawWidth;
+    const rawWidth = (model?.dimensions?.width || model?.width || "500px").toString().trim();
+    const width = /^\d+(\.\d+)?$/.test(rawWidth) ? `${rawWidth}px` : rawWidth;
 
     const colors: ILayoutColor = {
       ...filterObjFromKeys(model, [
