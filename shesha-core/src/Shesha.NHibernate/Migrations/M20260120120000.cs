@@ -53,7 +53,12 @@ namespace Shesha.Migrations
                     UPDATE frwk.notification_types
                     SET override_channels =
                         (
-                            SELECT jsonb_agg(elem)::text
+                            SELECT jsonb_agg(
+                                CASE
+                                    WHEN jsonb_typeof(elem) = 'string' THEN (elem #>> '{}')::jsonb
+                                    ELSE elem
+                                END
+                            )::text
                             FROM jsonb_array_elements(override_channels::jsonb) AS elem
                         )
                     WHERE override_channels IS NOT NULL
