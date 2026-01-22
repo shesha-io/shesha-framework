@@ -156,6 +156,7 @@ export interface IDataTableStateContext
 
   isFetchingTableData?: boolean;
   hasFetchTableDataError?: boolean;
+  fetchTableDataError?: any;
 
   properties?: string[];
 

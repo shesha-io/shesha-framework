@@ -10,7 +10,7 @@ import { getEditor } from '../utils';
 import { defaultExposedVariables } from '@/designer-components/_settings/settingsControl';
 
 export const CodeEditorWrapper: FC<ICodeEditorSettingsInputProps> = (props) => {
-  const { mode, language, availableConstantsExpression, value, readOnly, description, label, propertyName, onChange, templateSettings, wrapInTemplate } = props;
+  const { mode, language, availableConstantsExpression, resultTypeExpression, value, readOnly, description, label, propertyName, onChange, templateSettings, wrapInTemplate } = props;
   const functionName = `get${camelcase(label ?? propertyName, { pascalCase: true })}`;
 
   const codeEditorProps: ICodeEditorProps = {
@@ -26,7 +26,8 @@ export const CodeEditorWrapper: FC<ICodeEditorSettingsInputProps> = (props) => {
     templateSettings: templateSettings ?? { functionName: functionName },
     exposedVariables: defaultExposedVariables,
   };
-  const { formData } = useShaFormInstance();
+  const formInstance = useShaFormInstance();
+  const formData = formInstance.formData;
   const metadataBuilderFactory = useMetadataBuilderFactory();
   const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
     if (!availableConstantsExpression?.trim())
@@ -37,6 +38,18 @@ export const CodeEditorWrapper: FC<ICodeEditorSettingsInputProps> = (props) => {
     return executeScript<IObjectMetadata>(availableConstantsExpression, { data: formData, metadataBuilder });
   }, [availableConstantsExpression, metadataBuilderFactory, formData]);
 
+  const resultTypeAccessor = useCallback((): Promise<IObjectMetadata> | undefined => {
+    if (!resultTypeExpression || (typeof resultTypeExpression === 'string' && !resultTypeExpression.trim()))
+      return undefined;
+
+    const metadataBuilder = metadataBuilderFactory();
+    if (typeof resultTypeExpression === 'string')
+      return executeScript<IObjectMetadata>(resultTypeExpression, { data: formData, metadataBuilder });
+    if (typeof resultTypeExpression === 'function')
+      return resultTypeExpression({ data: formData, metadataBuilder, form: formInstance }) as Promise<IObjectMetadata>;
+    return undefined;
+  }, [resultTypeExpression, metadataBuilderFactory, formInstance, formData]);
+
   // TODO: move to wrapper, add `constantsAccessor`
-  return getEditor(availableConstantsExpression, codeEditorProps, constantsAccessor);
+  return getEditor(availableConstantsExpression, codeEditorProps, constantsAccessor, resultTypeAccessor);
 };

@@ -80,15 +80,18 @@ namespace Shesha.DynamicEntities.DbGenerator
                     .Where(x =>
                         x.EntityConfig.Id == entityConfig.Id
                         && x.InitStatus.HasFlag(EntityInitFlags.DbActionRequired)
-                        && x.ParentProperty == null
-                        && !x.IsFrameworkRelated)
+                        && x.ParentProperty == null)
                     .ToListAsync();
 
                 foreach (var property in props)
                 {
                     try
                     {
-                        await ProcessEntityPropertyAsync(property, force);
+                        if (property.IsFrameworkRelated)
+                            // Framework related properties should be created by UseSchemaAndTableAsync function executed above
+                            await UpdateSuccessAsync(property);
+                        else
+                            await ProcessEntityPropertyAsync(property, force);
                     }
                     catch (Exception e)
                     {

@@ -4,6 +4,7 @@ import React, { CSSProperties, FC, Fragment, MutableRefObject, ReactElement, use
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import { ValidationErrors } from '..';
+import { IErrorInfo } from '@/interfaces/errorInfo';
 import {
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
@@ -54,10 +55,18 @@ import { adjustWidth } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { IBeforeRowReorderArguments, IAfterRowReorderArguments } from '@/designer-components/dataTable/tableContext/models';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { StandaloneTable } from '@/designer-components/dataTable/table/standaloneTable';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
 }
+
+// Error info for ValidationErrors component when no columns are configured
+const noColumnsErrorInfo: IErrorInfo = {
+  message: 'Column Mismatches',
+  details: 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.',
+};
 
 export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   tableRef?: MutableRefObject<Partial<DataTableFullInstance> | null>;
@@ -193,7 +202,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   sortableIndicatorColor,
   ...props
 }) => {
-  const store = useDataTableStore();
+  const store = useDataTableStore(false);
   const mode = selectionMode ?? (useMultiSelect ? 'multiple' : 'single');
   const multiSelect = mode === 'multiple';
   const appContext = useAvailableConstantsData();
@@ -351,7 +360,31 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [tableData]);
   const { styles } = useStyles();
 
-  const metadata = useMetadata(false)?.metadata;
+  const entityMetadata = useMetadata(false);
+  const metadata = entityMetadata?.metadata;
+
+  // Register validation errors with parent FormComponent using the hook
+  // This follows the centralized validation architecture where FormComponent
+  // decides how to display errors based on form mode
+  // Component identity (id, name, type) is automatically obtained from FormComponentValidationProvider
+  useComponentValidation(
+    () => {
+      // Validate that component is inside a data context
+      if (!store) {
+        return {
+          hasErrors: true,
+          validationType: 'warning',
+          errors: [{
+            propertyName: 'No ancestor Data Context component is set',
+            error: '\nPlace this component inside a Data Context component to connect it to data',
+          }],
+        };
+      }
+
+      return undefined;
+    },
+    [store],
+  );
 
   const handleRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick?.actionName) return undefined;
@@ -460,7 +493,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         );
       }
     }
-    return false;
   };
 
   const crudOptions = useMemo(() => {
@@ -1001,13 +1033,21 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     rowDividers: props.rowDividers,
   };
 
+
+  // FormComponent will automatically wrap this component with ErrorIconPopover in designer mode
   return (
     <Fragment>
       <div className={styles.shaChildTableErrorContainer}>
         {exportToExcelError && <ValidationErrors error="Error occurred while exporting to excel" />}
       </div>
 
-      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps} />}
+      {tableProps.columns && tableProps.columns.length > 0 ? (
+        <ReactTable {...tableProps} />
+      ) : (
+        <ValidationErrors error={noColumnsErrorInfo}>
+          <StandaloneTable items={[]} type="" id="" />
+        </ValidationErrors>
+      )}
     </Fragment>
   );
 };

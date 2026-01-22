@@ -317,36 +317,59 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const metadata = useMetadata(false); // Don't require metadata - may not be in DataSource context
 
+  // Track previous prop values to avoid unnecessary dispatches and loops
+  const prevPropsRef = useRef({
+    initialPageSize,
+    permanentFilter,
+    sortMode,
+    strictSortBy,
+    strictSortOrder,
+    allowReordering,
+    dataFetchingMode,
+    modelType,
+    sortingItems,
+  });
+
   const changePageSize = (val: number): void => {
     dispatch(changePageSizeAction(val));
   };
 
+  // Sync page size - only dispatch when prop actually changes, not state
   useEffect(() => {
-    // sync page size on settings change
-    if (state.selectedPageSize !== initialPageSize) {
+    const prev = prevPropsRef.current.initialPageSize;
+    if (initialPageSize !== prev && initialPageSize !== undefined) {
+      prevPropsRef.current.initialPageSize = initialPageSize;
       changePageSize(initialPageSize);
     }
   }, [initialPageSize]);
 
   const setPermanentFilter = (filter: FilterExpression): void => {
-    const currentFilter = state.permanentFilter;
-    if (!isEqual(currentFilter, filter))
-      dispatch(setPermanentFilterAction({ filter }));
+    dispatch(setPermanentFilterAction({ filter }));
   };
 
+  // Sync permanent filter - only dispatch when prop changes
   useEffect(() => {
-    setPermanentFilter(permanentFilter);
+    const prev = prevPropsRef.current.permanentFilter;
+    if (!isEqual(permanentFilter, prev)) {
+      prevPropsRef.current.permanentFilter = permanentFilter;
+      setPermanentFilter(permanentFilter);
+    }
   }, [permanentFilter]);
 
   const { setState: setGlobalState } = useGlobalState();
   const tableIsReady = useRef(false);
 
-  // sync standard sorting
+  // Sync standard sorting - only when props change
   useDeepCompareEffect(() => {
-    const sorting = sortingItems2ColumnSorting(sortingItems);
-    dispatch(setStandardSortingAction(sorting));
+    const prev = prevPropsRef.current.sortingItems;
+    if (!isEqual(sortingItems, prev)) {
+      prevPropsRef.current.sortingItems = sortingItems;
+      const sorting = sortingItems2ColumnSorting(sortingItems);
+      dispatch(setStandardSortingAction(sorting));
+    }
   }, [sortingItems]);
 
+  // Sync grouping - only when grouping prop or sortMode changes (don't watch state.grouping!)
   useDeepCompareEffect(() => {
     const supported = repository.supportsGrouping && repository.supportsGrouping({ sortMode });
 
@@ -364,33 +387,62 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         allowSorting: true,
       }));
 
-      repository.prepareColumns(groupColumns).then((preparedColumns) => {
-        dispatch(fetchGroupingColumnsSuccessAction({ grouping: state.grouping, columns: preparedColumns }));
-      });
+      repository.prepareColumns(groupColumns)
+        .then((preparedColumns) => {
+          dispatch(fetchGroupingColumnsSuccessAction({ grouping, columns: preparedColumns }));
+        })
+        .catch((e) => {
+          console.error('Failed to prepare grouping columns:', e);
+          dispatch(fetchTableDataErrorAction({ error: e }));
+        });
     }
-  }, [state.grouping, sortMode]);
+  }, [grouping, sortMode]);
 
-  // sync ordering
+  // Sync ordering - only when props change
   useEffect(() => {
-    if (sortMode !== state.sortMode || strictSortBy !== state.strictSortBy || strictSortOrder !== state.strictSortOrder || allowReordering !== state.allowReordering)
+    const prev = prevPropsRef.current;
+    const sortingChanged = sortMode !== prev.sortMode ||
+      strictSortBy !== prev.strictSortBy ||
+      strictSortOrder !== prev.strictSortOrder ||
+      allowReordering !== prev.allowReordering;
+
+    if (sortingChanged) {
+      prevPropsRef.current.sortMode = sortMode;
+      prevPropsRef.current.strictSortBy = strictSortBy;
+      prevPropsRef.current.strictSortOrder = strictSortOrder;
+      prevPropsRef.current.allowReordering = allowReordering;
       dispatch(setSortingSettingsAction({ sortMode, strictSortBy, strictSortOrder, allowReordering }));
+    }
   }, [sortMode, strictSortBy, strictSortOrder, allowReordering]);
 
-  // sync dataFetchingMode
+  // Sync dataFetchingMode - only when prop changes
   useEffect(() => {
-    if (state.dataFetchingMode !== dataFetchingMode) dispatch(setDataFetchingModeAction(dataFetchingMode));
+    const prev = prevPropsRef.current.dataFetchingMode;
+    if (dataFetchingMode !== prev) {
+      prevPropsRef.current.dataFetchingMode = dataFetchingMode;
+      dispatch(setDataFetchingModeAction(dataFetchingMode));
+    }
   }, [dataFetchingMode]);
 
   const [userConfig, setUserConfig] = useLocalStorage<IDataTableUserConfig>(userConfigId, null);
 
+  // Sync model type - only when prop changes
   useEffect(() => {
-    if (modelType !== state.modelType) dispatch(setModelTypeAction(modelType));
+    const prev = prevPropsRef.current.modelType;
+    if (modelType !== prev) {
+      prevPropsRef.current.modelType = modelType;
+      dispatch(setModelTypeAction(modelType));
+    }
   }, [modelType]);
 
-  // sync contextValidation
+  // Sync contextValidation - only when prop changes
+  const prevContextValidationRef = useRef(contextValidation);
   useEffect(() => {
-    const contextValidationChanged = !isEqual(state.contextValidation, contextValidation);
-    if (contextValidationChanged) dispatch(setContextValidationAction(contextValidation));
+    const contextValidationChanged = !isEqual(prevContextValidationRef.current, contextValidation);
+    if (contextValidationChanged) {
+      prevContextValidationRef.current = contextValidation;
+      dispatch(setContextValidationAction(contextValidation));
+    }
   }, [contextValidation]);
 
   const requireColumnRef = useRef<boolean>(false);
@@ -427,7 +479,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
           })
           .catch((e) => {
             console.error(e);
-            dispatch(fetchTableDataErrorAction());
+            dispatch(fetchTableDataErrorAction({ error: e }));
           });
       } else {
         // skip fetching and return empty list
@@ -531,6 +583,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     state.sortMode,
     state.strictSortBy,
     state.strictSortOrder,
+    state.modelType, // Refetch when model type changes
   ]);
 
   const setColumnWidths = (widths: IColumnWidth[]): void => {
@@ -565,9 +618,10 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     dispatch(changeFilterAction({ filterColumnId, filterValue }));
 
   const applyFilters = (): void => {
-    const { tableFilterDirty } = state;
-
-    dispatch(applyFilterAction(tableFilterDirty));
+    dispatch((dispatchThunk, getState) => {
+      const { tableFilterDirty } = getState();
+      dispatchThunk(applyFilterAction(tableFilterDirty));
+    });
   };
 
   /** change quick search text without refreshing of the table data */
@@ -616,12 +670,15 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const setPredefinedFilters = (predefinedFilters: IStoredFilter[]): void => {
-    const filtersChanged = !isEqual(sortBy(state?.predefinedFilters), sortBy(predefinedFilters));
+    dispatch((dispatchThunk, getState) => {
+      const currentState = getState();
+      const filtersChanged = !isEqual(sortBy(currentState?.predefinedFilters), sortBy(predefinedFilters));
 
-    // note: we should update the state is the table is not yet ready to trigger dependencies check
-    if (filtersChanged || !tableIsReady.current) {
-      dispatch(setPredefinedFiltersAction({ predefinedFilters, userConfig }));
-    }
+      // note: we should update the state if the table is not yet ready to trigger dependencies check
+      if (filtersChanged || !tableIsReady.current) {
+        dispatchThunk(setPredefinedFiltersAction({ predefinedFilters, userConfig }));
+      }
+    });
   };
 
   const changeSelectedIds = (selectedIds: string[]): void => {
@@ -655,10 +712,15 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
       dispatchThunk(registerConfigurableColumnsAction({ ownerId, columns: columnsToRegister }));
 
-      repository.prepareColumns(columnsToRegister).then((preparedColumns) => {
-        // backgroundColor
-        dispatchThunk(fetchColumnsSuccessSuccessAction({ configurableColumns: columnsToRegister, columns: preparedColumns, userConfig }));
-      });
+      repository.prepareColumns(columnsToRegister)
+        .then((preparedColumns) => {
+          // backgroundColor
+          dispatchThunk(fetchColumnsSuccessSuccessAction({ configurableColumns: columnsToRegister, columns: preparedColumns, userConfig }));
+        })
+        .catch((e) => {
+          console.error('Failed to prepare table columns:', e);
+          dispatch(fetchTableDataErrorAction({ error: e }));
+        });
     });
   };
 
@@ -808,12 +870,18 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   const getRepository = (): IRepository => repository;
 
   const setSelectedRow = (index: number, row: any): void => {
-    dispatch(setSelectedRowAction(state.selectedRow?.id !== row?.id ? { index, row, id: row?.id } : null));
+    dispatch((dispatchThunk, getState) => {
+      const currentState = getState();
+      dispatchThunk(setSelectedRowAction(currentState.selectedRow?.id !== row?.id ? { index, row, id: row?.id } : null));
+    });
   };
 
   const setDraggingState = (dragState: DragState): void => {
-    if (state.dragState !== dragState)
-      dispatch(setDraggingRowAction(dragState));
+    dispatch((dispatchThunk, getState) => {
+      const currentState = getState();
+      if (currentState.dragState !== dragState)
+        dispatchThunk(setDraggingRowAction(dragState));
+    });
   };
 
   const setMultiSelectedRow = (rows: Row[] | Row): void => {
