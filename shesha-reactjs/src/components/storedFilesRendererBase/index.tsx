@@ -15,7 +15,6 @@ import {
   Popconfirm,
   Popover,
   Space,
-  Typography,
   Upload,
   UploadFile,
 } from 'antd';
@@ -28,7 +27,7 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { FormIdentifier } from '@/providers/form/models';
 import { DataContextProvider } from '@/providers/dataContextProvider';
-import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile } from './utils';
+import { FileVersionsButton, ExtraContent, createPlaceholderFile, getListTypeAndLayout, fetchStoredFile, FileNameDisplay } from './utils';
 import classNames from 'classnames';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { addPx } from '@/designer-components/button/util';
@@ -90,35 +89,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
 }
 
 const EMPTY_ARRAY = [];
-
-const { Text } = Typography;
-
-// Helper function to format file size
-const formatFileSize = (bytes?: number): string => {
-  if (bytes === null) return '';
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-};
-
-// Helper component to render file name with ellipsis and title
-const FileNameDisplay: FC<{ file: UploadFile; className?: string }> = ({ file, className }) => {
-  const sizeStr = formatFileSize(file.size);
-  const title = sizeStr ? `${file.name} (${sizeStr})` : file.name;
-
-  return (
-    <div className={className} style={{ overflow: 'hidden', flex: 1 }}>
-      <Text
-        ellipsis
-        title={title}
-        style={{ display: 'block' }}
-      >
-        {file.name}
-      </Text>
-    </div>
-  );
-};
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   multiple = true,
