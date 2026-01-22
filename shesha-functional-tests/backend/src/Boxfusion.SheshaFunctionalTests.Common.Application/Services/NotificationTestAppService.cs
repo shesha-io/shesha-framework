@@ -72,7 +72,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             if (notification.Type == null)
                 throw new ArgumentException($"{nameof(notification.Type)} must not be  null");
             // Fetch notification type details
-            var type = await _notificationTypeRepository.GetAll().Where(x =>  notification.Type.Name == x.Name && notification.Type.Module == x.Module!.Name).FirstOrDefaultAsync();
+            var type = await _notificationTypeRepository.FirstOrDefaultAsync(x => notification.Type.Name == x.Name && notification.Type.Module == x.Module!.Name);
 
             if (type == null)
                 throw new ArgumentException($"Notification type does not exist.");
@@ -119,7 +119,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 throw new ArgumentException($"{nameof(notification.Type)} must not be  null");
 
                         // Fetch notification type details
-            var type = await _notificationTypeRepository.GetAll().Where(x =>  notification.Type.Name == x.Name && notification.Type.Module == x.Module!.Name).FirstOrDefaultAsync();
+            var type = await _notificationTypeRepository.FirstOrDefaultAsync(x => notification.Type.Name == x.Name && notification.Type.Module == x.Module!.Name);
             if (type == null)
                 throw new ArgumentException($"Notification type does not exist.");
             // Get channel details
