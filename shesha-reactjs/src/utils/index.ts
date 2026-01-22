@@ -7,12 +7,19 @@ import { isNavigationActionConfiguration } from '@/providers/shaRouting';
 
 export type NumberOrString = number | string;
 
+const isReferenceListIdentifier = (value: unknown): value is IReferenceListIdentifier =>
+  typeof value === 'object' &&
+  value !== null &&
+  !Array.isArray(value) &&
+  'module' in value &&
+  'name' in value;
+
 export const getDynamicPath = (formId: IReferenceListIdentifier): string =>
   `/dynamic/${formId?.module}/${formId?.name}`;
 
 export const getSelectedKeys = (path: string, menuItems: ISidebarMenuItem[]): string[] => {
   // Strip query parameters and hash from the path before normalizing
-  const pathWithoutQuery = path?.split('?')[0]?.split('#')[0];
+  const pathWithoutQuery = path?.split('?')?.[0]?.split('#')?.[0];
   const normalizedPath = normalizeUrl(pathWithoutQuery);
   if (!normalizedPath) return [];
 
@@ -36,7 +43,7 @@ export const getSelectedKeys = (path: string, menuItems: ISidebarMenuItem[]): st
         if (navType === 'form') {
           // For form navigation, build the dynamic path from formId
           const formId = item.actionConfiguration?.actionArguments?.formId;
-          if (formId && typeof formId === 'object' && !Array.isArray(formId)) {
+          if (isReferenceListIdentifier(formId)) {
             itemUrl = getDynamicPath(formId);
           }
         } else if (navType === 'url') {
@@ -46,7 +53,7 @@ export const getSelectedKeys = (path: string, menuItems: ISidebarMenuItem[]): st
       }
 
       // Strip query parameters and hash from item URL before normalizing
-      const itemUrlWithoutQuery = itemUrl?.split('?')[0]?.split('#')[0];
+      const itemUrlWithoutQuery = itemUrl?.split('?')?.[0]?.split('#')?.[0];
       const normalizedItemUrl = normalizeUrl(itemUrlWithoutQuery);
       if (normalizedItemUrl && normalizedItemUrl === normalizedPath) {
         // Return all parent IDs plus this item's ID
