@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Shesha.DelayedUpdate;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
 using Shesha.Notifications.Dto;
@@ -11,7 +12,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
         /// <summary>
         /// 
         /// </summary>
-        public EntityDto<Guid>? Type { get; set; }
+        public ConfigurationItemIdentifierDto? Type { get; set; }
         /// <summary>
         /// 
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Repositories;
+﻿using System.Diagnostics;
+using Abp.Domain.Repositories;
 using Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto;
 using NHibernate.Linq;
 using Shesha;
@@ -70,11 +71,11 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 
             if (notification.Type == null)
                 throw new ArgumentException($"{nameof(notification.Type)} must not be  null");
-
             // Fetch notification type details
-            var type = await _notificationTypeRepository.FirstOrDefaultAsync(notification.Type.Id);
+            var type = await _notificationTypeRepository.GetAll().Where(x =>  notification.Type.Name == x.Name && notification.Type.Module == x.Module!.Name).FirstOrDefaultAsync();
+
             if (type == null)
-                throw new ArgumentException($"Notification type with ID {notification.Type.Id} does not exist.");
+                throw new ArgumentException($"Notification type does not exist.");
             // Get recipient details
             var recipientPerson = notification.Recipient?.Id != null 
                 ? await _personRepository.FirstOrDefaultAsync(notification.Recipient.Id)
@@ -117,9 +118,10 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             if (notification.Type == null)
                 throw new ArgumentException($"{nameof(notification.Type)} must not be  null");
 
-            var type = await _notificationTypeRepository.FirstOrDefaultAsync(notification.Type.Id);
+                        // Fetch notification type details
+            var type = await _notificationTypeRepository.GetAll().Where(x =>  notification.Type.Name == x.Name && notification.Type.Module == x.Module!.Name).FirstOrDefaultAsync();
             if (type == null)
-                throw new ArgumentException($"Notification type with ID {notification.Type.Id} does not exist.");
+                throw new ArgumentException($"Notification type does not exist.");
             // Get channel details
             var channel = notification.Channel != null ? await _notificationChannelRepository.FirstOrDefaultAsync(notification.Channel.Id) : null;
             // Prepare notification data
